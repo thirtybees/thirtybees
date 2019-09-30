@@ -4899,7 +4899,7 @@ class AdminProductsControllerCore extends AdminController
                     $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
                     $tmpName = $file['save_path'];
 
-                    foreach ($imagesTypes as $k => $imageType) {
+                    foreach ($imagesTypes as $imageType) {
                         if (!ImageManager::resize(
                             $tmpName,
                             $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
