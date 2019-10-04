@@ -21,6 +21,7 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
+ * @author    CustomPresta <developer@custompresta.com>
  * @author    thirty bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
  * @copyright 2017-2018 thirty bees
@@ -107,6 +108,10 @@ class ProductCore extends ObjectModel
     public $additional_shipping_cost = 0;
     /** @var float Wholesale Price in euros */
     public $wholesale_price = 0;
+	/** @var float content_value */
+	public $content_value;
+	/** @var string content_unit */
+	public $content_unit;
     /** @var bool on_sale */
     public $on_sale = false;
     /** @var bool online_only */
@@ -239,6 +244,8 @@ class ProductCore extends ObjectModel
             'minimal_quantity'          => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '1'],
             'price'                     => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'wholesale_price'           => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+			'content_value'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'dbDefault' => '0.000000'],
+			'content_unit'              => ['type' => self::TYPE_STRING, 'shop' => true, 'validate' => 'isString'],
             'unity'                     => ['type' => self::TYPE_STRING, 'shop' => true, 'validate' => 'isString'],
             'unit_price_ratio'          => ['type' => self::TYPE_FLOAT, 'shop' => true, 'dbDefault' => '0.000000'],
             'additional_shipping_cost'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
