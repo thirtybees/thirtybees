@@ -1854,7 +1854,7 @@ class AdminProductsControllerCore extends AdminController
                         (int) $imageType['height'],
                         $image->image_format
                     )) {
-                        $this->errors[] = Tools::displayError('An error occurred while copying this image:').' '.stripslashes($imageType['name']);
+                        $this->errors[] = Tools::displayError('An error occurred while copying this image: '.stripslashes($imageType['name']));
                     } else {
                         if ($highDpi) {
                             ImageManager::resize(
@@ -4912,18 +4912,67 @@ class AdminProductsControllerCore extends AdminController
                     continue;
                 } else {
                     $imagesTypes = ImageType::getImagesTypes('products');
-                    $generateHighDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
+                    $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
+                    $webpSupport = (bool) ImageManager::webpSupport();
+                    $tmpName = $file['save_path'];
 
+                    $results = [];
                     foreach ($imagesTypes as $imageType) {
-                        if (!ImageManager::resize($file['save_path'], $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
-                            $file['error'] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
-                            continue;
+                        # Default format
+                        if (!ImageManager::resize(
+                            $tmpName,
+                            $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
+                            (int) $imageType['width'],
+                            (int) $imageType['height'],
+                            $image->image_format
+                        )) {
+                            $results[$image->image_format] = '';
+                        } else {
+                            if ($highDpi) {
+                                $results['2x'.$image->image_format] = ImageManager::resize(
+                                    $tmpName,
+                                    $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format,
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2,
+                                    $image->image_format
+                                );
+                            }
+
+                            if ($webpSupport) {
+                                $results['webp'] = ImageManager::resize(
+                                    $tmpName,
+                                    $newPath.'-'.stripslashes($imageType['name']).'.webp',
+                                    (int) $imageType['width'],
+                                    (int) $imageType['height'],
+                                    'webp'
+                                );
+                            }
+
+                            if ($webpSupport && $highDpi){
+                                $results['2x.webp'] = ImageManager::resize(
+                                    $tmpName,
+                                    $newPath.'-'.stripslashes($imageType['name']).'2x.webp',
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2,
+                                    'webp'
+                                );
+                            }
                         }
 
-                        if ($generateHighDpiImages) {
-                            if (!ImageManager::resize($file['save_path'], $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format, (int) $imageType['width'] * 2, (int) $imageType['height'] * 2, $image->image_format)) {
-                                $file['error'] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
-                                continue;
+                        if ((int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $product->id) {
+                            Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $product->id);
+                        }
+
+                        # Some errors?
+                        if ($results) {
+                            foreach ($results as $format => $r){
+                                if ( ! $r) {
+                                    $file['error'] .= '<br/>'.sprintf(
+                                        $this->l('An error occurred while generate: %s.%s'),
+                                        stripslashes($imageType['name']),
+                                        $format
+                                    );
+                                }
                             }
                         }
                     }
@@ -4935,7 +4984,7 @@ class AdminProductsControllerCore extends AdminController
                 Hook::exec('actionWatermark', ['id_image' => $image->id, 'id_product' => $product->id]);
 
                 if (!$image->update()) {
-                    $file['error'] = Tools::displayError('Error while updating status');
+                    $file['error'] .= Tools::displayError('Error while updating image status');
                     continue;
                 }
 
