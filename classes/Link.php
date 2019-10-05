@@ -244,7 +244,7 @@ class LinkCore
 
         if ($ssl === null) {
             if ($forceSsl === null) {
-                $forceSsl = (Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE'));
+                $forceSsl = Configuration::get('PS_SSL_ENABLED');
             }
             $ssl = $forceSsl;
         }
