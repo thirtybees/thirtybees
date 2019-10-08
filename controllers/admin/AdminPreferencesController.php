@@ -107,7 +107,7 @@ class AdminPreferencesControllerCore extends AdminController
             $fields = [
                 'PS_SSL_ENABLED' => [
                     'title'      => $this->l('Enable SSL'),
-                    'desc'       => $this->l('If you own an SSL certificate for your shop\'s domain name, you can activate SSL encryption (https://) for your shop. Please beware that turning this option ON would force every page to use HTTPS.'),
+                    'desc'       => $this->l('This uses HTTPS rather than HTTP for shop internal links.'),
                     'validation' => 'isBool',
                     'cast'       => 'intval',
                     'type'       => 'bool',
