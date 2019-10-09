@@ -218,14 +218,19 @@ class OrderStateCore extends ObjectModel
     public static function installationCheck()
     {
         $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $result = $db->executeS(
-            (new DbQuery())
-                ->select('`active`')
-                ->from(static::$definition['table'])
-                ->limit(1)
-        );
+        $columnPresent = false;
 
-        if ( ! $result) {
+        try {
+            $columnPresent = $db->executeS(
+                (new DbQuery())
+                    ->select('`active`')
+                    ->from(static::$definition['table'])
+                    ->limit(1)
+            );
+        } catch (Exception $e) {
+        }
+
+        if ( ! $columnPresent) {
             $db->execute('ALTER TABLE '
                 ._DB_PREFIX_.static::$definition['table']
                 .' ADD COLUMN `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1;'
