@@ -3970,9 +3970,13 @@ FileETag none
      */
     public static function getMemoryLimit()
     {
-        $memory_limit = @ini_get('memory_limit');
+        $memoryLimit = @ini_get('memory_limit');
 
-        return Tools::getOctets($memory_limit);
+        if ((int) $memoryLimit <= 0) {
+            return PHP_INT_MAX;
+        }
+
+        return Tools::getOctets($memoryLimit);
     }
 
     /**
