@@ -210,7 +210,7 @@ function ProductTabsManager() {
       }
     }, time);
 
-    if (typeof this.current_request !== 'undefined' && typeof this.current_request === "function") {
+    if (typeof this.current_request !== 'undefined' && typeof this.current_request.complete === "function") {
       this.current_request.complete(function (request, status) {
         var wrongStatuses = ['abort', 'error', 'timeout'];
         var wrongStatusCodes = [400, 401, 403, 404, 405, 406, 408, 410, 413, 429, 499, 500, 502, 503, 504];
