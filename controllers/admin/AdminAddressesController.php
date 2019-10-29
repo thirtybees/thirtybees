@@ -82,10 +82,9 @@ class AdminAddressesControllerCore extends AdminController
             'firstname'     => ['title' => $this->l('First Name'), 'filter_key' => 'a!firstname'],
             'lastname'      => ['title' => $this->l('Last Name'), 'filter_key' => 'a!lastname'],
             'email'         => ['title' => $this->l('Email address'), 'filter_key' => 'c!email'],
+            'phone'         => ['title' => $this->l('Phone'), 'filter_key' => 'p!phones'],
             'address1'      => ['title' => $this->l('Address')],
             'postcode'      => ['title' => $this->l('Zip/Postal Code'), 'align' => 'right'],
-            'phone'         => ['title' => $this->l('Phone'), 'filter_key' => 'a!phone'],
-            'phone_mobile'  => ['title' => $this->l('Mobile Phone'), 'filter_key' => 'a!phone_mobile'],
             'city'          => ['title' => $this->l('City')],
             'country'       => ['title' => $this->l('Country'), 'type' => 'select', 'list' => $this->countries_array, 'filter_key' => 'cl!id_country'],
         ];
@@ -96,6 +95,7 @@ class AdminAddressesControllerCore extends AdminController
         $this->_join = '
 			LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (cl.`id_country` = a.`id_country` AND cl.`id_lang` = '.(int) $this->context->language->id.')
 			LEFT JOIN `'._DB_PREFIX_.'customer` c ON a.id_customer = c.id_customer
+			INNER JOIN (SELECT id_address, TRIM(CONCAT(phone, " ", phone_mobile)) AS phones FROM `'._DB_PREFIX_.'address` addr) AS p ON p.id_address = a.id_address
 		';
         $this->_where = 'AND a.id_customer != 0 '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'c');
         $this->_use_found_rows = false;
