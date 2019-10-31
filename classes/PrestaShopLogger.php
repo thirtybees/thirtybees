@@ -102,7 +102,7 @@ class PrestaShopLoggerCore extends ObjectModel
         $log = new Logger();
         $log->severity = (int) $severity;
         $log->error_code = (int) $errorCode;
-        $log->message = pSQL($message ? $message : static::getEmptyMessageText());
+        $log->message = $message ? $message : static::getEmptyMessageText();
         $log->date_add = date('Y-m-d H:i:s');
         $log->date_upd = date('Y-m-d H:i:s');
 
@@ -115,7 +115,7 @@ class PrestaShopLoggerCore extends ObjectModel
         }
 
         if (!empty($objectType) && !empty($objectId)) {
-            $log->object_type = pSQL($objectType);
+            $log->object_type = substr($objectType, 0, 31);
             $log->object_id = (int) $objectId;
         }
 
@@ -175,10 +175,10 @@ class PrestaShopLoggerCore extends ObjectModel
                 'SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'log`
 				WHERE
-					`message` = \''.$this->message.'\'
+					`message` = \''.pSQL($this->message).'\'
 					AND `severity` = \''.$this->severity.'\'
 					AND `error_code` = \''.$this->error_code.'\'
-					AND `object_type` = \''.$this->object_type.'\'
+					AND `object_type` = \''.pSQL($this->object_type).'\'
 					AND `object_id` = \''.$this->object_id.'\'
 				'
             );
