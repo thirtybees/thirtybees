@@ -1171,7 +1171,7 @@ CREATE TABLE `PREFIX_message_readed` (
 
 CREATE TABLE `PREFIX_meta` (
   `id_meta` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `page` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `page` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `configurable` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_meta`),
   UNIQUE KEY `page` (`page`)
