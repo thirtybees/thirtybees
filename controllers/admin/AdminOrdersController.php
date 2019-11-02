@@ -2134,8 +2134,8 @@ class AdminOrdersControllerCore extends AdminController
                         $combinations[$attribute['id_product_attribute']]['attributes'] = '';
                     }
                     $combinations[$attribute['id_product_attribute']]['attributes'] .= $attribute['attribute_name'].' - ';
-                    $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = $attribute['id_product_attribute'];
-                    $combinations[$attribute['id_product_attribute']]['default_on'] = $attribute['default_on'];
+                    $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = (int)$attribute['id_product_attribute'];
+                    $combinations[$attribute['id_product_attribute']]['default_on'] = (int)$attribute['default_on'];
                     if (!isset($combinations[$attribute['id_product_attribute']]['price'])) {
                         $priceTaxIncl = Product::getPriceStatic((int) $product['id_product'], true, $attribute['id_product_attribute']);
                         $priceTaxExcl = Product::getPriceStatic((int) $product['id_product'], false, $attribute['id_product_attribute']);
