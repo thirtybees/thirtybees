@@ -265,7 +265,7 @@ class AdminThemesControllerCore extends AdminController
                         if ( ! $idMeta) {
                             $newMeta = new Meta();
                             $newMeta->page = $metaPage;
-                            $newMeta->configurable = 0;
+                            $newMeta->configurable = 1;
                             $newMeta->add();
 
                             $idMeta = $newMeta->id;
