@@ -107,23 +107,12 @@ class AdminPreferencesControllerCore extends AdminController
             $fields = [
                 'PS_SSL_ENABLED' => [
                     'title'      => $this->l('Enable SSL'),
-                    'desc'       => $this->l('If you own an SSL certificate for your shop\'s domain name, you can activate SSL encryption (https://) for customer account identification and order processing.'),
-                    'hint'       => $this->l('If you want to enable SSL on all the pages of your shop, activate the "Enable on all the pages" option below.'),
+                    'desc'       => $this->l('This uses HTTPS rather than HTTP for shop internal links.'),
                     'validation' => 'isBool',
                     'cast'       => 'intval',
                     'type'       => 'bool',
                     'default'    => '0',
                 ],
-            ];
-
-            $fields['PS_SSL_ENABLED_EVERYWHERE'] = [
-                'title'      => $this->l('Enable SSL on all pages'),
-                'desc'       => $this->l('When enabled, all the pages of your shop will be SSL-secured.'),
-                'validation' => 'isBool',
-                'cast'       => 'intval',
-                'type'       => 'bool',
-                'default'    => '0',
-                'disabled'   => (Tools::getValue('PS_SSL_ENABLED', Configuration::get('PS_SSL_ENABLED'))) ? false : true,
             ];
 
             $fields = array_merge(

@@ -210,7 +210,7 @@ function ProductTabsManager() {
       }
     }, time);
 
-    if (typeof this.current_request !== 'undefined') {
+    if (typeof this.current_request !== 'undefined' && typeof this.current_request.complete === "function") {
       this.current_request.complete(function (request, status) {
         var wrongStatuses = ['abort', 'error', 'timeout'];
         var wrongStatusCodes = [400, 401, 403, 404, 405, 406, 408, 410, 413, 429, 499, 500, 502, 503, 504];
@@ -285,6 +285,26 @@ function ProductTabsManager() {
 
         return true;
       });
+    } else if (window.display_multishop_checkboxes && !self.has_error_loading_tabs && (self.stack_done.length === self.tabs_to_preload.length)) {
+      // this.current_request unavailable because there is nothing to load
+      $('[name="submitAddproductAndStay"]').each(function () {
+        $(this)
+          .prop('disabled', false)
+          .find('i')
+          .removeClass('process-icon-loading')
+          .addClass('process-icon-save');
+      });
+      $('[name="submitAddproduct"]').each(function () {
+        $(this)
+          .prop('disabled', false)
+          .find('i')
+          .removeClass('process-icon-loading')
+          .addClass('process-icon-save');
+      });
+      self.allow_hide_other_languages = true;
+      clearTimeout(tabsRunningTimeout);
+
+      return false;
     }
 
     return false;

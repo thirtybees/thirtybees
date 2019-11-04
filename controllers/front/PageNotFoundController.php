@@ -52,20 +52,22 @@ class PageNotFoundControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initContent()
     {
-        if (preg_match('/\.(gif|jpe?g|png|ico)$/i', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
+        if (preg_match('/\.(webp|gif|jpe?g|png|ico)$/i', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
             $this->context->cookie->disallowWriting();
 
             // First preg_match() matches friendly URLs, second one plain URLs.
             $imageType = $sourcePath = $sendPath = null;
             if (preg_match('@^'.__PS_BASE_URI__
-                .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(png|jpe?g|gif)$@',
+                .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(webp|png|jpe?g|gif)$@',
                 $_SERVER['REQUEST_URI'], $matches)
                 || preg_match('@^'._PS_PROD_IMG_
-                   .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(png|jpe?g|gif)$@',
+                   .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(webp|png|jpe?g|gif)$@',
                    $_SERVER['REQUEST_URI'], $matches)) {
                 $imageType = ImageType::getByNameNType($matches[2], 'products');
                 if ($imageType) {
@@ -89,10 +91,10 @@ class PageNotFoundControllerCore extends FrontController
                 ] as $type => $path) {
                     $dir = str_replace(_PS_IMG_, '', $path);
                     if (preg_match('@^'.__PS_BASE_URI__.$dir
-                        .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(png|jpe?g|gif)$@',
+                        .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(webp|png|jpe?g|gif)$@',
                         $_SERVER['REQUEST_URI'], $matches)
                         || preg_match('@^'.$path
-                            .'([0-9]+)\-([_a-zA-Z-]+)(\.)(png|jpe?g|gif)$@',
+                            .'([0-9]+)\-([_a-zA-Z-]+)(\.)(webp|png|jpe?g|gif)$@',
                             $_SERVER['REQUEST_URI'], $matches)
                     ) {
                         $imageType = ImageType::getByNameNType(
@@ -114,19 +116,31 @@ class PageNotFoundControllerCore extends FrontController
             }
 
             if ($imageType && $sourcePath && $sendPath) {
-                if (is_readable($sourcePath) && ! file_exists($sendPath)) {
-                    ImageManager::resize(
-                        $sourcePath,
-                        $sendPath,
-                        (int) $imageType['width'],
-                        (int) $imageType['height']
-                    );
+                if (! file_exists($sendPath)) {
+                    // Source file can be jpg file even if we using webp image
+                    // as output type.
+                    if (! is_readable($sourcePath)) {
+                        $sourcePath = preg_replace(
+                            '#.webp$#', '.jpg', $sourcePath
+                        );
+                    }
+
+                    if (is_readable($sourcePath)) {
+                        ImageManager::resize(
+                            $sourcePath,
+                            $sendPath,
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
+                        );
+                    }
                 }
 
                 if (file_exists($sendPath)) {
+                    $imageType = pathinfo($sendPath, PATHINFO_EXTENSION);
+                    $imageType = str_replace('jpg', 'jpeg', $imageType);
                     header('HTTP/1.1 200 Found');
                     header('Status: 200 Found');
-                    header('Content-Type: image/jpg');
+                    header('Content-Type: image/'.$imageType);
                     readfile($sendPath);
 
                     exit;

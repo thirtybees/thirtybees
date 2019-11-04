@@ -339,6 +339,8 @@ class ParentOrderControllerCore extends FrontController
     protected function _assignSummaryInformations()
     {
         $summary = $this->context->cart->getSummaryDetails();
+        $this->errors = array_merge($this->errors, $summary['errors']);
+
         $customizedDatas = Product::getAllCustomizedDatas($this->context->cart->id);
 
         // override customization tax rate with real tax (tax rules)

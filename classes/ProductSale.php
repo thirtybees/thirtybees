@@ -101,9 +101,8 @@ class ProductSaleCore
         if ($nbProducts < 1) {
             $nbProducts = 10;
         }
-        $finalOrderBy = $orderBy;
-        $orderTable = '';
 
+        $orderTable = '';
         if (is_null($orderBy)) {
             $orderBy = 'quantity';
             $orderTable = 'ps';
@@ -147,14 +146,14 @@ class ProductSaleCore
             ->where('p.`visibility` != \'none\'')
             ->where('EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.id_category = cg.id_category AND cg.`id_group` '.(count(FrontController::getCurrentCustomerGroups()) ? 'IN ('.implode(',', FrontController::getCurrentCustomerGroups()).')' : '= 1').') WHERE cp.`id_product` = p.`id_product`)');
 
-        if ($finalOrderBy != 'price') {
+        if ($orderBy !== 'price' && $orderBy !== 'position') {
             $sql->orderBy((!empty($orderTable) ? '`'.pSQL($orderTable).'`.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay));
             $sql->limit((int) $nbProducts, (int) ($pageNumber * $nbProducts));
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        if ($finalOrderBy == 'price') {
+        if ($orderBy === 'price') {
             Tools::orderbyPrice($result, $orderWay);
         }
         if (!$result) {

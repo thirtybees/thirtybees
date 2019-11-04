@@ -39,16 +39,6 @@ require_once($currentDir.'/defines.inc.php');
 
 $start_time = microtime(true);
 
-/**
- * This constants exists to tell CoreUpdate to consider object models definitions
- * as an ultimate source of truth. Database tables will be migrated to match
- * these definitions if there are any differences.
- *
- * Because this constant didn't exist in older version of thirtybess, downgrading will
- * not trigger any database changes
- */
-define('TB_OBJECT_MODELS_AUTHORITATIVE', true);
-
 /* SSL configuration */
 define('_PS_SSL_PORT_', 443);
 
@@ -175,7 +165,7 @@ if ($cookie_lifetime > 0) {
 if (defined('_PS_ADMIN_DIR_')) {
     $cookie = new Cookie('psAdmin', '', $cookie_lifetime);
 } else {
-    $force_ssl = Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE');
+    $force_ssl = Configuration::get('PS_SSL_ENABLED');
     if ($context->shop->getGroup()->share_order) {
         $cookie = new Cookie('ps-sg'.$context->shop->getGroup()->id, '', $cookie_lifetime, $context->shop->getUrlsSharedCart(), false, $force_ssl);
     } else {

@@ -103,7 +103,7 @@ function updateDiscountForm(discountFormHtml) {
 
 function populateWarehouseList(warehouseList) {
   $('#add_product_product_warehouse_area').hide();
-  if (warehouseList.length > 1) {
+  if (warehouseList.length >= 1) {
     $('#add_product_product_warehouse_area').show();
   }
   var orderWarehouseList = $('#warehouse_list').val().split(',');

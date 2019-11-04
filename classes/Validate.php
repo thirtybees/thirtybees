@@ -53,6 +53,18 @@ class ValidateCore
     }
 
     /**
+     * Validates that input string is valid ipv4 or ipv6 address
+     *
+     * @param string $ip input string
+     *
+     * @return bool
+     */
+    public static function isIPAddress($ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP);
+    }
+
+    /**
      * @return bool
      *
      * @since   1.0.0

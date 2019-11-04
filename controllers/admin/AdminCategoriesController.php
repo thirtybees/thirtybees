@@ -42,7 +42,7 @@ class AdminCategoriesControllerCore extends AdminController
     /** @var bool does the product have to be disable during the delete process */
     public $disable_products = false;
     /**
-     * @var object Category() instance for navigation
+     * @var Category instance for navigation
      */
     protected $_category = null;
     protected $position_identifier = 'id_category_to_move';
@@ -195,6 +195,7 @@ class AdminCategoriesControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -213,6 +214,15 @@ class AdminCategoriesControllerCore extends AdminController
                 'href' => static::$currentIndex.'&addcategory&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add new category', null, null, false),
                 'icon' => 'process-icon-new',
+            ];
+        } else if ($this->display == 'edit') {
+            // adding button for preview this category
+            $this->page_header_toolbar_btn['preview'] = [
+                'short'  => $this->l('Preview', null, null, false),
+                'href'   => $this->context->link->getCategoryLink($this->_category->id),
+                'desc'   => $this->l('Preview', null, null, false),
+                'target' => true,
+                'class'  => 'previewUrl',
             ];
         }
     }
@@ -696,6 +706,15 @@ class AdminCategoriesControllerCore extends AdminController
             'submit'  => [
                 'title' => $this->l('Save'),
                 'name'  => 'submitAdd'.$this->table.($this->_category->is_root_category && !Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('add'.$this->table.'root') ? '' : 'AndBackToParent'),
+            ],
+            'buttons' => [
+                'save-and-stay' => [
+                    'title' => $this->l('Save and Stay'),
+                    'name' => 'submitAdd'.$this->table.($this->_category->is_root_category && !Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('add'.$this->table.'root') ? '' : 'AndStay'),
+                    'type' => 'submit',
+                    'class' => 'btn btn-default pull-right',
+                    'icon' => 'process-icon-save',
+                ],
             ],
         ];
 

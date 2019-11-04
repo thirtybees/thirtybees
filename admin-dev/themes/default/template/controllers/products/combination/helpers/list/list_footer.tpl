@@ -28,7 +28,7 @@
 {block name="after"}
 	<div class="alert alert-info" style="display:block">
 		<ul>
-			<li>{l s='The blue row indicates the default combination.'}</li>
+			<li>{l s='Highlighted row indicates the default combination.'}</li>
 			<li>{l s='Each product that has combinations must have one default combination.'}</li>
 		</ul>
 	</div>

@@ -892,6 +892,27 @@ class AdminImagesControllerCore extends AdminController
                                     'webp'
                                 );
                             }
+
+                            if (ImageManager::retinaSupport()) {
+                                if (!ImageManager::resize(
+                                    $existingImage,
+                                    $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'2x.jpg',
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2
+                                )) {
+                                    $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $existingImage);
+                                }
+
+                                if (!$this->errors && ImageManager::webpSupport()) {
+                                    ImageManager::resize(
+                                        $existingImage,
+                                        $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'2x.webp',
+                                        (int) $imageType['width'] * 2,
+                                        (int) $imageType['height'] * 2,
+                                        'webp'
+                                    );
+                                }
+                            }
                         }
                     }
                 }
@@ -1136,8 +1157,8 @@ class AdminImagesControllerCore extends AdminController
                             ImageManager::resize(
                                 $file,
                                 $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.webp',
-                                (int) $imageType['width'],
-                                (int) $imageType['height'],
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2,
                                 'webp'
                             );
                         }
