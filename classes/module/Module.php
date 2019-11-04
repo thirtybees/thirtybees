@@ -2660,9 +2660,14 @@ abstract class ModuleCore
      *
      * @return bool result
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function registerHook($hookName, $shopList = null)
     {
+        if (!isset($this->id) || !is_numeric($this->id)) {
+            return false;
+        }
+
         $return = true;
         if (is_array($hookName)) {
             $hookNames = $hookName;
@@ -2675,12 +2680,15 @@ abstract class ModuleCore
             if (!Validate::isHookName($hookName)) {
                 throw new PrestaShopException('Invalid hook name');
             }
-            if (!isset($this->id) || !is_numeric($this->id)) {
-                return false;
+
+            $alias = Hook::getRetroHookName($hookName);
+
+            if (!is_callable([$this, 'hook'.$hookName]) && !is_callable([$this, 'hook'.$alias])) {
+                Logger::addLog("Module '{$this->name}' is trying to register hook '$hookName', but does not implement handler", 2, 0, 'Module', $this->id);
+                continue;
             }
 
-            // Retrocompatibility
-            if ($alias = Hook::getRetroHookName($hookName)) {
+            if ($alias) {
                 $hookName = $alias;
             }
 
