@@ -454,7 +454,7 @@ abstract class ModuleCore
         }
 
         if (!isset(static::$_INSTANCE[$moduleName])) {
-            if (!Tools::file_exists_no_cache(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php')) {
+            if (! static::moduleExistsOnFilesystem($moduleName)) {
                 return false;
             }
 
@@ -1158,7 +1158,7 @@ abstract class ModuleCore
         foreach ($modules as $name) {
             if (is_file(_PS_MODULE_DIR_.$name)) {
                 continue;
-            } elseif (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && file_exists(_PS_MODULE_DIR_.$name.'/'.$name.'.php')) {
+            } elseif (static::moduleExistsOnFilesystem($name)) {
                 if (!Validate::isModuleName($name)) {
                     throw new PrestaShopException(sprintf('Module %s is not a valid module name', $name));
                 }
@@ -1485,15 +1485,16 @@ abstract class ModuleCore
     {
         if (!Cache::isStored('Module::isEnabled'.$moduleName)) {
             $active = false;
-            $idModule = Module::getModuleIdByName($moduleName);
-            if (Db::getInstance()->getValue(
+            $idModule = (int)Module::getModuleIdByName($moduleName);
+
+            if ($idModule && Db::getInstance()->getValue(
                 (new DbQuery())
                     ->select('`id_module`')
                     ->from('module_shop')
-                    ->where('`id_module` = '.(int) $idModule)
+                    ->where('`id_module` = '. $idModule)
                     ->where('`id_shop` = '.(int) Context::getContext()->shop->id)
             )) {
-                $active = true;
+                $active = static::moduleExistsOnFilesystem($moduleName);
             }
             Cache::store('Module::isEnabled'.$moduleName, (bool) $active);
 
@@ -3074,7 +3075,8 @@ abstract class ModuleCore
      */
     public static function isEnabledForShops($moduleId, $shops)
     {
-        return ((bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        // first, check if module is marked as enabled
+        if (! (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('COUNT(*) n')
                 ->from('module_shop')
@@ -3082,7 +3084,35 @@ abstract class ModuleCore
                 ->where('`id_shop` IN ('.implode(',', array_map('intval', $shops)).')')
                 ->groupBy('`id_module`')
                 ->having('n = '. count($shops))
-        ));
+        )) {
+            return false;
+        }
+
+        // if the module is enabled, check if module file exists on filesystem
+        return static::moduleExistsOnFilesystem(static::getModuleNameById($moduleId));
+    }
+
+    /**
+     * Returns true, if module file exists in /modules/<modulenName>/<moduleName>.php
+     *
+     * @param string $moduleName
+     *
+     * @since   1.1.1
+     * @return bool
+     */
+    public static function moduleExistsOnFilesystem($moduleName)
+    {
+        if (! $moduleName) {
+            return false;
+        }
+        if (! Validate::isModuleName($moduleName)) {
+            return false;
+        }
+
+        return (
+            is_dir(_PS_MODULE_DIR_. $moduleName. DIRECTORY_SEPARATOR) &&
+            Tools::file_exists_no_cache(_PS_MODULE_DIR_ . $moduleName . '/' . $moduleName . '.php')
+        );
     }
 
     /**
