@@ -1708,19 +1708,54 @@ abstract class ModuleCore
      */
     public static function getModuleIdByName($name)
     {
-        $cacheId = 'Module::getModuleIdByName_'.pSQL($name);
-        if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('`id_module`')
-                    ->from('module')
-                    ->where('`name` = \''.pSQL($name).'\'')
-            );
-            Cache::store($cacheId, $result);
+        $map = static::getModulesNameToIdMap();
+        return isset($map[$name]) ? $map[$name] : 0;
+    }
 
-            return $result;
+    /**
+     * Get module name by ID
+     *
+     * @param int $moduleId
+     *
+     * @since   1.1.1
+     * @return string | null
+     * @throws PrestaShopException
+     */
+    public static function getModuleNameById($moduleId)
+    {
+        $map = static::getModulesNameToIdMap();
+        foreach ($map as $moduleName => $id) {
+            if ($moduleId === $moduleId) {
+                return $moduleName;
+            }
         }
+        return null;
+    }
 
+    /**
+     * Returns mapping from modules name -> module IDs
+     *
+     * @since 1.1.1
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected static function getModulesNameToIdMap()
+    {
+        $cacheId = 'Module::getModulesNameToIdMap';
+        if (!Cache::isStored($cacheId)) {
+            $sql = (new DbQuery())
+                ->select('`id_module`, `name`')
+                ->from('module');
+            $map = [];
+            foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->query($sql) as $row) {
+                $moduleId = (int)$row['id_module'];
+                $name = $row['name'];
+                $map[$name] = $moduleId;
+            }
+            Cache::store($cacheId, $map);
+
+            return $map;
+        }
         return Cache::retrieve($cacheId);
     }
 
@@ -2397,7 +2432,7 @@ abstract class ModuleCore
 
         // Uninstall the module
         if (Db::getInstance()->delete('module' , '`id_module` = '.(int) $this->id)) {
-            Cache::clean('Module::getModuleIdByName_'.pSQL($this->name));
+            Cache::clean('Module::getModulesNameToIdMap');
 
             return true;
         }
