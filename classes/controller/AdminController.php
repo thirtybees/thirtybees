@@ -2298,8 +2298,9 @@ class AdminControllerCore extends Controller
             foreach ($subTabs as $index2 => $subTab) {
                 //check if module is enable and
                 if (isset($subTab['module']) && !empty($subTab['module'])) {
-                    $module = Module::getInstanceByName($subTab['module']);
-                    if (is_object($module) && !$module->isEnabledForShopContext()) {
+
+                    $moduleId = Module::getModuleIdByName($subTab['module']) ;
+                    if (!$moduleId || !Module::isEnabledForShops($moduleId, Shop::getContextListShopID())) {
                         unset($subTabs[$index2]);
                         continue;
                     }

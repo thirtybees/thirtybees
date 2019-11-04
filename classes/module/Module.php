@@ -3025,14 +3025,28 @@ abstract class ModuleCore
      */
     public function isEnabledForShopContext()
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return static::isEnabledForShops($this->id, Shop::getContextListShopID());
+    }
+
+    /**
+     * This method returns true if module with id $moduleId is enabled for *all* shops specified in $shops array.
+     *
+     * @since   1.1.1
+     * @param int $moduleId module ID
+     * @param int[] $shops list of shops to check
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public static function isEnabledForShops($moduleId, $shops)
+    {
+        return ((bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('COUNT(*) n')
                 ->from('module_shop')
-                ->where('`id_module` = '.(int) $this->id)
-                ->where('`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).')')
+                ->where('`id_module` = '.(int) $moduleId)
+                ->where('`id_shop` IN ('.implode(',', array_map('intval', $shops)).')')
                 ->groupBy('`id_module`')
-                ->having('n = '.(int) count(Shop::getContextListShopID())
+                ->having('n = '. count($shops))
         ));
     }
 
