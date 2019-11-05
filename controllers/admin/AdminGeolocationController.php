@@ -204,7 +204,7 @@ class AdminGeolocationControllerCore extends AdminController
         foreach (explode("\n", $whitelist) as $address) {
             $address = trim($address);
             if (! Tools::isEmpty($address)) {
-                if (Validate::isIPAddress($address)) {
+                if (preg_match('/^[0-9]+[0-9.]*$/', $address)) {
                     $list[] = $address;
                 } else {
                     $this->errors[] = sprintf(Tools::displayError('Invalid IP address: %s'), Tools::htmlentitiesUTF8($address));
