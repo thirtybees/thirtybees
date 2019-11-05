@@ -156,7 +156,7 @@ class ErrorHandlerCore
         $error = [
             'errno'       => $errno,
             'errstr'      => $errstr,
-            'errfile'     => $file,
+            'errfile'     => static::normalizeFileName($file),
             'errline'     => $line,
             'suppressed'  => $suppressed,
             'type'        => static::getErrorType($errno),
