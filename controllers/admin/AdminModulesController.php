@@ -487,6 +487,11 @@ class AdminModulesControllerCore extends AdminController
             $this->confirmations[] = $this->l('Everything is up-to-date');
         }
 
+        // Sort modules by display name from their config.xml instad of their `name` property.
+        uasort($modules, function($a, $b) {
+            return strcoll(mb_strtolower($a->displayName), mb_strtolower($b->displayName));
+        });
+
         // Init tpl vars for smarty
         $tplVars = [
             'token'                     => $this->token,

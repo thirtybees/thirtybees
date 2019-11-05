@@ -398,7 +398,7 @@ class AdminOrdersControllerCore extends AdminController
 
         if ($this->tabAccess['edit'] == 1 && $this->display == 'view') {
 	        $apiKey = (Configuration::get('TB_GOOGLE_MAPS_API_KEY')) ? 'key='.Configuration::get('TB_GOOGLE_MAPS_API_KEY').'&' : '';
-	        $protocol = (Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE')) ? 'https' : 'http';
+	        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https' : 'http';
 	        $this->addJS($protocol.'://maps.google.com/maps/api/js?'.$apiKey);
             $this->addJS(_PS_JS_DIR_.'admin/orders.js');
             $this->addJS(_PS_JS_DIR_.'tools.js');
@@ -2134,8 +2134,8 @@ class AdminOrdersControllerCore extends AdminController
                         $combinations[$attribute['id_product_attribute']]['attributes'] = '';
                     }
                     $combinations[$attribute['id_product_attribute']]['attributes'] .= $attribute['attribute_name'].' - ';
-                    $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = $attribute['id_product_attribute'];
-                    $combinations[$attribute['id_product_attribute']]['default_on'] = $attribute['default_on'];
+                    $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = (int)$attribute['id_product_attribute'];
+                    $combinations[$attribute['id_product_attribute']]['default_on'] = (int)$attribute['default_on'];
                     if (!isset($combinations[$attribute['id_product_attribute']]['price'])) {
                         $priceTaxIncl = Product::getPriceStatic((int) $product['id_product'], true, $attribute['id_product_attribute']);
                         $priceTaxExcl = Product::getPriceStatic((int) $product['id_product'], false, $attribute['id_product_attribute']);

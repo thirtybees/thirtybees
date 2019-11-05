@@ -73,6 +73,8 @@ class InstallControllerHttpSystem extends InstallControllerHttp
 
     /**
      * Display system step
+     *
+     * @throws PrestashopInstallerException
      */
     public function display()
     {
@@ -94,18 +96,34 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'title'   => $this->l('Required PHP parameters'),
                     'success' => 1,
                     'checks'  => [
-                        'Bcmath'           => $this->l('The PHP bcmath extension is not enabled'),
-                        'Gd'               => $this->l('GD library is not installed'),
-                        'Json'             => $this->l('The PHP json extension is not enabled'),
-                        'MaxExecutionTime' => $this->l('Max execution time is lower than 30'),
-                        'Mbstring'         => $this->l('Mbstring extension is not enabled'),
-                        'OpenSSL'          => $this->l('OpenSSL extension is not enabled'),
-                        'PdoMysql'         => $this->l('PDO MySQL extension is not loaded'),
-                        'PhpVersion'       => $this->l('PHP 5.6.0 or later is not enabled'),
-                        'System'           => $this->l('Cannot create new files and folders'),
-                        'Upload'           => $this->l('Cannot upload files'),
-                        'Xml'              => $this->l('The PHP xml extension is not enabled'),
-                        'Zip'              => $this->l('The PHP zip extension/functionality is not enabled'),
+                        // This list should have a message for every test
+                        // in ConfigurationTest::getDefaultTests().
+                        // Exceptions: 'MysqlVersion', 'Files'
+                        'Bcmath'           => $this->l('The PHP bcmath extension is enabled'),
+                        'CacheDir'         => $this->l('Can write to cache/'),
+                        'LogDir'           => $this->l('Can write to log/'),
+                        'ImgDir'           => $this->l('Can write to img/'),
+                        'ModuleDir'        => $this->l('Can write to modules/'),
+                        'ThemeLangDir'     => $this->l('Can write to themes/niara/lang/'),
+                        'ThemePdfLangDir'  => $this->l('Can write to themes/niara/pdf/lang/'),
+                        'ThemeCacheDir'    => $this->l('Can write to themes/niara/cache/'),
+                        'TranslationsDir'  => $this->l('Can write to translations/'),
+                        'CustomizableProductsDir' => $this->l('Can write to upload/'),
+                        'VirtualProductsDir'      => $this->l('Can write to download/'),
+                        'ConfigDir'        => $this->l('Can write to config/'),
+                        'MailsDir'         => $this->l('Can write to mails/'),
+                        'System'           => $this->l('Critical PHP functions exist'),
+                        'Fopen'            => $this->l('PHP\'s \'allow_url_fopen\' enabled'),
+                        'Gd'               => $this->l('GD library is installed'),
+                        'Json'             => $this->l('The PHP json extension is enabled'),
+                        'MaxExecutionTime' => $this->l('Max execution time is higher than 30'),
+                        'Mbstring'         => $this->l('Mbstring extension is enabled'),
+                        'OpenSSL'          => $this->l('OpenSSL extension is enabled'),
+                        'PdoMysql'         => $this->l('PDO MySQL extension is loaded'),
+                        'PhpVersion'       => $this->l('PHP is 5.6.0 or later'),
+                        'Upload'           => $this->l('Can upload files'),
+                        'Xml'              => $this->l('The PHP xml extension is enabled'),
+                        'Zip'              => $this->l('The PHP zip extension/functionality is enabled'),
                     ],
                 ],
                 [

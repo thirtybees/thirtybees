@@ -220,9 +220,10 @@ class TabCore extends ObjectModel
             // Keep t.*, tl.name instead of only * because if translations are missing, the join on tab_lang will overwrite the id_tab in the results
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                    ->select('t.*, tl.`name`')
+                    ->select('t.*, COALESCE(NULLIF(tl.`name`, ""), tl_def.`name`) AS `name`')
                     ->from('tab', 't')
                     ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab` AND tl.`id_lang` = '.(int) $idLang)
+                    ->leftJoin('tab_lang', 'tl_def', 't.`id_tab` = tl_def.`id_tab` AND tl_def.`id_lang` = ' . (int)Configuration::get('PS_LANG_DEFAULT'))
                     ->orderBy('t.`position` ASC')
             );
 

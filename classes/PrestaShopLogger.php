@@ -81,28 +81,28 @@ class PrestaShopLoggerCore extends ObjectModel
     /**
      * add a log item to the database and send a mail if configured for this $severity
      *
-     * @param string $message        the log message
+     * @param string $message the log message
      * @param int    $severity
      * @param int    $errorCode
      * @param string $objectType
      * @param int    $objectId
      * @param bool   $allowDuplicate if set to true, can log several time the same information (not recommended)
-     *
-     * @param null   $idEmployee
+     * @param int    $idEmployee
      *
      * @return bool true if succeed
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function addLog($message, $severity = 1, $errorCode = null, $objectType = null, $objectId = null, $allowDuplicate = false, $idEmployee = null)
     {
-        $log = new Logger();
+        $log = new static();
         $log->severity = (int) $severity;
         $log->error_code = (int) $errorCode;
-        $log->message = pSQL($message ? $message : static::getEmptyMessageText());
+        $log->message = $message ? $message : static::getEmptyMessageText();
         $log->date_add = date('Y-m-d H:i:s');
         $log->date_upd = date('Y-m-d H:i:s');
 
@@ -115,12 +115,12 @@ class PrestaShopLoggerCore extends ObjectModel
         }
 
         if (!empty($objectType) && !empty($objectId)) {
-            $log->object_type = pSQL($objectType);
+            $log->object_type = substr($objectType, 0, 31);
             $log->object_id = (int) $objectId;
         }
 
         if ($objectType != 'Swift_Message') {
-            Logger::sendByMail($log);
+            static::sendByMail($log);
         }
 
         if ($allowDuplicate || !$log->_isPresent()) {
@@ -138,8 +138,7 @@ class PrestaShopLoggerCore extends ObjectModel
     /**
      * Send e-mail to the shop owner only if the minimal severity level has been reached
      *
-     * @param        Logger
-     * @param Logger $log
+     * @param PrestaShopLoggerCore $log
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -175,10 +174,10 @@ class PrestaShopLoggerCore extends ObjectModel
                 'SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'log`
 				WHERE
-					`message` = \''.$this->message.'\'
+					`message` = \''.pSQL($this->message).'\'
 					AND `severity` = \''.$this->severity.'\'
 					AND `error_code` = \''.$this->error_code.'\'
-					AND `object_type` = \''.$this->object_type.'\'
+					AND `object_type` = \''.pSQL($this->object_type).'\'
 					AND `object_id` = \''.$this->object_id.'\'
 				'
             );
@@ -238,5 +237,6 @@ class PrestaShopLoggerCore extends ObjectModel
                 return sprintf(Tools::displayError('Logger::addLog called with empty message at %s on line %s', false), $file, $line);
             }
         }
+        return Tools::displayError('Logger::addLog called with empty message', false);
     }
 }

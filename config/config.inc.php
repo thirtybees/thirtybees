@@ -165,7 +165,7 @@ if ($cookie_lifetime > 0) {
 if (defined('_PS_ADMIN_DIR_')) {
     $cookie = new Cookie('psAdmin', '', $cookie_lifetime);
 } else {
-    $force_ssl = Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE');
+    $force_ssl = Configuration::get('PS_SSL_ENABLED');
     if ($context->shop->getGroup()->share_order) {
         $cookie = new Cookie('ps-sg'.$context->shop->getGroup()->id, '', $cookie_lifetime, $context->shop->getUrlsSharedCart(), false, $force_ssl);
     } else {

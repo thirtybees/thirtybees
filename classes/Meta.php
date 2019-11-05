@@ -60,7 +60,7 @@ class MetaCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 64, 'unique' => true],
+            'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 128, 'unique' => true],
             'configurable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 1, 'dbDefault' => '1'],
 
             /* Lang fields */

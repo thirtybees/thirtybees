@@ -894,9 +894,7 @@ class StockManagerCore implements StockManagerInterface
 
         // gets all stock_mvt for the given coverage period
         $query = '
-			SELECT SUM(view.quantity) as quantity_out
-			FROM
-			(	SELECT sm.`physical_quantity` as quantity
+			SELECT SUM(sm.`physical_quantity`) as quantity
 				FROM `'._DB_PREFIX_.'stock_mvt` sm
 				LEFT JOIN `'._DB_PREFIX_.'stock` s ON (sm.`id_stock` = s.`id_stock`)
 				LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product` = s.`id_product`)
@@ -908,16 +906,15 @@ class StockManagerCore implements StockManagerInterface
 				AND TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(sm.`date_add`) <= '.(int) $coverage.'
 				AND s.`id_product` = '.(int) $idProduct.'
 				AND s.`id_product_attribute` = '.(int) $idProductAttribute.
-            ($idWarehouse ? ' AND s.`id_warehouse` = '.(int) $idWarehouse : '').'
-				GROUP BY sm.`id_stock_mvt`
-			) as view';
+            ($idWarehouse ? ' AND s.`id_warehouse` = '.(int) $idWarehouse : '');
 
-        $quantityOut = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $quantityOut = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+
         if (!$quantityOut) {
             return -1;
         }
 
-        $quantityPerDay = Tools::ps_round($quantityOut / $coverage);
+        $quantityPerDay = $quantityOut / $coverage;
         $physicalQuantity = $this->getProductPhysicalQuantities(
             $idProduct,
             $idProductAttribute,
@@ -925,7 +922,7 @@ class StockManagerCore implements StockManagerInterface
             true
         );
 
-        $timeLeft = ($quantityPerDay == 0) ? (-1) : Tools::ps_round($physicalQuantity / $quantityPerDay);
+        $timeLeft = Tools::ps_round($physicalQuantity / $quantityPerDay);
 
         return $timeLeft;
     }

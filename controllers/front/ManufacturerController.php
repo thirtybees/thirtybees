@@ -126,7 +126,6 @@ class ManufacturerControllerCore extends FrontController
      */
     protected function assignOne()
     {
-        $this->manufacturer->description = Tools::nl2br(trim($this->manufacturer->description));
         $nbProducts = $this->manufacturer->getProducts($this->manufacturer->id, null, null, null, $this->orderBy, $this->orderWay, true);
         $this->pagination((int) $nbProducts);
 

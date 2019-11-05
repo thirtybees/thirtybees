@@ -457,34 +457,39 @@ class HookCore extends ObjectModel
             $hookCallable = is_callable([$moduleInstance, 'hook'.$hookName]);
             $hookRetroCallable = is_callable([$moduleInstance, 'hook'.$retroHookName]);
 
-            if (($hookCallable || $hookRetroCallable) && Module::preCall($moduleInstance->name)) {
-                $hookArgs['altern'] = ++$altern;
+            if ($hookCallable || $hookRetroCallable) {
 
-                if ($usePush && isset($moduleInstance->push_filename) && file_exists($moduleInstance->push_filename)) {
-                    Tools::waitUntilFileIsModified($moduleInstance->push_filename, $moduleInstance->push_time_limit);
-                }
+                if (Module::preCall($moduleInstance->name)) {
+                    $hookArgs['altern'] = ++$altern;
 
-                // Call hook method
-                if ($hookCallable) {
-                    $display = Hook::coreCallHook($moduleInstance, 'hook'.$hookName, $hookArgs);
-                } elseif ($hookRetroCallable) {
-                    $display = Hook::coreCallHook($moduleInstance, 'hook'.$retroHookName, $hookArgs);
-                }
+                    if ($usePush && isset($moduleInstance->push_filename) && file_exists($moduleInstance->push_filename)) {
+                        Tools::waitUntilFileIsModified($moduleInstance->push_filename, $moduleInstance->push_time_limit);
+                    }
 
-                // Live edit
-                if (!$arrayReturn && $array['live_edit'] && Tools::isSubmit('live_edit') && Tools::getValue('ad')
-                    && Tools::getValue('liveToken') == Tools::getAdminToken(
-                        'AdminModulesPositions'
-                        .(int) Tab::getIdFromClassName('AdminModulesPositions').(int) Tools::getValue('id_employee')
-                    )
-                ) {
-                    $liveEdit = true;
-                    $output .= static::wrapLiveEdit($display, $moduleInstance, $array['id_hook']);
-                } elseif ($arrayReturn) {
-                    $output[$moduleInstance->name] = $display;
-                } else {
-                    $output .= $display;
+                    // Call hook method
+                    if ($hookCallable) {
+                        $display = Hook::coreCallHook($moduleInstance, 'hook' . $hookName, $hookArgs);
+                    } elseif ($hookRetroCallable) {
+                        $display = Hook::coreCallHook($moduleInstance, 'hook' . $retroHookName, $hookArgs);
+                    }
+
+                    // Live edit
+                    if (!$arrayReturn && $array['live_edit'] && Tools::isSubmit('live_edit') && Tools::getValue('ad')
+                        && Tools::getValue('liveToken') == Tools::getAdminToken(
+                            'AdminModulesPositions'
+                            . (int)Tab::getIdFromClassName('AdminModulesPositions') . (int)Tools::getValue('id_employee')
+                        )
+                    ) {
+                        $liveEdit = true;
+                        $output .= static::wrapLiveEdit($display, $moduleInstance, $array['id_hook']);
+                    } elseif ($arrayReturn) {
+                        $output[$moduleInstance->name] = $display;
+                    } else {
+                        $output .= $display;
+                    }
                 }
+            } else {
+                Logger::addLog("Module '{$array['module']}' doesn't implement handler for hook '$hookName'", 2, 0, 'Module', $moduleInstance->id);
             }
         }
 

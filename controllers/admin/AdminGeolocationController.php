@@ -125,15 +125,6 @@ class AdminGeolocationControllerCore extends AdminController
                 Configuration::updateValue('PS_GEOLOCATION_NA_BEHAVIOR', (int) Tools::getValue('PS_GEOLOCATION_NA_BEHAVIOR'));
                 Configuration::updateValue('PS_ALLOWED_COUNTRIES', implode(';', Tools::getValue('countries')));
             }
-
-            if (!Validate::isCleanHtml(Tools::getValue('PS_GEOLOCATION_WHITELIST'))) {
-                $this->errors[] = Tools::displayError('Invalid whitelist');
-            } else {
-                Configuration::updateValue(
-                    'PS_GEOLOCATION_WHITELIST',
-                    str_replace("\n", ';', str_replace("\r", '', Tools::getValue('PS_GEOLOCATION_WHITELIST')))
-                );
-            }
         }
 
         return parent::processUpdateOptions();
@@ -196,5 +187,34 @@ class AdminGeolocationControllerCore extends AdminController
         }
 
         parent::initContent();
+    }
+
+    /**
+     * Callback to save PS_GEOLOATION_WHITELIST option
+     *
+     * @param string $whitelist ip addresses separated by new line
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
+    public function updateOptionPsGeolocationWhitelist($whitelist)
+    {
+        // validate whitelist
+        $valid = true;
+        $list = [];
+        foreach (explode("\n", $whitelist) as $address) {
+            $address = trim($address);
+            if (! Tools::isEmpty($address)) {
+                if (Validate::isIPAddress($address)) {
+                    $list[] = $address;
+                } else {
+                    $this->errors[] = sprintf(Tools::displayError('Invalid IP address: %s'), Tools::htmlentitiesUTF8($address));
+                    $valid = false;
+                }
+            }
+        }
+
+        if ($valid) {
+            Configuration::updateValue('PS_GEOLOCATION_WHITELIST', implode(';', $list));
+        }
     }
 }

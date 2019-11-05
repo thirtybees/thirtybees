@@ -75,6 +75,8 @@ class ConfigurationTestCore
     public static function getDefaultTests()
     {
         $tests = [
+            // Changing this list also requires ajusting the list of matching
+            // error messages in install-dev/controllers/http/system.php
             'Upload'                  => false,
             'CacheDir'                => 'cache',
             'LogDir'                  => 'log',
