@@ -89,6 +89,8 @@ $kernel->loadFile(__DIR__.'/../../classes/cache/CacheMemcached.php');
 $kernel->loadFile(__DIR__.'/override/classes/cache/CacheMemcached.php');
 $kernel->loadFile(__DIR__.'/../../classes/cache/CacheMemcache.php');
 $kernel->loadFile(__DIR__.'/override/classes/cache/CacheMemcache.php');
+$kernel->loadFile(__DIR__.'/../../classes/cache/CacheNoop.php');
+$kernel->loadFile(__DIR__.'/override/classes/cache/CacheNoop.php');
 $kernel->loadFile(__DIR__.'/../../classes/cache/CacheRedis.php');
 $kernel->loadFile(__DIR__.'/override/classes/cache/CacheRedis.php');
 $kernel->loadFile(__DIR__.'/../../classes/Carrier.php');
