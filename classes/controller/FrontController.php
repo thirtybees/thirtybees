@@ -1906,34 +1906,49 @@ class FrontControllerCore extends Controller
      *
      * @return Country|false
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
      */
     protected function geolocationManagement($defaultCountry)
     {
-        if (!in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1'])) {
-            /* Check if Maxmind Database exists */
-            if (@filemtime(_PS_GEOIP_DIR_._PS_GEOIP_CITY_FILE_)) {
-                if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))))) {
-                    $gi = geoip_open(realpath(_PS_GEOIP_DIR_._PS_GEOIP_CITY_FILE_), GEOIP_STANDARD);
-                    $record = geoip_record_by_addr($gi, Tools::getRemoteAddr());
+        $ip = Tools::getRemoteAddr();
+        if ($ip && !in_array($ip, ['127.0.0.1', '::1'])) {
+            // determine GeoLocation service module
+            $geolocationModule = Configuration::getGlobalValue('PS_GEOLOCATION_SERVICE');
+            $geolocationModuleId = Module::getModuleIdByName($geolocationModule);
+            if ($geolocationModuleId) {
 
-                    if (is_object($record)) {
-                        if (!in_array(strtoupper($record->country_code), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))) && !FrontController::isInWhitelistForGeolocation()) {
+                $allowedCountries = explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'));
+                if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), $allowedCountries))) {
+
+                    // Invoke geolocation module service
+                    $res = Hook::exec('actionGeoLocation', [ 'ip' => $ip ], $geolocationModuleId, true);
+                    if ($res && isset($res[$geolocationModule]) && $res[$geolocationModule]) {
+                        $countryCode = strtoupper($res[$geolocationModule]);
+
+                        if (!in_array($countryCode, $allowedCountries) && !static::isInWhitelistForGeolocation()) {
                             if (Configuration::get('PS_GEOLOCATION_BEHAVIOR') == _PS_GEOLOCATION_NO_CATALOG_) {
                                 $this->restrictedCountry = true;
                             } elseif (Configuration::get('PS_GEOLOCATION_BEHAVIOR') == _PS_GEOLOCATION_NO_ORDER_) {
+                                $countryName = $countryCode;
+                                $country = new Country(Country::getByIso($countryCode), $this->context->language->id);
+                                if (Validate::isLoadedObject($country)) {
+                                    $countryName = $country->name;
+                                }
                                 $this->context->smarty->assign(
                                     [
                                         'restricted_country_mode' => true,
-                                        'geolocation_country'     => $record->country_name,
+                                        'geolocation_country' => $countryName
                                     ]
                                 );
                             }
                         } else {
                             $hasBeenSet = !isset($this->context->cookie->iso_code_country);
-                            $this->context->cookie->iso_code_country = strtoupper($record->country_code);
+                            $this->context->cookie->iso_code_country = $countryCode;
                         }
                     }
                 }
@@ -1958,7 +1973,7 @@ class FrontControllerCore extends Controller
                     $this->context->smarty->assign(
                         [
                             'restricted_country_mode' => true,
-                            'geolocation_country'     => isset($record) && isset($record->country_name) && $record->country_name ? $record->country_name : 'Undefined',
+                            'geolocation_country' => ''
                         ]
                     );
                 }
