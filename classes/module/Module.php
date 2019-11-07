@@ -1621,6 +1621,9 @@ abstract class ModuleCore
         // Enable the module for current shops in context
         $this->enable();
 
+        // Clean module cache
+        Cache::clean('Module::getModulesNameToIdMap');
+
         // Permissions management
         Db::getInstance()->execute(
             '
