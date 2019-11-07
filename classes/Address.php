@@ -352,11 +352,11 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * Check if country is active for a given address
+     * Check if zone, country, and state of an address are active
      *
-     * @param int $idAddress Address id for which we want to get country status
+     * @param int $idAddress Address id for which we want to get active status
      *
-     * @return int Country status
+     * @return int address active status
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -372,9 +372,11 @@ class AddressCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getvalue(
                 (new DbQuery())
-                    ->select('c.`active`')
+                    ->select('(IFNULL(c.`active`, 0) AND IFNULL(z.`active`, 0) AND IFNULL(s.`active`, 1)) AS `active`')
                     ->from('address', 'a')
                     ->leftJoin('country', 'c', 'c.`id_country` = a.`id_country`')
+                    ->leftJoin('state', 's', 's.id_country = c.id_country AND s.id_state = a.id_state')
+                    ->leftJoin('zone', 'z', 'z.id_zone = c.id_zone')
                     ->where('a.`id_address` = '.(int) $idAddress)
             );
             Cache::store($cacheId, $result);
