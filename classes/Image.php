@@ -873,9 +873,9 @@ class ImageCore extends ObjectModel
 
         // Delete base image
         if (file_exists($this->image_dir.$this->getExistingImgPath().'.'.$this->image_format)) {
-            unlink($this->image_dir.$this->getExistingImgPath().'.'.$this->image_format);
-        } else {
-            return false;
+            if (! @unlink($this->image_dir.$this->getExistingImgPath().'.'.$this->image_format)) {
+                return false;
+            }
         }
 
         $filesToDelete = [];
