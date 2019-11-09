@@ -157,38 +157,27 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * Get modules
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getModules()
     {
-        try {
-            $modules = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                (new DbQuery())
-                    ->select('h.`name` AS hook, m.`name`')
-                    ->from('module', 'm')
-                    ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
-                    ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
-                    ->where('h.`name` = \'displayAdminStatsModules\'')
-                    ->where('m.`active` = 1')
-                    ->groupBy('hm.`id_module`')
-                    ->orderBy('hm.`position`')
-            );
-        } catch (PrestaShopException $e) {
-            $modules = [];
-        }
-        if ($modules) {
-            foreach ($modules as $module) {
-                if ($module['name'] == 'statsmodule') {
-                    /** @var StatsModule $statsModule */
-                    $statsModule = Module::getInstanceByName('statsmodule');
-                    $statsModulesList = $statsModule->getStatsModulesList();
-                    if ($statsModulesList) {
-                        $modules = array_merge($modules, $statsModulesList);
-                    }
-                }
-            }
+        $list = Hook::getHookModuleExecList('displayAdminStatsModules');
+        $modules = $list ? array_map(function($hook) {
+            return [
+                'hook' => 'displayAdminStatsModules',
+                'name' => $hook['module'],
+            ];
+        }, $list) : [];
+
+        /** @var StatsModule $statsModule */
+        $statsModule = Module::getInstanceByName('statsmodule');
+        if ($statsModule) {
+            $modules = array_merge($modules, $statsModule->getStatsModulesList());
         }
 
         return $modules;
