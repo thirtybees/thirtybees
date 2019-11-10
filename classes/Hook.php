@@ -642,7 +642,7 @@ class HookCore extends ObjectModel
      *
      * @param string $hookName Hook name
      *
-     * @return int Hook ID
+     * @return string alternate hook name
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -651,17 +651,20 @@ class HookCore extends ObjectModel
      */
     public static function getRetroHookName($hookName)
     {
+        $hookName = strtolower($hookName);
         $aliasList = Hook::getHookAliasList();
-        if (isset($aliasList[strtolower($hookName)])) {
-            return $aliasList[strtolower($hookName)];
+
+        if (isset($aliasList[$hookName])) {
+            return strtolower($aliasList[$hookName]);
         }
 
-        $retroHookName = array_search($hookName, $aliasList);
-        if ($retroHookName === false) {
-            return '';
+        foreach ($aliasList as $alias => $original) {
+            if (strtolower($original) === $hookName) {
+                return strtolower($alias);
+            }
         }
 
-        return $retroHookName;
+        return '';
     }
 
     /**
