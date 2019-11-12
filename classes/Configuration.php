@@ -635,7 +635,7 @@ class ConfigurationCore extends ObjectModel
                     $value = Tools::purifyHTML($value);
                 } else {
                     // if html values are not allowed, strip tags
-                    $value = strip_tags(Tools::nl2br($value));
+                    $value = strip_tags($value);
                 }
             }
         }
