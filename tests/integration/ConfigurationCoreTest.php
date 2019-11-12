@@ -12,12 +12,14 @@ class ConfigurationCoreTest extends \Codeception\Test\Unit
             [ false, 'string with <a>html</a> tags', 'string with html tags'],
             [ false, 'html &gt; entities > test', 'html &gt; entities > test'],
             [ false, '{ "json": true }', '{ "json": true }' ],
+            [ false, "multi\nline\ntext", "multi\nline\ntext" ],
             //
             [ true, 'simple string' , 'simple string' ],
             [ true, "string with ' apostrophe", "string with ' apostrophe"],
             [ true, 'string with <a>html</a> tags', 'string with <a>html</a> tags'],
             [ true, 'html &gt; entities > test', 'html &gt; entities &gt; test'],
             [ true, '{ "json": true }', '{ "json": true }' ],
+            [ true, "multi\nline\ntext", "multi\nline\ntext" ],
         ];
     }
 
