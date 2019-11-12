@@ -817,17 +817,10 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            foreach ($this->to_install as $string) {
+            foreach (array_unique(array_merge($this->to_install, $this->to_enable)) as $moduleName) {
                 foreach ($this->hook_list as $tmp) {
-                    if ($tmp['name_module'] == $string) {
-                        $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
-                    }
-                }
-            }
-            foreach ($this->to_enable as $string) {
-                foreach ($this->hook_list as $tmp) {
-                    if ($tmp['name_module'] == $string) {
-                        $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
+                    if ($tmp['name_module'] == $moduleName) {
+                        $this->to_hook[] = $moduleName.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
                     }
                 }
             }
