@@ -2721,6 +2721,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function copyMailFilesForAllLanguages()
     {
@@ -2737,7 +2738,10 @@ class AdminTranslationsControllerCore extends AdminController
             $modulesHasMails = $this->getModulesHasMails(true);
             foreach ($modulesHasMails as $moduleName => $modulePath) {
                 if ($pos = strpos($modulePath, '/modules')) {
-                    $dirToCopyIso[] = _PS_ROOT_DIR_.substr($modulePath, $pos).'mails/'.$currentIsoCode.'/';
+                    $dir = _PS_ROOT_DIR_.substr($modulePath, $pos).'mails/'.$currentIsoCode.'/';
+                    if (@is_dir($dir)) {
+                        $dirToCopyIso[] = $dir;
+                    }
                 }
             }
 
