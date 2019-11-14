@@ -165,6 +165,37 @@ class DispatcherTest extends \Codeception\Test\Unit
     }
 
     /**
+     * This tests verifies that module route can use the same controller name as core does.
+     *
+     * For more info and background, see issue https://github.com/thirtybees/thirtybees/issues/1108
+     *
+     * @throws PrestaShopException
+     */
+    public function testGetControllerWithSameNameAsCore()
+    {
+        $uri = '/mod/category-name';
+        $dispatcher = $this->getDispatcher(true, $uri, [
+            [
+                'id' => 'module-mod-category',
+                'rule' => 'mod/{rewrite}',
+                'controller' => 'category',
+                'keywords' => [
+                    'rewrite' => [
+                        'required' => true,
+                        'regexp' => '[a-z-]*',
+                        'param' => 'rewrite',
+                    ]
+                ],
+                'params' => [
+                    'fc' => 'module',
+                    'module' => 'mod',
+                ]
+            ]
+        ]);
+        static::assertEquals('category', $dispatcher->getController(), "URI $uri should be resolved as category controller");
+    }
+
+    /**
      * @param boolean $useFriendlyUrl
      * @param string $uri
      * @param array $additionalRoutes
