@@ -1516,7 +1516,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                             Tools::getValue('input_unit_price_te_'.$id, 0)
                         );
                         $entry->quantity_expected = (int) Tools::getValue('input_quantity_expected_'.$id, 0);
-                        $entry->discount_rate = Tools::getValue('input_discount_rate_'.$id, 0);
+                        $entry->discount_rate = (float) Tools::getValue('input_discount_rate_'.$id, 0);
                         $entry->tax_rate = (float) Tools::getValue('input_tax_rate_'.$id, 0);
                         $entry->reference = Tools::getValue('input_reference_'.$id, '');
                         $entry->supplier_reference = Tools::getValue('input_supplier_reference_'.$id, '');
@@ -1538,10 +1538,23 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         $entry->id_currency = $currency->id;
                         $entry->id_supply_order = $supplyOrder->id;
 
-                        $errors = $entry->validateController();
-
                         //get the product name displayed in the backoffice according to the employee language
                         $entry->name_displayed = Tools::getValue('input_name_displayed_'.$id, '');
+
+                        // validation
+                        $errors = [];
+                        if ($entry->quantity_expected <= 0) {
+                            $errors[] = '<b>' . ObjectModel::displayFieldName('quantity_expected', get_class($this)) . '</b> ' . Tools::displayError('is invalid.');
+                        }
+
+                        if ($entry->tax_rate < 0 || $entry->tax_rate > 100) {
+                            $errors[] = '<b>' . ObjectModel::displayFieldName('tax_rate', get_class($this)) . '</b> ' . Tools::displayError('is invalid.');
+                        }
+
+                        if ($entry->discount_rate < 0 || $entry->discount_rate > 100) {
+                            $errors[] = '<b>' . SupplyOrderDetail::displayFieldName('discount_rate', get_class($this)) . '</b> ' . Tools::displayError('is invalid.');
+                        }
+
 
                         // if there is a problem, handle error for the current product
                         if (count($errors) > 0) {
