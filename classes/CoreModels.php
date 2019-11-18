@@ -999,7 +999,7 @@ class CoreModelsCore
             'table' => 'smarty_cache',
             'fields' => [
                 'id_smarty_cache' => ['type' => ObjectModel::TYPE_STRING, 'size' => 40, 'dbType' => 'char(40)', 'required' => true],
-                'name'            => ['type' => ObjectModel::TYPE_STRING, 'size' => 40, 'dbType' => 'char(40)', 'dbType' => 'char(40)', 'required' => true],
+                'name'            => ['type' => ObjectModel::TYPE_STRING, 'size' => 40, 'dbType' => 'char(40)', 'required' => true],
                 'cache_id'        => ['type' => ObjectModel::TYPE_STRING, 'size' => 64],
                 'modified'        => ['type' => ObjectModel::TYPE_DATE, 'dbType' => 'timestamp', 'dbDefault' => 'CURRENT_TIMESTAMP'],
                 'content'         => ['type' => ObjectModel::TYPE_STRING, 'size' => ObjectModel::SIZE_LONG_TEXT, 'required' => true],
