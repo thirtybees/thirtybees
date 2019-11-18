@@ -4757,4 +4757,35 @@ class AdminControllerCore extends Controller
 
         return $result;
     }
+
+    /**
+     * Adds javascript URI to list of javascript files included in page header
+     *
+     * @param string $uri           uri to javascript file
+     * @param boolean $checkPath    if true, system will check if the javascript file exits on filesystem
+     *
+     * @since   1.1.1
+     */
+    public function addJavascriptUri($uri, $checkPath)
+    {
+        // if javascript file exists locally, include its modification timestamp into uri as a version parameter
+        $parsed = parse_url($uri);
+        if (! array_key_exists('host', $parsed) && isset($parsed['path'])) {
+            $path = $parsed['path'];
+            $mediaUri = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $path), '/\\');
+            $fileUri = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
+            $timestamp = @filemtime($fileUri);
+            if ($timestamp) {
+                if (isset($parsed['query'])) {
+                    $version = '&ts=' . $timestamp;
+                } else {
+                    $version = '?ts=' . $timestamp;
+                }
+                $uri .= $version;
+            }
+        }
+
+        parent::addJavascriptUri($uri, $checkPath);
+    }
+
 }
