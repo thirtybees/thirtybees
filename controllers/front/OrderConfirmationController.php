@@ -157,6 +157,7 @@ class OrderConfirmationControllerCore extends FrontController
                 'is_guest'                => $this->context->customer->is_guest,
                 'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation(),
                 'HOOK_PAYMENT_RETURN'     => $this->displayPaymentReturn(),
+                'order'                   => $order,
             ]
         );
 
