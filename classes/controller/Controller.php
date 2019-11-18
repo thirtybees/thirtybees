@@ -557,35 +557,38 @@ abstract class ControllerCore
     {
         if (is_array($jsUri)) {
             foreach ($jsUri as $jsFile) {
-                $jsFile = explode('?', $jsFile);
-                $version = '';
-                if (isset($jsFile[1]) && $jsFile[1]) {
-                    $version = $jsFile[1];
-                }
-                $jsPath = $jsFile = $jsFile[0];
-                if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
-                }
-
-                // $key = is_array($js_path) ? key($js_path) : $js_path;
-                if ($jsPath && !in_array($jsPath, $this->js_files)) {
-                    $this->js_files[] = $jsPath.($version ? '?'.$version : '');
-                }
+                $this->addJavascriptUri($jsFile, $checkPath);
             }
         } else {
-            $jsUri = explode('?', $jsUri);
-            $version = '';
-            if (isset($jsUri[1]) && $jsUri[1]) {
-                $version = $jsUri[1];
-            }
-            $jsPath = $jsUri = $jsUri[0];
-            if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
-            }
+            $this->addJavascriptUri($jsUri, $checkPath);
+        }
+    }
 
-            if ($jsPath && !in_array($jsPath, $this->js_files)) {
-                $this->js_files[] = $jsPath.($version ? '?'.$version : '');
+    /**
+     * Adds javascript URI to list of javascript files included in page header
+     *
+     * @param string $uri           uri to javascript file
+     * @param boolean $checkPath    if true, system will check if the javascript file exits on filesystem
+     *
+     * @since   1.1.1
+     */
+    public function addJavascriptUri($uri, $checkPath)
+    {
+        if ($checkPath) {
+            // remove query parameters from uri
+            $parts = explode('?', $uri);
+
+            // resolve uri path
+            $uri = Media::getJSPath($parts[0]);
+
+            // add back query parameters
+            if ($uri && isset($parts[1]) && $parts[1]) {
+                $uri .= '?' . $parts[1];
             }
+        }
+
+        if ($uri && !in_array($uri, $this->js_files)) {
+            $this->js_files[] = $uri;
         }
     }
 
