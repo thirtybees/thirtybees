@@ -3852,8 +3852,8 @@ class AdminControllerCore extends Controller
 
         $this->addJS(
             [
-                _PS_JS_DIR_.'admin.js?v='._TB_VERSION_,
-                _PS_JS_DIR_.'tools.js?v='._TB_VERSION_,
+                _PS_JS_DIR_.'admin.js',
+                _PS_JS_DIR_.'tools.js',
                 _PS_JS_DIR_.'jquery/plugins/timepicker/jquery-ui-timepicker-addon.js',
             ]
         );
