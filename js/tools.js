@@ -114,7 +114,7 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
     }
 
     var formattedCurrency = price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' });
-    if (currencySign) {
+    if (currencySign  && currencySign!== 'undefined') {
       formattedCurrency = formattedCurrency.replace('USD', currencySign);
     }
 
