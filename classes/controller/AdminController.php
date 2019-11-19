@@ -1435,28 +1435,6 @@ class AdminControllerCore extends Controller
 
         /* Overload this method for custom checking */
         $this->_childValidation();
-
-        /* Checking for multilingual fields validity */
-        if (isset($rules['validateLang']) && is_array($rules['validateLang'])) {
-            foreach ($rules['validateLang'] as $fieldLang => $function) {
-                foreach ($languages as $language) {
-                    if (($value = Tools::getValue($fieldLang.'_'.$language['id_lang'])) !== false && !empty($value)) {
-                        if (mb_strtolower($function) == 'iscleanhtml' && Configuration::get('PS_ALLOW_HTML_IFRAME')) {
-                            $res = Validate::$function($value, true);
-                        } else {
-                            $res = Validate::$function($value);
-                        }
-                        if (!$res) {
-                            $this->errors[$fieldLang.'_'.$language['id_lang']] = sprintf(
-                                Tools::displayError('The %1$s field (%2$s) is invalid.'),
-                                call_user_func([$className, 'displayFieldName'], $fieldLang, $className),
-                                $language['name']
-                            );
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**

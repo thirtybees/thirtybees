@@ -49,8 +49,6 @@ class TaxCore extends ObjectModel
     /** @var bool true if the tax has been historized */
     public $deleted = 0;
 
-    protected static $_product_country_tax = [];
-    protected static $_product_tax_via_rules = [];
     // @codingStandardsIgnoreEnd
 
     /**
@@ -301,29 +299,6 @@ class TaxCore extends ObjectModel
         $taxCalculator = $taxManager->getTaxCalculator();
 
         return $taxCalculator->getTotalRate();
-    }
-
-    /**
-     * Return the product tax rate using the tax rules system
-     *
-     * @param int $idProduct
-     * @param int $idCountry
-     *
-     * @return Tax
-     *
-     * @deprecated 1.0.0
-     * @throws PrestaShopException
-     */
-    public static function getProductTaxRateViaRules($idProduct, $idCountry, $idState, $zipcode)
-    {
-        Tools::displayAsDeprecated();
-
-        if (!isset(static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$idState.'-'.$zipcode])) {
-            $taxRate = TaxRulesGroup::getTaxesRate((int) Product::getIdTaxRulesGroupByIdProduct((int) $idProduct), (int) $idCountry, (int) $idState, $zipcode);
-            static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode] = $taxRate;
-        }
-
-        return static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode];
     }
 
     /**
