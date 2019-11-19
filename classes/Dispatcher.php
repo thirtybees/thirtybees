@@ -210,7 +210,7 @@ class DispatcherCore
                     'regexp' => '[_a-zA-Z0-9-\pL]*',
                 ],
                 'manufacturer' => [
-                    'regexp' => '[_a-zA-Z09-\pL]*',
+                    'regexp' => '[_a-zA-Z0-9-\pL]*',
                 ],
                 'supplier' => [
                     'regexp' => '[_a-zA-Z0-9-\pL]*',
