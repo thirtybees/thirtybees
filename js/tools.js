@@ -113,12 +113,11 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
       locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
     }
 
-    var formattedCurrency = price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' });
-    if (currencySign) {
-      formattedCurrency = formattedCurrency.replace('USD', currencySign);
-    }
-
-    return formattedCurrency;
+    // format number as an USD currency in specific locale, and then replace USD symbol with currencySign
+    return price
+     .toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' })
+     .replace('USD', currencySign || '')
+     .trim();
   }
 
   var blank = '';
