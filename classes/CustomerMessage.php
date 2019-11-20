@@ -71,7 +71,7 @@ class CustomerMessageCore extends ObjectModel
             'message'            => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => ObjectModel::SIZE_MEDIUM_TEXT],
             'file_name'          => ['type' => self::TYPE_STRING, 'size' => 18],
             'ip_address'         => ['type' => self::TYPE_STRING, 'validate' => 'isIp2Long', 'size' => 16],
-            'user_agent'         => ['type' => self::TYPE_STRING, 'size' => 128],
+            'user_agent'         => ['type' => self::TYPE_STRING, 'size' => 250],
             'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_upd'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'private'            => ['type' => self::TYPE_INT, 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],

@@ -719,7 +719,7 @@ CREATE TABLE `PREFIX_customer_message` (
   `message` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `file_name` varchar(18) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ip_address` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `private` tinyint(4) NOT NULL DEFAULT '0',
