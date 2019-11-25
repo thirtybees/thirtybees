@@ -2811,7 +2811,7 @@ class ToolsCore
         }
 
         $timeout = ini_get('max_execution_time');
-        if ( ! $timeout || $timeout > 600) {
+        if (! $timeout || $timeout > 600 || $timeout <= 0) {
             $timeout = 600;
         }
         $timeout -= 5; // Room for other processing.
