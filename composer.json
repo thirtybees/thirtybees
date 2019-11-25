@@ -18,7 +18,8 @@
         "defuse/php-encryption": "^2.0",
         "pclzip/pclzip": "~2.8.2",
         "vierbergenlars/php-semver": "~2.1.0",
-        "paragonie/random_compat": "<9.99"
+        "paragonie/random_compat": "<9.99",
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^1.0",
