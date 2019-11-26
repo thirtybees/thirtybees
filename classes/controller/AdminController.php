@@ -2891,7 +2891,7 @@ class AdminControllerCore extends Controller
                 ]
             );
 
-            $helper = new HelperForm($this);
+            $helper = new HelperForm();
             $this->setHelperDisplay($helper);
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
@@ -3080,7 +3080,7 @@ class AdminControllerCore extends Controller
      */
     public function renderView()
     {
-        $helper = new HelperView($this);
+        $helper = new HelperView();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars = $this->getTemplateViewVars();
         if (!is_null($this->base_tpl_view)) {
@@ -3706,7 +3706,7 @@ class AdminControllerCore extends Controller
 
             unset($this->toolbar_btn);
             $this->initToolbar();
-            $helper = new HelperOptions($this);
+            $helper = new HelperOptions();
             $this->setHelperDisplay($helper);
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
