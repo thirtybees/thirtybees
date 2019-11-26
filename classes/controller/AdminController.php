@@ -2039,7 +2039,7 @@ class AdminControllerCore extends Controller
         $this->display_header_javascript = false;
         $this->display_footer = false;
 
-        return $this->display();
+        $this->display();
     }
 
     /**
