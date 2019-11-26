@@ -34,20 +34,22 @@
  *
  * @since   1.0.0
  */
-class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
+class HTMLTemplateOrderSlipCore extends HTMLTemplate
 {
     // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
+
     /** @var OrderSlipCore $order_slip */
     public $order_slip;
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param OrderSlip $orderSlip
-     * @param Smarty    $smarty
+     * @param OrderSlipCore $orderSlip
+     * @param Smarty $smarty
      *
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -340,6 +342,8 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
+     * @throws Exception
      */
     public function getShippingTaxesBreakdown()
     {
@@ -376,6 +380,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
