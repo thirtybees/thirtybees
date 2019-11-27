@@ -222,6 +222,7 @@ abstract class DbCore
     /**
      * Sets time zone for database connection.
      *
+     * @param string $timezone
      * @return string
      */
     abstract public function setTimeZone($timezone);
@@ -579,7 +580,7 @@ abstract class DbCore
             $sql .= ' ON DUPLICATE KEY UPDATE '.substr($duplicateKeyStringified, 0, -1);
         }
 
-        return (bool) $this->q($sql, $useCache);
+        return (bool) $this->query($sql);
     }
 
     /**
@@ -628,7 +629,7 @@ abstract class DbCore
             $sql .= ' LIMIT '.(int) $limit;
         }
 
-        return (bool) $this->q($sql, $useCache);
+        return (bool) $this->query($sql);
     }
 
     /**
@@ -808,21 +809,12 @@ abstract class DbCore
      * @return bool|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @deprecated 1.1.1
      */
     protected function q($sql, $useCache = true)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $this->result = false;
-        $result = $this->query($sql);
-
-        if (_PS_DEBUG_SQL_) {
-            $this->displayError($sql);
-        }
-
-        return $result;
+        Tools::displayAsDeprecated();
+        return $this->query($sql);
     }
 
     /**
