@@ -1637,8 +1637,8 @@ class DispatcherCore
                 $append = $m[5][$i];
                 $transformKeywords[$keyword] = [
                     'required' => isset($keywords[$keyword]['param']),
-                    'prepend' => Tools::stripslashes($prepend),
-                    'append' => Tools::stripslashes($append),
+                    'prepend' => $prepend,
+                    'append' => $append,
                 ];
                 $prependRegexp = $appendRegexp = '';
                 if ($prepend || $append) {
