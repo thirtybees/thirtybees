@@ -2498,18 +2498,21 @@ class ToolsCore
     }
 
     /**
+     * Despite its name, this method used to strip slashes only when magic_quotes_gpc
+     * was enabled. When this functionality was dropped in php 5.4, this method does
+     * nothing anymore.
+     *
      * @param $string
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.1.1
      */
     public static function stripslashes($string)
     {
-        if (_PS_MAGIC_QUOTES_GPC_) {
-            $string = stripslashes($string);
-        }
+        Tools::displayAsDeprecated();
 
         return $string;
     }
@@ -4609,15 +4612,7 @@ FileETag none
 
                 $purifier = new HTMLPurifier($config);
             }
-            if (_PS_MAGIC_QUOTES_GPC_) {
-                $html = stripslashes($html);
-            }
-
             $html = $purifier->purify($html);
-
-            if (_PS_MAGIC_QUOTES_GPC_) {
-                $html = addslashes($html);
-            }
         }
 
         return $html;

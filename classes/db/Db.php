@@ -859,10 +859,6 @@ abstract class DbCore
      */
     public function escape($string, $htmlOk = false, $bqSql = false)
     {
-        if (_PS_MAGIC_QUOTES_GPC_) {
-            $string = stripslashes($string);
-        }
-
         if (!is_numeric($string)) {
             $string = $this->_escape($string);
 
