@@ -3522,6 +3522,26 @@ abstract class ModuleCore
     }
 
     /**
+     * Return list of displayable hooks where this module can be hooked to
+     *
+     * By default, only front-office hooks are returned. By setting $includeBackOfficeHooks to true, the result
+     * will include even back-office displayable hooks
+     *
+     * @param bool $includeBackOfficeHooks
+     * @return array Hook list
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.1.1
+     */
+    public function getDisplayableHookList($includeBackOfficeHooks=false)
+    {
+        return array_filter($this->getPossibleHooksList(), function($hook) use ($includeBackOfficeHooks) {
+            return Hook::isDisplayableHook($hook['name'], $includeBackOfficeHooks);
+        });
+    }
+
+    /**
      * @param null $name
      *
      * @return string

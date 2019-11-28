@@ -53,6 +53,10 @@ class AdminThemesControllerCore extends AdminController
     public $user_doc = [];
     public $image_list = [];
     public $to_export = [];
+    private $modules_errors = [];
+    private $doc = [];
+    private $installWarnings = [];
+    private $theme_name;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -771,6 +775,11 @@ class AdminThemesControllerCore extends AdminController
                     ->groupBy('hm.`id_module`, h.`id_hook`')
                     ->orderBy('name_module')
             );
+
+            // filter hook list to contain displayable hooks only
+            $this->hook_list = array_filter($this->hook_list, function($hook) {
+                return Hook::isDisplayableHook($hook['name_hook']);
+            });
 
             foreach ($this->hook_list as &$row) {
                 $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
@@ -1925,6 +1934,7 @@ class AdminThemesControllerCore extends AdminController
         $this->img_error['ok'] = $installationResult['imageTypes'];
         $this->modules_errors = $installationResult['moduleErrors'];
         $this->doc = $installationResult['documents'];
+        $this->installWarnings = $installationResult['warnings'];
 
         /**
          * If the old theme is no longer in use by another shop, remove its
@@ -1965,6 +1975,7 @@ class AdminThemesControllerCore extends AdminController
             'theme_name'     => $this->theme_name,
             'img_error'      => $this->img_error,
             'modules_errors' => $this->modules_errors,
+            'installWarnings'=> $this->installWarnings,
             'back_link'      => $this->context->link->getAdminLink('AdminThemes'),
             'image_link'     => $this->context->link->getAdminLink('AdminImages'),
         ];

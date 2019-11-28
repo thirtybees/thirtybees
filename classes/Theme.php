@@ -678,7 +678,12 @@ class ThemeCore extends ObjectModel
      *                               item with 'module_name' and an 'errors',
      *                               an array with error messages.
      *               'documents':    Array with documentation links.
+     *               'warnings' :    List of warnings
      *
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @version 1.1.0 Excerpt from AdminThemesController->processInstallTheme().
      */
     public function installIntoShopContext()
@@ -687,6 +692,11 @@ class ThemeCore extends ObjectModel
             'imageTypes'    => [],
             'moduleErrors'  => [],
             'documents'     => [],
+            'warnings'      => [
+                'ignoredHooks' => [],
+                'ignoredModules' => [],
+                'unmanagedModules' => [],
+            ],
         ];
 
         $xml = $this->loadConfigFile();
@@ -725,71 +735,45 @@ class ThemeCore extends ObjectModel
              * used work on the current shop context.
              */
             $unrelatedModules = Module::getNotThemeRelatedModules();
+            $hooks = static::getHooksFromConfigFile($xml, $return['warnings']['ignoredHooks']);
             foreach ($xml->modules->module as $moduleRow) {
                 $moduleName = (string) $moduleRow['name'];
-                if (in_array($moduleName, $unrelatedModules)) {
-                    continue;
-                }
+                $moduleAction = strtolower((string)$moduleRow['action']);
 
                 $module = Module::getInstanceByName($moduleName);
                 if ( ! $module) {
                     continue;
                 }
 
-                $isInstalledSuccess = true;
-                if ((string) $moduleRow['action'] === 'install'
-                    || (string) $moduleRow['action'] === 'enable') {
-                    if ( ! Module::isInstalled($moduleName)) {
-                        $isInstalledSuccess = $module->install();
-                    }
-                    if ( ! $isInstalledSuccess) {
-                        $return['moduleErrors'][] = [
-                            'module_name' => $moduleName,
-                            'errors'      => $module->getErrors(),
-                        ];
-                    }
+                if (in_array($moduleName, $unrelatedModules)) {
+                    $return['warnings']['ignoredModules'][] = [
+                        'module' => $moduleName,
+                        'action' => $moduleAction,
+                    ];
+                    continue;
                 }
 
-                if ($isInstalledSuccess
-                    && (string) $moduleRow['action'] === 'enable'
-                ) {
-                    $module->enable();
 
-                    /**
-                     * Replace the modules' default hooks and hook
-                     * exceptions with those of the theme configuration.
-                     */
-                    $allHooks = $module->getPossibleHooksList();
-                    foreach ($allHooks as $hook) {
-                        $module->unregisterExceptions($hook['id_hook']);
-                        $module->unregisterHook($hook['id_hook']);
-                    }
-
-                    foreach ($xml->modules->hooks->hook as $hook) {
-                        if ((string) $hook['module'] === $moduleName) {
-                            $idHook = Hook::getIdByName((string) $hook['hook']);
-
-                            $module->registerHook((string) $hook['hook']);
-                            if (isset($hook['position'])) {
-                                $module->updatePosition(
-                                    $idHook,
-                                    false,
-                                    (int) $hook['position']
-                                );
-                            }
-
-                            if (isset($hook['exceptions'])) {
-                                $module->registerExceptions(
-                                    $idHook,
-                                    explode(',', (string) $hook['exceptions'])
-                                );
-                            }
+                switch ($moduleAction) {
+                    case 'install':
+                    case 'enable':
+                        $manageHooks = true;
+                        if (isset($moduleRow['manageHooks'])) {
+                            $value = strtolower((string)$moduleRow['manageHooks']);
+                            $manageHooks = $value === 'true';
                         }
-                    }
-                }
-
-                if ((string) $moduleRow['action'] === 'disable') {
-                    $module->disable();
+                        $moduleHooks = isset($hooks[$moduleName]) ? $hooks[$moduleName] : [];
+                        $result = $this->installModule($module, $manageHooks, $moduleHooks, $return['warnings']['unmanagedModules']);
+                        if ($result !== true) {
+                            $return['moduleErrors'][] = [
+                                'module_name' => $moduleName,
+                                'errors'      => $result,
+                            ];
+                        }
+                        break;
+                    case 'disable':
+                        $module->disable();
+                        break;
                 }
             }
 
@@ -868,6 +852,74 @@ class ThemeCore extends ObjectModel
         }
 
         return $return;
+    }
+
+    /**
+     * Installs module required by theme
+     *
+     * Module is installed (or enabled). If theme manages module hooks, then all module's displayable hooks
+     * will be unhooked and replaced with the hook list from theme configuration file.
+     * Returns true, if module is installed/enabled successfully. Otherwise, array of errors are returned
+     *
+     * @param Module $module module instance
+     * @param bool $manageHooks if true, module displayable hooks are fully managed by theme
+     * @param array $hooks list of module hooks from config.xml file
+     * @param array $warnings array to collect warnings
+     *
+     * @return true | array
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function installModule(Module $module, $manageHooks, array $hooks, array &$warnings)
+    {
+        $moduleName = $module->name;
+
+        // install module if it's not installed yet
+        if (! Module::isInstalled($moduleName)) {
+            if (! $module->install()) {
+                return $module->getErrors();
+            }
+        };
+
+        $module->enable();
+
+        // theme can mark some modules as un-managed - module hooks will not be modified during theme installation
+        if (! $manageHooks){
+            return true;
+        }
+
+        // get list of displayable hooks this module supports
+        $displayableHooks = $module->getDisplayableHookList();
+
+        // if module has some displayable hooks, but theme does not specify any, it's most
+        // likely a bug in theme config.xml
+        if ($displayableHooks && !$hooks) {
+            $warnings[] = $moduleName;
+            return true;
+        }
+
+        // replace module default displayable hooks and hook exceptions with those from the theme configuration.
+        foreach ($displayableHooks as $hook) {
+            $module->unregisterExceptions($hook['id_hook']);
+            $module->unregisterHook($hook['id_hook']);
+        }
+
+        foreach ($hooks as $hook) {
+            $module->registerHook($hook['name']);
+            $idHook = Hook::getIdByName($hook['name']);
+
+            if ($hook['position']) {
+                $module->updatePosition($idHook, false, $hook['position']);
+            }
+
+            if ($hook['exceptions']) {
+                $module->registerExceptions($idHook, $hook['exceptions']);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -1038,4 +1090,44 @@ class ThemeCore extends ObjectModel
 
         return static::loadConfigFromFile($path, true);
     }
+
+    /**
+     * Return list of displayable hooks from config.xml indexed by module key
+     *
+     * @param SimpleXMLElement $xml
+     * @param array $ignored/
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getHooksFromConfigFile(SimpleXMLElement $xml, array &$ignored)
+    {
+        $hooks = [];
+        foreach ($xml->modules->hooks->hook as $entry) {
+            $module = (string)$entry['module'];
+            $hook = (string)$entry['hook'];
+            $position = (int)$entry['position'];
+            $exceptions = isset($entry['exceptions']) ? explode(',', $entry['exceptions']) : [];
+
+            // we will load only displayable hooks, and ignore others.
+            if (Hook::isDisplayableHook($hook)) {
+                if (!isset($hooks[$module])) {
+                    $hooks[$module] = [];
+                }
+
+                $hooks[$module][] = [
+                    'name' => $hook,
+                    'position' => $position,
+                    'exceptions' => $exceptions,
+                ];
+            } else {
+                $ignored[] = [
+                    'module' => $module,
+                    'hook' => $hook
+                ];
+            }
+        }
+        return $hooks;
+    }
+
 }

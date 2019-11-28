@@ -36,6 +36,7 @@
         {/foreach}
     </ul>
 {/if}
+
 {if $modules_errors|count > 0}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -71,6 +72,69 @@
         </a>
     </div>
 {/if}
+
+{if $installWarnings.ignoredModules || $installWarnings.ignoredHooks || $installWarnings.unmanagedModules}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+
+        <div>
+            {l s='Some warnings were encountered during theme installation.'}
+            <button class='btn btn-default' onclick="$('#theme-warnings').show()">{l s='Show details'}</button>
+        </div>
+
+        <div id="theme-warnings" style="display:none; padding-top:20px">
+            {if $installWarnings.ignoredModules|count > 0}
+                <h4>{l s='Following module actions were ignored during theme installation'}</h4>
+                <p>
+                    {l s='Theme wants to enable or disable modules that are [1]not theme related[/1]. Such action can have unexpected side effects on stability of your system' tags=['<strong>']}
+                </p>
+                <ul>
+                    {foreach $installWarnings.ignoredModules as $entry}
+                        <li>
+                            {l s='Theme wants to [1]%s[/1] module [2]%s[/2]. This action was blocked' tags=['<strong>', '<strong>'] sprintf=[$entry.action, $entry.module] }
+                        </li>
+                    {/foreach}
+                </ul>
+                <br />
+            {/if}
+
+            {if $installWarnings.ignoredHooks|count > 0}
+                <h4>{l s='Following non-theme related hooks were ignored'}</h4>
+                <p>
+                    {l s='Theme instructs thirty bees core to register hooks that are [1]not theme related[/1]. These requests were ignored' tags=['<strong>']}
+                </p>
+                <ul>
+                    {foreach $installWarnings.ignoredHooks as $entry}
+                        <li>
+                            {l s='Hook [1]%s[/1] from module [2]%s[/2]' tags=['<strong>', '<strong>'] sprintf=[$entry.hook, $entry.module] }
+                        </li>
+                    {/foreach}
+                </ul>
+                <br />
+            {/if}
+
+            {if $installWarnings.unmanagedModules|count > 0}
+                <h4>{l s='No hooks defined for following modules'}</h4>
+                <p>
+                    {l s='Theme installed or enabled following modules but didn\'t provide hook list for them. Theme should always provide hook list in order to achieve consistent results. If no hooks are specified in config.xml file, module hook list will remain unchanged. If this is wanted behaviour, theme developer should make it explicit by adding [1]manageHooks="false"[/1] into module entry' tags=['<strong>']}
+                </p>
+                <ul>
+                    {foreach $installWarnings.unmanagedModules as $module}
+                        <li>
+                            {l s='No [1]hooks[/1] are defined for module [2]%s[/2] in theme config.xml file' tags=['<strong>', '<strong>'] sprintf=[$module] }
+                        </li>
+                    {/foreach}
+                </ul>
+                <br />
+            {/if}
+            <p>
+                {l s='Please contact theme developer and request correction of theme config.xml file'}
+            </p>
+        </div>
+    </div>
+{/if}
+
+
 
 <a href="{$back_link}">
     <button class="btn btn-default">{l s='Finish'}</button>
