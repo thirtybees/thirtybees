@@ -26,6 +26,7 @@
 $_TB_DEFAULT_MODULES_ = [
     'bankwire',
     'beesblog',
+    'beesblogpopularposts',
     'blockbanner',
     'blockbestsellers',
     'blockcart',
