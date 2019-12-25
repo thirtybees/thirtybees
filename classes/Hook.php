@@ -1139,4 +1139,36 @@ class HookCore extends ObjectModel
 
         return parent::add($autoDate, $nullValues);
     }
+
+    /**
+     * Returns true if $hookName is a displayable hook
+     *
+     * At the moment, crude check for hook name is used -- every hook starting with display
+     * is considered displayable hook, with exception of displayAdmin*
+     *
+     * @param string $hookName
+     * @param bool $includeBackOfficeHooks if true, then check for back office displayable hooks as well
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function isDisplayableHook($hookName, $includeBackOfficeHooks=false)
+    {
+        $variants = [ $hookName, HookCore::getRetroHookName($hookName) ];
+        foreach ($variants as $hook) {
+            $hook = strtolower($hook);
+            if ((strpos($hook, 'display') === 0)) {
+                if ($includeBackOfficeHooks) {
+                    return true;
+                }
+                return (
+                    strpos($hook, 'displayadmin') !== 0 &&
+                    strpos($hook, 'displaybackoffice') !== 0
+                );
+            }
+        }
+        return false;
+    }
+
 }
