@@ -177,7 +177,6 @@
         </div>
         <!-- Tab nav -->
         <ul class="nav nav-tabs" id="tabOrder">
-          {$HOOK_TAB_ORDER}
           <li class="active">
             <a href="#status">
               <i class="icon-time"></i>
@@ -190,10 +189,10 @@
               {l s='Documents'} <span class="badge">{$order->getDocuments()|@count}</span>
             </a>
           </li>
+	  {$HOOK_TAB_ORDER}
         </ul>
         <!-- Tab content -->
         <div class="tab-content panel">
-          {$HOOK_CONTENT_ORDER}
           <!-- Tab status -->
           <div class="tab-pane active" id="status">
             <h4 class="visible-print">{l s='Status'} <span class="badge">({$history|@count})</span></h4>
@@ -262,6 +261,8 @@
             {* Include document template *}
             {include file='controllers/orders/_documents.tpl'}
           </div>
+	  <!-- Additional tabs from modules -->
+	  {$HOOK_CONTENT_ORDER}
         </div>
         <script>
           $('#tabOrder a').click(function (e) {
