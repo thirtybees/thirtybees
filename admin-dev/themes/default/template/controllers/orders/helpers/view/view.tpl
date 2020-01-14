@@ -939,9 +939,9 @@
                 </th>
                 <th class="text-center"><span class="title_box ">{l s='Qty'}</span></th>
                 {if $display_warehouse}
-                  <th><span class="title_box ">{l s='Warehouse'}</span></th>{/if}
-                {if ($order->hasBeenPaid())}
-                  <th class="text-center"><span class="title_box ">{l s='Refunded'}</span></th>{/if}
+                  <th><span class="title_box ">{l s='Warehouse'}</span></th>
+                {/if}
+                <th class="text-center"><span class="title_box ">{l s='Refunded'}</span></th>
                 {if ($order->hasBeenDelivered() || $order->hasProductReturned())}
                   <th class="text-center"><span class="title_box ">{l s='Returned'}</span></th>
                 {/if}
