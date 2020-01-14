@@ -303,6 +303,80 @@ class SupplyOrderDetailCore extends ObjectModel
     }
 
     /**
+     * @see ObjectModel::validateController()
+     *
+     * @param bool $htmlentities Optional
+     *
+     * @return array Errors, if any..
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function validateController($htmlentities = true)
+    {
+        $errors = [];
+
+        /* required fields */
+        $fieldsRequired = $this->fieldsRequired;
+
+        if (isset(static::$fieldsRequiredDatabase[get_class($this)])) {
+            $fieldsRequired = array_merge(
+                $this->fieldsRequired,
+                static::$fieldsRequiredDatabase[get_class($this)]
+            );
+        }
+
+        foreach ($fieldsRequired as $field) {
+            if (($value = $this->{$field}) == false && (string) $value != '0') {
+                if (!$this->id || $field != 'passwd') {
+                    $errors[] = '<b>'.SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities)
+                        .'</b> '.Tools::displayError('is required.');
+                }
+            }
+        }
+
+        /* Checks maximum fields sizes */
+        foreach ($this->fieldsSize as $field => $maxLength) {
+            if ($value = $this->{$field} && mb_strlen($value) > $maxLength) {
+                $errors[] = sprintf(
+                    Tools::displayError('%1$s is too long. Maximum length: %2$d'),
+                    SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities),
+                    $maxLength
+                );
+            }
+        }
+
+        /* Checks fields validity */
+        foreach ($this->fieldsValidate as $field => $function) {
+            if ($value = $this->{$field}) {
+                if (!Validate::$function($value) && (!empty($value) || in_array($field, $this->fieldsRequired))) {
+                    $errors[] = '<b>'.SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities).'</b> '.Tools::displayError('is invalid.');
+                } elseif ($field == 'passwd') {
+                    if ($value = Tools::getValue($field)) {
+                        $this->{$field} = Tools::encrypt($value);
+                    } else {
+                        $this->{$field} = $value;
+                    }
+                }
+            }
+        }
+
+        if ($this->quantity_expected <= 0) {
+            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('quantity_expected', get_class($this)).'</b> '.Tools::displayError('is invalid.');
+        }
+
+        if ($this->tax_rate < 0 || $this->tax_rate > 100) {
+            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('tax_rate', get_class($this)).'</b> '.Tools::displayError('is invalid.');
+        }
+
+        if ($this->discount_rate < 0 || $this->discount_rate > 100) {
+            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('discount_rate', get_class($this)).'</b> '.Tools::displayError('is invalid.');
+        }
+
+        return $errors;
+    }
+
+    /**
      * @see ObjectModel::hydrate()
      *
      * @since   1.0.0
