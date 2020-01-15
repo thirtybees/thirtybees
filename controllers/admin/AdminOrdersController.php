@@ -751,15 +751,19 @@ class AdminOrdersControllerCore extends AdminController
                             $customerThread = new CustomerThread();
                             $customerThread->id_contact = 0;
                             $customerThread->id_customer = (int) $order->id_customer;
-                            $customerThread->id_shop = (int) $this->context->shop->id;
+                            $customerThread->id_shop = (int) $order->id_shop;
                             $customerThread->id_order = (int) $order->id;
                             $customerThread->id_lang = (int) $this->context->language->id;
                             $customerThread->email = $customer->email;
-                            $customerThread->status = 'open';
+                            $customerThread->status = Tools::getValue('status_msg');
                             $customerThread->token = Tools::passwdGen(12);
                             $customerThread->add();
                         } else {
-                            $customerThread = new CustomerThread((int) $idCustomerThread);
+                            $customerThread = new CustomerThread((int) $idCustomerThread);                            
+                            if ($customerThread->status!=Tools::getValue('status_msg')) {
+                                $customerThread->status = Tools::getValue('status_msg');
+                                $customerThread->update();
+                            }
                         }
 
                         $customerMessage = new CustomerMessage();
