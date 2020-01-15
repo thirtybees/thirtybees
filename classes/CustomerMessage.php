@@ -98,7 +98,7 @@ class CustomerMessageCore extends ObjectModel
 
     /**
      * @param int  $idOrder
-     * @param bool $private
+     * @param bool $hide_private
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -107,7 +107,7 @@ class CustomerMessageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getMessagesByOrderId($idOrder, $private = true)
+    public static function getMessagesByOrderId($idOrder, $hide_private = true)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
@@ -122,7 +122,7 @@ class CustomerMessageCore extends ObjectModel
                 ->leftJoin('customer', 'c', 'ct.`id_customer` = c.`id_customer`')
                 ->leftOuterJoin('employee', 'e', 'e.`id_employee` = cm.`id_employee`')
                 ->where('ct.`id_order` = '.(int) $idOrder)
-                ->where($private ? 'cm.`private` = 0' : '')
+                ->where($hide_private ? 'cm.`private` = 0' : '')
                 ->groupBy('cm.`id_customer_message`')
                 ->orderBy('cm.`date_add` DESC')
         );
