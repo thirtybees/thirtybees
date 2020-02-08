@@ -2710,7 +2710,7 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         $decimals = 0;
-        if ($currency->decimals) {
+        if ($this->context->currency->decimals) {
             $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         }
         $this->ajaxDie(json_encode([

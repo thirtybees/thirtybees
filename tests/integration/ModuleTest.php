@@ -45,4 +45,28 @@ class ModuleTest extends \Codeception\Test\Unit
             $this->assertTrue((bool)$module->uninstall(), 'Module uninstall failed : '.$moduleName);
         }
     }
+
+    public function testValidModuleNameIsEnabled()
+    {
+        $this->assertTrue(Module::isEnabled("coreupdater"));
+    }
+
+    public function testValidModuleNameGetModuleId() {
+        $this->assertTrue(!!Module::getModuleIdByName("coreupdater"));
+    }
+
+    public function testBackwardCompatibilityModuleNameIsEnabled()
+    {
+        $this->assertTrue(Module::isEnabled("CoreUpdater"));
+    }
+
+    public function testBackwardCompatibilityModuleNameGetModuleId() {
+        $this->assertTrue(!!Module::getModuleIdByName("CoreUpdater"));
+    }
+
+    public function testMultipleInstantiation() {
+        $this->assertTrue(!!Module::getInstanceByName("coreupdater"));
+        $this->assertTrue(!!Module::getInstanceByName("CoreUpdater"));
+    }
+
 }

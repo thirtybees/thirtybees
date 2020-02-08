@@ -2716,7 +2716,7 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public function copyMailFilesForAllLanguages()
     {
-        $currentTheme = Tools::safeOutput($this->context->theme->name);
+        $currentTheme = Tools::safeOutput($this->context->theme->directory);
         $languages = Language::getLanguages();
 
         foreach ($languages as $key => $lang) {

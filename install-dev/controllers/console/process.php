@@ -199,6 +199,9 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
 
         Context::getContext()->smarty = $smarty;
+
+        $protocol = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+        Context::getContext()->link = new Link($protocol, $protocol);
     }
 
     /**
