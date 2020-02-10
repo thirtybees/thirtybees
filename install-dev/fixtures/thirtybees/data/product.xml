@@ -44,8 +44,8 @@
   </fields>
   <entities>
     <product id="Candle"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="gifts"
              on_sale="0"
              online_only="0"
@@ -86,8 +86,8 @@
       <location/>
     </product>
     <product id="Soap"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="gifts"
              on_sale="0"
              online_only="0"
@@ -126,8 +126,8 @@
       <location/>
     </product>
     <product id="Coffee"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="coffee"
              on_sale="0" online_only="0"
              ean13="0" upc=""
@@ -164,8 +164,8 @@
       <location/>
     </product>
     <product id="Tin_Cup"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="tea"
              on_sale="0" online_only="0"
              ean13="0" upc=""
@@ -202,8 +202,8 @@
       <location/>
     </product>
     <product id="Picture_Frame"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="gifts"
              on_sale="0" online_only="0"
              ean13="0" upc=""
@@ -240,8 +240,8 @@
       <location/>
     </product>
     <product id="Mug"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="coffee"
              on_sale="0" online_only="0"
              ean13="0" upc=""
@@ -278,8 +278,8 @@
       <location/>
     </product>
     <product id="Tea"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="tea"
              on_sale="0" online_only="0"
              ean13="0" upc=""
@@ -316,8 +316,8 @@
       <location/>
     </product>
     <product id="Honey"
-             id_supplier="thirty_bees"
-             id_manufacturer="Fashion_Manufacturer"
+             id_supplier="thirty_bees_supplier"
+             id_manufacturer="thirty_bees_manufacturer"
              id_category_default="tea"
              on_sale="0" online_only="0"
              ean13="0" upc=""

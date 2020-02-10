@@ -8,12 +8,13 @@
     <field name="product_supplier_price_te"/>
   </fields>
   <entities>
-    <product_supplier id="product_supplier_1" id_product="Faded_Short_Sleeve_T-shirts" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_2" id_product="Blouse" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_3" id_product="Printed_Dress" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_4" id_product="Printed_Dress_1" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_5" id_product="Printed_Summer_Dress" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_6" id_product="Printed_Summer_Dress_1" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
-    <product_supplier id="product_supplier_7" id_product="Printed_Chiffon_Dress" id_product_attribute="" id_supplier="Fashion_Supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_1" id_product="Candle" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_2" id_product="Soap" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_3" id_product="Coffee" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_4" id_product="Tin_Cup" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_5" id_product="Picture_Frame" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_6" id_product="Mug" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_7" id_product="Tea" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
+    <product_supplier id="product_supplier_7" id_product="Honey" id_product_attribute="" id_supplier="thirty_bees_supplier" product_supplier_reference="" product_supplier_price_te="0.000000"/>
   </entities>
 </entity_product_supplier>
