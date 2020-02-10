@@ -66,8 +66,6 @@ class OrderReturnStateCore extends ObjectModel
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        static::installationCheck();
-
         parent::__construct($id, $idLang, $idShop);
     }
 
@@ -85,8 +83,6 @@ class OrderReturnStateCore extends ObjectModel
      */
     public static function getOrderReturnStates($idLang)
     {
-        static::installationCheck();
-
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
@@ -97,40 +93,4 @@ class OrderReturnStateCore extends ObjectModel
         );
     }
 
-    /**
-     * Test whether the database is up to date and fix it if not.
-     *
-     * Starting with v1.1.0, thirty bees no longer equips the updater module
-     * with database upgrade scripts, but equipped Core Updater with the
-     * capability to read each class' table description and to update the
-     * database accordingly.
-     *
-     * Retrocompatibility: as the above is just a plan and not yet true for
-     * the time being, this was added as a kludge to bridge the time until it
-     * actually gets true.
-     *
-     * @since 1.1.0
-     */
-    public static function installationCheck()
-    {
-        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $columnPresent = false;
-
-        try {
-            $columnPresent = $db->executeS(
-                (new DbQuery())
-                    ->select('`active`')
-                    ->from(static::$definition['table'])
-                    ->limit(1)
-            );
-        } catch (Exception $e) {
-        }
-
-        if ( ! $columnPresent) {
-            $db->execute('ALTER TABLE '
-                ._DB_PREFIX_.static::$definition['table']
-                .' ADD COLUMN `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1;'
-            );
-        }
-    }
 }

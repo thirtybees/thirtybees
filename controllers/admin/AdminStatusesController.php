@@ -43,9 +43,6 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function __construct()
     {
-        // Retrocompatibility with < 1.1.0.
-        OrderReturnState::installationCheck();
-
         $this->bootstrap = true;
         $this->table = 'order_state';
         $this->className = 'OrderState';
