@@ -44,7 +44,6 @@ class AdminStatusesControllerCore extends AdminController
     public function __construct()
     {
         // Retrocompatibility with < 1.1.0.
-        OrderState::installationCheck();
         OrderReturnState::installationCheck();
 
         $this->bootstrap = true;
