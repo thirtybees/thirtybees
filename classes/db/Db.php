@@ -64,6 +64,9 @@ abstract class DbCore
     /** @var string Database name */
     protected $database;
 
+    /** @var boolean */
+    protected $throwOnError;
+
     /**
      * @var bool
      *
@@ -364,10 +367,7 @@ abstract class DbCore
         $this->user = $user;
         $this->password = $password;
         $this->database = $database;
-
-        if (!defined('_PS_DEBUG_SQL_')) {
-            define('_PS_DEBUG_SQL_', false);
-        }
+        $this->throwOnError = defined('_PS_DEBUG_SQL_') ? _PS_DEBUG_SQL_ : false;
 
         if ($connect) {
             $this->connect();
@@ -492,13 +492,13 @@ abstract class DbCore
 
         $this->result = $this->_query($sql);
 
-        if (!$this->result && $this->getNumberError() == 2006) {
+        if ($this->result === false && $this->getNumberError() == 2006) {
             if ($this->connect()) {
                 $this->result = $this->_query($sql);
             }
         }
 
-        if (_PS_DEBUG_SQL_) {
+        if ($this->result === false && $this->throwOnError) {
             $this->displayError($sql);
         }
 
@@ -841,15 +841,14 @@ abstract class DbCore
         global $webserviceCall;
 
         $errno = $this->getNumberError();
-        if ($webserviceCall && $errno) {
-            $dbg = debug_backtrace();
-            WebserviceRequest::getInstance()->setError(500, '[SQL Error] '.$this->getMsgError().'. From '.(isset($dbg[3]['class']) ? $dbg[3]['class'] : '').'->'.$dbg[3]['function'].'() Query was : '.$sql, 97);
-        } elseif (_PS_DEBUG_SQL_ && $errno && !defined('TB_INSTALLATION_IN_PROGRESS')) {
-            if ($sql) {
+
+        if ($errno) {
+            if ($webserviceCall) {
+                $dbg = debug_backtrace();
+                WebserviceRequest::getInstance()->setError(500, '[SQL Error] ' . $this->getMsgError() . '. From ' . (isset($dbg[3]['class']) ? $dbg[3]['class'] : '') . '->' . $dbg[3]['function'] . '() Query was : ' . $sql, 97);
+            } else {
                 throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
             }
-
-            throw new PrestaShopDatabaseException($this->getMsgError());
         }
     }
 
