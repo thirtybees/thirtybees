@@ -51,6 +51,10 @@ if (!defined('_THEME_NAME_')) {
     define('_THEME_NAME_', 'niara');
 }
 
+if (!defined('_PS_DEBUG_SQL_')) {
+    define('_PS_DEBUG_SQL_', true);
+}
+
 require_once(_PS_CORE_DIR_.'/config/defines.inc.php');
 require_once(_PS_CORE_DIR_.'/config/autoload.php');
 require_once(_PS_CORE_DIR_.'/config/bootstrap.php');
