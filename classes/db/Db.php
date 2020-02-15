@@ -228,6 +228,20 @@ abstract class DbCore
     abstract public function setTimeZone($timezone);
 
     /**
+     * Creates new database object instance.
+     * @param string $server
+     * @param string $user
+     * @param string $password
+     * @param string $database
+     * @return Db
+     */
+    public static function createInstance($server, $user, $password, $database)
+    {
+        $class = static::getClass();
+        return new $class($server, $user, $password, $database);
+    }
+
+    /**
      * Returns database object instance.
      *
      * @param bool $master Decides whether the connection to be returned by the master server or the slave server
@@ -260,8 +274,7 @@ abstract class DbCore
         }
 
         if (!isset(static::$instance[$idServer])) {
-            $class = static::getClass();
-            static::$instance[$idServer] = new $class(
+            static::$instance[$idServer] = static::createInstance(
                 static::$_servers[$idServer]['server'],
                 static::$_servers[$idServer]['user'],
                 static::$_servers[$idServer]['password'],
