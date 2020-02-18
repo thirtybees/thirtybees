@@ -260,6 +260,20 @@
 			</p>
 			<div id="product_restriction_div">
 				<br />
+				<div class="form-group">
+					<label class="control-label col-lg-2">
+						<span class="label-tooltip" data-toggle="tooltip"
+							title="{l s='Setup wich amount is the one to reach, based on total order or only selected products.'}">
+							{l s='Minimum Amount calculation'}
+						</span>
+					</label>
+					<div class="col-lg-4">
+						<select name="prodrestrict_minamount">
+							<option value="0" {if $currentTab->getFieldValue($currentObject, 'prodrestrict_minamount') == 0}selected="selected"{/if}>{l s='Calculate minimum amount based on total cart amount'}</option>
+							<option value="1" {if $currentTab->getFieldValue($currentObject, 'prodrestrict_minamount') == 1}selected="selected"{/if}>{l s='Calculate minimum amount based on product selection'}</option>
+						</select>
+					</div>
+				</div>
 				<table id="product_rule_group_table" class="table">
 					{foreach from=$product_rule_groups item='product_rule_group'}
 						{$product_rule_group}
