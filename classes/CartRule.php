@@ -109,6 +109,8 @@ class CartRuleCore extends ObjectModel
     public $cart_rule_restriction;
     /** @var bool $product_restriction */
     public $product_restriction;
+    /** @var bool minimum_amount_product_restriction */
+    public $minimum_amount_product_restriction;
     /** @var bool $shop_restriction */
     public $shop_restriction;
     /** @var bool $free_shipping */
@@ -163,6 +165,7 @@ class CartRuleCore extends ObjectModel
             'group_restriction'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'cart_rule_restriction'   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'product_restriction'     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
+            'minimum_amount_product_restriction'  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'shop_restriction'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'free_shipping'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'reduction_percent'       => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage', 'size' => 5, 'decimals' => 2, 'dbDefault' => '0.00'],
@@ -1112,6 +1115,21 @@ class CartRuleCore extends ObjectModel
             }
             $products = $context->cart->getProducts();
             $cartRules = $context->cart->getCartRules();
+
+            // Check if the products chosen by the customer are usable with the cart rule to calculate if minimum amount is reached.
+            if ($this->product_restriction && $this->minimum_amount_product_restriction) {
+                $cartTotal = 0;
+                $selectedProducts = $this->checkProductRestrictions($context, true);
+                foreach ($products as $product) {
+                    if (in_array($product['id_product'] . '-' . $product['id_product_attribute'], $selectedProducts)) {
+                        if ($this->minimum_amount_tax) {
+                            $cartTotal = $cartTotal + $product['price_with_reduction_without_tax'] * $product['cart_quantity'];
+                        } else {
+                            $cartTotal = $cartTotal + $product['price'] * $product['cart_quantity'];
+                        }
+                    }
+                }
+            }
 
             foreach ($cartRules as &$cartRule) {
                 if ($cartRule['gift_product']) {
