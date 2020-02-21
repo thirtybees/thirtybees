@@ -1089,26 +1089,8 @@ class ToolsCore
      */
     public static function array_replace()
     {
-        if (!function_exists('array_replace')) {
-            $args = func_get_args();
-            $numArgs = func_num_args();
-            $res = [];
-            for ($i = 0; $i < $numArgs; $i++) {
-                if (is_array($args[$i])) {
-                    foreach ($args[$i] as $key => $val) {
-                        $res[$key] = $val;
-                    }
-                } else {
-                    trigger_error(__FUNCTION__.'(): Argument #'.($i + 1).' is not an array', E_USER_WARNING);
-
-                    return null;
-                }
-            }
-
-            return $res;
-        } else {
-            return call_user_func_array('array_replace', func_get_args());
-        }
+        Tools::displayAsDeprecated('Use PHP\'s array_replace() instead');
+        return call_user_func_array('array_replace', func_get_args());
     }
 
     /**
