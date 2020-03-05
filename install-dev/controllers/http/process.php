@@ -199,6 +199,8 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         Context::getContext()->currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
         Context::getContext()->cart = new Cart();
         Context::getContext()->employee = new Employee(1);
+        $protocol = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+        Context::getContext()->link = new Link($protocol, $protocol);
         define('_PS_SMARTY_FAST_LOAD_', true);
         require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
 
