@@ -196,35 +196,33 @@ class SearchCore
 			) position';
         }
 
-        $sqlGroups = '';
+        $searchSql = (new DbQuery())
+            ->select("DISTINCT `cp`.`id_product`")
+            ->from('category_product', 'cp')
+            ->innerJoin('category', 'c', '`cp`.`id_category` = `c`.`id_category`')
+            ->innerJoinMultishop('product', 'p', 'ps', '`cp`.`id_product` = `p`.`id_product`')
+            ->where('`c`.`active` = 1')
+            ->where('`ps`.`active` = 1')
+            ->where('`ps`.`visibility` IN ("both", "search")')
+            ->where('`ps`.`indexed` = 1');
+
         if (Group::isFeatureActive()) {
             $groups = FrontController::getCurrentCustomerGroups();
-            $sqlGroups = 'AND cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
+            $on = '`cp`.`id_category` = `cg`.`id_category` AND `cg`.`id_group` '.($groups ? 'IN ('.implode(',', $groups).')' : '= 1');
+            $searchSql->innerJoin('category_group', 'cg', $on);
         }
-        $inStockCondition = '';
-        if ((int)Configuration::get('PS_SEARCH_INSTOCK')) {
+
+        if ((int) Configuration::get('PS_SEARCH_INSTOCK')) {
+            $on = '`cp`.`id_product` = `sa`.`id_product` '.StockAvailable::addSqlShopRestriction(null, null, 'sa');
             if ((int) Configuration::get('PS_ORDER_OUT_OF_STOCK')) {
-                $inStockCondition = ' AND (sa.quantity > 0 OR sa.out_of_stock = 1 OR sa.out_of_stock = 2)';
+                $on .= ' AND (sa.quantity > 0 OR sa.out_of_stock = 1 OR sa.out_of_stock = 2)';
             } else {
-                $inStockCondition = ' AND (sa.quantity > 0 OR sa.out_of_stock = 1)';
+                $on .= ' AND (sa.quantity > 0 OR sa.out_of_stock = 1)';
             }
-
+            $searchSql->innerJoin('stock_available', 'sa', $on);
         }
 
-        $results = $db->executeS('
-            SELECT DISTINCT cp.`id_product`
-            FROM `'._DB_PREFIX_.'category_product` cp
-            '.(Group::isFeatureActive() ? 'INNER JOIN `'._DB_PREFIX_.'category_group` cg ON cp.`id_category` = cg.`id_category`' : '').'
-            INNER JOIN `'._DB_PREFIX_.'category` c ON cp.`id_category` = c.`id_category`
-            INNER JOIN `'._DB_PREFIX_.'product` p ON cp.`id_product` = p.`id_product`
-            '.Shop::addSqlAssociation('product', 'p', false).'
-            INNER JOIN `'._DB_PREFIX_.'stock_available` sa ON (cp.`id_product` = sa.`id_product` '.StockAvailable::addSqlShopRestriction(null, null, 'sa').')
-            WHERE c.`active` = 1
-            AND product_shop.`active` = 1
-            AND product_shop.`visibility` IN ("both", "search")
-            AND product_shop.indexed = 1
-            '.$sqlGroups.$inStockCondition, true, false
-        );
+        $results = $db->executeS($searchSql, true, false);
 
         $eligibleProducts = [];
         foreach ($results as $row) {
