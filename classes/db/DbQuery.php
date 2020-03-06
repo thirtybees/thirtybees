@@ -61,7 +61,7 @@ class DbQueryCore
      *
      * @param string $type SELECT|DELETE
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -82,7 +82,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to concat to other fields
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -102,7 +102,7 @@ class DbQueryCore
      * @param string      $table Table name
      * @param string|null $alias Table alias
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -129,7 +129,7 @@ class DbQueryCore
      *
      * @param string $join Complete string
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -150,7 +150,7 @@ class DbQueryCore
      * @param string|null $alias Table alias
      * @param string|null $on    ON clause
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -172,7 +172,7 @@ class DbQueryCore
      * @param string|null $alias Table alias
      * @param string|null $on    ON clause
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -187,13 +187,60 @@ class DbQueryCore
     }
 
     /**
+     * Include primary and shop tables into the query using INNER JOIN
+     *
+     * Two tables will be added to the sql query
+     *   - primary table:  <DB_PREFIX>_table AS alias
+     *   - shop table:     <DB_PREFIX>_table_shop AS aliasShop
+     * Shop table will be joined using object model metadata
+     *
+     * For more information, see Shop::addSqlAssociation
+     *
+     * @param string $table primary table name (without prefix)
+     * @param string $alias primary table alias
+     * @param string $aliasShop shop table alias
+     * @param string $on primary table ON clause
+     * @param string|null $shopOnExtra additional conditions to be included within shop ON clause
+     *
+     * @return $this
+     *
+     * @throws PrestaShopException
+     */
+    public function innerJoinMultishop($table, $alias, $aliasShop, $on, $shopOnExtra = null)
+    {
+        if (! Shop::isTableAssociated($table)) {
+            throw new PrestaShopException("Table `$table` is not multistore enabled`");
+        }
+
+        // expose primary table
+        $this->innerJoin($table, $alias, $on);
+
+        // expose shop table
+        $shopOn = '`' . pSQL($aliasShop) . '`.`id_' . $table . '` = `' . pSQL($alias). '`.`id_' . $table . '`';
+        if ((int) Shop::getContextShopID()) {
+            $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` = ' . (int) Shop::getContextShopID();
+        } elseif (Shpo::checkIdShopDefault($table)) {
+            $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` = `'.$alias.'`.`id_shop_default`';
+        } else {
+            $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')';
+        }
+
+        if ($shopOnExtra) {
+            $shopOn .= ' ' . trim($shopOnExtra);
+        }
+
+        return $this->innerJoin($table . "_shop", $aliasShop, $shopOn);
+    }
+
+
+    /**
      * Adds a LEFT OUTER JOIN clause
      *
      * @param string      $table Table name (without prefix)
      * @param string|null $alias Table alias
      * @param string|null $on    ON clause
      *
-     * @return DbQuery
+     * @return $this
      *
      *@since 1.0.0
      * @version 1.0.0 Initial version
@@ -213,7 +260,7 @@ class DbQueryCore
      * @param string      $table Table name (without prefix)
      * @param string|null $alias Table alias
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -234,7 +281,7 @@ class DbQueryCore
      * @param string|null $alias Table alias
      * @param string|null $on    ON clause
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -253,7 +300,7 @@ class DbQueryCore
      *
      * @param string $restriction
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -272,7 +319,7 @@ class DbQueryCore
      *
      * @param string $restriction
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -291,7 +338,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to sort. E.g. $this->order('myField, b.mySecondField DESC')
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -310,7 +357,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to group. E.g. $this->group('myField1, myField2')
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -330,7 +377,7 @@ class DbQueryCore
      * @param int $limit
      * @param int $offset
      *
-     * @return DbQuery
+     * @return $this
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -411,6 +458,10 @@ class DbQueryCore
      */
     public function __toString()
     {
-        return $this->build();
+        try {
+            return $this->build();
+        } catch (PrestaShopException $e) {
+            return $e->getMessage();
+        }
     }
 }
