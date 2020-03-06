@@ -3180,41 +3180,25 @@ class ToolsCore
 
         fwrite($write_fd, "RewriteEngine on\n");
 
-        if (!$medias && Configuration::getMultiShopValues('PS_MEDIA_SERVER_1')
-            && Configuration::getMultiShopValues('PS_MEDIA_SERVER_2')
-            && Configuration::getMultiShopValues('PS_MEDIA_SERVER_3')
-        ) {
-            $medias = [
-                Configuration::getMultiShopValues('PS_MEDIA_SERVER_1'),
-                Configuration::getMultiShopValues('PS_MEDIA_SERVER_2'),
-                Configuration::getMultiShopValues('PS_MEDIA_SERVER_3'),
-            ];
-        }
-
-        $media_domains = '';
-        foreach ($medias as $media) {
-            foreach ($media as $media_url) {
-                if ($media_url) {
-                    $media_domains .= 'RewriteCond %{HTTP_HOST} ^'.$media_url.'$ [OR]'."\n";
-                }
-            }
-        }
+        $mediaDomains = array_reduce(static::getMediaServersUrls(), function($acc, $mediaServer) {
+            return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
+        }, '');
 
         if (Configuration::get('PS_WEBSERVICE_CGI_HOST')) {
             fwrite($write_fd, "RewriteCond %{HTTP:Authorization} ^(.*)\nRewriteRule . - [E=HTTP_AUTHORIZATION:%1]\n\n");
         }
 
         foreach ($domains as $domain => $list_uri) {
-            $physicals = [];
             foreach ($list_uri as $uri) {
-                fwrite($write_fd, PHP_EOL.PHP_EOL.'#Domain: '.$domain.PHP_EOL);
+                fwrite($write_fd, PHP_EOL.PHP_EOL.'# Domain: '.$domain.PHP_EOL);
                 if (Shop::isFeatureActive()) {
                     fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n");
                 }
-                fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:'.$uri['physical'].']'."\n");
+                fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:'.$uri['physical'].']'."\n\n");
 
                 // Webservice
-                fwrite($write_fd, 'RewriteRule ^api$ api/ [L]'."\n\n");
+                fwrite($write_fd, "# Webservice API\n");
+                fwrite($write_fd, 'RewriteRule ^api$ api/ [L]'."\n");
                 fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]'."\n\n");
 
                 if (!$rewrite_settings) {
@@ -3224,34 +3208,43 @@ class ToolsCore
                 $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n";
                 // Rewrite virtual multishop uri
                 if ($uri['virtual']) {
+                    fwrite($write_fd, "# Virtual uri\n");
                     if (!$rewrite_settings) {
-                        fwrite($write_fd, $media_domains);
+                        fwrite($write_fd, $mediaDomains);
                         fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'/?$ '.$uri['physical'].$uri['virtual']."index.php [L,R]\n");
                     } else {
-                        fwrite($write_fd, $media_domains);
+                        fwrite($write_fd, $mediaDomains);
                         fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'$ '.$uri['physical'].$uri['virtual']." [L,R]\n");
                     }
-                    fwrite($write_fd, $media_domains);
+                    fwrite($write_fd, $mediaDomains);
                     fwrite($write_fd, $domain_rewrite_cond);
                     fwrite($write_fd, 'RewriteRule ^'.ltrim($uri['virtual'], '/').'(.*) '.$uri['physical']."$1 [L]\n\n");
                 }
 
                 if ($rewrite_settings) {
                     // Compatibility with the old image filesystem
-                    fwrite($write_fd, "# Images\n");
                     if (Configuration::get('PS_LEGACY_IMAGES')) {
-                        fwrite($write_fd, $media_domains);
+                        fwrite($write_fd, "# Legacy image rewrites\n");
+                        fwrite($write_fd, $mediaDomains);
                         fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.jpg [L]'."\n");
+
+                        fwrite($write_fd, $mediaDomains);
+                        fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.webp [L]'."\n");
-                        fwrite($write_fd, $media_domains);
+
+                        fwrite($write_fd, $mediaDomains);
                         fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.jpg [L]'."\n");
-                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.webp [L]'."\n");
+
+                        fwrite($write_fd, $mediaDomains);
+                        fwrite($write_fd, $domain_rewrite_cond);
+                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.webp [L]'."\n\n");
                     }
 
+                    fwrite($write_fd, "# Images\n");
                     // Rewrite product images < 100 millions
                     for ($i = 1; $i <= 8; $i++) {
                         $img_path = $img_name = '';
@@ -3260,27 +3253,37 @@ class ToolsCore
                             $img_name .= '$'.$j;
                         }
                         $img_name .= '$'.$j;
-                        fwrite($write_fd, $media_domains);
+                        fwrite($write_fd, $mediaDomains);
                         fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).".jpg [L]\n");
+
+                        fwrite($write_fd, $mediaDomains);
+                        fwrite($write_fd, $domain_rewrite_cond);
                         fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).".webp [L]\n");
                     }
-                    fwrite($write_fd, $media_domains);
+                    fwrite($write_fd, $mediaDomains);
                     fwrite($write_fd, $domain_rewrite_cond);
                     fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$3$4.jpg [L]'."\n");
+
+                    fwrite($write_fd, $mediaDomains);
+                    fwrite($write_fd, $domain_rewrite_cond);
                     fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/c/$1$2$3$4.webp [L]'."\n");
-                    fwrite($write_fd, $media_domains);
+
+                    fwrite($write_fd, $mediaDomains);
                     fwrite($write_fd, $domain_rewrite_cond);
                     fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$3.jpg [L]'."\n");
+
+                    fwrite($write_fd, $mediaDomains);
+                    fwrite($write_fd, $domain_rewrite_cond);
                     fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/c/$1$2$3.webp [L]'."\n");
                 }
 
-                fwrite($write_fd, "# AlphaImageLoader for IE and fancybox\n");
-                if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, $domain_rewrite_cond);
-                }
+                fwrite($write_fd, "\n# AlphaImageLoader for IE and fancybox\n");
+                fwrite($write_fd, $mediaDomains);
+                fwrite($write_fd, $domain_rewrite_cond);
                 fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ js/jquery/plugins/fancybox/images/$1.$2 [L]'."\n");
             }
+
             // Redirections to dispatcher
             if ($rewrite_settings) {
                 fwrite($write_fd, "\n# Dispatcher\n");
@@ -3370,6 +3373,29 @@ FileETag none
         }
 
         return true;
+    }
+
+    /**
+     * Returns list of all defined media servers
+     *
+     * @return string[]
+     * @throws PrestaShopException
+     */
+    public static function getMediaServersUrls()
+    {
+        $uniqueDomains = [];
+        $mediaServersKeys = ['PS_MEDIA_SERVER_1', 'PS_MEDIA_SERVER_2', 'PS_MEDIA_SERVER_3'];
+        foreach ($mediaServersKeys as $mediaServerKey) {
+            $mediaServers = Configuration::getMultiShopValues($mediaServerKey);
+            if ($mediaServers) {
+                foreach ($mediaServers as $mediaServer) {
+                    if ($mediaServer && is_string($mediaServer) && !isset($uniqueDomains[$mediaServer])) {
+                        $uniqueDomains[$mediaServer] = $mediaServer;
+                    }
+                }
+            }
+        }
+        return array_values($uniqueDomains);
     }
 
     /**

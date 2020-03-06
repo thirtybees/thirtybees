@@ -748,7 +748,7 @@ class AdminMetaControllerCore extends AdminController
             $this->updateOptionUri(Tools::getValue('uri'));
         }
 
-        if (Tools::generateHtaccess($this->ht_file, null, null, '', Tools::getValue('PS_HTACCESS_DISABLE_MULTIVIEWS'), false, Tools::getValue('PS_HTACCESS_DISABLE_MODSEC'))) {
+        if (Tools::generateHtaccess()) {
             Tools::enableCache();
             Tools::clearCache($this->context->smarty);
             Tools::restoreCacheSettings();
