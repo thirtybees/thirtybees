@@ -268,9 +268,9 @@
 						</span>
 					</label>
 					<div class="col-lg-4">
-						<select name="prodrestrict_minamount">
-							<option value="0" {if $currentTab->getFieldValue($currentObject, 'prodrestrict_minamount') == 0}selected="selected"{/if}>{l s='Calculate minimum amount based on total cart amount'}</option>
-							<option value="1" {if $currentTab->getFieldValue($currentObject, 'prodrestrict_minamount') == 1}selected="selected"{/if}>{l s='Calculate minimum amount based on product selection'}</option>
+						<select name="minimum_amount_product_restriction">
+							<option value="0" {if $currentTab->getFieldValue($currentObject, 'minimum_amount_product_restriction') == 0}selected="selected"{/if}>{l s='Calculate minimum amount based on total cart amount'}</option>
+							<option value="1" {if $currentTab->getFieldValue($currentObject, 'minimum_amount_product_restriction') == 1}selected="selected"{/if}>{l s='Calculate minimum amount based on product selection'}</option>
 						</select>
 					</div>
 				</div>
