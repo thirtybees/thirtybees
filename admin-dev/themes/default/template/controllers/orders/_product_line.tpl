@@ -113,26 +113,24 @@
 			{/if}
 		</td>
 	{/if}
-	{if ($order->hasBeenPaid())}
-		<td class="productQuantity text-center">
-			{if !empty($product['amount_refund'])}
-				{l s='%s (%s refund)' sprintf=[$product['product_quantity_refunded'], $product['amount_refund']]}
-			{/if}
-			<input type="hidden" value="{$product['quantity_refundable']}" class="partialRefundProductQuantity" />
-			<input type="hidden" value="{($product_price * ($product['product_quantity'] - $product['customizationQuantityTotal']))}" class="partialRefundProductAmount" />
-			{if count($product['refund_history'])}
-				<span class="tooltip">
-					<span class="tooltip_label tooltip_button">+</span>
-					<span class="tooltip_content">
-					<span class="title">{l s='Refund history'}</span>
-					{foreach $product['refund_history'] as $refund}
-						{l s='%1s - %2s' sprintf=[{dateFormat date=$refund.date_add}, {displayPrice price=$refund.amount_tax_incl}]}<br />
-					{/foreach}
-					</span>
+	<td class="productQuantity text-center">
+		{if !empty($product['amount_refund'])}
+			{l s='%s (%s refund)' sprintf=[$product['product_quantity_refunded'], $product['amount_refund']]}
+		{/if}
+		<input type="hidden" value="{$product['quantity_refundable']}" class="partialRefundProductQuantity" />
+		<input type="hidden" value="{($product_price * ($product['product_quantity'] - $product['customizationQuantityTotal']))}" class="partialRefundProductAmount" />
+		{if count($product['refund_history'])}
+			<span class="tooltip">
+				<span class="tooltip_label tooltip_button">+</span>
+				<span class="tooltip_content">
+				<span class="title">{l s='Refund history'}</span>
+				{foreach $product['refund_history'] as $refund}
+					{l s='%1s - %2s' sprintf=[{dateFormat date=$refund.date_add}, {displayPrice price=$refund.amount_tax_incl}]}<br />
+				{/foreach}
 				</span>
-			{/if}
-		</td>
-	{/if}
+			</span>
+		{/if}
+	</td>
 	{if $order->hasBeenDelivered() || $order->hasProductReturned()}
 		<td class="productQuantity text-center">
 			{$product['product_quantity_return']}

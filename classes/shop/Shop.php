@@ -1188,16 +1188,17 @@ class ShopCore extends ObjectModel
     /**
      * Add an SQL JOIN in query between a table and its associated table in multishop
      *
-     * @param string $table     Table name (E.g. product, module, etc.)
-     * @param string $alias     Alias of table
-     * @param bool   $innerJoin Use or not INNER JOIN
+     * @param string $table Table name (E.g. product, module, etc.)
+     * @param string $alias Alias of table
+     * @param bool $innerJoin Use or not INNER JOIN
      * @param string $on
+     * @param bool $forceNotDefault
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function addSqlAssociation($table, $alias, $innerJoin = true, $on = null, $forceNotDefault = false)
     {
@@ -1212,15 +1213,15 @@ class ShopCore extends ObjectModel
         }
         $sql = (($innerJoin) ? ' INNER' : ' LEFT').' JOIN '._DB_PREFIX_.$table.'_shop '.$tableAlias.'
 		ON ('.$tableAlias.'.id_'.$table.' = '.$alias.'.id_'.$table;
-        // @codingStandardsIgnoreStart
-        if ((int) static::$context_id_shop) {$sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
+
+        if ((int) static::$context_id_shop) {
+            $sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
         } elseif (static::checkIdShopDefault($table) && !$forceNotDefault) {
             $sql .= ' AND '.$tableAlias.'.id_shop = '.$alias.'.id_shop_default';
         } else {
             $sql .= ' AND '.$tableAlias.'.id_shop IN ('.implode(', ', static::getContextListShopID()).')';
         }
         $sql .= (($on) ? ' AND '.$on : '').')';
-        // @codingStandardsIgnoreEnd
 
         return $sql;
     }

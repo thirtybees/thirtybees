@@ -1108,14 +1108,14 @@ class AdminPerformanceControllerCore extends AdminController
                         Configuration::updateValue('PS_MEDIA_SERVERS', 0);
                     }
                     rewriteSettingsFile($baseUrls, null, null);
-                    Configuration::updateValue('PS_MEDIA_SERVER_1', Tools::getValue('_MEDIA_SERVER_1_'));
-                    Configuration::updateValue('PS_MEDIA_SERVER_2', Tools::getValue('_MEDIA_SERVER_2_'));
-                    Configuration::updateValue('PS_MEDIA_SERVER_3', Tools::getValue('_MEDIA_SERVER_3_'));
+                    Configuration::updateValue('PS_MEDIA_SERVER_1', $baseUrls['_MEDIA_SERVER_1_']);
+                    Configuration::updateValue('PS_MEDIA_SERVER_2', $baseUrls['_MEDIA_SERVER_2_']);
+                    Configuration::updateValue('PS_MEDIA_SERVER_3', $baseUrls['_MEDIA_SERVER_3_']);
                     Tools::clearSmartyCache();
                     Media::clearCache();
 
                     if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
-                        Tools::generateHtaccess(null, null, null, '', null, [$baseUrls['_MEDIA_SERVER_1_'], $baseUrls['_MEDIA_SERVER_2_'], $baseUrls['_MEDIA_SERVER_3_']]);
+                        Tools::generateHtaccess();
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_1_']);
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_2_']);
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_3_']);
