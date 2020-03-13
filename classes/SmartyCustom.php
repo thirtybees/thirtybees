@@ -188,18 +188,21 @@ class SmartyCustomCore extends Smarty
      */
     public function check_compile_cache_invalidation()
     {
-        static $lastFlush = null;
-        if (!file_exists($this->getCompileDir().'last_flush')) {
-            @touch($this->getCompileDir().'last_flush', time());
-        } elseif (defined('_DB_PREFIX_')) {
-            if ($lastFlush === null) {
-                $sql = 'SELECT UNIX_TIMESTAMP(last_flush) AS last_flush FROM `'._DB_PREFIX_.'smarty_last_flush` WHERE type=\'compile\'';
-                $lastFlush = Db::getInstance()->getValue($sql, false);
-            }
-            if ((int) $lastFlush && @filemtime($this->getCompileDir().'last_flush') < $lastFlush) {
-                @touch($this->getCompileDir().'last_flush', time());
+        static $checked = false;
+        if (!$checked) {
+            $filename = $this->getCompileDir() . 'last_flush';
+            if (! @file_exists($filename)) {
+                Tools::changeFileMTime($filename);
                 parent::clearCompiledTemplate();
+            } else {
+                $sql = 'SELECT UNIX_TIMESTAMP(last_flush) AS last_flush FROM `' . _DB_PREFIX_ . 'smarty_last_flush` WHERE type=\'compile\'';
+                $lastFlush = (int) Db::getInstance()->getValue($sql, false);
+                if ($lastFlush && @filemtime($filename) < $lastFlush) {
+                    Tools::changeFileMTime($filename);
+                    parent::clearCompiledTemplate();
+                }
             }
+            $checked = true;
         }
     }
 
@@ -215,6 +218,7 @@ class SmartyCustomCore extends Smarty
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function createTemplate($template, $cacheId = null, $compileId = null, $parent = null, $doClone = true)
     {
@@ -246,16 +250,18 @@ class SmartyCustomCore extends Smarty
     public function check_template_invalidation($template, $cacheId, $compileId)
     {
         static $lastFlush = null;
-        if (!file_exists($this->getCacheDir().'last_template_flush')) {
-            @touch($this->getCacheDir().'last_template_flush', time());
-        } elseif (defined('_DB_PREFIX_')) {
+        $filename = $this->getCacheDir() . 'last_template_flush';
+        if (! @file_exists($filename)) {
+            Tools::changeFileMTime($filename);
+            parent::clearAllCache();
+        } else {
             if ($lastFlush === null) {
                 $sql = 'SELECT UNIX_TIMESTAMP(last_flush) AS last_flush FROM `'._DB_PREFIX_.'smarty_last_flush` WHERE type=\'template\'';
                 $lastFlush = Db::getInstance()->getValue($sql, false);
             }
 
-            if ((int) $lastFlush && @filemtime($this->getCacheDir().'last_template_flush') < $lastFlush) {
-                @touch($this->getCacheDir().'last_template_flush', time());
+            if ((int) $lastFlush && @filemtime($filename) < $lastFlush) {
+                Tools::changeFileMTime($filename);
                 parent::clearAllCache();
             } else {
                 if ($cacheId !== null && (is_object($cacheId) || is_array($cacheId))) {
@@ -463,6 +469,8 @@ class SmartyCustomCore extends Smarty
             $length = count(static::$trace);
             return static::$trace[$length - 1];
         }
+
+        return null;
     }
 }
 
@@ -521,6 +529,7 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
      * @param $noOutputFilter
      * @return string
      * @throws SmartyException
+     * @throws Exception
      */
     public function fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter)
     {
