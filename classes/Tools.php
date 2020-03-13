@@ -3837,6 +3837,7 @@ FileETag none
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function clearSmartyCache()
     {
@@ -3852,7 +3853,8 @@ FileETag none
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return int|void
+     * @return int
+     * @throws PrestaShopException
      */
     public static function clearCache($smarty = null, $tpl = false, $cacheId = null, $compileId = null)
     {
@@ -3861,7 +3863,7 @@ FileETag none
         }
 
         if ($smarty === null) {
-            return;
+            return 0;
         }
 
         if (!$tpl && $cacheId === null && $compileId === null) {
@@ -3874,8 +3876,12 @@ FileETag none
     /**
      * Clear compile for Smarty
      *
+     * @param Smarty $smarty
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return int
+     * @throws PrestaShopException
      */
     public static function clearCompile($smarty = null)
     {
@@ -3884,7 +3890,7 @@ FileETag none
         }
 
         if ($smarty === null) {
-            return;
+            return 0;
         }
 
         return $smarty->clearCompiledTemplate();
@@ -4347,14 +4353,23 @@ FileETag none
     }
 
     /**
-     * @param $file_name
+     * @param string $filename
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
-    public static function changeFileMTime($file_name)
+    public static function changeFileMTime($filename)
     {
-        @touch($file_name);
+        if (@touch($filename)) {
+            return true;
+        }
+
+        $dir = dirname($filename);
+        if (!@file_exists($dir)) {
+            @mkdir($dir, 0777, true);
+        }
+        return @touch($filename);
     }
 
     /**
