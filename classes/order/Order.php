@@ -1685,6 +1685,9 @@ class OrderCore extends ObjectModel
                         'id_order'         => (int) $orderInvoice->id_order,
                     ]
                 );
+
+                // Update total_paid_real value for backward compatibility reasons
+                $this->total_paid_real += $orderPayment->amount;
             }
             // Clear cache
             Cache::clean('order_invoice_paid_*');
