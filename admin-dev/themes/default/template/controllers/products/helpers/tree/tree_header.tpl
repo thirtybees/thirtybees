@@ -31,18 +31,18 @@
 			} else {
 				$('#block_category_tree').hide();
 				$('#category-tree-toolbar').hide();
-				location.href = '{$base_url}&reset_filter_category=1';
+				location.href = '{!empty($base_url)}&reset_filter_category=1';
 			}
 		});
 	});
 </script>
 
 <div class="tree-panel-heading-controls clearfix">
-	<div id="category-tree-toolbar" {if !$is_category_filter}style="display:none;"{/if}>
+	<div id="category-tree-toolbar" {if !empty($is_category_filter)}style="display:none;"{/if}>
 		{if isset($toolbar)}{$toolbar}{/if}
 	</div>
 	<label class="tree-panel-label-title">
-		<input type="checkbox" id="filter-by-category" name="filter-by-category" {if $is_category_filter}checked="checked"{/if} />
+		<input type="checkbox" id="filter-by-category" name="filter-by-category" {if !empty($is_category_filter)}checked="checked"{/if} />
 		<i class="icon-tags"></i>
 		{$title}
 	</label>
