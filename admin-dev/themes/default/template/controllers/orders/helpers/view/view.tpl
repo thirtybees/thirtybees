@@ -850,17 +850,29 @@
               <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Display to customer?'}</label>
                 <div class="col-lg-9">
-									<span class="switch prestashop-switch fixed-width-lg">
-										<input type="radio" name="visibility" id="visibility_on" value="0"/>
-										<label for="visibility_on">
-											{l s='Yes'}
-										</label>
-										<input type="radio" name="visibility" id="visibility_off" value="1" checked="checked"/>
-										<label for="visibility_off">
-											{l s='No'}
-										</label>
-										<a class="slide-button btn"></a>
-									</span>
+                    <span class="switch prestashop-switch fixed-width-lg">
+                        <input type="radio" name="visibility" id="visibility_on" value="0"/>
+                        <label for="visibility_on">
+                            {l s='Yes'}
+                        </label>
+                        <input type="radio" name="visibility" id="visibility_off" value="1" checked="checked"/>
+                        <label for="visibility_off">
+                            {l s='No'}
+                        </label>
+                        <a class="slide-button btn"></a>
+                    </span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="status_msg" class="control-label col-lg-3">{l s='Status'}</label>
+                <div class="col-lg-9">
+                  <select id="status_msg" name="status_msg">
+                    <option value="open" {if isset($customer_thread_message[0]['status']) && $customer_thread_message[0]['status']=='open'}selected{/if}>{l s='Open'}</option>
+                    <option value="closed" {if isset($customer_thread_message[0]['status']) && $customer_thread_message[0]['status']=='closed'}selected{/if}>{l s='Closed'}</option>
+                    <option value="pending1" {if isset($customer_thread_message[0]['status']) && $customer_thread_message[0]['status']=='pending1'}selected{/if}>{l s='Pending 1'}</option>
+                    <option value="pending2" {if isset($customer_thread_message[0]['status']) && $customer_thread_message[0]['status']=='pending2'}selected{/if}>{l s='Pending 2'}</option>
+                  </select>
                 </div>
               </div>
 
@@ -940,14 +952,15 @@
                 </th>
                 <th class="text-center"><span class="title_box ">{l s='Qty'}</span></th>
                 {if $display_warehouse}
-                  <th><span class="title_box ">{l s='Warehouse'}</span></th>{/if}
-                {if ($order->hasBeenPaid())}
-                  <th class="text-center"><span class="title_box ">{l s='Refunded'}</span></th>{/if}
+                  <th><span class="title_box ">{l s='Warehouse'}</span></th>
+                {/if}
+                <th class="text-center"><span class="title_box ">{l s='Refunded'}</span></th>
                 {if ($order->hasBeenDelivered() || $order->hasProductReturned())}
                   <th class="text-center"><span class="title_box ">{l s='Returned'}</span></th>
                 {/if}
                 {if $stock_management}
-                  <th class="text-center"><span class="title_box ">{l s='Available quantity'}</span></th>{/if}
+                  <th class="text-center"><span class="title_box ">{l s='Available quantity'}</span></th>
+                {/if}
                 <th>
                   <span class="title_box ">{l s='Total'}</span>
                   <small class="text-muted">{$smarty.capture.TaxMethod}</small>

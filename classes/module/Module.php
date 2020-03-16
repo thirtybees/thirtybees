@@ -3569,27 +3569,31 @@ abstract class ModuleCore
      */
     protected function getCacheId($name = null)
     {
-        $cache_array = [];
-        $cache_array[] = $name !== null ? $name : $this->name;
-        if (Configuration::get('PS_SSL_ENABLED')) {
-            $cache_array[] = (int) Tools::usingSecureMode();
-        }
-        if (Shop::isFeatureActive()) {
-            $cache_array[] = (int) $this->context->shop->id;
-        }
-        if (Group::isFeatureActive() && isset($this->context->customer)) {
-            $cache_array[] = (int) Group::getCurrent()->id;
-            $cache_array[] = implode('_', Customer::getGroupsStatic($this->context->customer->id));
-        }
-        if (Language::isMultiLanguageActivated()) {
-            $cache_array[] = (int) $this->context->language->id;
-        }
-        if (Currency::isMultiCurrencyActivated()) {
-            $cache_array[] = (int) $this->context->currency->id;
-        }
-        $cache_array[] = (int) $this->context->country->id;
+        static $suffix;
+        if (is_null($suffix)) {
+            $cache_array = [];
+            if (Configuration::get('PS_SSL_ENABLED')) {
+                $cache_array[] = (int)Tools::usingSecureMode();
+            }
+            if (Shop::isFeatureActive()) {
+                $cache_array[] = (int)$this->context->shop->id;
+            }
+            if (Group::isFeatureActive() && isset($this->context->customer)) {
+                $cache_array[] = (int)Group::getCurrent()->id;
+                $cache_array[] = implode('_', Customer::getGroupsStatic($this->context->customer->id));
+            }
+            if (Language::isMultiLanguageActivated()) {
+                $cache_array[] = (int)$this->context->language->id;
+            }
+            if (Currency::isMultiCurrencyActivated()) {
+                $cache_array[] = (int)$this->context->currency->id;
+            }
+            $cache_array[] = (int)$this->context->country->id;
 
-        return implode('|', $cache_array);
+            $suffix = '|' . implode('|', $cache_array);
+        }
+
+        return ($name !== null ? $name : $this->name) . $suffix;
     }
 
     /**

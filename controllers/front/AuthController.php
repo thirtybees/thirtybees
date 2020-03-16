@@ -450,19 +450,25 @@ class AuthControllerCore extends FrontController
         if (Tools::isSubmit('submitAccount')) {
             $this->context->smarty->assign('email_create', 1);
         }
+
+        // is this a guest account?
+        $isGuestAccount = !Tools::getValue('is_new_customer', 1);
+
         // New Guest customer
-        if (!Tools::getValue('is_new_customer', 1) && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
-            $this->errors[] = Tools::displayError('You cannot create a guest account.');
-        }
-        if (!Tools::getValue('is_new_customer', 1)) {
+        if ($isGuestAccount) {
+            if (!Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
+                $this->errors[] = Tools::displayError('You cannot create a guest account.');
+            }
             $_POST['passwd'] = md5(time()._COOKIE_KEY_);
         }
         if ($guestEmail = Tools::convertEmailToIdn(Tools::getValue('guest_email'))) {
             $_POST['email'] = $guestEmail;
         }
+
         // Checked the user address in case he changed his email address
-        if (Validate::isEmail($email = Tools::convertEmailToIdn(Tools::getValue('email'))) && !empty($email)) {
-            if (Customer::customerExists($email)) {
+        $email = Tools::convertEmailToIdn(Tools::getValue('email'));
+        if ($email && Validate::isEmail($email)) {
+            if (!$isGuestAccount && Customer::customerExists($email)) {
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered.', false);
             }
         }
@@ -479,7 +485,7 @@ class AuthControllerCore extends FrontController
 
         $errorPhone = false;
         if (Configuration::get('PS_ONE_PHONE_AT_LEAST')) {
-            if (Tools::isSubmit('submitGuestAccount') || !Tools::getValue('is_new_customer')) {
+            if (Tools::isSubmit('submitGuestAccount') || $isGuestAccount) {
                 if (!Tools::getValue('phone') && !Tools::getValue('phone_mobile')) {
                     $errorPhone = true;
                 }
@@ -511,7 +517,7 @@ class AuthControllerCore extends FrontController
                 }
 
                 // New Guest customer
-                $customer->is_guest = (Tools::isSubmit('is_new_customer') ? !Tools::getValue('is_new_customer', 1) : 0);
+                $customer->is_guest = $isGuestAccount;
                 $customer->active = 1;
 
                 if (!count($this->errors)) {
@@ -633,10 +639,6 @@ class AuthControllerCore extends FrontController
         }
 
         if (!count($this->errors)) {
-            if (Customer::customerExists(Tools::convertEmailToIdn(Tools::getValue('email')))) {
-                $this->errors[] = Tools::displayError('An account using this email address has already been registered. Please enter a valid password or request a new one. ', false);
-            }
-
             $this->processCustomerNewsletter($customer);
 
             $customer->birthday = (empty($_POST['years']) ? '' : (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days'));
@@ -646,12 +648,7 @@ class AuthControllerCore extends FrontController
 
             if (!count($this->errors)) {
                 $customer->active = 1;
-                // New Guest customer
-                if (Tools::isSubmit('is_new_customer')) {
-                    $customer->is_guest = !Tools::getValue('is_new_customer', 1);
-                } else {
-                    $customer->is_guest = 0;
-                }
+                $customer->is_guest = $isGuestAccount;
                 if (!$customer->add()) {
                     $this->errors[] = Tools::displayError('An error occurred while creating your account.');
                 } else {
@@ -765,7 +762,7 @@ class AuthControllerCore extends FrontController
                 $_GET['display_guest_checkout'] = 1;
             }
 
-            if (!Tools::getValue('is_new_customer')) {
+            if ($isGuestAccount) {
                 unset($_POST['passwd']);
             }
             if ($this->ajax) {
