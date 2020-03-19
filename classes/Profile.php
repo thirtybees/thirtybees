@@ -131,7 +131,7 @@ class ProfileCore extends ObjectModel
      * @param int    $idProfile
      * @param string $type
      *
-     * @return bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
