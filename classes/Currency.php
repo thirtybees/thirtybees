@@ -365,18 +365,20 @@ class CurrencyCore extends ObjectModel
     /**
      * @param int $id
      *
-     * @return mixed
+     * @return Currency
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCurrencyInstance($id)
     {
+        $id = (int)$id;
         if (!isset(static::$currencies[$id])) {
-            static::$currencies[(int) ($id)] = new Currency($id);
+            static::$currencies[$id] = new Currency($id);
         }
 
-        return static::$currencies[(int) ($id)];
+        return static::$currencies[$id];
     }
 
     /**

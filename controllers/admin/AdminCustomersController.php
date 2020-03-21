@@ -835,9 +835,14 @@ class AdminCustomersControllerCore extends AdminController
 
         $orders = Order::getCustomerOrders($customer->id, true);
         $totalOrders = count($orders);
+        $shopCurrency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
         for ($i = 0; $i < $totalOrders; $i++) {
-            $orders[$i]['total_paid_real_not_formated'] = $orders[$i]['total_paid_real'];
-            $orders[$i]['total_paid_real'] = Tools::displayPrice($orders[$i]['total_paid_real'], new Currency((int) $orders[$i]['id_currency']));
+            $currency = Currency::getCurrencyInstance($orders[$i]['id_currency']);
+            $orderId = (int)$orders[$i]['id_order'];
+            $order = new Order($orderId);
+            $totalPaymentOrderCurrency = $order->getTotalPaid($currency);
+            $orders[$i]['totalPaymentFormatted'] = Tools::displayPrice($totalPaymentOrderCurrency, $currency->id);
+            $orders[$i]['totalPaymentShopCurrency'] = $shopCurrency->id == $currency->id ? $totalPaymentOrderCurrency : $order->getTotalPaid($shopCurrency);
         }
 
         $messages = CustomerThread::getCustomerMessages((int) $customer->id);
@@ -870,7 +875,7 @@ class AdminCustomersControllerCore extends AdminController
 
             if ($order['valid']) {
                 $ordersOk[] = $order;
-                $totalOk += $order['total_paid_real_not_formated'] / $order['conversion_rate'];
+                $totalOk += $order['totalPaymentShopCurrency'];
             } else {
                 $ordersKo[] = $order;
             }
