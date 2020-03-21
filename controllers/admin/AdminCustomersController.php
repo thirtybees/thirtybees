@@ -48,6 +48,7 @@ class AdminCustomersControllerCore extends AdminController
      * AdminCustomersControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -175,19 +176,24 @@ class AdminCustomersControllerCore extends AdminController
         parent::__construct();
 
         $this->_select = '
-        a.date_add, gl.name as title, (
-            SELECT SUM(total_paid_real / conversion_rate)
-            FROM '._DB_PREFIX_.'orders o
-            WHERE o.id_customer = a.id_customer
-            '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o').'
-            AND o.valid = 1
-        ) as total_spent, (
-            SELECT c.date_add FROM '._DB_PREFIX_.'guest g
-            LEFT JOIN '._DB_PREFIX_.'connections c ON c.id_guest = g.id_guest
-            WHERE g.id_customer = a.id_customer
-            ORDER BY c.date_add DESC
-            LIMIT 1
-        ) as connect';
+            a.date_add,
+            gl.name as title,
+            (
+                SELECT SUM(op.amount / op.conversion_rate)
+                FROM '._DB_PREFIX_.'orders o
+                INNER JOIN '._DB_PREFIX_.'order_payment op ON (o.reference = op.order_reference)
+                WHERE o.id_customer = a.id_customer
+                '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o').'
+                AND o.valid = 1
+            ) as total_spent,
+            (
+                SELECT c.date_add FROM '._DB_PREFIX_.'guest g
+                LEFT JOIN '._DB_PREFIX_.'connections c ON c.id_guest = g.id_guest
+                WHERE g.id_customer = a.id_customer
+                ORDER BY c.date_add DESC
+                LIMIT 1
+            ) as connect
+        ';
 
         // Check if we can add a customer
         if (Shop::isFeatureActive() && (Shop::getContext() == Shop::CONTEXT_ALL || Shop::getContext() == Shop::CONTEXT_GROUP)) {
