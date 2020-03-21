@@ -525,9 +525,7 @@ abstract class PaymentModuleCore extends Module
                     if ($this->context->currency->decimals) {
                         $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
                     }
-                    $amountPaid = $dontTouchAmount ? $amountPaid :
-                        Tools::ps_round($amountPaid, $displayDecimals);
-                    $order->total_paid_real = 0;
+                    $amountPaid = $dontTouchAmount ? $amountPaid : Tools::ps_round($amountPaid, $displayDecimals);
 
                     $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
                     $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
