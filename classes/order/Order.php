@@ -74,7 +74,7 @@ class OrderCore extends ObjectModel
             'total_paid'               => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_paid_tax_incl'      => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'total_paid_tax_excl'      => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
-            'total_paid_real'          => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
+            'total_paid_real'          => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => false, 'dbDefault' => '0.000000', 'dbNullable' => false],
             'total_products'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_products_wt'        => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_shipping'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
@@ -166,7 +166,10 @@ class OrderCore extends ObjectModel
     public $total_paid_tax_incl;
     /** @var float Total to pay tax excluded */
     public $total_paid_tax_excl;
-    /** @var float Total really paid @deprecated 1.5.0.1 */
+    /**
+     * @var float Total really paid
+     * @deprecated 1.5.0.1
+     */
     public $total_paid_real;
     /** @var float Products total */
     public $total_products;
