@@ -814,6 +814,9 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderView()
@@ -828,26 +831,7 @@ class AdminCustomersControllerCore extends AdminController
         $genderImage = $gender->getImage();
 
         $customerStats = $customer->getStats();
-        if ($total_customer = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-            ->select('SUM(`total_paid_real`)')
-            ->from('orders')
-            ->where('`id_customer` = '.(int) $customer->id)
-            ->where('`valid` = 1')
-        )) {
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                ->select('SQL_CALC_FOUND_ROWS COUNT(*)')
-                ->from('orders')
-                ->where('`valid` = 1')
-                ->where('`id_customer` != '.(int) $customer->id)
-                ->groupBy('id_customer')
-                ->having('SUM(`total_paid_real`) > '.(int) $total_customer)
-            );
-            $countBetterCustomers = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()') + 1;
-        } else {
-            $countBetterCustomers = '-';
-        }
+        $countBetterCustomers = $customer->getBestCustomerRank() ?: '-';
 
         $orders = Order::getCustomerOrders($customer->id, true);
         $totalOrders = count($orders);

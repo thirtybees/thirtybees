@@ -1271,6 +1271,42 @@ class CustomerCore extends ObjectModel
     }
 
     /**
+     * Return customer rank
+     *
+     * Return rank of customer among customers with at least one valid order.
+     * If customer haven't place any order yet, this method returns null.
+     *
+     * @return int|null
+     * @throws PrestaShopException
+     * @since 1.1.1
+     */
+    public function getBestCustomerRank()
+    {
+        $totalPaid = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('SUM(`total_paid` / `conversion_rate`)')
+                ->from('orders')
+                ->where('`id_customer` = ' . (int)$this->id)
+                ->where('`valid` = 1')
+        );
+
+        if ($totalPaid) {
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('SQL_CALC_FOUND_ROWS COUNT(*)')
+                    ->from('orders')
+                    ->where('`valid` = 1')
+                    ->where('`id_customer` != ' . (int)$this->id)
+                    ->groupBy('id_customer')
+                    ->having('SUM(`total_paid` / `conversion_rate`) > ' . $totalPaid)
+            );
+            return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()') + 1;
+        }
+
+        return null;
+    }
+
+    /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
      * @throws PrestaShopDatabaseException
