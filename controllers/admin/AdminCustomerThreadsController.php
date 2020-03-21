@@ -884,6 +884,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderView()
@@ -892,7 +894,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
             return '';
         }
 
-        if (!($thread = $this->loadObject())) {
+        /** @var CustomerThread $thread */
+        $thread = $this->loadObject();
+        if (! $thread) {
             return '';
         }
         $this->context->cookie->{'customer_threadFilter_cl!id_contact'} = $thread->id_contact;
@@ -988,13 +992,14 @@ class AdminCustomerThreadsControllerCore extends AdminController
             if ($orders && count($orders)) {
                 $totalOk = 0;
                 $ordersOk = [];
+                $shopCurrency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
                 foreach ($orders as $key => $order) {
                     if ($order['valid']) {
                         $ordersOk[] = $order;
-                        $totalOk += $order['total_paid_real'] / $order['conversion_rate'];
+                        $orderObj = new Order($order['id_order']);
+                        $totalOk += $orderObj->getTotalPaid($shopCurrency);
                     }
                     $orders[$key]['date_add'] = Tools::displayDate($order['date_add']);
-                    $orders[$key]['total_paid_real'] = Tools::displayPrice($order['total_paid_real'], new Currency((int) $order['id_currency']));
                 }
             }
 
