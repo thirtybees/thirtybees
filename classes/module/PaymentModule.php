@@ -569,11 +569,7 @@ abstract class PaymentModuleCore extends Module
                     }
 
                     // Amount paid by customer is not the right one -> Status = payment error
-                    // We don't use the following condition to avoid the float precision issues : http://www.php.net/manual/en/language.types.float.php
-                    // if ($order->total_paid != $order->total_paid_real)
-                    // We use number_format in order to compare two string
-                    if ($orderStatus->logable
-                        && (string) $cartTotalPaid !== (string) $amountPaid) {
+                    if ($orderStatus->logable && (string) $cartTotalPaid !== (string) $amountPaid) {
                         $idOrderState = Configuration::get('PS_OS_ERROR');
                     }
 
