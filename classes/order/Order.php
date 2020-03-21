@@ -2494,7 +2494,11 @@ class OrderCore extends ObjectModel
                 $total += $payment->amount;
             } else {
                 // get amount in shop default currency
-                $amount = $payment->amount / $payment->conversion_rate;
+                if ($payment->conversion_rate > 0.0) {
+                    $amount = $payment->amount / $payment->conversion_rate;
+                } else {
+                    $amount = Tools::convertPrice($payment->amount, $payment->id_currency, false);
+                }
                 if ($currency->id == Configuration::get('PS_CURRENCY_DEFAULT', null, null, $this->id_shop)) {
                     $total += $amount;
                 } else {
