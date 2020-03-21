@@ -162,6 +162,7 @@ class ReferrerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -321,10 +322,11 @@ class ReferrerCore extends ObjectModel
         if ($implode) {
             return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
-                    ->select('COUNT(`id_order`) AS `orders`, SUM(`total_paid_real` / `conversion_rate`) AS `sales`')
-                    ->from('orders')
-                    ->where('`id_order` IN ('.implode($implode, ',').') '.Shop::addSqlRestriction(Shop::SHARE_ORDER))
-                    ->where('`valid` = 1')
+                    ->select('COUNT(`o`.`id_order`) AS `orders`, SUM(`op`.`amount` / `op`.`conversion_rate`) AS `sales`')
+                    ->from('orders', 'o')
+                    ->leftJoin('order_payment', 'op', '`o`.`reference` = `op`.`order_reference`')
+                    ->where('`o`.`id_order` IN (1,2,3,4,5,6) '.Shop::addSqlRestriction(Shop::SHARE_ORDER))
+                    ->where('`o`.`valid` = 1')
             );
         } else {
             return ['orders' => 0, 'sales' => 0];
@@ -337,6 +339,8 @@ class ReferrerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -361,6 +365,8 @@ class ReferrerCore extends ObjectModel
      *
      * @return true
      *
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
