@@ -206,28 +206,24 @@
 							<thead>
 								<tr>
 									<th class="center"><span class="title_box ">{l s='ID'}</span></th>
+									<th><span class="title_box">{l s='Reference'}</span></th>
 									<th><span class="title_box">{l s='Date'}</span></th>
 									<th><span class="title_box">{l s='Payment'}</span></th>
 									<th><span class="title_box">{l s='Status'}</span></th>
 									<th><span class="title_box">{l s='Products'}</span></th>
 									<th><span class="title_box ">{l s='Total spent'}</span></th>
-									<th></th>
 								</tr>
 							</thead>
 							<tbody>
 							{foreach $orders_ok AS $key => $order}
 								<tr onclick="document.location = '?tab=AdminOrders&amp;id_order={$order['id_order']|intval}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}'">
 									<td>{$order['id_order']}</td>
+									<td><a href="?tab=AdminOrders&amp;id_order={$order['id_order']}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}">{$order['reference']}</a></td>
 									<td>{dateFormat date=$order['date_add'] full=0}</td>
 									<td>{$order['payment']}</td>
 									<td>{$order['order_state']}</td>
 									<td>{$order['nb_products']}</td>
-									<td>{$order['total_paid_real']}</td>
-									<td>
-										<a class="btn btn-default" href="?tab=AdminOrders&amp;id_order={$order['id_order']|intval}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}">
-											<i class='icon-search'></i> {l s='View'}
-										</a>
-									</td>
+									<td>{$order['totalPaymentFormatted']}</td>
 								</tr>
 							{/foreach}
 							</tbody>
@@ -235,10 +231,11 @@
 					{/if}
 
 					{if $count_ko}
-						<table class="table">
+						<table class="table" {if $count_ok}style="padding-top:20px"{/if}>
 							<thead>
 								<tr>
 									<th><span class="title_box ">{l s='ID'}</span></th>
+									<th><span class="title_box ">{l s='Reference'}</span></th>
 									<th><span class="title_box ">{l s='Date'}</span></th>
 									<th><span class="title_box ">{l s='Payment'}</span></th>
 									<th><span class="title_box ">{l s='Status'}</span></th>
@@ -250,11 +247,12 @@
 								{foreach $orders_ko AS $key => $order}
 								<tr onclick="document.location = '?tab=AdminOrders&amp;id_order={$order['id_order']|intval}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}'">
 									<td>{$order['id_order']}</td>
-									<td><a href="?tab=AdminOrders&amp;id_order={$order['id_order']}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}">{dateFormat date=$order['date_add'] full=0}</a></td>
+									<td><a href="?tab=AdminOrders&amp;id_order={$order['id_order']}&amp;vieworder&amp;token={getAdminToken tab='AdminOrders'}">{$order['reference']}</a></td>
+									<td>{dateFormat date=$order['date_add'] full=0}</td>
 									<td>{$order['payment']}</td>
 									<td>{$order['order_state']}</td>
 									<td>{$order['nb_products']}</td>
-									<td>{$order['total_paid_real']}</td>
+									<td>{$order['totalPaymentFormatted']}</td>
 								</tr>
 								{/foreach}
 							</tbody>

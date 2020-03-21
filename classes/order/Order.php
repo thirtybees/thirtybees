@@ -1133,7 +1133,7 @@ class OrderCore extends ObjectModel
 
         $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('o.*, (SELECT SUM(od.`product_quantity`) FROM `'._DB_PREFIX_.'order_detail` od WHERE od.`id_order` = o.`id_order`) nb_products')
+                ->select('o.*, COALESCE((SELECT SUM(od.`product_quantity`) FROM `'._DB_PREFIX_.'order_detail` od WHERE od.`id_order` = o.`id_order`), 0) nb_products')
                 ->from('orders', 'o')
                 ->where('o.`id_customer` = '.(int) $idCustomer.' '.Shop::addSqlRestriction(Shop::SHARE_ORDER))
                 ->groupBy('o.`id_order`')
@@ -2497,7 +2497,8 @@ class OrderCore extends ObjectModel
             if ($payment->id_currency == $currency->id) {
                 $total += $payment->amount;
             } else {
-                $amount = Tools::convertPrice($payment->amount, $payment->id_currency, false);
+                // get amount in shop default currency
+                $amount = $payment->amount / $payment->conversion_rate;
                 if ($currency->id == Configuration::get('PS_CURRENCY_DEFAULT', null, null, $this->id_shop)) {
                     $total += $amount;
                 } else {
