@@ -426,6 +426,7 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -465,7 +466,6 @@ class OrderCore extends ObjectModel
         $this->total_paid -= $productPriceTaxIncl + $shippingDiffTaxIncl;
         $this->total_paid_tax_incl -= $productPriceTaxIncl + $shippingDiffTaxIncl;
         $this->total_paid_tax_excl -= $productPriceTaxExcl + $shippingDiffTaxExcl;
-        $this->total_paid_real -= $productPriceTaxIncl + $shippingDiffTaxIncl;
 
         $fields = [
             'total_shipping',
@@ -476,7 +476,6 @@ class OrderCore extends ObjectModel
             'total_paid',
             'total_paid_tax_incl',
             'total_paid_tax_excl',
-            'total_paid_real',
         ];
 
         /* Prevent from floating precision issues */
