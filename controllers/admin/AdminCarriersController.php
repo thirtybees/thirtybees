@@ -384,6 +384,27 @@ class AdminCarriersControllerCore extends AdminController
                 ],
                 [
                     'type'     => 'text',
+                    'label'    => $this->l('Minimum order value'),
+                    'name'     => 'min_total',
+                    'required' => false,
+                    'hint'     => $this->l('Minimum order value without shipping managed by this carrier. Set the value to "0," or leave this field blank to ignore.'),
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Maximum order value'),
+                    'name'     => 'max_total',
+                    'required' => false,
+                    'hint'     => $this->l('Maximum order value without shipping managed by this carrier. Set the value to "0," or leave this field blank to ignore.'),
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Minimum package weight'),
+                    'name'     => 'min_weight',
+                    'required' => false,
+                    'hint'     => $this->l('Minimum weight managed by this carrier. Set the value to "0," or leave this field blank to ignore.'),
+                ],
+                [
+                    'type'     => 'text',
                     'label'    => $this->l('Maximum package weight'),
                     'name'     => 'max_weight',
                     'required' => false,
