@@ -107,6 +107,12 @@ class CarrierCore extends ObjectModel
     public $max_height;
     /** @var int maximum package deep managed by the transporter */
     public $max_depth;
+    /** @var int minimum cart total managed by the transporter */
+    public $min_total;
+    /** @var int maximum cart total managed by the transporter */
+    public $max_total;
+    /** @var int minimum package weight managed by the transporter */
+    public $min_weight;
     /** @var int maximum package weight managed by the transporter */
     public $max_weight;
     /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
@@ -143,6 +149,9 @@ class CarrierCore extends ObjectModel
             'max_width'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
             'max_height'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
             'max_depth'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
+            'min_total'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
+            'max_total'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
+            'min_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],		
             'max_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
             'grade'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'size' => 1, 'dbDefault' => '0', 'dbNullable' => true],
 
@@ -706,6 +715,21 @@ class CarrierCore extends ObjectModel
                     unset($carrierList[$key]);
                 }
 
+                if ($carrier->min_total > 0 && ($carrier->min_total > $cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))) {
+                    $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                    unset($carrierList[$key]);
+                }
+
+                if ($carrier->max_total > 0 && ($carrier->max_total < $cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))) {
+                    $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                    unset($carrierList[$key]);
+                }		    
+		    
+                if ($carrier->min_weight > 0 && ($carrier->min_weight > $product->weight * $cartQuantity || $carrier->min_weight > $cartWeight)) {
+                    $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
+                    unset($carrierList[$key]);
+                }		    
+		    
                 if ($carrier->max_weight > 0 && ($carrier->max_weight < $product->weight * $cartQuantity || $carrier->max_weight < $cartWeight)) {
                     $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                     unset($carrierList[$key]);
