@@ -588,6 +588,27 @@ class AdminCarrierWizardControllerCore extends AdminController
                     ],
                     [
                         'type'     => 'text',
+                        'label'    => sprintf($this->l('Minimum order value (%s)'), Configuration::get('PS_CURRENCY_DEFAULT')), //* needs edit to show the currency sign
+                        'name'     => 'min_total',
+                        'required' => false,
+                        'hint'     => $this->l('Minimum order value without shipping managed by this carrier. Set the value to "0", or leave this field blank to ignore.'),
+                    ],
+                    [
+                        'type'     => 'text',
+                        'label'    => sprintf($this->l('Maximum order value (%s)'), Configuration::get('PS_CURRENCY_DEFAULT')), //* needs edit to show the currency sign
+                        'name'     => 'max_total',
+                        'required' => false,
+                        'hint'     => $this->l('Maximum order value without shipping managed by this carrier. Set the value to "0", or leave this field blank to ignore.'),
+                    ],
+                    [
+                        'type'     => 'text',
+                        'label'    => sprintf($this->l('Minimum package weight (%s)'), Configuration::get('PS_WEIGHT_UNIT')),
+                        'name'     => 'min_weight',
+                        'required' => false,
+                        'hint'     => $this->l('Minimum weight managed by this carrier. Set the value to "0", or leave this field blank to ignore.'),
+                    ],
+                    [
+                        'type'     => 'text',
                         'label'    => sprintf($this->l('Maximum package weight (%s)'), Configuration::get('PS_WEIGHT_UNIT')),
                         'name'     => 'max_weight',
                         'required' => false,
@@ -638,6 +659,9 @@ class AdminCarrierWizardControllerCore extends AdminController
             'max_height'     => $this->getFieldValue($carrier, 'max_height'),
             'max_width'      => $this->getFieldValue($carrier, 'max_width'),
             'max_depth'      => $this->getFieldValue($carrier, 'max_depth'),
+            'min_total'     => $this->getFieldValue($carrier, 'min_total'),
+            'max_total'     => $this->getFieldValue($carrier, 'max_total'),
+            'min_weight'     => $this->getFieldValue($carrier, 'min_weight'),
             'max_weight'     => $this->getFieldValue($carrier, 'max_weight'),
             'group'          => $this->getFieldValue($carrier, 'group'),
         ];
@@ -1137,7 +1161,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $stepFields = [
             1 => ['name', 'delay', 'grade', 'url'],
             2 => ['is_free', 'id_tax_rules_group', 'shipping_handling', 'shipping_method', 'range_behavior'],
-            3 => ['range_behavior', 'max_height', 'max_width', 'max_depth', 'max_weight'],
+            3 => ['range_behavior', 'max_height', 'max_width', 'max_depth', 'min_total', 'max_total', 'min_weight', 'max_weight'],
             4 => [],
         ];
         if (Shop::isFeatureActive()) {
