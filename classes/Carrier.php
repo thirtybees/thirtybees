@@ -111,6 +111,16 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     public $max_height;
     /** @var int maximum package deep managed by the transporter */
     public $max_depth;
+    /** @var float minimum cart total managed by the transporter */
+    public $min_total;
+    /** @var bool flag thas specify if min_total value is with or without tax */
+    public $min_total_tax;
+    /** @var float maximum cart total managed by the transporter */
+    public $max_total;
+    /** @var bool flag thas specify if max_total value is with or without tax */
+    public $max_total_tax;
+    /** @var int minimum package weight managed by the transporter */
+    public $min_weight;
     /** @var int maximum package weight managed by the transporter */
     public $max_weight;
     /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
@@ -148,6 +158,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             'max_width'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
             'max_height'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
             'max_depth'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
+            'min_total'            => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000', 'dbNullable' => true],
+            'min_total_tax'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'max_total'            => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000', 'dbNullable' => true],
+            'max_total_tax'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'min_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
             'max_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
             'grade'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'size' => 1, 'dbDefault' => '0', 'dbNullable' => true],
             'prices_with_tax'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
@@ -680,28 +695,41 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
         }
 
-        if ($product->width > 0 || $product->height > 0 || $product->depth > 0 || $product->weight > 0 || $cartWeight > 0) {
-            foreach ($carrierList as $key => $idCarrier) {
-                $carrier = new Carrier($idCarrier);
+        foreach ($carrierList as $key => $idCarrier) {
+            $carrier = new Carrier($idCarrier);
 
-                // Get the sizes of the carrier and the product and sort them to check if the carrier can take the product.
-                $carrierSizes = [(int) $carrier->max_width, (int) $carrier->max_height, (int) $carrier->max_depth];
-                $productSizes = [(int) $product->width, (int) $product->height, (int) $product->depth];
-                rsort($carrierSizes, SORT_NUMERIC);
-                rsort($productSizes, SORT_NUMERIC);
+            // Get the sizes of the carrier and the product and sort them to check if the carrier can take the product.
+            $carrierSizes = [(int) $carrier->max_width, (int) $carrier->max_height, (int) $carrier->max_depth];
+            $productSizes = [(int) $product->width, (int) $product->height, (int) $product->depth];
+            rsort($carrierSizes, SORT_NUMERIC);
+            rsort($productSizes, SORT_NUMERIC);
 
-                if (($carrierSizes[0] > 0 && $carrierSizes[0] < $productSizes[0])
-                    || ($carrierSizes[1] > 0 && $carrierSizes[1] < $productSizes[1])
-                    || ($carrierSizes[2] > 0 && $carrierSizes[2] < $productSizes[2])
-                ) {
-                    $error[$carrier->id] = static::SHIPPING_SIZE_EXCEPTION;
-                    unset($carrierList[$key]);
-                }
+            if (($carrierSizes[0] > 0 && $carrierSizes[0] < $productSizes[0])
+                || ($carrierSizes[1] > 0 && $carrierSizes[1] < $productSizes[1])
+                || ($carrierSizes[2] > 0 && $carrierSizes[2] < $productSizes[2])
+            ) {
+                $error[$carrier->id] = static::SHIPPING_SIZE_EXCEPTION;
+                unset($carrierList[$key]);
+            }
 
-                if ($carrier->max_weight > 0 && ($carrier->max_weight < $product->weight * $cartQuantity || $carrier->max_weight < $cartWeight)) {
-                    $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
-                    unset($carrierList[$key]);
-                }
+            if ($carrier->min_total > 0 && ($carrier->min_total > $cart->getOrderTotal($carrier->min_total_tax, Cart::BOTH_WITHOUT_SHIPPING))) {
+                $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                unset($carrierList[$key]);
+            }
+
+            if ($carrier->max_total > 0 && ($carrier->max_total < $cart->getOrderTotal($carrier->max_total_tax, Cart::BOTH_WITHOUT_SHIPPING))) {
+                $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                unset($carrierList[$key]);
+            }
+
+            if ($carrier->min_weight > 0 && ($carrier->min_weight > $product->weight * $cartQuantity || $carrier->min_weight > $cartWeight)) {
+                $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
+                unset($carrierList[$key]);
+            }
+
+            if ($carrier->max_weight > 0 && ($carrier->max_weight < $product->weight * $cartQuantity || $carrier->max_weight < $cartWeight)) {
+                $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
+                unset($carrierList[$key]);
             }
         }
 
@@ -980,7 +1008,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idZone
      *
-     * @return flaot
+     * @return float|false
      *
      * @throws PrestaShopException
      */
