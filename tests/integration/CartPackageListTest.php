@@ -167,8 +167,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * This should lead to single package without warehouse association.
      *
-     * Note: current behavior is probably wrong
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
@@ -190,7 +188,7 @@ class CartPackageListTest extends \Codeception\Test\Unit
                     'products' => [
                         [ 'productId' => 1, 'combinationId' => 2, 'quantity' => 1 ]
                     ],
-                    'carriers' => [ 0 ],
+                    'carriers' => [ 1, 2 ],
                     'warehouse' => 0,
                 ],
             ]
