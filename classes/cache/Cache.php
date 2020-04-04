@@ -478,7 +478,7 @@ abstract class CacheCore
     /**
      * @param string $key
      *
-     * @return null
+     * @return mixed
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
