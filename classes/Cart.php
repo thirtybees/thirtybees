@@ -45,6 +45,7 @@ class CartCore extends ObjectModel
     const ONLY_WRAPPING = 6;
     const ONLY_PRODUCTS_WITHOUT_SHIPPING = 7;
     const ONLY_PHYSICAL_PRODUCTS_WITHOUT_SHIPPING = 8;
+    const NO_CARRIER_FOUND_PLACEHOLDER = 0;
     /**
      * @see ObjectModel::$definition
      */
@@ -1699,7 +1700,7 @@ class CartCore extends ObjectModel
             }
 
             if (empty($product['carrier_list'])) {
-                $product['carrier_list'] = [0 => 0];
+                $product['carrier_list'] = [ static::NO_CARRIER_FOUND_PLACEHOLDER ];
             }
 
             $groupedByWarehouse[$product['id_address_delivery']][$key][$idWarehouse][] = $product;

@@ -449,6 +449,52 @@ class CartPackageListTest extends \Codeception\Test\Unit
     }
 
     /**
+     * Product #1 ha assigned carrier that does not deliver to current zone
+     *
+     * This should result in two packages - one package without valid carriers
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function testUndeliverableProduct()
+    {
+        $this->removeCarrierFromZone(1, 2);
+
+        // restrict product 8 to use carrier 1
+        $product1 = new Product(1);
+        $product1->setCarriers([1]);
+
+        $product2 = new Product(2);
+        $product2->setCarriers([2]);
+        Cache::clean('*');
+
+        $cart = $this->createCart([
+            [ 'productId' => 1, 'combinationId' => 1, 'quantity' => 1 ],
+            [ 'productId' => 2, 'combinationId' => 7, 'quantity' => 2 ],
+        ]);
+
+        $this->verify([
+            0 => [
+                [
+                    'products' => [
+                        [ 'productId' => 1, 'combinationId' => 1, 'quantity' => 1 ],
+                    ],
+                    'carriers' => [ 0 ],
+                    'warehouse' => Cart::NO_CARRIER_FOUND_PLACEHOLDER,
+                ],
+                [
+                    'products' => [
+                        [ 'productId' => 2, 'combinationId' => 7, 'quantity' => 2 ],
+                    ],
+                    'carriers' => [ 2 ],
+                    'warehouse' => 0,
+                ],
+            ]
+        ], $cart->getPackageList(true));
+    }
+
+
+    /**
      * Verification of actual package list against expectation
      *
      * @param array $expectedAddressList
@@ -669,7 +715,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
         $carrier->deleteZone($zoneId);
         Cache::clean("*");
     }
-
 
 
 }
