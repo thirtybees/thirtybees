@@ -1277,15 +1277,31 @@ class CartCore extends ObjectModel
      */
     public function getDeliveryOptionList(Country $defaultCountry = null, $flush = false)
     {
-        static $cache = [];
-        if (isset($cache[$this->id]) && !$flush) {
-            return $cache[$this->id];
+        $countryId = $defaultCountry ? $defaultCountry->id : 0;
+        $cacheKey = "Cart::getDeliveryOptionList_" . $this->id . '_' . $countryId;
+
+        if ($flush || !Cache::isStored($cacheKey)) {
+            Cache::store($cacheKey, $this->calculateDeliveryOptionList($defaultCountry));
         }
 
+        return Cache::retrieve($cacheKey);
+    }
+
+    /**
+     * Calculate all delivery options available for the current cart
+     *
+     * @param Country|null $defaultCountry
+     * @return array
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function calculateDeliveryOptionList(Country $defaultCountry = null)
+    {
         $deliveryOptionList = [];
         $carriersPrice = [];
         $carrierCollection = [];
-        $packageList = $this->getPackageList($flush);
+        $packageList = $this->getPackageList(true);
 
         // Foreach addresses
         foreach ($packageList as $idAddress => $packages) {
@@ -1307,11 +1323,10 @@ class CartCore extends ObjectModel
 
             // Foreach packages, get the carriers with best price, best position and best grade
             foreach ($packages as $idPackage => $package) {
-                // No carriers available
-                if (count($packages) == 1 && count($package['carrier_list']) == 1 && current($package['carrier_list']) == 0) {
-                    $cache[$this->id] = [];
 
-                    return $cache[$this->id];
+                // fail if package have no carrier associated
+                if (!$package['carrier_list'] || in_array(static::NO_CARRIER_FOUND_PLACEHOLDER, $package['carrier_list'])) {
+                    return [];
                 }
 
                 $carriersPrice[$idAddress][$idPackage] = [];
@@ -1553,9 +1568,7 @@ class CartCore extends ObjectModel
             uasort($array, ['Cart', 'sortDeliveryOptionList']);
         }
 
-        $cache[$this->id] = $deliveryOptionList;
-
-        return $cache[$this->id];
+        return $deliveryOptionList;
     }
 
     /**
