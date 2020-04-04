@@ -3306,8 +3306,8 @@ class ToolsCore
         fwrite($write_fd, "AddType application/vnd.ms-fontobject .eot\n");
         fwrite($write_fd, "AddType font/ttf .ttf\n");
         fwrite($write_fd, "AddType font/otf .otf\n");
-        fwrite($write_fd, "AddType application/font-woff .woff\n");
-        fwrite($write_fd, "AddType application/font-woff2 .woff2\n");
+        fwrite($write_fd, "AddType font/woff .woff\n");
+        fwrite($write_fd, "AddType font/woff2 .woff2\n");
         fwrite(
             $write_fd, "<IfModule mod_headers.c>
 	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
@@ -3333,6 +3333,8 @@ class ToolsCore
 	ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
 	ExpiresByType application/font-woff \"access plus 1 year\"
 	ExpiresByType application/x-font-woff \"access plus 1 year\"
+	ExpiresByType font/woff \"access plus 1 year\"
+	ExpiresByType application/font-woff2 \"access plus 1 year\"
 	ExpiresByType font/woff2 \"access plus 1 year\"
 	ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
 	ExpiresByType font/opentype \"access plus 1 year\"
