@@ -980,7 +980,7 @@ class AdminMetaControllerCore extends AdminController
         $tab['Allow'] = ['*/modules/*.css', '*/modules/*.js'];
 
         // Directories
-        $tab['Directories'] = ['classes/', 'config/', 'download/', 'mails/', 'modules/', 'translations/', 'tools/'];
+        $tab['Directories'] = ['classes/', 'config/', 'download/', 'mails/', 'translations/', 'tools/'];
 
         // Files
         $disallowControllers = [
