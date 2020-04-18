@@ -18,10 +18,6 @@ services:
 git:
   depth: 3
 
-branches:
-  except:
-    - /^[0-9]+\.[0-9]+\.x$/
-
 cache:
   directories:
     - $HOME/.composer/cache
