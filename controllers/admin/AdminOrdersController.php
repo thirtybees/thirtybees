@@ -586,62 +586,20 @@ class AdminOrdersControllerCore extends AdminController
         /* Update shipping number */
         if (Tools::isSubmit('submitShippingNumber') && isset($order)) {
             if ($this->tabAccess['edit'] === '1') {
-                $orderCarrier = new OrderCarrier(Tools::getValue('id_order_carrier'));
+
+                $orderCarrier = new OrderCarrierCore(Tools::getValue('id_order_carrier'));
+
                 if (!Validate::isLoadedObject($orderCarrier)) {
                     $this->errors[] = Tools::displayError('The order carrier ID is invalid.');
-                } elseif (!Validate::isTrackingNumber(Tools::getValue('tracking_number'))) {
-                    $this->errors[] = Tools::displayError('The tracking number is incorrect.');
                 } else {
-                    // update shipping number
-                    // Keep these two following lines for backward compatibility, remove on 1.6 version
-                    $order->shipping_number = Tools::getValue('tracking_number');
-                    $order->update();
-
-                    // Update order_carrier
-                    $orderCarrier->tracking_number = pSQL(Tools::getValue('tracking_number'));
-                    if ($orderCarrier->update()) {
-                        // Send mail to customer
-                        $customer = new Customer((int) $order->id_customer);
-                        $carrier = new Carrier((int) $order->id_carrier, $order->id_lang);
-                        if (!Validate::isLoadedObject($customer)) {
-                            throw new PrestaShopException('Can\'t load Customer object');
-                        }
-                        if (!Validate::isLoadedObject($carrier)) {
-                            throw new PrestaShopException('Can\'t load Carrier object');
-                        }
-                        $templateVars = [
-                            '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                            '{firstname}'        => $customer->firstname,
-                            '{lastname}'         => $customer->lastname,
-                            '{id_order}'         => $order->id,
-                            '{shipping_number}'  => $order->shipping_number,
-                            '{order_name}'       => $order->getUniqReference(),
-                            '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
-                            '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                            '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
-                        ];
-                        if (@Mail::Send(
-                            (int) $order->id_lang,
-                            'in_transit',
-                            Mail::l('Package in transit', (int) $order->id_lang),
-                            $templateVars,
-                            $customer->email,
-                            $customer->firstname.' '.$customer->lastname,
-                            null,
-                            null,
-                            null,
-                            null,
-                            _PS_MAIL_DIR_,
-                            true,
-                            (int) $order->id_shop
-                        )) {
-                            Hook::exec('actionAdminOrdersTrackingNumberUpdate', ['order' => $order, 'customer' => $customer, 'carrier' => $carrier], null, false, true, false, $order->id_shop);
-                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                    try {
+                        if ($orderCarrier->updateTrackingNumber(Tools::getValue('tracking_number'))) {
+                            Tools::redirectAdmin(static::$currentIndex . '&id_order=' . $order->id . '&vieworder&conf=4&token=' . $this->token);
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
                         }
-                    } else {
-                        $this->errors[] = Tools::displayError('The order carrier cannot be updated.');
+                    } catch (PrestaShopException $e) {
+                        $this->errors[] = $e->getMessage();
                     }
                 }
             } else {

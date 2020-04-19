@@ -2944,12 +2944,12 @@ class OrderCore extends ObjectModel
                 ->where('`id_order` = '.(int) $this->id)
         );
         if ($idOrderCarrier) {
-            $orderCarrier = new OrderCarrier($idOrderCarrier);
-            $orderCarrier->tracking_number = $shippingNumber;
-            $orderCarrier->update();
-        } else {
-            $this->shipping_number = $shippingNumber;
+            $orderCarrier = new OrderCarrierCore($idOrderCarrier);
+            if ($shippingNumber != $orderCarrier->tracking_number)
+                $orderCarrier->updateTrackingNumber($shippingNumber);
         }
+
+        $this->shipping_number = $shippingNumber;
 
         return true;
     }
