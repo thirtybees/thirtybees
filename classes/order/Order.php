@@ -2073,6 +2073,10 @@ class OrderCore extends ObjectModel
         if (empty($idOrderState)) {
             return false;
         }
+        // We don't want to set same status again and again
+        if($this->current_state == (int) $idOrderState)
+            return true;
+
         $history = new OrderHistory();
         $history->id_order = (int) $this->id;
         $history->id_employee = (int) $idEmployee;
