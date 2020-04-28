@@ -1650,6 +1650,10 @@ class WebserviceRequestCore
             $this->objects[] = $object;
             $i18n = false;
             // attributes
+
+            // Defer setters execution as those may modify other properties
+            $setters_execute = [];
+
             foreach ($this->resourceConfiguration['fields'] as $fieldName => $fieldProperties) {
                 $sqlId = $fieldProperties['sqlId'];
 
@@ -1666,7 +1670,8 @@ class WebserviceRequestCore
                             return false;
                         } else {
                             $setter = $fieldProperties['setter'];
-                            $object->$setter((string) $attributes->$fieldName);
+                            $setters_execute[$setter] = (string) $attributes->$fieldName;
+//                            $object->$setter((string) $attributes->$fieldName);
                         }
                     } elseif (property_exists($object, $sqlId)) {
                         $object->$sqlId = (string) $attributes->$fieldName;
@@ -1691,6 +1696,9 @@ class WebserviceRequestCore
                         $object->{$fieldName} = (string) $attributes->$fieldName;
                     }
                 }
+            }
+            foreach ($setters_execute as $method => $value) {
+                $object->$method($value);
             }
 
             // Apply the modifiers if they exist
