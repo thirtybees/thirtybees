@@ -4772,16 +4772,16 @@ FileETag none
      */
     public static function smartyImplode($params, $template)
     {
-        if (!isset($params['value']))
-        {
+        if (!isset($params['value'])) {
             trigger_error("[plugin] implode parameter 'value' cannot be empty", E_USER_NOTICE);
-            return;
+            return '';
         }
 
-        if (empty($params['separator']))
+        if (empty($params['separator'])) {
             $params['separator'] = ',';
+        }
 
-        return implode($params['value'], $params['separator']);
+        return implode($params['separator'], $params['value']);
     }
 
     /**
