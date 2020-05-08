@@ -181,7 +181,8 @@ class ErrorHandlerCore
     public function shutdown()
     {
         $error = error_get_last();
-        if (static::isFatalError($error['type'])) {
+
+        if (is_array($error) && static::isFatalError($error['type'])) {
             $stack = [
                 1 => [
                     'file' => $error['file'],
