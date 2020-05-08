@@ -315,6 +315,24 @@ class DbQueryCore
     }
 
     /**
+     * Adds shop restriction for a specific table alias.
+     *
+     * @param string $tableAlias
+     * @param mixed $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+
+     * @return $this
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @since 1.1.1
+     */
+    public function addCurrentShopRestriction($tableAlias, $share = false)
+    {
+        return $this->where(Shop::getSqlRestriction($share, '`' . $tableAlias. '`'));
+    }
+
+    /**
      * Adds a restriction in HAVING clause (each restriction will be separated by AND statement)
      *
      * @param string $restriction
