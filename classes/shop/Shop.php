@@ -1171,19 +1171,41 @@ class ShopCore extends ObjectModel
      */
     public static function addSqlRestriction($share = false, $alias = null)
     {
+        return ' AND ' . static::getSqlRestriction($share, $alias).' ';
+    }
+
+    /**
+     * Returns sql restriction for shops fields
+     *
+     * @param bool   $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param string $alias
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @since   1.1.1
+     */
+    public static function getSqlRestriction($share = false, $alias = null)
+    {
         if ($alias) {
             $alias .= '.';
         }
 
         $group = static::getGroupFromShop(static::getContextShopID(), false);
         if ($share == self::SHARE_CUSTOMER && static::getContext() == self::CONTEXT_SHOP && $group['share_customer']) {
-            $restriction = ' AND '.$alias.'id_shop_group = '.(int) static::getContextShopGroupID().' ';
+            return $alias.'id_shop_group = '.(int) static::getContextShopGroupID();
         } else {
-            $restriction = ' AND '.$alias.'id_shop IN ('.implode(', ', static::getContextListShopID($share)).') ';
+            $shopIds = static::getContextListShopID($share);
+            if ($shopIds && count($shopIds) == 1) {
+                return $alias.'`id_shop` = ' . (int)reset($shopIds);
+            } else {
+                return $alias.'`id_shop` IN ('.implode(', ', static::getContextListShopID($share)).')';
+            }
         }
-
-        return $restriction;
     }
+
 
     /**
      * Add an SQL JOIN in query between a table and its associated table in multishop
