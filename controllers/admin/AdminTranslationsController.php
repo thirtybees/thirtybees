@@ -1559,7 +1559,7 @@ class AdminTranslationsControllerCore extends AdminController
         $initialRootDir = $rootDir;
         foreach ($modules as $module) {
             $rootDir = $initialRootDir;
-            if ($module{0} == '.') {
+            if ($module[0] == '.') {
                 continue;
             }
 
@@ -1688,7 +1688,7 @@ class AdminTranslationsControllerCore extends AdminController
         $arrGoodExt = ['.tpl', '.php'];
 
         foreach ($files as $key => $file) {
-            if ($file{0} === '.' || in_array(substr($file, 0, strrpos($file, '.')), $this->all_iso_lang)) {
+            if ($file[0] === '.' || in_array(substr($file, 0, strrpos($file, '.')), $this->all_iso_lang)) {
                 unset($files[$key]);
             } elseif ($typeClear === 'file' && !in_array(substr($file, strrpos($file, '.')), $arrGoodExt)) {
                 unset($files[$key]);
