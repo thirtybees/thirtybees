@@ -396,14 +396,18 @@ class TabCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function recursiveTab($idTab, $tabs)
+    public static function recursiveTab($idTab, $tabs=[])
     {
-        $adminTab = Tab::getTab((int) Context::getContext()->language->id, $idTab);
-        $tabs[] = $adminTab;
-        if ($adminTab['id_parent'] > 0) {
-            $tabs = Tab::recursiveTab($adminTab['id_parent'], $tabs);
+        $idTab = (int)$idTab;
+        while ($idTab) {
+            $adminTab = Tab::getTab((int)Context::getContext()->language->id, $idTab);
+            if ($adminTab) {
+                $tabs[] = $adminTab;
+                $idTab = (int)$adminTab['id_parent'];
+            } else {
+                $idTab = 0;
+            }
         }
-
         return $tabs;
     }
 
