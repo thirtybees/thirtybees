@@ -4134,20 +4134,18 @@ class AdminControllerCore extends Controller
     /**
      * Set breadcrumbs array for the controller page
      *
-     * @param int|null   $tabId
-     * @param array|null $tabs
+     * @param int|null $tabId
+     * @param mixed $tabs
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initBreadcrumbs($tabId = null, $tabs = null)
     {
-        if (is_array($tabs)) {
-            $tabs = [];
-        }
-
         if (is_null($tabId)) {
             $tabId = $this->id;
         }
 
-        $tabs = Tab::recursiveTab($tabId, $tabs);
+        $tabs = Tab::recursiveTab($tabId);
 
         $dummy = ['name' => '', 'href' => '', 'icon' => ''];
         $breadcrumbs2 = [
@@ -4208,7 +4206,9 @@ class AdminControllerCore extends Controller
         );
 
         /* BEGIN - Backward compatibility < 1.6.0.3 */
-        $this->breadcrumbs[] = $tabs[0]['name'];
+        if (isset($tabs[0])) {
+            $this->breadcrumbs[] = $tabs[0]['name'];
+        }
         $navigationPipe = (Configuration::get('PS_NAVIGATION_PIPE') ? Configuration::get('PS_NAVIGATION_PIPE') : '>');
         $this->context->smarty->assign('navigationPipe', $navigationPipe);
         /* END - Backward compatibility < 1.6.0.3 */
