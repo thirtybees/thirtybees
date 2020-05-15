@@ -27,19 +27,6 @@
         "codeception/codeception": "2.2.9",
         "codeception/aspect-mock": "^1.0 || ^2.0"
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "thirtybees/geoip",
-                "version": "1.18",
-                "dist": {
-                    "url": "https://github.com/thirtybees/geoip-api-php/archive/v1.18.zip",
-                    "type": "zip"
-                }
-            }
-        }
-    ],
     "config": {
         "autoloader-suffix": "ThirtybeesVendor"
     }
