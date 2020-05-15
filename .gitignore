@@ -16,6 +16,7 @@ nbproject
 bower_components
 node_modules
 composer.lock
+composer.dev.json
 
 # Cache, temp and personal files
 
