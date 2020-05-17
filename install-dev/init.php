@@ -93,5 +93,5 @@ if (!@ini_get('date.timezone')) {
     @date_default_timezone_set('UTC');
 }
 
-// Some hosting still have magic_quotes_runtime configured
-ini_set('magic_quotes_runtime', 0);
+// disable displaying errors in standard output
+@ini_set('display_errors', 'off');
