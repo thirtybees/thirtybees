@@ -1189,7 +1189,7 @@ class CustomerCore extends ObjectModel
         Hook::exec('actionCustomerLogoutBefore', ['customer' => $this]);
 
         if (isset(Context::getContext()->cookie)) {
-            Context::getContext()->cookie->logout();
+            Context::getContext()->cookie->delete();
         }
 
         $this->logged = 0;

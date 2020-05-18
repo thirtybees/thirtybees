@@ -210,7 +210,7 @@ if (!defined('_PS_ADMIN_DIR_')) {
     if (isset($cookie->id_customer) && (int)$cookie->id_customer) {
         $customer = new Customer($cookie->id_customer);
         if (!Validate::isLoadedObject($customer)) {
-            $context->cookie->logout();
+            $context->cookie->delete();
         } else {
             $customer->logged = true;
             if ($customer->id_lang != $context->language->id) {
