@@ -65,7 +65,7 @@ try {
     }
 
     InstallControllerConsole::execute($argc, $argv);
-    echo '-- Installation successfull! --'."\n";
-} catch (PrestashopInstallerException $e) {
-    $e->displayMessage();
+    echo '-- Installation successful! --'."\n";
+} catch (PrestashopException $e) {
+    die($e);
 }
