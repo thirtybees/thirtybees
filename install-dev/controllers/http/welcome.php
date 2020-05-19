@@ -59,6 +59,7 @@ class InstallControllerHttpWelcome extends InstallControllerHttp
 
     /**
      * Display welcome step
+     * @throws PrestashopInstallerException
      */
     public function display()
     {

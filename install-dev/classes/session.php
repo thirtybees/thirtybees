@@ -32,7 +32,41 @@
 /**
  * Manage session for install script
  *
- * @since 1.0.0
+ * @property string installType
+ * @property string step
+ * @property string lastStep
+ * @property array processValidated
+ *
+ * @property string lang
+ * @property string shopTimezone
+ * @property boolean rewriteEngine
+ *
+ * @property string databaseServer
+ * @property string databaseLogin
+ * @property string databasePassword
+ * @property string databaseName
+ * @property string databasePrefix
+ * @property boolean databaseClear
+ *
+ * @property boolean useSmtp
+ * @property boolean smtpEncryption
+ * @property int smtpPort
+ *
+ * @property string shopName
+ * @property string shopActivity
+ * @property string shopCountry
+ *
+ * @property string adminFirstname
+ * @property string adminLastname
+ * @property string adminPassword
+ * @property string adminEmail
+ *
+ * @property boolean sendInformations
+ * @property boolean licenseAgreement
+ * @property boolean configurationAgreement
+ *
+ * @property array xmlLoaderIds
+ *
  */
 class InstallSession
 {
@@ -45,49 +79,11 @@ class InstallSession
     /** @var bool|Cookie $cookie */
     protected static $cookie = false;
 
-//    public $databaseServer;
-//    public $databaseName;
-//    public $databaseLogin;
-//    public $databasePassword;
-//    public $databasePrefix;
-//    public $databaseClear;
-//    public $rewriteEngine;
-//
-//    public $installType;
-//
-//    public $shopName;
-//    public $shopActivity;
-//    public $shopCountry;
-//    public $shopTimezone;
-//    public $adminFirstname;
-//    public $adminLastname;
-//    public $adminEmail;
-//    public $sendInformations;
-//
-//    public $adminPassword;
-//    public $adminPasswordConfirm;
-//
-//    public $useSmtp;
-//    public $smtpEncryption;
-//    public $smtpPort;
-//
-//    public $lang;
-//    public $lastStep;
-//
-//    public $supportPhone;
-//
-//    public $licenseAgreement;
-//    public $configurationAgreement;
-//
-//    public $processValidated;
-//
-//    public $xmlLoaderIds;
-//    public $modules;
-
     /**
      * @return InstallSession
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function getInstance()
     {
@@ -102,6 +98,7 @@ class InstallSession
      * InstallSession constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
