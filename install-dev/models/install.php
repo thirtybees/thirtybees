@@ -117,8 +117,12 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
-            $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
-            $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            try {
+                $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
+                $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            } catch (\Defuse\Crypto\Exception\EnvironmentIsBrokenException $e) {
+                throw new PrestashopInstallerException("Failed to generate encryption key", 0, $e);
+            }
         }
 
         $settingsContent = "<?php\n";
