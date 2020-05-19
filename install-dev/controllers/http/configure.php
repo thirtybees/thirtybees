@@ -194,6 +194,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
 
     /**
      * @see InstallAbstractModel::display()
+     * @throws PrestashopInstallerException
      */
     public function display()
     {

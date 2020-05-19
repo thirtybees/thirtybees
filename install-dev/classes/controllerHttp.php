@@ -32,15 +32,23 @@
 abstract class InstallControllerHttp
 {
     /**
-     * @var array List of installer steps
+     * @var string[] List of installer steps
      */
     protected static $steps = ['welcome', 'license', 'system', 'configure', 'database', 'process'];
+
+    /**
+     * @var InstallControllerHttp[]
+     */
     protected static $instances = [];
+
     /**
      * @var string Current step
      */
     public $step;
 
+    /**
+     * @var string Last step
+     */
     public $lastStep;
 
     /**
@@ -80,6 +88,8 @@ abstract class InstallControllerHttp
      * @param string $step
      *
      * @since 1.0.0
+     * @throws PrestashopInstallerException
+     * @throws PrestaShopException
      */
     final public function __construct($step)
     {
@@ -112,6 +122,7 @@ abstract class InstallControllerHttp
 
     /**
      * @throws PrestashopInstallerException
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -283,7 +294,7 @@ abstract class InstallControllerHttp
     /**
      * Find previous step
      *
-     * @param string $step
+     * @return bool|string
      */
     public function findPreviousStep()
     {
@@ -293,7 +304,7 @@ abstract class InstallControllerHttp
     /**
      * Find next step
      *
-     * @param string $step
+     * @return bool|mixed
      */
     public function findNextStep()
     {
@@ -508,6 +519,8 @@ abstract class InstallControllerHttp
     /**
      * This method is called after script execution finishes or exit is called. If the script was
      * terminated because of fatal error, we will collect and send this information to the client
+     *
+     * @throws PrestashopInstallerException
      */
     public static function shutdownHandler()
     {
