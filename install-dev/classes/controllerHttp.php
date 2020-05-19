@@ -200,7 +200,7 @@ abstract class InstallControllerHttp
                 }
             } elseif (Tools::getValue('submitPrevious') && $currentStep != self::$steps[0]) {
                 // Go to previous step
-                $currentStep = self::$instances[$currentStep]->findPreviousStep($currentStep);
+                $currentStep = self::$instances[$currentStep]->findPreviousStep();
                 $session->step = $currentStep;
             }
 
