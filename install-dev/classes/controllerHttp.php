@@ -98,10 +98,10 @@ abstract class InstallControllerHttp
 
         // Set current language
         $this->language = InstallLanguages::getInstance();
-        $detectLanguage = $this->language->detectLanguage();
         if (isset($this->session->lang)) {
             $lang = $this->session->lang;
         } else {
+            $detectLanguage = $this->language->detectLanguage();
             $lang = (isset($detectLanguage['primarytag'])) ? $detectLanguage['primarytag'] : false;
         }
 
