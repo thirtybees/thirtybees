@@ -107,8 +107,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->processInstallModules();
         } elseif (Tools::getValue('installTheme')) {
             $this->processInstallTheme();
-        } elseif (Tools::getValue('sendEmail') && !empty($this->session->processValidated['installTheme'])) {
-            $this->processSendEmail();
         } else {
             // With no parameters, we consider that we are doing a new install, so session where the last process step
             // was stored can be cleaned
