@@ -122,7 +122,7 @@ class InstallSession
     public function clean()
     {
         if (InstallSession::$cookieMode) {
-            InstallSession::$cookie->logout();
+            InstallSession::$cookie->delete();
         } else {
             foreach ($_SESSION as $k => $v) {
                 unset($_SESSION[$k]);
