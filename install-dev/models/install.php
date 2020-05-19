@@ -203,7 +203,7 @@ class InstallModelInstall extends InstallAbstractModel
                     $this->language->l(
                         'The InnoDB database engine does not seem to be available. If you are using a MySQL alternative, could you please open an issue on %s? Thank you!'
                     ),
-                    '<a href="https://github.com/thirtybees/ThirtyBees.git" target="_blank">GitHub</a>'
+                    '<a href="https://github.com/thirtybees/thirtybees.git" target="_blank">GitHub</a>'
                 )
             );
 
