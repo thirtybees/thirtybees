@@ -210,7 +210,7 @@ class DispatcherCore
                     'regexp' => '[_a-zA-Z0-9-\pL]*',
                 ],
                 'manufacturer' => [
-                    'regexp' => '[_a-zA-Z09-\pL]*',
+                    'regexp' => '[_a-zA-Z0-9-\pL]*',
                 ],
                 'supplier' => [
                     'regexp' => '[_a-zA-Z0-9-\pL]*',
@@ -265,6 +265,11 @@ class DispatcherCore
     public $routes = [];
 
     /**
+     * @var array Map of additional route matchers
+     */
+    public $matchers = [];
+
+    /**
      * @var string Current controller name
      */
     protected $controller;
@@ -303,6 +308,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getInstance()
     {
@@ -539,6 +545,14 @@ class DispatcherCore
         $cmscatroutes = 'PS_ROUTE_cms_category_rule';
         $moduleroutes = 'PS_ROUTE_module';
 
+        $this->setRouteMatcher('product_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('category_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('supplier_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('manufacturer_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('layered_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('cms_rule', [ $this, 'matchRewritableRoute' ]);
+        $this->setRouteMatcher('cms_category_rule', [ $this, 'matchRewritableRoute' ]);
+
         // Set new routes
         foreach (Language::getLanguages() as $lang) {
             foreach ($this->default_routes as $id => $route) {
@@ -713,6 +727,7 @@ class DispatcherCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function dispatch()
     {
@@ -847,7 +862,6 @@ class DispatcherCore
      *
      * @return string
      *
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -858,7 +872,7 @@ class DispatcherCore
 
         // Get the controller directly on admin pages
         if (isset($context->employee->id) && $context->employee->id) {
-            $_GET['controllerUri'] = Tools::getvalue('controller');
+            $_GET['controllerUri'] = Tools::getValue('controller');
         }
         if ($this->controller) {
             $_GET['controller'] = $this->controller;
@@ -918,105 +932,31 @@ class DispatcherCore
                 if (isset($this->routes[$idShop][Context::getContext()->language->id])) {
                     $routes = $this->routes[$idShop][Context::getContext()->language->id];
 
-                    foreach ($routes as $route) {
+                    foreach ($routes as $routeId => $route) {
                         if (preg_match($route['regexp'], $uri, $m)) {
-                            // Try to recover the IDs which were previously unique
-                            // It will also tell us if the route leads to something
-                            // Skip this whole part if the url isn't rewritten
-                            if (array_key_exists('rewrite', $m)) {
-                                if ($route['controller'] === 'category') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idCategory = (int) $m['id'];
-                                    } else {
-                                        $idCategory = $this->categoryID($m['rewrite'], $uri);
-                                        if (!$idCategory) {
-                                            $idCategory = in_array('id_category', $m) ? (int) $m['id_category'] : 0;
-                                            if (!$idCategory) {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    $_GET['id_category'] = $idCategory;
+
+                            // if route has dedicated matcher, use it to determine whether route was found or not
+                            if (isset($this->matchers[$routeId])) {
+                                $matcher = $this->matchers[$routeId];
+                                $params = $matcher($m, $uri, $route);
+                                if ($params === false) {
+                                    // even though uri matches this route regexp, it does not matches associated mather
+                                    continue;
                                 }
-                                if ($route['controller'] === 'product') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idProduct = (int) $m['id'];
-                                    } else {
-                                        $idProduct = $this->productID($m['rewrite'], $uri);
-                                        if (!$idProduct) {
-                                            $idProduct = in_array('id_product', $m) ? (int) $m['id_product'] : 0;
-                                            if (!$idProduct) {
-                                                continue;
-                                            }
-                                        }
+                                if (is_array($params)) {
+                                    foreach ($params as $key => $value) {
+                                        $_GET[$key] = $value;
                                     }
-                                    $_GET['id_product'] = $idProduct;
-                                }
-                                if ($route['controller'] === 'supplier') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idSupplier = (int) $m['id'];
-                                    } else {
-                                        $idSupplier = $this->supplierID($m['rewrite']);
-                                        if (!$idSupplier) {
-                                            $idSupplier = in_array('id_supplier', $m) ? (int) $m['id_supplier'] : 0;
-                                            if (!$idSupplier) {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    $_GET['id_supplier'] = $idSupplier;
-                                }
-                                if ($route['controller'] === 'manufacturer') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idManufacturer = (int) $m['id'];
-                                    } else {
-                                        $idManufacturer = $this->manufacturerID($m['rewrite']);
-                                        if (!$idManufacturer) {
-                                            $idManufacturer = in_array('id_manufacturer', $m) ? (int) $m['id_manufacturer'] : 0;
-                                            if (!$idManufacturer) {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    $_GET['id_manufacturer'] = $idManufacturer;
+                                } else {
+                                    $params = [];
                                 }
                             }
-                            if (array_key_exists('cms_cat_rewrite', $m)) {
-                                if ($route['controller'] === 'cms') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idCmsCat = (int) $m['id'];
-                                    } else {
-                                        $idCmsCat = $this->cmsCategoryID($m['cms_cat_rewrite'], $uri);
-                                        if (!$idCmsCat) {
-                                            $idCmsCat = in_array('id_cms_category', $m) ? (int) $m['id_cms_category'] : 0;
-                                            if (!$idCmsCat) {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    $_GET['id_cms_category'] = $idCmsCat;
-                                }
-                            }
-                            if (array_key_exists('cms_rewrite', $m)) {
-                                if ($route['controller'] === 'cms') {
-                                    if (isset($m['id']) && $m['id']) {
-                                        $idCms = (int) $m['id'];
-                                    } else {
-                                        $idCms = $this->cmsID($m['cms_rewrite'], $uri);
-                                        if (!$idCms) {
-                                            $idCms = in_array('id_cms', $m) ? (int) $m['id_cms'] : 0;
-                                            if (!$idCms) {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    $_GET['id_cms'] = $idCms;
-                                }
-                            }
+
                             $isModule = isset($route['params']['fc']) && $route['params']['fc'] === 'module';
                             foreach ($m as $k => $v) {
                                 // We might have us an external module page here, in that case we set whatever we can
                                 if (!is_numeric($k) &&
+                                    !isset($params[$k]) &&
                                     ($isModule
                                         || $k !== 'id'
                                         && $k !== 'ipa'
@@ -1350,6 +1290,56 @@ class DispatcherCore
         return $url.$anchor;
     }
 
+
+    /**
+     * This method tries to match core rewritable controllers
+     *
+     * @param array $parts parsed uri according to $route rule definition
+     * @param string $uri
+     * @param array $route route definition
+     *
+     * @return array | false
+     */
+    protected function matchRewritableRoute($parts, $uri, $route)
+    {
+        $type = $route['controller'];
+        if ($type === 'cms') {
+            if (isset($parts['cms_rewrite'])) {
+                $key = 'id_cms';
+                $func = 'cmsID';
+                $rewrite = 'cms_rewrite';
+            } else {
+                $key = 'id_cms_category';
+                $func = 'cmsCategoryID';
+                $rewrite = 'cms_cat_rewrite';
+            }
+        } else {
+            $key = 'id_' . $type;
+            $func = $type . 'ID';
+            $rewrite = 'rewrite';
+        }
+
+        // Look if record ID is part of the parsed uri. If exists, use it directly
+        if (isset($parts['id']) && $parts['id']) {
+            $id = (int)$parts['id'];
+            if ($id) {
+                return [ $key => $id ];
+            }
+            return false;
+        }
+
+        // try to resolve by rewrite / full uri
+        if (isset($parts[$rewrite])) {
+            $id = $this->{$func}($parts[$rewrite], $uri);
+            if ($id) {
+                return [ $key => (int)$id ];
+            }
+            return false;
+        }
+
+        return false;
+    }
+
     /**
      * @param string $rewrite
      * @param string $url
@@ -1466,6 +1456,8 @@ class DispatcherCore
      * @param string $rewrite
      *
      * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function supplierID($rewrite)
     {
@@ -1490,6 +1482,8 @@ class DispatcherCore
      * @param string $rewrite
      *
      * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function manufacturerID($rewrite)
     {
@@ -1643,8 +1637,8 @@ class DispatcherCore
                 $append = $m[5][$i];
                 $transformKeywords[$keyword] = [
                     'required' => isset($keywords[$keyword]['param']),
-                    'prepend' => Tools::stripslashes($prepend),
-                    'append' => Tools::stripslashes($append),
+                    'prepend' => $prepend,
+                    'append' => $append,
                 ];
                 $prependRegexp = $appendRegexp = '';
                 if ($prepend || $append) {
@@ -1660,5 +1654,45 @@ class DispatcherCore
         }
 
         return '#^/'.$regexp.'$#u';
+    }
+
+    /**
+     * Registers matcher function for given route
+     *
+     * Matcher function is called with following parameters:
+     *    - $parts - array parsed when $route['rule'] regexp is matched against $uri
+     *    - $uri - matched uri
+     *    - $route - current route object
+     * and it must return either
+     *    - false - this means that $uri does NOT represent current route, even though it matched regexp
+     *    - array - associative array of parameters that will be passed to route Controller
+     *              This array usually contains resolved primary key, but it can contain additional
+     *              information as well
+     *
+     * @param string $routeId unique route ID
+     * @param callable $matcher matche function
+     * @throws PrestaShopException
+     */
+    public function setRouteMatcher($routeId, $matcher)
+    {
+        if (is_callable($matcher)) {
+            $this->matchers[$routeId] = $matcher;
+        } else {
+            throw new PrestaShopException("Can't register matcher for route $routeId");
+        }
+    }
+
+    /**
+     * Returns matcher function associated with given route
+     *
+     * @param string $routeId
+     * @return callable | null
+     */
+    public function getRouteMatcher($routeId)
+    {
+        if (isset($this->matchers[$routeId])) {
+            return $this->matchers[$routeId];
+        }
+        return null;
     }
 }

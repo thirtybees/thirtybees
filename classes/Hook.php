@@ -642,7 +642,7 @@ class HookCore extends ObjectModel
      *
      * @param string $hookName Hook name
      *
-     * @return int Hook ID
+     * @return string alternate hook name
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -651,17 +651,20 @@ class HookCore extends ObjectModel
      */
     public static function getRetroHookName($hookName)
     {
+        $hookName = strtolower($hookName);
         $aliasList = Hook::getHookAliasList();
-        if (isset($aliasList[strtolower($hookName)])) {
-            return $aliasList[strtolower($hookName)];
+
+        if (isset($aliasList[$hookName])) {
+            return strtolower($aliasList[$hookName]);
         }
 
-        $retroHookName = array_search($hookName, $aliasList);
-        if ($retroHookName === false) {
-            return '';
+        foreach ($aliasList as $alias => $original) {
+            if (strtolower($original) === $hookName) {
+                return strtolower($alias);
+            }
         }
 
-        return $retroHookName;
+        return '';
     }
 
     /**
@@ -1136,4 +1139,36 @@ class HookCore extends ObjectModel
 
         return parent::add($autoDate, $nullValues);
     }
+
+    /**
+     * Returns true if $hookName is a displayable hook
+     *
+     * At the moment, crude check for hook name is used -- every hook starting with display
+     * is considered displayable hook, with exception of displayAdmin*
+     *
+     * @param string $hookName
+     * @param bool $includeBackOfficeHooks if true, then check for back office displayable hooks as well
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function isDisplayableHook($hookName, $includeBackOfficeHooks=false)
+    {
+        $variants = [ $hookName, HookCore::getRetroHookName($hookName) ];
+        foreach ($variants as $hook) {
+            $hook = strtolower($hook);
+            if ((strpos($hook, 'display') === 0)) {
+                if ($includeBackOfficeHooks) {
+                    return true;
+                }
+                return (
+                    strpos($hook, 'displayadmin') !== 0 &&
+                    strpos($hook, 'displaybackoffice') !== 0
+                );
+            }
+        }
+        return false;
+    }
+
 }

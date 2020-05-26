@@ -91,7 +91,7 @@ class ShopMaintenanceCore
             $employees = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_);
             // Usually there's only one employee when we run this code.
             foreach ($employees as $employee) {
-                $employee = new Employee($employee);
+                $employee = new Employee($employee['id_employee']);
                 $employee->optin = true;
                 if ($employee->update()) {
                     Configuration::updateValue($name, 1);

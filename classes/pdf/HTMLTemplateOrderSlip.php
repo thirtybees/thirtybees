@@ -34,20 +34,22 @@
  *
  * @since   1.0.0
  */
-class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
+class HTMLTemplateOrderSlipCore extends HTMLTemplate
 {
     // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
+
     /** @var OrderSlipCore $order_slip */
     public $order_slip;
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param OrderSlip $orderSlip
-     * @param Smarty    $smarty
+     * @param OrderSlipCore $orderSlip
+     * @param Smarty $smarty
      *
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -119,7 +121,52 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
         }
 
         $customer = new Customer((int) $this->order->id_customer);
+        $this->order->total_paid_tax_excl = $this->order->total_paid_tax_incl = $this->order->total_products = $this->order->total_products_wt = 0;
+
+        if ($this->order_slip->amount > 0) {
+            foreach ($this->order->products as &$product) {
+                $product['total_price_tax_excl'] = $product['unit_price_tax_excl'] * $product['product_quantity'];
+                $product['total_price_tax_incl'] = $product['unit_price_tax_incl'] * $product['product_quantity'];
+
+                if ($this->order_slip->partial == 1) {
+                    $orderSlipDetail = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                        (new DbQuery())
+                            ->select('*')
+                            ->from('order_slip_detail')
+                            ->where('`id_order_slip` = '.(int) $this->order_slip->id)
+                            ->where('`id_order_detail` = '.(int) $product['id_order_detail'])
+                    );
+
+                    $product['total_price_tax_excl'] = $orderSlipDetail['amount_tax_excl'];
+                    $product['total_price_tax_incl'] = $orderSlipDetail['amount_tax_incl'];
+                }
+
+                $this->order->total_products += $product['total_price_tax_excl'];
+                $this->order->total_products_wt += $product['total_price_tax_incl'];
+                $this->order->total_paid_tax_excl = $this->order->total_products;
+                $this->order->total_paid_tax_incl = $this->order->total_products_wt;
+            }
+        } else {
+            $this->order->products = null;
+        }
+
+        unset($product); // remove reference
+
+        if ($this->order_slip->shipping_cost == 0) {
+            $this->order->total_shipping_tax_incl = $this->order->total_shipping_tax_excl = 0;
+        }
+
+        $tax = new Tax();
+        $tax->rate = $this->order->carrier_tax_rate;
+
         $taxExcludedDisplay = Group::getPriceDisplayMethod((int) $customer->id_default_group);
+
+        $this->order->total_shipping_tax_incl = $this->order_slip->total_shipping_tax_incl;
+        $this->order->total_shipping_tax_excl = $this->order_slip->total_shipping_tax_excl;
+        $this->order_slip->shipping_cost_amount = $taxExcludedDisplay ? $this->order_slip->total_shipping_tax_excl : $this->order_slip->total_shipping_tax_incl;
+
+        $this->order->total_paid_tax_incl += $this->order->total_shipping_tax_incl;
+        $this->order->total_paid_tax_excl += $this->order->total_shipping_tax_excl;
 
         $totalCartRule = 0;
         if ($this->order_slip->order_slip_type == 1 && is_array($cartRules = $this->order->getCartRules())) {
@@ -238,6 +285,11 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      */
     public function getProductTaxesBreakdown()
     {
+
+        if (! $this->order->products) {
+            return [];
+        }
+
         // $breakdown will be an array with tax rates as keys and at least the columns:
         // 	- 'total_price_tax_excl'
         // 	- 'total_amount'
@@ -290,6 +342,8 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
+     * @throws Exception
      */
     public function getShippingTaxesBreakdown()
     {
@@ -326,6 +380,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -116,15 +116,6 @@ if [ ! -e .git ]; then
   exit 1
 fi
 
-# Test wether this is a module directory.
-DIR="${PWD%/*}"
-DIR="${DIR##*/}"
-if [ "${DIR}" != 'modules' ]; then
-  echo "Not in modules/<module>/, this is apparently not a module. Aborting."
-  exit 1
-fi
-unset DIR
-
 # Test for the existence of the target directory.
 if [ -n "${TARGET_DIR}" ] && ! [ -d "${TARGET_DIR}" ]; then
   echo "Requested target directory doesn't exist. Aborting."

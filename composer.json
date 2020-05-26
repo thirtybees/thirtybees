@@ -10,7 +10,6 @@
         "jakeasmith/http_build_url": "^1.0",
         "mrclay/minify": "^2.3",
         "greenlion/php-sql-parser": "^4.1",
-        "thirtybees/geoip": "^1.17",
         "smarty/smarty": "3.1.31",
         "pear/archive_tar": "^1.4",
         "mobiledetect/mobiledetectlib": "^2.8",
@@ -19,7 +18,8 @@
         "defuse/php-encryption": "^2.0",
         "pclzip/pclzip": "~2.8.2",
         "vierbergenlars/php-semver": "~2.1.0",
-        "paragonie/random_compat": "<9.99"
+        "paragonie/random_compat": "<9.99",
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^1.0",

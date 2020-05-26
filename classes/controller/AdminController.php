@@ -1435,28 +1435,6 @@ class AdminControllerCore extends Controller
 
         /* Overload this method for custom checking */
         $this->_childValidation();
-
-        /* Checking for multilingual fields validity */
-        if (isset($rules['validateLang']) && is_array($rules['validateLang'])) {
-            foreach ($rules['validateLang'] as $fieldLang => $function) {
-                foreach ($languages as $language) {
-                    if (($value = Tools::getValue($fieldLang.'_'.$language['id_lang'])) !== false && !empty($value)) {
-                        if (mb_strtolower($function) == 'iscleanhtml' && Configuration::get('PS_ALLOW_HTML_IFRAME')) {
-                            $res = Validate::$function($value, true);
-                        } else {
-                            $res = Validate::$function($value);
-                        }
-                        if (!$res) {
-                            $this->errors[$fieldLang.'_'.$language['id_lang']] = sprintf(
-                                Tools::displayError('The %1$s field (%2$s) is invalid.'),
-                                call_user_func([$className, 'displayFieldName'], $fieldLang, $className),
-                                $language['name']
-                            );
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -2061,7 +2039,7 @@ class AdminControllerCore extends Controller
         $this->display_header_javascript = false;
         $this->display_footer = false;
 
-        return $this->display();
+        $this->display();
     }
 
     /**
@@ -2344,7 +2322,7 @@ class AdminControllerCore extends Controller
                     'show_new_messages'         => Configuration::get('PS_SHOW_NEW_MESSAGES') && isset($accesses['AdminCustomerThreads']) && $accesses['AdminCustomerThreads']['view'],
                     'employee'                  => $this->context->employee,
                     'search_type'               => Tools::getValue('bo_search_type'),
-                    'bo_query'                  => Tools::safeOutput(Tools::stripslashes(Tools::getValue('bo_query'))),
+                    'bo_query'                  => Tools::safeOutput(Tools::getValue('bo_query')),
                     'quick_access'              => $quickAccess,
                     'multi_shop'                => Shop::isFeatureActive(),
                     'shop_list'                 => $helperShop->getRenderedShopList(),
@@ -2913,7 +2891,7 @@ class AdminControllerCore extends Controller
                 ]
             );
 
-            $helper = new HelperForm($this);
+            $helper = new HelperForm();
             $this->setHelperDisplay($helper);
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
@@ -3102,7 +3080,7 @@ class AdminControllerCore extends Controller
      */
     public function renderView()
     {
-        $helper = new HelperView($this);
+        $helper = new HelperView();
         $this->setHelperDisplay($helper);
         $helper->tpl_vars = $this->getTemplateViewVars();
         if (!is_null($this->base_tpl_view)) {
@@ -3728,7 +3706,7 @@ class AdminControllerCore extends Controller
 
             unset($this->toolbar_btn);
             $this->initToolbar();
-            $helper = new HelperOptions($this);
+            $helper = new HelperOptions();
             $this->setHelperDisplay($helper);
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
@@ -3852,8 +3830,8 @@ class AdminControllerCore extends Controller
 
         $this->addJS(
             [
-                _PS_JS_DIR_.'admin.js?v='._TB_VERSION_,
-                _PS_JS_DIR_.'tools.js?v='._TB_VERSION_,
+                _PS_JS_DIR_.'admin.js',
+                _PS_JS_DIR_.'tools.js',
                 _PS_JS_DIR_.'jquery/plugins/timepicker/jquery-ui-timepicker-addon.js',
             ]
         );
@@ -3861,8 +3839,9 @@ class AdminControllerCore extends Controller
         //loads specific javascripts for the admin theme
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/bootstrap.min.js');
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/modernizr.min.js');
-        $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/modernizr-loads.js');
+        $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/enquire.min.js');
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/moment-with-langs.min.js');
+        $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/admin-theme.js');
 
         if (!$this->lite_display) {
             $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/help.js');
@@ -4756,4 +4735,35 @@ class AdminControllerCore extends Controller
 
         return $result;
     }
+
+    /**
+     * Adds javascript URI to list of javascript files included in page header
+     *
+     * @param string $uri           uri to javascript file
+     * @param boolean $checkPath    if true, system will check if the javascript file exits on filesystem
+     *
+     * @since   1.1.1
+     */
+    public function addJavascriptUri($uri, $checkPath)
+    {
+        // if javascript file exists locally, include its modification timestamp into uri as a version parameter
+        $parsed = parse_url($uri);
+        if (! array_key_exists('host', $parsed) && isset($parsed['path'])) {
+            $path = $parsed['path'];
+            $mediaUri = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $path), '/\\');
+            $fileUri = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
+            $timestamp = @filemtime($fileUri);
+            if ($timestamp) {
+                if (isset($parsed['query'])) {
+                    $version = '&ts=' . $timestamp;
+                } else {
+                    $version = '?ts=' . $timestamp;
+                }
+                $uri .= $version;
+            }
+        }
+
+        parent::addJavascriptUri($uri, $checkPath);
+    }
+
 }

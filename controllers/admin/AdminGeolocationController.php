@@ -39,6 +39,7 @@ class AdminGeolocationControllerCore extends AdminController
     /**
      * AdminGeolocationControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -46,25 +47,33 @@ class AdminGeolocationControllerCore extends AdminController
         parent::__construct();
 
         $this->bootstrap = true;
+        $services = $this->getGeolocationServices();
+        $hasServices = count($services) > 1;
         $this->fields_options = [
             'geolocationConfiguration' => [
-                'title'  => $this->l('Geolocation by IP address'),
+                'title'  => $this->l('Geolocation service'),
                 'icon'   => 'icon-map-marker',
+                'description' => ($hasServices
+                    ? $this->l('Enable geolocation feature by choosing service')
+                    : Translate::ppTags(
+                        $this->l('No geolocation service was found in the system. Please go to [1]Modules and Services[/1] to install service you want to use'),
+                        ['<a href="' . $this->context->link->getAdminLink('AdminModules') . '">']
+                    )
+                ),
                 'fields' => [
-                    'PS_GEOLOCATION_ENABLED' => [
-                        'title'      => $this->l('Geolocation by IP address'),
-                        'hint'       => $this->l('This option allows you, among other things, to restrict access to your shop for certain countries. See below.'),
-                        'validation' => 'isUnsignedId',
-                        'cast'       => 'intval',
-                        'type'       => 'bool',
-                    ],
+                    'PS_GEOLOCATION_SERVICE' => [
+                        'title'      => $this->l('Geolocation service'),
+                        'hint'       => $this->l('Choose module that provides geolocation services'),
+                        'type'       => 'select',
+                        'identifier' => 'key',
+                        'list'       => $services
+                    ]
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
             'geolocationCountries'     => [
                 'title'       => $this->l('Options'),
                 'icon'        => 'icon-map-marker',
-                'description' => $this->l('The following features are only available if you enable the Geolocation by IP address feature.'),
                 'fields'      => [
                     'PS_GEOLOCATION_BEHAVIOR'    => [
                         'title'      => $this->l('Geolocation behavior for restricted countries'),
@@ -101,19 +110,24 @@ class AdminGeolocationControllerCore extends AdminController
     }
 
     /**
+     * Registers javascript assets
+     */
+    public function setMedia()
+    {
+        parent::setMedia();
+        $this->addJS(_PS_JS_DIR_ . 'admin/geolocation.js');
+    }
+
+    /**
      * Process update options
      *
      * @since 1.0.0
+     * @return void
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      */
     public function processUpdateOptions()
     {
-        if ($this->isGeoLiteCityAvailable()) {
-            Configuration::updateValue('PS_GEOLOCATION_ENABLED', (int) Tools::getValue('PS_GEOLOCATION_ENABLED'));
-        } // stop processing if geolocation is set to yes but geolite pack is not available
-        elseif (Tools::getValue('PS_GEOLOCATION_ENABLED')) {
-            $this->errors[] = Tools::displayError('The geolocation database is unavailable.');
-        }
-
         if (empty($this->errors)) {
             if (!is_array(Tools::getValue('countries')) || !count(Tools::getValue('countries'))) {
                 $this->errors[] = Tools::displayError('Country selection is invalid.');
@@ -127,23 +141,7 @@ class AdminGeolocationControllerCore extends AdminController
             }
         }
 
-        return parent::processUpdateOptions();
-    }
-
-    /**
-     * Check if geolite city file is available
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected function isGeoLiteCityAvailable()
-    {
-        if (@filemtime(_PS_GEOIP_DIR_._PS_GEOIP_CITY_FILE_)) {
-            return true;
-        }
-
-        return false;
+        parent::processUpdateOptions();
     }
 
     /**
@@ -151,6 +149,8 @@ class AdminGeolocationControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderOptions()
@@ -170,26 +170,6 @@ class AdminGeolocationControllerCore extends AdminController
     }
 
     /**
-     * Initialize content
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    public function initContent()
-    {
-        $this->display = 'options';
-        if (!$this->isGeoLiteCityAvailable()) {
-            $this->displayWarning(
-                $this->l('In order to use Geolocation, please download').' <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">'.$this->l('this file').'</a> '.$this->l('and extract it (using Winrar or Gzip) into the /tools/geoip/ directory.')
-            );
-            Configuration::updateValue('PS_GEOLOCATION_ENABLED', 0);
-        }
-
-        parent::initContent();
-    }
-
-    /**
      * Callback to save PS_GEOLOATION_WHITELIST option
      *
      * @param string $whitelist ip addresses separated by new line
@@ -204,7 +184,7 @@ class AdminGeolocationControllerCore extends AdminController
         foreach (explode("\n", $whitelist) as $address) {
             $address = trim($address);
             if (! Tools::isEmpty($address)) {
-                if (Validate::isIPAddress($address)) {
+                if (preg_match('/^[0-9]+[0-9.]*$/', $address)) {
                     $list[] = $address;
                 } else {
                     $this->errors[] = sprintf(Tools::displayError('Invalid IP address: %s'), Tools::htmlentitiesUTF8($address));
@@ -216,5 +196,47 @@ class AdminGeolocationControllerCore extends AdminController
         if ($valid) {
             Configuration::updateValue('PS_GEOLOCATION_WHITELIST', implode(';', $list));
         }
+    }
+
+    /**
+     * Callback to save selected geolocation service
+     * For backwards compatibility reasons it also set PS_GEOLOCATION_ENABLED flag
+     *
+     * @param string $service name of selected geolocation module
+     *
+     * @throws PrestaShopException
+     */
+    public function updateOptionPsGeolocationService($service)
+    {
+        if ($service) {
+            Configuration::updateGlobalValue('PS_GEOLOCATION_SERVICE', $service);
+            Configuration::updateGlobalValue('PS_GEOLOCATION_ENABLED', 1);
+        } else {
+            Configuration::deleteByName('PS_GEOLOCATION_SERVICE');
+            Configuration::updateGlobalValue('PS_GEOLOCATION_ENABLED', 0);
+        }
+    }
+
+    /**
+     * Return list of all geolocation services installed in the system
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getGeolocationServices()
+    {
+        $services = [
+            ['key' => '', 'name' => $this->l('- No service selected -') ]
+        ];
+        $moduleList = Hook::getHookModuleExecList('actionGeoLocation');
+        if ($moduleList) {
+            foreach ($moduleList as $info) {
+                $services[] = [
+                    'key' => $info['module'],
+                    'name' => Module::getModuleName($info['module']),
+                ];
+            }
+        }
+        return $services;
     }
 }

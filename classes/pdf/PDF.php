@@ -43,6 +43,8 @@ class PDFCore
     public $objects;
     public $template;
     public $send_bulk_flag = false;
+    /** @var Smarty */
+    public $smarty;
     // @codingStandardsIgnoreEnd
 
     const TEMPLATE_INVOICE = 'Invoice';

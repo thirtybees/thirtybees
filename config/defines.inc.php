@@ -172,6 +172,12 @@ if ( ! defined('_TB_PRICE_DATABASE_PRECISION_')) {
     define('_TB_PRICE_DATABASE_PRECISION_', 6);
 }
 
+/**
+ * This constant exists for backwards compatibility only
+ *
+ * magic_quotes_gpc were removed in php 5.4, and all references to this constant was removed from
+ * thirty bees codebase in 1.1.1
+ */
 if (!defined('_PS_MAGIC_QUOTES_GPC_')) {
     define('_PS_MAGIC_QUOTES_GPC_', false);
 }

@@ -379,7 +379,6 @@ class MailCore extends ObjectModel
             }
 
             $templateVars = array_map(['Tools', 'htmlentitiesDecodeUTF8'], $templateVars);
-            $templateVars = array_map(['Tools', 'stripslashes'], $templateVars);
 
             if (Configuration::get('PS_LOGO_MAIL') !== false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MAIL', null, null, $idShop))) {
                 $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO_MAIL', null, null, $idShop);
@@ -474,7 +473,9 @@ class MailCore extends ObjectModel
                 'Swift Error: '.$e->getMessage(),
                 3,
                 null,
-                'Swift_Message'
+                'Swift_Message',
+                0,
+                true
             );
 
             return false;
@@ -730,7 +731,7 @@ class MailCore extends ObjectModel
 
         $key = str_replace('\'', '\\\'', $string);
 
-        return str_replace('"', '&quot;', Tools::stripslashes((array_key_exists($key, $_LANGMAIL) && !empty($_LANGMAIL[$key])) ? $_LANGMAIL[$key] : $string));
+        return str_replace('"', '&quot;',(array_key_exists($key, $_LANGMAIL) && !empty($_LANGMAIL[$key])) ? $_LANGMAIL[$key] : $string);
     }
 
     /**

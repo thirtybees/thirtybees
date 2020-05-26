@@ -1441,11 +1441,6 @@ class AdminTranslationsControllerCore extends AdminController
                             $title = Tools::getValue('title_'.$groupName.'_'.$mailName);
                         }
 
-                        // Magic Quotes shall... not.. PASS!
-                        if (_PS_MAGIC_QUOTES_GPC_) {
-                            $content = stripslashes($content);
-                        }
-
                         $content = preg_replace('/<title>.*<\/title>/', '<title>'.$title.'</title>', $content);
                     }
 
@@ -1508,10 +1503,6 @@ class AdminTranslationsControllerCore extends AdminController
             fwrite($fd, "<?php\n\nglobal \$_".$tab.";\n\$_".$tab." = array();\n");
 
             foreach ($sub as $key => $value) {
-                // Magic Quotes shall... not.. PASS!
-                if (_PS_MAGIC_QUOTES_GPC_) {
-                    $value = stripslashes($value);
-                }
                 fwrite($fd, '$_'.$tab.'[\''.pSQL($key).'\'] = \''.pSQL($value).'\';'."\n");
             }
 
@@ -2721,10 +2712,11 @@ class AdminTranslationsControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function copyMailFilesForAllLanguages()
     {
-        $currentTheme = Tools::safeOutput($this->context->theme->name);
+        $currentTheme = Tools::safeOutput($this->context->theme->directory);
         $languages = Language::getLanguages();
 
         foreach ($languages as $key => $lang) {
@@ -2737,7 +2729,10 @@ class AdminTranslationsControllerCore extends AdminController
             $modulesHasMails = $this->getModulesHasMails(true);
             foreach ($modulesHasMails as $moduleName => $modulePath) {
                 if ($pos = strpos($modulePath, '/modules')) {
-                    $dirToCopyIso[] = _PS_ROOT_DIR_.substr($modulePath, $pos).'mails/'.$currentIsoCode.'/';
+                    $dir = _PS_ROOT_DIR_.substr($modulePath, $pos).'mails/'.$currentIsoCode.'/';
+                    if (@is_dir($dir)) {
+                        $dirToCopyIso[] = $dir;
+                    }
                 }
             }
 

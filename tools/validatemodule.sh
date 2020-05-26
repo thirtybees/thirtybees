@@ -960,7 +960,7 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   MASTER_REMOTE=$(grep 'refs/heads/master' <<< "${REMOTE_CACHE}" | \
                     cut -d $'\t' -f 1)
   [ ${MASTER_LOCAL} = ${MASTER_REMOTE} ] || \
-    e "branches 'master' and '${REMOTE}/master' don't match, a push is needed."
+    w "branches 'master' and '${REMOTE}/master' don't match, a push is needed."
   unset MASTER_REMOTE
 
   # Latest tag should be a version tag.
@@ -978,7 +978,7 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
 
   # Latest tag should be pushed.
   grep -q $'\trefs/tags/'${LATEST_NAME} <<< "${REMOTE_CACHE}" || \
-    e "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
+    w "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
 
   # All remote tags should exist locally.
   grep $'\trefs/tags/' <<< "${REMOTE_CACHE}" | while read T; do

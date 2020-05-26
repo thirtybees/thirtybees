@@ -17,6 +17,9 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+
 /**
  * Class ErrorHandlerCore
  *
@@ -40,7 +43,7 @@ class ErrorHandlerCore
     protected $errorMessages = [];
 
     /**
-     * @var object psr compliant logger
+     * @var LoggerInterface psr compliant logger
      */
     protected $logger = null;
 
@@ -317,6 +320,7 @@ class ErrorHandlerCore
     /**
      * Returns true if errno is a fatal error.
      *
+     * @param int $errno
      * @return boolean
      *
      * @since 1.1.0

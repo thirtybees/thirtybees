@@ -84,19 +84,6 @@ $notThemeRelatedModules = [
 ];
 
 /**
- * Submodules. Some modules install submodules, which neither have their
- * own repository, nor are they listed in all.json or default_modules.php.
- */
-$submodules = [
-    'beesblog' => [
-        'beesblogcategories',
-        'beesblogpopularposts',
-        'beesblogrecentposts',
-        'beesblogrelatedproducts',
-    ],
-];
-
-/**
  * Theme independent variables.
  */
 $flawsFound = false;
@@ -160,16 +147,6 @@ require 'config/default_modules.php';
 $defaultModules = $_TB_DEFAULT_MODULES_;
 unset($_TB_DEFAULT_MODULES_);
 
-// Apply submodules.
-foreach ($submodules as $moduleName => $submoduleList) {
-    if (in_array($moduleName, $allModules)) {
-        $allModules = array_merge($allModules, $submoduleList);
-    }
-    if (in_array($moduleName, $defaultModules)) {
-        $defaultModules = array_merge($defaultModules, $submoduleList);
-    }
-}
-
 // Extract theme related modules.
 $themeRelatedModules = array_diff($allModules, $notThemeRelatedModules);
 $themeRelatedDefaultModules = array_diff(
@@ -178,9 +155,9 @@ $themeRelatedDefaultModules = array_diff(
 );
 
 // Print a summary.
-print((string) count($allModules)." modules and submodules in all.json.\n");
+print((string) count($allModules)." modules in all.json.\n");
 print("Thereof ".count($themeRelatedModules)." theme related modules.\n");
-print((string) count($defaultModules)." modules and submodules in default_modules.php.\n");
+print((string) count($defaultModules)." modules in default_modules.php.\n");
 print("Thereof ".count($themeRelatedDefaultModules)." theme related modules.\n");
 
 /**
