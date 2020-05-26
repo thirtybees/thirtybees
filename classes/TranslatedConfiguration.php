@@ -43,9 +43,9 @@ class TranslatedConfigurationCore extends Configuration
         'primary'   => 'id_configuration',
         'multilang' => true,
         'fields'    => [
-            'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
             'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
             'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
             'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'size' => ObjectModel::SIZE_TEXT],
             'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_upd'      => ['type' => self::TYPE_DATE, 'lang' => true, 'validate' => 'isDate'],
@@ -54,6 +54,14 @@ class TranslatedConfigurationCore extends Configuration
             'configuration' => [
                 'id_shop'       => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
                 'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+            ],
+            'configuration_kpi' => [
+                'id_shop'       => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+                'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+                'name'          => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
+            'configuration_kpi_lang' => [
+                'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_configuration_kpi', 'id_lang']],
             ],
         ],
     ];

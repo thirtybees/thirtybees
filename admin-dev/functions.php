@@ -225,7 +225,7 @@ function getDirContent($path)
     if (is_dir($path)) {
         $d = dir($path);
         while (false !== ($entry = $d->read())) {
-            if ($entry{0} != '.') {
+            if ($entry[0] != '.') {
                 $content[] = $entry;
             }
         }
@@ -450,8 +450,7 @@ function runAdminTab($tab, $ajax_mode = false)
                 require_once(_PS_ADMIN_DIR_.'/header.inc.php');
             }
             $iso_user = Context::getContext()->language->id;
-            $tabs = [];
-            $tabs = Tab::recursiveTab($admin_obj->id, $tabs);
+            $tabs = Tab::recursiveTab($admin_obj->id);
             $tabs = array_reverse($tabs);
             $bread = '';
             foreach ($tabs as $key => $item) {

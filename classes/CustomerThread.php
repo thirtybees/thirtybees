@@ -160,7 +160,6 @@ class CustomerThreadCore extends ObjectModel
                 ->select('cm.`id_customer_thread`')
                 ->from('customer_thread', 'cm')
                 ->where('cm.`email` = \''.pSQL($email).'\'')
-                ->where('cm.`id_shop` = '.(int) Context::getContext()->shop->id)
                 ->where('cm.`id_order` = '.(int) $idOrder)
         );
     }

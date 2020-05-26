@@ -5,7 +5,7 @@
     <field name="active"/>
   </fields>
   <entities>
-    <manufacturer id="Fashion_Manufacturer" active="1">
+    <manufacturer id="thirty_bees_manufacturer" active="1">
       <name>Bee Hive</name>
     </manufacturer>
   </entities>

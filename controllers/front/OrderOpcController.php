@@ -125,11 +125,6 @@ class OrderOpcControllerCore extends ParentOrderController
                                 exit;
                             }
 
-                            if (Validate::isEmail($email = Tools::getValue('email')) && !empty($email)) {
-                                if (Customer::customerExists($email)) {
-                                    $this->errors[] = Tools::displayError('An account using this email address has already been registered.', false);
-                                }
-                            }
 
                             if (Tools::getValue('years')) {
                                 $this->context->customer->birthday = (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days');

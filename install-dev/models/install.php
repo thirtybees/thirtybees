@@ -161,6 +161,10 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : installDatabase
      * Generate settings file and create database structure
      *
+     * @param bool $clearDatabase
+     * @return bool
+     * @throws PrestaShopException
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -168,7 +172,10 @@ class InstallModelInstall extends InstallAbstractModel
     {
         // Clear database (only tables with same prefix)
         require_once _PS_ROOT_DIR_.'/'.self::SETTINGS_FILE;
-        $collations = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+
+        $conn = Db::createInstance( _DB_SERVER_, _DB_USER_, _DB_PASSWD_, _DB_NAME_);
+
+        $collations = $conn->getValue(
             'SELECT `COLLATION_NAME`
              FROM `INFORMATION_SCHEMA`.`COLLATIONS`
              WHERE `COLLATION_NAME` = \'utf8mb4_unicode_ci\'
@@ -180,7 +187,7 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
-        $engine = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $engine = $conn->getValue(
             'SELECT `SUPPORT`
              FROM `INFORMATION_SCHEMA`.`ENGINES`
              WHERE `ENGINE` = \'InnoDB\';'
@@ -199,18 +206,18 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if ($clearDatabase) {
-            $this->clearDatabase();
+            $this->clearDatabase($conn);
         }
 
         // Install database structure
         require_once(_PS_MODULE_DIR_ . '/coreupdater/classes/schema/autoload.php');
+        \CoreUpdater\DatabaseCharset::loadCharsets($conn);
         $schemaBuilder = new \CoreUpdater\ObjectModelSchemaBuilder();
         try {
             $schema = $schemaBuilder->getSchema();
-            $db = Db::getInstance();
             foreach ($schema->getTables() as $table) {
-                if (! $db->execute($table->getDDLStatement())) {
-                    $this->setError($this->language->l('SQL error on query: <i>%s</i>', $db->getMsgError()));
+                if (! $conn->execute($table->getDDLStatement())) {
+                    $this->setError($this->language->l('SQL error on query: <i>%s</i>', $conn->getMsgError()));
                     return false;
                 }
             }
@@ -224,15 +231,19 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * Clear database (only tables with same prefix).
      *
+     * @param Db $conn
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
      * @version 1.0.0 Initial version, $truncate deprecated.
      * @version 1.1.0 Removed $truncate.
      */
-    public function clearDatabase()
+    public function clearDatabase($conn)
     {
-        foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
+        foreach ($conn->executeS('SHOW TABLES') as $row) {
             $table = current($row);
             if (!_DB_PREFIX_ || preg_match('#^'._DB_PREFIX_.'#i', $table)) {
-                Db::getInstance()->execute(('DROP TABLE').' `'.$table.'`');
+                $conn->execute(('DROP TABLE').' `'.$table.'`');
             }
         }
     }

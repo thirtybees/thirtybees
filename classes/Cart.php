@@ -45,6 +45,7 @@ class CartCore extends ObjectModel
     const ONLY_WRAPPING = 6;
     const ONLY_PRODUCTS_WITHOUT_SHIPPING = 7;
     const ONLY_PHYSICAL_PRODUCTS_WITHOUT_SHIPPING = 8;
+    const NO_CARRIER_FOUND_PLACEHOLDER = 0;
     /**
      * @see ObjectModel::$definition
      */
@@ -1276,15 +1277,31 @@ class CartCore extends ObjectModel
      */
     public function getDeliveryOptionList(Country $defaultCountry = null, $flush = false)
     {
-        static $cache = [];
-        if (isset($cache[$this->id]) && !$flush) {
-            return $cache[$this->id];
+        $countryId = $defaultCountry ? $defaultCountry->id : 0;
+        $cacheKey = "Cart::getDeliveryOptionList_" . $this->id . '_' . $countryId;
+
+        if ($flush || !Cache::isStored($cacheKey)) {
+            Cache::store($cacheKey, $this->calculateDeliveryOptionList($defaultCountry));
         }
 
+        return Cache::retrieve($cacheKey);
+    }
+
+    /**
+     * Calculate all delivery options available for the current cart
+     *
+     * @param Country|null $defaultCountry
+     * @return array
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function calculateDeliveryOptionList(Country $defaultCountry = null)
+    {
         $deliveryOptionList = [];
         $carriersPrice = [];
         $carrierCollection = [];
-        $packageList = $this->getPackageList($flush);
+        $packageList = $this->getPackageList(true);
 
         // Foreach addresses
         foreach ($packageList as $idAddress => $packages) {
@@ -1306,11 +1323,10 @@ class CartCore extends ObjectModel
 
             // Foreach packages, get the carriers with best price, best position and best grade
             foreach ($packages as $idPackage => $package) {
-                // No carriers available
-                if (count($packages) == 1 && count($package['carrier_list']) == 1 && current($package['carrier_list']) == 0) {
-                    $cache[$this->id] = [];
 
-                    return $cache[$this->id];
+                // fail if package have no carrier associated
+                if (!$package['carrier_list'] || in_array(static::NO_CARRIER_FOUND_PLACEHOLDER, $package['carrier_list'])) {
+                    return [];
                 }
 
                 $carriersPrice[$idAddress][$idPackage] = [];
@@ -1552,9 +1568,7 @@ class CartCore extends ObjectModel
             uasort($array, ['Cart', 'sortDeliveryOptionList']);
         }
 
-        $cache[$this->id] = $deliveryOptionList;
-
-        return $cache[$this->id];
+        return $deliveryOptionList;
     }
 
     /**
@@ -1606,12 +1620,15 @@ class CartCore extends ObjectModel
                 (int) $product['advanced_stock_management'] == 1
             ) {
                 $warehouseList = Warehouse::getProductWarehouseList($product['id_product'], $product['id_product_attribute'], $this->id_shop);
-                if (count($warehouseList) == 0) {
+                if (! $warehouseList) {
                     $warehouseList = Warehouse::getProductWarehouseList($product['id_product'], $product['id_product_attribute']);
                 }
+                if (! $warehouseList) {
+                    $warehouseList = [['id_warehouse' => 0]];
+                }
+
                 // Does the product is in stock ?
                 // If yes, get only warehouse where the product is in stock
-
                 $warehouseInStock = [];
                 $manager = StockManagerFactory::getManager();
 
@@ -1636,7 +1653,7 @@ class CartCore extends ObjectModel
                 }
             } else {
                 //simulate default warehouse
-                $warehouseList = [0 => ['id_warehouse' => 0]];
+                $warehouseList = [['id_warehouse' => 0]];
                 $product['in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], $product['id_product_attribute']) > 0;
             }
 
@@ -1696,7 +1713,7 @@ class CartCore extends ObjectModel
             }
 
             if (empty($product['carrier_list'])) {
-                $product['carrier_list'] = [0 => 0];
+                $product['carrier_list'] = [ static::NO_CARRIER_FOUND_PLACEHOLDER ];
             }
 
             $groupedByWarehouse[$product['id_address_delivery']][$key][$idWarehouse][] = $product;

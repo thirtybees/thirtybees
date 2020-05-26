@@ -74,7 +74,7 @@ class OrderCore extends ObjectModel
             'total_paid'               => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_paid_tax_incl'      => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'total_paid_tax_excl'      => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
-            'total_paid_real'          => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
+            'total_paid_real'          => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => false, 'dbDefault' => '0.000000', 'dbNullable' => false],
             'total_products'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_products_wt'        => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'total_shipping'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
@@ -166,7 +166,10 @@ class OrderCore extends ObjectModel
     public $total_paid_tax_incl;
     /** @var float Total to pay tax excluded */
     public $total_paid_tax_excl;
-    /** @var float Total really paid @deprecated 1.5.0.1 */
+    /**
+     * @var float Total really paid
+     * @deprecated 1.5.0.1 use Order::getTotalPaid() method instead
+     */
     public $total_paid_real;
     /** @var float Products total */
     public $total_products;
@@ -423,6 +426,7 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -462,7 +466,6 @@ class OrderCore extends ObjectModel
         $this->total_paid -= $productPriceTaxIncl + $shippingDiffTaxIncl;
         $this->total_paid_tax_incl -= $productPriceTaxIncl + $shippingDiffTaxIncl;
         $this->total_paid_tax_excl -= $productPriceTaxExcl + $shippingDiffTaxExcl;
-        $this->total_paid_real -= $productPriceTaxIncl + $shippingDiffTaxIncl;
 
         $fields = [
             'total_shipping',
@@ -473,7 +476,6 @@ class OrderCore extends ObjectModel
             'total_paid',
             'total_paid_tax_incl',
             'total_paid_tax_excl',
-            'total_paid_real',
         ];
 
         /* Prevent from floating precision issues */
@@ -1133,7 +1135,7 @@ class OrderCore extends ObjectModel
 
         $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('o.*, (SELECT SUM(od.`product_quantity`) FROM `'._DB_PREFIX_.'order_detail` od WHERE od.`id_order` = o.`id_order`) nb_products')
+                ->select('o.*, COALESCE((SELECT SUM(od.`product_quantity`) FROM `'._DB_PREFIX_.'order_detail` od WHERE od.`id_order` = o.`id_order`), 0) nb_products')
                 ->from('orders', 'o')
                 ->where('o.`id_customer` = '.(int) $idCustomer.' '.Shop::addSqlRestriction(Shop::SHARE_ORDER))
                 ->groupBy('o.`id_order`')
@@ -1685,6 +1687,8 @@ class OrderCore extends ObjectModel
                         'id_order'         => (int) $orderInvoice->id_order,
                     ]
                 );
+
+                $this->adjustTotalPaidAmount($orderPayment->amount, $orderPayment->id_currency);
             }
             // Clear cache
             Cache::clean('order_invoice_paid_*');
@@ -2284,12 +2288,7 @@ class OrderCore extends ObjectModel
             $orderPayment->date_add .= ' '.date('H:i:s');
         }
 
-        // Update total_paid_real value for backward compatibility reasons
-        if ($orderPayment->id_currency == $this->id_currency) {
-            $this->total_paid_real += $orderPayment->amount;
-        } else {
-            $this->total_paid_real += Tools::convertPrice($orderPayment->amount, $orderPayment->id_currency, false);
-        }
+        $this->adjustTotalPaidAmount($orderPayment->amount, $orderPayment->id_currency);
 
         // We put autodate parameter of add method to true if date_add field is null
         $res = $orderPayment->add(is_null($orderPayment->date_add)) && $this->update();
@@ -2494,7 +2493,12 @@ class OrderCore extends ObjectModel
             if ($payment->id_currency == $currency->id) {
                 $total += $payment->amount;
             } else {
-                $amount = Tools::convertPrice($payment->amount, $payment->id_currency, false);
+                // get amount in shop default currency
+                if ($payment->conversion_rate > 0.0) {
+                    $amount = $payment->amount / $payment->conversion_rate;
+                } else {
+                    $amount = Tools::convertPrice($payment->amount, $payment->id_currency, false);
+                }
                 if ($currency->id == Configuration::get('PS_CURRENCY_DEFAULT', null, null, $this->id_shop)) {
                     $total += $amount;
                 } else {
@@ -3162,5 +3166,42 @@ class OrderCore extends ObjectModel
                 ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
                 ->where('o.`id_order` = '.(int) $this->id)
         );
+    }
+
+    /**
+     * Adjust property total_paid_real
+     *
+     * Property total_paid_real is deprecated and should not be relied upon. To get information
+     * about amount paid, use Order::getTotalPaid() method instead
+     *
+     * For backwards compatibility reasons, we try to keep this property in sync with content
+     * of tb_order_payment table.
+     *
+     * @param float $amount
+     * @param int $currencyId
+     * @throws PrestaShopException
+     */
+    public function adjustTotalPaidAmount($amount, $currencyId)
+    {
+        $currencyId = (int)$currencyId;
+        $amount = (float)$amount;
+        $orderCurrency = (int)$this->id_currency;
+
+        if ($orderCurrency == $currencyId) {
+            $amountOrderCurrency = $amount;
+        } else {
+            // we need to convert $amount from source currency to order currency
+            $amountDefaultCurrency = Tools::convertPrice($amount, $currencyId, false);
+            $defaultCurrencyId = (int)Configuration::get('PS_CURRENCY_DEFAULT');
+            if ($orderCurrency == $defaultCurrencyId) {
+                $amountOrderCurrency = $amountDefaultCurrency;
+            } else {
+                $amountOrderCurrency = Tools::convertPrice($amountDefaultCurrency, $orderCurrency, true);
+            }
+        }
+
+        // this should be the only place in the core that modifies this deprecated property
+        /** @noinspection PhpDeprecationInspection */
+        $this->total_paid_real += $amountOrderCurrency;
     }
 }
