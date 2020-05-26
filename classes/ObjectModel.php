@@ -588,7 +588,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public function add($autoDate = true, $nullValues = false)
     {
-
         if (isset($this->id) && !$this->force_id) {
             unset($this->id);
         }
