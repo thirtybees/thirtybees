@@ -265,6 +265,17 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
         }
 
+        // Check if object is not auto_increment
+        if (isset($this->def['auto_increment']) && !$this->def['auto_increment']) {
+
+            if (!$id) {
+                throw new PrestaShopException('Identifier for non auto-increment key is not valid');
+            }
+
+            $this->force_id = true;
+            $this->{$this->def['primary']} = $id;
+        }
+
         if ($idLang !== null) {
             $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
         }
@@ -578,11 +589,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function add($autoDate = true, $nullValues = false)
     {
 
-        if ($this->force_id && $this->{$this->def['primary']}) {
-            $this->id = $this->{$this->def['primary']}; // Allowing usage of objectModel without auto_increment column
-        }
-        elseif ($this->id) {
+        if (isset($this->id) && !$this->force_id) {
             unset($this->id);
+        }
+        elseif ($this->force_id && $this->{$this->def['primary']}) {
+            $this->id = $this->{$this->def['primary']}; // Allowing usage of objectModel without auto_increment column
         }
 
         // @hook actionObject*AddBefore
@@ -615,7 +626,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // Get object id in database
-        if (!$this->id || !$this->force_id) {
+        if (!$this->id) {
             $this->id = Db::getInstance()->Insert_ID();
         }
 
