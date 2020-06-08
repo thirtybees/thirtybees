@@ -1326,22 +1326,12 @@ class AdminTranslationsControllerCore extends AdminController
             $_POST['type']
         );
 
-        // To deal with vanished translations, remove all translations
-        // belonging to the saved panel before adding the ones POSTed.
-        $keyBase = array_keys($_POST)[0];
-        if ($keyBase) {
-            $keyBase = substr($keyBase, 0, strrpos($keyBase, '_'));
-            foreach (array_keys($translationsArray) as $key) {
-                if (strpos($key, $keyBase) === 0 /* start of string! */) {
-                    unset($translationsArray[$key]);
-                }
-            }
-        }
-
-        // Get all POST which aren't empty
+        // update translations
         foreach ($_POST as $key => $value) {
             if (!empty($value)) {
                 $translationsArray[$key] = $value;
+            } else {
+                unset($translationsArray[$key]);
             }
         }
 
