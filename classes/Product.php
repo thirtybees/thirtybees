@@ -1684,7 +1684,7 @@ class ProductCore extends ObjectModel
 		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 		LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature)
 		'.Shop::addSqlAssociation('feature', 'f').'
-		WHERE `id_product` IN ('.implode($productImplode, ',').')
+		WHERE `id_product` IN ('.implode(',', $productImplode).')
 		ORDER BY f.position ASC'
         );
 

@@ -76,6 +76,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
     /**
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function process()
     {
@@ -104,8 +107,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->processInstallModules();
         } elseif (Tools::getValue('installTheme')) {
             $this->processInstallTheme();
-        } elseif (Tools::getValue('sendEmail') && !empty($this->session->processValidated['installTheme'])) {
-            $this->processSendEmail();
         } else {
             // With no parameters, we consider that we are doing a new install, so session where the last process step
             // was stored can be cleaned
@@ -145,6 +146,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : installDatabase
      * Create database structure
+     * @throws PrestaShopException
      */
     public function processInstallDatabase()
     {
@@ -172,6 +174,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : populateDatabase
      * Populate database with default data
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function processPopulateDatabase()
     {
@@ -187,6 +192,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
+    /**
+     * Initialize context
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     */
     public function initializeContext()
     {
         global $smarty;
@@ -210,6 +221,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : configureShop
      * Set default shop configuration
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function processConfigureShop()
     {
@@ -242,6 +256,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function processInstallFixtures()
     {
@@ -259,6 +276,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : installModules
      * Install all modules in ~/modules/ directory
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function processInstallModules()
     {
@@ -275,6 +295,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : installTheme
      * Install theme
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function processInstallTheme()
     {
@@ -291,6 +314,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
     /**
      * @see InstallAbstractModel::display()
+     * @throws PrestashopInstallerException
      */
     public function display()
     {

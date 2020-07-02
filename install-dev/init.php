@@ -36,8 +36,7 @@ if (version_compare(PHP_VERSION, '5.6', '<')) {
     die('You need at least PHP 5.6 to run thirty bees. Your current PHP version is '.PHP_VERSION);
 }
 
-// we check if theses constants are defined
-// in order to use init.php in upgrade.php script
+// we check if theses constants are defined in order to use init.php
 if (!defined('__PS_BASE_URI__')) {
     define('__PS_BASE_URI__', substr($_SERVER['REQUEST_URI'], 0, -1 * (strlen($_SERVER['REQUEST_URI']) - strrpos($_SERVER['REQUEST_URI'], '/')) - strlen(substr(dirname($_SERVER['REQUEST_URI']), strrpos(dirname($_SERVER['REQUEST_URI']), '/') + 1))));
 }
@@ -93,5 +92,5 @@ if (!@ini_get('date.timezone')) {
     @date_default_timezone_set('UTC');
 }
 
-// Some hosting still have magic_quotes_runtime configured
-ini_set('magic_quotes_runtime', 0);
+// disable displaying errors in standard output
+@ini_set('display_errors', 'off');

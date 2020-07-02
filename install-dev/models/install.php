@@ -39,7 +39,11 @@ class InstallModelInstall extends InstallAbstractModel
     const SETTINGS_FILE = 'config/settings.inc.php';
     private static $cacheLocalizationPackContent = null;
 
+    /**
+     * @var array
+     */
     public $xmlLoaderIds;
+
     /**
      * @var FileLogger
      */
@@ -50,6 +54,7 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestashopInstallerException
      */
     public function __construct()
     {
@@ -69,12 +74,12 @@ class InstallModelInstall extends InstallAbstractModel
      * @param string $databasePassword
      * @param string $databaseName
      * @param string $databasePrefix
-     * @param string $databaseEngine
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestashopInstallerException
      */
     public function generateSettingsFile($databaseServer, $databaseLogin, $databasePassword, $databaseName, $databasePrefix)
     {
@@ -112,8 +117,12 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
-            $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
-            $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            try {
+                $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
+                $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            } catch (\Defuse\Crypto\Exception\EnvironmentIsBrokenException $e) {
+                throw new PrestashopInstallerException("Failed to generate encryption key", 0, $e);
+            }
         }
 
         $settingsContent = "<?php\n";
@@ -198,7 +207,7 @@ class InstallModelInstall extends InstallAbstractModel
                     $this->language->l(
                         'The InnoDB database engine does not seem to be available. If you are using a MySQL alternative, could you please open an issue on %s? Thank you!'
                     ),
-                    '<a href="https://github.com/thirtybees/ThirtyBees.git" target="_blank">GitHub</a>'
+                    '<a href="https://github.com/thirtybees/thirtybees.git" target="_blank">GitHub</a>'
                 )
             );
 
@@ -255,12 +264,14 @@ class InstallModelInstall extends InstallAbstractModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @param string   $shopName
+     * @param string $shopName
      * @param int|bool $isoCountry
-     * @param bool     $allLanguages
-     * @param bool     $clearDatabase
+     * @param bool $allLanguages
+     * @param bool $clearDatabase
      *
      * @return bool
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function installDefaultData($shopName, $isoCountry = false, $allLanguages = false, $clearDatabase = false)
     {
@@ -309,6 +320,9 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

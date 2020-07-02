@@ -139,6 +139,7 @@ abstract class InstallControllerConsole
      * @param string $step
      *
      * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     final public function __construct($step)
     {

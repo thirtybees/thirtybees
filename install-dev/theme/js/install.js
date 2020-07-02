@@ -52,10 +52,6 @@ function tbinstall_facebook_click() {
 	window.open('http://www.facebook.com/sharer.php?u=https://thirtybees.com/', 'sharerfacebook', 'toolbar=0,status=0,width=660,height=445');
 }
 
-function tbinstall_google_click() {
-	window.open('https://plus.google.com/share?url=https://thirtybees.com/', 'sharergplus', 'toolbar=0,status=0,width=660,height=445');
-}
-
 function tbinstall_pinterest_click() {
 }
 

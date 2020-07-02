@@ -90,6 +90,7 @@ class PageCacheKeyCore
      * @return PageCacheKey | false
      * @since   1.0.7
      * @version 1.0.7 Initial version
+     * @throws PrestaShopException
      */
     public static function get()
     {
@@ -106,9 +107,15 @@ class PageCacheKeyCore
      * @return PageCacheKey | false
      * @since   1.0.7
      * @version 1.0.7 Initial version
+     * @throws PrestaShopException
      */
     protected static function resolvePageKey()
     {
+        // don't cache in back office
+        if (defined('_PS_ADMIN_DIR_')) {
+            return false;
+        }
+
         // we can cache only GET request
         if (! isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] != 'GET') {
             return false;

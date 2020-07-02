@@ -39,7 +39,6 @@ class InstallModelDatabase extends InstallAbstractModel
      * @param string $login
      * @param string $password
      * @param string $prefix
-     * @param string $engine
      * @param bool $clear
      * @return array List of errors
      */
@@ -112,12 +111,4 @@ class InstallModelDatabase extends InstallAbstractModel
         return call_user_func([$class, 'createDatabase'], $server, $login, $password, $database, $dropit);
     }
 
-    public function getBestEngine($server, $database, $login, $password)
-    {
-        $class = Db::getClass();
-        $instance = new $class($server, $login, $password, $database, true);
-        $engine = $instance->getBestEngine();
-        unset($instance);
-        return $engine;
-    }
 }

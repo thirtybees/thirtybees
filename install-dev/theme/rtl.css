@@ -391,11 +391,11 @@ ul#optional_update li.ok {
     }
 }
 
-.btn-facebook, .btn-twitter, .btn-google-plus, .btn-pinterest, .btn-linkedin {
+.btn-facebook, .btn-twitter, .btn-pinterest, .btn-linkedin {
     padding: 4px 4px 4px 8px;
 }
 
-.btn-facebook i, .btn-twitter i, .btn-google-plus i, .btn-pinterest i, .btn-linkedin i {
+.btn-facebook i, .btn-twitter i, .btn-pinterest i, .btn-linkedin i {
     margin-left: 4px;
     margin-right: auto;
 }
