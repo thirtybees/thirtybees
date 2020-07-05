@@ -87,6 +87,7 @@ class MetaCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws ReflectionException
      * @version 1.0.0 Initial version.
      * @version 1.1.0 New parameter $forTheme.
      */
@@ -603,6 +604,8 @@ class MetaCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -622,6 +625,7 @@ class MetaCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteSelection($selection)
     {
@@ -642,6 +646,7 @@ class MetaCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -653,7 +658,7 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {
