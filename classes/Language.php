@@ -471,8 +471,10 @@ class LanguageCore extends ObjectModel
         $langPack = false;
         $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.$iso.'.gzip';
+        $baseUri = "https://translations.thirtybees.com/packs/{$version}/";
+
         $guzzle = new GuzzleHttp\Client([
-            'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
+            'base_uri' => $baseUri,
             'timeout'  => 20,
             'verify'   => _PS_TOOL_DIR_.'cacert.pem',
         ]);
@@ -482,7 +484,11 @@ class LanguageCore extends ObjectModel
         } catch (Exception $e) {
             $langPackLink = false;
             $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
-            $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
+            $errors[] = sprintf(
+                Tools::displayError('Downloading %s failed (PHP message: %s).'),
+                $baseUri . "{$iso}.json",
+                $e->getMessage()
+            );
         }
 
         if ( ! count($errors)) {
@@ -505,7 +511,11 @@ class LanguageCore extends ObjectModel
             } catch (Exception $e) {
                 $success = false;
                 $errors[] = Tools::displayError('No translations pack available for your version.');
-                $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
+                $errors[] = sprintf(
+                    Tools::displayError('Downloading %s failed (PHP message: %s).'),
+                    $baseUri . "{$iso}.gzip",
+                    $e->getMessage()
+                );
             }
 
             if ($success && !@file_exists($file)) {
