@@ -549,10 +549,6 @@ class LanguageCore extends ObjectModel
             AdminTranslationsController::addNewTabs((string) $iso, $fileList);
         }
 
-        if ($success) {
-            @unlink($file);
-        }
-
         return count($errors) ? $errors : true;
     }
 
