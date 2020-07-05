@@ -50,7 +50,7 @@ class WebserviceExceptionCore extends Exception
      * WebserviceExceptionCore constructor.
      *
      * @param string $message
-     * @param int    $code
+     * @param int|int[] $code
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
