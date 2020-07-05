@@ -1090,7 +1090,7 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {

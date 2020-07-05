@@ -512,7 +512,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {
