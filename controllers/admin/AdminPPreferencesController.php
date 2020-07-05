@@ -129,7 +129,7 @@ class AdminPPreferencesControllerCore extends AdminController
                 'fields' => [
                     'PS_PRODUCTS_PER_PAGE'  => [
                         'title'      => $this->l('Products per page'),
-                        'hint'       => $this->l('Number of products displayed per page. Default is 10.'),
+                        'hint'       => $this->l('Number of products displayed per page.'),
                         'validation' => 'isUnsignedInt',
                         'cast'       => 'intval',
                         'type'       => 'text',
