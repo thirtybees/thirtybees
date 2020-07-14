@@ -127,7 +127,7 @@ class AdminStockManagementControllerCore extends AdminController
             // Load product attributes with sql override
             $this->table = 'product_attribute';
             $this->list_id = 'product_attribute';
-            $this->_select = 'a.id_product_attribute as id, a.id_product, a.reference, a.ean13, a.upc, s.physical_quantity, s.usable_quantity';
+            $this->_select = 'a.id_product_attribute as id, a.id_product, a.reference, a.ean13, a.upc, SUM(s.physical_quantity) AS physical_quantity, SUM(s.usable_quantity) AS usable_quantity';
             $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
             $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'stock` s ON (s.id_product = a.id_product AND s.id_product_attribute = a.id_product_attribute )';
             $this->_where = 'AND a.id_product = '.$idProduct;
