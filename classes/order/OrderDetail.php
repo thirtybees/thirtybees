@@ -70,7 +70,7 @@ class OrderDetailCore extends ObjectModel
             'product_weight'                => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbNullable' => false],
             'id_tax_rules_group'            => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0', 'dbNullable' => true],
             'tax_computation_method'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'size' => 1, 'dbDefault' => '0'],
-            'tax_name'                      => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 16, 'dbNullable' => false],
+            'tax_name'                      => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 32, 'dbNullable' => false],
             'tax_rate'                      => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'size' => 10, 'decimals' => 3, 'dbDefault' => '0.000'],
             'ecotax'                        => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'ecotax_tax_rate'               => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'size' => 5, 'decimals' => 3, 'dbDefault' => '0.000'],
