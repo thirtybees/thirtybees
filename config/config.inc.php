@@ -237,23 +237,73 @@ $https_link = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED'))
 $context->link = new Link($https_link, $https_link);
 
 /**
- * @deprecated
- * USE : Configuration::get() method in order to getting the id of order status
+ * @deprecated use Configuration::get() instead
  */
-
 define('_PS_OS_PAYMENT_', Configuration::get('PS_OS_PAYMENT'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_PREPARATION_', Configuration::get('PS_OS_PREPARATION'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_SHIPPING_', Configuration::get('PS_OS_SHIPPING'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_DELIVERED_', Configuration::get('PS_OS_DELIVERED'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_CANCELED_', Configuration::get('PS_OS_CANCELED'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_REFUND_', Configuration::get('PS_OS_REFUND'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_ERROR_', Configuration::get('PS_OS_ERROR'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_OUTOFSTOCK_', Configuration::get('PS_OS_OUTOFSTOCK'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_OUTOFSTOCK_PAID_', Configuration::get('PS_OS_OUTOFSTOCK_PAID'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_OUTOFSTOCK_UNPAID_', Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_BANKWIRE_', Configuration::get('PS_OS_BANKWIRE'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_PAYPAL_', Configuration::get('PS_OS_PAYPAL'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_WS_PAYMENT_', Configuration::get('PS_OS_WS_PAYMENT'));
+
+/**
+ * @deprecated use Configuration::get() instead
+ */
 define('_PS_OS_COD_VALIDATION_', Configuration::get('PS_OS_COD_VALIDATION'));
 
 if (!defined('_MEDIA_SERVER_1_')) {
