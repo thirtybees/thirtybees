@@ -4,17 +4,17 @@
 			<div class="row">
 				{if $is_rtl}
 				<div class="col-sm-6 col-lg-4">
-					<div class="datepicker2" data-date="{$date_to}" data-date-format="{$date_format}"></div>
+					<div class="datepicker2" data-date="{$date_to|escape:'html'}" data-date-format="{$date_format|escape:'html'}"></div>
 				</div>
 				<div class="col-sm-6 col-lg-4">
-					<div class="datepicker1" data-date="{$date_from}" data-date-format="{$date_format}"></div>
+					<div class="datepicker1" data-date="{$date_from|escape:'html'}" data-date-format="{$date_format|escape:'html'}"></div>
 				</div>
 				{else}
 				<div class="col-sm-6 col-lg-4">
-					<div class="datepicker1" data-date="{$date_from}" data-date-format="{$date_format}"></div>
+					<div class="datepicker1" data-date="{$date_from|escape:'html'}" data-date-format="{$date_format|escape:'html'}"></div>
 				</div>
 				<div class="col-sm-6 col-lg-4">
-					<div class="datepicker2" data-date="{$date_to}" data-date-format="{$date_format}"></div>
+					<div class="datepicker2" data-date="{$date_to|escape:'html'}" data-date-format="{$date_format|escape:'html'}"></div>
 				</div>
 				{/if}
 				<div class="col-xs-12 col-sm-6 col-lg-4 pull-right">
@@ -40,9 +40,9 @@
 							</div>
 							<div class='form-date-body'>
 								<label>{l s='From'}</label>
-								<input class='date-input form-control' id='date-start' placeholder='Start' type='text' name="date_from" value="{$date_from}" data-date-format="{$date_format}" tabindex="1" />
+								<input class='date-input form-control' id='date-start' placeholder='Start' type='text' name="date_from" value="{$date_from|escape:'html'}" data-date-format="{$date_format|escape:'html'}" tabindex="1" />
 								<label>{l s='to'}</label>
-								<input class='date-input form-control' id='date-end' placeholder='End' type='text' name="date_to" value="{$date_to}" data-date-format="{$date_format}" tabindex="2" />
+								<input class='date-input form-control' id='date-end' placeholder='End' type='text' name="date_to" value="{$date_to|escape:'html'}" data-date-format="{$date_format|escape:'html'}" tabindex="2" />
 							</div>
 						</div>
 						<div id="date-compare" class='form-date-group'>
@@ -61,9 +61,9 @@
 							</div>
 							<div class="form-date-body" id="form-date-body-compare"{if is_null($compare_date_from) || is_null($compare_date_to)} style="display: none;"{/if}>
 								<label>{l s='From'}</label>
-								<input id="date-start-compare" class="date-input form-control" type="text" placeholder="Start" name="compare_date_from" value="{$compare_date_from}" data-date-format="{$date_format}" tabindex="4" />
+								<input id="date-start-compare" class="date-input form-control" type="text" placeholder="Start" name="compare_date_from" value="{$compare_date_from|escape:'html'}" data-date-format="{$date_format|escape:'html'}" tabindex="4" />
 								<label>{l s='to'}</label>
-								<input id="date-end-compare" class="date-input form-control" type="text" placeholder="End" name="compare_date_to" value="{$compare_date_to}" data-date-format="{$date_format}"
+								<input id="date-end-compare" class="date-input form-control" type="text" placeholder="End" name="compare_date_to" value="{$compare_date_to|escape:'html'}" data-date-format="{$date_format|escape:'html'}"
 								tabindex="5" />
 							</div>
 						</div>

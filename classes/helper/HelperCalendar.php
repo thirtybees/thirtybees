@@ -144,7 +144,7 @@ class HelperCalendarCore extends Helper
      */
     public function setCompareDateFrom($value)
     {
-        $this->_compare_date_from = $value;
+        $this->_compare_date_from = $this->convertToDate($value);
 
         return $this;
     }
@@ -170,7 +170,7 @@ class HelperCalendarCore extends Helper
      */
     public function setCompareDateTo($value)
     {
-        $this->_compare_date_to = $value;
+        $this->_compare_date_to = $this->convertToDate($value);
 
         return $this;
     }
@@ -262,32 +262,23 @@ class HelperCalendarCore extends Helper
      */
     public function setDateFrom($value)
     {
-        if (!isset($value) || $value == '') {
-            $value = date('Y-m-d', strtotime('-31 days'));
-        }
 
-        if (!is_string($value)) {
-            throw new PrestaShopException('Date must be a string');
-        }
-
-        $this->_date_from = $value;
+        $this->_date_from = $this->convertToDate($value);
 
         return $this;
     }
 
     /**
-     * @return false|string
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function getDateFrom()
     {
-        if (!isset($this->_date_from)) {
-            $this->_date_from = date('Y-m-d', strtotime('-31 days'));
-        }
-
-        return $this->_date_from;
+        return isset($this->_date_from)
+            ? $this->_date_from
+            : date('Y-m-d', strtotime('-31 days'));
     }
 
     /**
@@ -301,15 +292,7 @@ class HelperCalendarCore extends Helper
      */
     public function setDateTo($value)
     {
-        if (!isset($value) || $value == '') {
-            $value = date('Y-m-d');
-        }
-
-        if (!is_string($value)) {
-            throw new PrestaShopException('Date must be a string');
-        }
-
-        $this->_date_to = $value;
+        $this->_date_to = $this->convertToDate($value);
 
         return $this;
     }
@@ -322,11 +305,9 @@ class HelperCalendarCore extends Helper
      */
     public function getDateTo()
     {
-        if (!isset($this->_date_to)) {
-            $this->_date_to = date('Y-m-d');
-        }
-
-        return $this->_date_to;
+        return isset($this->_date_to)
+            ? $this->_date_to
+            : date('Y-m-d');
     }
 
     /**
@@ -444,5 +425,22 @@ class HelperCalendarCore extends Helper
         }
 
         return $this->_rtl;
+    }
+
+    /**
+     * Converts and validates input value to date
+     *
+     * @param mixed $value
+     * @return string | null
+     */
+    public function convertToDate($value)
+    {
+        if (is_string($value) && !empty($value)) {
+            $timestamp = strtotime($value);
+            if ($timestamp !== false) {
+                return date('Y-m-d', $timestamp);
+            }
+        }
+        return null;
     }
 }
