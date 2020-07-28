@@ -379,7 +379,7 @@ class AdminSearchControllerCore extends AdminController
                 $searchType = (int) Tools::getValue('bo_search_type');
 
                 if ($query) {
-                    $helper->currentIndex .= '&bo_query='.$query.'&bo_search_type='.$searchType;
+                    $helper->currentIndex .= '&bo_query='.urlencode($query).'&bo_search_type='.$searchType;
                 }
 
                 $helper->token = Tools::getAdminTokenLite('AdminProducts');
