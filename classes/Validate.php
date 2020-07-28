@@ -1202,6 +1202,21 @@ class ValidateCore
     }
 
     /**
+     * Check for standard uri path validity
+     *
+     * @param string $path path to validate
+     *
+     * @return bool Validity is ok or not
+     */
+    public static function isUriPath($path)
+    {
+        if (is_string($path)) {
+            return (bool) preg_match('/^[\/a-zA-Z0-9_.-]*$/', $path);
+        }
+        return false;
+    }
+
+    /**
      * Check for admin panel tab name validity
      *
      * @param string $name Name to validate

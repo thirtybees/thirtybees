@@ -396,8 +396,35 @@ class ValidateTest extends \Codeception\TestCase\Test
      *
      * @dataProvider isPriceProvider
      */
-    public function testisPrice($expected, $input)
+    public function testIsPrice($expected, $input)
     {
         $this->assertSame($expected, Validate::isPrice($input));
+    }
+
+    public function isUriPathProvider()
+    {
+        return [
+            [true,  ""],
+            [true,  "/"],
+            [true,  "/a/b"],
+            [true,  "/a/b-c/d"],
+            [true, "6"],
+            [true, "//6/a"],
+            [false, 6],
+            [false, "a b"],
+            [true, 'a.b.c'],
+        ];
+    }
+
+    /**
+     * @param bool $expected
+     * @param string $input
+     *
+     * @dataProvider isUriPathProvider
+     * @throws PrestaShopException
+     */
+    public function testIsUriPathProvider($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isUriPath($input));
     }
 }
