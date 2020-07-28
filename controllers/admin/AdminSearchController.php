@@ -389,6 +389,7 @@ class AdminSearchControllerCore extends AdminController
                 }
 
                 $this->tpl_view_vars['products'] = $view;
+                $this->tpl_view_vars['productsCount'] = count($this->_list['products']);
             }
             if (isset($this->_list['customers']) && $this->_list['customers']) {
                 $view = '';
@@ -411,6 +412,7 @@ class AdminSearchControllerCore extends AdminController
                     $view = $helper->generateList($this->_list['customers'], $this->fields_list['customers']);
                 }
                 $this->tpl_view_vars['customers'] = $view;
+                $this->tpl_view_vars['customersCount'] = count($this->_list['customers']);
             }
             if (isset($this->_list['orders']) && $this->_list['orders']) {
                 $view = '';
@@ -430,6 +432,7 @@ class AdminSearchControllerCore extends AdminController
                     $view = $helper->generateList($this->_list['orders'], $this->fields_list['orders']);
                 }
                 $this->tpl_view_vars['orders'] = $view;
+                $this->tpl_view_vars['ordersCount'] = count($this->_list['orders']);
             }
 
             if (isset($this->_list['modules']) && $this->_list['modules']) {
