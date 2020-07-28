@@ -128,6 +128,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array Shops (id, name)
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -147,8 +149,11 @@ class WarehouseCore extends ObjectModel
     /**
      * Gets the carriers associated to the current warehouse
      *
+     * @param bool $returnReference
      * @return array Ids of the associated carriers
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -773,7 +778,7 @@ class WarehouseCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {

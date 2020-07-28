@@ -7,22 +7,20 @@ php:
   - 7.2
   - 7.3
 
-matrix:
-  fast_finish: true
-sudo: required
-dist: trusty
-group: deprecated-2017Q4
+os: linux
 
-branches:
-  except:
-    - /^[0-9]+\.[0-9]+\.x$/
+jobs:
+  fast_finish: true
+
+services:
+  - mysql
+
+git:
+  depth: 3
 
 cache:
   directories:
     - $HOME/.composer/cache
-
-notifications:
-  slack: thirtybees:L2Dyesn7En8jZ008IUwCrMnl
 
 before_install:
   - composer install --prefer-dist --no-interaction --no-progress
@@ -39,7 +37,8 @@ script:
   - php -S thirty.bees:8888 -t . >/dev/null 2>&1 &
   - phantomjs --webdriver=4444 >/dev/null 2>&1 &
   - sleep 10
-  - vendor/bin/codecept run functional,acceptance -c .
+  - vendor/bin/codecept run functional -c .
+#  - vendor/bin/codecept run acceptance -c .
   - if [ -f log/2* ]; then cat log/2*; false; fi
 
 after_success:

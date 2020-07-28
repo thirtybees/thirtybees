@@ -568,6 +568,7 @@ class AdminOrdersControllerCore extends AdminController
      * Post processing
      *
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      *
      * @since 1.0.0
      */
@@ -747,19 +748,24 @@ class AdminOrdersControllerCore extends AdminController
                     if (!count($this->errors)) {
                         //check if a thread already exist
                         $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($customer->email, $order->id);
+                        $threadStatus = Tools::getValue('status_msg', 'open');
                         if (!$idCustomerThread) {
                             $customerThread = new CustomerThread();
                             $customerThread->id_contact = 0;
                             $customerThread->id_customer = (int) $order->id_customer;
-                            $customerThread->id_shop = (int) $this->context->shop->id;
+                            $customerThread->id_shop = (int) $order->id_shop;
                             $customerThread->id_order = (int) $order->id;
                             $customerThread->id_lang = (int) $this->context->language->id;
                             $customerThread->email = $customer->email;
-                            $customerThread->status = 'open';
+                            $customerThread->status = $threadStatus;
                             $customerThread->token = Tools::passwdGen(12);
                             $customerThread->add();
                         } else {
                             $customerThread = new CustomerThread((int) $idCustomerThread);
+                            if ($customerThread->status !== $threadStatus) {
+                                $customerThread->status = $threadStatus;
+                                $customerThread->update();
+                            }
                         }
 
                         $customerMessage = new CustomerMessage();
@@ -2710,7 +2716,7 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         $decimals = 0;
-        if ($currency->decimals) {
+        if ($this->context->currency->decimals) {
             $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         }
         $this->ajaxDie(json_encode([

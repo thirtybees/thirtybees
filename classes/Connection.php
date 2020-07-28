@@ -137,6 +137,7 @@ class ConnectionCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function setNewConnection($cookie)
     {
@@ -156,37 +157,41 @@ class ConnectionCore extends ObjectModel
             }
         }
 
-        // A new connection is created if the guest made no actions during 30 minutes
-        $sql = 'SELECT SQL_NO_CACHE `id_guest`
-				FROM `'._DB_PREFIX_.'connections`
-				WHERE `id_guest` = '.(int) $cookie->id_guest.'
-					AND `date_add` > \''.pSQL(date('Y-m-d H:i:00', time() - 1800)).'\'
-					'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-				ORDER BY `date_add` DESC';
-        $result = Db::getInstance()->getRow($sql, false);
-        if (!$result['id_guest'] && (int) $cookie->id_guest) {
-            // The old connections details are removed from the database in order to spare some memory
-            Connection::cleanConnectionsPages();
+        $guestId = (int) $cookie->id_guest;
+        if ($guestId) {
 
-            $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-            $arrayUrl = parse_url($referer);
-            if (!isset($arrayUrl['host']) || preg_replace('/^www./', '', $arrayUrl['host']) == preg_replace('/^www./', '', Tools::getHttpHost(false, false))) {
-                $referer = '';
-            }
-            $connection = new Connection();
-            $connection->id_guest = (int) $cookie->id_guest;
-            $connection->id_page = Page::getCurrentId();
-            $connection->ip_address = Tools::getRemoteAddr() ? (int) ip2long(Tools::getRemoteAddr()) : '';
-            $connection->id_shop = Context::getContext()->shop->id;
-            $connection->id_shop_group = Context::getContext()->shop->id_shop_group;
-            $connection->date_add = $cookie->date_add;
-            if (Validate::isAbsoluteUrl($referer)) {
-                $connection->http_referer = substr($referer, 0, 254);
-            }
-            $connection->add();
-            $cookie->id_connections = $connection->id;
+            $sql = (new DbQuery())
+                ->select('1')
+                ->from('connections', 'c')
+                ->addCurrentShopRestriction('c')
+                ->where('`c`.`id_guest` = ' . $guestId )
+                ->where('`c`.`date_add` > \'' . pSQL(date('Y-m-d H:i:00', time() - 1800)) . '\'');
+            $exists = Db::getInstance()->getRow($sql);
 
-            return $connection->id_page;
+            if (!$exists) {
+                // The old connections details are removed from the database in order to spare some memory
+                Connection::cleanConnectionsPages();
+
+                $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+                $arrayUrl = parse_url($referer);
+                if (!isset($arrayUrl['host']) || preg_replace('/^www./', '', $arrayUrl['host']) == preg_replace('/^www./', '', Tools::getHttpHost(false, false))) {
+                    $referer = '';
+                }
+                $connection = new Connection();
+                $connection->id_guest = $guestId;
+                $connection->id_page = Page::getCurrentId();
+                $connection->ip_address = Tools::getRemoteAddr() ? (int)ip2long(Tools::getRemoteAddr()) : '';
+                $connection->id_shop = Context::getContext()->shop->id;
+                $connection->id_shop_group = Context::getContext()->shop->id_shop_group;
+                $connection->date_add = $cookie->date_add;
+                if (Validate::isAbsoluteUrl($referer)) {
+                    $connection->http_referer = substr($referer, 0, 254);
+                }
+                $connection->add();
+                $cookie->id_connections = $connection->id;
+
+                return $connection->id_page;
+            }
         }
     }
 

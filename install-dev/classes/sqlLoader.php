@@ -84,10 +84,11 @@ class InstallSqlLoader
      * Parse a SQL file and immediately executes the query
      *
      * @param string $filename
-     * @param bool   $stopWhenFail
+     * @param bool $stopWhenFail
      *
      * @return bool
      * @throws PrestashopInstallerException
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -104,9 +105,10 @@ class InstallSqlLoader
      * Parse and execute a list of SQL queries
      *
      * @param string $content
-     * @param bool   $stopWhenFail
+     * @param bool $stopWhenFail
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function parse($content, $stopWhenFail = true)
     {

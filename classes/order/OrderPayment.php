@@ -123,9 +123,10 @@ class OrderPaymentCore extends ObjectModel
             'OrderPayment',
             Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                    ->select('*')
-                    ->from('order_payment')
-                    ->where('`id_order` = '.(int) $idOrder)
+                    ->select('op.*')
+                    ->from('order_payment', 'op')
+                    ->innerJoin('orders', 'o', 'o.`reference`=op.`order_reference`')
+                    ->where('o.`id_order` = '.(int) $idOrder)
             )
         );
     }

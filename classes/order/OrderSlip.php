@@ -351,7 +351,7 @@ class OrderSlipCore extends ObjectModel
                 continue;
             }
 
-            if (!Tools::isSubmit('cancelProduct') && $order->hasBeenPaid()) {
+            if (!Tools::isSubmit('cancelProduct')) {
                 $orderDetail->product_quantity_refunded += $quantity;
             }
 

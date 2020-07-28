@@ -1513,7 +1513,7 @@ ul#optional_update li.ok {
 	margin: 16px 0
 }
 
-.btn-facebook, .btn-twitter, .btn-google-plus, .btn-pinterest, .btn-linkedin {
+.btn-facebook, .btn-twitter, .btn-pinterest, .btn-linkedin {
 	color: #333333;
 	background-color: white;
 	border: solid 1px #333333;
@@ -1534,11 +1534,11 @@ ul#optional_update li.ok {
 	border-radius: 3px;
 }
 
-.btn-facebook:hover, .btn-facebook:focus, .btn-facebook:active, .btn-twitter:hover, .btn-twitter:focus, .btn-twitter:active, .btn-google-plus:hover, .btn-google-plus:focus, .btn-google-plus:active, .btn-pinterest:hover, .btn-pinterest:focus, .btn-pinterest:active, .btn-linkedin:hover, .btn-linkedin:focus, .btn-linkedin:active {
+.btn-facebook:hover, .btn-facebook:focus, .btn-facebook:active, .btn-twitter:hover, .btn-twitter:focus, .btn-twitter:active, .btn-pinterest:hover, .btn-pinterest:focus, .btn-pinterest:active, .btn-linkedin:hover, .btn-linkedin:focus, .btn-linkedin:active {
 	color: white;
 }
 
-.btn-facebook i, .btn-twitter i, .btn-google-plus i, .btn-pinterest i, .btn-linkedin i {
+.btn-facebook i, .btn-twitter i, .btn-pinterest i, .btn-linkedin i {
 	vertical-align: middle;
 	display: inline-block;
 	height: 32px;
@@ -1571,18 +1571,6 @@ ul#optional_update li.ok {
 	background-position: -64px -32px;
 }
 
-.btn-google-plus i {
-	background-position: 0 0;
-}
-
-.btn-google-plus:hover {
-	background-color: #e04b34;
-}
-
-.btn-google-plus:hover i {
-	background-position: 0 -32px;
-}
-
 .btn-pinterest i {
 	background-position: -96px 0;
 }
@@ -1605,7 +1593,4 @@ ul#optional_update li.ok {
 
 .btn-linkedin:hover i {
 	background-position: -32px -32px;
-}
-#jerry-bottom {
-	text-align: center;
 }

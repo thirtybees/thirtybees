@@ -56,6 +56,10 @@ class InstallXmlLoader
     protected $data_path;
     protected $lang_path;
     protected $img_path;
+
+    /**
+     * @var array
+     */
     protected $ids = [];
 
     protected $primaries = [];
@@ -136,7 +140,7 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $ids
+     * @param array $ids
      *
      * @since 1.0.0
      */

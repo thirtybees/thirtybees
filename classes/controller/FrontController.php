@@ -68,7 +68,7 @@ class FrontControllerCore extends Controller
      */
     protected static $cart;
     /**
-     * @var array Holds current customer's groups.
+     * @var int[] Holds current customer's groups.
      */
     protected static $currentCustomerGroups;
     /** @var $errorsarray */
@@ -159,7 +159,7 @@ class FrontControllerCore extends Controller
     /**
      * Sets and returns customer groups that the current customer(visitor) belongs to.
      *
-     * @return array
+     * @return int[]
      *
      * @throws PrestaShopDatabaseException
      *
@@ -187,8 +187,10 @@ class FrontControllerCore extends Controller
                     ->from('customer_group')
                     ->where('`id_customer` = '.(int) $context->customer->id)
             );
-            foreach ($result as $row) {
-                static::$currentCustomerGroups[] = $row['id_group'];
+            if ($result) {
+                foreach ($result as $row) {
+                    static::$currentCustomerGroups[] = (int)$row['id_group'];
+                }
             }
         }
 

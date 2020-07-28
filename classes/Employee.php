@@ -644,7 +644,7 @@ class EmployeeCore extends ObjectModel
     public function logout()
     {
         if (isset(Context::getContext()->cookie)) {
-            Context::getContext()->cookie->logout();
+            Context::getContext()->cookie->delete();
             Context::getContext()->cookie->write();
         }
         $this->id = null;

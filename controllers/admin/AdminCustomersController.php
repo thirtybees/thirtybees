@@ -48,6 +48,7 @@ class AdminCustomersControllerCore extends AdminController
      * AdminCustomersControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -175,19 +176,24 @@ class AdminCustomersControllerCore extends AdminController
         parent::__construct();
 
         $this->_select = '
-        a.date_add, gl.name as title, (
-            SELECT SUM(total_paid_real / conversion_rate)
-            FROM '._DB_PREFIX_.'orders o
-            WHERE o.id_customer = a.id_customer
-            '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o').'
-            AND o.valid = 1
-        ) as total_spent, (
-            SELECT c.date_add FROM '._DB_PREFIX_.'guest g
-            LEFT JOIN '._DB_PREFIX_.'connections c ON c.id_guest = g.id_guest
-            WHERE g.id_customer = a.id_customer
-            ORDER BY c.date_add DESC
-            LIMIT 1
-        ) as connect';
+            a.date_add,
+            gl.name as title,
+            (
+                SELECT SUM(op.amount / op.conversion_rate)
+                FROM '._DB_PREFIX_.'orders o
+                INNER JOIN '._DB_PREFIX_.'order_payment op ON (o.reference = op.order_reference)
+                WHERE o.id_customer = a.id_customer
+                '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o').'
+                AND o.valid = 1
+            ) as total_spent,
+            (
+                SELECT c.date_add FROM '._DB_PREFIX_.'guest g
+                LEFT JOIN '._DB_PREFIX_.'connections c ON c.id_guest = g.id_guest
+                WHERE g.id_customer = a.id_customer
+                ORDER BY c.date_add DESC
+                LIMIT 1
+            ) as connect
+        ';
 
         // Check if we can add a customer
         if (Shop::isFeatureActive() && (Shop::getContext() == Shop::CONTEXT_ALL || Shop::getContext() == Shop::CONTEXT_GROUP)) {
@@ -814,6 +820,9 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderView()
@@ -828,32 +837,18 @@ class AdminCustomersControllerCore extends AdminController
         $genderImage = $gender->getImage();
 
         $customerStats = $customer->getStats();
-        if ($total_customer = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-            ->select('SUM(`total_paid_real`)')
-            ->from('orders')
-            ->where('`id_customer` = '.(int) $customer->id)
-            ->where('`valid` = 1')
-        )) {
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                ->select('SQL_CALC_FOUND_ROWS COUNT(*)')
-                ->from('orders')
-                ->where('`valid` = 1')
-                ->where('`id_customer` != '.(int) $customer->id)
-                ->groupBy('id_customer')
-                ->having('SUM(`total_paid_real`) > '.(int) $total_customer)
-            );
-            $countBetterCustomers = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()') + 1;
-        } else {
-            $countBetterCustomers = '-';
-        }
+        $countBetterCustomers = $customer->getBestCustomerRank() ?: '-';
 
         $orders = Order::getCustomerOrders($customer->id, true);
         $totalOrders = count($orders);
+        $shopCurrency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
         for ($i = 0; $i < $totalOrders; $i++) {
-            $orders[$i]['total_paid_real_not_formated'] = $orders[$i]['total_paid_real'];
-            $orders[$i]['total_paid_real'] = Tools::displayPrice($orders[$i]['total_paid_real'], new Currency((int) $orders[$i]['id_currency']));
+            $currency = Currency::getCurrencyInstance($orders[$i]['id_currency']);
+            $orderId = (int)$orders[$i]['id_order'];
+            $order = new Order($orderId);
+            $totalPaymentOrderCurrency = $order->getTotalPaid($currency);
+            $orders[$i]['totalPaymentFormatted'] = Tools::displayPrice($totalPaymentOrderCurrency, $currency->id);
+            $orders[$i]['totalPaymentShopCurrency'] = $shopCurrency->id == $currency->id ? $totalPaymentOrderCurrency : $order->getTotalPaid($shopCurrency);
         }
 
         $messages = CustomerThread::getCustomerMessages((int) $customer->id);
@@ -886,7 +881,7 @@ class AdminCustomersControllerCore extends AdminController
 
             if ($order['valid']) {
                 $ordersOk[] = $order;
-                $totalOk += $order['total_paid_real_not_formated'] / $order['conversion_rate'];
+                $totalOk += $order['totalPaymentShopCurrency'];
             } else {
                 $ordersKo[] = $order;
             }

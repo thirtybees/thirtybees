@@ -525,9 +525,7 @@ abstract class PaymentModuleCore extends Module
                     if ($this->context->currency->decimals) {
                         $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
                     }
-                    $amountPaid = $dontTouchAmount ? $amountPaid :
-                        Tools::ps_round($amountPaid, $displayDecimals);
-                    $order->total_paid_real = 0;
+                    $amountPaid = $dontTouchAmount ? $amountPaid : Tools::ps_round($amountPaid, $displayDecimals);
 
                     $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
                     $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
@@ -569,11 +567,7 @@ abstract class PaymentModuleCore extends Module
                     }
 
                     // Amount paid by customer is not the right one -> Status = payment error
-                    // We don't use the following condition to avoid the float precision issues : http://www.php.net/manual/en/language.types.float.php
-                    // if ($order->total_paid != $order->total_paid_real)
-                    // We use number_format in order to compare two string
-                    if ($orderStatus->logable
-                        && (string) $cartTotalPaid !== (string) $amountPaid) {
+                    if ($orderStatus->logable && (string) $cartTotalPaid !== (string) $amountPaid) {
                         $idOrderState = Configuration::get('PS_OS_ERROR');
                     }
 

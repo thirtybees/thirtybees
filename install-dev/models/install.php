@@ -39,7 +39,11 @@ class InstallModelInstall extends InstallAbstractModel
     const SETTINGS_FILE = 'config/settings.inc.php';
     private static $cacheLocalizationPackContent = null;
 
+    /**
+     * @var array
+     */
     public $xmlLoaderIds;
+
     /**
      * @var FileLogger
      */
@@ -50,6 +54,7 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestashopInstallerException
      */
     public function __construct()
     {
@@ -69,12 +74,12 @@ class InstallModelInstall extends InstallAbstractModel
      * @param string $databasePassword
      * @param string $databaseName
      * @param string $databasePrefix
-     * @param string $databaseEngine
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestashopInstallerException
      */
     public function generateSettingsFile($databaseServer, $databaseLogin, $databasePassword, $databaseName, $databasePrefix)
     {
@@ -112,8 +117,12 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
-            $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
-            $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            try {
+                $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
+                $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
+            } catch (\Defuse\Crypto\Exception\EnvironmentIsBrokenException $e) {
+                throw new PrestashopInstallerException("Failed to generate encryption key", 0, $e);
+            }
         }
 
         $settingsContent = "<?php\n";
@@ -161,6 +170,10 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : installDatabase
      * Generate settings file and create database structure
      *
+     * @param bool $clearDatabase
+     * @return bool
+     * @throws PrestaShopException
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -168,7 +181,10 @@ class InstallModelInstall extends InstallAbstractModel
     {
         // Clear database (only tables with same prefix)
         require_once _PS_ROOT_DIR_.'/'.self::SETTINGS_FILE;
-        $collations = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+
+        $conn = Db::createInstance( _DB_SERVER_, _DB_USER_, _DB_PASSWD_, _DB_NAME_);
+
+        $collations = $conn->getValue(
             'SELECT `COLLATION_NAME`
              FROM `INFORMATION_SCHEMA`.`COLLATIONS`
              WHERE `COLLATION_NAME` = \'utf8mb4_unicode_ci\'
@@ -180,7 +196,7 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
-        $engine = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $engine = $conn->getValue(
             'SELECT `SUPPORT`
              FROM `INFORMATION_SCHEMA`.`ENGINES`
              WHERE `ENGINE` = \'InnoDB\';'
@@ -191,7 +207,7 @@ class InstallModelInstall extends InstallAbstractModel
                     $this->language->l(
                         'The InnoDB database engine does not seem to be available. If you are using a MySQL alternative, could you please open an issue on %s? Thank you!'
                     ),
-                    '<a href="https://github.com/thirtybees/ThirtyBees.git" target="_blank">GitHub</a>'
+                    '<a href="https://github.com/thirtybees/thirtybees.git" target="_blank">GitHub</a>'
                 )
             );
 
@@ -199,18 +215,18 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if ($clearDatabase) {
-            $this->clearDatabase();
+            $this->clearDatabase($conn);
         }
 
         // Install database structure
         require_once(_PS_MODULE_DIR_ . '/coreupdater/classes/schema/autoload.php');
+        \CoreUpdater\DatabaseCharset::loadCharsets($conn);
         $schemaBuilder = new \CoreUpdater\ObjectModelSchemaBuilder();
         try {
             $schema = $schemaBuilder->getSchema();
-            $db = Db::getInstance();
             foreach ($schema->getTables() as $table) {
-                if (! $db->execute($table->getDDLStatement())) {
-                    $this->setError($this->language->l('SQL error on query: <i>%s</i>', $db->getMsgError()));
+                if (! $conn->execute($table->getDDLStatement())) {
+                    $this->setError($this->language->l('SQL error on query: <i>%s</i>', $conn->getMsgError()));
                     return false;
                 }
             }
@@ -224,15 +240,19 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * Clear database (only tables with same prefix).
      *
+     * @param Db $conn
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
      * @version 1.0.0 Initial version, $truncate deprecated.
      * @version 1.1.0 Removed $truncate.
      */
-    public function clearDatabase()
+    public function clearDatabase($conn)
     {
-        foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
+        foreach ($conn->executeS('SHOW TABLES') as $row) {
             $table = current($row);
             if (!_DB_PREFIX_ || preg_match('#^'._DB_PREFIX_.'#i', $table)) {
-                Db::getInstance()->execute(('DROP TABLE').' `'.$table.'`');
+                $conn->execute(('DROP TABLE').' `'.$table.'`');
             }
         }
     }
@@ -244,12 +264,14 @@ class InstallModelInstall extends InstallAbstractModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @param string   $shopName
+     * @param string $shopName
      * @param int|bool $isoCountry
-     * @param bool     $allLanguages
-     * @param bool     $clearDatabase
+     * @param bool $allLanguages
+     * @param bool $clearDatabase
      *
      * @return bool
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function installDefaultData($shopName, $isoCountry = false, $allLanguages = false, $clearDatabase = false)
     {
@@ -298,6 +320,9 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

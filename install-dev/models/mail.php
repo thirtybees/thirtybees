@@ -52,13 +52,14 @@ class InstallModelMail extends InstallAbstractModel
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param bool   $smtpChecked
+     * @param bool $smtpChecked
      * @param string $server
      * @param string $login
      * @param string $password
-     * @param int    $port
+     * @param int $port
      * @param string $encryption
      * @param string $email
+     * @throws PrestashopInstallerException
      */
     public function __construct($smtpChecked, $server, $login, $password, $port, $encryption, $email)
     {
@@ -79,6 +80,7 @@ class InstallModelMail extends InstallAbstractModel
      * @param string $subject
      * @param string $content
      * @return bool|string false is everything was fine, or error string
+     * @throws PrestaShopException
      */
     public function send($subject, $content)
     {

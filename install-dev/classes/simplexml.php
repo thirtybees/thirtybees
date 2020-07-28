@@ -58,6 +58,8 @@ class InstallSimplexmlElement extends SimpleXMLElement
             foreach ($value->children() as $child) {
                 $newElement->addChild($child->getName(), $child);
             }
+
+            return $newElement;
         } else {
             return parent::addChild($name, str_replace('&', '&amp;', $value), $namespace);
         }

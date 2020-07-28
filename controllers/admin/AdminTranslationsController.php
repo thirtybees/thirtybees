@@ -1326,22 +1326,12 @@ class AdminTranslationsControllerCore extends AdminController
             $_POST['type']
         );
 
-        // To deal with vanished translations, remove all translations
-        // belonging to the saved panel before adding the ones POSTed.
-        $keyBase = array_keys($_POST)[0];
-        if ($keyBase) {
-            $keyBase = substr($keyBase, 0, strrpos($keyBase, '_'));
-            foreach (array_keys($translationsArray) as $key) {
-                if (strpos($key, $keyBase) === 0 /* start of string! */) {
-                    unset($translationsArray[$key]);
-                }
-            }
-        }
-
-        // Get all POST which aren't empty
+        // update translations
         foreach ($_POST as $key => $value) {
             if (!empty($value)) {
                 $translationsArray[$key] = $value;
+            } else {
+                unset($translationsArray[$key]);
             }
         }
 
@@ -1559,7 +1549,7 @@ class AdminTranslationsControllerCore extends AdminController
         $initialRootDir = $rootDir;
         foreach ($modules as $module) {
             $rootDir = $initialRootDir;
-            if ($module{0} == '.') {
+            if ($module[0] == '.') {
                 continue;
             }
 
@@ -1688,7 +1678,7 @@ class AdminTranslationsControllerCore extends AdminController
         $arrGoodExt = ['.tpl', '.php'];
 
         foreach ($files as $key => $file) {
-            if ($file{0} === '.' || in_array(substr($file, 0, strrpos($file, '.')), $this->all_iso_lang)) {
+            if ($file[0] === '.' || in_array(substr($file, 0, strrpos($file, '.')), $this->all_iso_lang)) {
                 unset($files[$key]);
             } elseif ($typeClear === 'file' && !in_array(substr($file, strrpos($file, '.')), $arrGoodExt)) {
                 unset($files[$key]);

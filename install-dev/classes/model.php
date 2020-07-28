@@ -50,6 +50,7 @@ abstract class InstallAbstractModel
      * InstallAbstractModel constructor.
      *
      * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function __construct()
     {
