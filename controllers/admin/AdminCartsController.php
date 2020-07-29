@@ -916,13 +916,14 @@ class AdminCartsControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function displayAjaxSearchCarts()
     {
         $idCustomer = (int) Tools::getValue('id_customer');
         $carts = Cart::getCustomerCarts((int) $idCustomer);
         $orders = Order::getCustomerOrders((int) $idCustomer);
-        $customer = new Customer((int) $idCustomer);
 
         if (count($carts)) {
             foreach ($carts as $key => &$cart) {
@@ -934,9 +935,10 @@ class AdminCartsControllerCore extends AdminController
                 $cart['total_price'] = Tools::displayPrice($cartObj->getOrderTotal(), $currency);
             }
         }
-        if (count($orders)) {
+        if ($orders) {
             foreach ($orders as &$order) {
-                $order['total_paid_real'] = Tools::displayPrice($order['total_paid_real'], $currency);
+                $orderObj = new Order($order['id_order']);
+                $order['totalPaid'] = Tools::displayPrice($orderObj->getTotalPaid(), (int)$order['id_currency']);
             }
         }
         if ($orders || $carts) {

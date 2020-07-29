@@ -1331,7 +1331,7 @@ CREATE TABLE `PREFIX_order_detail` (
   `product_weight` decimal(20,6) NOT NULL,
   `id_tax_rules_group` int(11) unsigned DEFAULT '0',
   `tax_computation_method` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `tax_name` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tax_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tax_rate` decimal(10,3) NOT NULL DEFAULT '0.000',
   `ecotax` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `ecotax_tax_rate` decimal(5,3) NOT NULL DEFAULT '0.000',

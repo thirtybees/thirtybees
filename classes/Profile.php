@@ -131,7 +131,7 @@ class ProfileCore extends ObjectModel
      * @param int    $idProfile
      * @param string $type
      *
-     * @return bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -215,7 +215,8 @@ class ProfileCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopData§baseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -230,7 +231,7 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {

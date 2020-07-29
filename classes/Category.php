@@ -2116,6 +2116,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLink(Link $link = null, $idLang = null)
     {
@@ -2598,7 +2599,7 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param $table TableSchema
+     * @param $table \CoreUpdater\TableSchema
      */
     public static function processTableSchema($table)
     {

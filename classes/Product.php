@@ -1684,7 +1684,7 @@ class ProductCore extends ObjectModel
 		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 		LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature)
 		'.Shop::addSqlAssociation('feature', 'f').'
-		WHERE `id_product` IN ('.implode($productImplode, ',').')
+		WHERE `id_product` IN ('.implode(',', $productImplode).')
 		ORDER BY f.position ASC'
         );
 
@@ -2163,7 +2163,9 @@ class ProductCore extends ObjectModel
 
         $idAddress = $context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
         $ids = Address::getCountryAndState($idAddress);
-        $idCountry = $ids['id_country'] ? (int) $ids['id_country'] : (int) Configuration::get('PS_COUNTRY_DEFAULT');
+        $idCountry = ($ids && $ids['id_country'])
+            ? (int) $ids['id_country']
+            : (int) Configuration::get('PS_COUNTRY_DEFAULT');
 
         return SpecificPrice::getProductIdByDate(
             $context->shop->id,
@@ -2546,7 +2548,7 @@ class ProductCore extends ObjectModel
 			JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
 			JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang.')
 			JOIN `'._DB_PREFIX_.'attribute_group` ag ON (a.id_attribute_group = ag.`id_attribute_group`)
-			WHERE pa.`id_product` IN ('.implode(array_map('intval', $products), ',').') AND ag.`is_color_group` = 1
+			WHERE pa.`id_product` IN ('.implode(',', array_map('intval', $products)).') AND ag.`is_color_group` = 1
 			GROUP BY pa.`id_product`, a.`id_attribute`, `group_by`
 			'.($checkStock ? 'HAVING qty > 0' : '').'
 			ORDER BY a.`position` ASC;'
@@ -2660,7 +2662,7 @@ class ProductCore extends ObjectModel
             '
 		SELECT id_feature, id_product, id_feature_value
 		FROM `'._DB_PREFIX_.'feature_product`
-		WHERE `id_product` IN ('.implode($productImplode, ',').')'
+		WHERE `id_product` IN ('.implode(',', $productImplode).')'
         );
         foreach ($result as $row) {
             if (!array_key_exists($row['id_product'], static::$_cacheFeatures)) {

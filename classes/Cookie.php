@@ -77,7 +77,7 @@ class CookieCore
         $this->_expire = is_null($expire) ? time() + 1728000 : (int) $expire;
 
         $this->_path = trim(($this->_standalone ? '' : Context::getContext()->shop->physical_uri).$path, '/\\').'/';
-        if ($this->_path{0} != '/') {
+        if ($this->_path[0] != '/') {
             $this->_path = '/'.$this->_path;
         }
         $this->_path = rawurlencode($this->_path);
@@ -176,7 +176,7 @@ class CookieCore
             }
             /* Check if cookie has not been modified */
             if (!isset($this->_content['checksum']) || $this->_content['checksum'] != $checksum) {
-                $this->logout();
+                $this->delete();
             }
 
             if (!isset($this->_content['date_add'])) {
@@ -200,6 +200,17 @@ class CookieCore
      * @deprecated 1.0.0 Use Customer::logout() or Employee::logout() instead;
      */
     public function logout()
+    {
+        Tools::displayAsDeprecated();
+        $this->delete();
+    }
+
+    /**
+     * Deletes cookie
+     *
+     * @since   1.1.1
+     */
+    public function delete()
     {
         $this->_content = [];
         $this->_setcookie();

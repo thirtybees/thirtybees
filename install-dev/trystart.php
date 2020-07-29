@@ -32,6 +32,14 @@
 try {
     require_once(_TB_INSTALL_PATH_.'classes'.DIRECTORY_SEPARATOR.'controllerHttp.php');
     InstallControllerHttp::execute();
-} catch (PrestashopInstallerException $e) {
-    $e->displayMessage();
+} catch (PrestashopException $e) {
+    $isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    if ($isAjax) {
+        die(json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]));
+    } else {
+        PrestaShopException::renderDebugPage($e->getErrorDescription());
+    }
 }

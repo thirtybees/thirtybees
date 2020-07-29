@@ -100,6 +100,9 @@ class LanguageCore extends ObjectModel
      * @param int|null $id
      * @param int|null $idLang
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -229,6 +232,7 @@ class LanguageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function getLanguageByIETFCode($code)
     {
@@ -354,11 +358,12 @@ class LanguageCore extends ObjectModel
     /**
      * Check if more on than one language is activated
      *
+     * @param int $idShop
      * @return bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function isMultiLanguageActivated($idShop = null)
     {
@@ -366,7 +371,7 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param null $idShop
+     * @param int $idShop
      *
      * @return mixed
      *
@@ -397,9 +402,11 @@ class LanguageCore extends ObjectModel
     /**
      * @param array $modulesList
      *
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function updateModulesTranslations(Array $modulesList)
     {
@@ -446,6 +453,8 @@ class LanguageCore extends ObjectModel
      * @return array|bool
      *
      * @throws PrestaShopException
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -462,8 +471,10 @@ class LanguageCore extends ObjectModel
         $langPack = false;
         $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.$iso.'.gzip';
+        $baseUri = "https://translations.thirtybees.com/packs/{$version}/";
+
         $guzzle = new GuzzleHttp\Client([
-            'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
+            'base_uri' => $baseUri,
             'timeout'  => 20,
             'verify'   => _PS_TOOL_DIR_.'cacert.pem',
         ]);
@@ -473,7 +484,11 @@ class LanguageCore extends ObjectModel
         } catch (Exception $e) {
             $langPackLink = false;
             $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
-            $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
+            $errors[] = sprintf(
+                Tools::displayError('Downloading %s failed (PHP message: %s).'),
+                $baseUri . "{$iso}.json",
+                $e->getMessage()
+            );
         }
 
         if ( ! count($errors)) {
@@ -496,7 +511,11 @@ class LanguageCore extends ObjectModel
             } catch (Exception $e) {
                 $success = false;
                 $errors[] = Tools::displayError('No translations pack available for your version.');
-                $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
+                $errors[] = sprintf(
+                    Tools::displayError('Downloading %s failed (PHP message: %s).'),
+                    $baseUri . "{$iso}.gzip",
+                    $e->getMessage()
+                );
             }
 
             if ($success && !@file_exists($file)) {
@@ -528,10 +547,6 @@ class LanguageCore extends ObjectModel
             Language::loadLanguages();
             AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
             AdminTranslationsController::addNewTabs((string) $iso, $fileList);
-        }
-
-        if ($success) {
-            @unlink($file);
         }
 
         return count($errors) ? $errors : true;
@@ -566,6 +581,8 @@ class LanguageCore extends ObjectModel
      * @param array|null    $paramsLang
      *
      * @throws PrestaShopException
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
      * @return bool
      *
      * @since   1.0.0
@@ -700,6 +717,7 @@ class LanguageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public function add($autoDate = true, $nullValues = false, $onlyAdd = false)
     {
@@ -731,9 +749,9 @@ class LanguageCore extends ObjectModel
     /**
      * Generate translations files
      *
+     * @param string $newIso
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     *
      */
     protected function _generateFiles($newIso = null)
     {
@@ -907,6 +925,7 @@ class LanguageCore extends ObjectModel
     /**
      * Move translations files after editing language iso code
      *
+     * @param string $newIso
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -914,7 +933,7 @@ class LanguageCore extends ObjectModel
     public function moveToIso($newIso)
     {
         if ($newIso == $this->iso_code) {
-            return true;
+            return;
         }
 
         if (file_exists(_PS_TRANSLATIONS_DIR_.$this->iso_code)) {
@@ -1168,6 +1187,7 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1226,26 +1246,26 @@ class LanguageCore extends ObjectModel
 
             $modList = scandir(_PS_MODULE_DIR_);
             foreach ($modList as $mod) {
-                Language::recurseDeleteDir(_PS_MODULE_DIR_.$mod.'/mails/'.$this->iso_code);
+                Tools::deleteDirectory(_PS_MODULE_DIR_.$mod.'/mails/'.$this->iso_code);
                 $files = @scandir(_PS_MODULE_DIR_.$mod.'/mails/');
                 if (count($files) <= 2) {
-                    Language::recurseDeleteDir(_PS_MODULE_DIR_.$mod.'/mails/');
+                    Tools::deleteDirectory(_PS_MODULE_DIR_.$mod.'/mails/');
                 }
 
                 if (file_exists(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php')) {
                     unlink(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php');
                     $files = @scandir(_PS_MODULE_DIR_.$mod);
                     if (count($files) <= 2) {
-                        Language::recurseDeleteDir(_PS_MODULE_DIR_.$mod);
+                        Tools::deleteDirectory(_PS_MODULE_DIR_.$mod);
                     }
                 }
             }
 
             if (file_exists(_PS_MAIL_DIR_.$this->iso_code)) {
-                Language::recurseDeleteDir(_PS_MAIL_DIR_.$this->iso_code);
+                Tools::deleteDirectory(_PS_MAIL_DIR_.$this->iso_code);
             }
             if (file_exists(_PS_TRANSLATIONS_DIR_.$this->iso_code)) {
-                Language::recurseDeleteDir(_PS_TRANSLATIONS_DIR_.$this->iso_code);
+                Tools::deleteDirectory(_PS_TRANSLATIONS_DIR_.$this->iso_code);
             }
 
             $images = [
@@ -1285,6 +1305,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIsoById($idLang)
     {
@@ -1309,24 +1330,8 @@ class LanguageCore extends ObjectModel
      */
     public static function recurseDeleteDir($dir)
     {
-        if (!is_dir($dir)) {
-            return false;
-        }
-        if ($handle = @opendir($dir)) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file != '.' && $file != '..') {
-                    if (is_dir($dir.'/'.$file)) {
-                        Language::recurseDeleteDir($dir.'/'.$file);
-                    } elseif (file_exists($dir.'/'.$file)) {
-                        @unlink($dir.'/'.$file);
-                    }
-                }
-            }
-            closedir($handle);
-        }
-        if (is_writable($dir)) {
-            rmdir($dir);
-        }
+        Tools::displayAsDeprecated();
+        return Tools::deleteDirectory($dir);
     }
 
     /**

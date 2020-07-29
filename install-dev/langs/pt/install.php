@@ -181,7 +181,6 @@ return array (
     'I just built an online store with thirty bees!' => 'Construí uma loja online com o thirty bees!',
     'Tweet' => 'Tweet',
     'Share' => 'Partilhar',
-    'Google+' => 'Google+',
     'Pinterest' => 'Pinterest',
     'LinkedIn' => 'LinkedIn',
     'We are currently checking thirty bees compatibility with your system environment' => 'Está a ser feita uma verificação de compatibilidade entre o seu sistema e o thirty bees',

@@ -453,21 +453,24 @@ abstract class ModuleCore
             return false;
         }
 
-        if (!isset(static::$_INSTANCE[$moduleName])) {
-            if (! static::moduleExistsOnFilesystem($moduleName)) {
-                return false;
-            }
+        $className = strtolower($moduleName);
 
-            return Module::coreLoadModule($moduleName);
+        if (!isset(static::$_INSTANCE[$className])) {
+
+            $module = static::moduleExistsOnFilesystem($moduleName)
+                ? Module::coreLoadModule($moduleName)
+                : false;
+
+            static::$_INSTANCE[$className] = $module;
         }
 
-        return static::$_INSTANCE[$moduleName];
+        return static::$_INSTANCE[$className];
     }
 
     /**
      * @param $moduleName
      *
-     * @return bool|mixed|object
+     * @return Module
      *
      * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
@@ -478,7 +481,6 @@ abstract class ModuleCore
     protected static function coreLoadModule($moduleName)
     {
         // Define if we will log modules performances for this session
-        // @codingStandardsIgnoreStart
         if (Module::$_log_modules_perfs === null) {
             $modulo = _PS_DEBUG_PROFILING_ ? 1 : Configuration::get('PS_log_modules_perfs_MODULO');
             Module::$_log_modules_perfs = ($modulo && mt_rand(0, $modulo - 1) == 0);
@@ -492,27 +494,10 @@ abstract class ModuleCore
             $timeStart = microtime(true);
             $memoryStart = memory_get_usage(true);
         }
-        // @codingStandardsIgnoreEnd
 
-        include_once(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php');
+        $module = static::instantiateModule($moduleName);
 
-        $r = false;
-        if (Tools::file_exists_no_cache(_PS_OVERRIDE_DIR_.'modules/'.$moduleName.'/'.$moduleName.'.php')) {
-            include_once(_PS_OVERRIDE_DIR_.'modules/'.$moduleName.'/'.$moduleName.'.php');
-            $override = $moduleName.'Override';
-
-            if (class_exists($override, false)) {
-                $r = static::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($override);
-            }
-        }
-
-        if (!$r && class_exists($moduleName, false)) {
-            $r = static::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($moduleName);
-        }
-
-        // @codingStandardsIgnoreStart
         if (Module::$_log_modules_perfs) {
-            // @codingStandardsIgnoreEnd
             $timeEnd = microtime(true);
             $memoryEnd = memory_get_usage(true);
 
@@ -530,7 +515,35 @@ abstract class ModuleCore
             );
         }
 
-        return $r;
+        return $module;
+    }
+
+    /**
+     * @param String $moduleName
+     *
+     * @return Module
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     */
+    protected static function instantiateModule($moduleName)
+    {
+        include_once(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php');
+
+        if (Tools::file_exists_no_cache(_PS_OVERRIDE_DIR_.'modules/'.$moduleName.'/'.$moduleName.'.php')) {
+
+            include_once(_PS_OVERRIDE_DIR_.'modules/'.$moduleName.'/'.$moduleName.'.php');
+            $override = $moduleName.'Override';
+
+            if (class_exists($override, false)) {
+                return Adapter_ServiceLocator::get($override);
+            }
+        }
+
+        if (class_exists($moduleName, false)) {
+            return Adapter_ServiceLocator::get($moduleName);
+        }
+
+        throw new PrestaShopException("Failed to instantiate module '$moduleName'");
     }
 
     /**
@@ -1711,7 +1724,8 @@ abstract class ModuleCore
     public static function getModuleIdByName($name)
     {
         $map = static::getModulesNameToIdMap();
-        return isset($map[$name]) ? $map[$name] : 0;
+        $key = strtolower($name);
+        return isset($map[$key]) ? $map[$key] : 0;
     }
 
     /**
@@ -1751,7 +1765,7 @@ abstract class ModuleCore
             $map = [];
             foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->query($sql) as $row) {
                 $moduleId = (int)$row['id_module'];
-                $name = $row['name'];
+                $name = strtolower($row['name']);
                 $map[$name] = $moduleId;
             }
             Cache::store($cacheId, $map);
@@ -3118,9 +3132,11 @@ abstract class ModuleCore
             return false;
         }
 
+        $name = strtolower($moduleName);
+
         return (
-            is_dir(_PS_MODULE_DIR_. $moduleName. DIRECTORY_SEPARATOR) &&
-            Tools::file_exists_no_cache(_PS_MODULE_DIR_ . $moduleName . '/' . $moduleName . '.php')
+            is_dir(_PS_MODULE_DIR_. $name. DIRECTORY_SEPARATOR) &&
+            Tools::file_exists_no_cache(_PS_MODULE_DIR_ . $name . '/' . $name . '.php')
         );
     }
 
@@ -3553,27 +3569,31 @@ abstract class ModuleCore
      */
     protected function getCacheId($name = null)
     {
-        $cache_array = [];
-        $cache_array[] = $name !== null ? $name : $this->name;
-        if (Configuration::get('PS_SSL_ENABLED')) {
-            $cache_array[] = (int) Tools::usingSecureMode();
-        }
-        if (Shop::isFeatureActive()) {
-            $cache_array[] = (int) $this->context->shop->id;
-        }
-        if (Group::isFeatureActive() && isset($this->context->customer)) {
-            $cache_array[] = (int) Group::getCurrent()->id;
-            $cache_array[] = implode('_', Customer::getGroupsStatic($this->context->customer->id));
-        }
-        if (Language::isMultiLanguageActivated()) {
-            $cache_array[] = (int) $this->context->language->id;
-        }
-        if (Currency::isMultiCurrencyActivated()) {
-            $cache_array[] = (int) $this->context->currency->id;
-        }
-        $cache_array[] = (int) $this->context->country->id;
+        static $suffix;
+        if (is_null($suffix)) {
+            $cache_array = [];
+            if (Configuration::get('PS_SSL_ENABLED')) {
+                $cache_array[] = (int)Tools::usingSecureMode();
+            }
+            if (Shop::isFeatureActive()) {
+                $cache_array[] = (int)$this->context->shop->id;
+            }
+            if (Group::isFeatureActive() && isset($this->context->customer)) {
+                $cache_array[] = (int)Group::getCurrent()->id;
+                $cache_array[] = implode('_', Customer::getGroupsStatic($this->context->customer->id));
+            }
+            if (Language::isMultiLanguageActivated()) {
+                $cache_array[] = (int)$this->context->language->id;
+            }
+            if (Currency::isMultiCurrencyActivated()) {
+                $cache_array[] = (int)$this->context->currency->id;
+            }
+            $cache_array[] = (int)$this->context->country->id;
 
-        return implode('|', $cache_array);
+            $suffix = '|' . implode('|', $cache_array);
+        }
+
+        return ($name !== null ? $name : $this->name) . $suffix;
     }
 
     /**

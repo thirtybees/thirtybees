@@ -26,7 +26,6 @@
 // dashboard_ajax_url
 // adminstats_ajax_url
 // no_results_translation
-// dashboard_use_push
 // read_more
 
 function refreshDashboard(moduleName, usePush, extra) {
@@ -38,7 +37,6 @@ function refreshDashboard(moduleName, usePush, extra) {
         ajax: true,
         action: 'refreshDashboard',
         module: moduleList[idModule],
-        dashboard_use_push: Number(usePush),
         extra: extra
       },
       // Ensure to get fresh data
@@ -52,9 +50,6 @@ function refreshDashboard(moduleName, usePush, extra) {
             window[data_type](widget_name, widgets[widget_name][data_type]);
           }
         }
-        if (parseInt(dashboard_use_push) === 1) {
-          refreshDashboard(false, true);
-        }
       },
       contentType: 'application/json'
     });
@@ -62,23 +57,16 @@ function refreshDashboard(moduleName, usePush, extra) {
   if (moduleName === false) {
     $('.widget').each(function () {
       moduleList.push($(this).attr('id'));
-      if (!usePush) {
-        $(this).addClass('loading');
-      }
+      $(this).addClass('loading');
     });
   }
   else {
     moduleList.push(moduleName);
-    if (!usePush) {
-      $('#' + moduleName + ' section').each(function () {
-        $(this).addClass('loading');
-      });
-    }
+    $('#' + moduleName + ' section').each(function () {
+      $(this).addClass('loading');
+    });
   }
   for (var module_id in moduleList) {
-    if (usePush && !$('#' + moduleList[module_id]).hasClass('allow_push')) {
-      continue;
-    }
     this.getWidget(module_id);
   }
 }

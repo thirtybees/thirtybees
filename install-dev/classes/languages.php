@@ -82,6 +82,7 @@ class InstallLanguages
      * @return InstallLanguages
      *
      * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public static function getInstance()
     {

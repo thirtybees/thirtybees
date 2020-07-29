@@ -5,8 +5,8 @@
     <field name="active"/>
   </fields>
   <entities>
-    <supplier id="thirty_bees" active="1">
-      <name>thirty bees</name>
+    <supplier id="thirty_bees_supplier" active="1">
+      <name>Bee Keeper</name>
     </supplier>
   </entities>
 </entity_supplier>

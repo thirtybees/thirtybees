@@ -98,8 +98,8 @@ class PageCore extends ObjectModel
                 ->from('page')
                 ->where('`id_page_type` = '.(int) $pageTypeId.$where)
         );
-        if ($result['id_page']) {
-            return $result['id_page'];
+        if ($result && $result['id_page']) {
+            return (int)$result['id_page'];
         }
 
         Db::getInstance()->insert('page', $insertData, true);

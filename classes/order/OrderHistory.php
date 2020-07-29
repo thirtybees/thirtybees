@@ -343,12 +343,7 @@ class OrderHistoryCore extends ObjectModel
                         $payment->payment_method = null;
                     }
 
-                    // Update total_paid_real value for backward compatibility reasons
-                    if ($payment->id_currency == $order->id_currency) {
-                        $order->total_paid_real += $payment->amount;
-                    } else {
-                        $order->total_paid_real += Tools::convertPrice($payment->amount, $payment->id_currency, false);
-                    }
+                    $order->adjustTotalPaidAmount($payment->amount, $payment->id_currency);
                     $order->save();
 
                     $payment->conversion_rate = 1;

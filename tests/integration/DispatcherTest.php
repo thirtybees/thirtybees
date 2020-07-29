@@ -39,7 +39,7 @@ class DispatcherTest extends \Codeception\Test\Unit
         return array_merge($this->getUnfriendlyRoutes(), [
             // friendly url
             'Rewrite on | category controller' => [true, '/tea', 'category', ['controller' => 'category', 'id_category' => '5']],
-            'Rewrite on | supplier controller' => [true, '/thirty-bees', 'supplier', ['controller' => 'supplier', 'id_supplier' => '1']],
+            'Rewrite on | supplier controller' => [true, '/bee-keeper', 'supplier', ['controller' => 'supplier', 'id_supplier' => '1']],
             'Rewrite on | manufacturer controller' => [true, '/bee-hive', 'manufacturer', ['controller' => 'manufacturer', 'id_manufacturer' => '1']],
             'Rewrite on | cms controller' => [true, '/info/about-us', 'cms', ['controller' => 'cms', 'id_cms' => '4']],
             'Rewrite on | product controller' => [true, '/gifts/candle', 'product', ['controller' => 'product', 'id_product' => '1']],
