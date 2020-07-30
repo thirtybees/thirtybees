@@ -2796,7 +2796,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @return string|void
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -2818,10 +2818,10 @@ class AdminControllerCore extends Controller
                             $filterValue = ((bool) $val) ? $this->l('yes') : $this->l('no');
                         } elseif (isset($t['type']) && $t['type'] == 'date' || isset($t['type']) && $t['type'] == 'datetime') {
                             $date = json_decode($val, true);
-                            if (isset($date[0])) {
-                                $filterValue = $date[0];
-                                if (isset($date[1]) && !empty($date[1])) {
-                                    $filterValue .= ' - '.$date[1];
+                            if (isset($date[0]) && $ts=strtotime($date[0])) {
+                                $filterValue = date('Y-m-d', $ts);
+                                if (isset($date[1]) && !empty($date[1]) && $ts=strtotime($date[1])) {
+                                    $filterValue .= ' - '. date('Y-m-d', $ts);
                                 }
                             }
                         } elseif (is_string($val)) {
@@ -2849,6 +2849,8 @@ class AdminControllerCore extends Controller
                 return sprintf($this->l('filter by %s'), implode(', ', $filters));
             }
         }
+
+        return null;
     }
 
     /**
