@@ -1036,7 +1036,7 @@
 			{if isset($fields_value.id_state)}
 				if ($('#id_country') && $('#id_state'))
 				{
-					ajaxStates({$fields_value.id_state});
+					ajaxStates({$fields_value.id_state|intval});
 					$('#id_country').change(function() {
 						ajaxStates();
 					});
