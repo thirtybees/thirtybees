@@ -1004,17 +1004,14 @@
 		var id_language = {$defaultFormLanguage|intval};
 		var languages = new Array();
 		var vat_number = {if $vat_number}1{else}0{/if};
-		// Multilang field setup must happen before document is ready so that calls to displayFlags() to avoid
-		// precedence conflicts with other document.ready() blocks
 		{foreach $languages as $k => $language}
 			languages[{$k}] = {
-				id_lang: {$language.id_lang},
-				iso_code: '{$language.iso_code}',
-				name: '{$language.name}',
-				is_default: '{$language.is_default}'
+				id_lang: {$language.id_lang|intval},
+				iso_code: '{$language.iso_code|escape:'javascript':'UTF-8'}',
+				name: '{$language.name|escape:'javascript':'UTF-8'}',
+				is_default: {$language.is_default|intval}
 			};
 		{/foreach}
-		// we need allowEmployeeFormLang var in ajax request
 		allowEmployeeFormLang = {$allowEmployeeFormLang|intval};
 		displayFlags(languages, id_language, allowEmployeeFormLang);
 
