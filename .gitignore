@@ -41,6 +41,7 @@ composer.dev.json
 /config/xml/themes/*
 !/config/xml/themes/default.xml
 !/config/xml/themes/community-theme-default.xml
+!/upload/index.php
 
 /config/defines_custom.inc.php
 /config/settings_custom.inc.php
