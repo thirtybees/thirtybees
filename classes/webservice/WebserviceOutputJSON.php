@@ -270,19 +270,15 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     public function overrideContent($content)
     {
         $options = 0;
+        if (Tools::getValue('unescaped') === 'true') {
+            $options |= JSON_UNESCAPED_UNICODE;
+        }
         if (Tools::getValue('pretty') === 'true') {
-            $options += JSON_PRETTY_PRINT;
+            $options |= JSON_PRETTY_PRINT;
         }
 
         $content = '';
         $content .= json_encode($this->content, $options);
-        $content = preg_replace_callback(
-            "/\\\\u([a-f0-9]{4})/",
-            function () {
-                return iconv('UCS-4LE', 'UTF-8', pack('V', hexdec('U$1')));
-            },
-            $content
-        );
 
         return $content;
     }
