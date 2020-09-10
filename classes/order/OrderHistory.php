@@ -113,8 +113,11 @@ class OrderHistoryCore extends ObjectModel
             Hook::exec('actionPaymentConfirmation', ['id_order' => (int) $order->id], null, false, true, false, $order->id_shop);
         }
 
-        // executes hook
-        Hook::exec('actionOrderStatusUpdate', ['newOrderStatus' => $newOs, 'id_order' => (int) $order->id], null, false, true, false, $order->id_shop);
+        Hook::exec('actionOrderStatusUpdate', [
+            'newOrderStatus' => $newOs,
+            'id_order' => (int) $order->id,
+            'order' => $order
+        ], null, false, true, false, $order->id_shop);
 
         if (Validate::isLoadedObject($order) && ($newOs instanceof OrderState)) {
             $context = Context::getContext();
