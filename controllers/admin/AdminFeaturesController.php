@@ -498,7 +498,7 @@ class AdminFeaturesControllerCore extends AdminController
                 $this->processResetFilters();
             }
 
-            if (Tools::getIsset('submitFilter')) {
+            if (Tools::getIsset('submitFilter') . $this->list_id) {
                 static::$currentIndex = static::$currentIndex . '&id_feature=' . (int)Tools::getValue('id_feature') . '&viewfeature';
             }
         } else {
