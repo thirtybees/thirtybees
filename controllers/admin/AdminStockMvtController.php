@@ -282,6 +282,7 @@ class AdminStockMvtControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function renderCSV()
     {
@@ -290,8 +291,9 @@ class AdminStockMvtControllerCore extends AdminController
         }
 
         // header
-        if (Tools::getValue('id_warehouse') != -1) {
-            $filename = $this->l('stock_mvt').'_'.Warehouse::getWarehouseNameById((int) Tools::getValue('id_warehouse')).'.csv';
+        $warehouseId = (int)Tools::getValue('id_warehouse');
+        if ($warehouseId > 0) {
+            $filename = $this->l('stock_mvt').'_'.Warehouse::getWarehouseNameById($warehouseId).'.csv';
         } else {
             $filename = $this->l('stock_mvt').'.csv';
         }
@@ -301,7 +303,7 @@ class AdminStockMvtControllerCore extends AdminController
 
         // puts keys
         $keys = [
-            'id_order', 'id_supply_order', 'emloyee_firstname', 'employee_lastname', 'physical_quantity',
+            'id_order', 'id_supply_order', 'employee_firstname', 'employee_lastname', 'physical_quantity',
             'date_add', 'sign', 'price_te', 'product_name', 'label', 'product_reference', 'product_ean13', 'product_upc',
         ];
         echo sprintf("%s\n", implode(';', $keys));
