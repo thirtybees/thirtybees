@@ -235,6 +235,14 @@
 				}
 			});
 
+			var formatAutocompleteItem = function(item) {
+				if (typeof item.supplier_reference !== 'undefined' && item.supplier_reference) {
+					return item.supplier_reference + ' - ' + item.name;
+				} else {
+					return item.name;
+				}
+			};
+
 			// set autocomplete on search field
 			$('#cur_product_name').autocomplete("ajax-tab.php", {
 				delay: 100,
@@ -262,15 +270,13 @@
 	            		if (jQuery.inArray(row.id, product_ids) == -1)
 		    				return {
 		    					data: row,
-		    					result: row.supplier_reference + ' - ' + row.name,
+								result: formatAutocompleteItem(row),
 		    					value: row.id
 		    				}
 	    			});
 	    			return res;
 	            },
-	    		formatItem: function(item) {
-	    			return item.supplier_reference + ' - ' + item.name;
-	    		}
+				formatItem: formatAutocompleteItem,
 	        }).result(function(event, item){
 				product_infos = item;
 	            if (typeof(ajax_running_timeout) !== 'undefined')
