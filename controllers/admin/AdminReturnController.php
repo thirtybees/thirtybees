@@ -47,7 +47,6 @@ class AdminReturnControllerCore extends AdminController
         $this->context = Context::getContext();
         $this->table = 'order_return';
         $this->className = 'OrderReturn';
-        $this->colorOnBackground = true;
         $this->_select = 'ors.color, orsl.`name`, o.`id_shop`';
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'order_return_state ors ON (ors.`id_order_return_state` = a.`state`)';
         $this->_join .= 'LEFT JOIN '._DB_PREFIX_.'order_return_state_lang orsl ON (orsl.`id_order_return_state` = a.`state` AND orsl.`id_lang` = '.(int) $this->context->language->id.')';
