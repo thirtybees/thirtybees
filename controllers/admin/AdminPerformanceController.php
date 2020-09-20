@@ -1700,7 +1700,6 @@ class AdminPerformanceControllerCore extends AdminController
         if (_PS_MODE_DEMO_) {
             die(Tools::displayError('This functionality has been disabled.'));
         }
-        /* PrestaShop demo mode*/
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_redis_server') {
             $host = pSQL(Tools::getValue('sHost', ''));
             $port = (int) Tools::getValue('sPort', 0);
@@ -1720,7 +1719,7 @@ class AdminPerformanceControllerCore extends AdminController
                             }
                             $redis->select($db);
 
-                            $res = (mb_strtolower($redis->ping() === '+PONG') ? 1 : 0);
+                            $res = $redis->ping() ? 1 : 0;
                         }
                     } catch (Exception $e) {
                         $this->ajaxDie(json_encode([0]));
