@@ -36,7 +36,6 @@ class AdminFeaturesControllerCore extends AdminController
 {
     public $bootstrap = true;
     protected $position_identifier = 'id_feature';
-    protected $feature_name;
 
     /**
      * AdminFeaturesControllerCore constructor.
@@ -102,7 +101,7 @@ class AdminFeaturesControllerCore extends AdminController
                 break;
 
             case 'view':
-                $bread_extended[] = $this->feature_name[$this->context->employee->id_lang];
+                $bread_extended[] = $this->l('View Feature');
                 $this->addMetaTitle($bread_extended[count($bread_extended) - 1]);
                 break;
 
@@ -308,9 +307,18 @@ class AdminFeaturesControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * @return false|string|void
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestaShopExceptionCore
+     */
     public function renderView()
     {
-        if (($id = Tools::getValue('id_feature'))) {
+        $id = (int)Tools::getValue('id_feature');
+
+        if ($id > 0) {
             $this->setTypeValue();
             $this->list_id = 'feature_value';
             $this->lang = true;
@@ -319,14 +327,12 @@ class AdminFeaturesControllerCore extends AdminController
             $this->addRowAction('edit');
             $this->addRowAction('delete');
 
-            if (!Validate::isLoadedObject($obj = new Feature((int) $id))) {
-                $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-
+            if (!Validate::isLoadedObject($obj = new Feature($id, $this->context->employee->id_lang))) {
+                $this->errors[] = sprintf(Tools::displayError('Feature with id %s not found.'), $id);
                 return;
             }
 
-            $this->feature_name = $obj->name;
-            $this->toolbar_title = $this->feature_name[$this->context->employee->id_lang];
+            $this->toolbar_title = $obj->name;
             $this->fields_list = [
                 'id_feature_value' => [
                     'title' => $this->l('ID'),
@@ -338,11 +344,14 @@ class AdminFeaturesControllerCore extends AdminController
                 ],
             ];
 
-            $this->_where = sprintf('AND `id_feature` = %d', (int) $id);
-            static::$currentIndex = static::$currentIndex.'&id_feature='.(int) $id.'&viewfeature';
+            $this->_where = sprintf('AND `id_feature` = %d', $id);
+            static::$currentIndex = static::$currentIndex.'&id_feature='.$id.'&viewfeature';
             $this->processFilter();
 
             return parent::renderList();
+        } else {
+            $this->errors[] = sprintf(Tools::displayError('Invalid Feature ID: %s'), $id);
+            return null;
         }
     }
 
