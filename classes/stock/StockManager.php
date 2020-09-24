@@ -685,15 +685,7 @@ class StockManagerCore implements StockManagerInterface
      */
     public function getProductRealQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false)
     {
-        if (!is_null($idsWarehouse)) {
-            // in case $ids_warehouse is not an array
-            if (!is_array($idsWarehouse)) {
-                $idsWarehouse = [$idsWarehouse];
-            }
-
-            // casts for security reason
-            $idsWarehouse = array_map('intval', $idsWarehouse);
-        }
+        $idsWarehouse = $this->normalizeWarehouseIds($idsWarehouse);
 
         $clientOrdersQty = 0;
 
@@ -722,7 +714,7 @@ class StockManagerCore implements StockManagerInterface
 								   AND os.id_order_state != '.(int) Configuration::get('PS_OS_CANCELED').')'
                     );
                     $query->groupBy('od.id_order_detail');
-                    if (count($idsWarehouse)) {
+                    if ($idsWarehouse) {
                         $query->where('od.id_warehouse IN('.implode(', ', $idsWarehouse).')');
                     }
                     $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -757,7 +749,7 @@ class StockManagerCore implements StockManagerInterface
 						   AND os.id_order_state != '.(int) Configuration::get('PS_OS_CANCELED').')'
             );
             $query->groupBy('od.id_order_detail');
-            if (count($idsWarehouse)) {
+            if ($idsWarehouse) {
                 $query->where('od.id_warehouse IN('.implode(', ', $idsWarehouse).')');
             }
             $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -776,7 +768,7 @@ class StockManagerCore implements StockManagerInterface
         $query->leftjoin('supply_order_state', 'sos', 'sos.id_supply_order_state = so.id_supply_order_state');
         $query->where('sos.pending_receipt = 1');
         $query->where('sod.id_product = '.(int) $idProduct.' AND sod.id_product_attribute = '.(int) $idProductAttribute);
-        if (!is_null($idsWarehouse) && count($idsWarehouse)) {
+        if ($idsWarehouse) {
             $query->where('so.id_warehouse IN('.implode(', ', $idsWarehouse).')');
         }
 
