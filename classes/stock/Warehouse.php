@@ -373,22 +373,23 @@ class WarehouseCore extends ObjectModel
     public static function getProductWarehouseList($idProduct, $idProductAttribute = 0, $idShop = null)
     {
         // if it's a pack, returns warehouses if and only if some products use the advanced stock management
-        $shareStock = false;
         if ($idShop === null) {
             if (Shop::getContext() == Shop::CONTEXT_GROUP) {
                 $shopGroup = Shop::getContextShopGroup();
             } else {
                 $shopGroup = Context::getContext()->shop->getGroup();
-                $idShop = (int) Context::getContext()->shop->id;
             }
+            $idShop = (int) Context::getContext()->shop->id;
             $shareStock = $shopGroup->share_stock;
+            $shopGroupId = (int)$shopGroup->id;
         } else {
-            $shopGroup = Shop::getGroupFromShop($idShop);
-            $shareStock = $shopGroup['share_stock'];
+            $shopGroup = Shop::getGroupFromShop($idShop, false);
+            $shopGroupId = (int)$shopGroup['id'];
+            $shareStock = (bool)$shopGroup['share_stock'];
         }
 
         if ($shareStock) {
-            $idsShop = Shop::getShops(true, (int) $shopGroup->id, true);
+            $idsShop = Shop::getShops(true, $shopGroupId, true);
         } else {
             $idsShop = [(int) $idShop];
         }

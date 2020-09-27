@@ -961,7 +961,7 @@ class ShopCore extends ObjectModel
      * @param int  $shopId Shop ID
      * @param bool $asId
      *
-     * @return int Group ID
+     * @return int|array|false Group ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
