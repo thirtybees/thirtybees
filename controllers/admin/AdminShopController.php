@@ -520,6 +520,7 @@ class AdminShopControllerCore extends AdminController
         ];
 
         $themes = Theme::getThemes();
+        $idTheme = 0;
         if (!isset($obj->id_theme)) {
             foreach ($themes as $theme) {
                 if (isset($theme->id)) {
@@ -613,12 +614,29 @@ class AdminShopControllerCore extends AdminController
             ];
         }
 
+        // determine Shop Group
+        if (Tools::getValue('id_shop_group')) {
+            $idShopGroup = Tools::getValue('id_shop_group');
+        } elseif (isset($obj->id_shop_group)) {
+            $idShopGroup = $obj->id_shop_group;
+        } else {
+            $idShopGroup = Shop::getContextShopGroupID();
+        }
+
+        // determine Category ID
+        if (Tools::getValue('id_category')) {
+            $idCategory = Tools::getValue('id_category');
+        } elseif (isset($obj->id_category)) {
+            $idCategory = $obj->id_category;
+        } else {
+            $idCategory = Configuration::get('PS_HOME_CATEGORY');
+        }
+
+
         $this->fields_value = [
-            'id_shop_group'    => (Tools::getValue('id_shop_group') ? Tools::getValue('id_shop_group') :
-                (isset($obj->id_shop_group)) ? $obj->id_shop_group : Shop::getContextShopGroupID()),
-            'id_category'      => (Tools::getValue('id_category') ? Tools::getValue('id_category') :
-                (isset($obj->id_category)) ? $obj->id_category : (int) Configuration::get('PS_HOME_CATEGORY')),
-            'id_theme_checked' => (isset($obj->id_theme) ? $obj->id_theme : $idTheme),
+            'id_shop_group'    => (int)$idShopGroup,
+            'id_category'      => (int)$idCategory,
+            'id_theme_checked' => (int)(isset($obj->id_theme) ? $obj->id_theme : $idTheme),
         ];
 
         $idsCategory = [];
