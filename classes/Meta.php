@@ -152,7 +152,7 @@ class MetaCore extends ObjectModel
                     continue;
                 }
 
-                foreach (scandir($path) as $file) {
+                foreach (Tools::scandir($path, 'php', '', false) as $file) {
                     if (in_array($file, ['.', '..', 'index.php'])) {
                         continue;
                     }
