@@ -105,8 +105,6 @@ class OrderHistoryCore extends ObjectModel
             return;
         }
 
-        ShopUrl::cacheMainDomainForShop($order->id_shop);
-
         $newOs = new OrderState((int) $newOrderState, $order->id_lang);
         $oldOs = $order->getCurrentOrderState();
 
@@ -457,8 +455,6 @@ class OrderHistoryCore extends ObjectModel
 				LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = o.`id_lang`)
 			WHERE oh.`id_order_history` = '.(int) $this->id.' AND os.`send_email` = 1');
         if (isset($result['template']) && Validate::isEmail($result['email'])) {
-            ShopUrl::cacheMainDomainForShop($order->id_shop);
-
             $topic = $result['osname'];
             $data = [
                 '{lastname}'   => $result['lastname'],

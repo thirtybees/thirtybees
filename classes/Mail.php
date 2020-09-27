@@ -389,7 +389,6 @@ class MailCore extends ObjectModel
                     $templateVars['{shop_logo}'] = '';
                 }
             }
-            ShopUrl::cacheMainDomainForShop((int) $idShop);
             /* don't attach the logo as */
             if (isset($logo)) {
                 $templateVars['{shop_logo}'] = $message->embed(Swift_Image::fromPath($logo));

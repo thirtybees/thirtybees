@@ -580,7 +580,6 @@ class AdminOrdersControllerCore extends AdminController
             if (!Validate::isLoadedObject($order)) {
                 $this->errors[] = Tools::displayError('The order cannot be found within your database.');
             }
-            ShopUrl::cacheMainDomainForShop((int) $order->id_shop);
         }
 
         /* Update shipping number */

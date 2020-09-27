@@ -671,8 +671,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
             if (Tools::isSubmit('submitReply')) {
                 $ct = new CustomerThread($idCustomerThread);
 
-                ShopUrl::cacheMainDomainForShop((int) $ct->id_shop);
-
                 $cm = new CustomerMessage();
                 $cm->id_employee = (int) $this->context->employee->id;
                 $cm->id_customer_thread = $ct->id;
