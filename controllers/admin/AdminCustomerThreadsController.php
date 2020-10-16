@@ -190,9 +190,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         'type'  => 'text',
                     ],
                     'PS_SAV_IMAP_PWD'                 => [
-                        'title' => $this->l('IMAP password'),
-                        'hint'  => $this->l('Password to use to connect your IMAP server.'),
-                        'type'  => 'text',
+                        'title'        => $this->l('IMAP password'),
+                        'hint'         => $this->l('Password to use to connect your IMAP server.'),
+                        'validation'   => 'isAnything',
+                        'type'         => 'password',
+                        'autocomplete' => 'false',
                     ],
                     'PS_SAV_IMAP_DELETE_MSG'          => [
                         'title' => $this->l('Delete messages'),
