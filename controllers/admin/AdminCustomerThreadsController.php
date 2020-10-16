@@ -190,9 +190,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         'type'  => 'text',
                     ],
                     'PS_SAV_IMAP_PWD'                 => [
-                        'title' => $this->l('IMAP password'),
-                        'hint'  => $this->l('Password to use to connect your IMAP server.'),
-                        'type'  => 'text',
+                        'title'        => $this->l('IMAP password'),
+                        'hint'         => $this->l('Password to use to connect your IMAP server.'),
+                        'validation'   => 'isAnything',
+                        'type'         => 'password',
+                        'autocomplete' => 'false',
                     ],
                     'PS_SAV_IMAP_DELETE_MSG'          => [
                         'title' => $this->l('Delete messages'),
@@ -1165,8 +1167,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * @param $value
      *
+     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
-     *
      * @since 1.0.0
      */
     public function updateOptionPsSavImapOpt($value)
@@ -1177,6 +1179,22 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         if (!$this->errors && $value) {
             Configuration::updateValue('PS_SAV_IMAP_OPT', implode('', $value));
+        }
+    }
+
+    /**
+     * Update handler for parameter PS_SAV_IMAP_PWD
+     *
+     * @param string $value new valu
+     *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     * @since 1.0.0
+     */
+    public function updateOptionPsSavImapPwd($value)
+    {
+        if ($value) {
+            Configuration::updateValue('PS_SAV_IMAP_PWD', $value);
         }
     }
 
