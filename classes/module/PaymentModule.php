@@ -710,12 +710,16 @@ abstract class PaymentModuleCore extends Module
                                 $price : $priceTaxIncluded;
 
                         $productVarTpl = [
-                            'reference'     => $product['reference'],
-                            'name'          => $product['name'].(isset($product['attributes']) ? ' - '.$product['attributes'] : ''),
-                            'unit_price'    => Tools::displayPrice($productPrice, $this->context->currency, false),
-                            'price'         => Tools::displayPrice($productPrice * $product['quantity'], $this->context->currency, false),
-                            'quantity'      => $product['quantity'],
-                            'customization' => [],
+                            'reference'            => $product['reference'],
+                            'name'                 => $product['name'].(isset($product['attributes']) ? ' - '.$product['attributes'] : ''),
+                            'unit_price'           => Tools::displayPrice($productPrice, $this->context->currency, false),
+                            'price'                => Tools::displayPrice($productPrice * $product['quantity'], $this->context->currency, false),
+                            'quantity'             => $product['quantity'],
+                            'customization'        => [],
+                            'id_product'           => (int)$product['id_product'],
+                            'id_product_attribute' => $product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null,
+                            'id_image'             => $product['id_image'],
+                            'link_rewrite'         => $product['link_rewrite'],
                         ];
 
                         $customizedDatas = Product::getAllCustomizedDatas((int) $order->id_cart);
