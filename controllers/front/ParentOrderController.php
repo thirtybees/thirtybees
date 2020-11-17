@@ -84,7 +84,10 @@ class ParentOrderControllerCore extends FrontController
             $this->errors[] = Tools::displayError('This store has not accepted your new order.');
         }
 
-        if (Tools::isSubmit('submitReorder') && $idOrder = (int) Tools::getValue('id_order')) {
+        if (Tools::isSubmit('submitReorder')
+            && $this->context->customer->isLogged()
+            && $id_order = (int)Tools::getValue('id_order')
+        ) {
             $oldCart = new Cart(Order::getCartIdStatic($idOrder, $this->context->customer->id));
             $duplication = $oldCart->duplicate();
             if (!$duplication || !Validate::isLoadedObject($duplication['cart'])) {
