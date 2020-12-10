@@ -370,6 +370,13 @@
 
         return (bytes / 1000).toFixed(2) + ' KB';
 	}
+
+	function sanitizeFilename(str){
+		return str.replace(/[<>]/, function(c) {
+			return c === '<' ? '&lt;' : '&gt;';
+		});
+	}
+
 	// when user select a .csv
 	function csv_select(filename) {
 		$('#csv_selected_value').val(filename);
@@ -447,7 +454,7 @@
 			var index = data.index,	file = data.files[index];
 
 			if (file.error) {
-				$('#file-errors').append('<strong>'+file.name+'</strong> ('+humanizeSize(file.size)+') : '+file.error).show();
+				$('#file-errors').append('<strong>'+sanitizeFilename(file.name)+'</strong> ('+humanizeSize(file.size)+') : '+file.error).show();
 				$(data.context).find('button').trigger('click');
 			}
 		});
