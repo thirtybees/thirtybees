@@ -682,6 +682,7 @@ class AdminImportControllerCore extends AdminController
     public function ajaxProcessuploadCsv()
     {
         $filenamePrefix = date('YmdHis').'-';
+        $filename = preg_replace('/[^A-Za-z0-9._\-]/', '', $_FILES['file']['name']);
 
         if (isset($_FILES['file']) && !empty($_FILES['file']['error'])) {
             switch ($_FILES['file']['error']) {
@@ -698,15 +699,15 @@ class AdminImportControllerCore extends AdminController
                     $_FILES['file']['error'] = $this->l('No file was uploaded.');
                     break;
             }
-        } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $_FILES['file']['name'])) {
+        } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $filename)) {
             $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
-            !@move_uploaded_file($_FILES['file']['tmp_name'], static::getPath().$filenamePrefix.str_replace("\0", '', $_FILES['file']['name']))
+            !@move_uploaded_file($_FILES['file']['tmp_name'], static::getPath().$filenamePrefix.str_replace("\0", '', $filename))
         ) {
             $_FILES['file']['error'] = $this->l('An error occurred while uploading / copying the file.');
         } else {
-            @chmod(static::getPath().$filenamePrefix.$_FILES['file']['name'], 0664);
-            $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $_FILES['file']['name']);
+            @chmod(static::getPath().$filenamePrefix.$filename, 0664);
+            $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $filename);
         }
 
         $this->ajaxDie(json_encode($_FILES));
