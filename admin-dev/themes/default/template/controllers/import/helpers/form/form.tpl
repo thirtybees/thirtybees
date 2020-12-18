@@ -447,7 +447,7 @@
 			var index = data.index,	file = data.files[index];
 
 			if (file.error) {
-				$('#file-errors').append('<strong>'+file.name+'</strong> ('+humanizeSize(file.size)+') : '+file.error).show();
+				$('#file-errors').append('<strong>'+file.name.replace(/<|>/g, (char) => char == '<' ? '&lt;' : '&gt;')+'</strong> ('+humanizeSize(file.size)+') : '+file.error).show();
 				$(data.context).find('button').trigger('click');
 			}
 		});
