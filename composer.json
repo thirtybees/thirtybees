@@ -25,9 +25,16 @@
         "php-coveralls/php-coveralls": "^1.0",
         "phpunit/phpunit": "~4.8 || ~5.7 || ~6.0",
         "codeception/codeception": "2.2.9",
-        "codeception/aspect-mock": "^1.0 || ^2.0"
+        "codeception/aspect-mock": "^1.0 || ^2.0",
+        "symfony/polyfill-php80": "dev-main"
     },
     "config": {
         "autoloader-suffix": "ThirtybeesVendor"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/thirtybees/polyfill-php80"
+        }
+    ]
 }
