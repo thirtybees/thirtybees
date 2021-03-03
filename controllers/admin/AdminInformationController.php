@@ -343,6 +343,10 @@ class AdminInformationControllerCore extends AdminController
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
+            $realPath = $file->getRealPath();
+            if ($realPath === false || is_dir($realPath)) {
+                continue;
+            }
 
             $path = str_replace($basePath, '', $file->getPathname());
             $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
