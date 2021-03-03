@@ -274,7 +274,10 @@ class AdminInformationControllerCore extends AdminController
             if (strpos($filePath, $adminDir) !== false) {
                 $filePath = str_replace($adminDir, '/admin', $filePath);
             }
-            $md5List[$filePath] = md5_file($file->getRealPath());
+            $path = $file->getRealPath();
+            if ($path !== false && is_file($path) && !is_dir($path)) {
+                $md5List[$filePath] = md5_file($path);
+            }
         }
 
         file_put_contents(
@@ -297,11 +300,7 @@ class AdminInformationControllerCore extends AdminController
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CONTROLLER_DIR_)));
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Core')));
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Adapter')));
-        // if() for retrocompatibility, only. Make it unconditional after 1.0.8.
-        if ( ! defined('_TB_VERSION_')
-            || version_compare(_TB_VERSION_, '1.0.7', '>')) {
-            $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/vendor')));
-        }
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/vendor')));
         $iterator->append(new DirectoryIterator(_PS_ADMIN_DIR_));
 
         return $iterator;
