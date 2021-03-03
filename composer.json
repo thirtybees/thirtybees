@@ -26,18 +26,25 @@
         "phpunit/phpunit": "~4.8 || ~5.7 || ~6.0",
         "codeception/codeception": "2.2.9",
         "codeception/aspect-mock": "^1.0 || ^2.0",
-        "symfony/polyfill-php80": "dev-main"
+        "symfony/polyfill-php80": "2.0.0"
     },
     "config": {
         "platform": {
             "php": "5.6"
-	},
+        },
         "autoloader-suffix": "ThirtybeesVendor"
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/thirtybees/polyfill-php80"
+            "type": "package",
+            "package": {
+                "name": "symfony/polyfill-php80",
+                "version": "2.0.0",
+                "dist": {
+                    "url": "https://github.com/thirtybees/polyfill-php80/archive/2.0.0.zip",
+                    "type": "zip"
+                }
+            }
         }
     ]
 }
