@@ -388,6 +388,7 @@ class AdminOrdersControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -397,9 +398,10 @@ class AdminOrdersControllerCore extends AdminController
         $this->addJS(_PS_JS_DIR_.'vendor/d3.v3.min.js');
 
         if ($this->tabAccess['edit'] == 1 && $this->display == 'view') {
-	        $apiKey = (Configuration::get('TB_GOOGLE_MAPS_API_KEY')) ? 'key='.Configuration::get('TB_GOOGLE_MAPS_API_KEY').'&' : '';
-	        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https' : 'http';
-	        $this->addJS($protocol.'://maps.google.com/maps/api/js?'.$apiKey);
+            $apiKey = Configuration::get('TB_GOOGLE_MAPS_API_KEY');
+            if ($apiKey) {
+                $this->addJS('https://maps.google.com/maps/api/js?key='. urlencode($apiKey));
+            }
             $this->addJS(_PS_JS_DIR_.'admin/orders.js');
             $this->addJS(_PS_JS_DIR_.'tools.js');
             $this->addJqueryPlugin('autocomplete');
