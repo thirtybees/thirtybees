@@ -3542,12 +3542,10 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return string
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
-        // This nice code (irony) is here to store the product name, because the row after will erase product name in multishop context
-        $this->product_name = $this->object->name[$this->context->language->id];
-
         if (!method_exists($this, 'initForm'.$this->tab_display)) {
             return '';
         }
