@@ -1121,10 +1121,15 @@ class AdminProductsControllerCore extends AdminController
      * Initialize processing
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
-        if (Tools::isSubmit('submitAddproductAndStay') || Tools::isSubmit('submitAddproduct')) {
+        if (
+            Tools::isSubmit('submitAddproductAndStay') ||
+            Tools::isSubmit('submitAddproduct') ||
+            Tools::isSubmit('submitAddProductAndPreview')
+        ) {
             // Clean up possible product type changes.
             $typeProduct = (int) Tools::getValue('type_product');
             $idProduct = (int) Tools::getValue('id_product');
