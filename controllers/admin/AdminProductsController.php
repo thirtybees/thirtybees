@@ -1134,6 +1134,9 @@ class AdminProductsControllerCore extends AdminController
             $typeProduct = (int) Tools::getValue('type_product');
             $idProduct = (int) Tools::getValue('id_product');
 
+            $this->id_object = $idProduct;
+            $this->object = new Product($idProduct);
+
             if ($typeProduct !== Product::PTYPE_PACK) {
                 if (!Pack::deleteItems($idProduct)) {
                     $this->errors[] = Tools::displayError('Cannot delete product pack items.');
@@ -1162,10 +1165,6 @@ class AdminProductsControllerCore extends AdminController
             // Product preview
             $this->display = 'edit';
             $this->action = 'save';
-            if (Tools::getValue('id_product')) {
-                $this->id_object = Tools::getValue('id_product');
-                $this->object = new Product((int) Tools::getValue('id_product'));
-            }
         } elseif (Tools::isSubmit('submitAttachments')) {
             if ($this->tabAccess['edit'] === '1') {
                 $this->action = 'attachments';
