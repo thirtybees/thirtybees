@@ -736,31 +736,45 @@ class CustomerCore extends ObjectModel
      */
     public function getStats()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('COUNT(`id_order`) AS `nb_orders`, SUM(`total_paid` / o.`conversion_rate`) AS `total_orders`')
-                ->from('orders', 'o')
-                ->where('o.`id_customer` = '.(int) $this->id)
-                ->where('o.`valid` = 1')
-        );
+        $id = (int)$this->id;
+        $result = [
+            'nb_orders' => 0,
+            'total_orders' => 0,
+            'last_visit' => null,
+            'age' => '--'
+        ];
 
-        $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('MAX(c.`date_add`) AS `last_visit`')
-                ->from('guest', 'g')
-                ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
-                ->where('g.`id_customer` = '.(int) $this->id)
-        );
+        if ($id) {
+            $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $res = $conn->getRow(
+                (new DbQuery())
+                    ->select('COUNT(`id_order`) AS `nb_orders`, SUM(`total_paid` / o.`conversion_rate`) AS `total_orders`')
+                    ->from('orders', 'o')
+                    ->where('o.`id_customer` = ' . $id)
+                    ->where('o.`valid` = 1')
+            );
+            if (is_array($res)) {
+                $result['nb_orders'] = (int) $res['nb_orders'];
+                $result['total_orders'] = (int) $res['total_orders'];
+            }
 
-        $result3 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('(YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5) < RIGHT(c.`birthday`, 5)) AS `age`')
-                ->from('customer', 'c')
-                ->where('c.`id_customer` = '.(int) $this->id)
-        );
+            $result['last_visit'] = $conn->getValue(
+                (new DbQuery())
+                    ->select('MAX(c.`date_add`) AS `last_visit`')
+                    ->from('guest', 'g')
+                    ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
+                    ->where('g.`id_customer` = ' . $id)
+            );
 
-        $result['last_visit'] = $result2['last_visit'];
-        $result['age'] = ($result3['age'] != date('Y') ? $result3['age'] : '--');
+            $age = $conn->getValue(
+                (new DbQuery())
+                    ->select('(YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5) < RIGHT(c.`birthday`, 5)) AS `age`')
+                    ->from('customer', 'c')
+                    ->where('c.`id_customer` = ' . $id)
+            );
+
+            $result['age'] = ($age != date('Y')) ? $age : '--';
+        }
 
         return $result;
     }
