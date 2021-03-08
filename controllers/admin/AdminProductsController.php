@@ -2366,11 +2366,20 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return bool|string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function getPreviewUrl(Product $product)
     {
-        $idLang = Configuration::get('PS_LANG_DEFAULT', null, null, $this->context->shop->id);
+        if ($this->context->language->active) {
+            // use the same language that is used in back office
+            $idLang = $this->context->language->id;
+        } else {
+            // language used in back office is not allowed in front office, fall back to store default language
+            $idLang = Configuration::get('PS_LANG_DEFAULT', null, null, $this->context->shop->id);
+        }
+
 
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
             return $this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.');
@@ -2383,8 +2392,8 @@ class AdminProductsControllerCore extends AdminController
         $isRewriteActive = (bool) Configuration::get('PS_REWRITING_SETTINGS');
         $previewUrl = $this->context->link->getProductLink(
             $product,
-            $this->getFieldValue($product, 'link_rewrite', $this->context->language->id),
-            Category::getLinkRewrite($this->getFieldValue($product, 'id_category_default'), $this->context->language->id),
+            $this->getFieldValue($product, 'link_rewrite', $idLang),
+            Category::getLinkRewrite($this->getFieldValue($product, 'id_category_default'), $idLang),
             null,
             $idLang,
             (int) $this->context->shop->id,
