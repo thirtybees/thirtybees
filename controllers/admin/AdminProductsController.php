@@ -508,6 +508,7 @@ class AdminProductsControllerCore extends AdminController
 
         $tree = new HelperTreeCategories('subtree_associated_categories');
         $tree->setTemplate('subtree_associated_categories.tpl')
+            ->setHeaderTemplate('tree_associated_header.tpl')
             ->setUseCheckBox($useCheckBox)
             ->setUseSearch(true)
             ->setIdTree($idTree)
