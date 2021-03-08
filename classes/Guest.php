@@ -98,10 +98,11 @@ class GuestCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function setNewGuest($cookie)
     {
-        $guest = new Guest(isset($cookie->id_customer) ? Guest::getFromCustomer((int) ($cookie->id_customer)) : null);
+        $guest = new Guest(static::getFromCustomer($cookie->id_customer));
         $guest->userAgent();
         $guest->save();
         $cookie->id_guest = (int) ($guest->id);
@@ -110,7 +111,7 @@ class GuestCore extends ObjectModel
     /**
      * @param int $idCustomer
      *
-     * @return bool
+     * @return integer | null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -120,8 +121,14 @@ class GuestCore extends ObjectModel
     public static function getFromCustomer($idCustomer)
     {
         if (!Validate::isUnsignedId($idCustomer)) {
-            return false;
+            return null;
         }
+
+        $idCustomer = (int)$idCustomer;
+        if ($idCustomer === 0) {
+            return null;
+        }
+
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
                 ->select('`id_guest`')
@@ -129,7 +136,10 @@ class GuestCore extends ObjectModel
                 ->where('`id_customer` = '.(int) $idCustomer)
         );
 
-        return $result['id_guest'];
+        if (is_array($result) && isset($result['id_guest'])) {
+            return (int) $result['id_guest'];
+        }
+        return null;
     }
 
     /**
