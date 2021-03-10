@@ -1741,7 +1741,7 @@ abstract class ModuleCore
     {
         $map = static::getModulesNameToIdMap();
         foreach ($map as $moduleName => $id) {
-            if ($moduleId === $moduleId) {
+            if ($moduleId === $id) {
                 return $moduleName;
             }
         }
