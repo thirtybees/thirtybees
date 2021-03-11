@@ -71,9 +71,9 @@ You can install the master or follow a [release package](https://github.com/thir
 $ git clone https://github.com/thirtybees/thirtybees.git --recurse-submodules
 ```
 - Then cd into the `thirtybees` folder
-- Run composer to install the dependencies:
+- Run composer to install the dependencies - you have to choose composer file according to php version
 ```shell
-$ composer install
+$ COMPOSER=composer/<php>/composer.json composer install
 ```
 - Then install the software as usual, using either a web browser (https://example.com/install-dev)
 - Or install via command line

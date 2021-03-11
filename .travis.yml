@@ -4,7 +4,7 @@ php:
   - 5.6
   - 7.0
   - 7.3
-#  - 7.4
+  - 7.4
 
 os: linux
 
@@ -22,7 +22,7 @@ cache:
     - $HOME/.composer/cache
 
 before_install:
-  - composer install --prefer-dist --no-interaction --no-progress
+  - COMPOSER=composer/php${TRAVIS_PHP_VERSION:0:3}/composer.json composer install --prefer-dist --no-interaction --no-progress
 
 install:
   - php install-dev/index_cli.php --newsletter=0 --language=en --country=us --domain=thirty.bees:8888 --db_name=thirtybees --db_create=1 --name=thirtybees --email=test@thirty.bees --firstname=thirty --lastname=bees --password=thirtybees

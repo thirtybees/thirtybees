@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function usage {
-  echo "Usage: build.sh [-h|--help] [--[no-]validate] [--target-dir=<dir>]"
+  echo "Usage: build.sh [-h|--help] [--php-version=<version>] [--[no-]validate] [--target-dir=<dir>]"
   echo "          [<git revision>]"
   echo
   echo "This script builds an installation package from the current repository."
@@ -11,6 +11,9 @@ function usage {
   echo "    --[no-]validate       Enforce [no] validation. Default is to"
   echo "                          validate when packaging 'master' or the"
   echo "                          latest tag, but not when packaging others."
+  echo
+  echo "    --php-version=<ver>   Build package for specific php version. If not"
+  echo "                          specified, minimal supported php version will be used"
   echo
   echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
   echo "                          packaged files in <dir>."
@@ -47,6 +50,7 @@ trap cleanup 0
 ### Options parsing.
 
 OPTION_VALIDATE='auto'
+PHP_VERSION='auto'
 GIT_REVISION=''
 TARGET_DIR=''
 
@@ -77,6 +81,13 @@ while [ ${#} -ne 0 ]; do
         exit 1
       fi
       ;;
+    '--php-version='*)
+      PHP_VERSION="${1#*=}"
+      if [ -z "${PHP_VERSION}" ]; then
+        echo "Option --php-version= missing parameter. Aborting."
+        exit 1
+      fi
+      ;;
     *)
       if ! git show -q "${1}" 2>/dev/null | grep -q '.'; then
         echo "Git revision '${1}' doesn't exist. Aborting."
@@ -87,6 +98,18 @@ while [ ${#} -ne 0 ]; do
   esac
   shift
 done
+
+SUPPORTED_PHP_VERSIONS=$(find composer -type d -name "php*" | sed -e 's/^.*php\([0-9]\.[0-9]\)$/\1/g' | sort --version-sort);
+if [ "$PHP_VERSION" == "auto" ]; then
+  PHP_VERSION=$(find composer -type d -name "php*" | sed -e 's/^.*php\([0-9]\.[0-9]\)$/\1/g' | sort --version-sort | head -n 1);
+fi
+if [[ ! "${SUPPORTED_PHP_VERSIONS[@]}" =~ "${PHP_VERSION}" ]]; then
+  echo "Unsupported php version ${PHP_VERSION}";
+  exit 1;
+fi
+unset SUPPORTED_PHP_VERSIONS;
+
+echo "Building release package for PHP version ${PHP_VERSION}";
 
 # Latest tag = latest release. Ignore PS version tags.
 LATEST_TAG=$(git tag | \
@@ -259,8 +282,6 @@ EXCLUDE_FILE+=('.gitmodules')
 EXCLUDE_FILE+=('.travis.yml')
 EXCLUDE_FILE+=('architecture.md')
 EXCLUDE_FILE+=('codeception.yml')
-EXCLUDE_FILE+=('composer.json')
-EXCLUDE_FILE+=('composer.lock')
 EXCLUDE_FILE+=('Vagrantfile')
 EXCLUDE_FILE+=('CHANGELOG*')
 EXCLUDE_FILE+=('ChangeLog*')
@@ -280,13 +301,13 @@ EXCLUDE_DIR+=('vagrant')
 # As always, there are some exceptions from the above :-)
 # Paths starting at repository root, directories without trailing '/', please.
 KEEP=('docs')               # For CSV import samples, linked in back office.
-KEEP+=('composer.json')     # Allow merchants to upgrade vendor packages.
 
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=('generatemd5list.php')  <- Can't get removed.
 EXCLUDE_PATH=('tools/buildmodule.sh')
 EXCLUDE_PATH+=('tools/validatemodule.sh')
 EXCLUDE_PATH+=('tools/templates/')
+EXCLUDE_PATH+=('composer/')
 
 
 # Build a list of parameters for 'find' to actually keep ${KEEP}.
@@ -320,9 +341,9 @@ done
 # Composer repositories. Not reasonably doable without network access,
 # but fortunately composer maintains a cache, so no heavy downloads.
 (
-  cd "${PACKAGING_DIR}"                                           || exit ${?}
-  composer install --no-dev                                       || exit ${?}
-  composer dump-autoload -o                                       || exit ${?}
+  cd "${PACKAGING_DIR}"                                                        || exit ${?}
+  COMPOSER=composer/php${PHP_VERSION}/composer.json composer install --no-dev  || exit ${?}
+  COMPOSER=composer/php${PHP_VERSION}/composer.json composer dump-autoload -o  || exit ${?}
 ) || exit ${?}
 
 # Theme repositories.
