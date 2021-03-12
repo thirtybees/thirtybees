@@ -7392,7 +7392,7 @@ class ProductCore extends ObjectModel
     {
         $result = $this->getCover($this->id);
 
-        return $result['id_image'];
+        return isset($result['id_image']) ? $result['id_image'] : null;
     }
 
     /**
@@ -8039,6 +8039,9 @@ class ProductCore extends ObjectModel
      */
     public function modifierWsLinkRewrite()
     {
+        if (! $this->link_rewrite) {
+            $this->link_rewrite = [];
+        }
         foreach ($this->name as $idLang => $name) {
             if (empty($this->link_rewrite[$idLang])) {
                 $this->link_rewrite[$idLang] = Tools::link_rewrite($name);
