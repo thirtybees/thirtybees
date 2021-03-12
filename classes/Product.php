@@ -7099,7 +7099,7 @@ class ProductCore extends ObjectModel
     /**
      * Webservice setter : set category ids of current product for association
      *
-     * @param array $categoryIds category ids
+     * @param array $categories category description arrays
      *
      * @return bool
      *
@@ -7107,35 +7107,12 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public function setWsCategories($categoryIds)
+    public function setWsCategories($categories)
     {
-        $ids = [];
-        foreach ($categoryIds as $value) {
-            $ids[] = $value['id'];
-        }
-        if ($this->deleteCategories()) {
-            if ($ids) {
-                $ids = array_map('intval', $ids);
-                $inserts = [];
-                foreach ($ids as $position => $id) {
-                    $inserts[] = [
-                        'id_category' => (int) $id,
-                        'id_product'  => (int) $this->id,
-                        'position'    => (int) $position,
-                    ];
-                }
-                $result = Db::getInstance()->insert(
-                    'category_product',
-                    $inserts
-                );
-                Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
-
-                return $result;
-            }
-        }
+        $ids = array_map('intval', array_column($categories, 'id'));
+        $result = $this->updateCategories($ids);
         Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
-
-        return true;
+        return $result;
     }
 
     /**
