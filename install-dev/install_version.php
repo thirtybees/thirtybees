@@ -30,3 +30,4 @@
  */
 
 define('_TB_INSTALL_VERSION_', '1.3.0');
+define('_TB_INSTALL_REVISION_', 'development');

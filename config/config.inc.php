@@ -66,6 +66,10 @@ if (!file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
 require_once(_PS_ROOT_DIR_.'/config/settings.inc.php');
 require_once(_PS_CONFIG_DIR_.'autoload.php');
 
+if (! defined('_TB_REVISION_')) {
+    define('_TB_REVISION_', _TB_VERSION_);
+}
+
 /* Initialize error reporting logic */
 ErrorHandler::getInstance()->init();
 
