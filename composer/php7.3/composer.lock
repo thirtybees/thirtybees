@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5df35e42b459c012983d60fc14b1899",
+    "content-hash": "00f32d150b651063679ebeb5bd7be75c",
     "packages": [
         {
             "name": "commerceguys/intl",
@@ -1182,23 +1182,23 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.35",
+            "version": "v3.1.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "97f700971f7df65f66564b4ce14801f1059bcd8a"
+                "reference": "e27da524f7bcd7361e3ea5cdfa99c4378a7b5419"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/97f700971f7df65f66564b4ce14801f1059bcd8a",
-                "reference": "97f700971f7df65f66564b4ce14801f1059bcd8a",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/e27da524f7bcd7361e3ea5cdfa99c4378a7b5419",
+                "reference": "e27da524f7bcd7361e3ea5cdfa99c4378a7b5419",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "6.4.1",
+                "phpunit/phpunit": "^7.5 || ^6.5 || ^5.7 || ^4.8",
                 "smarty/smarty-lexer": "^3.1"
             },
             "type": "library",
@@ -1239,9 +1239,9 @@
                 "forum": "http://www.smarty.net/forums/",
                 "irc": "irc://irc.freenode.org/smarty",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v3.1.35"
+                "source": "https://github.com/smarty-php/smarty/tree/v3.1.39"
             },
-            "time": "2020-04-13T22:02:48+00:00"
+            "time": "2021-02-17T21:57:51+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
