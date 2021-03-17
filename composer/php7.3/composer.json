@@ -10,7 +10,7 @@
         "jakeasmith/http_build_url": "^1.0",
         "mrclay/minify": "^2.3",
         "greenlion/php-sql-parser": "^4.1",
-        "smarty/smarty": "3.1.35",
+        "smarty/smarty": "3.1.39",
         "pear/archive_tar": "^1.4",
         "mobiledetect/mobiledetectlib": "^2.8",
         "dlundgren/css-splitter": "^1.0",
