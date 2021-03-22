@@ -37,16 +37,17 @@
  */
 class AttributeCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int Group id which attribute belongs */
     public $id_attribute_group;
+
     /** @var string Name */
     public $name;
+
     /** @var string $color */
     public $color;
+
     /** @var int $position */
     public $position;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -76,8 +77,10 @@ class AttributeCore extends ObjectModel
         ],
     ];
 
+    /** @var string Path to image directory. Used for image deletion. */
     protected $image_dir = _PS_COL_IMG_DIR_;
 
+    /** @var array WebService parameters */
     protected $webserviceParameters = [
         'objectsNodeName' => 'product_option_values',
         'objectNodeName'  => 'product_option_value',
@@ -93,6 +96,9 @@ class AttributeCore extends ObjectModel
      * @param null $idLang
      * @param null $idShop
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -106,9 +112,11 @@ class AttributeCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -171,6 +179,8 @@ class AttributeCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -198,7 +208,7 @@ class AttributeCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
-            $this->position = Attribute::getHigherPosition($this->id_attribute_group) + 1;
+            $this->position = static::getHigherPosition($this->id_attribute_group) + 1;
         }
 
         $return = parent::add($autoDate, $nullValues);
@@ -281,13 +291,14 @@ class AttributeCore extends ObjectModel
      * Get quantity for a given attribute combination
      * Check if quantity is enough to deserve customer
      *
-     * @param int       $idProductAttribute Product attribute combination id
-     * @param int       $qty                Quantity needed
+     * @param int $idProductAttribute Product attribute combination id
+     * @param int $qty Quantity needed
      *
      * @param Shop|null $shop
      *
      * @return bool Quantity is available or not
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -303,6 +314,10 @@ class AttributeCore extends ObjectModel
     }
 
     /**
+     * @param int $idProduct Product ID
+     * @return int Quantity
+     * @throws PrestaShopException
+     *
      * @deprecated 1.0.0, use StockAvailable::getQuantityAvailableByProduct()
      */
     public static function getAttributeQty($idProduct)
@@ -320,13 +335,14 @@ class AttributeCore extends ObjectModel
      * @param array $arr
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public static function updateQtyProduct(&$arr)
     {
         Tools::displayAsDeprecated();
 
         $idProduct = (int) $arr['id_product'];
-        $qty = Attribute::getAttributeQty($idProduct);
+        $qty = StockAvailable::getQuantityAvailableByProduct($idProduct);
 
         if ($qty !== false) {
             $arr['quantity'] = (int) $qty;
@@ -340,7 +356,6 @@ class AttributeCore extends ObjectModel
     /**
      * Return true if attribute is color type
      *
-     * @acces   public
      * @return bool
      *
      * @since   1.0.0
@@ -351,17 +366,15 @@ class AttributeCore extends ObjectModel
     {
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('ag.`group_type`')
-            ->from('attribute_group', 'ag')
-            ->innerJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
-            ->where('`group_type` = \'color\'')
+                ->select('ag.`group_type`')
+                ->from('attribute_group', 'ag')
+                ->innerJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
+                ->where('`group_type` = \'color\'')
         );
     }
 
     /**
      * Get minimal quantity for product with attributes quantity
-     *
-     * @acces   public static
      *
      * @param int $idProductAttribute
      *
@@ -375,10 +388,10 @@ class AttributeCore extends ObjectModel
     {
         $minimalQuantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`minimal_quantity`')
-            ->from('product_attribute_shop', 'pas')
-            ->where('`id_shop` = '.(int) Context::getContext()->shop->id)
-            ->where('`id_product_attribute` = '.(int) $idProductAttribute)
+                ->select('`minimal_quantity`')
+                ->from('product_attribute_shop', 'pas')
+                ->where('`id_shop` = ' . (int)Context::getContext()->shop->id)
+                ->where('`id_product_attribute` = ' . (int)$idProductAttribute)
         );
 
         if ($minimalQuantity > 1) {
@@ -409,10 +422,10 @@ class AttributeCore extends ObjectModel
 
         if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('a.`id_attribute`, a.`position`, a.`id_attribute_group`')
-            ->from('attribute', 'a')
-            ->where('a.`id_attribute_group` = '.(int) $idAttributeGroup)
-            ->orderBy('a.`position` ASC')
+                ->select('a.`id_attribute`, a.`position`, a.`id_attribute_group`')
+                ->from('attribute', 'a')
+                ->where('a.`id_attribute_group` = ' . (int)$idAttributeGroup)
+                ->orderBy('a.`position` ASC')
         )) {
             return false;
         }
@@ -492,11 +505,11 @@ class AttributeCore extends ObjectModel
      */
     public static function getHigherPosition($idAttributeGroup)
     {
-        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $position = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('MAX(`position`)')
-            ->from('attribute')
-            ->where('`id_attribute_group` = '.(int) $idAttributeGroup)
+                ->select('MAX(`position`)')
+                ->from('attribute')
+                ->where('`id_attribute_group` = ' . (int)$idAttributeGroup)
         );
 
         return (is_numeric($position)) ? $position : -1;

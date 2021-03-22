@@ -2393,6 +2393,8 @@ abstract class ModuleCore
      *
      * @return bool result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
