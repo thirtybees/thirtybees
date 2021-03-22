@@ -3804,7 +3804,7 @@ class AdminImportControllerCore extends AdminController
         if (is_array($crossStepsVariables) && array_key_exists('attributes', $crossStepsVariables)) {
             $attributes = $crossStepsVariables['attributes'];
         }
-        foreach (Attribute::getAttributes($defaultLanguage) as $attribute) {
+        foreach (ProductAttribute::getAttributes($defaultLanguage) as $attribute) {
             $attributes[$attribute['attribute_group'].'_'.$attribute['name']] = (int) $attribute['id_attribute'];
         }
 
@@ -4082,11 +4082,11 @@ class AdminImportControllerCore extends AdminController
                     $group = $groupsAttributes[$key]['group'];
                     if (!isset($attributes[$group.'_'.$attribute]) && count($groupsAttributes[$key]) == 2) {
                         $idAttributeGroup = $groupsAttributes[$key]['id'];
-                        $obj = new Attribute();
+                        $obj = new ProductAttribute();
                         // sets the proper id (corresponding to the right key)
                         $obj->id_attribute_group = $groupsAttributes[$key]['id'];
                         $obj->name[$defaultLanguage] = str_replace('\n', '', str_replace('\r', '', $attribute));
-                        $obj->position = (!$position && isset($groups[$group])) ? Attribute::getHigherPosition($groups[$group]) + 1 : $position;
+                        $obj->position = (!$position && isset($groups[$group])) ? ProductAttribute::getHigherPosition($groups[$group]) + 1 : $position;
 
                         if (($fieldError = $obj->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
                             ($langFieldError = $obj->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
@@ -4190,7 +4190,7 @@ class AdminImportControllerCore extends AdminController
 
                     // after insertion, we clean attribute position and group attribute position
                     if (!$validateOnly) {
-                        $obj = new Attribute();
+                        $obj = new ProductAttribute();
                         $obj->cleanPositions((int) $idAttributeGroup, false);
                         AttributeGroup::cleanPositions();
                     }

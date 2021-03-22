@@ -5202,7 +5202,7 @@ class AdminProductsControllerCore extends AdminController
                     $this->displayWarning($this->l('A virtual product cannot have combinations.'));
                 } else {
                     $attributeJs = [];
-                    $attributes = Attribute::getAttributes($this->context->language->id, true);
+                    $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
                     foreach ($attributes as $k => $attribute) {
                         $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
                     }

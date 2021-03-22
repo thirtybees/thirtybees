@@ -357,7 +357,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
         ];
 
         $attributeGroups = [];
-        $attributes = Attribute::getAttributes((int) $this->context->language->id);
+        $attributes = ProductAttribute::getAttributes((int) $this->context->language->id);
         foreach ($attributes as $attribute) {
             if (!isset($attributeGroups[$attribute['id_attribute_group']])) {
                 $attributeGroups[$attribute['id_attribute_group']] = [

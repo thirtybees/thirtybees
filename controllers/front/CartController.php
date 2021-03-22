@@ -187,7 +187,7 @@ class CartControllerCore extends FrontController
 
         // Check product quantity availability
         if ($this->id_product_attribute) {
-            if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
+            if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !ProductAttribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
                 $this->errors[] = Tools::displayError('There aren\'t enough products in stock.', !Tools::getValue('ajax'));
             }
         } elseif ($product->hasAttributes()) {
@@ -195,7 +195,7 @@ class CartControllerCore extends FrontController
             $this->id_product_attribute = Product::getDefaultAttribute($product->id, $minimumQuantity);
             if (!$this->id_product_attribute) {
                 Tools::redirectAdmin($this->context->link->getProductLink($product));
-            } elseif (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
+            } elseif (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !ProductAttribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
                 $this->errors[] = Tools::displayError('There aren\'t enough products in stock.', !Tools::getValue('ajax'));
             }
         } elseif (!$product->checkQty($qtyToCheck)) {
@@ -227,7 +227,7 @@ class CartControllerCore extends FrontController
                 $updateQuantity = $this->context->cart->updateQty($this->qty, $this->id_product, $this->id_product_attribute, $this->customization_id, Tools::getValue('op', 'up'), $this->id_address_delivery);
                 if ($updateQuantity < 0) {
                     // If product has attribute, minimal quantity is set with minimal quantity of attribute
-                    $minimalQuantity = ($this->id_product_attribute) ? Attribute::getAttributeMinimalQty($this->id_product_attribute) : $product->minimal_quantity;
+                    $minimalQuantity = ($this->id_product_attribute) ? ProductAttribute::getAttributeMinimalQty($this->id_product_attribute) : $product->minimal_quantity;
                     $this->errors[] = sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimalQuantity);
                 } elseif (!$updateQuantity) {
                     $this->errors[] = Tools::displayError('You already have the maximum quantity available for this product.', !Tools::getValue('ajax'));
@@ -298,7 +298,7 @@ class CartControllerCore extends FrontController
         if (count($customizationProduct)) {
             $product = new Product((int) $this->id_product);
             if ($this->id_product_attribute > 0) {
-                $minimalQuantity = (int) Attribute::getAttributeMinimalQty($this->id_product_attribute);
+                $minimalQuantity = (int) ProductAttribute::getAttributeMinimalQty($this->id_product_attribute);
             } else {
                 $minimalQuantity = (int) $product->minimal_quantity;
             }

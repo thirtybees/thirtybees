@@ -251,7 +251,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $this->initPageHeaderToolbar();
         $this->initGroupTable();
 
-        $attributes = Attribute::getAttributes($this->context->language->id, true);
+        $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
         $attributeJs = [];
 
         foreach ($attributes as $k => $attribute) {

@@ -3183,7 +3183,7 @@ class CartCore extends ObjectModel
 
         /* If we have a product combination, the minimal quantity is set with the one of this combination */
         if (!empty($idProductAttribute)) {
-            $minimalQuantity = (int) Attribute::getAttributeMinimalQty($idProductAttribute);
+            $minimalQuantity = (int) ProductAttribute::getAttributeMinimalQty($idProductAttribute);
         } else {
             $minimalQuantity = (int) $product->minimal_quantity;
         }

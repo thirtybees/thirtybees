@@ -30,12 +30,12 @@
  */
 
 /**
- * Class AttributeCore
+ * Class ProductAttributeCore
  *
  * @since   1.0.0
  * @version 1.0.0 Initial version
  */
-class AttributeCore extends ObjectModel
+class ProductAttributeCore extends ObjectModel
 {
     /** @var int Group id which attribute belongs */
     public $id_attribute_group;
@@ -90,7 +90,7 @@ class AttributeCore extends ObjectModel
     ];
 
     /**
-     * AttributeCore constructor.
+     * ProductAttributeCore constructor.
      *
      * @param null $id
      * @param null $idLang

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2147e96ec81b63943a44e330489f410",
+    "content-hash": "526c3ee28ec963de4c341742f50353f0",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -5350,15 +5350,6 @@
                 }
             ],
             "time": "2022-05-24T11:49:31+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php80",
-            "version": "2.0.0",
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/thirtybees/polyfill-php80/archive/2.0.0.zip"
-            },
-            "type": "library"
         },
         {
             "name": "symfony/process",
