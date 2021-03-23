@@ -131,13 +131,16 @@
 									{if $field['type'] == 'select'}
 										<div class="col-lg-9">
 											{if $field['list']}
-												<select class="form-control fixed-width-xxl {if isset($field['class'])}{$field['class']}{/if}" name="{$key}"{if isset($field['js'])} onchange="{$field['js']}"{/if} id="{$key}" {if isset($field['size'])} size="{$field['size']}"{/if}>
+												<select class="form-control fixed-width-xxl {if isset($field['class'])}{$field['class']}{/if}" name="{$key}"{if isset($field['js'])} onchange="{$field['js']}"{/if} id="{$key}" {if isset($field['size'])} size="{$field['size']}"{/if}{if isset($field['disabled']) && !!$field['disabled']} disabled="disabled"{/if}>
 													{foreach $field['list'] AS $k => $option}
 														<option value="{$option[$field['identifier']]}"{if $field['value'] == $option[$field['identifier']]} selected="selected"{/if}>{$option['name']}</option>
 													{/foreach}
 												</select>
 											{elseif isset($field.empty_message)}
 												{$field.empty_message}
+											{/if}
+											{if isset($field['disabled']) && !!$field['disabled']}
+												<input type="hidden" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']|escape:'htmlall':'UTF-8'}" />
 											{/if}
 										</div>
 									{elseif $field['type'] == 'bool'}
