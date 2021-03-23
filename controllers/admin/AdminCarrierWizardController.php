@@ -438,6 +438,26 @@ class AdminCarrierWizardControllerCore extends AdminController
                             : $this->l('Tax rate'),
                         'disabled' => $proportionateTax
                     ],
+                    'prices_with_tax' => [
+                        'type'    => 'select',
+                        'label'   => $this->l('Prices include tax'),
+                        'name'    => 'prices_with_tax',
+                        'options' => [
+                            'query' => [
+                                [
+                                    'id'   => 0,
+                                    'name' => $this->l('No'),
+                                ],
+                                [
+                                    'id'   => 1,
+                                    'name' => $this->l('Yes'),
+                                ],
+                            ],
+                            'id'    => 'id',
+                            'name'  => 'name',
+                        ],
+                        'hint'    => $this->l('Specify whether prices entered in the table below already include tax or not'),
+                    ],
                     'range_behavior'     => [
                         'type'    => 'select',
                         'label'   => $this->l('Out-of-range behavior'),
@@ -494,6 +514,8 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function getStepThreeFieldsValues($carrier)
@@ -508,6 +530,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             'shipping_handling'  => $shippingHandling,
             'shipping_method'    => $this->getFieldValue($carrier, 'shipping_method'),
             'range_behavior'     => $this->getFieldValue($carrier, 'range_behavior'),
+            'prices_with_tax'    => $this->getFieldValue($carrier, 'prices_with_tax'),
             'zones'              => $this->getFieldValue($carrier, 'zones'),
         ];
     }

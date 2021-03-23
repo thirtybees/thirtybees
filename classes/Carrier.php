@@ -111,6 +111,8 @@ class CarrierCore extends ObjectModel
     public $max_weight;
     /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
     public $grade;
+    /** @var bool prices_with_tax indicates if the shipping prices associated with carrier are with or without tax */
+    public $prices_with_tax;
     /** @var int $id_tax_rules_group */
     public $id_tax_rules_group;
     // @codingStandardsIgnoreEnd
@@ -145,6 +147,7 @@ class CarrierCore extends ObjectModel
             'max_depth'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
             'max_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
             'grade'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'size' => 1, 'dbDefault' => '0', 'dbNullable' => true],
+            'prices_with_tax'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
 
             /* Lang fields */
             'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],

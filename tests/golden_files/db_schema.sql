@@ -159,6 +159,7 @@ CREATE TABLE `PREFIX_carrier` (
   `max_depth` int(10) DEFAULT '0',
   `max_weight` decimal(20,6) DEFAULT '0.000000',
   `grade` int(10) DEFAULT '0',
+  `prices_with_tax` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_carrier`),
   KEY `deleted` (`deleted`,`active`),
   KEY `id_tax_rules_group` (`id_tax_rules_group`),
