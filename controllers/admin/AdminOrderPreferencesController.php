@@ -40,6 +40,7 @@ class AdminOrderPreferencesControllerCore extends AdminController
      * AdminOrderPreferencesControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -71,6 +72,9 @@ class AdminOrderPreferencesControllerCore extends AdminController
                 'name'  => $this->l('One-page checkout'),
             ],
         ];
+
+        // check Proportionate tax for shipping and wrapping
+        $proportionateTax = Carrier::useProportionateTax();
 
         $this->fields_options = [
             'general' => [
@@ -164,12 +168,15 @@ class AdminOrderPreferencesControllerCore extends AdminController
                     ],
                     'PS_GIFT_WRAPPING_TAX_RULES_GROUP' => [
                         'title'      => $this->l('Gift-wrapping tax'),
-                        'hint'       => $this->l('Set a tax for gift wrapping.'),
                         'validation' => 'isInt',
                         'cast'       => 'intval',
                         'type'       => 'select',
                         'list'       => array_merge([['id_tax_rules_group' => 0, 'name' => $this->l('None')]], TaxRulesGroup::getTaxRulesGroups(true)),
                         'identifier' => 'id_tax_rules_group',
+                        'hint' => $proportionateTax
+                            ? Translate::ppTags($this->l('Taxes will be determined dynamically because [1]Proportionate tax for shipping and wrapping[/1] option is enabled'), ['<i>'])
+                            : $this->l('Set a tax for gift wrapping.'),
+                        'disabled' => $proportionateTax
                     ],
                     'PS_RECYCLABLE_PACK'               => [
                         'title'      => $this->l('Offer recycled packaging'),
@@ -187,9 +194,6 @@ class AdminOrderPreferencesControllerCore extends AdminController
             unset($this->fields_options['general']['fields']['PS_ALLOW_MULTISHIPPING']);
         }
 
-        if (Carrier::useProportionateTax()) {
-            unset($this->fields_options['gift']['fields']['PS_GIFT_WRAPPING_TAX_RULES_GROUP']);
-        }
     }
 
     /**
@@ -198,6 +202,7 @@ class AdminOrderPreferencesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {
