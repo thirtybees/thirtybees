@@ -347,10 +347,15 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderStepThree($carrier)
     {
+        // check Proportionate tax for shipping and wrapping
+        $proportionateTax = Carrier::useProportionateTax();
+
         $this->fields_form = [
             'form' => [
                 'id_form' => 'step_carrier_ranges',
@@ -428,6 +433,10 @@ class AdminCarrierWizardControllerCore extends AdminController
                                 'value' => 0,
                             ],
                         ],
+                        'hint' => $proportionateTax
+                            ? Translate::ppTags($this->l('Taxes will be determined dynamically because [1]Proportionate tax for shipping and wrapping[/1] option is enabled'), ['<i>'])
+                            : $this->l('Tax rate'),
+                        'disabled' => $proportionateTax
                     ],
                     'range_behavior'     => [
                         'type'    => 'select',
@@ -457,8 +466,12 @@ class AdminCarrierWizardControllerCore extends AdminController
             ],
         ];
 
-        if (Carrier::useProportionateTax()) {
-            unset($this->fields_form['form']['input']['id_tax_rules_group']);
+        if ($proportionateTax) {
+            // include hidden field to remember selected tax group
+            $this->fields_form['form']['input']['id_tax_rules_group_hidden'] = [
+                'type' => 'hidden',
+                'name' => 'id_tax_rules_group'
+            ];
         }
 
         $tplVars = [];
