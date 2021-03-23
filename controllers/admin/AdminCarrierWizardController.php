@@ -457,7 +457,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             ],
         ];
 
-        if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+        if (Carrier::useProportionateTax()) {
             unset($this->fields_form['form']['input']['id_tax_rules_group']);
         }
 

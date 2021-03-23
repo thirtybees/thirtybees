@@ -222,6 +222,20 @@ class CarrierCore extends ObjectModel
     }
 
     /**
+     * Returns true, if proportionate shipping and wrapping tax is used
+     *
+     * @return boolean
+     */
+    public static function useProportionateTax()
+    {
+        try {
+            return (bool)Configuration::get('PS_ATCP_SHIPWRAP');
+        } catch (PrestaShopException $ignored) {
+            return false;
+        }
+    }
+
+    /**
      * Hydrate function for the Carrier
      *
      * @param array    $data

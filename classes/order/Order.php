@@ -1747,7 +1747,7 @@ class OrderCore extends ObjectModel
         $address = new Address((int) $this->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         $carrier = new Carrier((int) $this->id_carrier);
 
-        if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+        if (Carrier::useProportionateTax()) {
             /** @var AverageTaxOfProductsTaxCalculator $wrappingTaxCalculator */
             $wrappingTaxCalculator = Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($this->id);
             /** @var AverageTaxOfProductsTaxCalculator $taxCalculator */

@@ -953,8 +953,8 @@ class CartCore extends ObjectModel
         // Wrapping Fees
         $wrappingFees = 0;
 
-        // With PS_ATCP_SHIPWRAP on the gift wrapping cost computation calls getOrderTotal with $type === static::ONLY_PRODUCTS, so the flag below prevents an infinite recursion.
-        $includeGiftWrapping = (!$configuration->get('PS_ATCP_SHIPWRAP') || $type !== static::ONLY_PRODUCTS);
+        // With useProportionateTax on the gift wrapping cost computation calls getOrderTotal with $type === static::ONLY_PRODUCTS, so the flag below prevents an infinite recursion.
+        $includeGiftWrapping = (!Carrier::useProportionateTax() || $type !== static::ONLY_PRODUCTS);
 
         if ($this->gift && $includeGiftWrapping) {
             $wrappingFees = Tools::ps_round(
@@ -1858,7 +1858,7 @@ class CartCore extends ObjectModel
     public function getPackageShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null, $idZone = null)
     {
         if ($this->isVirtualCart()) {
-            return 0.;
+            return 0.0;
         }
 
         if (!$defaultCountry) {
@@ -2045,8 +2045,8 @@ class CartCore extends ObjectModel
         if ($useTax && !Tax::excludeTaxeOption()) {
             $address = Address::initialize((int) $addressId);
 
-            if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-                // With PS_ATCP_SHIPWRAP, pre-tax price is deduced
+            if (Carrier::useProportionateTax()) {
+                // When using proportionate tax, pre-tax price is deduced
                 // from post tax price, so no $carrier_tax here
                 // even though it sounds weird.
                 $carrierTax = 0;
@@ -2166,9 +2166,9 @@ class CartCore extends ObjectModel
             }
         }
 
-        if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+        if (Carrier::useProportionateTax()) {
             if ($useTax) {
-                // With PS_ATCP_SHIPWRAP, we apply the proportionate tax rate to the shipping
+                // When using proportionate tax, we apply the proportionate tax rate to the shipping
                 // costs. This is on purpose and required in many countries in the European Union.
                 $shippingCost *= 1 + $this->getAverageProductsTaxRate();
             }
@@ -2375,9 +2375,11 @@ class CartCore extends ObjectModel
         }
 
         if ($withTaxes) {
-            if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-                // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included
-                // so nothing to do here.
+            if (carrier::useProportionateTax()) {
+                $wrappingFees = round(
+                    $wrappingFees * (1 + $this->getAverageProductsTaxRate()),
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             } else {
                 if (!isset($address[$this->id])) {
                     if ($idAddress === null) {
@@ -2394,15 +2396,6 @@ class CartCore extends ObjectModel
                 $taxManager = TaxManagerFactory::getManager($address[$this->id], (int) Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
                 $taxCalculator = $taxManager->getTaxCalculator();
                 $wrappingFees = $taxCalculator->addTaxes($wrappingFees);
-            }
-
-            if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-                // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included, so we convert it
-                // when asked for the pre tax price.
-                $wrappingFees = round(
-                    $wrappingFees * (1 + $this->getAverageProductsTaxRate()),
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
             }
         }
 

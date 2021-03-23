@@ -619,7 +619,7 @@ class OrderInvoiceCore extends ObjectModel
 
         $shippingTaxAmount = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
 
-        if (Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') || Configuration::get('PS_ATCP_SHIPWRAP')) {
+        if (Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') || Carrier::useProportionateTax()) {
             $shippingBreakdown = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                     ->select('t.`id_tax`, t.`rate`, oit.`amount` AS `total_amount`')
@@ -632,7 +632,7 @@ class OrderInvoiceCore extends ObjectModel
             $sumOfSplitTaxes = 0;
             $sumOfTaxBases = 0;
             foreach ($shippingBreakdown as &$row) {
-                if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+                if (Carrier::useProportionateTax()) {
                     $row['total_tax_excl'] = round(
                         $row['total_amount'] / $row['rate'] * 100,
                         _TB_PRICE_DATABASE_PRECISION_
@@ -706,7 +706,7 @@ class OrderInvoiceCore extends ObjectModel
         $sumOfTaxBases = 0;
         $totalTaxRate = 0;
         foreach ($wrappingBreakdown as &$row) {
-            if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+            if (Carrier::useProportionateTax()) {
                 $row['total_tax_excl'] = round(
                     $row['total_amount'] / $row['rate'] * 100,
                     _TB_PRICE_DATABASE_PRECISION_
@@ -737,7 +737,7 @@ class OrderInvoiceCore extends ObjectModel
             Tools::spreadAmount($deltaBase, _TB_PRICE_DATABASE_PRECISION_, $wrappingBreakdown, 'total_tax_excl');
         }
 
-        if (!Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') && !Configuration::get('PS_ATCP_SHIPWRAP')) {
+        if (!Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') && !Carrier::useProportionateTax()) {
             $wrappingBreakdown = [
                 [
                     'total_tax_excl' => $this->total_wrapping_tax_excl,
