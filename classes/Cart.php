@@ -2041,16 +2041,14 @@ class CartCore extends ObjectModel
             return 0.;
         }
 
-        // Select carrier tax
-        if ($useTax && !Tax::excludeTaxeOption()) {
-            $address = Address::initialize((int) $addressId);
-
+        // calculate carrier tax
+        if (Tax::excludeTaxeOption()) {
+            $carrierTax = 0.0;
+        } else {
             if (Carrier::useProportionateTax()) {
-                // When using proportionate tax, pre-tax price is deduced
-                // from post tax price, so no $carrier_tax here
-                // even though it sounds weird.
-                $carrierTax = 0;
+                $carrierTax = 100.0 * $this->getAverageProductsTaxRate();
             } else {
+                $address = Address::initialize((int) $addressId);
                 $carrierTax = $carrier->getTaxesRate($address);
             }
         }
@@ -2166,23 +2164,45 @@ class CartCore extends ObjectModel
             }
         }
 
-        if (Carrier::useProportionateTax()) {
-            if ($useTax) {
-                // When using proportionate tax, we apply the proportionate tax rate to the shipping
-                // costs. This is on purpose and required in many countries in the European Union.
-                $shippingCost *= 1 + $this->getAverageProductsTaxRate();
-            }
-        } else {
-            // Apply tax
-            if ($useTax && isset($carrierTax)) {
-                $shippingCost *= 1 + ($carrierTax / 100);
-            }
-        }
+        $shippingCost = $this->adjustShippingCostWithTax($useTax, $carrier->prices_with_tax, $carrierTax, $shippingCost);
         $shippingCost = round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
 
         Cache::store($cacheId, $shippingCost);
 
         return $shippingCost;
+    }
+
+    /**
+     * Helper method to adds or subtract tax from shipping cost
+     *
+     * @param boolean $returnPriceWithTax
+     *                  - if true, shipping cost including tax will be returned
+     *                  - if false, shipping cost excluding tax will be returned
+     * @param boolean $priceIncludesTax if true, then $value already includes tax
+     * @param float $taxRate tax rate, ie. 21
+     * @param float $value input shipping cost
+     * @return float
+     */
+    private function adjustShippingCostWithTax($returnPriceWithTax, $priceIncludesTax, $taxRate, $value)
+    {
+        $value = (float)$value;
+        if ($returnPriceWithTax) {
+            if ($priceIncludesTax) {
+                // price already contains tax
+                return $value;
+            } else {
+                // we want price with tax, but value is without tax. Let's add tax amount
+                return $value * (1.0 + ($taxRate / 100.0));
+            }
+        } else {
+            if ($priceIncludesTax) {
+                // price includes tax but we want price without tax. Let's remove tax amount
+                return $value / (1.0 + ($taxRate / 100.0));
+            } else {
+                // price is already without tax
+                return $value;
+            }
+        }
     }
 
     /**
