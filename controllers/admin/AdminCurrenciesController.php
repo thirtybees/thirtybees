@@ -92,9 +92,7 @@ class AdminCurrenciesControllerCore extends AdminController
 
         try {
             CurrencyRateModule::scanMissingCurrencyRateModules();
-        } catch (Adapter_Exception $e) {
-        } catch (PrestaShopDatabaseException $e) {
-        } catch (PrestaShopException $e) {
+        } catch (Exception $ignored) {
         }
 
         $this->_select .= 'currency_shop.conversion_rate conversion_rate, m.`name` AS `module_name`';

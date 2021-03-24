@@ -34,13 +34,27 @@
  *
  * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_IoC_Container
 {
-    // @codingStandardsIgnoreStartingStandardsIgnoreEnd
-
+    /**
+     * List of services and instruction about their creation
+     *
+     * @var array
+     */
     protected $bindings = [];
+
+    /**
+     * List of service instances
+     *
+     * @var array
+     */
     protected $instances = [];
+
+    /**
+     * List of namespace aliases, currently unused by core
+     *
+     * @var array
+     */
     protected $namespaceAliases = [];
 
     /**
@@ -68,28 +82,22 @@ class Core_Foundation_IoC_Container
 
     /**
      * @param string $serviceName
-     * @param string $constructor
+     * @param string | callable $constructor
      * @param bool   $shared
      *
      * @return $this
-     * @throws Core_Foundation_IoC_Exception
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function bind($serviceName, $constructor, $shared = false)
     {
-        if ($this->knows($serviceName)) {
-            throw new Core_Foundation_IoC_Exception(
-                sprintf('Cannot bind `%s` again. A service name can only be bound once.', $serviceName)
-            );
+        if (! $this->knows($serviceName)) {
+            $this->bindings[$serviceName] = [
+                'constructor' => $constructor,
+                'shared' => $shared
+            ];
         }
-
-        $this->bindings[$serviceName] = [
-            'constructor' => $constructor,
-            'shared' => $shared
-        ];
-
         return $this;
     }
 
@@ -157,7 +165,7 @@ class Core_Foundation_IoC_Container
         try {
             $refl = new ReflectionClass($className);
         } catch (ReflectionException $re) {
-            throw new Core_Foundation_IoC_Exception(sprintf('This doesn\'t seem to be a class name: `%s`.', $className));
+            throw new Core_Foundation_IoC_Exception(sprintf('This doesn\'t seem to be a class name: `%s`.', $className), 0, $re);
         }
 
         $args = [];
@@ -174,7 +182,11 @@ class Core_Foundation_IoC_Container
                 if ($paramClass) {
                     $args[] = $this->doMake($param->getClass()->getName(), $alreadySeen);
                 } elseif ($param->isDefaultValueAvailable()) {
-                    $args[] = $param->getDefaultValue();
+                    try {
+                        $args[] = $param->getDefaultValue();
+                    } catch (Exception $e) {
+                        throw new Core_Foundation_IoC_Exception("Failed to resolve default parameter", 0, $e);
+                    }
                 } else {
                     throw new Core_Foundation_IoC_Exception(sprintf('Cannot build a `%s`.', $className));
                 }
@@ -247,6 +259,7 @@ class Core_Foundation_IoC_Container
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @throws Core_Foundation_IoC_Exception
      */
     public function make($serviceName)
     {
