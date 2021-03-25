@@ -19,9 +19,12 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
+use Configuration;
 use DateTime;
 use Db;
 use Exception;
+use PrestaShopException;
+use Tools;
 
 /**
  * Class SchedulerCore
@@ -34,6 +37,31 @@ class SchedulerCore
      * Database lock name
      */
     const LOCK_NAME = 'THIRTY_BEES_SCHEDULER';
+
+    /**
+     * Configuration key: Last cron event timestamp
+     */
+    const CRON_EVENT_TS = 'SCHEDULER_LAST_CRON_EVENT_TS';
+
+    /**
+     * Configuration key: Synthetic cron secret
+     */
+    const SYNTHETIC_CRON_SECRET = 'SCHEDULER_SYNTHETIC_CRON_SECRET';
+
+    /**
+     * Configuration key: Minimal cron interval in seconds
+     */
+    const MINIMAL_CRON_INTERVAL = 'SCHEDULER_MINIMAL_CRON_INTERVAL';
+
+    /**
+     * Default value of cron interval, used if not found in configuration table
+     */
+    const MINIMAL_CRON_INTERVAL_DEFAULT_VALUE = 600;
+
+    /**
+     * Hard limit for minimal cron interval. Used if configuration table contains lower value
+     */
+    const MINIMAL_CRON_INTERVAL_HARD_LIMIT = 60;
 
     /**
      * @var Db Database connection
@@ -57,12 +85,60 @@ class SchedulerCore
     }
 
     /**
+     * Returns true, if synthetic cron event is required. This happens when no other cron mechanism are installed,
+     * or didn't generated event recently
+     *
+     * @throws PrestaShopException
+     */
+    public function syntheticEventRequired()
+    {
+        $now = time();
+        $lastCronEvent = (int)Configuration::getGlobalValue(static::CRON_EVENT_TS);
+        $minInterval = (int)Configuration::getGlobalValue(static::MINIMAL_CRON_INTERVAL);
+        if (! $minInterval) {
+            $minInterval = static::MINIMAL_CRON_INTERVAL_DEFAULT_VALUE;
+        }
+        $minInterval = max($minInterval, static::MINIMAL_CRON_INTERVAL_HARD_LIMIT);
+        $threshold = $lastCronEvent + $minInterval;
+        if ($now > $threshold) {
+            Configuration::updateGlobalValue(static::SYNTHETIC_CRON_SECRET, Tools::passwdGen(20));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getSyntheticEventSecret()
+    {
+        $secret = Configuration::getGlobalValue(static::SYNTHETIC_CRON_SECRET);
+        if (! $secret) {
+            $secret = Tools::passwdGen(20);
+            Configuration::updateGlobalValue(static::SYNTHETIC_CRON_SECRET, $secret);
+        }
+        return $secret;
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    public function deleteSyntheticEventSecret()
+    {
+        Configuration::deleteByName(static::SYNTHETIC_CRON_SECRET);
+    }
+
+    /**
      * Executes all scheduled tasks
      *
      * @throws Exception
      */
     public function run()
     {
+        // update last cron event timestamp
+        Configuration::updateGlobalValue(static::CRON_EVENT_TS, time());
+
         // disable timout limit
         @set_time_limit(0);
         if ($this->lock()) {

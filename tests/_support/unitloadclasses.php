@@ -773,6 +773,8 @@ $kernel->loadFile(__DIR__.'/../../controllers/front/StoresController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/front/StoresController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/front/SupplierController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/front/SupplierController.php');
+$kernel->loadFile(__DIR__.'/../../controllers/front/TriggerController.php');
+$kernel->loadFile(__DIR__.'/override/controllers/front/TriggerController.php');
 $kernel->loadFile(__DIR__.'/../../classes/CoreModels.php');
 $kernel->loadFile(__DIR__.'/override/classes/CoreModels.php');
 $kernel->loadFile(__DIR__.'/../../classes/core/ServiceLocator.php');

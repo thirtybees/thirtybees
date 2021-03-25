@@ -3814,6 +3814,7 @@ class AdminControllerCore extends Controller
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -3852,6 +3853,8 @@ class AdminControllerCore extends Controller
         if (!Tools::getValue('submitFormAjax')) {
             $this->addJS(_PS_JS_DIR_.'admin/notifications.js');
         }
+
+        $this->addSyntheticSchedulerJs();
 
         // Execute Hook AdminController SetMedia
         Hook::exec('actionAdminControllerSetMedia');

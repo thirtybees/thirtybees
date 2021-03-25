@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+
 /**
  * Class ControllerCore
  *
@@ -238,6 +240,7 @@ abstract class ControllerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -263,6 +266,7 @@ abstract class ControllerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     abstract public function setMedia();
 
@@ -775,6 +779,31 @@ abstract class ControllerCore
             $messages = '<script type="text/javascript">' . "\n" . 'window.phpMessages=' . json_encode($messagesList, JSON_PRETTY_PRINT). ";\n</script>\n";
             $debugJs = '<script type="text/javascript" src="' . Media::getJSPath(_PS_JS_DIR_ . 'php-debug.js') . '" async defer></script>' . "\n";
             return $messages . $debugJs;
+        }
+    }
+
+
+    /**
+     * Checks if scheduler synthetic cron even should be triggered. If so, /js/trigger.js
+     * script will be added to the page. This script will trigger ajax post request
+     * to TriggerController front controller
+     *
+     * @since   1.3.0
+     * @throws PrestaShopException
+     */
+    protected function addSyntheticSchedulerJs()
+    {
+        // check if scheduler event is required
+        if (! $this->ajax) {
+            $scheduler = ServiceLocator::getInstance()->getScheduler();
+            if ($scheduler ->syntheticEventRequired()) {
+                $triggerUrl = $this->context->link->getPageLink('trigger', null, null, ['ts' => time()]);
+                Media::addJsDef([
+                    'triggerUrl' => $triggerUrl,
+                    'triggerToken' => $scheduler->getSyntheticEventSecret()
+                ]);
+                $this->addJS(_PS_JS_DIR_ . 'trigger.js');
+            }
         }
     }
 }

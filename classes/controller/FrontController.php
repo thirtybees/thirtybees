@@ -1030,6 +1030,8 @@ class FrontControllerCore extends Controller
      * Sets controller CSS and JS files.
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -1092,6 +1094,7 @@ class FrontControllerCore extends Controller
         // Execute Hook FrontController SetMedia
         Hook::exec('actionFrontControllerSetMedia', []);
 
+        $this->addSyntheticSchedulerJs();
         return true;
     }
 
