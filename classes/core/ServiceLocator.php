@@ -20,6 +20,7 @@
 namespace Thirtybees\Core\DependencyInjection;
 
 use Core_Foundation_IoC_Container;
+use Db;
 use Exception;
 use PrestaShopException;
 
@@ -33,6 +34,9 @@ class ServiceLocatorCore
 
     // services
     const SERVICE_SERVICE_LOCATOR = 'Thirtybees\Core\DependencyInjection\ServiceLocator';
+    const SERVICE_SCHEDULER = 'Thirtybees\Core\WorkQueue\Scheduler';
+    const SERVICE_WORK_QUEUE_CLIENT = 'Thirtybees\Core\WorkQueue\WorkQueueClient';
+    const SERVICE_READ_WRITE_CONNECTION = 'Db';
 
     // Legacy services
     const SERVICE_ADAPTER_CONFIGURATION = 'Core_Business_ConfigurationInterface';
@@ -59,7 +63,13 @@ class ServiceLocatorCore
             ? new Core_Foundation_IoC_Container()
             : $container;
 
+        // services
         $this->container->bind(static::SERVICE_SERVICE_LOCATOR, $this, true);
+        $this->container->bind(static::SERVICE_WORK_QUEUE_CLIENT, static::SERVICE_WORK_QUEUE_CLIENT, true);
+        $this->container->bind(static::SERVICE_SCHEDULER, static::SERVICE_SCHEDULER, true);
+        $this->container->bind(static::SERVICE_READ_WRITE_CONNECTION, [Db::class, 'getInstance'],true);
+
+        // legacy services
         $this->container->bind(static::SERVICE_ADAPTER_CONFIGURATION, 'Adapter_Configuration', true);
         $this->container->bind(static::SERVICE_ADAPTER_DATABASE, 'Adapter_Database', true);
     }
@@ -70,6 +80,35 @@ class ServiceLocatorCore
     public function getServiceLocator()
     {
         return $this;
+    }
+
+    /**
+     * @return \Thirtybees\Core\WorkQueue\Scheduler
+     * @throws PrestaShopException
+     */
+    public function getScheduler()
+    {
+        return $this->getByServiceName(static::SERVICE_SCHEDULER);
+    }
+
+    /**
+     * @return \Thirtybees\Core\WorkQueue\WorkQueueClient
+     * @throws PrestaShopException
+     */
+    public function getWorkQueueClient()
+    {
+        return $this->getByServiceName(static::SERVICE_WORK_QUEUE_CLIENT);
+    }
+
+    /**
+     * Returns read/write connection
+     *
+     * @return \Db
+     * @throws PrestaShopException
+     */
+    public function getConnection()
+    {
+        return $this->getByServiceName(static::SERVICE_READ_WRITE_CONNECTION);
     }
 
     /**

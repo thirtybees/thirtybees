@@ -2064,6 +2064,29 @@ CREATE TABLE `PREFIX_scene_shop` (
   KEY `id_shop` (`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_scheduled_task` (
+  `id_scheduled_task` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `frequency` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `task` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` mediumtext COLLATE utf8mb4_unicode_ci,
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `last_execution` int(11) unsigned DEFAULT NULL,
+  `last_checked` int(11) unsigned DEFAULT NULL,
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_scheduled_task`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_scheduled_task_execution` (
+  `id_scheduled_task_execution` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_scheduled_task` int(11) unsigned NOT NULL,
+  `id_workqueue_task` int(11) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  PRIMARY KEY (`id_scheduled_task_execution`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_search_engine` (
   `id_search_engine` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `server` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
