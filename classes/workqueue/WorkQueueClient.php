@@ -27,17 +27,51 @@ namespace Thirtybees\Core\WorkQueue;
 class WorkQueueClientCore
 {
     /**
+     * Fallback work queue executor
+     */
+    const INSTANT_EXECUTOR = 'instant';
+
+    /**
      * Enqueues new work queue task
      *
-     * @param string $taskType Work queue task type
-     * @param array $payload Work queue task payload
-     * @param boolean $persistResult if true, result of task execution will be persisted in database
-     *
-     * @return string|int work queue id
+     * @param WorkQueueTask $task
+     * @return WorkQueueFuture work queue future descriptor
      */
-    public function enqueue($taskType, $payload, $persistResult)
+    public function enqueue(WorkQueueTask $task)
     {
-        // TODO: implement
-        return 0;
+        $executor = $this->getExecutor();
+        if ($executor) {
+            return $executor->enqueue($task);
+        } else {
+            // no executor exists, fallback to immediate execution
+            return new WorkQueueFuture(
+                static::INSTANT_EXECUTOR,
+                $this->getId($task),
+                $task->run()
+            );
+        }
+    }
+
+    /**
+     * Returns work queue executor
+     */
+    public function getExecutor()
+    {
+        // TODO: implement executors
+        return null;
+    }
+
+    /**
+     * Generates id for task
+     *
+     * @param WorkQueueTask $task
+     * @return string
+     */
+    protected function getId(WorkQueueTask $task)
+    {
+        if ($task->id) {
+            return WorkQueueTask::class . '::' . $task->id;
+        }
+        return $task->task . '::' . time();
     }
 }

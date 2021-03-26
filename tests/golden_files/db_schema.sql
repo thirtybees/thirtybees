@@ -2074,6 +2074,10 @@ CREATE TABLE `PREFIX_scheduled_task` (
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `last_execution` int(11) unsigned DEFAULT NULL,
   `last_checked` int(11) unsigned DEFAULT NULL,
+  `id_employee_context` int(11) unsigned DEFAULT NULL,
+  `id_shop_context` int(11) unsigned DEFAULT NULL,
+  `id_customer_context` int(11) unsigned DEFAULT NULL,
+  `id_language_context` int(11) unsigned DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_scheduled_task`)
@@ -2700,6 +2704,24 @@ CREATE TABLE `PREFIX_webservice_permission` (
   KEY `id_webservice_account` (`id_webservice_account`),
   KEY `method` (`method`),
   KEY `resource` (`resource`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_workqueue_task` (
+  `id_workqueue_task` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `task` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` mediumtext COLLATE utf8mb4_unicode_ci,
+  `status` enum('pending','running','success','failure') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_start` datetime DEFAULT NULL,
+  `duration` decimal(20,6) DEFAULT NULL,
+  `result` mediumtext COLLATE utf8mb4_unicode_ci,
+  `error` mediumtext COLLATE utf8mb4_unicode_ci,
+  `id_employee_context` int(11) unsigned DEFAULT NULL,
+  `id_shop_context` int(11) unsigned DEFAULT NULL,
+  `id_customer_context` int(11) unsigned DEFAULT NULL,
+  `id_language_context` int(11) unsigned DEFAULT NULL,
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_workqueue_task`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_zone` (

@@ -174,6 +174,7 @@ class SchedulerCore
 
         // execute all tasks
         foreach ($taskToRun as $task) {
+            /** @var $task ScheduledTask  */
             $task->run($this->workQueueClient);
         }
     }

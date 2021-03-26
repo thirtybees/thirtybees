@@ -53,6 +53,10 @@ class ScheduledTaskCore extends ObjectModel
             'active'                  => ['type' => self::TYPE_BOOL, 'required' => true, 'default' => true],
             'last_execution'          => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'last_checked'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'id_employee_context'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
+            'id_shop_context'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
+            'id_customer_context'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
+            'id_language_context'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
             'date_add'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_upd'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
         ]
@@ -97,6 +101,26 @@ class ScheduledTaskCore extends ObjectModel
      * @var integer last checked unix timestamp. Integer is used instead of date to motigate timezones issues
      */
     public $last_checked;
+
+    /**
+     * @var integer id employee
+     */
+    public $id_employee_context;
+
+    /**
+     * @var integer id shop
+     */
+    public $id_shop_context;
+
+    /**
+     * @var integer id customer
+     */
+    public $id_customer_context;
+
+    /**
+     * @var integer id language
+     */
+    public $id_language_context;
 
     /**
     /* @var string Object creation date
@@ -151,25 +175,44 @@ class ScheduledTaskCore extends ObjectModel
      * and mark scheduled task as executed
      *
      * @param WorkQueueClient $workQueueClient
+     * @return WorkQueueFuture
+     *
+     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function run(WorkQueueClient $workQueueClient)
     {
+        // load context from scheduled task definition
+        $context = new WorkQueueContext(
+            $this->id_shop_context,
+            $this->id_employee_context,
+            $this->id_customer_context,
+            $this->id_language_context
+        );
+
+        $parameters = $this->payload
+            ? json_decode($this->payload, true)
+            : [];
+
+        // create and persist work queue task
+        $task = WorkQueueTask::createTask($this->task, $parameters, $context);
+        $task->add();
+
         // create execution record
         $execution = new ScheduledTaskExecution();
         $execution->id_scheduled_task = $this->id;
-        $execution->id_workqueue_task = $workQueueClient->enqueue(
-            $this->task,
-            json_decode($this->payload, true),
-            true
-        );
+        $execution->id_workqueue_task = $task->id;
         $execution->add();
+
+        // enqueue work queue task
+        $future = $workQueueClient->enqueue($task);
 
         // mark task as executed
         $this->last_execution = time();
         $this->update();
+
+        return $future;
     }
 
     /**

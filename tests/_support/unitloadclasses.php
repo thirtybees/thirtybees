@@ -787,3 +787,11 @@ $kernel->loadFile(__DIR__.'/../../classes/workqueue/Scheduler.php');
 $kernel->loadFile(__DIR__.'/override/classes/workqueue/Scheduler.php');
 $kernel->loadFile(__DIR__.'/../../classes/workqueue/WorkQueueClient.php');
 $kernel->loadFile(__DIR__.'/override/classes/workqueue/WorkQueueClient.php');
+$kernel->loadFile(__DIR__.'/../../classes/workqueue/WorkQueueTask.php');
+$kernel->loadFile(__DIR__.'/override/classes/workqueue/WorkQueueTask.php');
+$kernel->loadFile(__DIR__.'/../../classes/workqueue/WorkQueueContext.php');
+$kernel->loadFile(__DIR__.'/override/classes/workqueue/WorkQueueContext.php');
+$kernel->loadFile(__DIR__.'/../../classes/workqueue/WorkQueueFuture.php');
+$kernel->loadFile(__DIR__.'/override/classes/workqueue/WorkQueueFuture.php');
+$kernel->loadFile(__DIR__.'/../../classes/workqueue/WorkQueueTaskCallable.php');
+
