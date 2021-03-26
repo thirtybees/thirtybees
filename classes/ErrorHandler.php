@@ -48,6 +48,11 @@ class ErrorHandlerCore
     protected $logger = null;
 
     /**
+     * @var callable custom handler of fatal error
+     */
+    protected $fatalErrorHandler;
+
+    /**
      * Get instance of error handler
      *
      * @return ErrorHandlerCore
@@ -183,17 +188,26 @@ class ErrorHandlerCore
         $error = error_get_last();
 
         if (is_array($error) && static::isFatalError($error['type'])) {
-            $stack = [
-                1 => [
-                    'file' => $error['file'],
-                    'line' => $error['line'],
-                    'type' => 'Fatal error',
-                ]
-            ];
-            $exception = new PrestaShopException($error['message'], 0, null,
-                                                 $stack, $error['file'],
-                                                 $error['line']);
-            $exception->displayMessage();
+            if ($this->fatalErrorHandler && is_callable($this->fatalErrorHandler)) {
+                call_user_func($this->fatalErrorHandler, $error);
+            } else {
+                $stack = [
+                    1 => [
+                        'file' => $error['file'],
+                        'line' => $error['line'],
+                        'type' => 'Fatal error',
+                    ]
+                ];
+                $exception = new PrestaShopException(
+                    $error['message'],
+                    0,
+                    null,
+                    $stack,
+                    $error['file'],
+                    $error['line']
+                );
+                $exception->displayMessage();
+            }
         }
     }
 
@@ -214,6 +228,19 @@ class ErrorHandlerCore
                 $this->logMessage($errorMessage);
             }
         }
+    }
+
+    /**
+     * Allows set custom handler for fatal errors. Returns previous handler, if exists
+     *
+     * @param $callable
+     * @return callable | null
+     */
+    public function setFatalErrorHandler($callable)
+    {
+        $ret = $this->fatalErrorHandler;
+        $this->fatalErrorHandler = $callable;
+        return $ret;
     }
 
     /**
@@ -328,7 +355,13 @@ class ErrorHandlerCore
      */
     public static function isFatalError($errno)
     {
-       return ($errno === E_USER_ERROR || $errno === E_ERROR);
+       return (
+           $errno === E_USER_ERROR ||
+           $errno === E_ERROR ||
+           $errno === E_CORE_ERROR ||
+           $errno === E_COMPILE_ERROR ||
+           $errno === E_RECOVERABLE_ERROR
+       );
     }
 
     /**
@@ -344,6 +377,9 @@ class ErrorHandlerCore
     {
         switch ($errno) {
             case E_USER_ERROR:
+            case E_COMPILE_ERROR:
+            case E_CORE_ERROR:
+            case E_RECOVERABLE_ERROR:
             case E_ERROR:
                 return 'error';
             case E_USER_WARNING:
