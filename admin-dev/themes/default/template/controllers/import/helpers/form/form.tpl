@@ -273,6 +273,23 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label for="forceCat" class="control-label col-lg-4">
+						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If you enable this option,  first category provided in file for each product will be used for default category.'}">
+							{l s='Force default category'}
+						</span>
+					</label>
+					<div class="col-lg-8">
+						<label class="switch-light prestashop-switch fixed-width-lg">
+							<input id="forceCat" name="forceCat" type="checkbox" />
+							<span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
+							</span>
+							<a class="slide-button btn"></a>
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
 					<label for="sendemail" class="control-label col-lg-4">
 						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='Sends an email to let you know your import is complete. It can be useful when handling large files, as the import may take some time.'}">
 						{l s='Send notification email'}</label>
