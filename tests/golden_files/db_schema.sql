@@ -1918,6 +1918,17 @@ CREATE TABLE `PREFIX_profile_lang` (
   PRIMARY KEY (`id_profile`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_profile_permission` (
+  `id_profile_permission` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_profile` int(11) unsigned NOT NULL,
+  `perm_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `perm_group` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permission` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `level` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_profile_permission`),
+  UNIQUE KEY `perm` (`id_profile`,`perm_group`,`permission`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_quick_access` (
   `id_quick_access` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `new_window` tinyint(1) NOT NULL DEFAULT '0',

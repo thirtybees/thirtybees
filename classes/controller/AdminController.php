@@ -4771,4 +4771,99 @@ class AdminControllerCore extends Controller
         parent::addJavascriptUri($uri, $checkPath);
     }
 
+    /**
+     * Method that allows controllers to define their own custom permissions. To be overridden by subclasses
+
+     * Returns array of permission definitions. Example entry:
+     *
+     *  [
+     *       ...
+     *      [
+     *          "permission" => 'action-buttons",
+     *          "name" => "Buttons available to employee"
+     *          "description" => "Here you can choose what action buttons can employee use"
+     *          "levels" => [
+     *              ...
+     *              'none' => 'No buttons available',
+     *              'invoice' => 'Employee can generate invoice',
+     *              'send_email' => 'Employee can send email'
+     *              'all' => 'Employee can use all buttons'
+     *              ...
+     *          ],
+     *          "defaultLevel" => 'all'
+     *      ]
+     *      ...
+     *  ]
+     *
+     * Controllers are responsible for enforcing selected permissions -- permission levels for current employee
+     * can be retrieved by calling method getPermLevels
+     *
+     *
+     * @return array
+     */
+    public function getPermDefinitions()
+    {
+        return [];
+    }
+
+    /**
+     * Returns permission levels for current employee. Returns map: permission -> level
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    public function getPermLevels()
+    {
+        $perms = $this->getPermDefinitions();
+        $levels = [];
+        if ($perms) {
+            $profileId = $this->context->employee->id_profile;
+            $group = preg_replace("#Controller$#", "", preg_replace("#Core$#", "", get_class($this)));
+            foreach ($perms as $def) {
+                $permission = $def['permission'];
+                $level = Profile::getProfilePermission($profileId, $group, $permission);
+                if ($level === false) {
+                    $levels[$permission] = $def['defaultLevel'];
+                } else {
+                    $levels[$permission] = $level;
+                }
+            }
+        }
+        return $levels;
+    }
+
+    /**
+     * Extracts information about custom permissions from all admin controllers
+     *
+     * This method iterates over all php files in /controllers/admin directory, and use reflection to checks
+     * if controller overrides method AdminControllerCore::getPermissions()
+     *
+     * For every controller that overrides permission, new instance is created and this method is called to retrieve
+     * list of additional permissions
+     *
+     * @throws PrestaShopException
+     */
+    public static function getControllersPermissions()
+    {
+        $permissions = [];
+        $iterator = new FilesystemIterator(_PS_ADMIN_CONTROLLER_DIR_);
+        foreach ($iterator as $file) {
+            /** @var SplFileInfo $file */
+            if ($file->isFile() && preg_match('#(.*)Controller\.php$#', $file->getFilename(), $matches)) {
+                $controllerName = $matches[1];
+                $className = $controllerName . 'Controller';
+                try {
+                    $reflection = new ReflectionMethod($className, 'getPermDefinitions');
+                    if ($reflection->getDeclaringClass()->getName() != AdminControllerCore::class) {
+                        /** @var AdminControllerCore $instance - subclass of admin controller */
+                        $instance = new $className();
+                        $permissions[$controllerName] = $instance->getPermDefinitions();
+                    }
+                } catch (ReflectionException $e) {
+                    throw new PrestaShopException("Failed to resolve permissions for admin controller " . $controllerName, 0, $e);
+                }
+            }
+        }
+        return $permissions;
+    }
 }

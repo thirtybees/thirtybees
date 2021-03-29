@@ -36,11 +36,12 @@
  */
 class ProfileCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     protected static $_cache_accesses = [];
+
+    protected static $_cache_permissions = [];
+
     /** @var string Name */
     public $name;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -125,6 +126,58 @@ class ProfileCore extends ObjectModel
         $accesses = Profile::getProfileAccesses($idProfile);
 
         return (isset($accesses[$idTab]) ? $accesses[$idTab] : false);
+    }
+
+    /**
+     * Returns permission level
+     *
+     * @param int $idProfile
+     * @param string $group
+     * @param stirng $permission
+     *
+     * @return string | false
+     *
+     * @throws PrestaShopException
+     */
+    public static function getProfilePermission($idProfile, $group, $permission)
+    {
+        $idProfile = (int)$idProfile;
+        if (! isset(static::$_cache_permissions[$idProfile])) {
+            static::$_cache_permissions[$idProfile] = static::loadPermissions($idProfile);
+        }
+
+        return isset(static::$_cache_permissions[$idProfile][$group][$permission])
+            ? static::$_cache_permissions[$idProfile][$group][$permission]
+            : false;
+    }
+
+    /**
+     * Loads profile permissions from database
+     *
+     * @param int $idProfile
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function loadPermissions($idProfile)
+    {
+        $data = Db::getInstance()->executeS(
+            (new DbQuery())
+                ->from('profile_permission')
+                ->where("id_profile = " . (int)$idProfile)
+        );
+
+        $result = [];
+        foreach ($data as $row) {
+            $group = $row['perm_group'];
+            $permission = $row['permission'];
+            $level = $row['level'];
+            if (! isset($result[$group])) {
+                $result[$group] = [];
+            }
+            $result[$group][$permission] = $level;
+        }
+        return $result;
     }
 
     /**
@@ -237,6 +290,21 @@ class ProfileCore extends ObjectModel
     {
         if ($table->getNameWithoutPrefix() === 'profile_lang') {
             $table->reorderColumns(['id_lang', 'id_profile']);
+        }
+    }
+
+    /**
+     * Invalidates cache for permissions
+     *
+     * @param int $profileId
+     */
+    public static function invalidateCache($profileId)
+    {
+        if (isset(static::$_cache_permissions[$profileId])) {
+            unset(static::$_cache_permissions[$profileId]);
+        }
+        if (isset(static::$_cache_accesses[$profileId])) {
+            unset(static::$_cache_accesses[$profileId]);
         }
     }
 }

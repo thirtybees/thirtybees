@@ -896,6 +896,23 @@ class CoreModelsCore
             ],
         ];
 
+        $profilePermission = [
+            'table' => 'profile_permission',
+            'primary' => 'id_profile_permission',
+            'fields' => [
+                'id_profile' => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'perm_type' => ['type' => ObjectModel::TYPE_STRING, 'size' => 32, 'required' => false],
+                'perm_group' => ['type' => ObjectModel::TYPE_STRING, 'size' => 80, 'required' => true],
+                'permission' => ['type' => ObjectModel::TYPE_STRING, 'size' => 80, 'required' => true],
+                'level'      => ['type' => ObjectModel::TYPE_STRING, 'size' => 80, 'required' => true],
+            ],
+            'keys' => [
+                'profile_permission' => [
+                    'perm' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_profile', 'perm_group', 'permission']],
+                ],
+            ],
+        ];
+
         $redisServers = [
             'table' => 'redis_servers',
             'primary' => 'id_redis_server',
@@ -1269,6 +1286,7 @@ class CoreModelsCore
             'ProductGroupReductionCache' => $productGroupReductionCache,
             'ProductSale' => $productSale,
             'ProductTag' => $productTag,
+            'ProfilePermission' => $profilePermission,
             'RedisServers' => $redisServers,
             'ReferrerCache' => $referrerCache,
             'RequiredField' => $requiredField,

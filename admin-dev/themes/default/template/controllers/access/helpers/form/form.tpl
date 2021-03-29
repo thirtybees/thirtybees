@@ -193,12 +193,7 @@
       {/foreach}
     </div>
   </div>
-  <form id="{$table}_form" class="defaultForm form-horizontal col-lg-10"
-        action="{$current|escape:'html':'UTF-8'}&amp;{$submit_action|escape:'htmlall':'UTF-8'}=1&amp;token={$token|escape:'html':'UTF-8'}"
-        method="post" enctype="multipart/form-data">
-    {if $form_id}
-      <input type="hidden" name="{$identifier|escape:'htmlall':'UTF-8'}" id="{$identifier|escape:'htmlall':'UTF-8'}" value="{$form_id|escape:'htmlall':'UTF-8'}"/>
-    {/if}
+  <div class="defaultForm form-horizontal col-lg-10">
     {assign var=tabsize value=count($tabs)}
     {foreach $tabs AS $tab}
       {if $tab.id_tab > $tabsize}
@@ -210,7 +205,9 @@
            style="display:{if $profile.id_profile != $current_profile}none{/if}">
         <div class="row">
           {if $profile.id_profile != $admin_profile}
-            <div class="col-lg-6">
+
+            {* Tabs permissions *}
+            <div class="col-lg-12">
               <div class="panel">
                 <h3>{l s='Menu'}</h3>
                 <table class="table" id="table_{$profile.id_profile|intval}">
@@ -315,7 +312,9 @@
                 </table>
               </div>
             </div>
-            <div class="col-lg-6">
+
+            {* Modules permissions *}
+            <div class="col-lg-12">
               <div class="panel">
                 <h3>{l s='Modules'}</h3>
                 <table class="table" id="table_module_{$profile.id_profile|intval}">
@@ -361,6 +360,45 @@
                 </table>
               </div>
             </div>
+
+            {* Admin controllers permissions *}
+            {foreach $admin_controllers[$profile.id_profile] as $adminController}
+              <form class="defaultForm form-horizontal"
+                    action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;id_profile={$profile.id_profile|intval}"
+                    method="post"
+                    enctype="multipart/form-data">
+                <input type="hidden" name="profileId" value="{$profile.id_profile|intval}" />
+                <input type="hidden" name="controllerId" value="{$adminController.controller|escape:'html':'utf-8'}" />
+
+                <div class="col-lg-12">
+                  <div class="panel">
+                    <h3>{l s='Permissions for %s' sprintf=[$adminController.name]}</h3>
+                    {foreach $adminController.permissions as $perm}
+                      <div class="form-group">
+                        <label class="control-label col-lg-3 required">
+                          <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="{$perm.description|escape:'html':'utf-8'}">
+                            {$perm.name}
+                          </span>
+                        </label>
+                        <div calass="col-lg-7">
+                          <select name="permissions[{$perm.key|escape:'html':'utf-8'}]" class="fixed-width-xl" id="{$perm.key|escape:'html':'utf-8'}">
+                            {foreach $perm.levels as $levelKey => $levelName}
+                              <option value="{$levelKey}" {if $perm.level == $levelKey} selected="selected"{/if}>
+                                {$levelName}
+                              </option>
+                            {/foreach}
+                          </select>
+                        </div>
+                      </div>
+                    {/foreach}
+                    <div class="panel-footer">
+                      <button type="submit" name="submitSaveController" class="btn btn-default pull-right"><i class="process-icon-save"></i> Save</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            {/foreach}
+
           {else}
             <div class="col-lg-12">
               <div class="panel">
@@ -371,5 +409,5 @@
         </div>
       </div>
     {/foreach}
-  </form>
+  </div>
 </div>

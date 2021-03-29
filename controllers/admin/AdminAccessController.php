@@ -36,15 +36,16 @@
  */
 class AdminAccessControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    const ADMIN_CONTROLLER_PERM_TYPE = 'admin_controller';
+
     /* @var array : Black list of id_tab that do not have access */
     public $accesses_black_list = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminAccessControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -63,6 +64,8 @@ class AdminAccessControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -87,6 +90,22 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
+     * Post process callback
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function postProcess()
+    {
+        if (Tools::isSubmit("submitSaveController")) {
+            $this->saveAdminControllerPermissions();
+            return true;
+        } else {
+            return parent::postProcess();
+        }
+    }
+
+    /**
      * @since 1.0.0
      */
     public function initPageHeaderToolbar()
@@ -98,6 +117,9 @@ class AdminAccessControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
@@ -161,6 +183,7 @@ class AdminAccessControllerCore extends AdminController
             'access_edit'         => $this->tabAccess['edit'],
             'perms'               => ['view', 'add', 'edit', 'delete'],
             'modules'             => $modules,
+            'admin_controllers'   => $this->getAdminControllerAccess($profiles),
             'link'                => $this->context->link,
         ];
 
@@ -303,5 +326,84 @@ class AdminAccessControllerCore extends AdminController
     protected function sortModuleByName($a, $b)
     {
         return strnatcmp($a['name'], $b['name']);
+    }
+
+    /**
+     * Return information about admin controllers custom permissions
+     *
+     * @param array $profiles
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getAdminControllerAccess($profiles)
+    {
+        $controllersPermissions = AdminController::getControllersPermissions();
+        foreach ($profiles as $profile) {
+            $profileId = (int)$profile['id_profile'];
+            $profileAccess = [];
+            foreach ($controllersPermissions as $controller => $permission) {
+                $permissions = [];
+                foreach ($permission as $desc) {
+                    $permission = $desc['permission'];
+                    $level = Profile::getProfilePermission($profileId, $controller, $permission);
+                    if ($level === false) {
+                        $level = $desc['defaultLevel'];
+                    }
+                    $permissions[] = [
+                        'key' => $permission,
+                        'name' => $desc['name'],
+                        'description' => $desc['description'],
+                        'levels' => $desc['levels'],
+                        'level' => $level
+                    ];
+                }
+
+                $tab = Tab::getInstanceFromClassName($controller, $this->context->language->id);
+                if (ValidateCore::isLoadedObject($tab)) {
+                    $name = $tab->name;
+                } else {
+                    $name = $controller;
+                }
+                $profileAccess[] = [
+                    'name' => $name,
+                    'controller' => $controller,
+                    'permissions' => $permissions,
+                ];
+
+            }
+            $access[$profileId] = $profileAccess;
+        }
+        return $access;
+    }
+
+    /**
+     * Saves controller permissions to the database
+     *
+     * @throws PrestaShopException
+     */
+    protected function saveAdminControllerPermissions()
+    {
+        $profileId = (int)Tools::getValue('profileId');
+        $controllerId = Tools::getValue('controllerId');
+        $permissions = Tools::getValue('permissions');
+        if ($profileId && $controllerId) {
+            $connection = Db::getInstance();
+            $controller = pSQL($controllerId);
+            $connection->delete('profile_permission', "`id_profile` = $profileId AND `perm_group` = '$controller'");
+            if ($permissions) {
+                $data = [];
+                foreach ($permissions as $permission => $level) {
+                    $data[] = [
+                        'id_profile' => $profileId,
+                        'perm_type' => pSQL(static::ADMIN_CONTROLLER_PERM_TYPE),
+                        'perm_group' => $controller,
+                        'permission' => pSQL($permission),
+                        'level' => pSQL($level)
+                    ];
+                }
+                $connection->insert('profile_permission', $data);
+            }
+            Profile::invalidateCache($profileId);
+        }
     }
 }
