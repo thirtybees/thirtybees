@@ -36,6 +36,17 @@
  */
 class AdminProductsControllerCore extends AdminController
 {
+
+    /**
+     * Tab permissions level NONE = tab is hidden / employee can't see it
+     */
+    const TAB_PERMISSION_NONE = 'none';
+
+    /**
+     * Tab permission level FULL = employee can work with tab without any restrictions
+     */
+    const TAB_PERMISSION_FULL = 'full';
+
     // @codingStandardsIgnoreStart
     /** @var int Max image size for upload
      * As of 1.5 it is recommended to not set a limit to max image size
@@ -1264,10 +1275,12 @@ class AdminProductsControllerCore extends AdminController
 
         // And if still not set, use default
         if (!$this->tab_display) {
-            if (in_array($this->default_tab, $this->available_tabs)) {
+            $allowedTabs = $this->getVisibleTabs();
+            if (isset($allowedTabs[$this->default_tab])) {
                 $this->tab_display = $this->default_tab;
             } else {
-                $this->tab_display = key($this->available_tabs);
+                $this->tab_display = key($allowedTabs);
+                $this->default_tab = $this->tab_display;
             }
         }
     }
@@ -3272,6 +3285,9 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param null $token
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent($token = null)
@@ -3298,6 +3314,9 @@ class AdminProductsControllerCore extends AdminController
                     $this->tab_display = $this->default_tab;
                 }
 
+                // get permissions levels for current employee
+                $permissions = $this->getPermLevels();
+
                 $advancedStockManagementActive = Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT');
                 foreach ($this->available_tabs as $productTab => $value) {
                     // if it's the warehouses tab and advanced stock management is disabled, continue
@@ -3307,6 +3326,7 @@ class AdminProductsControllerCore extends AdminController
 
                     $productTabs[$productTab] = [
                         'id'       => $productTab,
+                        'hidden'   => $permissions[$productTab] == static::TAB_PERMISSION_NONE,
                         'selected' => (strtolower($productTab) == strtolower($this->tab_display) || (isset($this->tab_display_module) && 'module'.$this->tab_display_module == mb_strtolower($productTab))),
                         'name'     => $this->available_tabs_lang[$productTab],
                         'href'     => $this->context->link->getAdminLink('AdminProducts').'&id_product='.(int) Tools::getValue('id_product').'&action='.$productTab,
@@ -6082,4 +6102,48 @@ class AdminProductsControllerCore extends AdminController
 			</div>';
         $this->tpl_form_vars['warning_unavailable_product'] = $content;
     }
+
+    /**
+     * Products controllers has per-tab permissions that allows store administrator to hide some tabs
+     * for some roles.
+     *
+     * This is useful, for example, if you want to ensure that translator can't change pricing information
+     *
+     * @return array Permissions definitions
+     */
+    public function getPermDefinitions()
+    {
+        $permissions = [];
+        foreach (array_keys($this->available_tabs) as $tab) {
+            $permissions[] = [
+                'permission' => $tab,
+                'name' => $this->available_tabs_lang[$tab],
+                'description' => sprintf($this->l('Permission for tab %s'), $this->available_tabs_lang[$tab]),
+                'levels' => [
+                    static::TAB_PERMISSION_NONE => $this->l('Tab is hidden'),
+                    static::TAB_PERMISSION_FULL => $this->l('Read and write access'),
+                ],
+                'defaultLevel' => static::TAB_PERMISSION_FULL
+            ];
+        }
+        return $permissions;
+    }
+
+    /**
+     * Returns list of tabs that current employee can see
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    public function getVisibleTabs()
+    {
+        $tabs = [];
+        foreach ($this->getPermLevels() as $key => $level) {
+            if ($level === static::TAB_PERMISSION_FULL) {
+                $tabs[$key] = true;
+            }
+        }
+        return $tabs;
+    }
+
 }

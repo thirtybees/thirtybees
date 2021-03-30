@@ -67,7 +67,7 @@
 			<div class="list-group">
 			{foreach $product_tabs key=numStep item=tab}
 				{if $tab.name != "Pack"}
-					<a class="list-group-item {if $tab.selected}active{/if}" id="link-{$tab.id}" href="{$tab.href|escape:'html':'UTF-8'}&amp;updateproduct">{$tab.name}</a>
+					<a class="list-group-item {if $tab.selected}active{/if}" id="link-{$tab.id}" href="{$tab.href|escape:'html':'UTF-8'}&amp;updateproduct" {if $tab.hidden}style="display:none"{/if}>{$tab.name}</a>
 				{/if}
 			{/foreach}
 			</div>
