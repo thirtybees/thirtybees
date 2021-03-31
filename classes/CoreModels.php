@@ -398,7 +398,7 @@ class CoreModelsCore
             ],
             'keys' => [
                 'feature_product' => [
-                    'primary'          => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_feature', 'id_product']],
+                    'primary'          => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_feature', 'id_product', 'id_feature_value']],
                     'id_feature_value' => ['type' => ObjectModel::KEY, 'columns' => ['id_feature_value']],
                     'id_product'       => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
                 ],

@@ -36,12 +36,25 @@
  */
 class FeatureCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
-    /** @var string Name */
+    /**
+     * @var string Feature name
+     */
     public $name;
-    /** @var int $position */
+
+    /**
+     * @var int Position of the feature
+     */
     public $position;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var bool Flag to indicate if feature allows multiple values, or just a single one
+     */
+    public $allows_multiple_values = false;
+
+    /**
+     * @var bool Flag to indicate if feature allows entering custom values, or if predefined values must be used
+     */
+    public $allows_custom_values = true;
 
     /**
      * @see ObjectModel::$definition
@@ -51,7 +64,9 @@ class FeatureCore extends ObjectModel
         'primary'   => 'id_feature',
         'multilang' => true,
         'fields'    => [
-            'position' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'position'               => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'allows_multiple_values' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'allows_custom_values'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
 
             /* Lang fields */
             'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
@@ -146,13 +161,14 @@ class FeatureCore extends ObjectModel
      * Create a feature from import
      *
      * @param string $name
-     * @param bool   $position
+     * @param bool $position
      *
      * @return int
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function addFeatureImport($name, $position = false)
     {
@@ -341,6 +357,7 @@ class FeatureCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

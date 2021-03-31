@@ -863,6 +863,8 @@ CREATE TABLE `PREFIX_employee_shop` (
 CREATE TABLE `PREFIX_feature` (
   `id_feature` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `position` int(11) unsigned NOT NULL DEFAULT '0',
+  `allows_multiple_values` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `allows_custom_values` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_feature`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -878,7 +880,7 @@ CREATE TABLE `PREFIX_feature_product` (
   `id_feature` int(11) unsigned NOT NULL,
   `id_product` int(11) unsigned NOT NULL,
   `id_feature_value` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id_feature`,`id_product`),
+  PRIMARY KEY (`id_feature`,`id_product`,`id_feature_value`),
   KEY `id_feature_value` (`id_feature_value`),
   KEY `id_product` (`id_product`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
