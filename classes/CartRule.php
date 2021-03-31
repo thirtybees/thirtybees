@@ -363,7 +363,7 @@ class CartRuleCore extends ObjectModel
             $sql->where('`highlight` = 1');
             $sql->where('`code` NOT LIKE \''.pSQL(static::BO_ORDER_CODE_PREFIX).'%\'');
         }
-        $sql->where('cr.`id_customer` = '.(int) $idCustomer.' OR cr.`group_restriction` = 1'.(($includeGeneric && (int) $idCustomer !== 0) ? ' OR cr.`id_customer` = 0' : ''));
+        $sql->where('cr.`id_customer` = '.(int) $idCustomer.' OR (cr.`group_restriction` = 1 AND cr.`id_customer` = 0)'.(($includeGeneric && (int) $idCustomer !== 0) ? ' OR cr.`id_customer` = 0' : ''));
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true);
 
