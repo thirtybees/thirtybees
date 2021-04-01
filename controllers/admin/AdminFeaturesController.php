@@ -66,6 +66,26 @@ class AdminFeaturesControllerCore extends AdminController
                 'align'   => 'center',
                 'class'   => 'fixed-width-xs',
             ],
+            'allows_multiple_values' => [
+                'title' => $this->l("Allows multiple values"),
+                'active'     => 'set_allow_multiple_values',
+                'filter_key' => 'a!allows_multiple_values',
+                'align'      => 'text-center',
+                'type'       => 'bool',
+                'class'      => 'fixed-width-xs',
+                'orderby'    => false,
+                'ajax'       => true,
+            ],
+            'allows_custom_values' => [
+                'title' => $this->l("Allows custom values"),
+                'active'     => 'set_allow_custom_values',
+                'filter_key' => 'a!allows_custom_values',
+                'align'      => 'text-center',
+                'type'       => 'bool',
+                'class'      => 'fixed-width-xs',
+                'orderby'    => false,
+                'ajax'       => true,
+            ],
             'position'   => [
                 'title'      => $this->l('Position'),
                 'filter_key' => 'a!position',
@@ -270,9 +290,19 @@ class AdminFeaturesControllerCore extends AdminController
      * AdminController::renderForm() override
      *
      * @see AdminController::renderForm()
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
+        if (Validate::isLoadedObject($this->object)) {
+            $multipleValuesDisabled = static::existsProductWithMultipleValues($this->object->id);
+            $customValuesDisabled = static::featureHasCustomValues($this->object->id);
+        } else {
+            $multipleValuesDisabled = false;
+            $customValuesDisabled = false;
+        }
+
         $this->toolbar_title = $this->l('Add a new feature');
         $this->fields_form = [
             'legend' => [
@@ -288,6 +318,52 @@ class AdminFeaturesControllerCore extends AdminController
                     'size'     => 33,
                     'hint'     => $this->l('Invalid characters:').' <>;=#{}',
                     'required' => true,
+                ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Allows multiple values'),
+                    'name'     => 'allows_multiple_values',
+                    'hint'     => $multipleValuesDisabled
+                                    ? $this->l('Some products contains multiple values for this feature. It is not possible to disable this functionality now')
+                                    : $this->l('Choose if product can have multiple values for this feature'),
+                    'required' => false,
+                    'is_bool'  => true,
+                    'disabled' => $multipleValuesDisabled,
+                    'values'   => [
+                        [
+                            'id'    => 'allows_multiple_values_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'allows_multiple_values_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Allows custom values'),
+                    'name'     => 'allows_custom_values',
+                    'hint'     => $customValuesDisabled
+                        ? $this->l('Some products contains custom values for this feature. It is not possible to disable this functionality now')
+                        : $this->l('Choose if product can have custom values for this feature'),
+                    'required' => false,
+                    'is_bool'  => true,
+                    'disabled' => $customValuesDisabled,
+                    'values'   => [
+                        [
+                            'id'    => 'allows_custom_values_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'allows_custom_values_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -673,5 +749,108 @@ class AdminFeaturesControllerCore extends AdminController
                 }
             }
         }
+    }
+
+    /**
+     * Handler for changing multiple values checkbox from list
+     */
+    protected function ajaxProcessSetAllowMultipleValuesFeature()
+    {
+        try {
+            $feature = new Feature(Tools::getValue('id_feature'));
+            if (! Validate::isLoadedObject($feature)) {
+                throw new PrestaShopException($this->l('Feature not found'));
+            }
+            if ($feature->allows_multiple_values) {
+                if (static::existsProductWithMultipleValues($feature->id)) {
+                    throw new PrestaShopException($this->l('Not possible to deactivate this functionality because some product has associated multiple values'));
+                }
+                $text = $this->l('Multiple feature values were disabled for this feature');
+                $feature->allows_multiple_values = false;
+            } else {
+                $text = $this->l('Multiple feature values were enabled for this feature');
+                $feature->allows_multiple_values = true;
+            }
+            $feature->update();
+            die(json_encode([
+                'success' => true,
+                'text' => $text
+            ]));
+        } catch (Exception $e) {
+            die(json_encode([
+                'success' => false,
+                'text' => $e->getMessage()
+            ]));
+        }
+    }
+
+    /**
+     * Return true, if some product has multiple values for feature $featureId
+     *
+     * @param int $featureId
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected static function existsProductWithMultipleValues($featureId)
+    {
+        $sql = (new DbQuery())
+            ->select('count(1)')
+            ->from('feature_product')
+            ->where('id_feature = ' . (int)$featureId)
+            ->groupBy('id_product')
+            ->having('count(1) > 1');
+
+        return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+    /**
+     * Handler for changing custom values checkbox from list
+     */
+    protected function ajaxProcessSetAllowCustomValuesFeature()
+    {
+        try {
+            $feature = new Feature(Tools::getValue('id_feature'));
+            if (! Validate::isLoadedObject($feature)) {
+                throw new PrestaShopException($this->l('Feature not found'));
+            }
+            if ($feature->allows_custom_values) {
+                if (static::featureHasCustomValues($feature->id)) {
+                    throw new PrestaShopException($this->l('Not possible to deactivate this functionality because some custom values already exists'));
+                }
+                $text = $this->l('Custom feature values were disabled for this feature');
+                $feature->allows_custom_values = false;
+            } else {
+                $text = $this->l('Custom feature values were enabled for this feature');
+                $feature->allows_custom_values = true;
+            }
+            $feature->update();
+            die(json_encode([
+                'success' => true,
+                'text' => $text
+            ]));
+        } catch (Exception $e) {
+            die(json_encode([
+                'success' => false,
+                'text' => $e->getMessage()
+            ]));
+        }
+    }
+
+    /**
+     * Return true, if some product has custom values for feature $featureId
+     *
+     * @param int $featureId
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected static function featureHasCustomValues($featureId)
+    {
+        $sql = (new DbQuery())
+            ->select('count(1)')
+            ->from('feature_value')
+            ->where('id_feature = ' . (int)$featureId)
+            ->where('custom = 1');
+
+        return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
     }
 }
