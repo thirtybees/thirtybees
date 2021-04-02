@@ -68,7 +68,7 @@ class OrderStateCore extends ObjectModel
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
     /** @var bool Active */
-    public $active;
+    public $active = 1;
     // @codingStandardsIgnoreEnd
 
     /**

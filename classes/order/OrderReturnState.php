@@ -44,7 +44,7 @@ class OrderReturnStateCore extends ObjectModel
     public $color;
 
     /** @var bool Active */
-    public $active;
+    public $active = 1;
     // @codingStandardsIgnoreEnd
 
     /**
