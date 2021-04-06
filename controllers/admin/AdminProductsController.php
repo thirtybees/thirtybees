@@ -2778,6 +2778,8 @@ class AdminProductsControllerCore extends AdminController
      * Process features
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function processFeatures()
     {
@@ -2785,32 +2787,75 @@ class AdminProductsControllerCore extends AdminController
             return;
         }
 
-        if (Validate::isLoadedObject($product = new Product((int) Tools::getValue('id_product')))) {
-            // delete all objects
-            $product->deleteFeatures();
+        // load product
+        $product = new Product((int)Tools::getValue('id_product'));
+        if (!Validate::isLoadedObject($product)) {
+            $this->errors[] = Tools::displayError('A product must be created before adding features.');
+            return;
+        }
 
-            // add new objects
-            $languages = Language::getLanguages(false);
-            foreach ($_POST as $key => $val) {
-                if (preg_match('/^feature_([0-9]+)_value/i', $key, $match)) {
-                    if ($val) {
-                        $product->addFeaturesToDB($match[1], $val);
-                    } else {
-                        if ($defaultValue = $this->checkFeatures($languages, $match[1])) {
-                            $idValue = $product->addFeaturesToDB($match[1], 0, 1);
-                            foreach ($languages as $language) {
-                                if ($cust = Tools::getValue('custom_'.$match[1].'_'.(int) $language['id_lang'])) {
-                                    $product->addFeaturesCustomToDB($idValue, (int) $language['id_lang'], $cust);
-                                } else {
-                                    $product->addFeaturesCustomToDB($idValue, (int) $language['id_lang'], $defaultValue);
-                                }
+        $allFeatures = [];
+
+        // collect predefined information
+        $predefined = [];
+        foreach ($_POST as $key => $val) {
+            // match pre-defined values
+            if (preg_match('/^feature_([0-9]+)_value/i', $key, $match)) {
+                $featureId = (int)$match[1];
+                $allFeatures[$featureId] = $featureId;
+                if (is_array($val) && $val) {
+                    // predefined values
+                    foreach ($val as $featureValueId) {
+                        $featureValueId = (int)$featureValueId;
+                        if ($featureValueId) {
+                            if (!isset($predefined[$featureId])) {
+                                $predefined[$featureId] = [];
                             }
+                            $predefined[$featureId][] = $featureValueId;
                         }
                     }
                 }
             }
-        } else {
-            $this->errors[] = Tools::displayError('A product must be created before adding features.');
+            if (preg_match('/^custom_values_count_([0-9]+)/i', $key, $match)) {
+                $featureId = (int)$match[1];
+                $allFeatures[$featureId] = $featureId;
+            }
+        }
+
+        // collect custom feature values
+        $custom = [];
+        foreach ($allFeatures as $featureId) {
+            if (! isset($predefined[$featureId]) || !$predefined[$featureId]) {
+                $customValues = $this->getCustomFeatureValues($featureId);
+                if ($customValues) {
+                    $custom[$featureId] = $customValues;
+                }
+            }
+        }
+
+        // Don't continue if there was any error
+        if ($this->errors) {
+            return;
+        }
+
+        // delete all product features
+        $product->deleteFeatures();
+
+        // save predefined feature values
+        foreach ($predefined as $featureId => $values) {
+            foreach ($values as $value) {
+                $product->addFeaturesToDB($featureId, $value);
+            }
+        }
+
+        // save any custom values
+        foreach ($custom as $featureId => $values) {
+            foreach ($values as $value) {
+                $featureValueId = $product->addFeaturesToDB($featureId, 0, 1);
+                foreach ($value as $languageId => $langValue) {
+                    $product->addFeaturesCustomToDB($featureValueId, $languageId, $langValue);
+                }
+            }
         }
     }
 
@@ -2820,42 +2865,56 @@ class AdminProductsControllerCore extends AdminController
      * @param $languages
      * @param $featureId
      *
-     * @return int|mixed
+     * @return int
      *
      * @since 1.0.0
+     * @deprecated 1.3.0
      */
     protected function checkFeatures($languages, $featureId)
     {
-        $rules = call_user_func(['FeatureValue', 'getValidationRules'], 'FeatureValue');
-        $feature = Feature::getFeature((int) Configuration::get('PS_LANG_DEFAULT'), $featureId);
+        Tools::displayAsDeprecated();
+        return 0;
+    }
 
-        foreach ($languages as $language) {
-            if ($val = Tools::getValue('custom_'.$featureId.'_'.$language['id_lang'])) {
-                $currentLanguage = new Language($language['id_lang']);
-                if (mb_strlen($val) > $rules['sizeLang']['value']) {
-                    $this->errors[] = sprintf(
-                        Tools::displayError('The name for feature %1$s is too long in %2$s.'),
-                        ' <b>'.$feature['name'].'</b>',
-                        $currentLanguage->name
-                    );
-                } elseif (!call_user_func(['Validate', $rules['validateLang']['value']], $val)) {
-                    $this->errors[] = sprintf(
-                        Tools::displayError('A valid name required for feature. %1$s in %2$s.'),
-                        ' <b>'.$feature['name'].'</b>',
-                        $currentLanguage->name
-                    );
+    /**
+     * Returns submitted custom feature values
+     *
+     * @param int $featureId
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getCustomFeatureValues($featureId)
+    {
+        $cnt = (int)Tools::getValue('custom_values_count_' . $featureId);
+        $values = [];
+
+        for ($index = 0; $index < $cnt; $index++) {
+            $defaultValue = Tools::getValue('custom_' . $featureId . '_' . $index . '_' . Configuration::get('PS_LANG_DEFAULT'));
+            $custValues = [];
+            foreach (Language::getLanguages(false) as $language) {
+                $languageId = (int)$language['id_lang'];
+                if ($val = Tools::getValue('custom_' . $featureId . '_' . $index . '_' . $languageId)) {
+                    $error = FeatureValue::validateFeatureValue($val);
+                    if ($error) {
+                        $this->errors[] = $error;
+                    }
+                } else {
+                    $val = $defaultValue;
                 }
-                if (count($this->errors)) {
-                    return 0;
+                if ($val) {
+                    $custValues[$languageId] = $val;
                 }
-                // Getting default language
-                if ($language['id_lang'] == Configuration::get('PS_LANG_DEFAULT')) {
-                    return $val;
-                }
+            }
+            if ($custValues) {
+                $values[$index] = $custValues;
             }
         }
 
-        return 0;
+        if (count($this->errors)) {
+            return [];
+        }
+
+        return $values;
     }
 
     /**
@@ -5091,15 +5150,9 @@ class AdminProductsControllerCore extends AdminController
                         'languages'           => $this->_languages,
                         'default_language'    => (int) Configuration::get('PS_LANG_DEFAULT'),
                         'image_uploader'      => $imageUploader->render(),
+                        'imageType'           => ImageType::getFormatedName('small'),
                     ]
                 );
-
-                $type = ImageType::getByNameNType('%', 'products', 'height');
-                if (isset($type['name'])) {
-                    $data->assign('imageType', $type['name']);
-                } else {
-                    $data->assign('imageType', ImageType::getFormatedName('small'));
-                }
             } else {
                 $this->displayWarning($this->l('You must save the product in this shop before adding images.'));
             }
@@ -5170,15 +5223,9 @@ class AdminProductsControllerCore extends AdminController
                     $data->assign('ps_stock_mvt_reason_default', $psStockMvtReasonDefault = Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
                     $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
                     $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
+                    $data->assign('imageType', ImageType::getFormatedName('small'));
 
                     $i = 0;
-                    $type = ImageType::getByNameNType('%', 'products', 'height');
-                    if (isset($type['name'])) {
-                        $data->assign('imageType', $type['name']);
-                    } else {
-                        $data->assign('imageType', ImageType::getFormatedName('small'));
-                    }
-                    $data->assign('imageWidth', (isset($imageType['width']) ? (int) ($imageType['width']) : 64) + 25);
                     foreach ($images as $k => $image) {
                         $images[$k]['obj'] = new Image($image['id_image']);
                         ++$i;
@@ -5644,30 +5691,42 @@ class AdminProductsControllerCore extends AdminController
                     $features = Feature::getFeatures($this->context->language->id, (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP));
 
                     foreach ($features as $k => $tab_features) {
-                        $features[$k]['current_item'] = false;
+                        $features[$k]['current_item'] = [];
                         $features[$k]['val'] = [];
 
-                        $custom = true;
                         foreach ($obj->getFeatures() as $tab_products) {
                             if ($tab_products['id_feature'] == $tab_features['id_feature']) {
-                                $features[$k]['current_item'] = $tab_products['id_feature_value'];
+                                $features[$k]['current_item'][] = $tab_products['id_feature_value'];
                             }
                         }
 
                         $features[$k]['featureValues'] = FeatureValue::getFeatureValuesWithLang($this->context->language->id, (int) $tab_features['id_feature']);
+                        $custom = true;
                         if (count($features[$k]['featureValues'])) {
                             foreach ($features[$k]['featureValues'] as $value) {
-                                if ($features[$k]['current_item'] == $value['id_feature_value']) {
+                                if (in_array($value['id_feature_value'], $features[$k]['current_item'])) {
                                     $custom = false;
+                                    break;
                                 }
                             }
                         }
 
+                        $features[$k]['val'] = [];
                         if ($custom) {
-                            $feature_values_lang = FeatureValue::getFeatureValueLang($features[$k]['current_item']);
-                            foreach ($feature_values_lang as $feature_value) {
-                                $features[$k]['val'][$feature_value['id_lang']] = $feature_value;
+                            foreach ($features[$k]['current_item'] as $item) {
+                                $itemValues = [];
+                                foreach (FeatureValue::getFeatureValueLang($item) as $featureValue) {
+                                    if ($featureValue && isset($featureValue['id_lang'])) {
+                                        $itemValues[$featureValue['id_lang']] = $featureValue['value'];
+                                    }
+                                }
+                                if ($itemValues) {
+                                    $features[$k]['val'][] = $itemValues;
+                                }
                             }
+                        }
+                        if (! $features[$k]['val']) {
+                            $features[$k]['val'][] = [];
                         }
                     }
 

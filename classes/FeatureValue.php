@@ -288,4 +288,32 @@ class FeatureValueCore extends ObjectModel
 
         return $return;
     }
+
+    /**
+     * Validates that $value is valid feature value
+     *
+     * @param string $value
+     * @return string | null
+     */
+    public static function validateFeatureValue($value)
+    {
+        if (! is_string($value)) {
+            return Tools::displayError('Invalid type');
+        }
+
+        $field = ObjectModel::getDefinition(FeatureValue::class, 'value');
+
+        // validate size
+        if (isset($field['size']) && mb_strlen($value) > $field['size']) {
+            return sprintf(Tools::displayError('Feature value \'%s\' is too long'), $value);
+        }
+
+        // validate content
+        if (isset($field['validate']) && !call_user_func(['Validate', $field['validate']], $value)) {
+            return sprintf(Tools::displayError('Feature value \'%s\' is not valid'), $value);
+        }
+
+        // this is valid feature value
+        return null;
+    }
 }
