@@ -1184,7 +1184,7 @@ class ThemeCore extends ObjectModel
         $archiveFile = tempnam(_PS_CACHE_DIR_, 'theme-templates');
         try {
             $guzzle = new \GuzzleHttp\Client([
-                'base_uri' => Tools::getApiServer(),
+                'base_uri' => Configuration::getApiServer(),
                 'verify' => _PS_TOOL_DIR_ . 'cacert.pem',
                 'timeout' => 20,
             ]);

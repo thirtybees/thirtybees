@@ -5274,20 +5274,6 @@ FileETag none
 
         return null;
     }
-
-    /**
-     * Returns thirty bees api server address
-     *
-     * @return string
-     */
-    public static function getApiServer()
-    {
-        $value = Configuration::getGlobalValue('TB_API_SERVER_OVERRIDE');
-        if ($value) {
-            return $value;
-        }
-        return "https://api.thirtybees.com";
-    }
 }
 
 /**

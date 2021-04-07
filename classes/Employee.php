@@ -328,6 +328,7 @@ class EmployeeCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @version 1.0.6 Added return value.
+     * @throws PrestaShopException
      */
     protected function saveOptin()
     {
@@ -338,7 +339,7 @@ class EmployeeCore extends ObjectModel
                 $context = Context::getContext();
 
                 $guzzle = new \GuzzleHttp\Client([
-                    'base_uri'    => Tools::getApiServer(),
+                    'base_uri'    => Configuration::getApiServer(),
                     'timeout'     => 20,
                     'verify'      => _PS_TOOL_DIR_.'cacert.pem',
                 ]);

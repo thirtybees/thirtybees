@@ -2036,6 +2036,7 @@ class AdminTranslationsControllerCore extends AdminController
                         ],
                     ],
                 ];
+                $directories['php'] = array_merge($directories['php'], $this->listFiles(_PS_CLASS_DIR_.'tracking/', [], 'php'));
 
                 // For translate the template which are overridden
                 if (file_exists(_PS_OVERRIDE_DIR_.'controllers'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR.'templates')) {
@@ -2291,6 +2292,8 @@ class AdminTranslationsControllerCore extends AdminController
                         $prefixKey = basename(substr($file, 0, -14));
                     } elseif (strpos($file, 'Helper') !== false) {
                         $prefixKey = 'Helper';
+                    } elseif (strpos($file, 'Extractor.php') !== false) {
+                        $prefixKey = 'AdminDataCollection';
                     }
 
                     if ($prefixKey == 'Admin') {

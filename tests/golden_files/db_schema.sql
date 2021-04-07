@@ -2644,6 +2644,17 @@ CREATE TABLE `PREFIX_timezone` (
   PRIMARY KEY (`id_timezone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_tracking_consent` (
+  `id_tracking_consent` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_employee` int(11) unsigned NOT NULL,
+  `identifier` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `consent` tinyint(1) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_tracking_consent`),
+  UNIQUE KEY `identifier` (`identifier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_warehouse` (
   `id_warehouse` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_currency` int(11) unsigned NOT NULL,

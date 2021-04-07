@@ -267,6 +267,8 @@ class ConfigurationCore extends ObjectModel
     const CUSTOMCODE_ORDERCONF_JS = 'TB_CUSTOMCODE_ORDERCONF_JS';
     const STORE_REGISTERED = 'TB_STORE_REGISTERED';
     const MAIL_SUBJECT_TEMPLATE = 'TB_MAIL_SUBJECT_TEMPLATE';
+    const API_SERVER_OVERRIDE = 'TB_API_SERVER_OVERRIDE';
+    const TRACKING_ID = 'TB_TRACKING_UID';
     // @codingStandardsIgnoreStart
     /**
      * @see ObjectModel::$definition
@@ -1048,5 +1050,38 @@ class ConfigurationCore extends ObjectModel
             ));
             die($e->displayMessage());
         }
+    }
+
+    /**
+     * Returns url to thirty bees api server
+     *
+     * Default api url can be overridden using configuration key TB_API_SERVER_OVERRIDE. This should be used
+     * by thirty bees developers only
+     *
+     * @return string
+     */
+    public static function getApiServer()
+    {
+        $baseUriOverride = Configuration::getGlobalValue(Configuration::API_SERVER_OVERRIDE);
+        if ($baseUriOverride && Validate::isAbsoluteUrl($baseUriOverride)) {
+            return $baseUriOverride;
+        }
+        return 'https://api.thirtybees.com';
+    }
+
+    /**
+     * Returns unique identifier of this installation, for tracking purposes
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getServerTrackingId()
+    {
+        $trackingId = static::getGlobalValue(Configuration::TRACKING_ID);
+        if (! $trackingId) {
+            $trackingId = Tools::passwdGen(40);
+            static::updateGlobalValue(Configuration::TRACKING_ID, $trackingId);
+        }
+        return $trackingId;
     }
 }
