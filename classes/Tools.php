@@ -29,9 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
-use CommerceGuys\Intl\Formatter\NumberFormatter;
 use PHPSQLParser\PHPSQLParser;
 
 /**
@@ -745,11 +742,11 @@ class ToolsCore
      * Formatting should match JavaScript function displayPrice (in tools.js).
      * Which means: don't forget to transport any changes made here to there.
      *
-     * @param float        $price      Product price
+     * @param float $price Product price
      * @param object|array $tbCurrency Current (thirty bees) Currency
-     * @param bool         $noUtf8
-     * @param Context      $context
-     * @param null|bool    $auto
+     * @param bool $noUtf8
+     * @param Context $context
+     * @param null|bool $auto
      *
      * @return string Price correctly formatted (sign, decimal separator...)
      *
@@ -757,7 +754,9 @@ class ToolsCore
      * @version 1.0.0 Initial version
      *
      * @since 1.0.2 Not every merchant likes to have currencies formatted automatically.
-     *        For them, the auto option is now available.
+     *              For them, the auto option is now available.
+     * @since 1.3.0 Automatic formatting extracted to
+     * @throws PrestaShopException
      */
     public static function displayPrice($price, $tbCurrency = null, $noUtf8 = false, Context $context = null, $auto = null)
     {
@@ -769,124 +768,85 @@ class ToolsCore
         }
         if (!$tbCurrency) {
             $tbCurrency = $context->currency;
-        } elseif (is_int($tbCurrency)) {
-            $tbCurrency = Currency::getCurrencyInstance((int) $tbCurrency);
         }
 
-        if (is_array($tbCurrency)) {
-            $currencyIso = $tbCurrency['iso_code'];
-            $currencyDecimals
-                = (int) $tbCurrency['decimals'] ?
-                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                  0;
+        if (is_int($tbCurrency)) {
+            $tbCurrency = Currency::getCurrencyInstance((int) $tbCurrency);
+        } elseif (is_array($tbCurrency)) {
             $currencyArray = $tbCurrency;
             $tbCurrency = new Currency();
             $tbCurrency->hydrate($currencyArray);
-        } elseif (is_object($tbCurrency)) {
-            $currencyIso = $tbCurrency->iso_code;
-            $currencyDecimals
-                = (int) $tbCurrency->decimals ?
-                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                  0;
-        } else {
+        }
+
+        if (! is_object($tbCurrency)) {
+            // this should never happen
             return '';
         }
 
-        if ($auto === null) {
-            try {
-                $auto = $tbCurrency->getMode();
-            } catch (PrestaShopException $e) {
-                $auto = false;
+        // if currency has associated formatter, use it. Formatter must return string
+        $formatter = $tbCurrency->getFormatter();
+        if ($formatter && is_callable($formatter)) {
+            $result = $formatter($price, $tbCurrency, $context->language);
+            if (!is_null($result) && is_string($result)) {
+                return $result;
             }
         }
 
-        if (!$auto) {
-            $cChar = $tbCurrency->sign;
-            $cFormat = $tbCurrency->format;
-            $cDecimals = (int) $tbCurrency->decimals ?
-                         Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                         0;
-            $cBlank = $tbCurrency->blank;
-            $blank = ($cBlank ? ' ' : '');
-            $ret = 0;
-            if (($isNegative = ($price < 0))) {
-                $price *= -1;
-            }
-            $price = Tools::ps_round($price, $cDecimals);
+        // fallback to default currency formatting
+        $cChar = $tbCurrency->sign;
+        $cFormat = $tbCurrency->format;
+        $cDecimals = (int) $tbCurrency->decimals ? Configuration::get('PS_PRICE_DISPLAY_PRECISION') : 0;
+        $cBlank = $tbCurrency->blank;
+        $blank = ($cBlank ? ' ' : '');
+        $ret = 0;
+        if (($isNegative = ($price < 0))) {
+            $price *= -1;
+        }
+        $price = Tools::ps_round($price, $cDecimals);
 
-            /*
-            * If the language is RTL and the selected currency format contains spaces as thousands separator
-            * then the number will be printed in reverse since the space is interpreted as separating words.
-            * To avoid this we replace the currency format containing a space with the one containing a comma (,) as thousand
-            * separator when the language is RTL.
-            */
-            if (($cFormat == 2) && ($context->language->is_rtl == 1)) {
-                $cFormat = 4;
-            }
-            switch ($cFormat) {
-                /* X 0,000.00 */
-                case 1:
-                    $ret = $cChar.$blank.number_format($price, $cDecimals, '.', ',');
-                    break;
-                /* 0 000,00 X*/
-                case 2:
-                    $ret = number_format($price, $cDecimals, ',', ' ').$blank.$cChar;
-                    break;
-                /* X 0.000,00 */
-                case 3:
-                    $ret = $cChar.$blank.number_format($price, $cDecimals, ',', '.');
-                    break;
-                /* 0,000.00 X */
-                case 4:
-                    $ret = number_format($price, $cDecimals, '.', ',').$blank.$cChar;
-                    break;
-                /* X 0'000.00  Added for the switzerland currency */
-                case 5:
-                    $ret = number_format($price, $cDecimals, '.', "'").$blank.$cChar;
-                    break;
-                /* 0.000,00 X */
-                case 6:
-                    $ret = number_format($price, $cDecimals, ',', '.').$blank.$cChar;
-                    break;
-            }
-            if ($isNegative) {
-                $ret = '-'.$ret;
-            }
-            if ($noUtf8) {
-                return str_replace('€', chr(128), $ret);
-            }
-
-            return $ret;
+        /*
+        * If the language is RTL and the selected currency format contains spaces as thousands separator
+        * then the number will be printed in reverse since the space is interpreted as separating words.
+        * To avoid this we replace the currency format containing a space with the one containing a comma (,) as thousand
+        * separator when the language is RTL.
+        */
+        if (($cFormat == 2) && ($context->language->is_rtl == 1)) {
+            $cFormat = 4;
+        }
+        switch ($cFormat) {
+            /* X 0,000.00 */
+            case 1:
+                $ret = $cChar.$blank.number_format($price, $cDecimals, '.', ',');
+                break;
+            /* 0 000,00 X*/
+            case 2:
+                $ret = number_format($price, $cDecimals, ',', ' ').$blank.$cChar;
+                break;
+            /* X 0.000,00 */
+            case 3:
+                $ret = $cChar.$blank.number_format($price, $cDecimals, ',', '.');
+                break;
+            /* 0,000.00 X */
+            case 4:
+                $ret = number_format($price, $cDecimals, '.', ',').$blank.$cChar;
+                break;
+            /* X 0'000.00  Added for the switzerland currency */
+            case 5:
+                $ret = number_format($price, $cDecimals, '.', "'").$blank.$cChar;
+                break;
+            /* 0.000,00 X */
+            case 6:
+                $ret = number_format($price, $cDecimals, ',', '.').$blank.$cChar;
+                break;
+        }
+        if ($isNegative) {
+            $ret = '-'.$ret;
+        }
+        if ($noUtf8) {
+            return str_replace('€', chr(128), $ret);
         }
 
-        $price = Tools::ps_round($price, $currencyDecimals);
-        $languageIso = $context->language->language_code;
-
-        $currencyRepository = new CurrencyRepository();
-        $numberFormatRepository = new NumberFormatRepository();
-
-        try {
-            $currency = $currencyRepository->get(mb_strtoupper($currencyIso));
-        } catch (\CommerceGuys\Intl\Exception\UnknownCurrencyException $e) {
-            $numberFormat = $numberFormatRepository->get($languageIso);
-            $decimalFormatter = new NumberFormatter($numberFormat, NumberFormatter::DECIMAL);
-
-            $formattedPrice = '';
-            if ($tbCurrency->iso_code) {
-                $formattedPrice .= mb_strtoupper($tbCurrency->iso_code).' ';
-            }
-
-            return $formattedPrice.$decimalFormatter->format($price);
-        }
-
-        if ($tbCurrency->sign) {
-            $currency->setSymbol($tbCurrency->sign);
-        }
-        $numberFormat = $numberFormatRepository->get($languageIso);
-
-        $currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
-
-        return $currencyFormatter->formatCurrency($price, $currency);
+        return $ret;
     }
 
     /**

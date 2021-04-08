@@ -1051,9 +1051,7 @@ class FrontControllerCore extends Controller
         $this->addJqueryPlugin('easing');
         $this->addJS(_PS_JS_DIR_.'tools.js');
         $this->addJS(_THEME_JS_DIR_.'global.js');
-
-        // @since 1.0.2
-        Media::addJsDef(['currencyModes' => Currency::getModes()]);
+        Media::addJsDef(['currencyFormatters' => Currency::getJavascriptFormatters()]);
         // @since 1.0.4
         Media::addJsDef([
             'useLazyLoad' => (bool) Configuration::get('TB_LAZY_LOAD'),

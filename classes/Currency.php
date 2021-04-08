@@ -36,10 +36,19 @@
  */
 class CurrencyCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var array Currency cache */
     protected static $currencies = [];
+
+    /**
+     * @var array
+     */
     protected static $countActiveCurrencies = [];
+
+    /**
+     * @var array Currency formatters
+     */
+    protected static $currencyFormatters = null;
+
     public $id;
     /** @var string Name */
     public $name;
@@ -61,8 +70,6 @@ class CurrencyCore extends ObjectModel
     public $decimals;
     /** @var int bool active */
     public $active;
-    /** @var bool $auto_format */
-    public $auto_format;
     /**
      * contains the sign to display before price, according to its format
      *
@@ -75,7 +82,6 @@ class CurrencyCore extends ObjectModel
      * @var string
      */
     public $suffix = null;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -117,6 +123,7 @@ class CurrencyCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -128,8 +135,6 @@ class CurrencyCore extends ObjectModel
         if (!$this->conversion_rate) {
             $this->conversion_rate = 1;
         }
-
-        $this->auto_format = $this->getMode();
     }
 
     /**
@@ -739,32 +744,110 @@ class CurrencyCore extends ObjectModel
      * @return bool
      *
      * @since 1.0.2
-     * @throws PrestaShopException
      */
     public function getMode()
     {
-        return !Configuration::get('TB_NO_AUTO_FORMAT_'.(int) $this->id);
+        Tools::displayAsDeprecated();
+        return false;
     }
 
     /**
      * Get the modes for all currencies
-     * NOTE: the keys in this array are the uppercased ISO codes
+     * NOTE: the keys in this array are the upper cased ISO codes
      *
      * @return array
      *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      * @since 1.0.2
      */
     public static function getModes()
     {
-        $modes = [];
-        foreach (static::getCurrencies(false, false) as $currency) {
-            $currencyInstance = Currency::getCurrencyInstance((int) $currency['id_currency']);
+        Tools::displayAsDeprecated();
+        return [];
+    }
 
-            $modes[strtoupper($currency['iso_code'])] = $currencyInstance->getMode();
+    /**
+     * Get map from currencies to javascript function used for formatting
+     * The keys in this array are the upper cased ISO codes
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     * @since 1.3.0
+     */
+    public static function getJavascriptFormatters()
+    {
+        $formatters = [];
+        foreach (static::getFormatters() as $id => $formatter) {
+            $currency = Currency::getCurrencyInstance((int) $id);
+            if (isset($formatter['js']) && $formatter['js']) {
+                $formatters[strtoupper($currency->iso_code)] = $formatter['js'];
+            }
         }
+        return $formatters;
+    }
 
-        return $modes;
+    /**
+     * Returns currency formatter associated with this currency, if exists
+     *
+     * @returns callable | null
+     *
+     * @throws PrestaShopException
+     */
+    public function getFormatter()
+    {
+        $id = (int)$this->id;
+        if ($id) {
+            $formatters = static::getFormatters();
+            if (isset($formatters[$id])) {
+                return $formatters[$id]['php'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns currency formatters
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getFormatters()
+    {
+        if (is_null(static::$currencyFormatters)) {
+            static::$currencyFormatters = static::resolveFormatters();
+        }
+        return static::$currencyFormatters;
+    }
+
+    /**
+     * Resolves currency formatters
+     *
+     * Method calls hook actionGetCurrencyFormatters and return list of all formatters
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function resolveFormatters()
+    {
+        $currencies = static::getCurrencies(false, false);
+        $results = Hook::exec(
+            'actionGetCurrencyFormatters',
+            [ 'currencies' => $currencies ],
+            null,
+            true
+        );
+        $formatters = [];
+        if (is_array($results)) {
+            foreach ($results as $module => $moduleFormatters) {
+                foreach ($moduleFormatters as $currencyId => $definition) {
+                    $currencyId = (int)$currencyId;
+                    if (isset($formatters[$currencyId])) {
+                        trigger_error(E_USER_WARNING, "Multiple modules provided formatter for currency ".$currencyId);
+                    }
+                    $formatters[$currencyId] = $definition;
+                }
+            }
+        }
+        return $formatters;
     }
 }
