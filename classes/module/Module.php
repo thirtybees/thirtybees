@@ -1691,7 +1691,8 @@ abstract class ModuleCore
             return false;
         }
 
-        return version_compare(_TB_VERSION_, $this->tb_min_version, '>=');
+        $tbVersion = implode('.', array_map('intval', explode('.', _TB_VERSION_, 3)));
+        return version_compare($tbVersion, $this->tb_min_version, '>=');
     }
 
     /**
