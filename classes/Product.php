@@ -5646,7 +5646,8 @@ class ProductCore extends ObjectModel
 				FROM `'._DB_PREFIX_.'product_attribute` pa
 				'.Shop::addSqlAssociation('product_attribute', 'pa').'
 				WHERE pa.`id_product` = '.(int) $this->id.'
-				GROUP BY pa.`id_product_attribute`'
+				GROUP BY pa.`id_product_attribute`
+				ORDER BY pa.`id_product_attribute`'
         );
 
         if (!$combinations) {
@@ -5666,7 +5667,8 @@ class ProductCore extends ObjectModel
 				LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang.')
 				LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang.')
 				WHERE pac.id_product_attribute IN ('.implode(',', $productAttributes).')
-				GROUP BY pac.id_product_attribute'
+				GROUP BY pac.id_product_attribute
+			   	ORDER BY pac.id_product_attribute'
         );
 
         foreach ($lang as $k => $row) {
