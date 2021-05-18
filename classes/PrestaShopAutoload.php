@@ -121,19 +121,21 @@ class PrestaShopAutoload
 
         // Write classes index on disc to cache it
         $filename = $this->root_dir . PrestaShopAutoload::INDEX_FILE;
-        $filenameTmp = tempnam(dirname($filename), basename($filename.'.'));
+        $dirname = dirname($filename);
+        $filenameTmp = tempnam($dirname, basename($filename.'.'));
         if ($filenameTmp !== false && file_put_contents($filenameTmp, $content) !== false) {
             if (!@rename($filenameTmp, $filename)) {
                 unlink($filenameTmp);
+                error_log('Cannot rename temp autoload file');
             } else {
                 @chmod($filename, 0666);
                 if (function_exists('opcache_invalidate')) {
                     opcache_invalidate($filenameTmp);
                 }
             }
-        } // $filename_tmp couldn't be written. $filename should be there anyway (even if outdated), no need to die.
-        else {
-            Tools::error_log('Cannot write temporary file '.$filenameTmp);
+        } else {
+            // $filename_tmp couldn't be written. $filename should be there anyway (even if outdated), no need to die.
+            error_log('Cannot create temporary autoload file in directory '.$dirname);
         }
         $this->index = $classes;
     }
