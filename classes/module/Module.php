@@ -1740,6 +1740,7 @@ abstract class ModuleCore
      */
     public static function getModuleNameById($moduleId)
     {
+        $moduleId = (int)$moduleId;
         $map = static::getModulesNameToIdMap();
         foreach ($map as $moduleName => $id) {
             if ($moduleId === $id) {
