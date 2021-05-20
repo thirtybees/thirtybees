@@ -533,7 +533,7 @@ class FrontControllerCore extends Controller
             }
 
             // append page number
-            if ($p = Tools::getValue('p')) {
+            if ($p = (int)Tools::getValue('p')) {
                 $lnk .= "?p=$p";
             }
 
@@ -577,7 +577,7 @@ class FrontControllerCore extends Controller
                 return '';
         }
 
-        $p = Tools::getValue('p');
+        $p = (int) Tools::getValue('p');
         $n = (int) Configuration::get('PS_PRODUCTS_PER_PAGE');
 
         $totalPages = ceil($nbProducts / $n);
