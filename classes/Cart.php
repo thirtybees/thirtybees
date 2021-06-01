@@ -21,6 +21,7 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
+ * @author    CustomPresta <developer@custompresta.com>
  * @author    thirty bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
  * @copyright 2017-2018 thirty bees
@@ -312,6 +313,8 @@ class CartCore extends ObjectModel
         $sql->select('product_shop.`available_for_order`');
         $sql->select('product_shop.`price`');
         $sql->select('product_shop.`active`');
+		$sql->select('product_shop.`content_value`');
+		$sql->select('product_shop.`content_unit`');
         $sql->select('product_shop.`unity`');
         $sql->select('product_shop.`unit_price_ratio`');
         $sql->select('stock.`quantity` AS `quantity_available`');

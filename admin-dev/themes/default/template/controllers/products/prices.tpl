@@ -17,6 +17,7 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
+*  @author    CustomPresta <developer@custompresta.com>
 *  @author PrestaShop SA <contact@prestashop.com>
 *  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
@@ -108,7 +109,48 @@ $(document).ready(function () {
 		}
 	};
 	Customer.init();
+	
+	$('#content_unit').val($('#base_price_unit option:selected').html());
 });
+
+function calcContentUnitPrice() {
+  var pricetaxexcl = $('#priceTE').val();
+  var contentunit = $('#content_value').val();
+  
+  var modifier_full = $('#base_price_unit option:selected').attr('data-modifier');
+  var modifier_operator = modifier_full.substr(0, 1);
+  var modifier_value = modifier_full.substr(1);
+  
+  var contentunit_calc = pricetaxexcl / contentunit;
+  
+  if(modifier_operator == '*')
+  {
+      var calc2 = contentunit_calc * modifier_value;
+  }
+  else if (modifier_operator == '/')
+  {
+      var calc2 = contentunit_calc / modifier_value;  
+  }
+  else if (modifier_operator == '+')
+  {
+      var calc2 = contentunit_calc + modifier_value;  
+  }
+  else if (modifier_operator == '-')
+  {
+      var calc2 = contentunit_calc - modifier_value;  
+  }
+  
+  var contentunit_res = ps_round(calc2, 6).toFixed(6);
+  $('#unit_price').val(contentunit_res);
+  
+  unitPriceWithTax('unit');
+  unitChange();
+}
+
+function unitChange() {
+  $('#unity').val($('#base_price_unit option:selected').attr('data-displayname'));
+  $('#content_unit').val($('#base_price_unit option:selected').html());
+}
 </script>
 
 <div id="product-prices" class="panel product-tab">
@@ -160,7 +202,7 @@ $(document).ready(function () {
                     id="priceTE"
                     name="price_displayed"
                     value="{displayPriceValue price=$product->price}"
-                    onchange="$('#priceTEReal').val(this.value);"
+                    onchange="$('#priceTEReal').val(this.value);calcContentUnitPrice();"
                     onkeyup="if (isArrowKey(event)) return;
                              this.value = this.value.replace(/,/g, '.');
                              $('#priceType').val('TE');
@@ -244,7 +286,8 @@ $(document).ready(function () {
                 onkeyup="if (isArrowKey(event)) return;
                          this.value = this.value.replace(/,/g, '.');
                          $('#priceType').val('TI');
-                         calcPriceTE();"
+                         calcPriceTE();
+						 calcContentUnitPrice();"
             />
 		</div>
         {if isset($pack) && $pack->isPack($product->id)}
@@ -255,40 +298,6 @@ $(document).ready(function () {
             </p>
         {/if}
 	</div>
-
-	<div class="form-group">
-		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="unit_price" type="unit_price"}</span></div>
-		<label class="control-label col-lg-2" for="unit_price">
-			<span class="label-tooltip" data-toggle="tooltip" title="{l s='When selling a pack of items, you can indicate the unit price for each item of the pack. For instance, "per bottle" or "per pound".'}">{l s='Unit price (tax excl.)'}</span>
-		</label>
-		<div class="col-lg-4">
-			<div class="input-group">
-				<span class="input-group-addon">{$currency->prefix}{$currency->suffix}</span>
-                <input type="text"
-                    id="unit_price"
-                    name="unit_price"
-                    value="{displayPriceValue price=$unit_price}"
-                    onkeyup="if (isArrowKey(event)) return;
-                             this.value = this.value.replace(/,/g, '.');
-                             unitPriceWithTax('unit');"
-                />
-				<span class="input-group-addon">{l s='per'}</span>
-				<input id="unity" name="unity" type="text" value="{$product->unity|htmlentitiesUTF8}"  maxlength="255" onkeyup="if (isArrowKey(event)) return ;unitySecond();" onchange="unitySecond();"/>
-			</div>
-		</div>
-	</div>
-	{if isset($product->unity) && $product->unity}
-	<div class="form-group">
-		<div class="col-lg-9 col-lg-offset-3">
-			<div class="alert alert-warning">
-				<span>{l s='or'}
-					{$currency->prefix}<span id="unit_price_with_tax">0.00</span>{$currency->suffix}
-					{l s='per'} <span id="unity_second">{$product->unity}</span>{if $ps_tax && $country_display_tax_label} {l s='(tax incl.)'}{/if}
-				</span>
-			</div>
-		</div>
-	</div>
-	{/if}
 	<div class="form-group">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="on_sale" type="default"}</span></div>
 		<label class="control-label col-lg-2" for="on_sale">&nbsp;</label>
@@ -323,6 +332,45 @@ $(document).ready(function () {
 			</div>
 		</div>
 	</div>
+	<div class="panel-footer">
+		<a href="{$link->getAdminLink('AdminProducts')|escape:'html':'UTF-8'}{if isset($smarty.request.page) && $smarty.request.page > 1}&amp;submitFilterproduct={$smarty.request.page|intval}{/if}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
+		<button type="submit" name="submitAddproduct" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save'}</button>
+		<button type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save and stay'}</button>
+	</div>
+</div>
+<div class="panel" {if !$product_units}style="display:none;"{/if}>
+<h3>{l s='Unit Price'}</h3>
+	<div class="form-group">
+		<label class="control-label col-lg-3" for="content_value">{l s='Verpackungsinhalt'}</label>
+		<div class="col-lg-4">
+			<div class="input-group">
+				<input id="content_value" name="content_value" maxlength="16" type="text" value="{$product->content_value}" autocomplete="off" onkeyup="this.value = this.value.replace(/,/g, '.');calcContentUnitPrice();" />
+				<span class="input-group-addon">{l s='Grundpreiseinheit'}</span>
+				<select name="base_price_unit" id="base_price_unit" onchange="unitChange();">
+					{foreach from=$product_units item=p_unit}
+						<option value="{$p_unit.id_product_unit}" data-modifier="{$p_unit.modifier}" data-displayname="{$p_unit.display_name}" {if $product->unity == $p_unit.display_name}selected="selected"{/if}>{$p_unit.content_name|htmlentitiesUTF8}</option>
+					{/foreach}
+				</select>
+				<input type="hidden" value="" id="content_unit" name="content_unit" />
+			</div>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="unit_price" type="unit_price"}</span></div>
+		<label class="control-label col-lg-2" for="unit_price">
+			<span class="label-tooltip" data-toggle="tooltip" title="{l s='When selling a pack of items, you can indicate the unit price for each item of the pack. For instance, "per bottle" or "per pound".'}">{l s='Unit price (tax excl.)'}</span>
+		</label>
+		<div class="col-lg-4">
+			<div class="input-group">
+				<span class="input-group-addon">{$currency->prefix}{$currency->suffix}</span>
+				<input id="unit_price" name="unit_price" type="text" value="{$unit_price|string_format:'%.6f'}" readonly maxlength="27" />
+				<span class="input-group-addon">{l s='per'}</span>
+				<input id="unity" name="unity" type="text" value="{$product->unity|htmlentitiesUTF8}" readonly maxlength="255" />
+			</div>
+		</div>
+	</div>
+	
 	<div class="panel-footer">
 		<a href="{$link->getAdminLink('AdminProducts')|escape:'html':'UTF-8'}{if isset($smarty.request.page) && $smarty.request.page > 1}&amp;submitFilterproduct={$smarty.request.page|intval}{/if}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
 		<button type="submit" name="submitAddproduct" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save'}</button>

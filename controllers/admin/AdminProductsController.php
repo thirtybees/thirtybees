@@ -21,6 +21,7 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
+ * @author    CustomPresta <developer@custompresta.com>
  * @author    thirty bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
  * @copyright 2017-2018 thirty bees
@@ -3935,6 +3936,21 @@ class AdminProductsControllerCore extends AdminController
                 $taxRates[$idTaxRulesGroup]['rates'][] = 0;
             }
         }
+		
+		// Product Units Part
+		$sql = new DbQuery();
+		$sql->select('pu.`id_product_unit`');
+		$sql->select('pu.`modifier`');
+		$sql->select('pul.`content_name`');
+		$sql->select('pul.`display_name`');
+		$sql->from('product_unit', 'pu');
+        $sql->leftJoin('product_unit_lang', 'pul', 'pu.`id_product_unit` = pul.`id_product_unit`');
+		$sql->where('pul.`id_lang` = '.(int) $this->context->language->id);
+		$result = Db::getInstance()->executeS($sql);
+
+        if (isset($result) && !empty($result)) {
+		    $data->assign('product_units', $result);
+		}
 
         // prices part
         $data->assign(
