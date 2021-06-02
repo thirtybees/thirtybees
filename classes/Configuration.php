@@ -1037,7 +1037,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @param string $key
      *
-     * @throws PrestaShopException
      * @since   1.0.8
      */
     protected static function validateKey($key)
