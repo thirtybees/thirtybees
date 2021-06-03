@@ -21,8 +21,6 @@ use \GuzzleHttp\Exception\RequestException;
 
 class AdminAddonsCatalogControllerCore extends AdminController
 {
-    const ADDONS_URL = 'https://api.thirtybees.com/catalog/catalog.json';
-
     public function __construct()
     {
         $this->bootstrap = true;
@@ -41,7 +39,7 @@ class AdminAddonsCatalogControllerCore extends AdminController
             'timeout'     => 20,
         ]);
         try {
-            $addonsContent = $guzzle->get(static::ADDONS_URL)->getBody();
+            $addonsContent = $guzzle->get(Tools::getApiServer() . '/catalog/catalog.json')->getBody();
         } catch (RequestException $e) {
         }
         if ($addonsContent) {

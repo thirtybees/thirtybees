@@ -2193,6 +2193,7 @@ class FrontControllerCore extends Controller
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setTemplate($defaultTemplate)
     {
@@ -2200,11 +2201,13 @@ class FrontControllerCore extends Controller
             $this->setMobileTemplate($defaultTemplate);
         } else {
             $template = $this->getOverrideTemplate();
-            if ($template) {
-                parent::setTemplate($template);
-            } else {
-                parent::setTemplate($defaultTemplate);
+            if (! $template) {
+                $template = $defaultTemplate;
             }
+
+            $theme = Context::getContext()->theme;
+            $theme->ensureTemplate($template);
+            parent::setTemplate($template);
         }
     }
 

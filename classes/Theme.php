@@ -1130,4 +1130,104 @@ class ThemeCore extends ObjectModel
         return $hooks;
     }
 
+    /**
+     * Helper method to ensure that template exists. If front office template does not exists, it will be downloaded
+     * from thirty bees api server
+     *
+     * @param string $template
+     * @throws PrestaShopException
+     */
+    public function ensureTemplate($template)
+    {
+        // template variable usually represents file, simply check if it exists
+        if (! @file_exists($template)) {
+            // first, resolve relative path
+            $directoryPath = $this->getDirectoryPath();
+            $template = str_replace('\\', '/', $template);
+            if (strpos($template, $directoryPath) === 0) {
+                $relativeTemplate = substr($template, strlen($directoryPath));
+            } else {
+                $relativeTemplate = $template;
+            }
+
+            $this->downloadTemplate($directoryPath, $relativeTemplate);
+
+            if (! @file_exists($template)) {
+                throw new PrestaShopException("Template " . $template . " does not exists");
+            }
+        }
+    }
+
+    /**
+     * Downloads missing template from thirty bees api server
+     *
+     * @param string $directoryPath
+     * @param string $relativeTemplate
+     * @throws PrestaShopException
+     */
+    protected function downloadTemplate($directoryPath, $relativeTemplate)
+    {
+        // throttle api requests - allow one request per hour per resource
+        $cacheKey = 'TB_TEMPLATE_' . md5($relativeTemplate);
+        $lastAttempt = (int)Configuration::getGlobalValue($cacheKey);
+        $now = time();
+        if ($lastAttempt > ($now - 3600)) {
+            return;
+        }
+        Configuration::updateGlobalValue($cacheKey, $now);
+
+        $request = [
+            'action' => 'download-template',
+            'php' => phpversion(),
+            'templates' => [$relativeTemplate]
+        ];
+        $archiveFile = tempnam(_PS_CACHE_DIR_, 'theme-templates');
+        try {
+            $guzzle = new \GuzzleHttp\Client([
+                'base_uri' => Tools::getApiServer(),
+                'verify' => _PS_TOOL_DIR_ . 'cacert.pem',
+                'timeout' => 20,
+            ]);
+            $guzzle->post("/coreupdater/v2.php", [
+                'form_params' => $request,
+                'http_errors' => false,
+                'sink' => $archiveFile
+            ]);
+            if (!is_file($archiveFile)) {
+                throw new PrestaShopException("Failed to download file from thirty bees api server");
+            }
+            $magicNumber = file_get_contents($archiveFile, false, null, 0, 2);
+            if (@filesize($archiveFile) < 100 || strcmp($magicNumber, "\x1f\x8b")) {
+                // It's an error message response.
+                throw new PrestaShopException("Api error: " . file_get_contents($archiveFile));
+            }
+
+            $archive = new \Archive_Tar($archiveFile, 'gz');
+            $archivePaths = $archive->listContent();
+            if ($archive->error_object) {
+                throw new PrestaShopException("Failed to open archive: " . $archive->error_object->message);
+            }
+            if (count($archivePaths) !== 1 || $archivePaths[0]['filename'] !== $relativeTemplate) {
+                throw new PrestaShopException("Archive contains invalid content: " . print_r($archivePaths, true));
+            }
+            $archive->extract($directoryPath);
+        } catch (PrestaShopException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            throw new PrestaShopException("Failed to download file from thirty bees api server", $e);
+        } finally {
+            @unlink($archiveFile);
+        }
+    }
+
+    /**
+     * Returns full path to theme directory
+     *
+     * @return string
+     */
+    public function getDirectoryPath()
+    {
+        return rtrim(str_replace('\\', '/', _PS_ALL_THEMES_DIR_),'/') . '/' . $this->directory . '/';
+    }
+
 }

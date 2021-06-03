@@ -338,7 +338,7 @@ class EmployeeCore extends ObjectModel
                 $context = Context::getContext();
 
                 $guzzle = new \GuzzleHttp\Client([
-                    'base_uri'    => 'https://api.thirtybees.com',
+                    'base_uri'    => Tools::getApiServer(),
                     'timeout'     => 20,
                     'verify'      => _PS_TOOL_DIR_.'cacert.pem',
                 ]);
