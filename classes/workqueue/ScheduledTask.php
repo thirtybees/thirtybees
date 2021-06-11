@@ -146,6 +146,19 @@ class ScheduledTaskCore extends ObjectModel
     }
 
     /**
+     * Returns all scheduled tasks for given callable
+     *
+     * @return ScheduledTask[]
+     * @throws PrestaShopException
+     */
+    public static function getTasksForCallable($callable)
+    {
+        $list = new PrestaShopCollection(static::class);
+        $list->where('task', '=', $callable);
+        return $list->getResults();
+    }
+
+    /**
      * Mark scheduled tasks $taskIds as checked at timestamp $ts
      *
      * @param int[] $taskIds

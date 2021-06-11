@@ -20,9 +20,13 @@
 namespace Thirtybees\Core\Tracking;
 
 
+use Adapter_Exception;
 use Configuration;
+use Db;
 use Exception;
 use PrestaShopException;
+use Thirtybees\Core\InitializationCallback;
+use Thirtybees\Core\WorkQueue\ScheduledTask;
 use Thirtybees\Core\WorkQueue\WorkQueueContext;
 use Thirtybees\Core\WorkQueue\WorkQueueTaskCallable;
 
@@ -33,7 +37,7 @@ use Thirtybees\Core\WorkQueue\WorkQueueTaskCallable;
  *
  * @since 1.3.0
  */
-class TrackingTaskCore implements WorkQueueTaskCallable
+class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
 {
 
     /**
@@ -109,5 +113,28 @@ class TrackingTaskCore implements WorkQueueTaskCallable
                 ]
             ]
         );
+    }
+
+    /**
+     * Callback method to initialize class
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $task = str_replace("TrackingTaskCore", "TrackingTask", static::class);
+        $trackingTasks = ScheduledTask::getTasksForCallable($task);
+        if (! $trackingTasks) {
+            $scheduledTask = new ScheduledTask();
+            $scheduledTask->frequency = rand(0, 59) . ' ' . rand(0, 23) . ' * * *';
+            $scheduledTask->name = 'Thirty bees data collection task';
+            $scheduledTask->description = 'Sends various information to thirty bees server';
+            $scheduledTask->task = $task;
+            $scheduledTask->active = true;
+            $scheduledTask->add();
+        }
     }
 }
