@@ -19,18 +19,21 @@
 
 namespace Thirtybees\Core\Tracking;
 
+use Adapter_Exception;
+use Context;
 use Db;
 use DbQuery;
 use ObjectModel;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class ConsentCore
  *
  * @since 1.3.0
  */
-class ConsentCore extends ObjectModel
+class ConsentCore extends ObjectModel implements InitializationCallback
 {
     const CONSENT_ALL = "all";
     const PREFIX_GROUP = "group_";
@@ -93,7 +96,7 @@ class ConsentCore extends ObjectModel
      */
     public static function getAllowedExtractors()
     {
-        $consents = static::getConsents();
+        $consents = static::getConsents(Db::getInstance(_PS_USE_SQL_SLAVE_));
         $groups = DataExtractor::getGroups();
         $allowed = [];
         foreach ($groups as $groupId => $group) {
@@ -106,19 +109,19 @@ class ConsentCore extends ObjectModel
         return $allowed;
     }
 
-
-
     /**
      * Return all consents
+     *
+     * @param Db $conn
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getConsents()
+    public static function getConsents(Db $conn)
     {
         $consents = [];
-        $result = Db::getInstance()->executeS((new DbQuery())
+        $result = $conn->executeS((new DbQuery())
             ->select('identifier, consent')
             ->from(static::$definition['table'])
         );
@@ -164,5 +167,46 @@ class ConsentCore extends ObjectModel
     protected static function hasConsent($key, $consents)
     {
         return array_key_exists($key, $consents) && !!$consents[$key];
+    }
+
+    /**
+     * Callback method to initialize class
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $consents = static::getConsents($conn);
+        $groups = DataExtractor::getGroups();
+        static::ensureConsentExists(static::CONSENT_ALL, $consents);
+        foreach ($groups as $groupId => $group) {
+            static::ensureConsentExists(static::PREFIX_GROUP . $groupId, $consents);
+            foreach ($group['extractors'] as $extractorId) {
+                static::ensureConsentExists(static::PREFIX_EXTRACTOR . $extractorId, $consents);
+            }
+        }
+    }
+
+    /**
+     * Ensures that consent with identifier $key exists in database
+     *
+     * @param string $key
+     * @param array $consents
+     *
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
+     */
+    protected static function ensureConsentExists($key, $consents)
+    {
+        if (! array_key_exists($key, $consents)) {
+            $consent = new static();
+            $consent->id_employee = Context::getContext()->employee->id;
+            $consent->identifier = $key;
+            $consent->consent = true;
+            $consent->add();
+        }
     }
 }
