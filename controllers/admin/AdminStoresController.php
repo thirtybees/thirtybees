@@ -596,7 +596,7 @@ class AdminStoresControllerCore extends AdminController
             for ($i = 1; $i < 8; $i++) {
                 $_POST['hours'][] .= Tools::getValue('hours_'.(int) $i);
             }
-            $_POST['hours'] = json_encode($_POST['hours']);
+            $_POST['hours'] = json_encode($_POST['hours'], JSON_UNESCAPED_UNICODE);
         }
 
         if (!count($this->errors)) {
