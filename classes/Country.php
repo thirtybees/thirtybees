@@ -126,8 +126,8 @@ class CountryCore extends ObjectModel
             (new DbQuery())
                 ->select('*')
                 ->from('country', 'c')
-                ->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country` AND cs.`id_shop` = '.(int) $idShop.' AND cs.`id_lang` = '.(int) $idLang)
-                ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`')
+                ->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country` AND cs.`id_shop` = '.(int) $idShop)
+                ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country` AND cl.`id_lang` = '.(int) $idLang)
         );
     }
 
