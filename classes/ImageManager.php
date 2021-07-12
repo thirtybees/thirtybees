@@ -394,7 +394,7 @@ class ImageManagerCore
         }
 
         if ($psWebpQuality === null) {
-            $psWebpQuality = Configuration::get('PS_WEBP_QUALITY');
+            $psWebpQuality = Configuration::get('TB_WEBP_QUALITY');
         }
 
         switch ($type) {
