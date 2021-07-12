@@ -542,6 +542,8 @@ $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCurrenciesController.ph
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCurrenciesController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomCodeController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomCodeController.php');
+$kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomerMergeController.php');
+$kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomerMergeController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomerPreferencesController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomerPreferencesController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomersController.php');

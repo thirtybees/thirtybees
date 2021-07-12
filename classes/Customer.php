@@ -86,6 +86,23 @@ class CustomerCore extends ObjectModel
             ],
         ],
     ];
+
+    const DEFAULT_MERGE_OPERATIONS = [
+        'customer' => 'delete',
+        'address' => 'update',
+        'cart' => 'update',
+        'customer_thread' => 'update',
+        'guest' => 'update',
+        'message' => 'update',
+        'order_return' => 'update',
+        'order_slip' => 'update',
+        'orders' => 'update',
+        'specific_price' => 'update',
+        'cart_rule' => 'delete',
+        'compare' => 'delete',
+        'customer_group' => 'delete'
+    ];
+
     protected static $_defaultGroupId = [];
     protected static $_customerHasAddress = [];
     protected static $_customer_groups = [];
@@ -1381,5 +1398,47 @@ class CustomerCore extends ObjectModel
         $sqlFilter .= Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'main');
 
         return parent::getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit);
+    }
+
+    /**
+     * Methods merges two customer accounts, and deletes the $other account from the database
+     *
+     * @param Customer $target
+     * @param Customer $source
+     * @param array $tablesOperations
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function mergeAccounts(Customer $target, Customer $source, array $tablesOperations)
+    {
+        $targetId = (int)$target->id;
+        $sourceId = (int)$source->id;
+        if (! $targetId) {
+            throw new PrestaShopException('Merge failed: invalid target customer id');
+        }
+        if (! $sourceId) {
+            throw new PrestaShopException('Merge failed: invalid source customer id');
+        }
+
+        $tables = array_merge(static::DEFAULT_MERGE_OPERATIONS, $tablesOperations);
+
+        $conn = Db::getInstance();
+
+
+        // re-associate data
+        unset($tables['customer']);
+        foreach ($tables as $table => $operation) {
+            if ($operation === 'update') {
+                $conn->update($table, ['id_customer' => $targetId], 'id_customer = ' . $sourceId);
+            } elseif ($operation === 'delete') {
+                $conn->delete($table, 'id_customer = ' . $sourceId);
+            } elseif (is_callable($operation)) {
+                call_user_func($operation);
+            }
+        }
+
+        // delete source customer
+        $source->delete();
+
     }
 }

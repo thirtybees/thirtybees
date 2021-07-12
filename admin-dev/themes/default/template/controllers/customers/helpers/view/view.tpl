@@ -26,6 +26,66 @@
 {extends file="helpers/view/view.tpl"}
 
 {block name="override_tpl"}
+
+<script type="text/javascript">
+    var customerId = {$customer->id};
+	$(document).ready(function() {
+		$('#customer-search').typeWatch({
+			captureLength: 1,
+			highlight: true,
+			wait: 750,
+			callback: searchCustomers
+		});
+	});
+
+	function searchCustomers()
+	{
+		$.ajax({
+			type:"POST",
+			url : "{$link->getAdminLink('AdminCustomers')}",
+			async: true,
+			dataType: "json",
+			data : {
+				ajax: "1",
+				tab: "AdminCustomers",
+				action: "searchCustomers",
+				customer_search: $('#customer-search').val()
+			},
+			success : function(res)
+			{
+				if(res.found)
+				{
+					var html = '';
+					$.each(res.customers, function() {
+						if (this.id_customer != customerId) {
+							html += '<div class="customerCard col-lg-4">';
+							html += '<div class="panel">';
+							html += '<div class="panel-heading">' + this.firstname + ' ' + this.lastname;
+							html += '<span class="pull-right">#' + this.id_customer + '</span></div>';
+							html += '<span>' + this.email + '</span><br/>';
+							html += '<span class="text-muted">' + ((this.birthday != '0000-00-00') ? this.birthday : '') + '</span><br/>';
+							html += '<div class="panel-footer">';
+							html += '<a href="{$link->getAdminLink('AdminCustomers')}&id_customer=' + this.id_customer + '&viewcustomer&liteDisplaying=1" class="btn btn-default fancybox"><i class="icon-search"></i> {l s='Details'}</a>&nbsp;';
+							html += '<a href="{$link->getAdminLink('AdminCustomerMerge')}&source_customer_id=' + customerId + '&target_customer_id=' + this.id_customer + '" class="btn btn-default"><i class="icon-arrow-right"></i> {l s='Merge into'}</a>';
+							html += '</div>';
+							html += '</div>';
+							html += '</div>';
+						}
+					});
+				} else  {
+					html = '<div class="alert alert-warning">{l s='No customers found'}</div>';
+				}
+				$('#customers').html(html);
+				$('.fancybox').fancybox({
+					'type': 'iframe',
+					'width': '90%',
+					'height': '90%',
+				});
+			}
+		});
+	}
+</script>
+
 <div id="container-customer">
 	<div class="row">
 		{*left*}
@@ -546,6 +606,35 @@
 					</tbody>
 				</table>
 				{/if}
+			</div>
+			{* Customer merge functionality *}
+			<div class="panel">
+				<div class="panel-heading">
+					<i class="icon-circle-arrow-right"></i>
+					{l s='Merge with another customer account'}
+				</div>
+				<div>
+					<div class="alert alert-info">
+                        {l s="Merge this customer with another customer account. All orders and data will be associated with the other customer account, and this one will be removed"}
+					</div>
+					<div id="search-customer-form-group" class="form-group">
+						<label class="control-label col-lg-3">
+							<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='Search for an existing customer by typing the first letters of his/her name.'}">
+								{l s='Search for a customer'}
+							</span>
+						</label>
+							<div class="row">
+								<div class="input-group">
+									<input type="text" id="customer-search" value="" />
+									<span class="input-group-addon"><i class="icon-search"></i></span>
+								</div>
+							</div>
+							<div class="row" style="padding-top:1em">
+								<div id="customers"></div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

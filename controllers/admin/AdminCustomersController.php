@@ -731,6 +731,12 @@ class AdminCustomersControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    public function setMedia()
+    {
+        parent::setMedia();
+        $this->addJqueryPlugin(['typewatch', 'fancybox']);
+    }
+
     /**
      * Before add
      *
