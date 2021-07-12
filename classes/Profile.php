@@ -113,7 +113,7 @@ class ProfileCore extends ObjectModel
      * @param int $idProfile
      * @param int $idTab
      *
-     * @return bool
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -125,7 +125,20 @@ class ProfileCore extends ObjectModel
         // getProfileAccesses is cached so there is no performance leak
         $accesses = Profile::getProfileAccesses($idProfile);
 
-        return (isset($accesses[$idTab]) ? $accesses[$idTab] : false);
+        if (isset($accesses[$idTab])) {
+            return $accesses[$idTab];
+        }
+
+        $perm = ($idProfile == _PS_ADMIN_PROFILE_) ? '1' : '0';
+        return [
+            'id_profile' => $idProfile,
+            'id_tab'     => $idTab,
+            'class_name' => '',
+            'view'       => $perm,
+            'add'        => $perm,
+            'edit'       => $perm,
+            'delete'     => $perm,
+        ];
     }
 
     /**
