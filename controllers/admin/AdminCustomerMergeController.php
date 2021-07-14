@@ -17,12 +17,14 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use \Thirtybees\Core\InitializationCallback;
+
 /**
  * Class AdminCustomerMergeControllerCore
  *
  * @since 1.3.0
  */
-class AdminCustomerMergeControllerCore extends AdminController
+class AdminCustomerMergeControllerCore extends AdminController implements InitializationCallback
 {
     /**
      * AdminMaintenanceControllerCore constructor.
@@ -269,5 +271,26 @@ class AdminCustomerMergeControllerCore extends AdminController
             return $customer;
         }
         return null;
+    }
+
+
+    /**
+     * Callback method to initialize class
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $classname = 'AdminCustomerMerge';
+        $tabId = Tab::getIdFromClassName($classname);
+        if (! $tabId) {
+            $tab = new Tab();
+            $tab->class_name = $classname;
+            $tab->id_parent = -1;
+            $tab->add();
+        }
     }
 }
