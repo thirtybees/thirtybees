@@ -103,6 +103,7 @@ UNOVERRIDABLES+=('classes/tree/ITreeToolbar.php')
 UNOVERRIDABLES+=('classes/webservice/WebserviceOutputInterface.php')
 UNOVERRIDABLES+=('classes/webservice/WebserviceSpecificManagementInterface.php')
 UNOVERRIDABLES+=('classes/workqueue/WorkQueueTaskCallable.php')
+UNOVERRIDABLES+=('classes/core/InitializationCallback.php')
 
 # Also classes in Adapter and Core, none of which are overridable.
 while read F; do

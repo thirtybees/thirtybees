@@ -26,6 +26,7 @@ use AspectMock\Test as test;
 
 $kernel = \AspectMock\Kernel::getInstance();
 
+$kernel->loadFile(__DIR__.'/../../classes/core/InitializationCallback.php');
 $kernel->loadFile(__DIR__.'/../../Core/Foundation/Exception/Core_Foundation_Exception_Exception.php');
 $kernel->loadFile(__DIR__.'/../../Core/Foundation/IoC/Core_Foundation_IoC_Exception.php');
 $kernel->loadFile(__DIR__.'/../../Core/Foundation/IoC/Core_Foundation_IoC_Container.php');
