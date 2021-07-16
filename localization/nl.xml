@@ -78,7 +78,7 @@
       <taxRule iso_code_country="gb" id_tax="1" />
       <taxRule iso_code_country="hr" id_tax="2" />
     </taxRulesGroup>
-    <taxRulesGroup name="NL Reduced Rate (6%)">
+    <taxRulesGroup name="NL Reduced Rate (9%)">
       <taxRule iso_code_country="be" id_tax="2" />
       <taxRule iso_code_country="bg" id_tax="2" />
       <taxRule iso_code_country="cz" id_tax="2" />
@@ -108,7 +108,7 @@
       <taxRule iso_code_country="gb" id_tax="2" />
       <taxRule iso_code_country="hr" id_tax="2" />
     </taxRulesGroup>
-    <taxRulesGroup name="NL Foodstuff Rate (6%)">
+    <taxRulesGroup name="NL Foodstuff Rate (9%)">
       <taxRule iso_code_country="be" id_tax="2" />
       <taxRule iso_code_country="bg" id_tax="2" />
       <taxRule iso_code_country="cz" id_tax="2" />
@@ -138,7 +138,7 @@
       <taxRule iso_code_country="gb" id_tax="2" />
       <taxRule iso_code_country="hr" id_tax="2" />
     </taxRulesGroup>
-    <taxRulesGroup name="NL Books Rate (6%)">
+    <taxRulesGroup name="NL Books Rate (9%)">
       <taxRule iso_code_country="be" id_tax="2" />
       <taxRule iso_code_country="bg" id_tax="2" />
       <taxRule iso_code_country="cz" id_tax="2" />
