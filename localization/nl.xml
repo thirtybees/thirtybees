@@ -76,7 +76,7 @@
       <taxRule iso_code_country="fi" id_tax="1" />
       <taxRule iso_code_country="se" id_tax="1" />
       <taxRule iso_code_country="gb" id_tax="1" />
-      <taxRule iso_code_country="hr" id_tax="2" />
+      <taxRule iso_code_country="hr" id_tax="1" />
     </taxRulesGroup>
     <taxRulesGroup name="NL Reduced Rate (9%)">
       <taxRule iso_code_country="be" id_tax="2" />
