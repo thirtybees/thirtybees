@@ -2055,7 +2055,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             foreach ($row as $key => $value) {
-                if (array_key_exists($key, $this)) {
+                if (property_exists($this, $key)) {
                     if (!empty($this->def['fields'][$key]['lang']) && !empty($row['id_lang'])) {
                         // Multilang
                         if (!is_array($this->$key)) {
@@ -2064,7 +2064,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         $this->$key[(int) $row['id_lang']] = $value;
                     } else {
                         // Normal
-                        if (array_key_exists($key, $this)) {
+                        if (property_exists($this, $key)) {
                             $this->$key = $value;
                         }
                     }
