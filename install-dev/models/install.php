@@ -29,6 +29,10 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use CoreUpdater\CodeCallback;
+use CoreUpdater\DatabaseCharset;
+use CoreUpdater\ObjectModelSchemaBuilder;
+
 /**
  * Class InstallModelInstall
  *
@@ -220,9 +224,9 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // Install database structure
-        require_once(_PS_MODULE_DIR_ . '/coreupdater/classes/schema/autoload.php');
-        \CoreUpdater\DatabaseCharset::loadCharsets($conn);
-        $schemaBuilder = new \CoreUpdater\ObjectModelSchemaBuilder();
+        static::loadCoreUpdater();
+        DatabaseCharset::loadCharsets($conn);
+        $schemaBuilder = new ObjectModelSchemaBuilder();
         try {
             $schema = $schemaBuilder->getSchema();
             foreach ($schema->getTables() as $table) {
@@ -913,6 +917,27 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
+     * PROCESS : initializeClasses
+     *
+     * Executes initialization callbacks on all classes that implements the interface
+     *
+     * @return bool
+     */
+    public function initializeClasses()
+    {
+        static::loadCoreUpdater();
+        try {
+            $callback = new CodeCallback();
+            $callback->execute(Db::getInstance());
+            return true;
+        } catch (Exception $e) {
+            $this->setError($this->language->l('Failed to initialize classes: %s', $e->getMessage()));
+            return false;
+
+        }
+    }
+
+    /**
      * PROCESS : installTheme
      * Install theme
      *
@@ -974,5 +999,18 @@ class InstallModelInstall extends InstallAbstractModel
         }
         // fallback - use Blowfish php implementation
         return 0;
+    }
+
+    /**
+     * Includes core updater classes
+     */
+    protected static function loadCoreUpdater()
+    {
+        $dir = _PS_MODULE_DIR_ . 'coreupdater/';
+        if (! file_exists($dir)) {
+            throw new RuntimeException('Core updater is not part of the installation package!');
+        }
+        require_once($dir . 'classes/schema/autoload.php');
+        require_once($dir . 'classes/CodeCallback.php');
     }
 }

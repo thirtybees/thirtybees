@@ -102,6 +102,8 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->processConfigureShop();
         } elseif (Tools::getValue('installFixtures') && !empty($this->session->processValidated['configureShop'])) {
             $this->processInstallFixtures();
+        } elseif (Tools::getValue('initializeClasses') && !empty($this->session->processValidated['configureShop'])) {
+            $this->processInitializeClasses();
         } elseif (Tools::getValue('installModules') && (!empty($this->session->processValidated['installFixtures']) || $this->session->installType != 'full')) {
             unset($_SESSION['xmlLoaderIds']);
             $this->processInstallModules();
@@ -274,6 +276,24 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     }
 
     /**
+     * PROCESS : initializeClasses
+     * Executes initialization callbacks on all classes that implements the interface
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     */
+    public function processInitializeClasses()
+    {
+        $this->initializeContext();
+        if ($this->modelInstall->initializeClasses()) {
+            $this->session->processValidated = array_merge($this->session->processValidated, ['initializeClasses' => true]);
+            $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
+        } else {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
+        }
+    }
+
+    /**
      * PROCESS : installModules
      * Install all modules in ~/modules/ directory
      *
@@ -362,6 +382,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
                 $fixturesStep['subtasks'][] = ['entity' => $entity];
             }
             $this->processSteps[] = $fixturesStep;
+            $this->processSteps[] = [
+                'key' => 'initializeClasses',
+                'lang' => $this->l('Initialize classes')
+            ];
         }
 
         $installModules = [

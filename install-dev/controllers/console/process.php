@@ -101,6 +101,9 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
             if (!$this->processInstallFixtures()) {
                 $this->printErrors();
             }
+            if (!$this->processInitializeClasses()) {
+                $this->printErrors();
+            }
         }
 
         if (in_array('modules', $steps)) {
@@ -253,6 +256,17 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         $result = $this->modelInstall->installFixtures(null, ['shopActivity' => $this->datas->shopActivity, 'shopCountry' => $this->datas->shopCountry]);
 
         return $result;
+    }
+
+    /**
+     * PROCESS : initializeClasses
+     * Executes initialization callbacks on all classes that implements the interface
+     */
+    public function processInitializeClasses()
+    {
+        $this->initializeContext();
+
+        return $this->modelInstall->initializeClasses();
     }
 
     /**
