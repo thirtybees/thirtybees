@@ -3984,7 +3984,8 @@ class AdminImportControllerCore extends AdminController
                             );
                         }
                         if ($fieldError !== true || $langFieldError !== true) {
-                            $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').mysql_error();
+                            $errorMessage = Db::getInstance()->getMsgError();
+                            $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').$errorMessage;
                         }
                     }
                 }
