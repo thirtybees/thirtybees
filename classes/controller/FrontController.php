@@ -1532,8 +1532,12 @@ class FrontControllerCore extends Controller
             $this->context->cookie->id_cart = (int) $idCart;
         }
 
-        if ($this->auth && !$this->context->customer->isLogged($this->guestAllowed)) {
-            Tools::redirect('index.php?controller=authentication'.($this->authRedirection ? '&back='.$this->authRedirection : ''));
+        // Redirect to authentication page if user is not signed in, and is not already trying to access the authentication page.
+        if ($this->auth
+            && !$this->context->customer->isLogged($this->guestAllowed)
+            && $this->context->controller->php_self !== 'authentication'
+        ) {
+            Tools::redirect('index.php?controller=authentication' . ($this->authRedirection ? '&back=' . $this->authRedirection : ''));
         }
 
         /* Theme is missing */
