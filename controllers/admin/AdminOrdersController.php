@@ -2348,6 +2348,26 @@ class AdminOrdersControllerCore extends AdminController
             $order->{Configuration::get('PS_TAX_ADDRESS_TYPE', null, null, $order->id_shop)}
         );
 
+
+        // Add product to cart
+        $updateQuantity = $cart->updateQty(
+            $productInformations['product_quantity'],
+            $product->id,
+            isset($productInformations['product_attribute_id']) ? $productInformations['product_attribute_id'] : null,
+            isset($combination) ? $combination->id : null,
+            'up',
+            0,
+            new Shop($cart->id_shop)
+        );
+
+        if ($updateQuantity < 0) {
+            // If product has attribute, minimal quantity is set with minimal quantity of attribute
+            $minimalQuantity = ($productInformations['product_attribute_id']) ? Attribute::getAttributeMinimalQty($productInformations['product_attribute_id']) : $product->minimal_quantity;
+            $this->ajaxDie(json_encode(['error' => sprintf(Tools::displayError('You must add %d minimum quantity', false), $minimalQuantity)]));
+        } elseif (!$updateQuantity) {
+            $this->ajaxDie(json_encode(['error' => Tools::displayError('You already have the maximum quantity available for this product.', false)]));
+        }
+
         // Creating specific price if needed
         if ((string) $productInformations['product_price_tax_incl']
             !== (string) $initialProductPriceTaxIncl) {
@@ -2373,25 +2393,6 @@ class AdminOrdersControllerCore extends AdminController
             $specificPrice->from = '0000-00-00 00:00:00';
             $specificPrice->to = '0000-00-00 00:00:00';
             $specificPrice->add();
-        }
-
-        // Add product to cart
-        $updateQuantity = $cart->updateQty(
-            $productInformations['product_quantity'],
-            $product->id,
-            isset($productInformations['product_attribute_id']) ? $productInformations['product_attribute_id'] : null,
-            isset($combination) ? $combination->id : null,
-            'up',
-            0,
-            new Shop($cart->id_shop)
-        );
-
-        if ($updateQuantity < 0) {
-            // If product has attribute, minimal quantity is set with minimal quantity of attribute
-            $minimalQuantity = ($productInformations['product_attribute_id']) ? Attribute::getAttributeMinimalQty($productInformations['product_attribute_id']) : $product->minimal_quantity;
-            $this->ajaxDie(json_encode(['error' => sprintf(Tools::displayError('You must add %d minimum quantity', false), $minimalQuantity)]));
-        } elseif (!$updateQuantity) {
-            $this->ajaxDie(json_encode(['error' => Tools::displayError('You already have the maximum quantity available for this product.', false)]));
         }
 
         // If order is valid, we can create a new invoice or edit an existing invoice
