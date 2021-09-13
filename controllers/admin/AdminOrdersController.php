@@ -2352,6 +2352,7 @@ class AdminOrdersControllerCore extends AdminController
         if ((string) $productInformations['product_price_tax_incl']
             !== (string) $initialProductPriceTaxIncl) {
             $specificPrice = new SpecificPrice();
+            $specificPrice->id_cart = $cart->id;
             $specificPrice->id_shop = 0;
             $specificPrice->id_shop_group = 0;
             $specificPrice->id_currency = 0;
