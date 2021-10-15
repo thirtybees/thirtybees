@@ -85,7 +85,7 @@ class MailCore extends ObjectModel
      * @param string $from           From email
      * @param string $fromName       To email
      * @param array  $fileAttachment Array with three parameters (content, mime and name). You can use an array of array to attach multiple files
-     * @param bool   $mode_smtp      SMTP mode (deprecated)
+     * @param bool   $modeSmtp       SMTP mode (deprecated)
      * @param string $templatePath   Template path
      * @param bool   $die            Die after error
      * @param int    $idShop         Shop ID
@@ -94,6 +94,7 @@ class MailCore extends ObjectModel
      *
      * @return bool|int Whether sending was successful. If not at all, false, otherwise amount of recipients succeeded.
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function Send(
         $idLang,
@@ -580,12 +581,13 @@ class MailCore extends ObjectModel
     /**
      * Format email subject using email subject template
      *
-     * @param $subject Unformatted email subject
+     * @param string $subject email subject
      *
      * @return string
      *
      * @since   1.0.8
      * @version 1.0.8 Initial version
+     * @throws PrestaShopException
      */
     protected static function formatSubject($subject)
     {
@@ -618,6 +620,7 @@ class MailCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function eraseLog($idMail)
     {
@@ -655,8 +658,9 @@ class MailCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
-    public static function sendMailTest($smtpChecked, $smtpServer, $content, $subject, $type, $to, $from, $smtpLogin, $smtpPassword, $smtpPort = 25, $smtpEncryption)
+    public static function sendMailTest($smtpChecked, $smtpServer, $content, $subject, $type, $to, $from, $smtpLogin, $smtpPassword, $smtpPort = 25, $smtpEncryption = 'off')
     {
         $result = false;
         try {
@@ -697,6 +701,8 @@ class MailCore extends ObjectModel
      *
      * @param string $string raw sentence (write directly in file)
      *
+     * @param null $idLang
+     * @param Context|null $context
      * @return mixed
      *
      * @since   1.0.0
@@ -745,6 +751,9 @@ class MailCore extends ObjectModel
      * @param string $baseTemplatePath base template path
      *
      * @return string | null
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.1.0
      */
     protected static function getTemplatePath($template, $suffix, $iso, Shop $shop, $baseTemplatePath)
@@ -788,6 +797,9 @@ class MailCore extends ObjectModel
      * @param string $suffix template suffix
      * @param string $iso language iso code
      * @param string[] $paths searched paths
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private static function logMissingTemplate($template, $suffix, $iso, $paths)
     {
@@ -828,21 +840,23 @@ class MailCore extends ObjectModel
      * the script.
      *
      * @param string $message Error message to be logged.
-     * @param bool   $die     Wether to die instead of returning.
+     * @param bool $die Whether to die instead of returning.
      *
      * @return false This method always, if it returns, returns false.
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.7
      * @version 1.0.7 Initial version
-     * @throws PrestaShopException
      */
     private static function logError($message, $die)
     {
-      Logger::addLog($message, 3);
-      if ($die) {
-        die($message);
-      } else {
-        return false;
-      }
+        Logger::addLog($message, 3);
+        if ($die) {
+            die($message);
+        } else {
+            return false;
+        }
     }
 }

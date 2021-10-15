@@ -139,6 +139,7 @@ unset OVERRIDE
 while read OVERRIDE; do
   [ "${OVERRIDE##*/}" = 'index.php' ] && continue
   [ "${OVERRIDE##*/}" = '.htaccess' ] && continue
+  [ "${OVERRIDE##*/}" = 'Logger.php' ] && continue
 
   NEEDED='false'
   S="${OVERRIDE#*/}"
