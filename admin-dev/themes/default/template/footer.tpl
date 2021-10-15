@@ -45,9 +45,6 @@
 			<a class="link-social link-github _blank" href="https://github.com/thirtybees" title="Github">
 				<i class="icon-github"></i>
 			</a>
-			<a class="link-social link-google _blank" href="https://plus.google.com/+thirtybees/" title="Google">
-				<i class="icon-google-plus"></i>
-			</a>
 			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
 				<i class="icon-reddit"></i>
 			</a>
@@ -60,7 +57,7 @@
 				{l s='Contact'}
 			</a>
 			/&nbsp;
-			<a href="https://forum.thirtybees.com/category/10/bug-reports/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
+			<a href="https://github.com/thirtybees/thirtybees/issues" class="footer_link _blank">
 				<i class="icon-bug"></i>
 				{l s='Bug Tracker'}
 			</a>
