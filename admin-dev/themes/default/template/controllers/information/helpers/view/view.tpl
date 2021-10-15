@@ -154,10 +154,19 @@
 					{l s='Store information'}
 				</h3>
 				<p>
-					<strong>{l s='thirty bees version:'}</strong> {$shop.ps|escape:'html':'UTF-8'}
+					<strong>{l s='thirty bees version:'}</strong> {$shop.version|escape:'html':'UTF-8'}
 				</p>
 				<p>
-					<strong>{l s='Shop URL:'}</strong> {$shop.url|escape:'html':'UTF-8'}
+					<strong>{l s='thirty bees revision:'}</strong>
+					<a target="_blank" href="https://github.com/thirtybees/thirtybees{if $shop.revision != 'development'}/tree/{$shop.revision}{/if}">
+						{$shop.revision|escape:'html':'UTF-8'}
+					</a>
+				</p>
+				<p>
+					<strong>{l s='Shop URL:'}</strong>
+					<a target="_blank" href="{$shop.url}">
+						{$shop.url|escape:'html':'UTF-8'}
+					</a>
 				</p>
 				<p>
 					<strong>{l s='Current theme in use:'}</strong> {$shop.theme|escape:'html':'UTF-8'}

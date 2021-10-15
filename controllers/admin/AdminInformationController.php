@@ -118,9 +118,10 @@ class AdminInformationControllerCore extends AdminController
             'uname'           => function_exists('php_uname') ? php_uname('s').' '.php_uname('v').' '.php_uname('m') : '',
             'apache_instaweb' => Tools::apacheModExists('mod_instaweb'),
             'shop'            => [
-                'ps'    => _TB_VERSION_,
-                'url'   => $this->context->shop->getBaseURL(),
-                'theme' => $this->context->shop->theme_name,
+                'version'  => _TB_VERSION_,
+                'revision' => _TB_REVISION_,
+                'url'      => $this->context->shop->getBaseURL(),
+                'theme'    => $this->context->shop->theme_name,
             ],
             'mail'            => Configuration::get('PS_MAIL_METHOD') == 1,
             'smtp'            => [
