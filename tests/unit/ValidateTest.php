@@ -28,6 +28,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isEmailDataProvider()
     {
         return [
+            [false,  null],
             [true,  'john.doe@prestashop.com'],
             [true,  'john.doe+alias@prestshop.com'],
             [true,  'john.doe+alias@pr.e.sta.shop.com'],

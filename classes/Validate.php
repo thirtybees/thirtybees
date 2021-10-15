@@ -91,6 +91,9 @@ class ValidateCore
      */
     public static function isEmail($email)
     {
+        if (! $email) {
+            return false;
+        }
         // Convert to IDN first if necessary
         if (mb_detect_encoding($email, 'UTF-8', true) && mb_strpos($email, '@') > -1) {
             // Convert to IDN

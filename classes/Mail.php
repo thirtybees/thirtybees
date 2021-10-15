@@ -229,11 +229,12 @@ class MailCore extends ObjectModel
                     $bcc = [ $bcc ];
                 }
                 // Add additional bcc addresses to $bcc.
-                array_push($bcc, array_values($bccMails));
+                $bcc = array_merge($bcc, $bccMails);
             }
         }
 
         if (is_array($bcc)) {
+            $bcc = array_unique($bcc);
             foreach ($bcc as &$address) {
                 $address = Tools::convertEmailToIdn($address);
             }
