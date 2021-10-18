@@ -3,12 +3,13 @@
   <fields id="name" class="AttributeGroup">
     <field name="is_color_group"/>
     <field name="group_type"/>
+    <field name="position" />
   </fields>
   <entities>
-    <attribute_group id="Flavor" is_color_group="0" group_type="select"/>
-    <attribute_group id="Product" is_color_group="0" group_type="select"/>
-    <attribute_group id="Color" is_color_group="1" group_type="color"/>
-    <attribute_group id="Size" is_color_group="0" group_type="select"/>
-    <attribute_group id="Scent" is_color_group="0" group_type="select"/>
+    <attribute_group id="Flavor" is_color_group="0" group_type="select" position="1"/>
+    <attribute_group id="Product" is_color_group="0" group_type="select" position="2"/>
+    <attribute_group id="Color" is_color_group="1" group_type="color" position="3"/>
+    <attribute_group id="Size" is_color_group="0" group_type="select" position="4"/>
+    <attribute_group id="Scent" is_color_group="0" group_type="select" position="5"/>
   </entities>
 </entity_attribute_group>
