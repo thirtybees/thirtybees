@@ -1,5 +1,4 @@
 # thirty bees
-[![Build Status](https://travis-ci.org/thirtybees/thirtybees.svg?branch=master)](https://travis-ci.org/thirtybees/thirtybees)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/thirty-bees/localized.svg)](https://crowdin.com/project/thirty-bees)
 [![Forum](https://img.shields.io/badge/forum-thirty%20bees-brightgreen.svg)](https://forum.thirtybees.com/discover/)
 
@@ -14,8 +13,6 @@ thirty bees is commited to being free and open source. We are also committed to 
 ## Roadmap
 
 - Remove really old code. Like retrocompatibility code for PS 1.4 and older.
-- Allow Core Updater to update to latest changes in the Github repository. Then one will be able to update a shop minutes after a bug got fixed.
-- Extend Core Updater to also upgrade the database. This will bring additional reliability to the shop database as well.
 - Remove pointless configuration switches in back office. Quite a number of them are outdated or useless, just distracting merchants and slowing down operations.
   - Support for multiple encryption algorithms. One reliable encryption is entirely sufficient.
   - Support for mixed HTTP/HTTPS sites. This was a good idea in 2005, but triggers browser warnings today.
@@ -23,7 +20,6 @@ thirty bees is commited to being free and open source. We are also committed to 
 - Package management for JavaScript and CSS vendor packages as well.
 - Bring all modules provided by thirty bees to the standards level of default modules.
 - Bootstrap 4 for back office.
-- Goal for thirty bees 1.2.0: [**Zero Known Bugs**](https://github.com/thirtybees/thirtybees/issues?q=is%3Aissue+is%3Aopen+label%3ABug).
 
 ## Requirements
 Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
