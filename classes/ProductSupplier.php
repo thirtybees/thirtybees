@@ -220,11 +220,15 @@ class ProductSupplierCore extends ObjectModel
                 ->where('id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute)
                 ->where('id_supplier = '.(int) $idSupplier)
         );
-        if ($convertedPrice) {
-            return Tools::convertPrice($row['price_te'], $row['id_currency']);
+        if ($row && isset($row['price_te'])) {
+            if ($convertedPrice) {
+                return Tools::convertPrice($row['price_te'], $row['id_currency']);
+            }
+
+            return $row['price_te'];
         }
 
-        return $row['price_te'];
+        return false;
     }
 
     /**
