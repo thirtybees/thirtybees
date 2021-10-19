@@ -1433,7 +1433,7 @@ class CustomerCore extends ObjectModel
             } elseif ($operation === 'delete') {
                 $conn->delete($table, 'id_customer = ' . $sourceId);
             } elseif (is_callable($operation)) {
-                call_user_func($operation);
+                call_user_func($operation, $sourceId, $targetId);
             }
         }
 

@@ -45,8 +45,10 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
         $modulesTables = [];
         $otherTables = [];
 
+        $modulesManaged = $this->getModuleManagedTables();
+
         foreach ($tables as $table) {
-            $operation = $this->getOperation($table);
+            $operation = $this->getOperation($table, $modulesManaged);
             if (array_key_exists($table, Customer::DEFAULT_MERGE_OPERATIONS)) {
                 $coreTables[$table] = [
                     'title' => _DB_PREFIX_ . $table,
@@ -67,7 +69,30 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
                         ]
                     ]
                 ];
-            } elseif (isset($operations[$table])) {
+            } elseif (array_key_exists($table, $modulesManaged)) {
+                $modulesTables[$table] = [
+                    'title' => _DB_PREFIX_ . $table,
+                    'no_multishop_checkbox' => true,
+                    'type' => 'select',
+                    'identifier' => 'id',
+                    'auto_value' => false,
+                    'value' => $operation,
+                    'disabled' => true,
+                    'list' => [
+                        [
+                            'id' => 'update',
+                            'name' => $this->l('Update')
+                        ],
+                        [
+                            'id' => 'delete',
+                            'name' => $this->l('Delete')
+                        ],
+                        [
+                            'id' => 'callable',
+                            'name' => $this->l('Custom code handler')
+                        ]
+                    ]
+                ];
             } else {
                 $otherTables[$table] = [
                     'title' => _DB_PREFIX_ . $table,
@@ -163,14 +188,21 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
         if (Tools::isSubmit('submitMerge')) {
             $tables = $this->getTables();
             $options = [];
+            $managedTables = array_merge(Customer::DEFAULT_MERGE_OPERATIONS, $this->getModuleManagedTables());
             foreach ($tables as $table) {
                 $operation = Tools::getValue($table);
                 if (! $operation) {
                     $this->errors[] = sprintf($this->l('Please select merge mode for table %s'), $table);
                 }
-                if (! array_key_exists($table, Customer::DEFAULT_MERGE_OPERATIONS)) {
+
+                if (! array_key_exists($table, $managedTables)) {
                     Configuration::updateGlobalValue('CUSTOMER_MERGE_' . strtoupper($table), $operation);
                 }
+
+                if ($operation === 'callable') {
+                    $operation = $managedTables[$table];
+                }
+
                 $options[$table] = $operation;
             }
 
@@ -208,9 +240,10 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
      * Resolves merge operation
      *
      * @param string $table
+     * @param array $defaults
      * @return string
      */
-    protected function getOperation($table)
+    protected function getOperation($table, $defaults)
     {
         $operation = Tools::getValue($table);
         if ($operation) {
@@ -220,6 +253,14 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
         $operation = Configuration::getGlobalValue('CUSTOMER_MERGE_' . strtoupper($table));
         if ($operation) {
             return $operation;
+        }
+
+        if (array_key_exists($table, $defaults)) {
+            $value = $defaults[$table];
+            if (is_callable($value)) {
+                return 'callable';
+            }
+            return $value;
         }
 
         if (array_key_exists($table, Customer::DEFAULT_MERGE_OPERATIONS)) {
@@ -292,5 +333,21 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
             $tab->id_parent = -1;
             $tab->add();
         }
+    }
+
+    /**
+     * @return array
+     * @throws PrestaShopException
+     */
+    public function getModuleManagedTables()
+    {
+        $modulesManaged = [];
+        $modules = Hook::exec('actionCustomerMergeStrategy', [], null, true);
+        if ($modules) {
+            foreach ($modules as $definitions) {
+                $modulesManaged = array_merge($modulesManaged, $definitions);
+            }
+        }
+        return $modulesManaged;
     }
 }
