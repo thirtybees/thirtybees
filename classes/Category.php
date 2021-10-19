@@ -2146,15 +2146,35 @@ class CategoryCore extends ObjectModel
      */
     public function getName($idLang = null)
     {
+        if (is_array($this->name)) {
+            // object was loaded with all language context
+            $nameArray = $this->name;
+        } else {
+            // object was loaded in single language context, we need to load all languages
+            $connection = $name = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $nameArray = [];
+            $rows = $connection->executeS((new DbQuery())
+                ->select('id_lang, name')
+                ->from('category_lang')
+                ->where('id_category = ' . (int)$this->id)
+                ->where(Shop::getSqlRestriction())
+            );
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $nameArray[(int)$row['id_lang']] = $row['name'];
+                }
+            }
+        }
+
         if (!$idLang) {
-            if (isset($this->name[Context::getContext()->language->id])) {
+            if (isset($nameArray[Context::getContext()->language->id])) {
                 $idLang = Context::getContext()->language->id;
             } else {
                 $idLang = (int) Configuration::get('PS_LANG_DEFAULT');
             }
         }
 
-        return isset($this->name[$idLang]) ? $this->name[$idLang] : '';
+        return isset($nameArray[$idLang]) ? $nameArray[$idLang] : '';
     }
 
     /**
