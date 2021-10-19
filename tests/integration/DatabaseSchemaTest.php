@@ -100,6 +100,7 @@ class DatabaseSchemaTest extends \Codeception\Test\Unit
                 'tbhtmlblock',
                 'tbhtmlblock_hook',
                 'tbhtmlblock_lang',
+                'coreupdater_cache',
             ]
         ]);
 
