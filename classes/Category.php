@@ -2150,8 +2150,21 @@ class CategoryCore extends ObjectModel
             // object was loaded with all language context
             $nameArray = $this->name;
         } else {
-            // object was loaded in single language context, we need to load all languages
-            $connection = $name = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            // object was loaded in single language context
+
+            // if object was loaded for requested language, we can return name directly
+            if ($idLang && $this->id_lang == $idLang) {
+                return $this->name;
+            }
+            if (!$idLang && $this->id_lang == Context::getContext()->language->id) {
+                return $this->name;
+            }
+            if (!$idLang && $this->id_lang == Configuration::get('PS_LANG_DEFAULT')) {
+                return $this->name;
+            }
+
+            // object was loaded in different language context than requested, we need to load names from db
+            $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
             $nameArray = [];
             $rows = $connection->executeS((new DbQuery())
                 ->select('id_lang, name')
