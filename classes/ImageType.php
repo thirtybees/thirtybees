@@ -174,24 +174,41 @@ class ImageTypeCore extends ObjectModel
      */
     public static function typeAlreadyExists($typeName)
     {
-        static $typeNameCache = false;
+        $typeNameCache = static::getIndexedImageTypeNames();
+        return isset($typeNameCache[$typeName]);
+    }
 
-        if ( ! $typeNameCache) {
-            $typeNameCache = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+    /**
+     * Return indexed list of image type names
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getIndexedImageTypeNames()
+    {
+        static $typeNameCache = false;
+        if ($typeNameCache === false) {
+            $typeNameCache = [];
+            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                     ->select('`name`')
                     ->from('image_type')
             );
-            $typeNameCache = array_flip(array_column($typeNameCache, 'name'));
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    $name = $row['name'];
+                    $typeNameCache[$name] = $name;
+                }
+            }
         }
-
-        return isset($typeNameCache[$typeName]);
+        return $typeNameCache;
     }
 
     /**
      * Find an existing variant of a specific image type.
      *
-     * @param string $name
+     * @param string $name image type name
      *
      * @return string
      *
@@ -201,30 +218,105 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getFormatedName($name)
     {
-        $themeName = Context::getContext()->shop->theme_name;
-        $nameWithoutTheme = str_replace(
-            ['_'.$themeName, $themeName.'_'],
-            '',
-            $name
-        );
-
-        if (static::typeAlreadyExists($themeName.'_'.$nameWithoutTheme)) {
-            return $themeName.'_'.$nameWithoutTheme;
-        } elseif ($themeName
-            && strpos($name, $themeName) !== false
-            && static::typeAlreadyExists($name)) {
+        if (! $name) {
             return $name;
-        // These last two are for retrocompatibility.
-        } elseif (static::typeAlreadyExists($nameWithoutTheme.'_'.$themeName)) {
-            return $nameWithoutTheme.'_'.$themeName;
-        } elseif (static::typeAlreadyExists($nameWithoutTheme.'_default')) {
-            return $nameWithoutTheme.'_default';
+        }
+        $themeName = '';
+        $themeDir = '';
+        $theme = Context::getContext()->theme;
+        if (Validate::isLoadedObject($theme)) {
+            $themeName = $theme->name;
+            $themeDir = $theme->directory;
+        }
+        return static::resolveImageTypeName($name, $themeName, $themeDir, static::getIndexedImageTypeNames());
+    }
+
+    /**
+     * Helper method to resolve image type name to canonical version. If this method fails to
+     * resolve image type, input $name value is returned
+     *
+     * For example:
+     *     Niara_cart -> Niara_cart
+     *     Niara_cart_default -> Niara_cart
+     *     cart -> Niara_cart
+     *     cart_default -> Niara_cart
+     *     non-existing -> non-existing
+     *
+     * @param string $name image type name
+     * @param string $themeName theme name
+     * @param string $themeDirectory theme directory name
+     * @param array $imageTypes indexed map of all image types
+     * @return string
+     * @since 1.4.0
+     */
+    protected static function resolveImageTypeName($name, $themeName, $themeDirectory, $imageTypes)
+    {
+        static $cache = [];
+        $cacheKey = $name . '|' . $themeName . '|' . $themeDirectory;
+        if (! array_key_exists($cacheKey, $cache)) {
+            $cache[$cacheKey] = static::resolveImageTypeNameWithoutCache($name, $themeName, $themeDirectory, $imageTypes);
+        }
+        return $cache[$cacheKey];
+    }
+
+    /**
+     * Helper method to resolve image type name to canonical version. If this method fails to
+     * resolve image type, input $name value is returned
+
+     * @param string $name image type name
+     * @param string $themeName theme name
+     * @param string $themeDirectory theme directory name
+     * @param array $imageTypes indexed map of all image types
+     * @return string
+     * @since 1.4.0
+     */
+    protected static function resolveImageTypeNameWithoutCache($name, $themeName, $themeDirectory, $imageTypes)
+    {
+        // normalize input $name -- remove all theme prefixes/suffixes.
+        $themeNames = array_unique([$themeName, $themeDirectory, 'default']);
+        $regexps = [];
+        foreach ($themeNames as $item) {
+            $regexps[] = '/^' . preg_quote($item) . '_/i';
+            $regexps[] = '/_' . preg_quote($item) . '$/i';
+        }
+        $nameWithoutTheme = $name;
+        do {
+            $nameWithoutTheme = preg_replace($regexps, '', $nameWithoutTheme, -1, $count);
+        } while ($count > 0);
+
+        // possible variants of the input image type name that we accept, ordered by priority
+        $variants = [
+            $themeName.'_'.$nameWithoutTheme,
+            $themeDirectory.'_'.$nameWithoutTheme,
+            $nameWithoutTheme.'_'.$themeName,
+            $nameWithoutTheme.'_'.$themeDirectory,
+            $themeName.'_'.$nameWithoutTheme.'_default',
+            $themeDirectory.'_'.$nameWithoutTheme.'_default',
+            $nameWithoutTheme.'_'.$themeName . '_default',
+            $nameWithoutTheme.'_'.$themeDirectory .'_default',
+            $nameWithoutTheme,
+            $nameWithoutTheme.'_default',
+            $themeName.'_'.$nameWithoutTheme.'_'.$themeName,
+            $themeDirectory.'_'.$nameWithoutTheme.'_'.$themeDirectory,
+        ];
+
+        // image type is not case sensitive
+        foreach ($imageTypes as $key => $value) {
+            $lower = strtolower($key);
+            if ($lower != $key && !in_array($lower, $imageTypes)) {
+                $imageTypes[$lower] = $value;
+            }
         }
 
-        // if $name contains _default suffix, ie. home_default then try to resolve the name without this suffix
-        $pos = strpos($name, '_default');
-        if ($pos === strlen($name) - 8) {
-            return static::getFormatedName(substr($name, 0, $pos));
+        // try to find variant for input name, and map it to actual name
+        foreach ($variants as $variant) {
+            if (array_key_exists($variant, $imageTypes)) {
+                return $imageTypes[$variant];
+            }
+            $lower = strtolower($variant);
+            if (array_key_exists($lower, $imageTypes)) {
+                return $imageTypes[$lower];
+            }
         }
 
         // Give up searching.
