@@ -29,12 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class WebserviceKeyCore
  *
  * @since   1.0.0
  */
-class WebserviceKeyCore extends ObjectModel
+class WebserviceKeyCore extends ObjectModel implements InitializationCallback
 {
     /** @var string Key */
     public $key;
@@ -54,6 +56,9 @@ class WebserviceKeyCore extends ObjectModel
     /** @var string module name - webservice provider*/
     public $module_name;
 
+    /** @var int context employee id */
+    public $context_employee_id;
+
     /**
      * @see ObjectModel::$definition
      */
@@ -62,12 +67,13 @@ class WebserviceKeyCore extends ObjectModel
         'primary' => 'id_webservice_account',
         'primaryKeyDbType' => 'int(11)',
         'fields'  => [
-            'key'         => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 32],
-            'description' => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
-            'class_name'  => ['type' => self::TYPE_STRING, 'size' => 50, 'default' => 'WebserviceRequest'],
-            'is_module'   => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
-            'module_name' => ['type' => self::TYPE_STRING, 'size' => 50],
-            'active'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbNullable' => false],
+            'key'                 => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 32],
+            'description'         => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
+            'class_name'          => ['type' => self::TYPE_STRING, 'size' => 50, 'default' => 'WebserviceRequest'],
+            'is_module'           => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
+            'module_name'         => ['type' => self::TYPE_STRING, 'size' => 50],
+            'active'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbNullable' => false],
+            'context_employee_id' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
         ],
         'keys' => [
             'webservice_account' => [
@@ -77,7 +83,6 @@ class WebserviceKeyCore extends ObjectModel
                 'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
             ],
         ],
-
     ];
 
     /**
@@ -86,6 +91,9 @@ class WebserviceKeyCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -99,21 +107,48 @@ class WebserviceKeyCore extends ObjectModel
     }
 
     /**
+     * Returns WebserviceKey instance associated with key $key
+     *
+     * @param string $key
+     * @return static | null
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
+     */
+    public static function getInstanceByKey($key)
+    {
+        static $cache = [];
+        if (! $key) {
+            return null;
+        }
+        if (! array_key_exists($key, $cache)) {
+            $query = (new DbQuery())
+                ->select('id_webservice_account')
+                ->from('webservice_account')
+                ->where('`key` = "' . pSQL($key) . '"');
+            $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $id = (int)$connection->getValue($query);
+            if ($id) {
+                $cache[$key] = new static($id);
+            } else {
+                $cache[$key] = null;
+            }
+        }
+        return $cache[$key];
+    }
+
+    /**
      * @param $key
      *
-     * @return false|null|string
+     * @return boolean
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function keyExists($key)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT `key`
-		FROM '._DB_PREFIX_.'webservice_account
-		WHERE `key` = "'.pSQL($key).'"'
-        );
+        return Validate::isLoadedObject(static::getInstanceByKey($key));
     }
 
     /**
@@ -121,6 +156,7 @@ class WebserviceKeyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -130,6 +166,8 @@ class WebserviceKeyCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -143,6 +181,8 @@ class WebserviceKeyCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -169,37 +209,39 @@ class WebserviceKeyCore extends ObjectModel
     /**
      * @param $authKey
      *
-     * @return false|null|string
+     * @return boolean
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function isKeyActive($authKey)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT active
-		FROM `'._DB_PREFIX_.'webservice_account`
-		WHERE `key` = "'.pSQL($authKey).'"'
-        );
+        $instance = static::getInstanceByKey($authKey);
+        return Validate::isLoadedObject($instance)
+            ? $instance->active
+            : false;
     }
 
     /**
-     * @param $authKey
+     * Returns class_name associated with webservice key
      *
-     * @return false|null|string
+     * @param string $authKey
+     *
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public static function getClassFromKey($authKey)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT class_name
-		FROM `'._DB_PREFIX_.'webservice_account`
-		WHERE `key` = "'.pSQL($authKey).'"'
-        );
+        $instance = static::getInstanceByKey($authKey);
+        return Validate::isLoadedObject($instance)
+            ? $instance->class_name
+            : null;
     }
 
     /**
@@ -208,6 +250,9 @@ class WebserviceKeyCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -245,5 +290,26 @@ class WebserviceKeyCore extends ObjectModel
         }
 
         return $ok;
+    }
+
+    /**
+     * Callback method to initialize class
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $employees = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_);
+        if ($employees && count($employees) > 0) {
+            $employeeId = (int)$employees[0]['id_employee'];
+            $conn->update(
+                static::$definition['table'],
+                ['context_employee_id' => $employeeId],
+                'context_employee_id IS NULL OR context_employee_id = 0'
+            );
+        }
     }
 }

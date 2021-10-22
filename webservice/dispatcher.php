@@ -52,9 +52,9 @@ if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$
 $method = isset($_REQUEST['ps_method']) ? $_REQUEST['ps_method'] : $_SERVER['REQUEST_METHOD'];
 
 if (isset($_SERVER['PHP_AUTH_USER'])) {
-    $key = $_SERVER['PHP_AUTH_USER'];
+    $key = trim($_SERVER['PHP_AUTH_USER']);
 } elseif (isset($_GET['ws_key'])) {
-    $key = $_GET['ws_key'];
+    $key = trim($_GET['ws_key']);
 } else {
     header($_SERVER['SERVER_PROTOCOL'].' 401 Unauthorized');
     header('WWW-Authenticate: Basic realm="Welcome to PrestaShop Webservice, please enter the authentication key as the login. No password required."');
@@ -78,7 +78,15 @@ if (isset($inputXml) && strncmp($inputXml, 'xml=', 4) == 0) {
 $params = $_GET;
 unset($params['url']);
 
-$className = WebserviceKey::getClassFromKey($key);
+$keyInstance = WebserviceKey::getInstanceByKey($key);
+if ($keyInstance) {
+    // assign employee to webservice request
+    Context::getContext()->employee = new Employee($keyInstance->context_employee_id);
+    $className = $keyInstance->class_name;
+} else {
+    $className = '';
+}
+
 $badClassName = false;
 if (!class_exists($className)) {
     $badClassName = $className;

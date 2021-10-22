@@ -47,6 +47,7 @@ class AdminWebserviceControllerCore extends AdminController
      * AdminWebserviceControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -57,6 +58,8 @@ class AdminWebserviceControllerCore extends AdminController
         $this->edit = true;
         $this->delete = true;
         $this->id_lang_default = Configuration::get('PS_LANG_DEFAULT');
+        $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'employee` b ON (b.`id_employee` = a.`context_employee_id`)';
+        $this->_select = 'concat(concat(b.`firstname`, " "), b.`lastname`) as employee';
 
         $this->bulk_actions = [
             'delete' => [
@@ -75,6 +78,10 @@ class AdminWebserviceControllerCore extends AdminController
                 'title'   => $this->l('Key description'),
                 'align'   => 'left',
                 'orderby' => false,
+            ],
+            'employee'    => [
+                'title'   => $this->l('Employee context'),
+                'align'   => 'left',
             ],
             'active'      => [
                 'title'   => $this->l('Enabled'),
@@ -140,10 +147,26 @@ class AdminWebserviceControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
     {
+        if (!($obj = $this->loadObject(true))) {
+            return '';
+        }
+
+        // retrieve list of employees
+        $employees = array_map(function($row) {
+            return [
+                'id_employee' => $row['id_employee'],
+                'name' => $row['firstname'] . ' ' . $row['lastname']
+            ];
+        }, Employee::getEmployees(false));
+
+        // generate form
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Webservice Accounts'),
@@ -171,6 +194,18 @@ class AdminWebserviceControllerCore extends AdminController
                     'rows'  => 3,
                     'cols'  => 110,
                     'hint'  => $this->l('Quick description of the key: who it is for, what permissions it has, etc.'),
+                ],
+                [
+                    'type'    => 'select',
+                    'label'   => $this->l('Employee context'),
+                    'name'    => 'context_employee_id',
+                    'options' => [
+                        'query' => $employees,
+                        'id'    => 'id_employee',
+                        'name'  => 'name',
+                    ],
+                    'desc'    => $this->l('Select employee in which context API request will be executed'),
+                    'hint'    => $this->l('This is useful for audit trail, as changes created by API calls can be associated with dedicated user')
                 ],
                 [
                     'type'     => 'switch',
@@ -211,15 +246,11 @@ class AdminWebserviceControllerCore extends AdminController
             'title' => $this->l('Save'),
         ];
 
-        if (!($obj = $this->loadObject(true))) {
-            return '';
-        }
-
-        $ressources = WebserviceRequest::getResources();
+        $resources = WebserviceRequest::getResources();
         $permissions = WebserviceKey::getPermissionForAccount($obj->key);
 
         $this->tpl_form_vars = [
-            'ressources'  => $ressources,
+            'ressources'  => $resources,
             'permissions' => $permissions,
         ];
 
@@ -231,6 +262,10 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -245,6 +280,9 @@ class AdminWebserviceControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function checkForWarning()
@@ -287,12 +325,16 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @sinc 1.0.0
      */
     public function renderOptions()
     {
         if ($this->fields_options && is_array($this->fields_options)) {
-            $helper = new HelperOptions($this);
+            $helper = new HelperOptions();
             $this->setHelperDisplay($helper);
             $helper->toolbar_scroll = true;
             $helper->toolbar_btn = [
@@ -333,16 +375,20 @@ class AdminWebserviceControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function postProcess()
     {
-        if (Tools::getValue('key') && strlen(Tools::getValue('key')) < 32) {
-            $this->errors[] = Tools::displayError('Key length must be 32 character long.');
+        $key = Tools::getValue('key');
+        if ($key) {
+            if (strlen($key) < 32) {
+                $this->errors[] = Tools::displayError('Key length must be 32 character long.');
+            }
+            if (WebserviceKey::keyExists($key) && !Tools::getValue('id_webservice_account')) {
+                $this->errors[] = Tools::displayError('This key already exists.');
+            }
         }
-        if (WebserviceKey::keyExists(Tools::getValue('key')) && !Tools::getValue('id_webservice_account')) {
-            $this->errors[] = Tools::displayError('This key already exists.');
-        }
-
         return parent::postProcess();
     }
 
@@ -352,6 +398,7 @@ class AdminWebserviceControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processUpdateOptions()
     {
@@ -364,6 +411,9 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function afterAdd($object)
@@ -377,6 +427,9 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function afterUpdate($object)

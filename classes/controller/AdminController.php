@@ -952,8 +952,7 @@ class AdminControllerCore extends Controller
      * @param int|null    $limit    Row count in LIMIT clause
      * @param int|bool    $idLangShop
      *
-     * @throws \PrestaShopDatabaseExceptionCore
-     * @throws \PrestaShopExceptionCore
+     * @throws PrestaShopException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -3123,10 +3122,9 @@ class AdminControllerCore extends Controller
      *
      * @return string|false
      * @throws PrestaShopException
-     *
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopExceptionCore
      */
     public function renderList()
     {
