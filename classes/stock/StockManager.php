@@ -1198,29 +1198,27 @@ class StockManagerCore implements StockManagerInterface
     protected function getAttributesOfEmployeeRequestingStockMovement($employee)
     {
         $context = Context::getContext();
-
-        if ((int) $context->employee->id) {
-            $employeeId = (int) $context->employee->id;
-        } else {
-            $employeeId = $employee->id;
+        if (Validate::isLoadedObject($context->employee)) {
+            return [
+                'employee_id' => (int)$context->employee->id,
+                'first_name'  => $context->employee->firstname,
+                'last_name'   => $context->employee->lastname,
+            ];
         }
 
-        if ($context->employee->firstname) {
-            $employeeFirstName = $context->employee->firstname;
-        } else {
-            $employeeFirstName = $employee->firstname;
+        if (Validate::isLoadedObject($employee)) {
+            return [
+                'employee_id' => (int)$employee->id,
+                'first_name'  => $employee->firstname,
+                'last_name'   => $employee->lastname,
+            ];
         }
 
-        if ($context->employee->lastname) {
-            $employeeLastName = $context->employee->lastname;
-        } else {
-            $employeeLastName = $employee->lastname;
-        }
-
+        // fallback - we are in front-office context, no employee available
         return [
-            'employee_id' => $employeeId,
-            'first_name'  => $employeeFirstName,
-            'last_name'   => $employeeLastName,
+            'employee_id' => 0,
+            'first_name'  => '',
+            'last_name'   => ''
         ];
     }
 
