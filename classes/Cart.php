@@ -2395,7 +2395,7 @@ class CartCore extends ObjectModel
         }
 
         if ($withTaxes) {
-            if (carrier::useProportionateTax()) {
+            if (Carrier::useProportionateTax()) {
                 $wrappingFees = round(
                     $wrappingFees * (1 + $this->getAverageProductsTaxRate()),
                     _TB_PRICE_DATABASE_PRECISION_
