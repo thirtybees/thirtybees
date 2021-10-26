@@ -55,10 +55,10 @@ class PrestaShopAutoload
      * @var array Mapping for legacy purposes
      */
     protected static $class_aliases = [
-        'Collection' => 'PrestaShopCollection',
-        'Autoload'   => 'PrestaShopAutoload',
-        'Backup'     => 'PrestaShopBackup',
-        'Logger'     => 'PrestaShopLogger',
+        'collection' => 'PrestaShopCollection',
+        'autoload'   => 'PrestaShopAutoload',
+        'backup'     => 'PrestaShopBackup',
+        'logger'     => 'PrestaShopLogger',
     ];
 
     /**
@@ -169,7 +169,7 @@ class PrestaShopAutoload
                         .'(?:\s+extends\s+'.$namespacePattern.'[a-z][a-z0-9_]*)?(?:\s+implements\s+'.$namespacePattern.'[a-z][\\a-z0-9_]*(?:\s*,\s*'.$namespacePattern.'[a-z][\\a-z0-9_]*)*)?\s*\{#i';
 
                     if (preg_match($pattern, $content, $m)) {
-                        $className = $fileNamespace . $m['classname'];
+                        $className = strtolower($fileNamespace . $m['classname']);
                         $classes[$className] = [
                             'name'  => $m['classname'],
                             'ns'    => rtrim($fileNamespace, static::NAMESPACE_DELIMITER),
@@ -177,7 +177,7 @@ class PrestaShopAutoload
                             'type'  => trim($m[1])
                         ];
 
-                        if (substr($className, -4) == 'Core') {
+                        if (substr($className, -4) == 'core') {
                             $overrideClass = substr($className, 0, -4);
                             $classes[$overrideClass] = [
                                 'name' => substr($m['classname'], 0, -4),
@@ -242,6 +242,8 @@ class PrestaShopAutoload
      */
     public function load($className)
     {
+        $className = strtolower($className);
+
         // Retrocompatibility
         if (isset(PrestaShopAutoload::$class_aliases[$className]) && !interface_exists($className, false) && !class_exists($className, false)) {
             return eval('class '.$className.' extends '.PrestaShopAutoload::$class_aliases[$className].' {}');
@@ -249,19 +251,19 @@ class PrestaShopAutoload
 
         // regenerate the class index if the requested file doesn't exists
         if ((isset($this->index[$className]) && $this->index[$className]['path'] && !is_file($this->root_dir.$this->index[$className]['path']))
-            || (isset($this->index[$className.'Core']) && $this->index[$className.'Core']['path'] && !is_file($this->root_dir.$this->index[$className.'Core']['path']))
+            || (isset($this->index[$className.'core']) && $this->index[$className.'core']['path'] && !is_file($this->root_dir.$this->index[$className.'core']['path']))
         ) {
             $this->generateIndex();
         }
 
         // If $classname has not core suffix (E.g. Shop, Product)
-        if (substr($className, -4) != 'Core') {
+        if (substr($className, -4) != 'core') {
             // If requested class does not exist, load associated core class
             if (isset($this->index[$className]) && !$this->index[$className]['path']) {
-                require_once($this->root_dir.$this->index[$className.'Core']['path']);
+                require_once($this->root_dir.$this->index[$className.'core']['path']);
 
-                if ($this->index[$className.'Core']['type'] != 'interface') {
-                    $coreDefinition = $this->index[$className.'Core'];
+                if ($this->index[$className.'core']['type'] != 'interface') {
+                    $coreDefinition = $this->index[$className.'core'];
                     $overrideDefinition = $this->index[$className];
                     if (isset($coreDefinition['ns']) && $coreDefinition['ns']) {
                         $dynamicOverride = (
@@ -275,8 +277,8 @@ class PrestaShopAutoload
                 }
             } else {
                 // request a non Core Class load the associated Core class if exists
-                if (isset($this->index[$className.'Core'])) {
-                    require_once($this->root_dir.$this->index[$className.'Core']['path']);
+                if (isset($this->index[$className.'core'])) {
+                    require_once($this->root_dir.$this->index[$className.'core']['path']);
                 }
 
                 if (isset($this->index[$className])) {
@@ -299,6 +301,7 @@ class PrestaShopAutoload
      */
     public function getClassPath($className)
     {
+        $className = strtolower($className);
         return (isset($this->index[$className]) && isset($this->index[$className]['path'])) ? $this->index[$className]['path'] : null;
     }
 }
