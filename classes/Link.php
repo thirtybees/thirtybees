@@ -338,13 +338,17 @@ class LinkCore
         $type = ImageType::getFormatedName($type);
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
+        // TODO: this functionality should be extracted to post-processing hook
         if (($type != '')
-            && Configuration::get('WATERMARK_LOGGED')
-            && (Module::isInstalled('watermark')
-                && Module::isEnabled('watermark'))
-            && isset(Context::getContext()->customer->id)
+                && isset(Context::getContext()->customer->id)
+                && Configuration::get('WATERMARK_LOGGED')
+                && Module::isInstalled('watermark')
+                && Module::isEnabled('watermark')
         ) {
-            $type .= '-'.Configuration::get('WATERMARK_HASH');
+            $watermarkTypes = static::getWatermarkImageTypes();
+            if (isset($watermarkTypes[$type])) {
+                $type = $watermarkTypes[$type];
+            }
         }
 
         // legacy mode or default image
@@ -1043,5 +1047,34 @@ class LinkCore
         }
 
         return http_build_query($output);
+    }
+
+    /**
+     * Returns product image types that are protected using watermark functionality
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    private static function getWatermarkImageTypes()
+    {
+        static $watermarkTypes = null;
+        if (is_null($watermarkTypes)) {
+            $watermarkTypes = [];
+            $selectedTypes = Configuration::get('WATERMARK_TYPES');
+            if ($selectedTypes) {
+                $selectedTypes = array_map('intval', explode(',', $selectedTypes));
+                if ($selectedTypes) {
+                    $hash = Configuration::get('WATERMARK_HASH');
+                    foreach (ImageType::getImagesTypes('products') as $imageType) {
+                        if (in_array((int)$imageType['id_image_type'], $selectedTypes)) {
+                            $imageTypeName = $imageType['name'];
+                            $watermarkTypes[$imageTypeName] = $imageTypeName . '-' . $hash;
+                        }
+                    }
+                }
+            }
+        }
+        return $watermarkTypes;
     }
 }
