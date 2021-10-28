@@ -97,7 +97,7 @@ class WorkQueueContextCore
      * @param Context $context
      * @return static
      */
-    public function fromContext(Context $context)
+    public static function fromContext(Context $context)
     {
         $shop = $context->shop;
         $employee = $context->employee;
