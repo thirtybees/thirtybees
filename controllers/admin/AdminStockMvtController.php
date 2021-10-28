@@ -89,11 +89,11 @@ class AdminStockMvtControllerCore extends AdminController
                 'icon'       => [
                     -1 => [
                         'src' => 'remove_stock.png',
-                        'alt' => $this->l('Increase'),
+                        'alt' => $this->l('Decrease'),
                     ],
                     1  => [
                         'src' => 'add_stock.png',
-                        'alt' => $this->l('Decrease'),
+                        'alt' => $this->l('Increase'),
                     ],
                 ],
                 'class'      => 'fixed-width-xs',
