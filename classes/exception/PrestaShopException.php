@@ -76,6 +76,22 @@ class PrestaShopExceptionCore extends Exception
      */
     public function displayMessage()
     {
+        try {
+            $this->doDisplayMessage();
+        } catch (Exception $e) {
+            // It's very unlikely that exception will be thrown during error message rendering. If that happen,
+            // simply give up
+            die($e->__toString());
+        }
+    }
+
+    /**
+     * This method acts like an error handler, if dev mode is on, display the error else use a better silent way
+     *
+     * @throws PrestaShopException
+     */
+    protected function doDisplayMessage()
+    {
         if (! headers_sent()) {
             header('HTTP/1.1 500 Internal Server Error');
             header('Content-Type: text/html');
@@ -181,9 +197,20 @@ class PrestaShopExceptionCore extends Exception
      */
     public function getErrorDescription()
     {
+        return static::describeException($this);
+    }
+
+    /**
+     * Helper method to describe exception
+     *
+     * @param Exception $e
+     * @return array
+     */
+    protected static function describeException($e)
+    {
         $smartyTrace = SmartyCustom::$trace;
 
-        $file = $this->getFile();
+        $file = $e->getFile();
         if (SmartyCustom::isCompiledTemplate($file)) {
             $file = array_pop($smartyTrace);
             $fileType = 'smarty';
@@ -191,12 +218,21 @@ class PrestaShopExceptionCore extends Exception
             $fileContent = static::readFile($file, 0, -1);
         } else {
             $fileType = 'php';
-            $line = $this->getLine();
+            $line = $e->getLine();
             $fileContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
         }
 
+        $extraSections = [];
+        if ($e instanceof PrestaShopExceptionCore) {
+            $traces = $e->trace;
+            $extraSections = $e->getExtraSections();
+        } else {
+            $traces = $e->getTrace();
+        }
+
         $stacktrace = [];
-        foreach ($this->trace as $id => $trace) {
+
+        foreach ($traces as $id => $trace) {
             $class = isset($trace['class']) ? $trace['class'] : '';
             $function = isset($trace['function']) ? $trace['function'] : '';
             $type = isset($trace['type']) ? $trace['type'] : '';
@@ -215,9 +251,9 @@ class PrestaShopExceptionCore extends Exception
             $nextId = $id + 1;
             $currentFunction = '';
             $currentClass = '';
-            if (isset($this->trace[$nextId]['class'])) {
-                $currentClass = $this->trace[$nextId]['class'];
-                $currentFunction = $this->trace[$nextId]['function'];
+            if (isset($traces[$nextId]['class'])) {
+                $currentClass = $traces[$nextId]['class'];
+                $currentFunction = $traces[$nextId]['function'];
             }
             $stacktrace[] = [
                 'class' => $class,
@@ -226,29 +262,33 @@ class PrestaShopExceptionCore extends Exception
                 'fileType' => $isTemplate ? 'template' : 'php',
                 'fileName' => $relativeFile,
                 'line' => $lineNumber,
-                'args' => array_map([$this, 'displayArgument'], $args),
+                'args' => array_map([__CLASS__, 'displayArgument'], $args),
                 'fileContent' => static::readFile($fileName, $lineNumber, $showLines),
                 'description' => static::describeOperation($class, $function, $args),
                 'suppressed' => static::isSuppressed($relativeFile, $currentClass, $currentFunction, $class, $function)
             ];
         }
 
+        $previous = $e->getPrevious();
+        $previousDesc = is_null($previous) ? null : static::describeException($previous);
+
         return [
-            'errorName' => str_replace('PrestaShop', 'ThirtyBees', get_class($this)),
-            'errorMessage' => $this->getMessage(),
+            'errorName' => str_replace('PrestaShop', 'ThirtyBees', get_class($e)),
+            'errorMessage' => $e->getMessage(),
             'fileType' => $fileType,
             'fileName' => static::getRelativeFile($file),
             'line' => $line,
             'fileContent' => $fileContent,
             'stacktrace' => $stacktrace,
-            'extraSections' => $this->getExtraSections()
+            'extraSections' => $extraSections,
+            'previous' => $previousDesc
         ];
     }
 
     /**
      * Method will render argument into string. Similar to var_dump, but will product smaller output
      *
-     * @param $variable variable to be rendered
+     * @param mixed $variable variable to be rendered
      * @param int $strlen max length of string. If longer then string will be truncated and ... will be added
      * @param int $width maximal number of array items to be rendered
      * @param int $depth maximaln depth that we will traverse
@@ -257,7 +297,7 @@ class PrestaShopExceptionCore extends Exception
      *
      * @return string
      */
-    protected function displayArgument($variable, $strlen = 80, $width = 50, $depth = 2, $i = 0, $objects = [])
+    protected static function displayArgument($variable, $strlen = 80, $width = 50, $depth = 2, $i = 0, $objects = [])
     {
         $search = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
         $replace = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
@@ -302,7 +342,7 @@ class PrestaShopExceptionCore extends Exception
                         break;
                     }
                     $string.= "\n".$spaces."  [$key] => ";
-                    $string.= $this->displayArgument($variable[$key], $strlen, $width, $depth,$i+1, $objects);
+                    $string.= static::displayArgument($variable[$key], $strlen, $width, $depth,$i+1, $objects);
                     $count++;
                 }
                 $string.="\n".$spaces.']';
@@ -324,7 +364,7 @@ class PrestaShopExceptionCore extends Exception
                 foreach($properties as $property) {
                     $name = str_replace("\0",':', trim($property));
                     $string .= "\n".$spaces."  [$name] => ";
-                    $string .= $this->displayArgument($array[$property], $strlen, $width, $depth,$i+1, $objects);
+                    $string .= static::displayArgument($array[$property], $strlen, $width, $depth,$i+1, $objects);
                 }
                 $string .= "\n".$spaces.'}';
                 return $string;
@@ -497,6 +537,7 @@ class PrestaShopExceptionCore extends Exception
             $hookName = isset($args[0]['h']) ? $args[0]['h'] : '';
             return 'Execute hook <b>' . $hookName . '</b>';
         }
+        return null;
     }
 
 }

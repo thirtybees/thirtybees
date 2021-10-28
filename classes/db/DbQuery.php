@@ -426,17 +426,38 @@ class DbQueryCore
      */
     public function build()
     {
+        $this->validate();
+        return $this->buildSql();
+    }
+
+    /**
+     * Validates current DbQuery object, throws exception if it's not valid
+     *
+     * @throws PrestaShopException
+     */
+    public function validate()
+    {
+        if (!$this->query['from']) {
+            throw new PrestaShopException('Table name not set in DbQuery object. Cannot build a valid SQL query.');
+        }
+    }
+
+    /**
+     * Generates query and return SQL
+     *
+     * @return string
+     */
+    public function buildSql()
+    {
         if ($this->query['type'] == 'SELECT') {
             $sql = 'SELECT '.((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*')."\n";
         } else {
             $sql = $this->query['type'].' ';
         }
 
-        if (!$this->query['from']) {
-            throw new PrestaShopException('Table name not set in DbQuery object. Cannot build a valid SQL query.');
+        if ($this->query['from']) {
+            $sql .= 'FROM ' . implode(', ', $this->query['from']) . "\n";
         }
-
-        $sql .= 'FROM '.implode(', ', $this->query['from'])."\n";
 
         if ($this->query['join']) {
             $sql .= implode("\n", $this->query['join'])."\n";
@@ -476,10 +497,6 @@ class DbQueryCore
      */
     public function __toString()
     {
-        try {
-            return $this->build();
-        } catch (PrestaShopException $e) {
-            return $e->getMessage();
-        }
+        return $this->buildSql();
     }
 }

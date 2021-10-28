@@ -171,7 +171,7 @@ function errDisplayLines($lines)
 
             .line {
                 display: inline-block;
-                width: 50px;
+                width: 100px;
                 color: #9F9C7F;
             }
 
@@ -308,6 +308,49 @@ function errDisplayLines($lines)
                 <?php } ?>
             </div>
         </div>
+
+        <?php if (isset($previous) && $previous) { ?>
+        <div class="panel">
+            <h2 data-toggle="cause-trace" class="closed">Caused by</h2>
+            <div id="cause-trace" class="collapsed stacktrace">
+                <?php
+                    $prevCnt = 1;
+                    while (isset($previous) && $previous) {
+                ?>
+                    <div>
+                        <div class="stacktrace-header">
+                            <span class="line">Caused by</span>
+                            <span class="stacktrace-file">
+                                <i><?= $previous['errorName'] ?></i>: <b><?= $previous['errorMessage'] ?></b>
+                                <?php
+                                if ($fileType === 'smarty') {
+                                    echo " when rendering smarty template <b>$fileName</b>";
+                                } else {
+                                    echo " in file <b>$fileName</b> at line <b>$line</b>";
+                                }
+                                ?>
+                            </span>
+                            <?php if (isset($previous['fileContent']) && $previous['fileContent']) { ?>
+                                &nbsp;
+                                <a data-toggle="previous-<?= $prevCnt ?>-source" class="closed">Source</a>
+                                <div class="panel">
+                                    <div id="previous-<?= $prevCnt ?>-source" class="collapsed">
+                                        <?= errDisplayLines($previous['fileContent']) ?>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php
+                        $prevCnt++;
+                        $previous = $previous['previous'];
+                    }
+                    ?>
+            </div>
+        </div>
+        <?php } ?>
+
+        <br />
 
         <script type="text/javascript">
             document.querySelectorAll('[data-toggle]').forEach(function (el) {

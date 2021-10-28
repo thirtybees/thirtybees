@@ -41,12 +41,18 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
      */
     private $sql = null;
 
+    /**
+     * PrestaShopDatabaseExceptionCore constructor.
+     *
+     * @param string $message
+     * @param string | DbQuery | null $sql
+     */
     public function __construct($message = '', $sql = null)
     {
         parent::__construct($message);
 
         if ($sql instanceof DbQuery) {
-            $this->sql = $sql->build();
+            $this->sql = $sql->buildSql();
         } else {
             $this->sql = $sql;
         }
@@ -85,7 +91,7 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
      */
     protected function getExtraSections()
     {
-        $sections = [];
+        $sections = parent::getExtraSections();
         if ($this->sql) {
           $sections [] = [
               'label' => 'SQL',
