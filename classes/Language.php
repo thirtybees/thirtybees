@@ -411,35 +411,29 @@ class LanguageCore extends ObjectModel
     public static function updateModulesTranslations(Array $modulesList)
     {
         $languages = Language::getLanguages(false);
+        clearstatcache();
+
         foreach ($languages as $lang) {
-            $gz = false;
-            $filesListing = [];
-            foreach ($modulesList as $moduleName) {
-                $filegz = _PS_TRANSLATIONS_DIR_.$lang['iso_code'].'.gzip';
-
-                clearstatcache();
-                if (@filemtime($filegz) < (time() - (24 * 3600))) {
-                    if (Language::downloadAndInstallLanguagePack($lang['iso_code'], null, null, false) !== true) {
-                        break;
-                    }
-                }
-
-                $gz = new Archive_Tar($filegz, true);
-                $filesList = Language::getLanguagePackListContent($lang['iso_code'], $gz);
-                foreach ($filesList as $i => $file) {
-                    if (strpos($file['filename'], 'modules/'.$moduleName.'/') !== 0) {
-                        unset($filesList[$i]);
-                    }
-                }
-
-                foreach ($filesList as $file) {
-                    if (isset($file['filename']) && is_string($file['filename'])) {
-                        $filesListing[] = $file['filename'];
-                    }
-                }
+            $filePath = _PS_TRANSLATIONS_DIR_.$lang['iso_code'].'.gzip';
+            if (@filemtime($filePath) < (time() - (24 * 3600))) {
+                Language::downloadAndInstallLanguagePack($lang['iso_code'], null, null, false);
             }
-            if ($gz) {
-                $gz->extractList($filesListing, _PS_TRANSLATIONS_DIR_.'../', '');
+
+            if (@file_exists($filePath)) {
+                $gz = new Archive_Tar($filePath, true);
+                $fileList = array_column(Language::getLanguagePackListContent($lang['iso_code'], $gz), 'filename');
+                if ($fileList) {
+                    $filesToExtract = [];
+                    foreach ($modulesList as $moduleName) {
+                        $moduleFileList = array_filter($fileList, function ($file) use ($moduleName) {
+                            return strpos($file, 'modules/' . $moduleName . '/') !== false;
+                        });
+                        $filesToExtract = array_merge($filesToExtract, $moduleFileList);
+                    }
+                    if ($filesToExtract) {
+                        $gz->extractList($filesToExtract, _PS_TRANSLATIONS_DIR_ . '../', '');
+                    }
+                }
             }
         }
     }
@@ -556,19 +550,22 @@ class LanguageCore extends ObjectModel
      * @param string      $iso
      * @param Archive_Tar $tar
      *
-     * @return array|bool|int|null
+     * @return array
      */
     public static function getLanguagePackListContent($iso, $tar)
     {
         $key = 'Language::getLanguagePackListContent_'.$iso;
         if (!Cache::isStored($key)) {
             if (!$tar instanceof Archive_Tar) {
-                return false;
+                return [];
             }
             $result = $tar->listContent();
-            Cache::store($key, $result);
-
-            return $result;
+            if (is_array($result)) {
+                Cache::store($key, $result);
+                return $result;
+            } else {
+                return [];
+            }
         }
 
         return Cache::retrieve($key);
