@@ -920,10 +920,19 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $kept = [];
         foreach ($list as $file) {
-            if ('index.php' == basename($file['filename'])) {
+            $filename = $file['filename'];
+
+            // ignore index.php
+            if ('index.php' == basename($filename)) {
                 continue;
             }
-            if (preg_match('#^modules/([^/]+)/#', $file['filename'], $m)) {
+            // ignore directories
+            if (substr($filename, -1) === '/') {
+                continue;
+            }
+
+            if (preg_match('#modules/([^/]+)/#', $filename, $m)) {
+                // ignore modules that are not installed
                 if (is_dir(_PS_MODULE_DIR_.$m[1])) {
                     $kept[] = $file;
                 }

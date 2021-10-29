@@ -532,7 +532,7 @@ class LanguageCore extends ObjectModel
                     $tmpArray[] = $path;
                 }
             }
-            if (!$gz->extractList(AdminTranslationsController::filesListToPaths($fileList), _PS_TRANSLATIONS_DIR_.'../')) {
+            if (!$gz->extractList($filePaths, _PS_TRANSLATIONS_DIR_.'../')) {
                 $errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), (string) $iso);
             }
             // Clear smarty modules cache
