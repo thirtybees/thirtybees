@@ -311,17 +311,17 @@ class AdminCartsControllerCore extends AdminController
                 $product['product_price'] = $product['price_wt'];
                 $product['product_total'] = $product['total_wt'];
             }
-            $image = [];
+            $image = 0;
             if (isset($product['id_product_attribute']) && (int) $product['id_product_attribute']) {
-                $image = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $image = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                     (new DbQuery())
                     ->select('`id_image`')
                     ->from('product_attribute_image')
                     ->where('`id_product_attribute` = '.(int) $product['id_product_attribute'])
                 );
             }
-            if (!isset($image['id_image'])) {
-                $image = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            if (! $image) {
+                $image = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                     (new DbQuery())
                     ->select('`id_image`')
                     ->from('image')
@@ -332,8 +332,12 @@ class AdminCartsControllerCore extends AdminController
 
             $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int) $idShop);
 
-            $imageProduct = new Image($image['id_image']);
-            $product['image'] = (isset($image['id_image']) ? ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$imageProduct->getExistingImgPath().'.jpg', 'product_mini_'.(int) $product['id_product'].(isset($product['id_product_attribute']) ? '_'.(int) $product['id_product_attribute'] : '').'.jpg', 45, 'jpg') : '--');
+            if ($image) {
+                $imageProduct = new Image($image);
+                $product['image'] = ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$imageProduct->getExistingImgPath().'.jpg', 'product_mini_'.(int) $product['id_product'].(isset($product['id_product_attribute']) ? '_'.(int) $product['id_product_attribute'] : '').'.jpg', 45, 'jpg');
+            } else {
+                $product['image'] = '--';
+            }
         }
 
         $helper = new HelperKpi();
