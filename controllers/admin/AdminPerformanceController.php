@@ -58,6 +58,7 @@ class AdminPerformanceControllerCore extends AdminController
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -69,6 +70,9 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -109,6 +113,9 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -137,6 +144,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetSmarty()
     {
@@ -246,6 +254,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetDebugMode()
     {
@@ -350,6 +359,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetFeaturesDetachables()
     {
@@ -438,6 +448,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetCCC()
     {
@@ -573,6 +584,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetMediaServer()
     {
@@ -619,6 +631,7 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initFieldsetCiphering()
     {
@@ -682,6 +695,7 @@ class AdminPerformanceControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initFieldsetCaching()
     {
@@ -785,6 +799,8 @@ class AdminPerformanceControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function initFieldsetFullPageCache()
     {
@@ -895,6 +911,8 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public function postProcess()
     {
@@ -1098,27 +1116,22 @@ class AdminPerformanceControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('Media server #3 is invalid');
                 }
                 if (!count($this->errors)) {
-                    $baseUrls = [];
-                    $baseUrls['_MEDIA_SERVER_1_'] = Tools::getValue('_MEDIA_SERVER_1_');
-                    $baseUrls['_MEDIA_SERVER_2_'] = Tools::getValue('_MEDIA_SERVER_2_');
-                    $baseUrls['_MEDIA_SERVER_3_'] = Tools::getValue('_MEDIA_SERVER_3_');
-                    if ($baseUrls['_MEDIA_SERVER_1_'] || $baseUrls['_MEDIA_SERVER_2_'] || $baseUrls['_MEDIA_SERVER_3_']) {
+                    $mediaServer1 = Tools::getValue('_MEDIA_SERVER_1_');
+                    $mediaServer2 = Tools::getValue('_MEDIA_SERVER_2_');
+                    $mediaServer3 = Tools::getValue('_MEDIA_SERVER_3_');
+                    if ($mediaServer1 || $mediaServer2 || $mediaServer3) {
                         Configuration::updateValue('PS_MEDIA_SERVERS', 1);
                     } else {
                         Configuration::updateValue('PS_MEDIA_SERVERS', 0);
                     }
-                    rewriteSettingsFile($baseUrls, null, null);
-                    Configuration::updateValue('PS_MEDIA_SERVER_1', $baseUrls['_MEDIA_SERVER_1_']);
-                    Configuration::updateValue('PS_MEDIA_SERVER_2', $baseUrls['_MEDIA_SERVER_2_']);
-                    Configuration::updateValue('PS_MEDIA_SERVER_3', $baseUrls['_MEDIA_SERVER_3_']);
+                    Configuration::updateValue('PS_MEDIA_SERVER_1', $mediaServer1);
+                    Configuration::updateValue('PS_MEDIA_SERVER_2', $mediaServer2);
+                    Configuration::updateValue('PS_MEDIA_SERVER_3', $mediaServer3);
                     Tools::clearSmartyCache();
                     Media::clearCache();
 
                     if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
                         Tools::generateHtaccess();
-                        unset($this->_fieldsGeneral['_MEDIA_SERVER_1_']);
-                        unset($this->_fieldsGeneral['_MEDIA_SERVER_2_']);
-                        unset($this->_fieldsGeneral['_MEDIA_SERVER_3_']);
                         $redirectAdmin = true;
                     } else {
                         $message = $this->l('Before being able to use this tool, you need to:');
@@ -1345,6 +1358,9 @@ class AdminPerformanceControllerCore extends AdminController
      * @param $idShop
      *
      * @return string
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function displayControllerList($fileList, $idShop)
     {
@@ -1733,6 +1749,7 @@ class AdminPerformanceControllerCore extends AdminController
 
     /**
      * Process dynamic hook setting
+     * @throws PrestaShopException
      */
     public function displayAjaxUpdateDynamicHooks()
     {

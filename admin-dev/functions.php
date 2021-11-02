@@ -97,46 +97,15 @@ function priceval($price) {
 /**
  * Generate a new settings file, only transmitted parameters are updated
  *
- * @param string $baseUri Base URI
+ * @param string $base_urls Base URI
  * @param string $theme Theme name (eg. default)
  * @param array $array_db Parameters in order to connect to database
-*/
+ * @deprecated 1.4.0
+ * @return bool
+ */
 function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
 {
-    $defines = [];
-    $defines['_PS_CACHING_SYSTEM_'] = _PS_CACHING_SYSTEM_;
-    $defines['_DB_NAME_'] = (($array_db && isset($array_db['_DB_NAME_'])) ? $array_db['_DB_NAME_'] : _DB_NAME_);
-    $defines['_MYSQL_ENGINE_'] = (($array_db && isset($array_db['_MYSQL_ENGINE_'])) ? $array_db['_MYSQL_ENGINE_'] : _MYSQL_ENGINE_);
-    $defines['_DB_SERVER_'] = (($array_db && isset($array_db['_DB_SERVER_'])) ? $array_db['_DB_SERVER_'] : _DB_SERVER_);
-    $defines['_DB_USER_'] = (($array_db && isset($array_db['_DB_USER_'])) ? $array_db['_DB_USER_'] : _DB_USER_);
-    $defines['_DB_PREFIX_'] = (($array_db && isset($array_db['_DB_PREFIX_'])) ? $array_db['_DB_PREFIX_'] : _DB_PREFIX_);
-    $defines['_DB_PASSWD_'] = (($array_db && isset($array_db['_DB_PASSWD_'])) ? $array_db['_DB_PASSWD_'] : _DB_PASSWD_);
-    $defines['_COOKIE_KEY_'] = addslashes(_COOKIE_KEY_);
-    $defines['_COOKIE_IV_'] = addslashes(_COOKIE_IV_);
-    $defines['_PS_CREATION_DATE_'] = addslashes(_PS_CREATION_DATE_);
-
-    if (defined('_RIJNDAEL_KEY_')) {
-        $defines['_RIJNDAEL_KEY_'] = addslashes(_RIJNDAEL_KEY_);
-    }
-    if (defined('_RIJNDAEL_IV_')) {
-        $defines['_RIJNDAEL_IV_'] = addslashes(_RIJNDAEL_IV_);
-    }
-    $defines['_PS_VERSION_'] = addslashes(_PS_VERSION_);
-    $defines['_TB_VERSION_'] = addslashes(_TB_VERSION_);
-    $content = "<?php\n\n";
-    foreach ($defines as $k => $value) {
-        if (in_array($k, array('_PS_VERSION_', '_TB_VERSION_'))) {
-            $content .= 'if (!defined(\''.$k.'\'))'."\n\t";
-        }
-
-        $content .= 'define(\''.$k.'\', \''.addslashes($value).'\');'."\n";
-    }
-    copy(_PS_ADMIN_DIR_.'/../config/settings.inc.php', _PS_ADMIN_DIR_.'/../config/settings.old.php');
-    if ($fd = fopen(_PS_ADMIN_DIR_.'/../config/settings.inc.php', 'w')) {
-        fwrite($fd, $content);
-        fclose($fd);
-        return true;
-    }
+    Tools::displayAsDeprecated();
     return false;
 }
 
