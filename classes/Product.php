@@ -3901,54 +3901,40 @@ class ProductCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
-            '
-            SELECT cp.`id_product`, cp.`position`, cp.`id_category`
-            FROM `'._DB_PREFIX_.'category_product` cp
-            WHERE cp.`id_category` = '.(int) Tools::getValue('id_category', 1).'
-            ORDER BY cp.`position` ASC'
-        )
-        ) {
+        if (! isset($position)) {
             return false;
         }
 
-        foreach ($res as $product) {
-            if ((int) $product['id_product'] == (int) $this->id) {
-                $movedProduct = $product;
-            }
-        }
+        $conn = Db::getInstance();
 
-        if (!isset($movedProduct) || !isset($position)) {
-            return false;
-        }
+        $categoryId = (int)Tools::getValue('id_category', 1);
+        $productId = (int)$this->id;
 
-        // < and > statements rather than BETWEEN operator
-        // since BETWEEN is treated differently according to databases
-        $result = (Db::getInstance()->execute(
-                '
-            UPDATE `'._DB_PREFIX_.'category_product` cp
-            INNER JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product` = cp.`id_product`)
-            '.Shop::addSqlAssociation('product', 'p').'
-            SET cp.`position`= `position` '.($way ? '- 1' : '+ 1').',
-            p.`date_upd` = "'.date('Y-m-d H:i:s').'", product_shop.`date_upd` = "'.date('Y-m-d H:i:s').'"
-            WHERE cp.`position`
-            '.($way
-                    ? '> '.(int) $movedProduct['position'].' AND `position` <= '.(int) $position
-                    : '< '.(int) $movedProduct['position'].' AND `position` >= '.(int) $position).'
-            AND `id_category`='.(int) $movedProduct['id_category']
-            )
-            && Db::getInstance()->execute(
-                '
-            UPDATE `'._DB_PREFIX_.'category_product` cp
-            INNER JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product` = cp.`id_product`)
-            '.Shop::addSqlAssociation('product', 'p').'
-            SET cp.`position` = '.(int) $position.',
-            p.`date_upd` = "'.date('Y-m-d H:i:s').'", product_shop.`date_upd` = "'.date('Y-m-d H:i:s').'"
-            WHERE cp.`id_product` = '.(int) $movedProduct['id_product'].'
-            AND cp.`id_category`='.(int) $movedProduct['id_category']
-            )
-
+        $newPosition = (int)$position;
+        $currentPosition = (int)$conn->getValue((new DbQuery())
+            ->select('position')
+            ->from('category_product')
+            ->where('id_category = ' . $categoryId)
+            ->where('id_product = ' . $productId)
         );
+
+        $result = Db::getInstance()->execute('
+            UPDATE `'._DB_PREFIX_.'category_product`
+            SET `position`= `position` '.($way ? '-1' : '+1').'
+            WHERE `position` '.($way ? '>': '<').$currentPosition.' 
+              AND `position` '.($way ? '<=' : '>=').$newPosition.'
+              AND `id_category` ='.$categoryId
+        );
+
+        $result &= Db::getInstance()->execute('
+            UPDATE `'._DB_PREFIX_.'category_product`
+            SET `position` = '.(int) $newPosition.'
+            WHERE `id_product` = '.$productId.'
+              AND `id_category` ='.$categoryId
+        );
+
+        static::cleanPositions($categoryId);
+
         Hook::exec('actionProductUpdate', ['id_product' => (int) $this->id, 'product' => $this]);
 
         return $result;
@@ -4188,7 +4174,7 @@ class ProductCore extends ObjectModel
      *
      * @param bool $cleanPositions clean category positions after deletion
      *
-     * @return array Deletion result
+     * @return boolean Deletion result
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -4197,18 +4183,22 @@ class ProductCore extends ObjectModel
      */
     public function deleteCategories($cleanPositions = false)
     {
-        if ($cleanPositions === true) {
-            $result = Db::getInstance()->executeS(
-                'SELECT `id_category`, `position`
-				FROM `'._DB_PREFIX_.'category_product`
-				WHERE `id_product` = '.(int) $this->id
+        $productId = (int) $this->id;
+
+        $categories = [];
+        if ($cleanPositions) {
+            $categories = Db::getInstance()->executeS((new DbQuery())
+                ->select('id_category')
+                ->from('category_product')
+                ->where('id_product = ' . $productId)
             );
         }
 
-        $return = Db::getInstance()->delete('category_product', 'id_product = '.(int) $this->id);
-        if ($cleanPositions === true && is_array($result)) {
-            foreach ($result as $row) {
-                $return &= $this->cleanPositions((int) $row['id_category'], (int) $row['position']);
+        $return = Db::getInstance()->delete('category_product', 'id_product = ' . $productId);
+
+        if ($cleanPositions && is_array($categories) && $categories) {
+            foreach ($categories as $row) {
+                $return &= static::cleanPositions((int) $row['id_category']);
             }
         }
 
@@ -4220,7 +4210,7 @@ class ProductCore extends ObjectModel
      * Call it after deleting a product from a category.
      *
      * @param int $idCategory
-     * @param int $position
+     * @param int $position Deprecated, no longer in use
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -4231,27 +4221,16 @@ class ProductCore extends ObjectModel
     public static function cleanPositions($idCategory, $position = 0)
     {
         $idCategory = (int) $idCategory;
-        $position = (int) $position;
         $now = date('Y-m-d H:i:s');
 
-        $return = true;
-        if (! $position) {
-            // reset positions of all products within category
-            $return = Db::getInstance()->execute('
-                SET @rank:=-1;
-                UPDATE `'._DB_PREFIX_.'category_product`
-                SET position = @rank:=@rank+1
-                WHERE `id_category` = '.$idCategory.'
-                ORDER BY `position`
-            ');
-        } else {
-            // decrease positions of all subsequent products within category
-            $return = Db::getInstance()->update(
-                'category_product',
-                ['position' => ['type' => 'sql', 'value' => '`position`-1']],
-                '`id_category` = '.$idCategory.' AND `position` > '.$position
-            );
-        }
+        // reset positions of all products within category
+        $return = Db::getInstance()->execute('
+            SET @rank:=-1;
+            UPDATE `'._DB_PREFIX_.'category_product`
+            SET position = @rank:=@rank+1
+            WHERE `id_category` = '.$idCategory.'
+            ORDER BY `position`, `id_product`
+        ');
 
         // mark all products whose position within category (might) have changed as modified
         $return &= Db::getInstance()->execute('
@@ -4648,18 +4627,10 @@ class ProductCore extends ObjectModel
      */
     public function deleteCategory($idCategory, $cleanPositions = true)
     {
-        $result = Db::getInstance()->executeS(
-            'SELECT `id_category`, `position`
-			FROM `'._DB_PREFIX_.'category_product`
-			WHERE `id_product` = '.(int) $this->id.'
-			AND id_category = '.(int) $idCategory.''
-        );
-
-        $return = Db::getInstance()->delete('category_product', 'id_product = '.(int) $this->id.' AND id_category = '.(int) $idCategory);
-        if ($cleanPositions === true) {
-            foreach ($result as $row) {
-                $this->cleanPositions((int) $row['id_category'], (int) $row['position']);
-            }
+        $idCategory = (int) $idCategory;
+        $return = Db::getInstance()->delete('category_product', 'id_product = '.(int) $this->id.' AND id_category = '.$idCategory);
+        if ($cleanPositions) {
+            static::cleanPositions($idCategory);
         }
         SpecificPriceRule::applyAllRules([(int) $this->id]);
 

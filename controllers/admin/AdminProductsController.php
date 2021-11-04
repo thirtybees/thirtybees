@@ -5935,6 +5935,7 @@ class AdminProductsControllerCore extends AdminController
      * Ajax process update positions
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdatePositions()
     {
@@ -5959,7 +5960,7 @@ class AdminProductsControllerCore extends AdminController
                             if (isset($position) && $product->updatePosition($way, $position)) {
                                 $category = new Category((int) $id_category);
                                 if (Validate::isLoadedObject($category)) {
-                                    hook::Exec('categoryUpdate', ['category' => $category]);
+                                    Hook::exec('categoryUpdate', ['category' => $category]);
                                 }
                                 echo 'ok position '.(int) $position.' for product '.(int) $pos[2]."\r\n";
                             } else {
