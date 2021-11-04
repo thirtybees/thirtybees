@@ -379,7 +379,7 @@ class PrestaShopExceptionCore extends Exception
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    protected function logError()
+    public function logError()
     {
         $logger = new FileLogger();
         $logger->setFilename(_PS_ROOT_DIR_.'/log/'.date('Ymd').'_exception.log');

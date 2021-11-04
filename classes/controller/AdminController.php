@@ -612,6 +612,7 @@ class AdminControllerCore extends Controller
                 }
             }
         } catch (PrestaShopException $e) {
+            $e->logError();
             $this->errors[] = $e->getMessage();
         };
 
