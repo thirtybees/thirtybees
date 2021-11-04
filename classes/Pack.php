@@ -262,12 +262,14 @@ class PackCore extends Product
             return false;
         }
 
+        $idProduct = (int)$idProduct;
+
         if (!$idProduct) {
             return false;
         }
 
         if (!array_key_exists($idProduct, static::$cacheIsPack)) {
-            $result = Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'pack` WHERE id_product_pack = '.(int) $idProduct);
+            $result = Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'pack` WHERE id_product_pack = '.$idProduct);
             static::$cacheIsPack[$idProduct] = ($result > 0);
         }
 
