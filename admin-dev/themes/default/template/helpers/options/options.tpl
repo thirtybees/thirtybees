@@ -195,6 +195,7 @@
 												   value="{if isset($field['no_escape']) && $field['no_escape']}{$field['value']|escape:'UTF-8'}{else}{$field['value']|escape:'html':'UTF-8'}{/if}"
 												   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
 												   {if isset($field['autocomplete']) && !$field['autocomplete']}autocomplete="off"{/if}
+												   {if isset($field['disabled']) && $field['disabled']} disabled="disabled"{/if}
 												/>
 											{if isset($field['suffix'])}
 											<span class="input-group-addon">
