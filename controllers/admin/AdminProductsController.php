@@ -1883,7 +1883,7 @@ class AdminProductsControllerCore extends AdminController
                             );
                         }
 
-                        if (ImageManager::webpSupport()) {
+                        if (ImageManager::generateWebpImages()) {
                             ImageManager::resize(
                                 $tmpName,
                                 $newPath.'-'.stripslashes($imageType['name']).'.webp',
@@ -4988,7 +4988,7 @@ class AdminProductsControllerCore extends AdminController
                 } else {
                     $imagesTypes = ImageType::getImagesTypes('products');
                     $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
-                    $webpSupport = (bool) ImageManager::webpSupport();
+                    $webpSupport = (bool) ImageManager::generateWebpImages();
                     $tmpName = $file['save_path'];
 
                     $results = [];

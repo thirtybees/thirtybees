@@ -982,7 +982,7 @@ class AdminManufacturersControllerCore extends AdminController
                     (int) $imageType['width'],
                     (int) $imageType['height']
                 );
-                if (ImageManager::webpSupport()) {
+                if (ImageManager::generateWebpImages()) {
                     $res &= ImageManager::resize(
                         _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                         _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.webp',
@@ -998,7 +998,7 @@ class AdminManufacturersControllerCore extends AdminController
                         (int) $imageType['width'] * 2,
                         (int) $imageType['height'] * 2
                     );
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         $res &= ImageManager::resize(
                             _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                             _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.webp',

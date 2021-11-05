@@ -228,25 +228,49 @@ class AdminImagesControllerCore extends AdminController
                 'visibility' => Shop::CONTEXT_ALL,
             ];
         }
-        if (!empty($themeConfiguration['webp'])) {
-            $this->fields_options['images']['fields']['TB_USE_WEBP'] = [
-                'type'       => 'bool',
-                'validation' => 'isBool',
-                'cast'       => 'intval',
-                'required'   => false,
-                'title'      => $this->l('Enable webp images'),
-                'desc'       => $this->l('Serve smaller images in the webp format to browsers that support it'),
-                'visibility' => Shop::CONTEXT_ALL,
-            ];
-            $this->fields_options['images']['fields']['TB_WEBP_QUALITY'] = [
-                'title'      => $this->l('WEBP compression'),
-                'hint'       => $this->l('Ranges from 0 (worst quality, smallest file) to 100 (best quality, biggest file).').' '.$this->l('Recommended: 90.'),
-                'validation' => 'isUnsignedId',
-                'required'   => true,
-                'cast'       => 'intval',
-                'type'       => 'text',
-            ];
+
+        $desc = $this->l('Serve smaller images in the webp format to browsers that support it');
+        if (! ImageManager::themeSupportsWebp()) {
+            $desc .= '<br>' . Translate::ppTags($this->l('[1]Warning[/1]: your theme does not support webp images'), ['<b>']);
         }
+        if (! ImageManager::serverSupportsWebp()) {
+            $desc .= '<br>' . Translate::ppTags($this->l('[1]Warning[/1]: your server does not support webp images'), ['<b>']);
+        }
+        $this->fields_options['images']['fields']['TB_USE_WEBP'] = [
+            'type'       => 'select',
+            'validation' => 'isUnsignedId',
+            'cast'       => 'intval',
+            'required'   => false,
+            'title'      => $this->l('Use webp images'),
+            'hint'       => $this->l('If enabled, your store will server webp images instead of jpg, if the browser supports it'),
+            'desc'       => $desc,
+            'visibility' => Shop::CONTEXT_ALL,
+            'identifier' => 'id',
+            'disabled'   => !ImageManager::serverSupportsWebp(),
+            'list'       => [
+                [
+                    'id'   => ImageManager::DO_NOT_USE_WEBP,
+                    'name' => $this->l('No'),
+                ],
+                [
+                    'id'   => ImageManager::USE_WEBP,
+                    'name' => $this->l('Yes'),
+                ],
+                [
+                    'id'   => ImageManager::GENERATE_WEBP_ONLY,
+                    'name' => $this->l('Generate webp images but still use jpg'),
+                ],
+            ],
+        ];
+        $this->fields_options['images']['fields']['TB_WEBP_QUALITY'] = [
+            'title'      => $this->l('WEBP compression'),
+            'hint'       => $this->l('Ranges from 0 (worst quality, smallest file) to 100 (best quality, biggest file).').' '.$this->l('Recommended: 90.'),
+            'validation' => 'isUnsignedId',
+            'required'   => true,
+            'cast'       => 'intval',
+            'type'       => 'text',
+            'disabled'   => !ImageManager::serverSupportsWebp(),
+        ];
 
         $this->fields_form = [
             'legend' => [
@@ -841,7 +865,7 @@ class AdminImagesControllerCore extends AdminController
                                 $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
                             }
                         }
-                        if (ImageManager::webpSupport()) {
+                        if (ImageManager::generateWebpImages()) {
                             $success &= ImageManager::resize(
                                 $dir.$image,
                                 $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.webp',
@@ -883,7 +907,7 @@ class AdminImagesControllerCore extends AdminController
                             if (!ImageManager::resize($existingImage, $newFile, (int) ($imageType['width']), (int) ($imageType['height']))) {
                                 $this->errors[] = sprintf($this->l('Original image is corrupt (%s) or bad permission on folder'), $existingImage);
                             }
-                            if (ImageManager::webpSupport()) {
+                            if (ImageManager::generateWebpImages()) {
                                 ImageManager::resize(
                                     $existingImage,
                                     $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp',
@@ -903,7 +927,7 @@ class AdminImagesControllerCore extends AdminController
                                     $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $existingImage);
                                 }
 
-                                if (!$this->errors && ImageManager::webpSupport()) {
+                                if (!$this->errors && ImageManager::generateWebpImages()) {
                                     ImageManager::resize(
                                         $existingImage,
                                         $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'2x.webp',
@@ -1040,7 +1064,7 @@ class AdminImagesControllerCore extends AdminController
                                     $this->errors[] = sprintf(Tools::displayError('Original image is corrupt (%s) for product ID %2$d or bad permission on folder'), $existingImg, (int) $imageObj->id_product);
                                 }
                             }
-                            if(!$this->errors && ImageManager::webpSupport()) {
+                            if(!$this->errors && ImageManager::generateWebpImages()) {
                                 $imgRes = imagecreatefromjpeg($dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg');
                                 ImageManager::resize(
                                     $imgRes,
@@ -1138,7 +1162,7 @@ class AdminImagesControllerCore extends AdminController
                         $errors = true;
                     }
 
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         ImageManager::resize(
                             $file,
                             $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'.webp',
@@ -1153,7 +1177,7 @@ class AdminImagesControllerCore extends AdminController
                             $errors = true;
                         }
 
-                        if (ImageManager::webpSupport()) {
+                        if (ImageManager::generateWebpImages()) {
                             ImageManager::resize(
                                 $file,
                                 $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.webp',

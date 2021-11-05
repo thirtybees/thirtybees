@@ -40,6 +40,10 @@ class ImageManagerCore
     const ERROR_FILE_WIDTH = 2;
     const ERROR_MEMORY_LIMIT = 3;
 
+    const DO_NOT_USE_WEBP = 0;
+    const USE_WEBP = 1;
+    const GENERATE_WEBP_ONLY = 2;
+
     /**
      * Generate a cached thumbnail for object lists (eg. carrier, order statuses...etc)
      *
@@ -819,32 +823,93 @@ class ImageManagerCore
     }
 
     /**
-     * @param bool $checkAccept Check the accept header
+     * Returns true, if webp images can be used for current request
      *
      * @return bool
      *
      * @since 1.0.4
      */
-    public static function webpSupport($checkAccept = false)
+    public static function webpSupport()
     {
         static $supported = null;
+
         if ($supported === null) {
-            $config = Context::getContext()->theme->getConfiguration();
-
-            try {
-                $supported = Configuration::get('TB_USE_WEBP')
-                    && !empty($config['webp'])
-                    && function_exists('imagewebp');
-            } catch (PrestaShopException $e) {
-                $supported = false;
-            }
-        }
-
-        if ($checkAccept) {
-            $supported &= !empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false;
+            $supported = (
+                static::getWebpPreference() === static::USE_WEBP &&
+                static::serverSupportsWebp() &&
+                static::themeSupportsWebp() &&
+                static::browserSupportsWebp()
+            );
         }
 
         return $supported;
+    }
+
+    /**
+     * Returns true, if browser that initiated request supports webp images
+     *
+     * @return bool
+     */
+    public static function browserSupportsWebp()
+    {
+        if (array_key_exists('HTTP_ACCEPT', $_SERVER)) {
+            return strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') !== false;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true, if theme currently in use supports webp images
+     *
+     * @return bool
+     */
+    public static function themeSupportsWebp()
+    {
+        $config = Context::getContext()->theme->getConfiguration();
+        return (
+            array_key_exists('webp', $config) &&
+            (bool) $config['webp']
+        );
+    }
+
+    /**
+     * Returns true, if server supports webp images
+     *
+     * @return bool
+     */
+    public static function serverSupportsWebp()
+    {
+        return (bool)function_exists('imagewebp');
+    }
+
+    /**
+     * Returns true, if webp images should be generated. That does not necessary mean that webp images
+     * will be used by store
+     *
+     * @return bool
+     * @since 1.4.0
+     */
+    public static function generateWebpImages()
+    {
+        $preference = static::getWebpPreference();
+        return (
+            $preference === static::GENERATE_WEBP_ONLY ||
+            $preference === static::USE_WEBP
+        );
+    }
+
+    /**
+     * Returns current webp settings preference
+     *
+     * @return int
+     */
+    protected static function getWebpPreference()
+    {
+        try {
+            return (int)Configuration::get('TB_USE_WEBP');
+        } catch (PrestaShopException $e) {
+            return static::DO_NOT_USE_WEBP;
+        }
     }
 
     /**

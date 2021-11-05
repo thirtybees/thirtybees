@@ -579,7 +579,7 @@ class AdminSuppliersControllerCore extends AdminController
                     (int) $imageType['width'],
                     (int) $imageType['height']
                 );
-                if (ImageManager::webpSupport()) {
+                if (ImageManager::generateWebpImages()) {
                     $return &= ImageManager::resize(
                         $file,
                         _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.webp',
@@ -596,7 +596,7 @@ class AdminSuppliersControllerCore extends AdminController
                         (int) $imageType['width'] * 2,
                         (int) $imageType['height'] * 2
                     );
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         $return &= ImageManager::resize(
                             $file,
                             _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.webp',

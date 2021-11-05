@@ -394,7 +394,7 @@ class AdminScenesControllerCore extends AdminController
                             (int) $imageType['height'] * 2
                         );
                     }
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         ImageManager::resize(
                             $baseThumbPath,
                             _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
@@ -427,7 +427,7 @@ class AdminScenesControllerCore extends AdminController
                             (int) $imageType['height'] * 2
                         );
                     }
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         ImageManager::resize(
                             $baseImgPath,
                             _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',

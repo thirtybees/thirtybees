@@ -2130,7 +2130,7 @@ class AdminImportControllerCore extends AdminController
             $srcWidth = $srcHeight = 0;
             $error = 0;
             ImageManager::resize($tmpfile, $path.'.jpg', null, null, 'jpg', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
-            if (ImageManager::webpSupport()) {
+            if (ImageManager::generateWebpImages()) {
                 ImageManager::resize($tmpfile, $path.'.webp', null, null, 'webp', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
             }
             $imagesTypes = ImageType::getImagesTypes($entity, true);
@@ -2170,7 +2170,7 @@ class AdminImportControllerCore extends AdminController
                             $srcHeight
                         );
                     }
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         ImageManager::resize(
                             $tmpfile,
                             $path.'-'.stripslashes($imageType['name']).'.webp',

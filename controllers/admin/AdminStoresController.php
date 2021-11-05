@@ -690,7 +690,7 @@ class AdminStoresControllerCore extends AdminController
                         (int) $imageType['height'] * 2
                     );
                 }
-                if (ImageManager::webpSupport()) {
+                if (ImageManager::generateWebpImages()) {
                     ImageManager::resize(
                         _PS_STORE_IMG_DIR_.$idStore.'.jpg',
                         _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.webp',

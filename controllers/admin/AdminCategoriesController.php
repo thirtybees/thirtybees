@@ -1099,7 +1099,7 @@ class AdminCategoriesControllerCore extends AdminController
                         (int) $imageType['width'],
                         (int) $imageType['height']
                     );
-                    if (ImageManager::webpSupport()) {
+                    if (ImageManager::generateWebpImages()) {
                         $success &= ImageManager::resize(
                             _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                             _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
@@ -1115,7 +1115,7 @@ class AdminCategoriesControllerCore extends AdminController
                             (int) $imageType['width'] * 2,
                             (int) $imageType['height'] * 2
                         );
-                        if (ImageManager::webpSupport()) {
+                        if (ImageManager::generateWebpImages()) {
                             $success &= ImageManager::resize(
                                 _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
@@ -1168,7 +1168,7 @@ class AdminCategoriesControllerCore extends AdminController
                                 (int) $imageType['height']
                             );
 
-                            if (ImageManager::webpSupport()) {
+                            if (ImageManager::generateWebpImages()) {
                                 ImageManager::resize(
                                     $tmpName,
                                     _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
@@ -1185,7 +1185,7 @@ class AdminCategoriesControllerCore extends AdminController
                                     (int) $imageType['height'] * 2
                                 );
 
-                                if (ImageManager::webpSupport()) {
+                                if (ImageManager::generateWebpImages()) {
                                     ImageManager::resize(
                                         $tmpName,
                                         _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
