@@ -319,7 +319,7 @@ class LinkCore
      * @param string $name    Rewrite link of the image
      * @param string $ids     ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
      * @param string $type    Image type
-     * @param string $format  Image format (jpg/png/webp)
+     * @param string $format  Image format (jpg/png/webp). Auto-detected by default
      * @param bool   $highDpi Higher resolution
      *
      * @return string
@@ -328,10 +328,10 @@ class LinkCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getImageLink($name, $ids, $type = null, $format = 'jpg', $highDpi = false)
+    public function getImageLink($name, $ids, $type = null, $format = null, $highDpi = false)
     {
         if (!$format) {
-            $format = 'jpg';
+            $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
         }
         $notDefault = false;
 
@@ -384,6 +384,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getMediaLink($filepath)
     {
@@ -394,7 +395,8 @@ class LinkCore
      * @param string      $name
      * @param int         $idCategory
      * @param string|null $type
-     * @param string      $format
+     * @param string      $format - image format (jpg/png/webp). Auto-detected by default
+     * @param boolean     $highDpi
      *
      * @return string
      *
@@ -402,8 +404,12 @@ class LinkCore
      * @version 1.0.0 Initial version.
      * @version 1.1.0 Use getGenericImageLink().
      */
-    public function getCatImageLink($name, $idCategory, $type = null, $format = 'jpg', $highDpi = false)
+    public function getCatImageLink($name, $idCategory, $type = null, $format = null, $highDpi = false)
     {
+        if (is_null($format)) {
+            $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
+        }
+
         return static::getGenericImageLink(
             'categories',
             $idCategory,
@@ -424,23 +430,26 @@ class LinkCore
      * @param int     $id         ID of the image.
      * @param string  $type       Image type, like 'home', 'home_small', ...
      * @param string  $resolution Image resolution. '', '2x', '3x', ...
-     * @param bool    $webp       Whether to use the WEBP format, if available.
+     * @param bool    $webp       Whether to use the WEBP format, if available. Auto-detected by default
      * @param string  $name       An image name for pretty/SEO-friendly URLs.
      *                            Currently, only (products and) categories
      *                            support such names.
      *
-     * @return Full URL to the image.
+     * @return string Full URL to the image.
      *
-     * @version 1.1.0 Iniitial version.
+     * @throws PrestaShopException
+     * @version 1.1.0 Initial version.
      */
-    public static function getGenericImageLink($class, $id, $type,
-                                               $resolution = '',
-                                               $webp = false, $name = '')
+    public static function getGenericImageLink($class, $id, $type, $resolution = '', $webp = null, $name = '')
     {
         $type = ImageType::getFormatedName($type);
+
+        // resolve image format
         $format = 'jpg';
-        if ($webp && ImageManager::webpSupport()) {
-            $format = 'webp';
+        if (is_null($webp) || $webp === true) {
+            if (ImageManager::webpSupport()) {
+                $format = 'webp';
+            }
         }
 
         if (Configuration::get('PS_REWRITING_SETTINGS')
@@ -471,6 +480,7 @@ class LinkCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function getLanguageLink($idLang, Context $context = null)
     {
@@ -662,6 +672,7 @@ class LinkCore
      *
      * @return string
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -699,6 +710,7 @@ class LinkCore
      * @param int $idLang
      *
      * @return string
+     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     protected function findCMSSubcategories($idCms, $idLang)
@@ -721,6 +733,8 @@ class LinkCore
      * @param int $idLang
      *
      * @return string
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     protected function findCMSCategorySubcategories($idCmsCategory, $idLang)
     {
@@ -746,6 +760,7 @@ class LinkCore
      *
      * @return string
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
