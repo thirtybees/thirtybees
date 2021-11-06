@@ -1513,7 +1513,7 @@ ul#optional_update li.ok {
 	margin: 16px 0
 }
 
-.btn-facebook, .btn-twitter, .btn-pinterest, .btn-linkedin {
+.btn-facebook, .btn-twitter, .btn-linkedin {
 	color: #333333;
 	background-color: white;
 	border: solid 1px #333333;
@@ -1527,18 +1527,14 @@ ul#optional_update li.ok {
 	padding: 4px 8px 4px 4px;
 	font-size: 13px;
 	line-height: 32px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	-ms-border-radius: 3px;
-	-o-border-radius: 3px;
 	border-radius: 3px;
 }
 
-.btn-facebook:hover, .btn-facebook:focus, .btn-facebook:active, .btn-twitter:hover, .btn-twitter:focus, .btn-twitter:active, .btn-pinterest:hover, .btn-pinterest:focus, .btn-pinterest:active, .btn-linkedin:hover, .btn-linkedin:focus, .btn-linkedin:active {
+.btn-facebook:hover, .btn-twitter:hover, .btn-linkedin:hover {
 	color: white;
 }
 
-.btn-facebook i, .btn-twitter i, .btn-pinterest i, .btn-linkedin i {
+.btn-facebook i, .btn-twitter i, .btn-linkedin i {
 	vertical-align: middle;
 	display: inline-block;
 	height: 32px;
@@ -1569,18 +1565,6 @@ ul#optional_update li.ok {
 
 .btn-twitter:hover i {
 	background-position: -64px -32px;
-}
-
-.btn-pinterest i {
-	background-position: -96px 0;
-}
-
-.btn-pinterest:hover {
-	background-color: #ce1f21;
-}
-
-.btn-pinterest:hover i {
-	background-position: -94px -32px;
 }
 
 .btn-linkedin i {
