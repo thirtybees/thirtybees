@@ -3687,7 +3687,7 @@ class AdminProductsControllerCore extends AdminController
         // autoload rich text editor (tiny mce)
         $this->tpl_form_vars['tinymce'] = true;
         $iso = $this->context->language->iso_code;
-        $this->tpl_form_vars['iso'] = file_exists(_PS_CORE_DIR_.'/js/tiny_mce/langs/'.$iso.'.js') ? $iso : 'en';
+        $this->tpl_form_vars['iso'] = file_exists(_PS_ROOT_DIR_.'/js/tiny_mce/langs/'.$iso.'.js') ? $iso : 'en';
         $this->tpl_form_vars['path_css'] = _THEME_CSS_DIR_;
         $this->tpl_form_vars['ad'] = __PS_BASE_URI__.basename(_PS_ADMIN_DIR_);
 
@@ -4698,7 +4698,7 @@ class AdminProductsControllerCore extends AdminController
                 }
 
                 $isoTinyMce = $this->context->language->iso_code;
-                $isoTinyMce = (file_exists(_PS_JS_DIR_.'tiny_mce/langs/'.$isoTinyMce.'.js') ? $isoTinyMce : 'en');
+                $isoTinyMce = (file_exists(_PS_ROOT_DIR_.'/js/tiny_mce/langs/'.$isoTinyMce.'.js') ? $isoTinyMce : 'en');
 
                 $attachmentUploader = new HelperUploader('attachment_file');
                 $attachmentUploader
