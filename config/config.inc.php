@@ -189,12 +189,13 @@ if (defined('_PS_ADMIN_DIR_')) {
     $employee = new Employee($cookie->id_employee);
     $context->employee = $employee;
 
-    /* Auth on shops are recached after employee assignation */
-    if ($employee->id_profile != _PS_ADMIN_PROFILE_) {
-        Shop::cacheShops(true);
+    if (Validate::isLoadedObject($employee)) {
+        /* Auth on shops are re-cached after employee assignation */
+        if ($employee->id_profile != _PS_ADMIN_PROFILE_) {
+            Shop::cacheShops(true);
+        }
+        $cookie->id_lang = (int)$employee->id_lang;
     }
-
-    $cookie->id_lang = (int)$employee->id_lang;
 }
 
 /* if the language stored in the cookie is not available language, use default language */
