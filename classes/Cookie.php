@@ -188,9 +188,9 @@ class CookieCore
 
         //checks if the language exists, if not choose the default language
         if (!$this->_standalone && !Language::getLanguage((int) $this->id_lang)) {
-            $this->id_lang = Configuration::get('PS_LANG_DEFAULT');
+            $this->_content['id_lang'] = Configuration::get('PS_LANG_DEFAULT');
             // set detect_language to force going through Tools::setCookieLanguage to figure out browser lang
-            $this->detect_language = true;
+            $this->_content['detect_language'] = true;
         }
     }
 
