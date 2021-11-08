@@ -219,7 +219,7 @@ class CurrencyCore extends ObjectModel
      * @param int      $idModule
      * @param int|null $idShop
      *
-     * @return array|bool|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -229,20 +229,22 @@ class CurrencyCore extends ObjectModel
     public static function checkPaymentCurrencies($idModule, $idShop = null)
     {
         if (empty($idModule)) {
-            return false;
+            return [];
         }
 
         if (is_null($idShop)) {
             $idShop = Context::getContext()->shop->id;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('module_currency')
                 ->where('`id_module` = '.(int) $idModule)
                 ->where('`id_shop` = '.(int) $idShop)
         );
+
+        return is_array($ret) ? $ret : [];
     }
 
     /**
