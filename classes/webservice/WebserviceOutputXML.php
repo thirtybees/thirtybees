@@ -189,20 +189,21 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
     {
         $ret = '';
         $nodeContent = '';
+        $value = isset($field['value']) ? $field['value'] : null;
         $ret .= '<'.$field['sqlId'];
         // display i18n fields
         if (isset($field['i18n']) && $field['i18n']) {
             foreach ($this->languages as $language) {
                 $more_attr = '';
-                if (isset($field['synopsis_details']) || (isset($field['value']) && is_array($field['value']))) {
+                if (isset($field['synopsis_details']) || is_array($value)) {
                     $more_attr .= ' xlink:href="'.$this->getWsUrl().'languages/'.$language.'"';
                     if (isset($field['synopsis_details']) && $this->schemaToDisplay != 'blank') {
                         $more_attr .= ' format="isUnsignedId" ';
                     }
                 }
                 $nodeContent .= '<language id="'.$language.'"'.$more_attr.'>';
-                if (isset($field['value']) && is_array($field['value']) && isset($field['value'][$language])) {
-                    $nodeContent .= '<![CDATA['.$field['value'][$language].']]>';
+                if (is_array($value) && isset($value[$language])) {
+                    $nodeContent .= '<![CDATA['.$value[$language].']]>';
                 }
                 $nodeContent .= '</language>';
             }
@@ -210,10 +211,10 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
         else {
             if (array_key_exists('xlink_resource', $field) && $this->schemaToDisplay != 'blank') {
                 if (!is_array($field['xlink_resource'])) {
-                    $ret .= ' xlink:href="'.$this->getWsUrl().$field['xlink_resource'].'/'.$field['value'].'"';
+                    $ret .= ' xlink:href="'.$this->getWsUrl().$field['xlink_resource'].'/'.$value.'"';
                 } else {
                     $ret .= ' xlink:href="'.$this->getWsUrl().$field['xlink_resource']['resourceName'].'/'.
-                        (isset($field['xlink_resource']['subResourceName']) ? $field['xlink_resource']['subResourceName'].'/'.$field['object_id'].'/' : '').$field['value'].'"';
+                        (isset($field['xlink_resource']['subResourceName']) ? $field['xlink_resource']['subResourceName'].'/'.$field['object_id'].'/' : '').$value.'"';
                 }
             }
 
@@ -225,8 +226,8 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
                 $ret .= ' read_only="true"';
             }
 
-            if ($field['value'] != '') {
-                $nodeContent .= '<![CDATA['.$field['value'].']]>';
+            if ($value != '') {
+                $nodeContent .= '<![CDATA['.$value.']]>';
             }
         }
 

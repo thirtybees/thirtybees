@@ -807,10 +807,14 @@ class WebserviceOutputBuilderCore
             if (!is_array($this->fieldsToDisplay) || in_array($fieldName, $this->fieldsToDisplay[$assocName])) {
                 if ($fieldName == 'id' && !isset($field['sqlId'])) {
                     $field['sqlId'] = 'id';
-                    $field['value'] = $objectAssoc['id'];
+                    if (is_array($objectAssoc) && array_key_exists('id', $objectAssoc)) {
+                        $field['value'] = $objectAssoc['id'];
+                    }
                 } elseif (!isset($field['sqlId'])) {
                     $field['sqlId'] = $fieldName;
-                    $field['value'] = $objectAssoc[$fieldName];
+                    if (is_array($objectAssoc) && array_key_exists($fieldName, $objectAssoc)) {
+                        $field['value'] = $objectAssoc[$fieldName];
+                    }
                 }
                 $field['entities_name'] = $assocName;
                 $field['entity_name'] = $resourceName;

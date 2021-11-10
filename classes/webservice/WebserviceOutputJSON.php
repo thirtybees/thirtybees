@@ -164,22 +164,16 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     {
         $isAssociation = (isset($field['is_association']) && $field['is_association'] == true);
 
-        if (is_array($field['value'])) {
-            $tmp = [];
-            foreach ($this->languages as $idLang) {
-                $tmp[] = ['id' => $idLang, 'value' => $field['value'][$idLang]];
-            }
-            if (count($tmp) == 1) {
-                $field['value'] = $tmp[0]['value'];
-            } else {
-                $field['value'] = $tmp;
-            }
-        }
-        // Case 1 : fields of the current entity (not an association)
         if (!$isAssociation) {
-            $this->currentEntity[$field['sqlId']] = $field['value'];
-        } else { // Case 2 : fields of an associated entity to the current one
-            $this->currentAssociatedEntity[] = ['name' => $field['entities_name'], 'key' => $field['sqlId'], 'value' => $field['value']];
+            // Case 1 : fields of the current entity (not an association)
+            $this->currentEntity[$field['sqlId']] = $this->getFieldValue($field);
+        } else {
+            // Case 2 : fields of an associated entity to the current one
+            $this->currentAssociatedEntity[] = [
+                'name' => $field['entities_name'],
+                'key' => $field['sqlId'],
+                'value' => $this->getFieldValue($field)
+            ];
         }
 
         return '';
@@ -395,5 +389,33 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     public function renderi18nField($field)
     {
         return '';
+    }
+
+    /**
+     * Returns field value
+     *
+     * @param array $field
+     * @return mixed
+     */
+    protected function getFieldValue($field)
+    {
+        $value = isset($field['value']) ? $field['value'] : null;
+
+        if (is_array($value)) {
+            $tmp = [];
+            foreach ($this->languages as $idLang) {
+                $tmp[] = [
+                    'id' => $idLang,
+                    'value' => array_key_exists($idLang, $value) ? $value[$idLang] : '',
+                ];
+            }
+            if (count($tmp) == 1) {
+                $value = $tmp[0]['value'];
+            } else {
+                $value = $tmp;
+            }
+        }
+
+        return $value;
     }
 }
