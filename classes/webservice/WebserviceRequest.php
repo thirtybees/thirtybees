@@ -1592,15 +1592,15 @@ class WebserviceRequestCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function saveEntityFromXml($successReturnCode)
     {
         try {
-            $xml = new SimpleXMLElement($this->_inputXml);
+            $xml = @(new SimpleXMLElement($this->_inputXml));
         } catch (Exception $error) {
             $this->setError(500, 'XML error : '.$error->getMessage()."\n".'XML length : '.strlen($this->_inputXml)."\n".'Original XML : '.$this->_inputXml, 127);
-
-            return;
+            return false;
         }
 
         /** @var SimpleXMLElement|Countable $xmlEntities */
@@ -1615,7 +1615,6 @@ class WebserviceRequestCore
             }
         }
         if ($this->method == 'PUT') {
-            $ids2 = [];
             $ids2 = array_unique($ids);
             if (count($ids2) != count($ids)) {
                 $this->setError(400, 'id is duplicate in request', 89);
