@@ -7082,8 +7082,12 @@ class ProductCore extends ObjectModel
      */
     public function setWsCategories($categories)
     {
-        $ids = array_map('intval', array_column($categories, 'id'));
-        $result = $this->updateCategories($ids);
+        $ids = array_filter(array_map('intval', array_column($categories, 'id')));
+        if ($ids) {
+            $result = $this->updateCategories($ids);
+        } else {
+            $result = $this->deleteCategories(true);
+        }
         Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
         return $result;
     }
