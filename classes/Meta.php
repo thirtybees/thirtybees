@@ -187,7 +187,7 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -196,18 +196,19 @@ class MetaCore extends ObjectModel
      */
     public static function getMetas()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('meta')
                 ->orderBy('`page` ASC')
         );
+        return is_array($ret) ? $ret : [];
     }
 
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -216,14 +217,15 @@ class MetaCore extends ObjectModel
      */
     public static function getMetasByIdLang($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('*')
+                ->select('m.id_meta, m.page, m.configurable, ml.title, ml.description, ml.keywords, ml.url_rewrite')
                 ->from('meta', 'm')
-                ->leftJoin('meta_lang', 'ml', 'm.`id_meta` = ml.`id_meta`')
-                ->where('ml.`id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('ml'))
-                ->orderBy('`page` ASC')
+                ->leftJoin('meta_lang', 'ml', 'm.id_meta = ml.id_meta AND ml.id_lang = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('ml'))
+                ->orderBy('m.page ASC')
         );
+
+        return is_array($ret) ? $ret : [];
     }
 
     /**
