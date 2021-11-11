@@ -998,7 +998,7 @@ class CategoryCore extends ObjectModel
      *
      * @param int $id
      *
-     * @return array
+     * @return array | false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1015,6 +1015,9 @@ class CategoryCore extends ObjectModel
                     ->from('category')
                     ->where('`id_category` = '.(int) $id)
             );
+            if (! is_array($result)) {
+                $result = false;
+            }
             Cache::store($cacheId, $result);
 
             return $result;

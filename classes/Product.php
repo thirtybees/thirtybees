@@ -7791,13 +7791,20 @@ class ProductCore extends ObjectModel
         }
 
         $interval = Category::getInterval($this->id_category_default);
-        $sql = new DbQuery();
-        $sql->from('category', 'c');
-        $sql->leftJoin('category_lang', 'cl', 'c.id_category = cl.id_category AND id_lang = '.(int) $idLang.Shop::addSqlRestrictionOnLang('cl'));
-        $sql->where('c.nleft <= '.(int) $interval['nleft'].' AND c.nright >= '.(int) $interval['nright']);
-        $sql->orderBy('c.nleft');
+        if (is_array($interval)) {
+            $sql = new DbQuery();
+            $sql->from('category', 'c');
+            $sql->leftJoin('category_lang', 'cl', 'c.id_category = cl.id_category AND id_lang = ' . (int)$idLang . Shop::addSqlRestrictionOnLang('cl'));
+            $sql->where('c.nleft <= ' . (int)$interval['nleft'] . ' AND c.nright >= ' . (int)$interval['nright']);
+            $sql->orderBy('c.nleft');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            if (is_array($ret)) {
+                return $ret;
+            }
+        }
+
+        return [];
     }
 
     /**
