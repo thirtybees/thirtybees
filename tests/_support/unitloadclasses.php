@@ -486,6 +486,8 @@ $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceException.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceException.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceKey.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceKey.php');
+$kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceLogger.php');
+$kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceLogger.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputBuilder.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceOutputBuilder.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputInterface.php');

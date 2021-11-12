@@ -40,6 +40,9 @@ class WebserviceRequestCore
     const HTTP_POST = 2;
     const HTTP_PUT = 4;
 
+    const HEADER_IO_FORMAT = 'Io-Format';
+    const HEADER_OUTPUT_FORMAT = 'Output-Format';
+
     // @codingStandardsIgnoreStart
     protected $_available_languages = null;
     /**
@@ -69,6 +72,11 @@ class WebserviceRequestCore
      * @var string
      */
     public $wsUrl;
+
+    /**
+     * @var array
+     */
+    protected $params;
 
     /**
      * PrestaShop Webservice Documentation URL
@@ -219,6 +227,12 @@ class WebserviceRequestCore
     public static $ws_current_classname;
 
     public static $shopIDs;
+
+    /**
+     * @var WebserviceLogger
+     */
+    protected $logger = null;
+
     // @codingStandardsIgnoreEnd
 
     /**
@@ -252,7 +266,7 @@ class WebserviceRequestCore
     /**
      * Get WebserviceRequest object instance (Singleton)
      *
-     * @return object WebserviceRequest instance
+     * @return static WebserviceRequest instance
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -277,11 +291,11 @@ class WebserviceRequestCore
     protected function getOutputObject($type)
     {
         // set header param in header or as get param
-        $headers = static::getallheaders();
-        if (isset($headers['Io-Format'])) {
-            $type = $headers['Io-Format'];
-        } elseif (isset($headers['Output-Format'])) {
-            $type = $headers['Output-Format'];
+        $headers = static::getWebserviceHeaders();
+        if (isset($headers[static::HEADER_IO_FORMAT])) {
+            $type = $headers[static::HEADER_IO_FORMAT];
+        } elseif (isset($headers[static::HEADER_OUTPUT_FORMAT])) {
+            $type = $headers[static::HEADER_OUTPUT_FORMAT];
         } elseif (isset($_GET['output_format'])) {
             $type = $_GET['output_format'];
         } elseif (isset($_GET['io_format'])) {
@@ -496,16 +510,22 @@ class WebserviceRequestCore
      * @param string $key
      * @param string $method
      * @param string $url
-     * @param string $params
+     * @param array $params GET parameters
+     * @param $badClassName
      * @param string $inputXml
      *
      * @return array Returns an array of results (headers, content, type of resource...)
      *
+     * @throws PrestaShopException
+     * @throws WebserviceException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function fetch($key, $method, $url, $params, $badClassName, $inputXml = null)
     {
+        $logger = $this->getLogger();
+
         // Time logger
         $this->_startTime = microtime(true);
         $this->objects = [];
@@ -518,19 +538,31 @@ class WebserviceRequestCore
         global $webserviceCall, $displayErrors;
         $webserviceCall = true;
         $displayErrors = strtolower(ini_get('display_errors')) != 'off';
+
+        if (! $params) {
+            $params = [];
+        }
+        $this->params = $params;
+
         // __PS_BASE_URI__ is from Shop::$current_base_uri
         $this->wsUrl = Tools::getHttpHost(true).__PS_BASE_URI__.'api/';
         // set the output object which manage the content and header structure and informations
         $this->objOutput = new WebserviceOutputBuilder($this->wsUrl);
-
         $this->_key = trim($key);
+
 
         $this->outputFormat = isset($params['output_format']) ? $params['output_format'] : $this->outputFormat;
         // Set the render object to build the output on the asked format (XML, JSON, CSV, ...)
         $this->objOutput->setObjectRender($this->getOutputObject($this->outputFormat));
-        $this->params = $params;
+
         // Check webservice activation and request authentication
         if ($this->webserviceChecks()) {
+
+            $logger->setKey(WebserviceKey::getInstanceByKey($this->_key));
+
+            $headers = static::getWebserviceHeaders();
+            $logger->logRequest($method, $_SERVER['REQUEST_URI'], $headers, $inputXml);
+
             if ($badClassName) {
                 $this->setError(500, 'Class "'.htmlspecialchars($badClassName).'" not found. Please update the class_name field in the webservice_account table.', 126);
             }
@@ -587,24 +619,17 @@ class WebserviceRequestCore
                             $this->resourceConfiguration = $object->getWebserviceParameters();
                         }
                     }
-                    $success = false;
                     // execute the action
                     switch ($this->method) {
                         case 'GET':
                         case 'HEAD':
-                            if ($this->executeEntityGetAndHead()) {
-                                $success = true;
-                            }
+                            $this->executeEntityGetAndHead();
                             break;
                         case 'POST':
-                            if ($this->executeEntityPost()) {
-                                $success = true;
-                            }
+                            $this->executeEntityPost();
                             break;
                         case 'PUT':
-                            if ($this->executeEntityPut()) {
-                                $success = true;
-                            }
+                            $this->executeEntityPut();
                             break;
                         case 'DELETE':
                             $this->executeEntityDelete();
@@ -648,12 +673,20 @@ class WebserviceRequestCore
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function webserviceChecks()
     {
-        return ($this->isActivated() && $this->authenticate() && $this->groupShopExists($this->params) && $this->shopExists($this->params) && $this->shopHasRight($this->_key));
+        return (
+            $this->isActivated() &&
+            $this->authenticate() &&
+            $this->groupShopExists($this->params) &&
+            $this->shopExists($this->params) &&
+            $this->shopHasRight($this->_key)
+        );
     }
 
     /**
@@ -670,10 +703,6 @@ class WebserviceRequestCore
      */
     public function setError($status, $label, $code)
     {
-        global $displayErrors;
-        if (!isset($displayErrors)) {
-            $displayErrors = strtolower(ini_get('display_errors')) != 'off';
-        }
         if (isset($this->objOutput)) {
             $this->objOutput->setStatus($status);
         }
@@ -686,7 +715,7 @@ class WebserviceRequestCore
      * @param int    $num
      * @param string $label
      * @param array  $value
-     * @param array  $values
+     * @param array  $availableValues
      * @param int    $code
      *
      * @return void
@@ -746,7 +775,7 @@ class WebserviceRequestCore
     {
         $displayErrors = strtolower(ini_get('display_errors')) != 'off';
         if (!(error_reporting() & $errno) || $displayErrors) {
-            return;
+            return false;
         }
 
         $errortype = [
@@ -878,6 +907,7 @@ class WebserviceRequestCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function isActivated()
     {
@@ -897,6 +927,7 @@ class WebserviceRequestCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function shopHasRight($key)
     {
@@ -922,6 +953,8 @@ class WebserviceRequestCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -958,6 +991,8 @@ class WebserviceRequestCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1897,21 +1932,25 @@ class WebserviceRequestCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws WebserviceException
      */
     protected function returnOutput()
     {
         $return = [];
 
         // write headers
-        $this->objOutput->setHeaderParams('Access-Time', time())
-            ->setHeaderParams('PSWS-Version', _PS_VERSION_)
-            ->setHeaderParams('Execution-Time', round(microtime(true) - $this->_startTime, 3));
+        $time = round(microtime(true) - $this->_startTime, 3);
+        $this->objOutput
+            ->setHeaderParams('Access-Time', time())
+            ->setHeaderParams('Execution-Time', $time);
 
         $return['type'] = strtolower($this->outputFormat);
 
         // write this header only now (avoid hackers happiness...)
         if ($this->_authenticated) {
-            $this->objOutput->setHeaderParams('PSWS-Version', _PS_VERSION_);
+            $this->objOutput
+                ->setHeaderParams('PSWS-Version', _PS_VERSION_)
+                ->setHeaderParams('TBWS-Version', _TB_VERSION_);
         }
 
         // If Specific Management is asked
@@ -1978,7 +2017,7 @@ class WebserviceRequestCore
             $this->objOutput->setHeaderParams('Content-Sha1', sha1($return['content']));
         }
 
-        // if errors happends when creating returned xml,
+        // if errors happens when creating returned xml,
         // the usual xml content is replaced by the nice error handler content
         if ($this->hasErrors()) {
             $this->_outputEnabled = true;
@@ -1992,6 +2031,9 @@ class WebserviceRequestCore
         $return['headers'] = $this->objOutput->buildHeader();
         restore_error_handler();
 
+        $logger = $this->getLogger();
+        $logger->logResponse($return['content'], $this->errors, $time);
+
         return $return;
     }
 
@@ -2001,10 +2043,8 @@ class WebserviceRequestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getallheaders()
+    public static function getAllHeaders()
     {
-        $retarr = [];
-        $headers = [];
 
         if (function_exists('apache_request_headers')) {
             $headers = apache_request_headers();
@@ -2020,14 +2060,40 @@ class WebserviceRequestCore
                 }
             }
         }
+
         //Normalize this array to Cased-Like-This structure.
+        $retarr = [];
         foreach ($headers as $key => $value) {
             $key = preg_replace('/^HTTP_/i', '', $key);
             $key = str_replace(' ', '-', ucwords(strtolower(str_replace(['-', '_'], ' ', $key))));
             $retarr[$key] = $value;
         }
         ksort($retarr);
-
         return $retarr;
     }
+
+    /**
+     * @return array
+     */
+    private static function getWebserviceHeaders()
+    {
+        static $headers = null;
+        if (is_null($headers)) {
+            $interesting = [ static::HEADER_OUTPUT_FORMAT, static::HEADER_IO_FORMAT ];
+            $headers = array_intersect_key(static::getAllHeaders(), array_flip($interesting));
+        }
+        return $headers;
+    }
+
+    /**
+     * @return WebserviceLogger
+     */
+    protected function getLogger()
+    {
+        if (is_null($this->logger)) {
+            $this->logger = new WebserviceLogger();
+        }
+        return $this->logger;
+    }
+
 }

@@ -94,6 +94,8 @@ if (!class_exists($className)) {
 }
 // fetch the request
 WebserviceRequest::$ws_current_classname = $className;
+
+/** @var WebserviceRequest $request */
 $request = call_user_func([$className, 'getInstance']);
 
 $result = $request->fetch($key, $method, $_GET['url'], $params, $badClassName, $inputXml);
