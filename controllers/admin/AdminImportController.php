@@ -1598,7 +1598,7 @@ class AdminImportControllerCore extends AdminController
                         $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
                     }
                 }
-                Image::deleteAllImages(_PS_PROD_IMG_DIR_);
+                Image::deleteAllImages();
                 if (!file_exists(_PS_PROD_IMG_DIR_)) {
                     mkdir(_PS_PROD_IMG_DIR_);
                 }

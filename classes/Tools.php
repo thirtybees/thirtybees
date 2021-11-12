@@ -5274,6 +5274,29 @@ FileETag none
 
         return null;
     }
+
+    /**
+     * Returns true, if directory is empty
+     *
+     * @param string $directory path to directory to check
+     * @param array $ignore list of files/directories that can exists in the directory for it to be considered empty
+     *
+     * @since 1.4.0
+     * @return bool
+     */
+    public static function isDirectoryEmpty($directory, $ignore=[])
+    {
+        if (! is_dir($directory)) {
+            return false;
+        }
+        $arrayIgnore = array_merge(['.', '..'], $ignore);
+        foreach (@scandir($directory) as $filename) {
+            if (!in_array($filename, $arrayIgnore)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 /**

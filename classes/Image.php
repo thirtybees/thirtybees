@@ -647,43 +647,55 @@ class ImageCore extends ObjectModel
     /**
      * Recursively deletes all product images in the given folder tree and removes empty folders.
      *
-     * @param string $path   folder containing the product images to delete
-     * @param string $format image format
+     * @param string $path folder containing the product images to delete
+     * @param array|string $formats image formats to delete
      *
      * @return bool success
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
-    public static function deleteAllImages($path, $format = 'jpg')
+    public static function deleteAllImages($path = _PS_PROD_IMG_DIR_, $formats = null)
     {
-        if (!$path || !$format || !is_dir($path)) {
+        if (!$path || !is_dir($path)) {
             return false;
         }
-        foreach (scandir($path) as $file) {
-            if (preg_match('/^[0-9]+(\-(.*))?\.'.$format.'$/', $file)) {
-                unlink($path.$file);
-            } elseif (is_dir($path.$file) && (preg_match('/^[0-9]$/', $file))) {
-                Image::deleteAllImages($path.$file.'/', $format);
+
+        // normalize input variable $formats. It can either be null, string, or array
+        if (is_null($formats)) {
+            // auto detect formats
+            $formats = ['jpg'];
+            if (ImageManager::generateWebpImages()) {
+                $formats[] = 'webp';
+            }
+        } elseif (is_string($formats)) {
+            // single format provided
+            $formats = [ $formats ];
+        } elseif (! is_array($formats)) {
+            return false;
+        }
+
+        // recursively delete files
+        foreach (@scandir($path) as $file) {
+            if (is_dir($path.$file)) {
+                if (preg_match('/^[0-9]$/', $file)) {
+                    Image::deleteAllImages($path.$file.'/', $formats);
+                }
+            } else {
+                foreach ($formats as $format) {
+                    if (preg_match('/^[0-9]+(\-(.*))?\.' . $format . '$/', $file)) {
+                        @unlink($path . $file);
+                    }
+                }
             }
         }
 
         // Can we remove the image folder?
         if (is_numeric(basename($path))) {
-            $removeFolder = true;
-            foreach (scandir($path) as $file) {
-                if (($file != '.' && $file != '..' && $file != 'index.php')) {
-                    $removeFolder = false;
-                    break;
-                }
-            }
-
-            if ($removeFolder) {
-                // we're only removing index.php if it's a folder we want to delete
-                if (file_exists($path.'index.php')) {
-                    @unlink($path.'index.php');
-                }
-                @rmdir($path);
+            // delete image directory, if it's empty
+            if (Tools::isDirectoryEmpty($path, ['index.php'])) {
+                Tools::deleteDirectory($path);
             }
         }
 
@@ -871,9 +883,48 @@ class ImageCore extends ObjectModel
             return false;
         }
 
+        $directory = $this->image_dir . $this->getImgFolder();
+        if (! is_dir($directory)) {
+            return true;
+        }
+
+        // delete jpg files
+        $result = $this->deleteImageFormat('jpg');
+
+        // delete webp files
+        if (ImageManager::generateWebpImages()) {
+            $result = $this->deleteImageFormat('webp') && $result;
+        }
+
+        // delete image_format, if not deleted already
+        if ($this->image_format && !in_array($this->image_format, ['jpg', 'webp'])) {
+            $result = $this->deleteImageFormat($this->image_format) && $result;
+        }
+
+        // delete image directory, if it's empty
+        if (Tools::isDirectoryEmpty($directory, ['index.php'])) {
+            Tools::deleteDirectory($directory);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Delete the product images of given format from disk
+     *
+     * @param string $format
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since 1.4.0
+     */
+    protected function deleteImageFormat($format)
+    {
+
         // Delete base image
-        if (file_exists($this->image_dir.$this->getExistingImgPath().'.'.$this->image_format)) {
-            if (! @unlink($this->image_dir.$this->getExistingImgPath().'.'.$this->image_format)) {
+        if (file_exists($this->image_dir.$this->getExistingImgPath().'.'.$format)) {
+            if (! @unlink($this->image_dir.$this->getExistingImgPath().'.'.$format)) {
                 return false;
             }
         }
@@ -883,41 +934,29 @@ class ImageCore extends ObjectModel
         // Delete auto-generated images
         $imageTypes = ImageType::getImagesTypes();
         foreach ($imageTypes as $imageType) {
-            $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'.'.$this->image_format;
+            $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'.'.$format;
             if (Configuration::get('WATERMARK_HASH')) {
-                $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$this->image_format;
+                $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$format;
             }
         }
 
         // Delete watermark image
-        $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-watermark.'.$this->image_format;
+        $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-watermark.'.$format;
         // delete index.php
         $filesToDelete[] = $this->image_dir.$this->getImgFolder().'index.php';
         // Delete tmp images
-        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_'.$this->id_product.'.'.$this->image_format;
-        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'.'.$this->image_format;
+        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_'.$this->id_product.'.'.$format;
+        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'.'.$format;
 
+        // perform delete
+        $result = true;
         foreach ($filesToDelete as $file) {
-            if (file_exists($file) && !@unlink($file)) {
-                return false;
+            if (file_exists($file)) {
+                $result = @unlink($file) && $result;
             }
         }
 
-        // Can we delete the image folder?
-        if (is_dir($this->image_dir.$this->getImgFolder())) {
-            $deleteFolder = true;
-            foreach (scandir($this->image_dir.$this->getImgFolder()) as $file) {
-                if (($file != '.' && $file != '..')) {
-                    $deleteFolder = false;
-                    break;
-                }
-            }
-        }
-        if (isset($deleteFolder) && $deleteFolder) {
-            @rmdir($this->image_dir.$this->getImgFolder());
-        }
-
-        return true;
+        return $result;
     }
 
     /**
