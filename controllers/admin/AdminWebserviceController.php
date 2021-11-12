@@ -101,9 +101,21 @@ class AdminWebserviceControllerCore extends AdminController
                         'title' => $this->l('Enable thirty bees\' webservice'),
                         'desc'  => $this->l('Before activating the webservice, you must be sure to: ').
                             '<ol>
-													<li>'.$this->l('Check that URL rewriting is available on this server.').'</li>
-													<li>'.$this->l('Check that the five methods GET, POST, PUT, DELETE and HEAD are supported by this server.').'</li>
-												</ol>',
+                                <li>'.$this->l('Check that URL rewriting is available on this server.').'</li>
+                                <li>'.$this->l('Check that the five methods GET, POST, PUT, DELETE and HEAD are supported by this server.').'</li>
+                            </ol>',
+                        'cast'  => 'intval',
+                        'type'  => 'bool',
+                    ],
+                    'WEBSERVICE_LOG_ENABLED' => [
+                        'title' => $this->l('Enable logging'),
+                        'desc'  => Translate::ppTags(sprintf($this->l('All webservice requests and responses will be saved in directory [1]%s[/1]'), WebserviceLogger::getDirectory()), ['<code>']),
+                        'cast'  => 'intval',
+                        'type'  => 'bool',
+                    ],
+                    'PS_WEBSERVICE_CGI_HOST' => [
+                        'title' => $this->l('Enable CGI mode for PHP'),
+                        'desc'  => $this->l('Before choosing "Yes", check that PHP is not configured as an Apache module on your server.'),
                         'cast'  => 'intval',
                         'type'  => 'bool',
                     ],
@@ -111,15 +123,6 @@ class AdminWebserviceControllerCore extends AdminController
                 'submit' => ['title' => $this->l('Save')],
             ],
         ];
-
-        if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_options['general']['fields']['PS_WEBSERVICE_CGI_HOST'] = [
-                'title' => $this->l('Enable CGI mode for PHP'),
-                'desc'  => $this->l('Before choosing "Yes", check that PHP is not configured as an Apache module on your server.'),
-                'cast'  => 'intval',
-                'type'  => 'bool',
-            ];
-        }
 
         parent::__construct();
     }

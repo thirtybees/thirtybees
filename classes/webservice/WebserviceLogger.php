@@ -142,14 +142,23 @@ class WebserviceLoggerCore
     }
 
     /**
-     * Returns log file
+     * Returns directory for log files
      */
-    protected function getLogFilename()
+    public static function getDirectory()
     {
         $dir = _PS_ROOT_DIR_.'/log/webservice/';
         if (! is_dir($dir)) {
             @mkdir($dir);
         }
+        return $dir;
+    }
+
+    /**
+     * Returns log file
+     */
+    protected function getLogFilename()
+    {
+        $dir = static::getDirectory();
         if (is_null($this->key)) {
             return $dir . 'webservice_' . $this->fileTime . '.log';
         } else {
