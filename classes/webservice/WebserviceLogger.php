@@ -123,6 +123,7 @@ class WebserviceLoggerCore
             }
         } else {
             $formattedMessage .= "Success response generated in " . $time . " seconds\n";
+            $formattedMessage .= $this->formatPayload($prefix, $content);
         }
         @file_put_contents($filename, $formattedMessage, FILE_APPEND);
     }
