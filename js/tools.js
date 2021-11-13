@@ -102,7 +102,7 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
     price = 0;
   }
 
-  if (typeof window.currencyFormatters[currency] !== 'undefined' && window.currencyFormatters[currency]) {
+  if (typeof window['currencyFormatters'] !== 'undefined' && window.currencyFormatters[currency]) {
     var formatter = window.currencyFormatters[currency];
     var val = executeFunctionByName(formatter, [price, currencyFormat, currencySign, currencyBlank, priceDisplayPrecision]);
     if (typeof val === 'string' || val instanceof String) {
