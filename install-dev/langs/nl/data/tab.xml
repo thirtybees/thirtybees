@@ -104,4 +104,5 @@
   <tab id="Custom_Code" name="Aangepaste Code"/>
   <tab id="Redirects" name="Doorverwijzingen"/>
   <tab id="Duplicate_URLs" name="Dubbele URL's"/>
+  <tab id="CustomerMerge" name="Merge customers"/>
 </entity_tab>

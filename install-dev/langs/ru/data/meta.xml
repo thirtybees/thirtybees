@@ -204,4 +204,40 @@
     <keywords>поставщик</keywords>
     <url_rewrite>supplier</url_rewrite>
   </meta>
+  <meta id="order-confirmation" id_shop="1">
+    <title>Order confirmation</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>order-confirmation</url_rewrite>
+  </meta>
+  <meta id="category" id_shop="1">
+    <title>Category</title>
+    <description>Categories</description>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="changecurrency" id_shop="1">
+    <title>Change currency</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>change-currency</url_rewrite>
+  </meta>
+  <meta id="cms" id_shop="1">
+    <title>CMS</title>
+    <description/>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="product" id_shop="1">
+    <title>Product</title>
+    <description>Products</description>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="statistics" id_shop="1">
+    <title>Statistics</title>
+    <description>Collects statistics</description>
+    <keywords/>
+    <url_rewrite>statistics</url_rewrite>
+  </meta>
 </entity_meta>

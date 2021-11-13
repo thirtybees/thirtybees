@@ -101,4 +101,5 @@
   <tab id="Configuration" name="Configuration"/>
   <tab id="CarrierWizard" name="Carrier"/>
   <tab id="Custom_Code" name="Custom Code"/>
+  <tab id="CustomerMerge" name="Merge customers"/>
 </entity_tab>

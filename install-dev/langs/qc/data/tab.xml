@@ -101,4 +101,5 @@
   <tab id="CarrierWizard" name="Transporteur"/>
   <tab id="Custom_Code" name="Custom Code"/>
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
+  <tab id="CustomerMerge" name="Merge customers"/>
 </entity_tab>

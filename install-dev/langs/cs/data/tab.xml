@@ -99,6 +99,7 @@
   <tab id="Supply_orders" name="Objednávky dodavatelům"/>
   <tab id="Configuration" name="Konfigurace"/>
   <tab id="CarrierWizard" name="Dopravce"/>
-  <tab id="Custom_Code" name="Custom Code"/>
-  <tab id="Duplicate_URLs" name="Duplicate URLs"/>
+  <tab id="Custom_Code" name="Vlastní kód"/>
+  <tab id="Duplicate_URLs" name="Duplicitní URLs"/>
+  <tab id="CustomerMerge" name="Sloučit zákaznické účty"/>
 </entity_tab>

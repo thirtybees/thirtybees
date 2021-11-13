@@ -102,4 +102,5 @@
   <tab id="Custom_Code" name="קוד מותאם אישית"/>
   <tab id="Duplicate_URLs" name="כתובות זהות"/>
   <tab id="Image_Mapping" name="מיפוי תמונה"/>
+  <tab id="CustomerMerge" name="Merge customers"/>
 </entity_tab>

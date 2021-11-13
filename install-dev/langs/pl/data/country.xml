@@ -996,4 +996,7 @@
     <name>Zjednoczone Emiraty Arabskie</name>
   </country>
 
+  <country id="AN">
+    <name>Netherlands Antilles</name>
+  </country>
 </entity_country>

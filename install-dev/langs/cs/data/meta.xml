@@ -206,8 +206,38 @@
   </meta>
   <meta id="supplier" id_shop="1">
     <title>Dodavatelé</title>
-    <description>Suppliers list</description>
+    <description>Seznam dodavatelů</description>
     <keywords/>
     <url_rewrite>dodavatele</url_rewrite>
+  </meta>
+  <meta id="category" id_shop="1">
+    <title>Kategorie</title>
+    <description>Kategorie</description>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="changecurrency" id_shop="1">
+    <title>Výběr měny</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>vyber-meny</url_rewrite>
+  </meta>
+  <meta id="cms" id_shop="1">
+    <title>CMS</title>
+    <description/>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="product" id_shop="1">
+    <title>Product</title>
+    <description>Produkty</description>
+    <keywords/>
+    <url_rewrite/>
+  </meta>
+  <meta id="statistics" id_shop="1">
+    <title>Statistiky</title>
+    <description>Sběr statistik</description>
+    <keywords/>
+    <url_rewrite>statistiky</url_rewrite>
   </meta>
 </entity_meta>
