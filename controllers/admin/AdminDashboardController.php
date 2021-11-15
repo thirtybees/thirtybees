@@ -40,6 +40,8 @@ class AdminDashboardControllerCore extends AdminController
      * AdminDashboardControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function __construct()
     {
@@ -56,11 +58,13 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * @return array
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getOptionFields()
     {
-        $forms = [];
         $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
         $carriers = Carrier::getCarriers($this->context->language->id, true, false, false, null, 'ALL_CARRIERS');
         $modules = Module::getModulesOnDisk(true);
@@ -180,6 +184,7 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -198,6 +203,7 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -217,6 +223,8 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderView()
@@ -225,103 +233,54 @@ class AdminDashboardControllerCore extends AdminController
             return parent::renderOptions();
         }
 
-        // $translations = array(
-        // 	'Calendar' => $this->l('Calendar', 'AdminStatsTab'),
-        // 	'Day' => $this->l('Day', 'AdminStatsTab'),
-        // 	'Month' => $this->l('Month', 'AdminStatsTab'),
-        // 	'Year' => $this->l('Year', 'AdminStatsTab'),
-        // 	'From' => $this->l('From:', 'AdminStatsTab'),
-        // 	'To' => $this->l('To:', 'AdminStatsTab'),
-        // 	'Save' => $this->l('Save', 'AdminStatsTab')
-        // );
+        /** @var Employee $employee */
+        $employee = $this->context->employee;
 
-        $testStatsDateUpdate = $this->context->cookie->__get('stats_date_update');
-        if (!empty($testStatsDateUpdate) && $this->context->cookie->__get('stats_date_update') < strtotime(date('Y-m-d'))) {
-            switch ($this->context->employee->preselect_date_range) {
-                case 'day':
-                    $dateFrom = date('Y-m-d');
-                    $dateTo = date('Y-m-d');
-                    break;
-                case 'prev-day':
-                    $dateFrom = date('Y-m-d', strtotime('-1 day'));
-                    $dateTo = date('Y-m-d', strtotime('-1 day'));
-                    break;
-                case 'month':
-                default:
-                    $dateFrom = date('Y-m-01');
-                    $dateTo = date('Y-m-d');
-                    break;
-                case 'prev-month':
-                    $dateFrom = date('Y-m-01', strtotime('-1 month'));
-                    $dateTo = date('Y-m-t', strtotime('-1 month'));
-                    break;
-                case 'year':
-                    $dateFrom = date('Y-01-01');
-                    $dateTo = date('Y-m-d');
-                    break;
-                case 'prev-year':
-                    $dateFrom = date('Y-m-01', strtotime('-1 year'));
-                    $dateTo = date('Y-12-t', strtotime('-1 year'));
-                    break;
-            }
-            $this->context->employee->stats_date_from = $dateFrom;
-            $this->context->employee->stats_date_to = $dateTo;
-            $this->context->employee->update();
-            $this->context->cookie->__set('stats_date_update', strtotime(date('Y-m-d')));
-            $this->context->cookie->write();
+        // resolve date range
+        $now = date('Y-m-d');
+        $dateFrom = static::getDate(Tools::getValue('date_from', $employee->stats_date_from), $now);
+        $dateTo = static::getDate(Tools::getValue('date_to', $employee->stats_date_to), $now);
+        if (strtotime($dateFrom) > strtotime($dateTo)) {
+            $dateFrom = $dateTo;
         }
 
         $calendarHelper = new HelperCalendar();
-
-        $calendarHelper->setDateFrom(Tools::getValue('date_from', $this->context->employee->stats_date_from));
-        $calendarHelper->setDateTo(Tools::getValue('date_to', $this->context->employee->stats_date_to));
-
-        $statsCompareFrom = $this->context->employee->stats_compare_from;
-        $statsCompareTo = $this->context->employee->stats_compare_to;
-
-        if (is_null($statsCompareFrom) || $statsCompareFrom == '0000-00-00') {
-            $statsCompareFrom = null;
-        }
-
-        if (is_null($statsCompareTo) || $statsCompareTo == '0000-00-00') {
-            $statsCompareTo = null;
-        }
-
-        $calendarHelper->setCompareDateFrom($statsCompareFrom);
-        $calendarHelper->setCompareDateTo($statsCompareTo);
-        $calendarHelper->setCompareOption(Tools::getValue('compare_date_option', $this->context->employee->stats_compare_option));
+        $calendarHelper->setDateFrom($dateFrom);
+        $calendarHelper->setDateTo($dateTo);
+        $calendarHelper->setCompareDateFrom(static::getDate($employee->stats_compare_from));
+        $calendarHelper->setCompareDateTo(static::getDate($employee->stats_compare_to));
+        $calendarHelper->setCompareOption($employee->stats_compare_option);
 
         $params = [
-            'date_from' => $this->context->employee->stats_date_from,
-            'date_to'   => $this->context->employee->stats_date_to,
+            'date_from' => $dateFrom,
+            'date_to'   => $dateTo,
         ];
 
         $this->tpl_view_vars = [
-            'date_from'               => $this->context->employee->stats_date_from,
-            'date_to'                 => $this->context->employee->stats_date_to,
+            'date_from'               => $dateFrom,
+            'date_to'                 => $dateTo,
             'hookDashboardZoneOne'    => Hook::exec('dashboardZoneOne', $params),
             'hookDashboardZoneTwo'    => Hook::exec('dashboardZoneTwo', $params),
-            //'translations' => $translations,
             'action'                  => '#',
             'warning'                 => $this->getWarningDomainName(),
             'calendar'                => $calendarHelper->generate(),
             'PS_DASHBOARD_SIMULATION' => Configuration::get('PS_DASHBOARD_SIMULATION'),
-            'datepickerFrom'          => Tools::getValue('datepickerFrom', $this->context->employee->stats_date_from),
-            'datepickerTo'            => Tools::getValue('datepickerTo', $this->context->employee->stats_date_to),
-            'preselect_date_range'    => Tools::getValue('preselectDateRange', $this->context->employee->preselect_date_range),
+            'datepickerFrom'          => $dateFrom,
+            'datepickerTo'            => $dateTo,
+            'preselect_date_range'    => $employee->preselect_date_range,
         ];
 
         return parent::renderView();
     }
 
     /**
-     * @return bool|null|string
+     * @return null|string
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function getWarningDomainName()
     {
-        $warning = false;
         if (Shop::isFeatureActive()) {
             return null;
         }
@@ -336,9 +295,10 @@ class AdminDashboardControllerCore extends AdminController
                 $warning .= $this->l('This is different from the domain name set in the "SEO & URLs" tab.').'
 				'.preg_replace('@{link}(.*){/link}@', '<a href="index.php?controller=AdminMeta&token='.Tools::getAdminTokenLite('AdminMeta').'#meta_fieldset_shop_url">$1</a>', $this->l('If this is your main domain, please {link}change it now{/link}.'));
             }
+            return $warning;
         }
 
-        return $warning;
+        return null;
     }
 
     /**
@@ -362,21 +322,22 @@ class AdminDashboardControllerCore extends AdminController
             }
 
             if (!count($this->errors)) {
-                $this->context->employee->stats_date_from = Tools::getValue('date_from');
-                $this->context->employee->stats_date_to = Tools::getValue('date_to');
-                $this->context->employee->preselect_date_range = Tools::getValue('preselectDateRange');
+                $employee = $this->context->employee;
+                $employee->stats_date_from = static::getDate(Tools::getValue('date_from'), $employee->stats_date_from);
+                $employee->stats_date_to = static::getDate(Tools::getValue('date_to'), $employee->stats_date_to);
+                $employee->preselect_date_range = Tools::getValue('preselectDateRange');
 
                 if (Tools::getValue('datepicker_compare')) {
-                    $this->context->employee->stats_compare_from = Tools::getValue('compare_date_from');
-                    $this->context->employee->stats_compare_to = Tools::getValue('compare_date_to');
-                    $this->context->employee->stats_compare_option = Tools::getValue('compare_date_option');
+                    $employee->stats_compare_from = static::getDate(Tools::getValue('compare_date_from'));
+                    $employee->stats_compare_to = static::getDate(Tools::getValue('compare_date_to'));
+                    $employee->stats_compare_option = Tools::getValue('compare_date_option');
                 } else {
-                    $this->context->employee->stats_compare_from = null;
-                    $this->context->employee->stats_compare_to = null;
-                    $this->context->employee->stats_compare_option = HelperCalendar::DEFAULT_COMPARE_OPTION;
+                    $employee->stats_compare_from = null;
+                    $employee->stats_compare_to = null;
+                    $employee->stats_compare_option = HelperCalendar::DEFAULT_COMPARE_OPTION;
                 }
 
-                $this->context->employee->update();
+                $employee->update();
             }
         }
 
@@ -385,6 +346,8 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function ajaxProcessRefreshDashboard()
     {
@@ -408,6 +371,8 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      * @since 1.0.0
      */
     public function ajaxProcessSetSimulationMode()
@@ -418,6 +383,7 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetBlogRss()
     {
@@ -478,6 +444,10 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessSaveDashConfig()
@@ -492,29 +462,119 @@ class AdminDashboardControllerCore extends AdminController
             'date_to'   => $this->context->employee->stats_date_to,
         ];
 
-        if (Validate::isModuleName($module) && $moduleObj = Module::getInstanceByName($module)) {
-            if (Validate::isLoadedObject($moduleObj) && method_exists($moduleObj, 'validateDashConfig')) {
-                $return['errors'] = $moduleObj->validateDashConfig($configs);
-            }
-            if (!count($return['errors'])) {
-                if (Validate::isLoadedObject($moduleObj) && method_exists($moduleObj, 'saveDashConfig')) {
-                    $return['has_errors'] = $moduleObj->saveDashConfig($configs);
-                } elseif (is_array($configs) && count($configs)) {
-                    foreach ($configs as $name => $value) {
-                        if (Validate::isConfigName($name)) {
-                            Configuration::updateValue($name, $value);
+        if (Validate::isModuleName($module)) {
+            $moduleObj = Module::getInstanceByName($module);
+            if (Validate::isLoadedObject($moduleObj)) {
+
+                if (method_exists($moduleObj, 'validateDashConfig')) {
+                    $return['errors'] = $moduleObj->validateDashConfig($configs);
+                }
+
+                if (!count($return['errors'])) {
+                    if (method_exists($moduleObj, 'saveDashConfig')) {
+                        $return['has_errors'] = $moduleObj->saveDashConfig($configs);
+                    } elseif (is_array($configs) && count($configs)) {
+                        foreach ($configs as $name => $value) {
+                            if (Validate::isConfigName($name)) {
+                                Configuration::updateValue($name, $value);
+                            }
                         }
                     }
+                } else {
+                    $return['has_errors'] = true;
                 }
-            } else {
-                $return['has_errors'] = true;
-            }
-        }
 
-        if (Validate::isHookName($hook) && method_exists($moduleObj, $hook)) {
-            $return['widget_html'] = $moduleObj->$hook($params);
+                if (Validate::isHookName($hook) && method_exists($moduleObj, $hook)) {
+                    $return['widget_html'] = $moduleObj->$hook($params);
+                }
+            }
         }
 
         $this->ajaxDie(json_encode($return));
     }
+
+    /**
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    public function initContent()
+    {
+        $this->updateDateRange();
+        parent::initContent();
+    }
+
+    /**
+     * Automatically update date range stored in Employee record
+     *
+     * Employee record contains three dashboard related properties
+     *   - stats_date_from - date
+     *   - stats_date_to - date
+     *   - preselect_date_range (day|prev-day|month|prev-month|year|prev-year)
+     *
+     * Range range start and end dates (stored in $stats_date_from and $stats_date_to) should be
+     * derived from preset $preselect_date_range. We need to recalculate date range at least
+     * once a day
+     */
+    protected function updateDateRange()
+    {
+        $employee = $this->context->employee;
+        $cookie = $this->context->cookie;
+        $lastDateRangeUpdate = (int)$cookie->stats_date_update;
+        $dateRangeUpdate = (int)strtotime(date('Y-m-d'));
+
+        if ($lastDateRangeUpdate !== $dateRangeUpdate) {
+            $cookie->stats_date_update = $dateRangeUpdate;
+            switch ($employee->preselect_date_range) {
+                case 'day':
+                    $dateFrom = date('Y-m-d');
+                    $dateTo = date('Y-m-d');
+                    break;
+                case 'prev-day':
+                    $dateFrom = date('Y-m-d', strtotime('-1 day'));
+                    $dateTo = date('Y-m-d', strtotime('-1 day'));
+                    break;
+                case 'month':
+                default:
+                    $dateFrom = date('Y-m-01');
+                    $dateTo = date('Y-m-d');
+                    break;
+                case 'prev-month':
+                    $dateFrom = date('Y-m-01', strtotime('-1 month'));
+                    $dateTo = date('Y-m-t', strtotime('-1 month'));
+                    break;
+                case 'year':
+                    $dateFrom = date('Y-01-01');
+                    $dateTo = date('Y-m-d');
+                    break;
+                case 'prev-year':
+                    $dateFrom = date('Y-m-01', strtotime('-1 year'));
+                    $dateTo = date('Y-12-t', strtotime('-1 year'));
+                    break;
+            }
+            if ($dateTo != $employee->stats_date_to || $dateFrom != $employee->stats_date_from) {
+                $employee->stats_date_from = $dateFrom;
+                $employee->stats_date_to = $dateTo;
+                $employee->update();
+            }
+        }
+    }
+
+    /**
+     * Validates input string $strValue that is is valid date
+     *
+     * @param $strValue
+     * @param null $defaultValue
+     * @return false|string|null
+     */
+    protected function getDate($strValue, $defaultValue=null)
+    {
+        if (is_string($strValue) && Validate::isDate($strValue) && $strValue != '0000-00-00') {
+            $timestamp = strtotime($strValue);
+            if ($timestamp !== false) {
+                return date('Y-m-d', $timestamp);
+            }
+        }
+        return $defaultValue;
+    }
+
 }
