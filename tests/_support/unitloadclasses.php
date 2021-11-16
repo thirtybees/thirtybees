@@ -476,8 +476,6 @@ $kernel->loadFile(__DIR__.'/../../classes/tree/TreeToolbarSearchCategories.php')
 $kernel->loadFile(__DIR__.'/override/classes/tree/TreeToolbarSearchCategories.php');
 $kernel->loadFile(__DIR__.'/../../classes/tree/TreeToolbarSearch.php');
 $kernel->loadFile(__DIR__.'/override/classes/tree/TreeToolbarSearch.php');
-$kernel->loadFile(__DIR__.'/../../classes/Upgrader.php');
-$kernel->loadFile(__DIR__.'/override/classes/Upgrader.php');
 $kernel->loadFile(__DIR__.'/../../classes/UrlRewrite.php');
 $kernel->loadFile(__DIR__.'/override/classes/UrlRewrite.php');
 $kernel->loadFile(__DIR__.'/../../classes/Validate.php');

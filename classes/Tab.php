@@ -36,8 +36,6 @@
  */
 class TabCore extends ObjectModel
 {
-    const TAB_MODULE_LIST_URL = _PS_TAB_MODULE_LIST_URL_;
-
     // @codingStandardsIgnoreStart
     protected static $_getIdFromClassName = null;
     /**

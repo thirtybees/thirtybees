@@ -211,13 +211,6 @@ function createDir($path, $rights)
     return @mkdir($path, $rights);
 }
 
-function checkPSVersion()
-{
-    $upgrader = new Upgrader();
-
-    return $upgrader->checkPSVersion();
-}
-
 /**
  * @deprecated 1.5.4.1 Use Translate::getAdminTranslation($string) instead
  * @param string $string
