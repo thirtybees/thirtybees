@@ -899,6 +899,8 @@ class AdminCategoriesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function processDelete()
     {
@@ -907,11 +909,13 @@ class AdminCategoriesControllerCore extends AdminController
             $category = $this->loadObject();
             if ($category->isRootCategoryForAShop()) {
                 $this->errors[] = Tools::displayError('You cannot remove this category because one of your shops uses it as a root category.');
-            } elseif (parent::processDelete()) {
-                $this->setDeleteMode();
-                $this->processFatherlessProducts((int) $category->id_parent);
-
-                return true;
+            } else {
+                $categoryProducts = $category->getAssociatedProducts();
+                if (parent::processDelete()) {
+                    $this->setDeleteMode();
+                    $this->processFatherlessProducts((int)$category->id_parent, $categoryProducts);
+                    return true;
+                }
             }
         } else {
             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
@@ -996,23 +1000,31 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processBulkDelete()
     {
         if ($this->tabAccess['delete'] === '1') {
-            $catsIds = [];
+            $categories = [];
             foreach (Tools::getValue($this->table.'Box') as $idCategory) {
                 $category = new Category((int) $idCategory);
                 if (!$category->isRootCategoryForAShop()) {
-                    $catsIds[$category->id] = $category->id_parent;
+                    $categories[$category->id] = [
+                        'parentCategoryId' => (int)$category->id_parent,
+                        'products' => $category->getAssociatedProducts()
+                    ];
                 }
             }
 
             if (parent::processBulkDelete()) {
                 $this->setDeleteMode();
-                foreach ($catsIds as $id => $idParent) {
-                    $this->processFatherlessProducts((int) $idParent);
+                foreach ($categories as $id => $info) {
+                    $parentCategoryId = (int)$info['parentCategoryId'];
+                    $products = $info['products'];
+                    $this->processFatherlessProducts($parentCategoryId, $products);
                 }
 
                 return true;
@@ -1040,32 +1052,63 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @param int $idParent
+     * Process products that were left category-less after category deletion.
      *
+     * Depending on delete option, products can be either removed, or associated to different category
+     *
+     * Since 1.4.0 this method accepts new parameter $products. This is an array of product IDs that were
+     * directly affected by category deletion. Only these products will be processed. Products that were
+     * already without category before this category was deleted will not be processed.
+     *
+     * @param int $idParent id of new parent category (if re-assigning)
+     * @param array $products list of products affected by category deletion
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
-    public function processFatherlessProducts($idParent)
+    public function processFatherlessProducts($idParent, array $products)
     {
+        if (! $products) {
+            return;
+        }
+
+        $idParent = (int)$idParent;
+        $products = array_map('intval', $products);
+
         /* Delete or link products which were not in others categories */
-        $fatherlessProducts = Db::getInstance()->executeS(
-            '
-			SELECT p.`id_product` FROM `'._DB_PREFIX_.'product` p
-			'.Shop::addSqlAssociation('product', 'p').'
-			WHERE NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp WHERE cp.`id_product` = p.`id_product`)'
+        $sql = (
+            'SELECT p.`id_product` FROM `'._DB_PREFIX_.'product` p'.Shop::addSqlAssociation('product', 'p').' '.
+            'WHERE NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp WHERE cp.`id_product` = p.`id_product`)'
         );
 
-        foreach ($fatherlessProducts as $idPoorProduct) {
-            $poorProduct = new Product((int) $idPoorProduct['id_product']);
-            if (Validate::isLoadedObject($poorProduct)) {
-                if ($this->remove_products || $idParent == 0) {
-                    $poorProduct->delete();
-                } else {
-                    if ($this->disable_products) {
-                        $poorProduct->active = 0;
+        // small optimization - if we have only a few products, include them all in sql query
+        if (count($products) < 50) {
+            $sql .= ' AND p.id_product in ('.implode(', ', $products).')';
+            $skipCheck = true;
+        } else {
+            $skipCheck = false;
+        }
+
+        $fatherlessProducts = Db::getInstance()->executeS($sql);
+        if (is_array($fatherlessProducts)) {
+            foreach ($fatherlessProducts as $product) {
+                $productId = (int)$product['id_product'];
+                if ($skipCheck || in_array($productId, $products)) {
+                    $poorProduct = new Product($productId);
+                    if (Validate::isLoadedObject($poorProduct)) {
+                        if ($this->remove_products || $idParent == 0) {
+                            $poorProduct->delete();
+                        } else {
+                            if ($this->disable_products) {
+                                $poorProduct->active = 0;
+                            }
+                            $poorProduct->id_category_default = $idParent;
+                            $poorProduct->addToCategories($idParent);
+                            $poorProduct->save();
+                        }
                     }
-                    $poorProduct->id_category_default = (int) $idParent;
-                    $poorProduct->addToCategories((int) $idParent);
-                    $poorProduct->save();
                 }
             }
         }

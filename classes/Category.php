@@ -2433,7 +2433,31 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * Returns products associated with this category
+     *
+     * @return int[]
+     *
+     * @since 1.4.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getAssociatedProducts()
+    {
+        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $result = $connection->executeS((new DbQuery())
+            ->select('id_product')
+            ->from('category_product')
+            ->where('id_category = ' . (int) $this->id)
+            ->orderBy('`position` ASC, `id_product`')
+        );
+        if (is_array($result)) {
+            return array_map('intval', array_column($result, 'id_product'));
+        }
+        return [];
+    }
+
+    /**
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
