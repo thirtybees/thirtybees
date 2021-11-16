@@ -331,9 +331,6 @@
 							<li class="text-center text-nowrap">{$employee->firstname} {$employee->lastname}</li>
 							<li class="divider"></li>
 							<li><a href="{$link->getAdminLink('AdminEmployees')|escape:'html':'UTF-8'}&amp;id_employee={$employee->id|intval}&amp;updateemployee"><i class="icon-wrench"></i> {l s='My preferences'}</a></li>
-							{if $host_mode}
-							<li><a href="https://www.thirtybees.com/cloud/" class="_blank"><i class="icon-wrench"></i> {l s='My thirty bees account'}</a></li>
-							{/if}
 							<li class="divider"></li>
 							<li><a id="header_logout" href="{$login_link|escape:'html':'UTF-8'}&amp;logout"><i class="icon-signout"></i> {l s='Sign out'}</a></li>
 						</ul>

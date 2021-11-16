@@ -2518,7 +2518,6 @@ CREATE TABLE `PREFIX_tab` (
   `module` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `position` int(11) unsigned NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
-  `hide_host_mode` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_tab`),
   KEY `class_name` (`class_name`),
   KEY `id_parent` (`id_parent`)

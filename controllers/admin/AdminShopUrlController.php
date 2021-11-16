@@ -265,20 +265,18 @@ class AdminShopUrlControllerCore extends AdminController
             ],
         ];
 
-        if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_form[1]['form']['input'] = array_merge(
-                $this->fields_form[1]['form']['input'],
+        $this->fields_form[1]['form']['input'] = array_merge(
+            $this->fields_form[1]['form']['input'],
+            [
                 [
-                    [
-                        'type'  => 'text',
-                        'label' => $this->l('Physical URL'),
-                        'name'  => 'physical_uri',
-                        'desc'  => $this->l('This is the physical folder for your store on the web server. Leave this field empty if your store is installed on the root path. For instance, if your store is available at www.example.com/my-store/, you must input my-store/ in this field.'),
-                        'size'  => 50,
-                    ],
-                ]
-            );
-        }
+                    'type'  => 'text',
+                    'label' => $this->l('Physical URL'),
+                    'name'  => 'physical_uri',
+                    'desc'  => $this->l('This is the physical folder for your store on the web server. Leave this field empty if your store is installed on the root path. For instance, if your store is available at www.example.com/my-store/, you must input my-store/ in this field.'),
+                    'size'  => 50,
+                ],
+            ]
+        );
 
         $this->fields_form[1]['form']['input'] = array_merge(
             $this->fields_form[1]['form']['input'],

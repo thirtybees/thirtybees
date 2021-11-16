@@ -58,10 +58,6 @@ if (!defined('_PS_VERSION_') && (getenv('_PS_VERSION_') || getenv('REDIRECT__PS_
     define('_PS_VERSION_', getenv('_PS_VERSION_') ? getenv('_PS_VERSION_') : getenv('REDIRECT__PS_VERSION_'));
 }
 
-if (!defined('_PS_HOST_MODE_') && (getenv('_PS_HOST_MODE_') || getenv('REDIRECT__PS_HOST_MODE_'))) {
-    define('_PS_HOST_MODE_', getenv('_PS_HOST_MODE_') ? getenv('_PS_HOST_MODE_') : getenv('REDIRECT__PS_HOST_MODE_'));
-}
-
 if (!defined('_PS_ROOT_DIR_') && (getenv('_PS_ROOT_DIR_') || getenv('REDIRECT__PS_ROOT_DIR_'))) {
     define('_PS_ROOT_DIR_', getenv('_PS_ROOT_DIR_') ? getenv('_PS_ROOT_DIR_') : getenv('REDIRECT__PS_ROOT_DIR_'));
 }
@@ -122,11 +118,7 @@ define('_PS_TCPDF_PATH_',            _PS_TOOL_DIR_.'tcpdf/');
 if (!defined('_PS_IMG_DIR_')) {
     define('_PS_IMG_DIR_',               _PS_ROOT_DIR_.'/img/');
 }
-if (!defined('_PS_HOST_MODE_')) {
-    define('_PS_CORE_IMG_DIR_',      _PS_CORE_DIR_.'/img/');
-} else {
-    define('_PS_CORE_IMG_DIR_',      _PS_ROOT_DIR_.'/img/');
-}
+define('_PS_CORE_IMG_DIR_',      _PS_CORE_DIR_.'/img/');
 
 /**
  * A list of all front office related image classes with mapping to their

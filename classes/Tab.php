@@ -63,8 +63,6 @@ class TabCore extends ObjectModel
     public $position;
     /** @var bool active */
     public $active = true;
-    /** @var int hide_host_mode */
-    public $hide_host_mode = false;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -80,7 +78,6 @@ class TabCore extends ObjectModel
             'module'         => ['type' => self::TYPE_STRING, 'validate' => 'isTabName', 'size' => 64],
             'position'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbNullable' => false],
             'active'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
-            'hide_host_mode' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             /* Lang fields */
             'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTabName', 'size' => 64],
         ],

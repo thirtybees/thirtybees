@@ -148,12 +148,6 @@ $(function() {
 	{/if}
 {/if}
 <div class="row">
-	{*<div class="col-lg-4">*}
-		{*<div class="panel">*}
-			{*<h3>{l s='Search docs.thirtybees.com'}</h3>*}
-			{*<a href="http://docs.thirtybees.com/dosearchsite.action?spaceSearch=true&amp;queryString={$query}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="btn btn-default _blank">{l s='Go to the documentation'}</a>*}
-		{*</div>*}
-	{*</div>*}
 	<div class="col-lg-4">
 		<div class="panel">
 			<h3>{l s='Search thirty bees forum'}</h3>

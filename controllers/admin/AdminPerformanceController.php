@@ -1104,7 +1104,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('media_server_up') && !defined('_PS_HOST_MODE_')) {
+        if ((bool) Tools::getValue('media_server_up')) {
             if ($this->tabAccess['edit'] === '1') {
                 if (Tools::getValue('_MEDIA_SERVER_1_') != null && !Validate::isFileName(Tools::getValue('_MEDIA_SERVER_1_'))) {
                     $this->errors[] = Tools::displayError('Media server #1 is invalid');

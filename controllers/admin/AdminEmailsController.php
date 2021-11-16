@@ -119,8 +119,9 @@ class AdminEmailsControllerCore extends AdminController
                         'type'       => 'radio',
                         'required'   => true,
                         'choices'    => [
-                            3 => $this->l('Never send emails (may be useful for testing purposes)'),
+                            1 => $this->l('Use PHP\'s mail() function'),
                             2 => $this->l('Set my own SMTP parameters (for advanced users ONLY)'),
+                            3 => $this->l('Never send emails (may be useful for testing purposes)'),
                         ],
                     ],
                     'PS_MAIL_TYPE'          => [
@@ -242,13 +243,6 @@ class AdminEmailsControllerCore extends AdminController
                 ],
             ],
         ];
-
-        if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_options['email']['fields']['PS_MAIL_METHOD']['choices'][1] =
-                $this->l('Use PHP\'s mail() function (recommended; works in most cases)');
-        }
-
-        ksort($this->fields_options['email']['fields']['PS_MAIL_METHOD']['choices']);
     }
 
     /**

@@ -98,7 +98,7 @@
 						<dd>{l s="User, Developer and Designer Guides"}</dd>
 					</dl>
 					<dl>
-						<dt><a href="https://forum.thirtybees.com/?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="thirty bees Forum"}</a></dt>
+						<dt><a href="https://forum.thirtybees.com/?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="_blank">{l s="thirty bees Forum"}</a></dt>
 						<dd>{l s="Connect with the thirty bees community"}</dd>
 					</dl>
 					<dl>

@@ -26,7 +26,6 @@
 {extends file="helpers/view/view.tpl"}
 
 {block name="override_tpl"}
-	{if !$host_mode}
 	<script type="text/javascript">
 		$(document).ready(function()
 		{
@@ -81,7 +80,6 @@
 			});
 		});
 	</script>
-	{/if}
 	<div class="row">
 		<div class="col-lg-6">
 			<div class="panel">
@@ -91,7 +89,6 @@
 				</h3>
 				<p>{l s='This information must be provided when you report an issue on our bug tracker or forum.'}</p>
 			</div>
-			{if !$host_mode}
 			<div class="panel">
 				<h3>
 					<i class="icon-info"></i>
@@ -146,7 +143,6 @@
 				</p>
 			</div>
 		</div>
-		{/if}
 		<div class="col-lg-6">
 			<div class="panel">
 				<h3>
@@ -263,7 +259,6 @@
 			</div>
 		</div>
 	</div>
-	{if !$host_mode}
 	<div class="panel">
 		<h3>
 			<i class="icon-info"></i>
@@ -271,5 +266,4 @@
 		</h3>
 		<div id="changedFiles"><i class="icon-spin icon-refresh"></i> {l s='Checking files...'}</div>
 	</div>
-	{/if}
 {/block}

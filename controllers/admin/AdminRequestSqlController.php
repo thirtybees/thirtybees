@@ -509,7 +509,7 @@ class AdminRequestSqlControllerCore extends AdminController
     public function generateExport()
     {
         $id = Tools::getValue($this->identifier);
-        $exportDir = defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_.'/export/' : _PS_ADMIN_DIR_.'/export/';
+        $exportDir = _PS_ADMIN_DIR_.'/export/';
         if (!Validate::isFileName($id)) {
             die(Tools::displayError());
         }

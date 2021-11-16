@@ -3826,7 +3826,6 @@ class AdminControllerCore extends Controller
         $this->addjQueryPlugin('growl', null, false);
         $this->addJqueryUI(['ui.slider', 'ui.datepicker']);
 
-        Media::addJsDef(['host_mode' => false]);
         Media::addJsDef(['currencyFormatters' => Currency::getJavascriptFormatters()]);
 
         $this->addJS(
@@ -3931,7 +3930,6 @@ class AdminControllerCore extends Controller
                 'table'            => $this->table,
                 'current'          => static::$currentIndex,
                 'token'            => $this->token,
-                'host_mode'        => 0,
                 'stock_management' => (int) Configuration::get('PS_STOCK_MANAGEMENT'),
             ]
         );
