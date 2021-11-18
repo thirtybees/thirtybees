@@ -431,6 +431,7 @@ class ProductCore extends ObjectModel
                 'fields'   => [
                     'id'       => ['required' => true],
                     'quantity' => [],
+                    'combination_id' => ['xlink_resource' => 'combinations']
                 ],
             ],
         ],
@@ -8028,6 +8029,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function modifierWsLinkRewrite()
     {
@@ -8046,7 +8048,7 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -8055,7 +8057,12 @@ class ProductCore extends ObjectModel
      */
     public function getWsProductBundle()
     {
-        return Db::getInstance()->executeS('SELECT id_product_item AS id, quantity FROM '._DB_PREFIX_.'pack WHERE id_product_pack = '.(int) $this->id);
+        $sql = (new DbQuery())
+            ->select('id_product_item AS id, quantity, NULLIF(id_product_attribute_item, 0) AS combination_id')
+            ->from('pack')
+            ->where('id_product_pack = ' . (int) $this->id);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -8110,8 +8117,13 @@ class ProductCore extends ObjectModel
         Pack::deleteItems($this->id);
 
         foreach ($items as $item) {
-            if ((int) $item['id'] > 0) {
-                Pack::addItem($this->id, (int) $item['id'], (int) $item['quantity']);
+            if (isset($item['id']) && (int)$item['id']) {
+                Pack::addItem(
+                    (int)$this->id,
+                    (int)$item['id'],
+                    isset($item['quantity']) ? (int)$item['quantity'] : 1,
+                    isset($item['combination_id']) ? (int)$item['combination_id'] : 0
+                );
             }
         }
 
