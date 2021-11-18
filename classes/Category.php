@@ -119,7 +119,7 @@ class CategoryCore extends ObjectModel
     public $is_root_category;
     /** @var int */
     public $id_shop_default;
-    public $groupBox;
+    public $groupBox = null;
     /** @var string id_image is the category ID when an image exists and 'default' otherwise */
     public $id_image = 'default';
     protected $webserviceParameters = [
@@ -1309,7 +1309,12 @@ class CategoryCore extends ObjectModel
         if (!isset($this->doNotRegenerateNTree) || !$this->doNotRegenerateNTree) {
             Category::regenerateEntireNtree();
         }
-        $this->updateGroup($this->groupBox);
+
+        // Update group selection, if provided
+        if (is_array($this->groupBox)) {
+            $this->updateGroup($this->groupBox);
+        }
+
         Hook::exec('actionCategoryAdd', ['category' => $this]);
 
         return $ret;
@@ -1413,20 +1418,19 @@ class CategoryCore extends ObjectModel
     /**
      * Update customer groups associated to the object
      *
-     * @param array $list groups
+     * @param int[] $groupIds List of group IDs
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function updateGroup($list)
+    public function updateGroup($groupIds)
     {
         $this->cleanGroups();
-        if (empty($list)) {
-            $list = [Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP')];
+        if (is_array($groupIds)) {
+            $this->addGroups($groupIds);
         }
-        $this->addGroups($list);
     }
 
     /**
@@ -1435,14 +1439,19 @@ class CategoryCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function cleanGroups()
     {
-        return Db::getInstance()->delete('category_group', 'id_category = '.(int) $this->id);
+        $categoryId = (int)$this->id;
+        Cache::clean('Category::getGroups_' . $categoryId);
+        return Db::getInstance()->delete('category_group', 'id_category = '.$categoryId);
     }
 
     /**
      * @param array $groups
+     *
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1451,11 +1460,19 @@ class CategoryCore extends ObjectModel
      */
     public function addGroups($groups)
     {
-        foreach ($groups as $group) {
-            if ($group !== false) {
-                Db::getInstance()->insert('category_group', ['id_category' => (int) $this->id, 'id_group' => (int) $group]);
+        $categoryId = (int)$this->id;
+        $result = true;
+        foreach ($groups as $groupId) {
+            $groupId = (int)$groupId;
+            if ($groupId) {
+                $result &= Db::getInstance()->insert('category_group', [
+                    'id_category' => $categoryId,
+                    'id_group' => $groupId,
+                ]);
             }
         }
+        Cache::clean('Category::getGroups_' . $categoryId);
+        return $result;
     }
 
     /**
@@ -1484,8 +1501,10 @@ class CategoryCore extends ObjectModel
             $this->is_root_category = 0;
         }
 
-        // Update group selection
-        $this->updateGroup($this->groupBox);
+        // Update group selection, if provided
+        if (is_array($this->groupBox)) {
+            $this->updateGroup($this->groupBox);
+        }
 
         if ($this->level_depth != $this->calcLevelDepth()) {
             $this->level_depth = $this->calcLevelDepth();
@@ -2274,7 +2293,7 @@ class CategoryCore extends ObjectModel
     /**
      * @param $idGroup
      *
-     * @return bool|void
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2283,16 +2302,17 @@ class CategoryCore extends ObjectModel
      */
     public function addGroupsIfNoExist($idGroup)
     {
+        $idGroup = (int)$idGroup;
         $groups = $this->getGroups();
-        if (!in_array((int) $idGroup, $groups)) {
-            return $this->addGroups([(int) $idGroup]);
+        if (! in_array($idGroup, $groups)) {
+            return $this->addGroups([ $idGroup ]);
         }
 
         return false;
     }
 
     /**
-     * @return array|null
+     * @return int[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2301,24 +2321,28 @@ class CategoryCore extends ObjectModel
      */
     public function getGroups()
     {
-        $cache_id = 'Category::getGroups_'.(int) $this->id;
-        if (!Cache::isStored($cache_id)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                (new DbQuery())
-                    ->select('cg.`id_group`')
-                    ->from('category_group', 'cg')
-                    ->where('cg.`id_category` = '.(int) $this->id)
-            );
-            $groups = [];
-            foreach ($result as $group) {
-                $groups[] = $group['id_group'];
+        $categoryId = (int)$this->id;
+        if ($categoryId) {
+            $cache_id = 'Category::getGroups_' . $categoryId;
+            if (!Cache::isStored($cache_id)) {
+                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('cg.`id_group`')
+                        ->from('category_group', 'cg')
+                        ->where('cg.`id_category` = ' . $categoryId)
+                );
+                $groups = [];
+                foreach ($result as $group) {
+                    $groups[] = (int)$group['id_group'];
+                }
+                Cache::store($cache_id, $groups);
+
+                return $groups;
             }
-            Cache::store($cache_id, $groups);
 
-            return $groups;
+            return Cache::retrieve($cache_id);
         }
-
-        return Cache::retrieve($cache_id);
+        return [];
     }
 
     /**

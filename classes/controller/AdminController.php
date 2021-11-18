@@ -838,7 +838,7 @@ class AdminControllerCore extends Controller
     protected function loadObject($opt = false)
     {
         if (!isset($this->className) || empty($this->className)) {
-            return true;
+            return false;
         }
 
         $id = (int) Tools::getValue($this->identifier);

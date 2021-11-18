@@ -511,6 +511,9 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return string|void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
@@ -519,6 +522,10 @@ class AdminCategoriesControllerCore extends AdminController
 
         /** @var Category $obj */
         $obj = $this->loadObject(true);
+        if (! $obj) {
+            return;
+        }
+
         $context = $this->context;
         $idShop = $context->shop->id;
         $selectedCategories = [(isset($obj->id_parent) && $obj->isParentCategoryAvailable($idShop)) ? (int) $obj->id_parent : (int) Tools::getValue('id_parent', Category::getRootCategory()->id)];
@@ -529,10 +536,6 @@ class AdminCategoriesControllerCore extends AdminController
         $unidentifiedGroupInformation = sprintf($this->l('%s - All people without a valid customer account.'), '<b>'.$unidentified->name[$this->context->language->id].'</b>');
         $guestGroupInformation = sprintf($this->l('%s - Customer who placed an order with the guest checkout.'), '<b>'.$guest->name[$this->context->language->id].'</b>');
         $defaultGroupInformation = sprintf($this->l('%s - All people who have created an account on this site.'), '<b>'.$default->name[$this->context->language->id].'</b>');
-
-        if (!($obj = $this->loadObject(true))) {
-            return;
-        }
 
         $image = _PS_CAT_IMG_DIR_.$obj->id.'.'.$this->imageType;
         $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true, true);
@@ -763,10 +766,6 @@ class AdminCategoriesControllerCore extends AdminController
             }
         }
 
-        if (!($obj = $this->loadObject(true))) {
-            return;
-        }
-
         $image = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true);
 
         $this->fields_value = [
@@ -774,15 +773,16 @@ class AdminCategoriesControllerCore extends AdminController
             'size'  => $image ? filesize(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType) / 1000 : false,
         ];
 
-        // Added values of object Group
-        $categoryGroupsIds = $obj->getGroups();
+        // get selected groups
+        $categoryGroupsIds = Validate::isLoadedObject($obj)
+            ? $obj->getGroups()
+            : [
+                Configuration::get('PS_UNIDENTIFIED_GROUP'),
+                Configuration::get('PS_GUEST_GROUP'),
+                Configuration::get('PS_CUSTOMER_GROUP')
+            ];
 
         $groups = Group::getGroups($this->context->language->id);
-        // if empty $carrier_groups_ids : object creation : we set the default groups
-        if (empty($categoryGroupsIds)) {
-            $preselected = [Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP')];
-            $categoryGroupsIds = array_merge($categoryGroupsIds, $preselected);
-        }
         foreach ($groups as $group) {
             $this->fields_value['groupBox_'.$group['id_group']] = Tools::getValue('groupBox_'.$group['id_group'], (in_array($group['id_group'], $categoryGroupsIds)));
         }
@@ -1261,4 +1261,25 @@ class AdminCategoriesControllerCore extends AdminController
 
         return $ret;
     }
+
+    /**
+     * Copy data values from $_POST to object
+     *
+     * @param Category $object
+     * @param string $table
+     * @throws PrestaShopException
+     */
+    protected function copyFromPost(&$object, $table)
+    {
+        parent::copyFromPost($object, $table);
+
+        // assign groups to category objects
+        if (is_null($object->groupBox)) {
+            $object->groupBox = [];
+        } else {
+            $object->groupBox = array_filter(array_unique(array_map('intval', $object->groupBox)));
+        }
+    }
+
+
 }
