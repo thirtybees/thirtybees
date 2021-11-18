@@ -2851,7 +2851,7 @@ class AdminProductsControllerCore extends AdminController
         // save any custom values
         foreach ($custom as $featureId => $values) {
             foreach ($values as $value) {
-                $featureValueId = $product->addFeaturesToDB($featureId, 0, 1);
+                $featureValueId = $product->addFeaturesToDB($featureId, 0, true);
                 foreach ($value as $languageId => $langValue) {
                     $product->addFeaturesCustomToDB($featureValueId, $languageId, $langValue);
                 }

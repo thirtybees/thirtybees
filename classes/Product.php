@@ -6927,13 +6927,17 @@ class ProductCore extends ObjectModel
      */
     public function setWsProductFeatures($productFeatures)
     {
-        Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'feature_product`
-			WHERE `id_product` = '.(int) $this->id
-        );
+        Db::getInstance()->delete('feature_product', 'id_product = '.(int) $this->id);
+
         foreach ($productFeatures as $productFeature) {
-            $this->addFeaturesToDB($productFeature['id'], $productFeature['id_feature_value']);
+            if (isset($productFeature['id']) && (int)$productFeature['id'] &&
+                isset($productFeature['id_feature_value']) && (int)$productFeature['id_feature_value']
+            ) {
+                $this->addFeaturesToDB(
+                    (int)$productFeature['id'],
+                    (int)$productFeature['id_feature_value']
+                );
+            }
         }
 
         return true;
@@ -6942,26 +6946,39 @@ class ProductCore extends ObjectModel
     /**
      * @param int $idFeature
      * @param int $idValue
-     * @param int $cust
+     * @param bool $createCustomValue
      *
-     * @return int|string
+     * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function addFeaturesToDB($idFeature, $idValue, $cust = 0)
+    public function addFeaturesToDB($idFeature, $idValue, $createCustomValue = false)
     {
-        if ($cust) {
-            $row = ['id_feature' => (int) $idFeature, 'custom' => 1];
+        $idFeature = (int)$idFeature;
+        if ($createCustomValue) {
+            $row = [
+                'id_feature' => $idFeature,
+                'custom' => 1
+            ];
             Db::getInstance()->insert('feature_value', $row);
-            $idValue = Db::getInstance()->Insert_ID();
+            $idValue = (int)Db::getInstance()->Insert_ID();
+        } else {
+            $idValue =  (int)$idValue;
         }
-        $row = ['id_feature' => (int) $idFeature, 'id_product' => (int) $this->id, 'id_feature_value' => (int) $idValue];
-        Db::getInstance()->insert('feature_product', $row);
-        SpecificPriceRule::applyAllRules([(int) $this->id]);
-        if ($idValue) {
-            return ($idValue);
+
+        if ($idFeature && $idValue) {
+            $row = [
+                'id_feature' => $idFeature,
+                'id_product' => (int)$this->id,
+                'id_feature_value' => $idValue
+            ];
+            Db::getInstance()->insert('feature_product', $row);
+            SpecificPriceRule::applyAllRules([(int)$this->id]);
         }
+        return $idValue;
     }
 
     /**
@@ -7127,8 +7144,15 @@ class ProductCore extends ObjectModel
     public function setWsAccessories($accessories)
     {
         $this->deleteAccessories();
+        $id = (int)$this->id;
         foreach ($accessories as $accessory) {
-            Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'accessory` (`id_product_1`, `id_product_2`) VALUES ('.(int) $this->id.', '.(int) $accessory['id'].')');
+            if (isset($accessory['id']) && (int)$accessory['id']) {
+                $accessoryId = (int)$accessory['id'];
+                Db::getInstance()->insert('accessory', [
+                    'id_product_1' => $id,
+                    'id_product_2' => $accessoryId,
+                ]);
+            }
         }
 
         return true;
@@ -7166,13 +7190,16 @@ class ProductCore extends ObjectModel
      * @return bool
      * @throws PrestaShopException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function setWsCombinations($combinations)
     {
         // No hook exec
         $idsNew = [];
         foreach ($combinations as $combination) {
-            $idsNew[] = (int) $combination['id'];
+            if (isset($combination['id']) && (int)$combination['id']) {
+                $idsNew[] = (int) $combination['id'];
+            }
         }
 
         $idsOrig = [];
@@ -7481,23 +7508,27 @@ class ProductCore extends ObjectModel
     {
         $ids = [];
         foreach ($tagIds as $value) {
-            $ids[] = $value['id'];
+            if (isset($value['id']) && (int)$value['id']) {
+                $ids[] = (int)$value['id'];
+            }
         }
+
         if ($this->deleteWsTags()) {
             if ($ids) {
                 $sqlValues = [];
-                $ids = array_map('intval', $ids);
                 foreach ($ids as $position => $id) {
-                    $idLang = Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'tag` WHERE `id_tag`='.(int) $id);
-                    $sqlValues[] = '('.(int) $this->id.', '.(int) $id.', '.(int) $idLang.')';
+                    $idLang = (int)Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'tag` WHERE `id_tag`='.(int) $id);
+                    if ($idLang) {
+                        $sqlValues[] = '('.(int) $this->id.', '.(int) $id.', '.(int) $idLang.')';
+                    }
                 }
-                $result = Db::getInstance()->execute(
-                    '
-					INSERT INTO `'._DB_PREFIX_.'product_tag` (`id_product`, `id_tag`, `id_lang`)
-					VALUES '.implode(',', $sqlValues)
-                );
-
-                return $result;
+                if ($sqlValues) {
+                    return Db::getInstance()->execute(
+                        '
+                        INSERT INTO `' . _DB_PREFIX_ . 'product_tag` (`id_product`, `id_tag`, `id_lang`)
+                        VALUES ' . implode(',', $sqlValues)
+                    );
+                }
             }
         }
 
