@@ -107,11 +107,21 @@ class CombinationCore extends ObjectModel
         'objectNodeName'  => 'combination',
         'objectsNodeName' => 'combinations',
         'fields'          => [
-            'id_product' => ['required' => true, 'xlink_resource' => 'products'],
+            'id_product' => [
+                'required' => true,
+                'xlink_resource' => 'products'
+            ],
         ],
         'associations'    => [
-            'product_option_values' => ['resource' => 'product_option_value'],
-            'images'                => ['resource' => 'image', 'api' => 'images/products'],
+            'product_option_values' => [
+                'resource' => 'product_option_value',
+                'fields'   => ['id' => []],
+            ],
+            'images'                => [
+                'resource' => 'image',
+                'api' => 'images/products',
+                'fields'   => ['id' => []],
+            ],
         ],
     ];
     // @codingStandardsIgnoreEnd
@@ -207,6 +217,7 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -243,6 +254,7 @@ class CombinationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteAssociations()
     {
@@ -261,6 +273,7 @@ class CombinationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteFromSupplier($idProduct)
     {
@@ -342,7 +355,9 @@ class CombinationCore extends ObjectModel
     {
         $idsAttributes = [];
         foreach ($values as $value) {
-            $idsAttributes[] = $value['id'];
+            if (isset($value['id']) && (int)$value['id']) {
+                $idsAttributes[] = (int)$value['id'];
+            }
         }
 
         return $this->setAttributes($idsAttributes);
@@ -360,24 +375,29 @@ class CombinationCore extends ObjectModel
      */
     public function setAttributes($idsAttribute)
     {
-        $result = $this->deleteAssociations();
-        if ($result && !empty($idsAttribute)) {
+        $result = Db::getInstance()->delete('product_attribute_combination', '`id_product_attribute` = '.(int) $this->id);
+
+        if ($result && is_array($idsAttribute) && $idsAttribute) {
             $sqlValues = [];
             foreach ($idsAttribute as $value) {
-                $sqlValues[] = [
-                    'id_attribute'         => (int) $value,
-                    'id_product_attribute' => (int) $this->id,
-                ];
+                $value = (int)$value;
+                if ($value) {
+                    $sqlValues[] = [
+                        'id_attribute' => $value,
+                        'id_product_attribute' => (int)$this->id,
+                    ];
+                }
             }
-
-            $result = Db::getInstance()->insert('product_attribute_combination', $sqlValues);
+            if ($sqlValues) {
+                $result = Db::getInstance()->insert('product_attribute_combination', $sqlValues);
+            }
         }
 
         return $result;
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -394,26 +414,27 @@ class CombinationCore extends ObjectModel
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
 
-        return $result;
+        return is_array($result) ? $result : [];
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getWsImages()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('a.`id_image` AS `id`')
                 ->from('product_attribute_image', 'a')
                 ->join(Shop::addSqlAssociation('product_attribute', 'a'))
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
+
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -423,13 +444,15 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setWsImages($values)
     {
         $idsImages = [];
         foreach ($values as $value) {
-            $idsImages[] = (int) $value['id'];
+            if (isset($value['id']) && (int)$value['id']) {
+                $idsImages[] = (int) $value['id'];
+            }
         }
 
         return $this->setImages($idsImages);
@@ -454,13 +477,16 @@ class CombinationCore extends ObjectModel
         if (is_array($idsImage) && count($idsImage)) {
             $sqlValues = [];
             foreach ($idsImage as $value) {
-                $sqlValues[] = [
-                    'id_product_attribute' => (int) $this->id,
-                    'id_image'             => (int) $value,
-                ];
+                $value = (int)$value;
+                if ($value) {
+                    $sqlValues[] = [
+                        'id_product_attribute' => (int)$this->id,
+                        'id_image' => $value,
+                    ];
+                }
             }
 
-            if (is_array($sqlValues) && count($sqlValues)) {
+            if ($sqlValues) {
                 Db::getInstance()->insert('product_attribute_image', $sqlValues);
             }
         }
