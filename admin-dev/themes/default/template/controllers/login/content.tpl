@@ -134,7 +134,7 @@
 	{hook h="displayAdminLogin"}
 	<div id="login-footer">
 		<p class="text-center text-muted">
-			<a href="http://www.thirtybees.com/" onclick="return !window.open(this.href);">
+			<a href="https://www.thirtybees.com/" onclick="return !window.open(this.href);">
 				&copy; thirty bees&#8482; 2007-{$smarty.now|date_format:"%Y"} - All rights reserved
 			</a>
 		</p>
@@ -147,9 +147,6 @@
 			</a>
 			<a class="link-social link-github _blank" href="https://github.com/thirtybees" title="Github">
 				<i class="icon-github"></i>
-			</a>
-			<a class="link-social link-google _blank" href="https://plus.google.com/+thirtybees/" title="Google">
-				<i class="icon-google-plus"></i>
 			</a>
 			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
 				<i class="icon-reddit"></i>

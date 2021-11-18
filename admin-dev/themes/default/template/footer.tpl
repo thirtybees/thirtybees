@@ -29,7 +29,7 @@
 <div id="footer" class="bootstrap hide">
 
 	<div class="col-sm-2 hidden-xs">
-		<a href="http://www.thirtybees.com/" class="_blank">thirty bees&trade;</a>
+		<a href="https://www.thirtybees.com/" class="_blank">thirty bees&trade;</a>
 		-
 		<span id="footer-load-time"><i class="icon-time" title="{l s='Load time: '}"></i> {number_format(microtime(true) - $timer_start, 3, '.', '')}s</span>
 	</div>
