@@ -80,19 +80,21 @@ class DbPDOCore extends Db
      * @param string $user
      * @param string $password
      * @param string $dbname
-     * @param bool $dropit If true, drops the created database.
+     * @param bool $dropAfter If true, drops the created database.
      *
      * @return bool|int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function createDatabase($host, $user, $password, $dbname, $dropit = false)
+    public static function createDatabase($host, $user, $password, $dbname, $dropAfter = false)
     {
         try {
             $link = static::_getPDO($host, $user, $password, false);
-            $success = $link->exec('CREATE DATABASE `'.str_replace('`', '\\`', $dbname).'`');
-            if ($dropit && ($link->exec('DROP DATABASE `'.str_replace('`', '\\`', $dbname).'`') !== false)) {
+            $escapedName = str_replace('`', '\\`', $dbname);
+            $createDbDDL = 'CREATE DATABASE `' . $escapedName .'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+            $success = $link->exec($createDbDDL);
+            if ($dropAfter && ($link->exec('DROP DATABASE `'. $escapedName .'`') !== false)) {
                 return true;
             }
         } catch (PDOException $e) {
