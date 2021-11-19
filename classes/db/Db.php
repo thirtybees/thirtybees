@@ -746,13 +746,31 @@ abstract class DbCore
     }
 
     /**
+     * Executes sql and returns the result of $sql as an array
+     *
+     * @param string|DbQuery $sql the select query
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since 1.4.0 Method introduced in thirty bees 1.4.0
+     */
+    public function getArray($sql)
+    {
+        $result = $this->executeS($sql);
+        return is_array($result)
+            ? $result
+            : [];
+    }
+
+    /**
      * Returns an associative array containing the first row of the query
      * This function automatically adds "LIMIT 1" to the query
      *
      * @param string|DbQuery $sql      the select query (without "LIMIT 1")
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
-     * @return array|bool|object|null
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -775,7 +793,7 @@ abstract class DbCore
 
         $this->last_cached = false;
 
-        if (is_null($result)) {
+        if (! is_array($result)) {
             $result = false;
         }
 
@@ -788,15 +806,11 @@ abstract class DbCore
      * @param string|DbQuery $sql
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
-     * @return string|false|null
+     * @return mixed
      * @throws PrestaShopException
      */
     public function getValue($sql, $useCache = true)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
         if (!$result = $this->getRow($sql, $useCache)) {
             return false;
         }

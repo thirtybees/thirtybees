@@ -89,10 +89,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /** @var int|null Object ID */
     public $id;
 
-    /** @var int Language ID */
+    /** @var int|null Language ID */
     public $id_lang = null;
 
-    /** @var int Shop ID */
+    /** @var int|null Shop ID */
     public $id_shop = null;
 
     /** @var array|null List of shop IDs */
@@ -278,6 +278,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         if ($id) {
+            /** @var Adapter_EntityMapper $entityMapper */
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, $this->id_shop, static::$cache_objects);
         }
@@ -2054,15 +2055,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 if (property_exists($this, $key)) {
                     if (!empty($this->def['fields'][$key]['lang']) && !empty($row['id_lang'])) {
                         // Multilang
-                        if (!is_array($this->$key)) {
-                            $this->$key = [];
+                        if (!is_array($this->{$key})) {
+                            $this->{$key} = [];
                         }
-                        $this->$key[(int) $row['id_lang']] = $value;
+                        $this->{$key}[(int) $row['id_lang']] = $value;
                     } else {
                         // Normal
-                        if (property_exists($this, $key)) {
-                            $this->$key = $value;
-                        }
+                        $this->{$key} = $value;
                     }
                 }
             }

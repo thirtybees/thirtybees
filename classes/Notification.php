@@ -36,151 +36,498 @@
  */
 class NotificationCore
 {
-    public $types;
+    /**
+     * @var array
+     */
+    protected $types;
+
+    /**
+     * @var int
+     */
+    protected $employeeId;
+
+    /**
+     * @var array
+     */
+    protected $lastSeenIds = null;
+
+    /**
+     * @var array
+     */
+    protected $permissions;
 
     /**
      * NotificationCore constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function __construct()
-    {
-        $this->types = ['order', 'customer_message', 'customer'];
-    }
-
-    /**
-     * getLastElements return all the notifications (new order, new customer registration, and new customer message)
-     * Get all the notifications
-     *
-     * @return array containing the notifications
-     *
-     * @throws PrestaShopDatabaseException
+     * @param EmployeeCore|null $employee
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getLastElements()
+    public function __construct($employee = null)
     {
-        $notifications = [];
-        $employeeInfos = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('`id_last_order`, `id_last_customer_message`, `id_last_customer`')
-                ->from('employee')
-                ->where('`id_employee` = '.(int) Context::getContext()->cookie->id_employee)
-        );
-
-        foreach ($this->types as $type) {
-            $notifications[$type] = Notification::getLastElementsIdsByType($type, $employeeInfos['id_last_'.$type]);
+        if (! $employee) {
+            $employee = Context::getContext()->employee;
         }
 
+        $this->employeeId = (int)$employee->id;
+        $this->permissions = [];
+        foreach (Profile::getProfileAccesses($employee->id_profile, 'class_name') as $tab => $access) {
+            $this->permissions[$tab] = (bool)$access['view'];
+        }
+
+        $this->types = [];
+
+        // register build in notification types
+        if (Configuration::get('PS_SHOW_NEW_ORDERS')) {
+            $this->registerType('order', [
+                'getNotifications' => [$this, 'getNewOrders'],
+                'renderer' => 'renderOrderNotification',
+                'rendererData' => [
+                    'orderNumber' => $this->l('Order number:'),
+                    'total' => $this->l('Total:'),
+                    'from' => $this->l('From:'),
+                ],
+                'controller' => 'AdminOrders',
+                'icon' => 'icon-shopping-cart',
+                'header' => $this->l('Latest Orders'),
+                'emptyMessage' => $this->l('No new orders have been placed on your shop.'),
+                'showAll' => $this->l('Show all orders'),
+            ]);
+        }
+
+        if (Configuration::get('PS_SHOW_NEW_CUSTOMERS')) {
+            $this->registerType('customer', [
+                'getNotifications' => [$this, 'getNewCustomers'],
+                'renderer' => 'renderCustomerNotification',
+                'rendererData' => [
+                    'customerName' => $this->l('Customer name:'),
+                ],
+                'controller' => 'AdminCustomers',
+                'icon' => 'icon-user',
+                'header' => $this->l('Latest Registrations'),
+                'emptyMessage' => $this->l('No new customers have registered on your shop.'),
+                'showAll' => $this->l('Show all customers'),
+            ]);
+        }
+
+        if (Configuration::get('PS_SHOW_NEW_MESSAGES')) {
+            $this->registerType('customer_message', [
+                'getNotifications' => [$this, 'getNewCustomerMessages'],
+                'renderer' => 'renderCustomerMessageNotification',
+                'rendererData' => [
+                    'from' => $this->l('From:'),
+                ],
+                'controller' => 'AdminCustomerThreads',
+                'icon' => 'icon-envelope',
+                'header' => $this->l('Latest Messages'),
+                'emptyMessage' => $this->l('No new messages have been posted on your shop.'),
+                'showAll' => $this->l('Show all messages'),
+            ]);
+        }
+
+        // Register modules notification types
+        foreach (static::getModuleNotificationTypes() as $type => $definition) {
+            $this->registerType($type, $definition);
+        }
+    }
+
+    /**
+     * Returns notification types defined by modules
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getModuleNotificationTypes()
+    {
+        static $moduleTypes = null;
+        if (is_null($moduleTypes)) {
+            $moduleTypes = static::resolveModuleNotificationTypes();
+        }
+        return $moduleTypes;
+    }
+
+    /**
+     * Returns notification types defined by modules
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected static function resolveModuleNotificationTypes()
+    {
+        $moduleTypes = [];
+        $result = Hook::exec('actionGetNotificationType', [], null, true);
+        if (is_array($result)) {
+            foreach ($result as $moduleName => $definitions) {
+                if (is_array($definitions)) {
+                    foreach ($definitions as $type => $definition) {
+                        $fullType = $moduleName . '_' . $type;
+                        $fullType = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $fullType));
+                        $moduleTypes[$fullType] = $definition;
+                    }
+                }
+            }
+        }
+        return $moduleTypes;
+    }
+
+    /**
+     * Returns enabled notification types
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    public function getTypes()
+    {
+        $ret = [];
+        $link = Context::getContext()->link;
+        foreach ($this->types as $type => $description) {
+            $ret[] = [
+                'type' => $type,
+                'icon' => $description['icon'],
+                'header' => $description['header'],
+                'emptyMessage' => $description['emptyMessage'],
+                'showAll' => $description['showAll'],
+                'showAllLink' => ($description['showAllLink'] ?? $link->getAdminLink($description['controller'])
+                )
+            ];
+        }
+        return $ret;
+    }
+
+    /**
+     * Initialize notifications to match current last id.
+     * Used when new employee is created, to prevent too many unread notifications
+     *
+     * @throws PrestaShopException
+     */
+    public function initialize()
+    {
+        foreach ($this->getNotifications() as $notification) {
+            $type = $notification['type'];
+            $lastId = (int)$notification['lastId'];
+            $this->markAsRead($type, $lastId);
+        }
+    }
+
+    /**
+     * Returns true, if $type is supported
+     *
+     * @param $type
+     * @return bool
+     */
+    public function hasType($type)
+    {
+        return isset($this->types[$type]);
+    }
+
+    /**
+     * Returns last seen notification id for given type
+     *
+     * @param string $type
+     * @return int
+     * @throws PrestaShopException
+     */
+    public function getLastSeenId($type)
+    {
+        if (is_null($this->lastSeenIds)) {
+            $this->lastSeenIds = [];
+            $types = "'" . implode("', '", array_map('pSql', array_keys($this->types))) . "'";
+            $sql = (new DbQuery())
+                ->select('type, last_id')
+                ->from('employee_notification')
+                ->where('id_employee = ' . $this->employeeId)
+                ->where('type IN (' . $types . ')');
+            $employeeInfos = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            if (is_array($employeeInfos)) {
+                foreach ($employeeInfos as $row) {
+                    $this->lastSeenIds[$row['type']] = (int)$row['last_id'];
+                }
+            }
+        }
+        return $this->lastSeenIds[$type] ?? 0;
+    }
+
+    /**
+     * Get all unread the notifications
+     *
+     * @param array $typeFilter list of types to return. Pass null to return all supported types
+     *
+     * @return array containing the notifications
+     *
+     * @throws PrestaShopException
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getNotifications($typeFilter = null)
+    {
+        $notifications = [];
+        foreach ($this->types as $type => $description) {
+            if (! is_null($typeFilter)) {
+                if (! in_array($type, $typeFilter)) {
+                    continue;
+                }
+            }
+            $callable = $description['getNotifications'];
+            if (is_callable($callable)) {
+                $notifications[] = array_merge(
+                    [
+                        'type' => $type,
+                        'renderer' => $description['renderer'],
+                        'rendererData' => $description['rendererData'],
+                    ],
+                    $callable($this->getLastSeenId($type), 5)
+                );
+            }
+        }
         return $notifications;
     }
 
     /**
-     * getLastElementsIdsByType return all the element ids to show (order, customer registration, and customer message)
-     * Get all the element ids
+     * Marks notification of given types as read
      *
-     * @param string $type          contains the field name of the Employee table
-     * @param int    $idLastElement contains the id of the last seen element
-     *
-     * @return array containing the notifications
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $type - notification type, must be allowed in $this->types
+     * @param int $lastId - last notification id that employee seen
+     * @return bool
      * @throws PrestaShopException
      */
-    public static function getLastElementsIdsByType($type, $idLastElement)
+    public function markAsRead($type, $lastId)
     {
-        switch ($type) {
-            case 'order':
-                $sql = (new DbQuery())
-                    ->select('SQL_CALC_FOUND_ROWS o.`id_order`, o.`id_customer`, o.`total_paid`')
-                    ->select('o.`id_currency`, o.`date_upd`, c.`firstname`, c.`lastname`')
-                    ->from('orders', 'o')
-                    ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
-                    ->where('`id_order` > '.(int) $idLastElement.' '.Shop::addSqlRestriction(false, 'o'))
-                    ->orderBy('`id_order` DESC')
-                    ->limit(5);
-                break;
-
-            case 'customer_message':
-                $sql = (new DbQuery())
-                    ->select('SQL_CALC_FOUND_ROWS c.`id_customer_message`, ct.`id_customer`, ct.`id_customer_thread`')
-                    ->select('ct.`email`, c.`date_add` AS `date_upd`')
-                    ->from('customer_message', 'c')
-                    ->leftJoin('customer_thread', 'ct', 'c.`id_customer_thread` = ct.`id_customer_thread`')
-                    ->where('c.`id_customer_message` > '.(int) $idLastElement)
-                    ->where('c.`id_employee` = 0')
-                    ->where('ct.`id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')')
-                    ->orderBy('c.`id_customer_message` DESC')
-                    ->limit(5);
-                break;
-            default:
-                $sql = (new DbQuery())
-                    ->select('SQL_CALC_FOUND_ROWS t.`id_'.bqSQL($type).'`, t.*')
-                    ->from(bqSQL($type), 't')
-                    ->where('t.`deleted` = 0')
-                    ->where('t.`id_'.bqSQL($type).'` > '.(int) $idLastElement.' '.Shop::addSqlRestriction(false, 't'))
-                    ->orderBy('t.`id_'.bqSQL($type).'` DESC')
-                    ->limit(5);
-                break;
+        if (! isset($this->types[$type])) {
+            return false;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
-        $total = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()', false);
-        $json = ['total' => $total, 'results' => []];
-        foreach ($result as $value) {
-            $customerName = '';
-            if (isset($value['firstname']) && isset($value['lastname'])) {
-                $customerName = Tools::safeOutput($value['firstname'].' '.$value['lastname']);
-            } elseif (isset($value['email'])) {
-                $customerName = Tools::safeOutput($value['email']);
-            }
-
-            $json['results'][] = [
-                'id_order'            => ((!empty($value['id_order'])) ? (int) $value['id_order'] : 0),
-                'id_customer'         => ((!empty($value['id_customer'])) ? (int) $value['id_customer'] : 0),
-                'id_customer_message' => ((!empty($value['id_customer_message'])) ? (int) $value['id_customer_message'] : 0),
-                'id_customer_thread'  => ((!empty($value['id_customer_thread'])) ? (int) $value['id_customer_thread'] : 0),
-                'total_paid'          => ((!empty($value['total_paid'])) ? Tools::displayPrice((float) $value['total_paid'], (int) $value['id_currency'], false) : 0),
-                'customer_name'       => $customerName,
-                // x1000 because of moment.js (see: http://momentjs.com/docs/#/parsing/unix-timestamp/)
-                'update_date'         => isset($value['date_upd']) ? (int) strtotime($value['date_upd']) * 1000 : 0,
-            ];
+        $lastId  = (int)$lastId;
+        if ($lastId <= 0) {
+            return false;
         }
 
-        return $json;
+        return Db::getInstance()->insert(
+            'employee_notification',
+            [
+                'id_employee' => $this->employeeId,
+                'type' => pSQL($type),
+                'last_id' => $lastId
+            ],
+            false,
+            false,
+            Db::REPLACE
+        );
     }
 
     /**
-     * updateEmployeeLastElement return 0 if the field doesn't exists in Employee table.
-     * Updates the last seen element by the employee
+     * Returns information about orders created after $lastId
      *
-     * @param string $type contains the field name of the Employee table
+     * @param int $lastId order id
+     * @param int $limit number of detail rows to return
      *
-     * @return bool if type exists or not
-     *
-     * @throws PrestaShopDatabaseException
+     * @return array
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
-    public function updateEmployeeLastElement($type)
+    protected function getNewOrders($lastId, $limit)
     {
-        global $cookie;
+        $link = Context::getContext()->link;
 
-        if (in_array($type, $this->types)) {
-            // We update the last item viewed
-            return Db::getInstance()->update(
-                'employee',
-                [
-                    'id_last_'.bqSQL($type) => ['type' => 'sql', 'value' => '(SELECT IFNULL(MAX(`id_'.$type.'`), 0) FROM `'._DB_PREFIX_.(($type == 'order') ? bqSQL($type).'s' : bqSQL($type)).'`)'],
-                ],
-                '`id_employee` = '.(int) $cookie->id_employee
-            );
+        $baseSql = (new DbQuery())
+            ->from('orders', 'o')
+            ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
+            ->where('`id_order` > '. $lastId.' '.Shop::addSqlRestriction(false, 'o'));
+
+        $totalSql = clone $baseSql;
+        $totalSql->select('COUNT(1)');
+
+        $detailSql = clone $baseSql;
+        $detailSql
+            ->select('o.`id_order`, o.`total_paid`, o.`id_currency`, o.`date_add`, c.`id_customer`, CONCAT(c.`firstname`, " ", c.`lastname`) as name')
+            ->orderBy('`id_order` DESC')
+            ->limit($limit);
+
+        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+        $result = $connection->executeS($detailSql);
+        $total = (int)$connection->getValue($totalSql);
+
+        $results = [];
+        foreach ($result as $row) {
+            $id = (int) $row['id_order'];
+            $lastId = max($id, $lastId);
+            $results[] = [
+                'link' => $link->getAdminLink('AdminOrders', true, ['vieworder' => 1, 'id_order' => $id]),
+                'id' => $id,
+                'total' => Tools::displayPrice((float) $row['total_paid'], (int) $row['id_currency']),
+                'customerName' => $row['name'],
+                'ts' => (int)strtotime($row['date_add'])
+            ];
         }
 
-        return false;
+        return [
+            'total' => $total,
+            'lastId' => $lastId,
+            'results' => $results
+        ];
+    }
+
+    /**
+     * Returns information about new customers created after $lastId
+     *
+     * @param int $lastId order id
+     * @param int $limit number of detail rows to return
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getNewCustomers($lastId, $limit)
+    {
+        $lastId = (int)$lastId;
+        $link = Context::getContext()->link;
+
+        $baseSql = (new DbQuery())
+            ->from('customer', 'c')
+            ->where('c.`deleted` = 0')
+            ->where('c.`id_customer` > '.$lastId.' '.Shop::addSqlRestriction(false, 'c'));
+
+        $totalSql = clone $baseSql;
+        $totalSql->select('COUNT(1)');
+
+        $detailSql = clone $baseSql;
+        $detailSql
+            ->select('c.`id_customer`, c.`date_add`, CONCAT(c.`firstname`, " ", c.`lastname`) as name')
+            ->orderBy('`id_customer` DESC')
+            ->limit($limit);
+
+        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+        $result = $connection->executeS($detailSql);
+        $total = (int)$connection->getValue($totalSql);
+
+        $results = [];
+        foreach ($result as $row) {
+            $id = (int) $row['id_customer'];
+            $lastId = max($id, $lastId);
+            $results[] = [
+                'link' => $link->getAdminLink('AdminCustomers', true, ['viewcustomer' => 1, 'id_customer' => $id]),
+                'id' => $id,
+                'customerName' => $row['name'],
+                'ts' => (int)strtotime($row['date_add'])
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'lastId' => $lastId,
+            'results' => $results
+        ];
+    }
+
+    /**
+     * Returns information about customer messages created after $lastId
+     *
+     * @param int $lastId order id
+     * @param int $limit number of detail rows to return
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getNewCustomerMessages($lastId, $limit)
+    {
+        $lastId = (int)$lastId;
+        $link = Context::getContext()->link;
+
+        $baseSql = (new DbQuery())
+            ->from('customer_message', 'c')
+            ->leftJoin('customer_thread', 'ct', 'c.`id_customer_thread` = ct.`id_customer_thread`')
+            ->leftJoin('customer', 'customer', 'ct.`id_customer` = customer.`id_customer`')
+            ->where('c.`id_customer_message` > ' . $lastId)
+            ->where('c.`id_employee` = 0')
+            ->where('ct.`id_shop` IN (' . implode(', ', Shop::getContextListShopID()) . ')');
+
+        $totalSql = clone $baseSql;
+        $totalSql->select('COUNT(1)');
+
+        $detailSql = clone $baseSql;
+        $detailSql
+            ->select('c.`id_customer_message`, ct.`id_customer_thread`')
+            ->select('ct.`email`, c.`date_add`, customer.id_customer, customer.firstname, customer.lastname, customer.email as customerEmail')
+            ->orderBy('c.`id_customer_message` DESC')
+            ->limit($limit);
+
+        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+        $result = $connection->executeS($detailSql);
+        $total = (int)$connection->getValue($totalSql);
+
+        $results = [];
+        foreach ($result as $row) {
+            $id = (int)$row['id_customer_message'];
+            $threadId = (int)$row['id_customer_thread'];
+            $lastId = max($id, $lastId);
+            $customerId = (int)$row['id_customer'];
+            if ($customerId) {
+                $email = $row['customerEmail'] ? $row['customerEmail'] : $row['email'];
+                $from = $row['firstname'] . ' ' . $row['lastname'] . ' - ' . $email;
+            } else {
+                $from = $row['email'];
+            }
+            $results[] = [
+                'link' => $link->getAdminLink('AdminCustomerThreads', true, ['viewcustomer_thread' => 1, 'id_customer_thread' => $threadId]),
+                'id' => $id,
+                'from' => $from,
+                'ts' => (int)strtotime($row['date_add'])
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'lastId' => $lastId,
+            'results' => $results
+        ];
+    }
+
+
+    /**
+     * Registers new notification type
+     *
+     * @param string $type
+     * @param array $definition
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected function registerType($type, $definition)
+    {
+        // validate $definition
+        $required = ['getNotifications', 'renderer', 'icon', 'header', 'emptyMessage', 'showAll'];
+        foreach ($required as $item) {
+            if (! isset($definition[$item])) {
+                throw new PrestaShopException('Invalid notification definition "' . $type . '": missing field "' . $item . '"');
+            }
+        }
+        if (! is_callable($definition['getNotifications'])) {
+            throw new PrestaShopException('Invalid notification definition "' . $type . '": "getNotification" is not callable');
+        }
+        if (!isset($definition['controller']) && !isset($definition['showAllLink'])) {
+            throw new PrestaShopException('Invalid notification definition "' . $type . '": "either "showAllLink" or "controller" must be specified');
+        }
+        if (isset($definition['controller'])) {
+            $controller = $definition['controller'];
+            if (! $this->permissions[$controller]) {
+                return false;
+            }
+        }
+        if (! isset($definition['rendererData'])) {
+            $definition['rendererData'] = [];
+        }
+        $this->types[$type] = $definition;
+        return true;
+    }
+
+
+    /**
+     * Translate method
+     *
+     * @param string $str
+     * @return string
+     */
+    protected function l($str)
+    {
+        return Translate::getAdminTranslation($str, 'AdminController');
     }
 }

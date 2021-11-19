@@ -100,14 +100,31 @@ if (Tools::isSubmit('getChildrenCategories') && Tools::isSubmit('id_category_par
 
 if (Tools::isSubmit('getNotifications')) {
     ShopMaintenance::run();
-
-    $notification = new Notification;
-    die(json_encode($notification->getLastElements()));
+    if (! headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    try {
+        $notification = $context->employee->getNotification();
+        die(json_encode($notification->getNotifications()));
+    } catch (PrestaShopException $e) {
+        $e->logError();
+        die([]);
+    }
 }
 
-if (Tools::isSubmit('updateElementEmployee') && Tools::getValue('updateElementEmployeeType')) {
-    $notification = new Notification;
-    die($notification->updateEmployeeLastElement(Tools::getValue('updateElementEmployeeType')));
+if (Tools::isSubmit('markNotificationsRead')) {
+    if (! headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    try {
+        $notification = $context->employee->getNotification();
+        $type = Tools::getValue('type');
+        $lastId = (int)Tools::getValue('lastId');
+        die(json_encode(['success' => $notification->markAsRead($type, $lastId)]));
+    } catch (PrestaShopException $e) {
+        $e->logError();
+        die(json_encode(['success' => false]));
+    }
 }
 
 if (Tools::isSubmit('searchCategory')) {

@@ -29,7 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use \GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Class EmployeeCore
@@ -84,15 +84,15 @@ class EmployeeCore extends ObjectModel
     /** @var bool Optin status */
     public $optin = 1;
 
-    /* employee notifications */
     public $remote_addr;
-    public $id_last_order;
-    public $id_last_customer_message;
-    public $id_last_customer;
     protected $associated_shops = [];
 
     public $last_connection_date;
     // @codingStandardsIgnoreEnd
+
+
+    /** @var Notification|null */
+    protected $notification = null;
 
     /**
      * @see ObjectModel::$definition
@@ -122,9 +122,6 @@ class EmployeeCore extends ObjectModel
             'bo_menu'                  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
             'active'                   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'optin'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
-            'id_last_order'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
-            'id_last_customer_message' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
-            'id_last_customer'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
             'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbDefault' => '1970-01-01', 'dbNullable' => true, 'dbType' => 'date'],
         ],
         'keys' => [
@@ -230,7 +227,7 @@ class EmployeeCore extends ObjectModel
      * @param int  $idProfile
      * @param bool $activeOnly
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -247,7 +244,7 @@ class EmployeeCore extends ObjectModel
             $sql->where('`active` = 1');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
     }
 
     /**
@@ -272,7 +269,7 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::getFields()
+     * @see ObjectModel::getFields()
      * @return array
      *
      * @since   1.0.0
@@ -363,7 +360,7 @@ class EmployeeCore extends ObjectModel
                     $this->optin = false;
                 }
                 if ((string) $body) {
-                    // Service itsself wasn't successful.
+                    // Service itself wasn't successful.
                     $success = false;
                     $this->optin = false;
                 }
@@ -373,6 +370,21 @@ class EmployeeCore extends ObjectModel
         }
 
         return $success;
+    }
+
+    /**
+     * Deletes this employee
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function delete()
+    {
+        $id = (int)$this->id;
+        if ($id) {
+            Db::getInstance()->delete('employee_notification', 'id_employee = ' . $id);
+        }
+        return parent::delete();
     }
 
     /**
@@ -456,7 +468,7 @@ class EmployeeCore extends ObjectModel
      * @param string $plainTextPassword Password is also checked if specified
      * @param bool   $activeOnly        Filter employee by active status
      *
-     * @return Employee|bool Employee instance
+     * @return static|bool Employee instance
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -652,7 +664,7 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -661,7 +673,7 @@ class EmployeeCore extends ObjectModel
      */
     public function favoriteModulesList()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('module')
                 ->from('module_preference')
@@ -741,28 +753,35 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param string $element
+     * @param string $type
      *
      * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @deprecated since 1.4.0
      */
-    public function getLastElementsForNotify($element)
+    public function getLastElementsForNotify($type)
     {
-        $element = bqSQL($element);
-        $max = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-                ->select('MAX(`id_'.bqSQL($element).'`) as `id_'.bqSQL($element).'`')
-                ->from(bqSQL($element).($element == 'order' ? 's' : ''))
-        );
-
-        // if no rows in table, set max to 0
-        if ((int) $max < 1) {
-            $max = 0;
-        }
-
-        return (int) $max;
+        Tools::displayAsDeprecated();
+        return $this->getNotification()->getLastSeenId($type);
     }
+
+    /**
+     * Returns Notification object associated with this employee
+     *
+     * @return Notification
+     * @throws PrestaShopException
+     * @since 1.4.0
+     */
+    public function getNotification()
+    {
+        if (is_null($this->notification)) {
+            $this->notification = new Notification($this);
+
+        }
+        return $this->notification;
+    }
+
 }

@@ -2031,7 +2031,7 @@ class AdminTranslationsControllerCore extends AdminController
                         _PS_OVERRIDE_DIR_.'controllers/admin/' => scandir(_PS_OVERRIDE_DIR_.'controllers/admin/'),
                         _PS_CLASS_DIR_.'helper/'               => scandir(_PS_CLASS_DIR_.'helper/'),
                         _PS_CLASS_DIR_.'controller/'           => ['AdminController.php'],
-                        _PS_CLASS_DIR_                         => ['PaymentModule.php'],
+                        _PS_CLASS_DIR_                         => ['PaymentModule.php', 'Notification.php'],
                     ],
                     'tpl'      => $this->listFiles(_PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes/'),
                     'specific' => [
@@ -2304,6 +2304,9 @@ class AdminTranslationsControllerCore extends AdminController
                     }
 
                     if ($prefixKey == 'Admin') {
+                        $prefixKey = 'AdminController';
+                    }
+                    if ($prefixKey == 'Notification.php') {
                         $prefixKey = 'AdminController';
                     }
 

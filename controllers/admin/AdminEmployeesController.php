@@ -598,10 +598,6 @@ class AdminEmployeesControllerCore extends AdminController
                 $_POST[$key][$row['id_shop']] = 1;
                 $_GET[$key][$row['id_shop']] = 1;
             }
-        } else {
-            $_POST['id_last_order'] = $employee->getLastElementsForNotify('order');
-            $_POST['id_last_customer_message'] = $employee->getLastElementsForNotify('customer_message');
-            $_POST['id_last_customer'] = $employee->getLastElementsForNotify('customer');
         }
 
         //if profile is super admin, manually fill checkBoxShopAsso_employee because in the form they are disabled.
@@ -664,6 +660,23 @@ class AdminEmployeesControllerCore extends AdminController
 
         return parent::processSave();
     }
+
+    /**
+     * Object creation
+     *
+     * @return Employee|false
+     * @throws PrestaShopException
+     */
+    public function processAdd()
+    {
+        /** @var Employee|false $object */
+        $object = parent::processAdd();
+        if (Validate::isLoadedObject($object)) {
+            $object->getNotification()->initialize();
+        }
+        return $object;
+    }
+
 
     /**
      * @param bool $className

@@ -389,6 +389,20 @@ class CoreModelsCore
             ],
         ];
 
+        $employeeNotification = [
+            'table'   => 'employee_notification',
+            'fields'  => [
+                'id_employee' => ['type' => ObjectModel::TYPE_INT, 'validate' => 'isInt', 'required' => true ],
+                'type' => ['type' => ObjectModel::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 64 ],
+                'last_id' => ['type' => ObjectModel::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'default' => '0'],
+            ],
+            'keys' => [
+                'employee_notification' => [
+                    'primary'          => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_employee', 'type']],
+                ]
+            ],
+        ];
+
         $featureProduct = [
             'table' => 'feature_product',
             'fields' => [
@@ -1251,6 +1265,7 @@ class CoreModelsCore
             'CustomerGroup' => $customerGroup,
             'CustomerMessageSyncImap' => $customerMessageSyncImap,
             'CustomizedData' => $customizedData,
+            'EmployeeNotification' => $employeeNotification,
             'FeatureProduct' => $featureProduct,
             'HookAlias' => $hookAlias,
             'HookModule' => $hookModule,

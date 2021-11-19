@@ -848,14 +848,18 @@ CREATE TABLE `PREFIX_employee` (
   `bo_menu` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `optin` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `id_last_order` int(11) unsigned NOT NULL DEFAULT '0',
-  `id_last_customer_message` int(11) unsigned NOT NULL DEFAULT '0',
-  `id_last_customer` int(11) unsigned NOT NULL DEFAULT '0',
   `last_connection_date` date DEFAULT '1970-01-01',
   PRIMARY KEY (`id_employee`),
   KEY `employee_login` (`email`,`passwd`),
   KEY `id_employee_passwd` (`id_employee`,`passwd`),
   KEY `id_profile` (`id_profile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_employee_notification` (
+  `id_employee` int(11) unsigned NOT NULL,
+  `type` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_id` int(11) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_employee`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_employee_shop` (
