@@ -22,19 +22,19 @@ CREATE TABLE `PREFIX_address` (
   `id_manufacturer` int(11) unsigned NOT NULL DEFAULT '0',
   `id_supplier` int(11) unsigned NOT NULL DEFAULT '0',
   `id_warehouse` int(11) unsigned NOT NULL DEFAULT '0',
-  `alias` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `company` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `lastname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `firstname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address1` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address2` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `postcode` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `city` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `other` text COLLATE utf8mb4_unicode_ci,
-  `phone` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone_mobile` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `vat_number` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `dni` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alias` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `company` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address1` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address2` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `postcode` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `other` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone_mobile` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vat_number` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dni` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -50,14 +50,14 @@ CREATE TABLE `PREFIX_address` (
 
 CREATE TABLE `PREFIX_address_format` (
   `id_country` int(11) unsigned NOT NULL,
-  `format` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `format` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id_country`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_alias` (
   `id_alias` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `alias` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `search` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alias` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `search` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_alias`),
   UNIQUE KEY `alias` (`alias`)
@@ -65,25 +65,25 @@ CREATE TABLE `PREFIX_alias` (
 
 CREATE TABLE `PREFIX_attachment` (
   `id_attachment` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `file` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `file_size` bigint(11) unsigned NOT NULL DEFAULT '0',
-  `mime` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_attachment`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_attachment_lang` (
   `id_attachment` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id_attachment`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_attribute` (
   `id_attribute` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_attribute_group` int(11) unsigned NOT NULL,
-  `color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_attribute`),
   KEY `attribute_group` (`id_attribute_group`)
@@ -92,7 +92,7 @@ CREATE TABLE `PREFIX_attribute` (
 CREATE TABLE `PREFIX_attribute_group` (
   `id_attribute_group` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `is_color_group` tinyint(1) NOT NULL DEFAULT '0',
-  `group_type` enum('select','radio','color') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
+  `group_type` enum('select','radio','color') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_attribute_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -100,8 +100,8 @@ CREATE TABLE `PREFIX_attribute_group` (
 CREATE TABLE `PREFIX_attribute_group_lang` (
   `id_attribute_group` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `public_name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `public_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_attribute_group`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -125,7 +125,7 @@ CREATE TABLE `PREFIX_attribute_impact` (
 CREATE TABLE `PREFIX_attribute_lang` (
   `id_attribute` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_attribute`,`id_lang`),
   KEY `id_lang` (`id_lang`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -141,8 +141,8 @@ CREATE TABLE `PREFIX_carrier` (
   `id_carrier` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_reference` int(11) unsigned NOT NULL,
   `id_tax_rules_group` int(11) unsigned DEFAULT '0',
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `shipping_handling` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -151,7 +151,7 @@ CREATE TABLE `PREFIX_carrier` (
   `is_free` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `shipping_external` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `need_range` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `external_module_name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `external_module_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `shipping_method` int(2) NOT NULL DEFAULT '0',
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   `max_width` int(10) DEFAULT '0',
@@ -176,7 +176,7 @@ CREATE TABLE `PREFIX_carrier_lang` (
   `id_carrier` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `delay` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delay` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_lang`,`id_shop`,`id_carrier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -205,17 +205,17 @@ CREATE TABLE `PREFIX_cart` (
   `id_shop_group` int(11) unsigned NOT NULL DEFAULT '1',
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_carrier` int(11) unsigned NOT NULL,
-  `delivery_option` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `delivery_option` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_address_delivery` int(11) unsigned NOT NULL,
   `id_address_invoice` int(11) unsigned NOT NULL,
   `id_currency` int(11) unsigned NOT NULL,
   `id_customer` int(11) unsigned NOT NULL,
   `id_guest` int(11) unsigned NOT NULL,
-  `secure_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
+  `secure_key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
   `recyclable` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `gift` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `gift_message` text COLLATE utf8mb4_unicode_ci,
+  `gift_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `mobile_theme` tinyint(1) NOT NULL DEFAULT '0',
   `allow_seperated_package` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `date_add` datetime NOT NULL,
@@ -258,12 +258,12 @@ CREATE TABLE `PREFIX_cart_rule` (
   `id_customer` int(10) unsigned NOT NULL DEFAULT '0',
   `date_from` datetime NOT NULL,
   `date_to` datetime NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `quantity` int(11) unsigned NOT NULL DEFAULT '0',
   `quantity_per_user` int(11) unsigned NOT NULL DEFAULT '0',
   `priority` int(11) unsigned NOT NULL DEFAULT '1',
   `partial_use` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `code` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `minimum_amount` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `minimum_amount_tax` tinyint(1) NOT NULL DEFAULT '0',
   `minimum_amount_currency` int(10) unsigned NOT NULL DEFAULT '0',
@@ -322,14 +322,14 @@ CREATE TABLE `PREFIX_cart_rule_group` (
 CREATE TABLE `PREFIX_cart_rule_lang` (
   `id_cart_rule` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_cart_rule`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_cart_rule_product_rule` (
   `id_product_rule` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_product_rule_group` int(11) unsigned NOT NULL,
-  `type` enum('products','categories','attributes','manufacturers','suppliers') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('products','categories','attributes','manufacturers','suppliers') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_product_rule`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -386,12 +386,12 @@ CREATE TABLE `PREFIX_category_lang` (
   `id_category` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `link_rewrite` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `link_rewrite` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_category`,`id_shop`,`id_lang`),
   KEY `category_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -437,12 +437,12 @@ CREATE TABLE `PREFIX_cms_category_lang` (
   `id_cms_category` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `link_rewrite` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `link_rewrite` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_cms_category`,`id_shop`,`id_lang`),
   KEY `category_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -458,29 +458,29 @@ CREATE TABLE `PREFIX_cms_lang` (
   `id_cms` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci,
-  `link_rewrite` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `link_rewrite` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_cms`,`id_shop`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_cms_role` (
   `id_cms_role` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `id_cms` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_cms_role`,`id_cms`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_cms_role_lang` (
   `id_cms_role` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL,
-  `name` varchar(128) DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id_cms_role`,`id_lang`,`id_shop`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_cms_shop` (
   `id_cms` int(11) unsigned NOT NULL,
@@ -507,8 +507,8 @@ CREATE TABLE `PREFIX_configuration` (
   `id_configuration` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop_group` int(11) unsigned DEFAULT NULL,
   `id_shop` int(11) unsigned DEFAULT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_configuration`),
@@ -520,8 +520,8 @@ CREATE TABLE `PREFIX_configuration_kpi` (
   `id_configuration_kpi` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop_group` int(11) unsigned DEFAULT NULL,
   `id_shop` int(11) unsigned DEFAULT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_configuration_kpi`),
@@ -533,7 +533,7 @@ CREATE TABLE `PREFIX_configuration_kpi` (
 CREATE TABLE `PREFIX_configuration_kpi_lang` (
   `id_configuration_kpi` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_upd` datetime DEFAULT NULL,
   PRIMARY KEY (`id_configuration_kpi`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -541,7 +541,7 @@ CREATE TABLE `PREFIX_configuration_kpi_lang` (
 CREATE TABLE `PREFIX_configuration_lang` (
   `id_configuration` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_upd` datetime DEFAULT NULL,
   PRIMARY KEY (`id_configuration`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -554,7 +554,7 @@ CREATE TABLE `PREFIX_connections` (
   `id_page` int(11) unsigned NOT NULL,
   `ip_address` bigint(20) DEFAULT NULL,
   `date_add` datetime NOT NULL,
-  `http_referer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_connections`),
   KEY `date_add` (`date_add`),
   KEY `id_guest` (`id_guest`),
@@ -572,9 +572,9 @@ CREATE TABLE `PREFIX_connections_page` (
 CREATE TABLE `PREFIX_connections_source` (
   `id_connections_source` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_connections` int(11) unsigned NOT NULL,
-  `http_referer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `request_uri` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_connections_source`),
   KEY `connections` (`id_connections`),
@@ -583,7 +583,7 @@ CREATE TABLE `PREFIX_connections_source` (
 
 CREATE TABLE `PREFIX_contact` (
   `id_contact` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `customer_service` tinyint(1) NOT NULL DEFAULT '0',
   `position` tinyint(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_contact`)
@@ -592,8 +592,8 @@ CREATE TABLE `PREFIX_contact` (
 CREATE TABLE `PREFIX_contact_lang` (
   `id_contact` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id_contact`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -608,13 +608,13 @@ CREATE TABLE `PREFIX_country` (
   `id_country` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_zone` int(11) unsigned NOT NULL,
   `id_currency` int(11) unsigned NOT NULL DEFAULT '0',
-  `iso_code` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `iso_code` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `call_prefix` int(10) NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `contains_states` tinyint(1) NOT NULL DEFAULT '0',
   `need_identification_number` tinyint(1) NOT NULL DEFAULT '0',
   `need_zip_code` tinyint(1) NOT NULL DEFAULT '1',
-  `zip_code_format` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `zip_code_format` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `display_tax_label` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_country`),
   KEY `country_` (`id_zone`),
@@ -624,7 +624,7 @@ CREATE TABLE `PREFIX_country` (
 CREATE TABLE `PREFIX_country_lang` (
   `id_country` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_country`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -637,10 +637,10 @@ CREATE TABLE `PREFIX_country_shop` (
 
 CREATE TABLE `PREFIX_currency` (
   `id_currency` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `iso_code` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `iso_code_num` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `sign` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `iso_code` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `iso_code_num` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `sign` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `blank` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `format` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `decimals` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -672,25 +672,25 @@ CREATE TABLE `PREFIX_customer` (
   `id_default_group` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned DEFAULT NULL,
   `id_risk` int(11) unsigned NOT NULL DEFAULT '1',
-  `company` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `siret` varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ape` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `firstname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lastname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passwd` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `company` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `siret` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ape` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `passwd` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_passwd_gen` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `birthday` date DEFAULT NULL,
   `newsletter` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `ip_registration_newsletter` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_registration_newsletter` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `newsletter_date_add` datetime DEFAULT NULL,
   `optin` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `website` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `outstanding_allow_amount` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `show_public_prices` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `max_payment_days` int(11) unsigned NOT NULL DEFAULT '60',
-  `secure_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
-  `note` text COLLATE utf8mb4_unicode_ci,
+  `secure_key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_guest` tinyint(1) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
@@ -717,10 +717,10 @@ CREATE TABLE `PREFIX_customer_message` (
   `id_customer_message` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_customer_thread` int(11) DEFAULT NULL,
   `id_employee` int(11) unsigned DEFAULT NULL,
-  `message` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_name` varchar(18) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ip_address` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `message` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file_name` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `private` tinyint(4) NOT NULL DEFAULT '0',
@@ -743,9 +743,9 @@ CREATE TABLE `PREFIX_customer_thread` (
   `id_customer` int(11) unsigned DEFAULT NULL,
   `id_order` int(11) unsigned DEFAULT NULL,
   `id_product` int(11) unsigned DEFAULT NULL,
-  `status` enum('open','closed','pending1','pending2') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('open','closed','pending1','pending2') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_customer_thread`),
@@ -785,7 +785,7 @@ CREATE TABLE `PREFIX_customization_field_lang` (
   `id_customization_field` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_customization_field`,`id_lang`,`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -793,7 +793,7 @@ CREATE TABLE `PREFIX_customized_data` (
   `id_customization` int(11) unsigned NOT NULL,
   `type` tinyint(1) NOT NULL,
   `index` int(3) NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_customization`,`type`,`index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -824,20 +824,20 @@ CREATE TABLE `PREFIX_employee` (
   `id_employee` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_profile` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL DEFAULT '0',
-  `lastname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `firstname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passwd` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `passwd` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_passwd_gen` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `stats_date_from` date DEFAULT NULL,
   `stats_date_to` date DEFAULT NULL,
   `stats_compare_from` date DEFAULT NULL,
   `stats_compare_to` date DEFAULT NULL,
   `stats_compare_option` int(1) unsigned NOT NULL DEFAULT '1',
-  `preselect_date_range` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bo_color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bo_theme` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bo_css` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `preselect_date_range` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bo_color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bo_theme` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bo_css` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `default_tab` int(11) unsigned NOT NULL DEFAULT '0',
   `bo_width` int(11) unsigned NOT NULL DEFAULT '0',
   `bo_menu` tinyint(1) NOT NULL DEFAULT '1',
@@ -871,7 +871,7 @@ CREATE TABLE `PREFIX_feature` (
 CREATE TABLE `PREFIX_feature_lang` (
   `id_feature` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_feature`,`id_lang`),
   KEY `id_lang` (`id_lang`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -903,7 +903,7 @@ CREATE TABLE `PREFIX_feature_value` (
 CREATE TABLE `PREFIX_feature_value_lang` (
   `id_feature_value` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_feature_value`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -916,7 +916,7 @@ CREATE TABLE `PREFIX_gender` (
 CREATE TABLE `PREFIX_gender_lang` (
   `id_gender` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_gender`,`id_lang`),
   KEY `id_gender` (`id_gender`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -934,7 +934,7 @@ CREATE TABLE `PREFIX_group` (
 CREATE TABLE `PREFIX_group_lang` (
   `id_group` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_group`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -969,7 +969,7 @@ CREATE TABLE `PREFIX_guest` (
   `apple_quicktime` tinyint(1) DEFAULT NULL,
   `real_player` tinyint(1) DEFAULT NULL,
   `windows_media` tinyint(1) DEFAULT NULL,
-  `accept_language` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `accept_language` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `mobile_theme` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_guest`),
   KEY `id_customer` (`id_customer`),
@@ -979,9 +979,9 @@ CREATE TABLE `PREFIX_guest` (
 
 CREATE TABLE `PREFIX_hook` (
   `id_hook` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `position` tinyint(1) NOT NULL DEFAULT '1',
   `live_edit` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_hook`),
@@ -990,8 +990,8 @@ CREATE TABLE `PREFIX_hook` (
 
 CREATE TABLE `PREFIX_hook_alias` (
   `id_hook_alias` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `alias` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alias` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_hook_alias`),
   UNIQUE KEY `alias` (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1012,7 +1012,7 @@ CREATE TABLE `PREFIX_hook_module_exceptions` (
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_module` int(11) unsigned NOT NULL,
   `id_hook` int(11) unsigned NOT NULL,
-  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_hook_module_exceptions`),
   KEY `id_hook` (`id_hook`),
   KEY `id_module` (`id_module`)
@@ -1032,7 +1032,7 @@ CREATE TABLE `PREFIX_image` (
 CREATE TABLE `PREFIX_image_lang` (
   `id_image` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `legend` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `legend` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_image`,`id_lang`),
   KEY `id_image` (`id_image`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1049,7 +1049,7 @@ CREATE TABLE `PREFIX_image_shop` (
 
 CREATE TABLE `PREFIX_image_type` (
   `id_image_type` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `width` int(11) unsigned NOT NULL,
   `height` int(11) unsigned NOT NULL,
   `products` tinyint(1) NOT NULL DEFAULT '1',
@@ -1064,20 +1064,20 @@ CREATE TABLE `PREFIX_image_type` (
 
 CREATE TABLE `PREFIX_import_match` (
   `id_import_match` int(10) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `match` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `match` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `skip` int(2) NOT NULL,
   PRIMARY KEY (`id_import_match`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_lang` (
   `id_lang` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `iso_code` char(2) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `language_code` char(5) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `date_format_lite` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d',
-  `date_format_full` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d H:i:s',
+  `iso_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `language_code` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_format_lite` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d',
+  `date_format_full` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d H:i:s',
   `is_rtl` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_lang`),
   KEY `lang_iso_code` (`iso_code`)
@@ -1094,8 +1094,8 @@ CREATE TABLE `PREFIX_log` (
   `id_log` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `severity` tinyint(1) NOT NULL,
   `error_code` int(11) DEFAULT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `object_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `object_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `object_id` int(11) unsigned DEFAULT NULL,
   `id_employee` int(11) unsigned DEFAULT NULL,
   `date_add` datetime NOT NULL,
@@ -1105,9 +1105,9 @@ CREATE TABLE `PREFIX_log` (
 
 CREATE TABLE `PREFIX_mail` (
   `id_mail` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `recipient` varchar(126) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `template` varchar(62) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subject` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `recipient` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `template` varchar(62) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_mail`),
@@ -1116,7 +1116,7 @@ CREATE TABLE `PREFIX_mail` (
 
 CREATE TABLE `PREFIX_manufacturer` (
   `id_manufacturer` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0',
@@ -1126,11 +1126,11 @@ CREATE TABLE `PREFIX_manufacturer` (
 CREATE TABLE `PREFIX_manufacturer_lang` (
   `id_manufacturer` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `short_description` text COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `short_description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_manufacturer`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1143,7 +1143,7 @@ CREATE TABLE `PREFIX_manufacturer_shop` (
 
 CREATE TABLE `PREFIX_memcached_servers` (
   `id_memcached_server` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `port` int(11) unsigned NOT NULL,
   `weight` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_memcached_server`)
@@ -1155,7 +1155,7 @@ CREATE TABLE `PREFIX_message` (
   `id_customer` int(11) unsigned NOT NULL,
   `id_employee` int(11) unsigned DEFAULT NULL,
   `id_order` int(11) unsigned NOT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `private` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_message`),
@@ -1174,7 +1174,7 @@ CREATE TABLE `PREFIX_message_readed` (
 
 CREATE TABLE `PREFIX_meta` (
   `id_meta` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `page` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `page` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `configurable` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_meta`),
   UNIQUE KEY `page` (`page`)
@@ -1184,10 +1184,10 @@ CREATE TABLE `PREFIX_meta_lang` (
   `id_meta` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `url_rewrite` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `url_rewrite` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_meta`,`id_shop`,`id_lang`),
   KEY `id_lang` (`id_lang`),
   KEY `id_shop` (`id_shop`)
@@ -1195,9 +1195,9 @@ CREATE TABLE `PREFIX_meta_lang` (
 
 CREATE TABLE `PREFIX_module` (
   `id_module` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `version` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `version` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_module`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1242,7 +1242,7 @@ CREATE TABLE `PREFIX_module_group` (
 CREATE TABLE `PREFIX_module_preference` (
   `id_module_preference` int(11) NOT NULL AUTO_INCREMENT,
   `id_employee` int(11) NOT NULL,
-  `module` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `interest` tinyint(1) DEFAULT NULL,
   `favorite` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_module_preference`),
@@ -1260,19 +1260,19 @@ CREATE TABLE `PREFIX_module_shop` (
 CREATE TABLE `PREFIX_modules_perfs` (
   `id_modules_perfs` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `session` int(11) unsigned NOT NULL,
-  `module` varchar(64) NOT NULL,
-  `method` varchar(126) NOT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `method` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `time_start` double unsigned NOT NULL,
   `time_end` double unsigned NOT NULL,
   `memory_start` int(10) unsigned NOT NULL,
   `memory_end` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id_modules_perfs`),
   KEY `session` (`session`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_operating_system` (
   `id_operating_system` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_operating_system`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1284,7 +1284,7 @@ CREATE TABLE `PREFIX_order_carrier` (
   `weight` decimal(20,6) DEFAULT NULL,
   `shipping_cost_tax_excl` decimal(20,6) DEFAULT NULL,
   `shipping_cost_tax_incl` decimal(20,6) DEFAULT NULL,
-  `tracking_number` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tracking_number` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_order_carrier`),
   KEY `id_carrier` (`id_carrier`),
@@ -1297,7 +1297,7 @@ CREATE TABLE `PREFIX_order_cart_rule` (
   `id_order` int(11) unsigned NOT NULL,
   `id_cart_rule` int(11) unsigned NOT NULL,
   `id_order_invoice` int(11) unsigned DEFAULT '0',
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `value_tax_excl` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `free_shipping` tinyint(1) NOT NULL DEFAULT '0',
@@ -1314,7 +1314,7 @@ CREATE TABLE `PREFIX_order_detail` (
   `id_shop` int(11) unsigned NOT NULL,
   `product_id` int(11) unsigned NOT NULL,
   `product_attribute_id` int(11) unsigned DEFAULT NULL,
-  `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `product_quantity` int(11) unsigned NOT NULL DEFAULT '0',
   `product_quantity_in_stock` int(10) NOT NULL DEFAULT '0',
   `product_quantity_refunded` int(11) unsigned NOT NULL DEFAULT '0',
@@ -1327,19 +1327,19 @@ CREATE TABLE `PREFIX_order_detail` (
   `reduction_amount_tax_excl` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `group_reduction` decimal(10,2) NOT NULL DEFAULT '0.00',
   `product_quantity_discount` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `product_ean13` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `product_upc` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `product_reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `product_supplier_reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_ean13` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_upc` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_supplier_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `product_weight` decimal(20,6) NOT NULL,
   `id_tax_rules_group` int(11) unsigned DEFAULT '0',
   `tax_computation_method` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `tax_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tax_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tax_rate` decimal(10,3) NOT NULL DEFAULT '0.000',
   `ecotax` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `ecotax_tax_rate` decimal(5,3) NOT NULL DEFAULT '0.000',
   `discount_quantity_applied` tinyint(1) NOT NULL DEFAULT '0',
-  `download_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `download_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `download_nb` int(11) unsigned DEFAULT '0',
   `download_deadline` datetime DEFAULT NULL,
   `total_price_tax_incl` decimal(20,6) NOT NULL DEFAULT '0.000000',
@@ -1397,10 +1397,10 @@ CREATE TABLE `PREFIX_order_invoice` (
   `shipping_tax_computation_method` int(11) unsigned NOT NULL,
   `total_wrapping_tax_excl` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `total_wrapping_tax_incl` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `shop_address` text COLLATE utf8mb4_unicode_ci,
-  `invoice_address` text COLLATE utf8mb4_unicode_ci,
-  `delivery_address` text COLLATE utf8mb4_unicode_ci,
-  `note` text COLLATE utf8mb4_unicode_ci,
+  `shop_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `invoice_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `delivery_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_order_invoice`),
   KEY `id_order` (`id_order`)
@@ -1417,7 +1417,7 @@ CREATE TABLE `PREFIX_order_invoice_payment` (
 
 CREATE TABLE `PREFIX_order_invoice_tax` (
   `id_order_invoice` int(11) NOT NULL,
-  `type` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_tax` int(11) NOT NULL,
   `amount` decimal(20,6) NOT NULL DEFAULT '0.000000',
   KEY `id_tax` (`id_tax`)
@@ -1432,23 +1432,23 @@ CREATE TABLE `PREFIX_order_message` (
 CREATE TABLE `PREFIX_order_message_lang` (
   `id_order_message` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_order_message`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_order_payment` (
   `id_order_payment` int(11) NOT NULL AUTO_INCREMENT,
-  `order_reference` varchar(9) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_reference` varchar(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `id_currency` int(10) unsigned NOT NULL,
   `amount` decimal(20,6) NOT NULL,
-  `payment_method` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `conversion_rate` decimal(13,6) NOT NULL DEFAULT '1.000000',
-  `transaction_id` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `card_number` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `card_brand` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `card_expiration` char(7) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `card_holder` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_id` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `card_number` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `card_brand` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `card_expiration` char(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `card_holder` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_order_payment`),
   KEY `order_reference` (`order_reference`)
@@ -1459,7 +1459,7 @@ CREATE TABLE `PREFIX_order_return` (
   `id_customer` int(11) unsigned NOT NULL,
   `id_order` int(11) unsigned NOT NULL,
   `state` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `question` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_order_return`),
@@ -1477,7 +1477,7 @@ CREATE TABLE `PREFIX_order_return_detail` (
 
 CREATE TABLE `PREFIX_order_return_state` (
   `id_order_return_state` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_order_return_state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1485,7 +1485,7 @@ CREATE TABLE `PREFIX_order_return_state` (
 CREATE TABLE `PREFIX_order_return_state_lang` (
   `id_order_return_state` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_order_return_state`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1536,8 +1536,8 @@ CREATE TABLE `PREFIX_order_state` (
   `id_order_state` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `invoice` tinyint(1) unsigned DEFAULT '0',
   `send_email` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `module_name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unremovable` tinyint(1) unsigned NOT NULL,
   `hidden` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `logable` tinyint(1) NOT NULL DEFAULT '0',
@@ -1555,14 +1555,14 @@ CREATE TABLE `PREFIX_order_state` (
 CREATE TABLE `PREFIX_order_state_lang` (
   `id_order_state` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `template` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `template` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_order_state`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_orders` (
   `id_order` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `reference` varchar(9) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `id_shop_group` int(11) unsigned NOT NULL DEFAULT '1',
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_carrier` int(11) unsigned NOT NULL,
@@ -1573,15 +1573,15 @@ CREATE TABLE `PREFIX_orders` (
   `id_address_delivery` int(11) unsigned NOT NULL,
   `id_address_invoice` int(11) unsigned NOT NULL,
   `current_state` int(11) unsigned NOT NULL,
-  `secure_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
-  `payment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `secure_key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-1',
+  `payment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `conversion_rate` decimal(13,6) NOT NULL DEFAULT '1.000000',
-  `module` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `recyclable` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `gift` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `gift_message` text COLLATE utf8mb4_unicode_ci,
+  `gift_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `mobile_theme` tinyint(1) NOT NULL DEFAULT '0',
-  `shipping_number` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `shipping_number` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `total_discounts` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `total_discounts_tax_incl` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `total_discounts_tax_excl` decimal(20,6) NOT NULL DEFAULT '0.000000',
@@ -1642,12 +1642,12 @@ CREATE TABLE `PREFIX_page` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_page_cache` (
-  `cache_hash` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cache_hash` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_currency` int(11) unsigned DEFAULT NULL,
   `id_language` int(11) unsigned DEFAULT NULL,
   `id_country` int(11) unsigned DEFAULT NULL,
   `id_shop` int(11) unsigned DEFAULT NULL,
-  `entity_type` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entity_type` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_entity` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`cache_hash`),
   KEY `cache_combo` (`cache_hash`,`id_currency`,`id_language`,`id_country`,`id_shop`)
@@ -1655,7 +1655,7 @@ CREATE TABLE `PREFIX_page_cache` (
 
 CREATE TABLE `PREFIX_page_type` (
   `id_page_type` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_page_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1677,19 +1677,19 @@ CREATE TABLE `PREFIX_product` (
   `id_tax_rules_group` int(11) unsigned NOT NULL,
   `on_sale` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `online_only` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `ean13` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `upc` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ean13` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `upc` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ecotax` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `quantity` int(10) NOT NULL DEFAULT '0',
   `minimal_quantity` int(11) unsigned NOT NULL DEFAULT '1',
   `price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `wholesale_price` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `unity` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unity` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unit_price_ratio` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `additional_shipping_cost` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `supplier_reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `location` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `supplier_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `width` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `height` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `depth` decimal(20,6) NOT NULL DEFAULT '0.000000',
@@ -1700,14 +1700,14 @@ CREATE TABLE `PREFIX_product` (
   `uploadable_files` tinyint(4) NOT NULL DEFAULT '0',
   `text_fields` tinyint(4) NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `redirect_type` enum('','404','301','302') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `redirect_type` enum('','404','301','302') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `id_product_redirected` int(11) unsigned NOT NULL DEFAULT '0',
   `available_for_order` tinyint(1) NOT NULL DEFAULT '1',
   `available_date` date NOT NULL DEFAULT '1970-01-01',
-  `condition` enum('new','used','refurbished') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
+  `condition` enum('new','used','refurbished') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
   `show_price` tinyint(1) NOT NULL DEFAULT '1',
   `indexed` tinyint(1) NOT NULL DEFAULT '0',
-  `visibility` enum('both','catalog','search','none') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'both',
+  `visibility` enum('both','catalog','search','none') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'both',
   `cache_is_pack` tinyint(1) NOT NULL DEFAULT '0',
   `cache_has_attachments` tinyint(1) NOT NULL DEFAULT '0',
   `is_virtual` tinyint(1) NOT NULL DEFAULT '0',
@@ -1733,11 +1733,11 @@ CREATE TABLE `PREFIX_product_attachment` (
 CREATE TABLE `PREFIX_product_attribute` (
   `id_product_attribute` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_product` int(11) unsigned NOT NULL,
-  `reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `supplier_reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `location` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ean13` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `upc` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `supplier_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ean13` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `upc` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `wholesale_price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `ecotax` decimal(20,6) NOT NULL DEFAULT '0.000000',
@@ -1802,8 +1802,8 @@ CREATE TABLE `PREFIX_product_country_tax` (
 CREATE TABLE `PREFIX_product_download` (
   `id_product_download` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_product` int(11) unsigned NOT NULL,
-  `display_filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_expiration` datetime DEFAULT NULL,
   `nb_days_accessible` int(11) unsigned DEFAULT NULL,
@@ -1826,15 +1826,15 @@ CREATE TABLE `PREFIX_product_lang` (
   `id_product` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `description_short` text COLLATE utf8mb4_unicode_ci,
-  `link_rewrite` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `available_now` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `available_later` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `description_short` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `link_rewrite` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `available_now` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `available_later` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_product`,`id_shop`,`id_lang`),
   KEY `id_lang` (`id_lang`),
   KEY `name` (`name`)
@@ -1860,21 +1860,21 @@ CREATE TABLE `PREFIX_product_shop` (
   `minimal_quantity` int(11) unsigned NOT NULL DEFAULT '1',
   `price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `wholesale_price` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `unity` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unity` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unit_price_ratio` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `additional_shipping_cost` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `customizable` tinyint(2) NOT NULL DEFAULT '0',
   `uploadable_files` tinyint(4) NOT NULL DEFAULT '0',
   `text_fields` tinyint(4) NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `redirect_type` enum('','404','301','302') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `redirect_type` enum('','404','301','302') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `id_product_redirected` int(11) unsigned NOT NULL DEFAULT '0',
   `available_for_order` tinyint(1) NOT NULL DEFAULT '1',
   `available_date` date NOT NULL DEFAULT '1970-01-01',
-  `condition` enum('new','used','refurbished') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
+  `condition` enum('new','used','refurbished') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
   `show_price` tinyint(1) NOT NULL DEFAULT '1',
   `indexed` tinyint(1) NOT NULL DEFAULT '0',
-  `visibility` enum('both','catalog','search','none') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'both',
+  `visibility` enum('both','catalog','search','none') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'both',
   `cache_default_attribute` int(11) unsigned DEFAULT NULL,
   `advanced_stock_management` tinyint(1) NOT NULL DEFAULT '0',
   `date_add` datetime NOT NULL,
@@ -1891,7 +1891,7 @@ CREATE TABLE `PREFIX_product_supplier` (
   `id_product` int(11) unsigned NOT NULL,
   `id_product_attribute` int(11) unsigned NOT NULL DEFAULT '0',
   `id_supplier` int(11) unsigned NOT NULL,
-  `product_supplier_reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_supplier_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `product_supplier_price_te` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `id_currency` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_product_supplier`),
@@ -1916,17 +1916,17 @@ CREATE TABLE `PREFIX_profile` (
 CREATE TABLE `PREFIX_profile_lang` (
   `id_lang` int(11) unsigned NOT NULL,
   `id_profile` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_profile`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_profile_permission` (
   `id_profile_permission` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_profile` int(11) unsigned NOT NULL,
-  `perm_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `perm_group` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `permission` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `level` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `perm_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `perm_group` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permission` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `level` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_profile_permission`),
   UNIQUE KEY `perm` (`id_profile`,`perm_group`,`permission`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1934,14 +1934,14 @@ CREATE TABLE `PREFIX_profile_permission` (
 CREATE TABLE `PREFIX_quick_access` (
   `id_quick_access` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `new_window` tinyint(1) NOT NULL DEFAULT '0',
-  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_quick_access`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_quick_access_lang` (
   `id_quick_access` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_quick_access`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1965,25 +1965,25 @@ CREATE TABLE `PREFIX_range_weight` (
 
 CREATE TABLE `PREFIX_redis_servers` (
   `id_redis_server` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(46) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(46) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `port` int(11) unsigned NOT NULL,
-  `auth` text COLLATE utf8mb4_unicode_ci,
+  `auth` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `db` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_redis_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_referrer` (
   `id_referrer` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passwd` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `http_referer_regexp` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `http_referer_like` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `request_uri_regexp` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `request_uri_like` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `http_referer_regexp_not` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `http_referer_like_not` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `request_uri_regexp_not` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `request_uri_like_not` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `passwd` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer_regexp` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer_like` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri_regexp` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri_like` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer_regexp_not` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_referer_like_not` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri_regexp_not` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri_like_not` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `base_fee` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `percent_fee` decimal(5,2) NOT NULL DEFAULT '0.00',
   `click_fee` decimal(20,6) NOT NULL DEFAULT '0.000000',
@@ -2013,15 +2013,15 @@ CREATE TABLE `PREFIX_referrer_shop` (
 
 CREATE TABLE `PREFIX_request_sql` (
   `id_request_sql` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sql` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sql` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_request_sql`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_required_field` (
   `id_required_field` int(11) NOT NULL AUTO_INCREMENT,
-  `object_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `field_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `object_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `field_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_required_field`),
   KEY `object_name` (`object_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2029,14 +2029,14 @@ CREATE TABLE `PREFIX_required_field` (
 CREATE TABLE `PREFIX_risk` (
   `id_risk` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `percent` tinyint(3) NOT NULL,
-  `color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_risk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_risk_lang` (
   `id_risk` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_risk`,`id_lang`),
   KEY `id_risk` (`id_risk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2056,7 +2056,7 @@ CREATE TABLE `PREFIX_scene_category` (
 CREATE TABLE `PREFIX_scene_lang` (
   `id_scene` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_scene`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2079,11 +2079,11 @@ CREATE TABLE `PREFIX_scene_shop` (
 
 CREATE TABLE `PREFIX_scheduled_task` (
   `id_scheduled_task` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `frequency` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `task` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` mediumtext COLLATE utf8mb4_unicode_ci,
+  `frequency` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `task` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `last_execution` int(11) unsigned DEFAULT NULL,
   `last_checked` int(11) unsigned DEFAULT NULL,
@@ -2106,8 +2106,8 @@ CREATE TABLE `PREFIX_scheduled_task_execution` (
 
 CREATE TABLE `PREFIX_search_engine` (
   `id_search_engine` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `server` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `getvar` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `server` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `getvar` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_search_engine`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2123,7 +2123,7 @@ CREATE TABLE `PREFIX_search_word` (
   `id_word` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `word` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `word` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_word`),
   UNIQUE KEY `id_lang` (`id_lang`,`id_shop`,`word`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2131,7 +2131,7 @@ CREATE TABLE `PREFIX_search_word` (
 CREATE TABLE `PREFIX_shop` (
   `id_shop` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop_group` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_category` int(11) unsigned NOT NULL DEFAULT '1',
   `id_theme` int(1) unsigned NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
@@ -2144,7 +2144,7 @@ CREATE TABLE `PREFIX_shop` (
 
 CREATE TABLE `PREFIX_shop_group` (
   `id_shop_group` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `share_customer` tinyint(1) NOT NULL,
   `share_order` tinyint(1) NOT NULL,
   `share_stock` tinyint(1) NOT NULL,
@@ -2157,10 +2157,10 @@ CREATE TABLE `PREFIX_shop_group` (
 CREATE TABLE `PREFIX_shop_url` (
   `id_shop_url` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop` int(11) unsigned NOT NULL,
-  `domain` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `domain_ssl` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `physical_uri` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `virtual_uri` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `domain` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `domain_ssl` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `physical_uri` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `virtual_uri` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `main` tinyint(1) NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_shop_url`),
@@ -2170,11 +2170,11 @@ CREATE TABLE `PREFIX_shop_url` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_smarty_cache` (
-  `id_smarty_cache` char(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` char(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cache_id` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_smarty_cache` char(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` char(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cache_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_smarty_cache`),
   KEY `cache_id` (`cache_id`),
   KEY `modified` (`modified`),
@@ -2182,19 +2182,19 @@ CREATE TABLE `PREFIX_smarty_cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_smarty_last_flush` (
-  `type` enum('compile','template') NOT NULL DEFAULT 'compile',
+  `type` enum('compile','template') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'compile',
   `last_flush` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_smarty_lazy_cache` (
-  `template_hash` varchar(32) NOT NULL DEFAULT '',
-  `cache_id` varchar(64) NOT NULL DEFAULT '',
-  `compile_id` varchar(32) NOT NULL DEFAULT '',
-  `filepath` varchar(255) NOT NULL DEFAULT '',
+  `template_hash` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `cache_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `compile_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `filepath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `last_update` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`template_hash`,`cache_id`,`compile_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_specific_price` (
   `id_specific_price` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2212,7 +2212,7 @@ CREATE TABLE `PREFIX_specific_price` (
   `from_quantity` mediumint(8) unsigned NOT NULL,
   `reduction` decimal(20,6) NOT NULL,
   `reduction_tax` tinyint(1) NOT NULL DEFAULT '1',
-  `reduction_type` enum('amount','percentage') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reduction_type` enum('amount','percentage') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `from` datetime NOT NULL,
   `to` datetime NOT NULL,
   PRIMARY KEY (`id_specific_price`),
@@ -2231,14 +2231,14 @@ CREATE TABLE `PREFIX_specific_price` (
 CREATE TABLE `PREFIX_specific_price_priority` (
   `id_specific_price_priority` int(11) NOT NULL AUTO_INCREMENT,
   `id_product` int(11) NOT NULL,
-  `priority` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_specific_price_priority`,`id_product`),
   UNIQUE KEY `id_product` (`id_product`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_specific_price_rule` (
   `id_specific_price_rule` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_currency` int(11) unsigned NOT NULL,
   `id_country` int(11) unsigned NOT NULL,
@@ -2247,7 +2247,7 @@ CREATE TABLE `PREFIX_specific_price_rule` (
   `price` decimal(20,6) DEFAULT NULL,
   `reduction` decimal(20,6) NOT NULL,
   `reduction_tax` tinyint(1) NOT NULL DEFAULT '1',
-  `reduction_type` enum('amount','percentage') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reduction_type` enum('amount','percentage') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `from` datetime NOT NULL,
   `to` datetime NOT NULL,
   PRIMARY KEY (`id_specific_price_rule`),
@@ -2257,8 +2257,8 @@ CREATE TABLE `PREFIX_specific_price_rule` (
 CREATE TABLE `PREFIX_specific_price_rule_condition` (
   `id_specific_price_rule_condition` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_specific_price_rule_condition_group` int(11) unsigned NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_specific_price_rule_condition`),
   KEY `id_specific_price_rule_condition_group` (`id_specific_price_rule_condition_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2273,8 +2273,8 @@ CREATE TABLE `PREFIX_state` (
   `id_state` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_country` int(11) unsigned NOT NULL,
   `id_zone` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `iso_code` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `iso_code` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tax_behavior` smallint(1) NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_state`),
@@ -2288,9 +2288,9 @@ CREATE TABLE `PREFIX_stock` (
   `id_warehouse` int(11) unsigned NOT NULL,
   `id_product` int(11) unsigned NOT NULL,
   `id_product_attribute` int(11) unsigned NOT NULL,
-  `reference` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ean13` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `upc` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ean13` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `upc` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `physical_quantity` int(11) unsigned NOT NULL,
   `usable_quantity` int(11) unsigned NOT NULL,
   `price_te` decimal(20,6) DEFAULT '0.000000',
@@ -2324,8 +2324,8 @@ CREATE TABLE `PREFIX_stock_mvt` (
   `id_supply_order` int(11) unsigned DEFAULT NULL,
   `id_stock_mvt_reason` int(11) unsigned NOT NULL,
   `id_employee` int(11) unsigned NOT NULL,
-  `employee_lastname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  `employee_firstname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
   `physical_quantity` int(11) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   `sign` tinyint(1) NOT NULL DEFAULT '1',
@@ -2350,7 +2350,7 @@ CREATE TABLE `PREFIX_stock_mvt_reason` (
 CREATE TABLE `PREFIX_stock_mvt_reason_lang` (
   `id_stock_mvt_reason` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_stock_mvt_reason`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2358,18 +2358,18 @@ CREATE TABLE `PREFIX_store` (
   `id_store` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_country` int(11) unsigned NOT NULL,
   `id_state` int(11) unsigned DEFAULT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address1` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address2` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `city` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `postcode` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address1` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address2` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `postcode` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `latitude` decimal(13,8) DEFAULT NULL,
   `longitude` decimal(13,8) DEFAULT NULL,
-  `hours` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `fax` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `note` text COLLATE utf8mb4_unicode_ci,
+  `hours` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fax` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
@@ -2385,7 +2385,7 @@ CREATE TABLE `PREFIX_store_shop` (
 
 CREATE TABLE `PREFIX_supplier` (
   `id_supplier` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0',
@@ -2395,10 +2395,10 @@ CREATE TABLE `PREFIX_supplier` (
 CREATE TABLE `PREFIX_supplier_lang` (
   `id_supplier` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_supplier`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2412,13 +2412,13 @@ CREATE TABLE `PREFIX_supplier_shop` (
 CREATE TABLE `PREFIX_supply_order` (
   `id_supply_order` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_supplier` int(11) unsigned NOT NULL,
-  `supplier_name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `supplier_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_warehouse` int(11) unsigned NOT NULL,
   `id_supply_order_state` int(11) unsigned NOT NULL,
   `id_currency` int(11) unsigned NOT NULL,
   `id_ref_currency` int(11) unsigned NOT NULL,
-  `reference` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   `date_delivery_expected` datetime DEFAULT NULL,
@@ -2441,11 +2441,11 @@ CREATE TABLE `PREFIX_supply_order_detail` (
   `id_currency` int(11) unsigned NOT NULL,
   `id_product` int(11) unsigned NOT NULL,
   `id_product_attribute` int(11) unsigned NOT NULL,
-  `reference` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `supplier_reference` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ean13` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `upc` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `supplier_reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ean13` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `upc` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `exchange_rate` decimal(20,6) DEFAULT '0.000000',
   `unit_price_te` decimal(20,6) DEFAULT '0.000000',
   `quantity_expected` int(11) unsigned NOT NULL,
@@ -2469,8 +2469,8 @@ CREATE TABLE `PREFIX_supply_order_history` (
   `id_supply_order_history` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_supply_order` int(11) unsigned NOT NULL,
   `id_employee` int(11) unsigned NOT NULL,
-  `employee_lastname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  `employee_firstname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
   `id_state` int(11) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   PRIMARY KEY (`id_supply_order_history`),
@@ -2483,8 +2483,8 @@ CREATE TABLE `PREFIX_supply_order_receipt_history` (
   `id_supply_order_receipt_history` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_supply_order_detail` int(11) unsigned NOT NULL,
   `id_employee` int(11) unsigned NOT NULL,
-  `employee_lastname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  `employee_firstname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `employee_firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
   `id_supply_order_state` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
@@ -2500,22 +2500,22 @@ CREATE TABLE `PREFIX_supply_order_state` (
   `receipt_state` tinyint(1) NOT NULL DEFAULT '0',
   `pending_receipt` tinyint(1) NOT NULL DEFAULT '0',
   `enclosed` tinyint(1) NOT NULL DEFAULT '0',
-  `color` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_supply_order_state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_supply_order_state_lang` (
   `id_supply_order_state` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_supply_order_state`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_tab` (
   `id_tab` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_parent` int(11) NOT NULL,
-  `class_name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `module` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `class_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `position` int(11) unsigned NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_tab`),
@@ -2526,7 +2526,7 @@ CREATE TABLE `PREFIX_tab` (
 CREATE TABLE `PREFIX_tab_lang` (
   `id_tab` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_tab`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2534,7 +2534,7 @@ CREATE TABLE `PREFIX_tab_module_preference` (
   `id_tab_module_preference` int(11) NOT NULL AUTO_INCREMENT,
   `id_employee` int(11) NOT NULL,
   `id_tab` int(11) NOT NULL,
-  `module` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_tab_module_preference`),
   UNIQUE KEY `employee_module` (`id_employee`,`id_tab`,`module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2542,7 +2542,7 @@ CREATE TABLE `PREFIX_tab_module_preference` (
 CREATE TABLE `PREFIX_tag` (
   `id_tag` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_tag`),
   KEY `id_lang` (`id_lang`),
   KEY `tag_name` (`name`)
@@ -2569,7 +2569,7 @@ CREATE TABLE `PREFIX_tax` (
 CREATE TABLE `PREFIX_tax_lang` (
   `id_tax` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_tax`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2578,11 +2578,11 @@ CREATE TABLE `PREFIX_tax_rule` (
   `id_tax_rules_group` int(11) NOT NULL,
   `id_country` int(11) NOT NULL,
   `id_state` int(11) NOT NULL,
-  `zipcode_from` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `zipcode_to` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `zipcode_from` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `zipcode_to` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_tax` int(11) NOT NULL,
   `behavior` int(11) NOT NULL,
-  `description` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_tax_rule`),
   KEY `category_getproducts` (`id_tax_rules_group`,`id_country`,`id_state`,`zipcode_from`),
   KEY `id_tax` (`id_tax`),
@@ -2591,7 +2591,7 @@ CREATE TABLE `PREFIX_tax_rule` (
 
 CREATE TABLE `PREFIX_tax_rules_group` (
   `id_tax_rules_group` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` int(11) NOT NULL,
   `deleted` tinyint(1) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
@@ -2608,8 +2608,8 @@ CREATE TABLE `PREFIX_tax_rules_group_shop` (
 
 CREATE TABLE `PREFIX_theme` (
   `id_theme` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `directory` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `directory` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `responsive` tinyint(1) NOT NULL DEFAULT '0',
   `default_left_column` tinyint(1) NOT NULL DEFAULT '0',
   `default_right_column` tinyint(1) NOT NULL DEFAULT '0',
@@ -2627,7 +2627,7 @@ CREATE TABLE `PREFIX_theme_meta` (
   UNIQUE KEY `id_theme_2` (`id_theme`,`id_meta`),
   KEY `id_meta` (`id_meta`),
   KEY `id_theme` (`id_theme`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `PREFIX_theme_specific` (
   `id_theme` int(11) unsigned NOT NULL,
@@ -2639,14 +2639,14 @@ CREATE TABLE `PREFIX_theme_specific` (
 
 CREATE TABLE `PREFIX_timezone` (
   `id_timezone` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_timezone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_tracking_consent` (
   `id_tracking_consent` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_employee` int(11) unsigned NOT NULL,
-  `identifier` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `consent` tinyint(1) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
@@ -2659,9 +2659,9 @@ CREATE TABLE `PREFIX_warehouse` (
   `id_currency` int(11) unsigned NOT NULL,
   `id_address` int(11) unsigned NOT NULL,
   `id_employee` int(11) unsigned NOT NULL,
-  `reference` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `management_type` enum('WA','FIFO','LIFO') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WA',
+  `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `management_type` enum('WA','FIFO','LIFO') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WA',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_warehouse`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2679,7 +2679,7 @@ CREATE TABLE `PREFIX_warehouse_product_location` (
   `id_product` int(11) unsigned NOT NULL,
   `id_product_attribute` int(11) unsigned NOT NULL,
   `id_warehouse` int(11) unsigned NOT NULL,
-  `location` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_warehouse_product_location`),
   UNIQUE KEY `id_product` (`id_product`,`id_product_attribute`,`id_warehouse`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2694,17 +2694,17 @@ CREATE TABLE `PREFIX_warehouse_shop` (
 
 CREATE TABLE `PREFIX_web_browser` (
   `id_web_browser` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_web_browser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_webservice_account` (
   `id_webservice_account` int(11) NOT NULL AUTO_INCREMENT,
-  `key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `class_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WebserviceRequest',
+  `key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `class_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WebserviceRequest',
   `is_module` tinyint(2) NOT NULL DEFAULT '0',
-  `module_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `active` tinyint(2) NOT NULL,
   `context_employee_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_webservice_account`),
@@ -2720,8 +2720,8 @@ CREATE TABLE `PREFIX_webservice_account_shop` (
 
 CREATE TABLE `PREFIX_webservice_permission` (
   `id_webservice_permission` int(11) NOT NULL AUTO_INCREMENT,
-  `resource` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `method` enum('GET','POST','PUT','DELETE','HEAD') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `resource` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method` enum('GET','POST','PUT','DELETE','HEAD') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_webservice_account` int(11) NOT NULL,
   PRIMARY KEY (`id_webservice_permission`),
   UNIQUE KEY `resource_2` (`resource`,`method`,`id_webservice_account`),
@@ -2732,13 +2732,13 @@ CREATE TABLE `PREFIX_webservice_permission` (
 
 CREATE TABLE `PREFIX_workqueue_task` (
   `id_workqueue_task` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `task` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` mediumtext COLLATE utf8mb4_unicode_ci,
-  `status` enum('pending','running','success','failure') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `task` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('pending','running','success','failure') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_start` datetime DEFAULT NULL,
   `duration` decimal(20,6) DEFAULT NULL,
-  `result` mediumtext COLLATE utf8mb4_unicode_ci,
-  `error` mediumtext COLLATE utf8mb4_unicode_ci,
+  `result` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `error` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `id_employee_context` int(11) unsigned DEFAULT NULL,
   `id_shop_context` int(11) unsigned DEFAULT NULL,
   `id_customer_context` int(11) unsigned DEFAULT NULL,
@@ -2750,7 +2750,7 @@ CREATE TABLE `PREFIX_workqueue_task` (
 
 CREATE TABLE `PREFIX_zone` (
   `id_zone` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_zone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

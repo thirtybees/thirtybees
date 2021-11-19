@@ -225,7 +225,6 @@ class InstallModelInstall extends InstallAbstractModel
 
         // Install database structure
         static::loadCoreUpdater();
-        DatabaseCharset::loadCharsets($conn);
         $schemaBuilder = new ObjectModelSchemaBuilder();
         try {
             $schema = $schemaBuilder->getSchema();
