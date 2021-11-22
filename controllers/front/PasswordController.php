@@ -98,7 +98,7 @@ class PasswordControllerCore extends FrontController
                     if (! Validate::isPasswd($password)) {
                         $this->errors[] = Tools::displayError('This password does not meet security criteria');
                     } elseif ($password != $confirm) {
-                        $this->errors[] = Tools::displayError('Passwords does not match');
+                        $this->errors[] = Tools::displayError('Password does not match value from confirmation field');
                     } else {
                         $this->setNewPassword($customer, $password);
                     }
@@ -144,17 +144,7 @@ class PasswordControllerCore extends FrontController
                 'customer' => $customer,
                 'password' => $password
             ]);
-            $mailParams = [
-                '{email}' => $customer->email,
-                '{lastname}' => $customer->lastname,
-                '{firstname}' => $customer->firstname,
-                '{passwd}'    => $password,
-            ];
-            if (Mail::Send($this->context->language->id, 'password', Mail::l('Your password has been changed'), $mailParams, $customer->email, $customer->firstname . ' ' . $customer->lastname)) {
-                $this->context->smarty->assign(['confirmation' => 1]);
-            } else {
-                $this->errors[] = Tools::displayError('An error occurred while sending the email.');
-            }
+            $this->context->smarty->assign(['confirmation' => 1]);
         } else {
             $this->errors[] = Tools::displayError('An error occurred with your account, which prevents us from sending you a new password. Please report this issue using the contact form.');
         }

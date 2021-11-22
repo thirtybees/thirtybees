@@ -86,7 +86,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     const KEY = 4;
 
     // @codingStandardsIgnoreStart
-    /** @var int Object ID */
+    /** @var int|null Object ID */
     public $id;
 
     /** @var int Language ID */
