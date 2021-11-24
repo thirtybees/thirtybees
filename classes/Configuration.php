@@ -268,6 +268,8 @@ class ConfigurationCore extends ObjectModel
     const STORE_REGISTERED = 'TB_STORE_REGISTERED';
     const MAIL_SUBJECT_TEMPLATE = 'TB_MAIL_SUBJECT_TEMPLATE';
     const API_SERVER_OVERRIDE = 'TB_API_SERVER_OVERRIDE';
+    const SSL_TRUST_STORE_TYPE = 'TB_SSL_TRUST_STORE_TYPE';
+    const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
     // @codingStandardsIgnoreStart
     /**
@@ -1062,11 +1064,37 @@ class ConfigurationCore extends ObjectModel
      */
     public static function getApiServer()
     {
-        $baseUriOverride = Configuration::getGlobalValue(Configuration::API_SERVER_OVERRIDE);
+        $baseUriOverride = static::getGlobalValue(static::API_SERVER_OVERRIDE);
         if ($baseUriOverride && Validate::isAbsoluteUrl($baseUriOverride)) {
             return $baseUriOverride;
         }
         return 'https://api.thirtybees.com';
+    }
+
+    /**
+     * Returns path to trust store that should be used to verify SSL connections.
+     *
+     * If this method returns true, then operation-system trust store will be used
+     * If this method returns false, then SSL certificates will not be used
+     *
+     * @since 1.4.0
+     */
+    public static function getSslTrustStore()
+    {
+        $type = static::getGlobalValue(static::SSL_TRUST_STORE_TYPE);
+        switch (strtolower($type)) {
+            case 'system':
+                return true;
+            case 'disable':
+                return false;
+            case 'custom':
+            default:
+                $path = static::getGlobalValue(static::SSL_TRUST_STORE);
+                if (! $path) {
+                    $path = _PS_TOOL_DIR_.'cacert.pem';
+                }
+                return $path;
+        }
     }
 
     /**

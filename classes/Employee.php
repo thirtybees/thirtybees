@@ -341,7 +341,7 @@ class EmployeeCore extends ObjectModel
                 $guzzle = new \GuzzleHttp\Client([
                     'base_uri'    => Configuration::getApiServer(),
                     'timeout'     => 20,
-                    'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+                    'verify'      => Configuration::getSslTrustStore(),
                 ]);
 
                 try {

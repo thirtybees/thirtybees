@@ -101,7 +101,7 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
         $guzzle = new \GuzzleHttp\Client([
             'base_uri'    => Configuration::getApiServer(),
             'timeout'     => 15,
-            'verify'      => _PS_TOOL_DIR_.'cacert.pem'
+            'verify'      => Configuration::getSslTrustStore()
         ]);
         $guzzle->post(
             '/collect/v1.php',

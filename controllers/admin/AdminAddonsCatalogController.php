@@ -76,7 +76,7 @@ class AdminAddonsCatalogControllerCore extends AdminController
         $guzzle = new \GuzzleHttp\Client([
             'base_uri'    => Configuration::getApiServer(),
             'http_errors' => true,
-            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'      => Configuration::getSslTrustStore(),
             'timeout'     => 20,
         ]);
 

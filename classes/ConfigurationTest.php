@@ -326,7 +326,7 @@ class ConfigurationTestCore
     public static function testTlsv12()
     {
         $guzzle = new GuzzleHttp\Client([
-            'verify'  => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'  => Configuration::getSslTrustStore(),
             'timeout' => 20,
         ]);
 

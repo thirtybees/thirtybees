@@ -470,7 +470,7 @@ class LanguageCore extends ObjectModel
         $guzzle = new GuzzleHttp\Client([
             'base_uri' => $baseUri,
             'timeout'  => 20,
-            'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'   => Configuration::getSslTrustStore(),
         ]);
 
         try {
@@ -607,7 +607,7 @@ class LanguageCore extends ObjectModel
             $guzzle = new GuzzleHttp\Client([
                 'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
                 'timeout'  => 20,
-                'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+                'verify'   => Configuration::getSslTrustStore(),
             ]);
 
             try {

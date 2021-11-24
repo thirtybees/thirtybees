@@ -1185,7 +1185,7 @@ class ThemeCore extends ObjectModel
         try {
             $guzzle = new \GuzzleHttp\Client([
                 'base_uri' => Configuration::getApiServer(),
-                'verify' => _PS_TOOL_DIR_ . 'cacert.pem',
+                'verify' => Configuration::getSslTrustStore(),
                 'timeout' => 20,
             ]);
             $guzzle->post("/coreupdater/v2.php", [

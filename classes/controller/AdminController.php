@@ -3323,7 +3323,7 @@ class AdminControllerCore extends Controller
     {
         $guzzle = new GuzzleHttp\Client([
             'timeout' => 5,
-            'verify' => _PS_TOOL_DIR_.'cacert.pem',
+            'verify' => Configuration::getSslTrustStore(),
         ]);
 
         if (static::$isThirtybeesUp) {

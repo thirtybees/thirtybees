@@ -226,7 +226,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         $langPacks = false;
         $guzzle = new \GuzzleHttp\Client([
-            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'      => Configuration::getSslTrustStore(),
             'timeout'     => 20,
         ]);
         try {
@@ -1217,7 +1217,7 @@ class AdminTranslationsControllerCore extends AdminController
             $guzzle = new \GuzzleHttp\Client([
                 'base_uri' => $this->link_lang_pack,
                 'timeout'  => 20,
-                'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+                'verify'   => Configuration::getSslTrustStore(),
             ]);
 
             $version = implode('.', array_map('intval', explode('.', $arrImportLang[1], 3)));

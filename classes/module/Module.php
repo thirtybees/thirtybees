@@ -1062,7 +1062,7 @@ abstract class ModuleCore
         // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
         $imagePromises = [];
         $guzzle = new \GuzzleHttp\Client([
-            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'      => Configuration::getSslTrustStore(),
             'timeout'     => 20,
         ]);
 
