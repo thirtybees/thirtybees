@@ -404,11 +404,6 @@ class AdminControllerCore extends Controller
         }
         $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, $this->id);
 
-        // Fix for homepage
-        if ($this->controller_name == 'AdminDashboard') {
-            $_POST['token'] = $this->token;
-        }
-
         if (!Shop::isFeatureActive()) {
             $this->shopLinkType = '';
         }
@@ -1988,31 +1983,34 @@ class AdminControllerCore extends Controller
      */
     public function checkToken()
     {
+        // if token is provided it must match the expected token
         $token = Tools::getValue('token');
-        if (!empty($token) && $token === $this->token) {
-            return true;
+        if ($token) {
+            return $token === $this->token;
         }
 
-        if (count($_POST) || !isset($_GET['controller']) || !Validate::isControllerName($_GET['controller']) || $token) {
+        // token was not provided. It is required, if security was explicitly strengthened
+        $forceToken = (bool)Configuration::getGlobalValue(Configuration::BO_FORCE_TOKEN);
+        if ($forceToken) {
             return false;
         }
 
+        // if there are any POST parameters, token is required
+        if (count($_POST)) {
+            return false;
+        }
+
+        // if there are any GET parameters, token is required as well
         foreach ($_GET as $key => $value) {
-            if (is_array($value) || !in_array($key, ['controller', 'controllerUri'])) {
+            if (! in_array($key, ['controller', 'controllerUri'])) {
+                return false;
+            }
+            if ($key === 'controller' && !Validate::isControllerName($value)) {
                 return false;
             }
         }
 
-        $cookie = $this->context->cookie;
-        $whitelist = ['date_add', 'id_lang', 'id_employee', 'email', 'profile', 'passwd', 'remote_addr', 'shopContext', 'collapse_menu', 'checksum'];
-        foreach ($cookie->getAll() as $key => $value) {
-            if (!in_array($key, $whitelist)) {
-                unset($cookie->$key);
-            }
-        }
-
-        $cookie->write();
-
+        // for backwards compatibility reasons
         return true;
     }
 

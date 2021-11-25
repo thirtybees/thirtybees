@@ -127,6 +127,14 @@ class AdminPreferencesControllerCore extends AdminController
                         'default'    => '0',
                         'visibility' => Shop::CONTEXT_ALL,
                     ],
+                    Configuration::BO_FORCE_TOKEN => [
+                        'title'      => $this->l('Always require back office token'),
+                        'desc'       => $this->l('Always require token in Back Office to improve thirty bees\' security.'),
+                        'validation' => 'isBool',
+                        'type'       => 'bool',
+                        'default'    => '0',
+                        'visibility' => Shop::CONTEXT_ALL,
+                    ],
                     'PS_ALLOW_HTML_IFRAME'        => [
                         'title'      => $this->l('Allow iframes on HTML fields'),
                         'desc'       => $this->l('Allow iframes on text fields like product description. We recommend that you leave this option disabled.'),

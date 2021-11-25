@@ -511,6 +511,9 @@
     <configuration id="PS_TOKEN_ENABLE" name="PS_TOKEN_ENABLE">
       <value>1</value>
     </configuration>
+    <configuration id="TB_BO_FORCE_TOKEN" name="TB_BO_FORCE_TOKEN">
+      <value>1</value>
+    </configuration>
     <configuration id="PS_STATS_RENDER" name="PS_STATS_RENDER">
       <value>ModuleGraphEngine</value>
     </configuration>
