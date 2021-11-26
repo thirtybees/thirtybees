@@ -275,7 +275,7 @@ class AdminControllerCore extends Controller
     protected $bo_theme;
     /** @var bool Redirect or not after a creation */
     protected $_redirect = true;
-    /** @var ObjectModel Instantiation of the class associated with the AdminController */
+    /** @var ObjectModel|null Instantiation of the class associated with the AdminController */
     protected $object;
     /** @var int Current object ID */
     protected $id_object;
@@ -825,22 +825,25 @@ class AdminControllerCore extends Controller
      *
      * @param bool $opt Return an empty object if load fail
      *
-     * @return ObjectModel|false
+     * @return ObjectModel|bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function loadObject($opt = false)
     {
+        // return object that was already instantiated
+        if ($this->object) {
+            return $this->object;
+        }
+
         if (!isset($this->className) || empty($this->className)) {
-            return false;
+            return true;
         }
 
         $id = (int) Tools::getValue($this->identifier);
         if ($id && Validate::isUnsignedId($id)) {
-            if (!$this->object) {
-                $this->object = new $this->className($id);
-            }
+            $this->object = new $this->className($id);
             if (Validate::isLoadedObject($this->object)) {
                 return $this->object;
             }
@@ -849,10 +852,7 @@ class AdminControllerCore extends Controller
 
             return false;
         } elseif ($opt) {
-            if (!$this->object) {
-                $this->object = new $this->className();
-            }
-
+            $this->object = new $this->className();
             return $this->object;
         } else {
             $this->errors[] = Tools::displayError('The object cannot be loaded (the identifier is missing or invalid)');
@@ -1264,8 +1264,7 @@ class AdminControllerCore extends Controller
     public function processSave()
     {
         if ($this->id_object) {
-            $this->object = $this->loadObject();
-
+            $this->loadObject();
             return $this->processUpdate();
         } else {
             return $this->processAdd();
@@ -2439,8 +2438,10 @@ class AdminControllerCore extends Controller
         $this->initPageHeaderToolbar();
 
         if ($this->display == 'edit' || $this->display == 'add') {
-            if (!$this->loadObject(true)) {
-                return;
+            if ($this->className) {
+                if (!$this->loadObject(true)) {
+                    return;
+                }
             }
 
             $this->content .= $this->renderForm();
