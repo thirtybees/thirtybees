@@ -37,8 +37,6 @@
 class CountryCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    protected static $_idZones = [];
-    protected static $cache_iso_by_id = [];
     public $id;
     /** @var int Zone id which country belongs */
     public $id_zone;
@@ -113,7 +111,7 @@ class CountryCore extends ObjectModel
      * @param int $idShop
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -122,22 +120,24 @@ class CountryCore extends ObjectModel
      */
     public static function getCountriesByIdShop($idShop, $idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('country', 'c')
                 ->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country` AND cs.`id_shop` = '.(int) $idShop)
                 ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country` AND cl.`id_lang` = '.(int) $idLang)
         );
+
+        return is_array($result) ? $result : [];
     }
 
     /**
-     * Get a country ID with its iso code
+     * Get a country ID by its iso code
      *
      * @param string $isoCode Country iso code
-     * @param bool   $active  return only active coutries
+     * @param bool   $active  return only active countries
      *
-     * @return int Country ID
+     * @return false|int Country ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -146,28 +146,26 @@ class CountryCore extends ObjectModel
      */
     public static function getByIso($isoCode, $active = false)
     {
-        if (!Validate::isLanguageIsoCode($isoCode)) {
-            die(Tools::displayError());
-        }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('`id_country`')
-                ->from('country')
-                ->where('`iso_code` = \''.pSQL(strtoupper($isoCode)).'\'')
-                ->where($active ? '`active` = 1' : '')
-        );
+        if (Validate::isLanguageIsoCode($isoCode)) {
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`id_country`')
+                    ->from('country')
+                    ->where('`iso_code` = \'' . pSQL(strtoupper($isoCode)) . '\'')
+                    ->where($active ? '`active` = 1' : '')
+            );
 
-        if (isset($result['id_country'])) {
-            return (int) $result['id_country'];
+            if (isset($result['id_country'])) {
+                return (int)$result['id_country'];
+            }
         }
-
         return false;
     }
 
     /**
      * @param int $idCountry
      *
-     * @return bool|int
+     * @return int | false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -176,28 +174,31 @@ class CountryCore extends ObjectModel
      */
     public static function getIdZone($idCountry)
     {
-        if (!Validate::isUnsignedId($idCountry)) {
-            die(Tools::displayError());
+        $idCountry = (int)$idCountry;
+
+        if (! $idCountry) {
+            return false;
         }
 
-        if (isset(static::$_idZones[$idCountry])) {
-            return (int) static::$_idZones[$idCountry];
+        $key = 'country_getIdZone_' . $idCountry;
+        if (!Cache::isStored($key)) {
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`id_zone`')
+                    ->from('country')
+                    ->where('`id_country` = ' . $idCountry)
+            );
+
+            $zoneId = (isset($result['id_zone']) && $result['id_zone'])
+                ? (int)$result['id_zone']
+                : false;
+
+            Cache::store($key, $zoneId);
+
+            return $zoneId;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            (new DbQuery())
-                ->select('`id_zone`')
-                ->from('country')
-                ->where('`id_country` = '.(int) $idCountry)
-        );
-
-        if (isset($result['id_zone'])) {
-            static::$_idZones[$idCountry] = (int) $result['id_zone'];
-
-            return (int) $result['id_zone'];
-        }
-
-        return false;
+        return Cache::retrieve($key);
     }
 
     /**
@@ -206,7 +207,7 @@ class CountryCore extends ObjectModel
      * @param int $idLang    Language ID
      * @param int $idCountry Country ID
      *
-     * @return string Country name
+     * @return string | false Country name
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -214,14 +215,17 @@ class CountryCore extends ObjectModel
      */
     public static function getNameById($idLang, $idCountry)
     {
+        $idLang = (int)$idLang;
+        $idCountry = (int)$idCountry;
+
         $key = 'country_getNameById_'.$idCountry.'_'.$idLang;
         if (!Cache::isStored($key)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`name`')
                     ->from('country_lang')
-                    ->where('`id_lang` = '.(int) $idLang)
-                    ->where('`id_country` = '.(int) $idCountry)
+                    ->where('`id_lang` = '.$idLang)
+                    ->where('`id_country` = '.$idCountry)
             );
             Cache::store($key, $result);
 
@@ -236,7 +240,7 @@ class CountryCore extends ObjectModel
      *
      * @param int $idCountry Country ID
      *
-     * @return string Country iso
+     * @return string | false Country iso
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -244,44 +248,47 @@ class CountryCore extends ObjectModel
      */
     public static function getIsoById($idCountry)
     {
-        // @codingStandardsIgnoreStart
-        if (!isset(Country::$cache_iso_by_id[$idCountry])) {
-            Country::$cache_iso_by_id[$idCountry] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idCountry = (int)$idCountry;
+
+        $key = 'country_getIsoById_' . $idCountry;
+        if (!Cache::isStored($key)) {
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`iso_code`')
                     ->from('country')
                     ->where('`id_country` = '.(int) $idCountry)
             );
-        }
-        if (isset(Country::$cache_iso_by_id[$idCountry])) {
-            return Country::$cache_iso_by_id[$idCountry];
-        }
-        // @codingStandardsIgnoreEnd
+            Cache::store($key, $result);
 
-        return false;
+            return $result;
+        }
+
+        return Cache::retrieve($key);
     }
 
     /**
      * Get a country id with its name
      *
-     * @param int    $idLang  Language ID
-     * @param string $country Country Name
+     * @param int    $idLang      Language ID
+     * @param string $countryName Country Name
      *
-     * @return int Country ID
+     * @return int | false Country ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getIdByName($idLang = null, $country)
+    public static function getIdByName($idLang, $countryName)
     {
+        $idLang = (int) $idLang;
+
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
                 ->select('`id_country`')
                 ->from('country_lang')
-                ->where('`name` = \''.pSQL($country).'\'')
-                ->where($idLang ? '`id_lang` = '.(int) $idLang : '')
+                ->where('`name` = \''.pSQL($countryName).'\'')
+                ->where($idLang ? '`id_lang` = '. $idLang : '')
         );
 
         if (isset($result['id_country'])) {
@@ -317,7 +324,7 @@ class CountryCore extends ObjectModel
     /**
      * @param int $idCountry
      *
-     * @return bool|false|null|string
+     * @return string | false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -325,7 +332,9 @@ class CountryCore extends ObjectModel
      */
     public static function getZipCodeFormat($idCountry)
     {
-        if (!(int) $idCountry) {
+        $idCountry = (int)$idCountry;
+
+        if (! $idCountry) {
             return false;
         }
 
@@ -333,7 +342,7 @@ class CountryCore extends ObjectModel
             (new DbQuery())
                 ->select('`zip_code_format`')
                 ->from('country')
-                ->where('`id_country` = '.(int) $idCountry)
+                ->where('`id_country` = '.$idCountry)
         );
 
         if (isset($zipCodeFormat) && $zipCodeFormat) {
@@ -344,7 +353,7 @@ class CountryCore extends ObjectModel
     }
 
     /**
-     * Returns the default country Id
+     * Returns the default country ID
      *
      * @deprecated 1.0.0 use $context->country->id instead
      * @return int default country id
@@ -353,14 +362,14 @@ class CountryCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        return Context::getContext()->country->id;
+        return (int)Context::getContext()->country->id;
     }
 
     /**
      * @param int $idZone
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -369,19 +378,20 @@ class CountryCore extends ObjectModel
      */
     public static function getCountriesByZoneId($idZone, $idLang)
     {
-        if (empty($idZone) || empty($idLang)) {
-            die(Tools::displayError());
-        }
+        $idZone = (int)$idZone;
+        $idLang = (int)$idLang;
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('c.*, cl.*')
                 ->from('country', 'c')
                 ->join(Shop::addSqlAssociation('country', 'c', false))
                 ->leftJoin('state', 's', 's.`id_country` = c.`id_country`')
-                ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country` AND cl.`id_lang` = '.(int) $idLang)
-                ->where('c.`id_zone` = '.(int) $idZone.' OR s.`id_zone` = '.(int) $idZone)
+                ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country` AND cl.`id_lang` = '.$idLang)
+                ->where('c.`id_zone` = '.$idZone.' OR s.`id_zone` = '.$idZone)
         );
+
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -406,9 +416,10 @@ class CountryCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopDatabaseException
      */
     public function delete()
     {
@@ -510,9 +521,10 @@ class CountryCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        $return = parent::add($autoDate, $nullValues) && static::addModuleRestrictions([], [['id_country' => $this->id]], []);
-
-        return $return;
+        return (
+            parent::add($autoDate, $nullValues) &&
+            static::addModuleRestrictions([], [['id_country' => $this->id]], [])
+        );
     }
 
     /**
