@@ -265,7 +265,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -283,7 +282,6 @@ class AdminWebserviceControllerCore extends AdminController
     /**
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @throws SmartyException
      * @since 1.0.0
@@ -379,7 +377,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function postProcess()
     {
@@ -414,7 +411,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -430,7 +426,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

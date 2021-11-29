@@ -93,7 +93,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -112,7 +111,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      * @param string $key
      * @return static | null
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function getInstanceByKey($key)
     {
@@ -144,7 +142,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function keyExists($key)
     {
@@ -214,7 +211,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function isKeyActive($authKey)
     {
@@ -234,7 +230,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function getClassFromKey($authKey)
     {
@@ -250,7 +245,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

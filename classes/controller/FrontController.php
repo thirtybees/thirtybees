@@ -1909,7 +1909,6 @@ class FrontControllerCore extends Controller
      *
      * @return Country|false
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

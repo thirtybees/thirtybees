@@ -78,7 +78,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * @since 1.0.0
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function process()
     {
@@ -177,7 +176,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : populateDatabase
      * Populate database with default data
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processPopulateDatabase()
@@ -197,7 +195,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * Initialize context
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function initializeContext()
@@ -224,7 +221,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : configureShop
      * Set default shop configuration
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processConfigureShop()
@@ -259,7 +255,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processInstallFixtures()
@@ -279,7 +274,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : initializeClasses
      * Executes initialization callbacks on all classes that implements the interface
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processInitializeClasses()
@@ -297,7 +291,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : installModules
      * Install all modules in ~/modules/ directory
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processInstallModules()
@@ -316,7 +309,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : installTheme
      * Install theme
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function processInstallTheme()

@@ -19,7 +19,6 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Adapter_Exception;
 use ErrorHandler;
 use Exception;
 use ObjectModel;
@@ -165,7 +164,6 @@ class WorkQueueTaskCore extends ObjectModel
      *
      * @return static
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -188,7 +186,6 @@ class WorkQueueTaskCore extends ObjectModel
      * WorkQueueTaskCore constructor.
      *
      * @param int | null $id
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

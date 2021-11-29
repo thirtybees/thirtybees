@@ -1959,7 +1959,6 @@ class CarrierCore extends ObjectModel
      *
      * @return float
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1979,7 +1978,6 @@ class CarrierCore extends ObjectModel
      * @param bool     $useAverageTaxOfProducts
      *
      * @return AverageTaxOfProductsTaxCalculator|TaxCalculator
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version

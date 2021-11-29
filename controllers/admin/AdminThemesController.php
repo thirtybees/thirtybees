@@ -707,7 +707,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -1170,7 +1169,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Adapter_Exception
      * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1360,7 +1358,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -1867,7 +1864,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *

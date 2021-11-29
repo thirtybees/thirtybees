@@ -321,7 +321,6 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
      * @param Db $conn
      * @return void
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function initializationCallback(Db $conn)
     {

@@ -159,7 +159,6 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

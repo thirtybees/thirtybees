@@ -556,7 +556,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @return void
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -749,7 +748,6 @@ class OrderDetailCore extends ObjectModel
      * @param array $product
      * @param int   $idOrderState
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -991,7 +989,6 @@ class OrderDetailCore extends ObjectModel
      * @param bool  $useTaxes set to false if you don't want to use taxes
      * @param int   $idWarehouse
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

@@ -256,7 +256,6 @@ class OrderSlipCore extends ObjectModel
      * @param bool  $shippingCost
      *
      * @return bool
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -291,7 +290,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

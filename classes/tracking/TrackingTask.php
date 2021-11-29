@@ -20,7 +20,6 @@
 namespace Thirtybees\Core\Tracking;
 
 
-use Adapter_Exception;
 use Configuration;
 use Db;
 use Exception;
@@ -121,7 +120,6 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
      * @param Db $conn
      * @return void
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function initializationCallback(Db $conn)
     {

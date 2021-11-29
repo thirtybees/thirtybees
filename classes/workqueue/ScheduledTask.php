@@ -19,11 +19,9 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Adapter_Exception;
 use DateInterval;
 use DateTime;
 use Db;
-use Exceptin;
 use Exception;
 use ObjectModel;
 use PrestaShopCollection;
@@ -93,12 +91,12 @@ class ScheduledTaskCore extends ObjectModel
     public $active;
 
     /**
-     * @var integer last execution unix timestamp. Integer is used instead of date to mitigate timezones issues
+     * @var integer|null last execution unix timestamp. Integer is used instead of date to mitigate timezones issues
      */
     public $last_execution;
 
     /**
-     * @var integer last checked unix timestamp. Integer is used instead of date to motigate timezones issues
+     * @var integer|null last checked unix timestamp. Integer is used instead of date to mitigate timezones issues
      */
     public $last_checked;
 
@@ -190,7 +188,6 @@ class ScheduledTaskCore extends ObjectModel
      * @param WorkQueueClient $workQueueClient
      * @return WorkQueueFuture
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

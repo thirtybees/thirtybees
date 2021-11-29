@@ -93,7 +93,6 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

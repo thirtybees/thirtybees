@@ -9,7 +9,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     protected function _before() {
         $this->reset();
@@ -21,7 +20,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     protected function _after()
     {
@@ -203,7 +201,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     public function testASMSingleProductWithWarehouseAssociation()
     {
@@ -239,7 +236,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     public function testASMSingleProductWithWarehouseAssociationAndProductRestriction()
     {
@@ -276,7 +272,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     public function testASMMultipleProductsSingleWarehouse()
     {
@@ -319,7 +314,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
-     * @throws Adapter_Exception
      */
     public function testASMMultipleProductsDifferentWarehouses()
     {
@@ -546,7 +540,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     private function reset() {
         $this->resetProducts();
@@ -563,7 +556,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @param Warehouse $warehouse
      * @param int $productId
      * @param int $combinationId
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -582,7 +574,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * Helper method to restore products settings
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     private function resetProducts() {
         $repository = Adapter_ServiceLocator::get('Core_Foundation_Database_EntityManager')->getRepository('WarehouseProductLocation');
@@ -649,7 +640,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * @param int[] $carriers
      * @return Warehouse
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -671,7 +661,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
     /**
      * Deletes all warehouses
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     private function deleteWarehouses()

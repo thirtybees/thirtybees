@@ -19,7 +19,6 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Adapter_Exception;
 use Context;
 use Customer;
 use Employee;
@@ -190,7 +189,6 @@ class WorkQueueContextCore
     /**
      * @return Language
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function getLanguage()
     {

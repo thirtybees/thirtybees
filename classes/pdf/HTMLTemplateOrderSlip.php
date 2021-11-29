@@ -49,7 +49,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      * @param Smarty $smarty
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -342,7 +341,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @throws Exception
      */
     public function getShippingTaxesBreakdown()
@@ -380,7 +378,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

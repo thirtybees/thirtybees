@@ -250,7 +250,6 @@ class DiscountCore extends CartRule
      * @param Shop|null     $shop
      *
      * @return float|int|string
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

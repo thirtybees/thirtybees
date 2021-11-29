@@ -79,8 +79,9 @@ class Core_Foundation_Database_EntityManager
      *
      * @return mixed
      *
+     * @throws PrestaShopException
+     * @version 1.0.0 Initial version
      * @since 1.0.0
-     * @version 1.0.0 Intial version
      */
     public function getRepository($className)
     {
@@ -94,13 +95,11 @@ class Core_Foundation_Database_EntityManager
             $repositoryClass = 'Core_Foundation_Database_EntityRepository';
         }
 
-        $repository = new $repositoryClass(
+        return new $repositoryClass(
             $this,
             $this->configuration->get('_DB_PREFIX_'),
             $this->getEntityMetaData($className)
         );
-
-        return $repository;
     }
 
     /**
@@ -109,7 +108,7 @@ class Core_Foundation_Database_EntityManager
      * @param string $className
      *
      * @return mixed
-     * @throws Adapter_Exception
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version

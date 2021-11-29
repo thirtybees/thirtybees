@@ -518,7 +518,6 @@ class WebserviceRequestCore
      *
      * @throws PrestaShopException
      * @throws WebserviceException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

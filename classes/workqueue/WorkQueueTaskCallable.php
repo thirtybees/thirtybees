@@ -19,12 +19,7 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Adapter_Exception;
-use ErrorHandler;
 use Exception;
-use ObjectModel;
-use PrestaShopDatabaseException;
-use PrestaShopException;
 
 /**
  * Class WorkQueueTaskCallable

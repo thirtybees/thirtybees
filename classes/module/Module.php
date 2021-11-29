@@ -437,7 +437,6 @@ abstract class ModuleCore
      *
      * @return Module|bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -472,7 +471,6 @@ abstract class ModuleCore
      *
      * @return Module
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -522,7 +520,6 @@ abstract class ModuleCore
      * @param String $moduleName
      *
      * @return Module
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     protected static function instantiateModule($moduleName)
@@ -843,7 +840,6 @@ abstract class ModuleCore
      *
      * @return array Modules
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -2679,7 +2675,6 @@ abstract class ModuleCore
      *
      * @return bool result
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function registerHook($hookName, $shopList = null)
     {

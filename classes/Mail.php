@@ -94,7 +94,6 @@ class MailCore extends ObjectModel
      *
      * @return bool|int Whether sending was successful. If not at all, false, otherwise amount of recipients succeeded.
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function Send(
         $idLang,
@@ -751,7 +750,6 @@ class MailCore extends ObjectModel
      * @param string $baseTemplatePath base template path
      *
      * @return string | null
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.1.0
@@ -797,7 +795,6 @@ class MailCore extends ObjectModel
      * @param string $suffix template suffix
      * @param string $iso language iso code
      * @param string[] $paths searched paths
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -844,7 +841,6 @@ class MailCore extends ObjectModel
      *
      * @return false This method always, if it returns, returns false.
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.7

@@ -753,7 +753,6 @@ class CartCore extends ObjectModel
      *
      * @return float Order total
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -1092,7 +1091,6 @@ class CartCore extends ObjectModel
      *
      * @return float Shipping total
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -1137,7 +1135,6 @@ class CartCore extends ObjectModel
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
      */
     public function getDeliveryOption($defaultCountry = null, $dontAutoSelectOptions = false, $useCache = true)
     {
@@ -1205,7 +1202,6 @@ class CartCore extends ObjectModel
      *
      * @param array ?null $deliveryOption
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -1271,7 +1267,6 @@ class CartCore extends ObjectModel
      *                   ),
      *               );
      *               If there are no carriers available for an address, return an empty  array
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1292,7 +1287,6 @@ class CartCore extends ObjectModel
      *
      * @param Country|null $defaultCountry
      * @return array
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1851,9 +1845,6 @@ class CartCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws PrestaShopException
-     * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function getPackageShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null, $idZone = null)
     {
@@ -2240,7 +2231,6 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since      1.0.0
@@ -2350,7 +2340,6 @@ class CartCore extends ObjectModel
      *
      * @return float
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
@@ -2378,7 +2367,6 @@ class CartCore extends ObjectModel
      *
      * @return float wrapping price
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -2486,7 +2474,6 @@ class CartCore extends ObjectModel
      *
      * @return int|mixed
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -3761,7 +3748,6 @@ class CartCore extends ObjectModel
      * @param int $idAddress
      *
      * @return bool
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -3795,7 +3781,6 @@ class CartCore extends ObjectModel
      *
      * @return array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -3904,7 +3889,6 @@ class CartCore extends ObjectModel
      *
      * @return float Shipping total
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -3944,7 +3928,6 @@ class CartCore extends ObjectModel
      * @param array|null   $productList
      *
      * @return bool|float
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     public function getOrderShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null)
@@ -3983,7 +3966,6 @@ class CartCore extends ObjectModel
      *
      * @return array Cart details
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

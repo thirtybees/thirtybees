@@ -900,7 +900,6 @@ class AdminCategoriesControllerCore extends AdminController
      *
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function processDelete()
     {
@@ -1000,7 +999,6 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -1063,7 +1061,6 @@ class AdminCategoriesControllerCore extends AdminController
      * @param int $idParent id of new parent category (if re-assigning)
      * @param array $products list of products affected by category deletion
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

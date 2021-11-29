@@ -87,7 +87,6 @@ class OrderHistoryCore extends ObjectModel
      * @param int|Order $idOrder
      * @param bool      $useExistingPayment
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -577,7 +576,6 @@ class OrderHistoryCore extends ObjectModel
      * If sendemail=1 GET parameter is present sends email to customer otherwise does not
      *
      * @return bool
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

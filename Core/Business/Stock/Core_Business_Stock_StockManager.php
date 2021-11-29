@@ -54,6 +54,7 @@ class Core_Business_Stock_StockManager
     {
         $configuration = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
         if ($product->pack_stock_type == 1 || $product->pack_stock_type == 2 || ($product->pack_stock_type == 3 && $configuration->get('PS_PACK_STOCK_TYPE') > 0)) {
+            /** @var Adapter_PackItemsManager $packItemsManager */
             $packItemsManager = Adapter_ServiceLocator::get('Adapter_PackItemsManager');
             $productsPack = $packItemsManager->getPackItems($product);
             /** @var Adapter_StockManager $stockManager */

@@ -826,7 +826,6 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

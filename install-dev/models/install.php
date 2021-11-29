@@ -275,7 +275,6 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @return bool
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function installDefaultData($shopName, $isoCountry = false, $allLanguages = false, $clearDatabase = false)
     {
@@ -324,7 +323,6 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

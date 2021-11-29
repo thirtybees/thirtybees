@@ -680,7 +680,6 @@ class ThemeCore extends ObjectModel
      *               'documents':    Array with documentation links.
      *               'warnings' :    List of warnings
      *
-     * @throws Adapter_Exception
      * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -868,7 +867,6 @@ class ThemeCore extends ObjectModel
      *
      * @return true | array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

@@ -98,7 +98,6 @@ class GuestCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function setNewGuest($cookie)
     {

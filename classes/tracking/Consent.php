@@ -19,7 +19,6 @@
 
 namespace Thirtybees\Core\Tracking;
 
-use Adapter_Exception;
 use Context;
 use Db;
 use DbQuery;
@@ -175,7 +174,6 @@ class ConsentCore extends ObjectModel implements InitializationCallback
      * @param Db $conn
      * @return void
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function initializationCallback(Db $conn)
     {
@@ -197,7 +195,6 @@ class ConsentCore extends ObjectModel implements InitializationCallback
      * @param array $consents
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     protected static function ensureConsentExists($key, $consents)
     {

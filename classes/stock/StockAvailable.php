@@ -533,7 +533,6 @@ class StockAvailableCore extends ObjectModel
      * @param int $idShop             Optional
      *
      * @return bool
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -547,6 +546,7 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
+        /** @var Core_Business_Stock_StockManager $stockManager */
         $stockManager = Adapter_ServiceLocator::get('Core_Business_Stock_StockManager');
         $stockManager->updateQuantity($product, $idProductAttribute, $deltaQuantity, $idShop = null);
 

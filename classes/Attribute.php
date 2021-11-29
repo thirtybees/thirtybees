@@ -96,7 +96,6 @@ class AttributeCore extends ObjectModel
      * @param null $idLang
      * @param null $idShop
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -112,7 +111,6 @@ class AttributeCore extends ObjectModel
     /**
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

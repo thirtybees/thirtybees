@@ -49,7 +49,7 @@ class Adapter_PackItemsManager
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function getPackItems($product, $idLang = false)
     {
@@ -76,7 +76,7 @@ class Adapter_PackItemsManager
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function getPacksContainingItem($item, $itemAttributeId, $idLang = false)
     {
@@ -95,6 +95,7 @@ class Adapter_PackItemsManager
      *
      * @return boolean
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -116,6 +117,7 @@ class Adapter_PackItemsManager
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isPacked($product, $idProductAttribute = false)
     {

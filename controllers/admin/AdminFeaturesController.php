@@ -385,7 +385,6 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * @return false|string|void
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws PrestaShopExceptionCore

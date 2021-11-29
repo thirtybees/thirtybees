@@ -480,7 +480,6 @@ class LinkCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function getLanguageLink($idLang, Context $context = null)
     {
@@ -672,7 +671,6 @@ class LinkCore
      *
      * @return string
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -710,7 +708,6 @@ class LinkCore
      * @param int $idLang
      *
      * @return string
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     protected function findCMSSubcategories($idCms, $idLang)
@@ -733,7 +730,6 @@ class LinkCore
      * @param int $idLang
      *
      * @return string
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      */
     protected function findCMSCategorySubcategories($idCmsCategory, $idLang)
@@ -760,7 +756,6 @@ class LinkCore
      *
      * @return string
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {

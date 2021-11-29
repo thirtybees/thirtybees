@@ -456,7 +456,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function postProcess()
     {
@@ -651,7 +650,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -791,7 +789,6 @@ class AdminImagesControllerCore extends AdminController
      * @param string $entityType
      * @param int    $idEntity
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
@@ -1096,7 +1093,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

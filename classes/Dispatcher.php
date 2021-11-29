@@ -401,7 +401,6 @@ class DispatcherCore
      *
      * @return array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -727,7 +726,6 @@ class DispatcherCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function dispatch()
     {

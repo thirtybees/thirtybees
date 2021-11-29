@@ -93,7 +93,6 @@ class ImageTypeCore extends ObjectModel
      *
      * @return ImageType
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @version 1.1.0 Initial version.

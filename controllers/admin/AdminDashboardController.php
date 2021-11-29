@@ -41,7 +41,6 @@ class AdminDashboardControllerCore extends AdminController
      *
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function __construct()
     {
@@ -58,7 +57,6 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * @return array
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -347,7 +345,6 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function ajaxProcessRefreshDashboard()
     {
@@ -444,7 +441,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @throws Adapter_Exception
      * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

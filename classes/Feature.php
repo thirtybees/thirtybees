@@ -168,7 +168,6 @@ class FeatureCore extends ObjectModel
      * @since    1.0.0
      * @version  1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function addFeatureImport($name, $position = false)
     {
@@ -357,7 +356,6 @@ class FeatureCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

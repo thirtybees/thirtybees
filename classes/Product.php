@@ -3128,7 +3128,6 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -4000,7 +3999,6 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
      */
     public function deleteSelection($products)
     {
@@ -4023,7 +4021,6 @@ class ProductCore extends ObjectModel
     /**
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -6771,7 +6768,6 @@ class ProductCore extends ObjectModel
      * @param int $idEmployee - DEPRECATED
      *
      * @return bool
-     * @throws Adapter_Exception
      */
     public function addStockMvt($quantity, $idReason, $idProductAttribute = null, $idOrder = null, $idEmployee = null)
     {
@@ -7191,7 +7187,6 @@ class ProductCore extends ObjectModel
      * @return bool
      * @throws PrestaShopException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function setWsCombinations($combinations)
     {

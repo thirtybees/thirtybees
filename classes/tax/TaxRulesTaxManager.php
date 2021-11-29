@@ -54,7 +54,6 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
      */
     public function __construct(Address $address, $type, Core_Business_ConfigurationInterface $configurationManager = null)
     {

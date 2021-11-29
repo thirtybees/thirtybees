@@ -921,7 +921,6 @@ class AdminCartsControllerCore extends AdminController
     /**
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function displayAjaxSearchCarts()
     {

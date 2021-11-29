@@ -426,7 +426,6 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -1599,7 +1598,6 @@ class OrderCore extends ObjectModel
      *
      * @param bool $useExistingPayment
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1732,7 +1730,6 @@ class OrderCore extends ObjectModel
      *
      * @param OrderInvoice $orderInvoice
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -2062,7 +2059,6 @@ class OrderCore extends ObjectModel
      * @param int $idEmployee (/!\ not optional except for Webservice.
      *
      * @return bool
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -2967,7 +2963,6 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

@@ -70,7 +70,6 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -113,7 +112,6 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @return string
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopException
      * @throws SmartyException
      * @since   1.0.0
@@ -800,7 +798,6 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since 1.0.0
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public function initFieldsetFullPageCache()
     {
@@ -1358,7 +1355,6 @@ class AdminPerformanceControllerCore extends AdminController
      * @param $idShop
      *
      * @return string
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

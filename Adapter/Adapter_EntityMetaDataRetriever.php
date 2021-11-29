@@ -43,7 +43,7 @@ class Adapter_EntityMetaDataRetriever
      * @param string $className
      *
      * @return Core_Foundation_Database_EntityMetaData
-     * @throws Adapter_Exception
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -60,7 +60,7 @@ class Adapter_EntityMetaDataRetriever
             $metaData->setTableName($classVars['definition']['table']);
             $metaData->setPrimaryKeyFieldNames([$classVars['definition']['primary']]);
         } else {
-            throw new Adapter_Exception(
+            throw new PrestaShopException(
                 sprintf(
                     'Cannot get metadata for entity `%s`.',
                     $className

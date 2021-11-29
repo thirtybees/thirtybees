@@ -204,7 +204,6 @@ class StockMvtWSCore extends ObjectModelCore
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

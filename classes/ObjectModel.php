@@ -246,7 +246,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws Adapter_Exception
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {

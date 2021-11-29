@@ -1381,7 +1381,6 @@ class CartRuleCore extends ObjectModel
      * @param bool    $useCache Allow using cache to avoid multiple free gift using multishipping
      *
      * @return float|int|string
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

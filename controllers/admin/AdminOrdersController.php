@@ -570,7 +570,6 @@ class AdminOrdersControllerCore extends AdminController
      * Post processing
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      *
      * @since 1.0.0
      */

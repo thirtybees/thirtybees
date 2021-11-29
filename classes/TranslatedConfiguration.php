@@ -81,7 +81,6 @@ class TranslatedConfigurationCore extends Configuration
      * @param int|null $id
      * @param int|null $idLang
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

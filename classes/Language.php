@@ -100,7 +100,6 @@ class LanguageCore extends ObjectModel
      * @param int|null $id
      * @param int|null $idLang
      *
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -232,7 +231,6 @@ class LanguageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     public static function getLanguageByIETFCode($code)
     {
@@ -402,7 +400,6 @@ class LanguageCore extends ObjectModel
     /**
      * @param array $modulesList
      *
-     * @throws Adapter_Exception
      * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since   1.0.0
@@ -447,7 +444,6 @@ class LanguageCore extends ObjectModel
      * @return array|bool
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @throws HTMLPurifier_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -578,7 +574,6 @@ class LanguageCore extends ObjectModel
      * @param array|null    $paramsLang
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @throws HTMLPurifier_Exception
      * @return bool
      *
@@ -1184,7 +1179,6 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
