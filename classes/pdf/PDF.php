@@ -36,16 +36,24 @@
  */
 class PDFCore
 {
-    // @codingStandardsIgnoreStart
+
     /** @var string $filename */
     public $filename;
+
+    /** @var PDFGenerator */
     public $pdf_renderer;
+
+    /** @var array */
     public $objects;
+
+    /** @var string */
     public $template;
+
+    /** @var bool */
     public $send_bulk_flag = false;
+
     /** @var Smarty */
     public $smarty;
-    // @codingStandardsIgnoreEnd
 
     const TEMPLATE_INVOICE = 'Invoice';
     const TEMPLATE_ORDER_RETURN = 'OrderReturn';
@@ -54,14 +62,13 @@ class PDFCore
     const TEMPLATE_SUPPLY_ORDER_FORM = 'SupplyOrderForm';
 
     /**
-     * @param array        $objects
-     * @param HTMLTemplate $template
-     * @param Smarty       $smarty
-     * @param string       $orientation
+     * @param ObjectModel[] | Iterator | ObjectModel $objects
+     * @param string $template
+     * @param Smarty $smarty
+     * @param string $orientation
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function __construct($objects, $template, $smarty, $orientation = 'P')
     {
@@ -71,7 +78,7 @@ class PDFCore
 
         $this->objects = $objects;
         if (!($objects instanceof Iterator) && !is_array($objects)) {
-            $this->objects = [$objects];
+            $this->objects = [ $objects ];
         }
 
         if (count($this->objects) > 1) { // when bulk mode only
@@ -86,6 +93,7 @@ class PDFCore
      *
      * @return string
      * @throws PrestaShopException
+     * @throws SmartyException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -97,9 +105,6 @@ class PDFCore
         foreach ($this->objects as $object) {
             $this->pdf_renderer->startPageGroup();
             $template = $this->getTemplateObject($object);
-            if (!$template) {
-                continue;
-            }
 
             if (empty($this->filename)) {
                 $this->filename = $template->getFilename();
@@ -137,7 +142,7 @@ class PDFCore
      *
      * @param mixed $object
      *
-     * @return HTMLTemplate|false
+     * @return HTMLTemplate
      * @throws PrestaShopException
      *
      * @since   1.0.0
@@ -145,19 +150,19 @@ class PDFCore
      */
     public function getTemplateObject($object)
     {
-        $class = false;
-        $className = 'HTMLTemplate'.$this->template;
-
-        if (class_exists($className)) {
-            // Some HTMLTemplateXYZ implementations won't use the third param but this is not a problem (no warning in PHP),
-            // the third param is then ignored if not added to the method signature.
-            $class = new $className($object, $this->smarty, $this->send_bulk_flag);
-
-            if (!($class instanceof HTMLTemplate)) {
-                throw new PrestaShopException('Invalid class. It should be an instance of HTMLTemplate');
-            }
+        switch ($this->template) {
+            case static::TEMPLATE_INVOICE:
+                return new HTMLTemplateInvoice($object, $this->smarty, $this->send_bulk_flag);
+            case static::TEMPLATE_ORDER_RETURN:
+                return new HTMLTemplateOrderReturn($object, $this->smarty);
+            case static::TEMPLATE_ORDER_SLIP:
+                return new HTMLTemplateOrderSlip($object, $this->smarty);
+            case static::TEMPLATE_DELIVERY_SLIP:
+                return new HTMLTemplateDeliverySlip($object, $this->smarty, $this->send_bulk_flag);
+            case static::TEMPLATE_SUPPLY_ORDER_FORM:
+                return new HTMLTemplateSupplyOrderForm($object, $this->smarty);
+            default:
+                throw new PrestaShopException('Unknown template: '.$this->template);
         }
-
-        return $class;
     }
 }
