@@ -229,7 +229,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $this->smarty->assign(
             [
                 'logo_path'       => $pathLogo,
-                'img_ps_dir'      => 'http://'.Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
+                'img_ps_dir'      => Tools::getShopProtocol().Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
                 'img_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'title'           => $this->title,
                 'reference'       => $this->supply_order->reference,

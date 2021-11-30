@@ -36,18 +36,20 @@
  */
 abstract class HTMLTemplateCore
 {
-    // @codingStandardsIgnoreStart
     /** @var string $title */
     public $title;
+
     /** @var string $date */
     public $date;
+
     /** @var bool $available_in_your_account */
     public $available_in_your_account = true;
+
     /** @var Smarty */
     public $smarty;
+
     /** @var Shop */
     public $shop;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Returns the template's HTML header
@@ -170,12 +172,12 @@ abstract class HTMLTemplateCore
         $this->smarty->assign(
             [
                 'logo_path'       => $pathLogo,
-                'img_ps_dir'      => 'http://'.Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
+                'img_ps_dir'      => Tools::getShopProtocol().Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
                 'img_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'date'            => $this->date,
                 'title'           => $this->title,
                 'shop_name'       => $shopName,
-                'shop_details'    => Configuration::get('PS_SHOP_DETAILS', null, null, (int) $idShop),
+                'shop_details'    => Configuration::get('PS_SHOP_DETAILS', null, null, $idShop),
                 'width_logo'      => $width,
                 'height_logo'     => $height,
             ]
@@ -186,6 +188,7 @@ abstract class HTMLTemplateCore
      * Assign hook data
      *
      * @param ObjectModel $object generally the object used in the constructor
+     * @throws PrestaShopException
      */
     public function assignHookData($object)
     {
@@ -272,6 +275,7 @@ abstract class HTMLTemplateCore
     /**
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setShopId()
     {
@@ -292,6 +296,7 @@ abstract class HTMLTemplateCore
      *
      * @return string HTML pagination block
      *
+     * @throws SmartyException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
