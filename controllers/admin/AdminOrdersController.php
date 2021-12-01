@@ -915,6 +915,7 @@ class AdminOrdersControllerCore extends AdminController
                             $params['{firstname}'] = $customer->firstname;
                             $params['{id_order}'] = $order->id;
                             $params['{order_name}'] = $order->getUniqReference();
+                            $params['{credit_slips_url}'] = $this->context->link->getPageLink('order-slip');
                             @Mail::Send(
                                 (int) $order->id_lang,
                                 'credit_slip',
@@ -1147,6 +1148,7 @@ class AdminOrdersControllerCore extends AdminController
                             $params['{firstname}'] = $customer->firstname;
                             $params['{id_order}'] = $order->id;
                             $params['{order_name}'] = $order->getUniqReference();
+                            $params['{credit_slips_url}'] = $this->context->link->getPageLink('order-slip');
                         }
 
                         // Generate credit slip
