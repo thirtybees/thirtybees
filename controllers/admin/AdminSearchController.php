@@ -39,6 +39,7 @@ class AdminSearchControllerCore extends AdminController
     /**
      * AdminSearchControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -52,6 +53,8 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcess()
@@ -172,6 +175,8 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function searchFeatures()
@@ -232,11 +237,10 @@ class AdminSearchControllerCore extends AdminController
      *
      * @params string $query String to find in the catalog
      *
-     *
      * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
-     *
-     *
      */
     public function searchCatalog()
     {
@@ -251,6 +255,8 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function searchCustomer()
@@ -278,6 +284,8 @@ class AdminSearchControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function searchModule()
@@ -297,6 +305,7 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -333,6 +342,9 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderView()
@@ -340,9 +352,7 @@ class AdminSearchControllerCore extends AdminController
         $this->tpl_view_vars['query'] = Tools::safeOutput($this->query);
         $this->tpl_view_vars['show_toolbar'] = true;
 
-        if ($this->errors) {
-            return parent::renderView();
-        } else {
+        if (! $this->errors) {
             $nbResults = 0;
             foreach ($this->_list as $list) {
                 if ($list != false) {
@@ -440,9 +450,9 @@ class AdminSearchControllerCore extends AdminController
             if (isset($this->_list['addons']) && $this->_list['addons']) {
                 $this->tpl_view_vars['addons'] = $this->_list['addons'];
             }
-
-            return parent::renderView();
         }
+
+        return parent::renderView();
     }
 
     /**

@@ -2689,12 +2689,17 @@ class ProductCore extends ObjectModel
      */
     public static function searchByName($idLang, $query, Context $context = null)
     {
-        if (!$context) {
-            $context = Context::getContext();
-        }
-
         $sql = new DbQuery();
-        $sql->select('p.`id_product`, pl.`name`, p.`ean13`, p.`upc`, p.`active`, p.`reference`, m.`name` AS manufacturer_name, stock.`quantity`, product_shop.advanced_stock_management, p.`customizable`');
+        $sql->select('p.id_product');
+        $sql->select('pl.name');
+        $sql->select('p.ean13');
+        $sql->select('p.upc');
+        $sql->select('product_shop.active');
+        $sql->select('p.reference');
+        $sql->select('m.name AS manufacturer_name');
+        $sql->select('stock.`quantity`');
+        $sql->select('product_shop.advanced_stock_management');
+        $sql->select('product_shop.customizable');
         $sql->from('product', 'p');
         $sql->join(Shop::addSqlAssociation('product', 'p'));
         $sql->leftJoin(
@@ -2726,7 +2731,7 @@ class ProductCore extends ObjectModel
         $result = Db::getInstance()->executeS($sql);
 
         if (!$result) {
-            return false;
+            return [];
         }
 
         $resultsArray = [];
