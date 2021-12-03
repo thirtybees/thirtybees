@@ -4852,19 +4852,13 @@ class ProductCore extends ObjectModel
             return;
         }
 
-        $price = str_replace(',', '.', $price);
-        $weight = str_replace(',', '.', $weight);
-
         $combination = new Combination();
         $combination->id_product = (int) $this->id;
-        $combination->price = round($price, _TB_PRICE_DATABASE_PRECISION_);
-        $combination->ecotax = round($ecotax, _TB_PRICE_DATABASE_PRECISION_);
+        $combination->price = Tools::parseNumber($price);
+        $combination->ecotax = Tools::parseNumber($ecotax);
         $combination->quantity = 0;
-        $combination->weight = (float) $weight;
-        $combination->unit_price_impact = round(
-            $unitImpact,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        $combination->weight = Tools::parseNumber($weight);
+        $combination->unit_price_impact = Tools::parseNumber($unitImpact);
         $combination->reference = pSQL($reference);
         $combination->location = pSQL($location);
         $combination->ean13 = pSQL($ean13);
@@ -5459,20 +5453,11 @@ class ProductCore extends ObjectModel
             );
         }
 
-        $price = str_replace(',', '.', $price);
-        $weight = str_replace(',', '.', $weight);
-
-        $combination->price = round($price, _TB_PRICE_DATABASE_PRECISION_);
-        $combination->wholesale_price = round(
-            $wholesalePrice,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
-        $combination->ecotax = round($ecotax, _TB_PRICE_DATABASE_PRECISION_);
-        $combination->weight = (float) $weight;
-        $combination->unit_price_impact = round(
-            $unit,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        $combination->price = Tools::parseNumber($price);
+        $combination->wholesale_price = Tools::parseNumber($wholesalePrice);
+        $combination->ecotax = Tools::parseNumber($ecotax);
+        $combination->weight = Tools::parseNumber($weight);
+        $combination->unit_price_impact = Tools::parseNumber($unit);
         $combination->reference = pSQL($reference);
         $combination->location = pSQL($location);
         $combination->ean13 = pSQL($ean13);

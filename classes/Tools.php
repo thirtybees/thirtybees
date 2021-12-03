@@ -5327,6 +5327,10 @@ FileETag none
     {
         $precision = (int)$precision;
 
+        if (is_null($input)) {
+            return 0.0;
+        }
+
         if (is_float($input)) {
             return round((float)$input, $precision);
         }
@@ -5389,6 +5393,30 @@ FileETag none
         }
 
         return 0.0;
+    }
+
+    /**
+     * Round input price value
+     *
+     * This method expects input type to be either float of int. If different input is provided,
+     * the function will raise warning notice, and fallback static::parseNumber() implementation
+     * In future versions, the notice will not be raised, and this method will throw instead.
+     *
+     * @param float|int $input Input value
+     * @return float
+     */
+    public static function roundPrice($input)
+    {
+        if (is_null($input)) {
+            return 0.0;
+        }
+
+        if (is_float($input) || is_int($input)) {
+            return round((float)$input, _TB_PRICE_DATABASE_PRECISION_);
+        }
+
+        trigger_error("Tools::roundPrice was called with invalid input of type " . gettype($input));
+        return static::parseNumber($input);
     }
 }
 

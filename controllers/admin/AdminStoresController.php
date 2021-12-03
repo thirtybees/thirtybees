@@ -574,8 +574,8 @@ class AdminStoresControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('An address located in a country containing states must have a state selected.');
             }
 
-            $latitude = (float) Tools::getValue('latitude');
-            $longitude = (float) Tools::getValue('longitude');
+            $latitude = Tools::getNumberValue('latitude');
+            $longitude = Tools::getNumberValue('longitude');
 
             if (empty($latitude) || empty($longitude)) {
                 $this->errors[] = Tools::displayError('Latitude and longitude are required.');

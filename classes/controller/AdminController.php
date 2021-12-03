@@ -709,13 +709,11 @@ class AdminControllerCore extends Controller
 
                         if ($type == 'int' || $type == 'bool') {
                             $sqlFilter .= (($checkKey || $key == '`active`') ? $alias.'.' : '').pSQL($key).' = '.(int) $value.' ';
-                        } elseif ($type == 'decimal') {
-                            $sqlFilter .= ($checkKey ? $alias.'.' : '').pSQL($key).' = '.(float) $value.' ';
+                        } elseif ($type == 'decimal' || $type == 'price') {
+                            $value = Tools::parseNumber($value);
+                            $sqlFilter .= ($checkKey ? $alias.'.' : '').pSQL($key).' = '. $value.' ';
                         } elseif ($type == 'select') {
                             $sqlFilter .= ($checkKey ? $alias.'.' : '').pSQL($key).' = \''.pSQL($value).'\' ';
-                        } elseif ($type == 'price') {
-                            $value = (float) str_replace(',', '.', $value);
-                            $sqlFilter .= ($checkKey ? $alias.'.' : '').pSQL($key).' = '.pSQL(trim($value)).' ';
                         } else {
                             $sqlFilter .= ($checkKey ? $alias.'.' : '').pSQL($key).' LIKE \'%'.pSQL(trim($value)).'%\' ';
                         }

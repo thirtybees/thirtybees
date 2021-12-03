@@ -241,7 +241,7 @@ class AdminCartRulesControllerCore extends AdminController
             if ((int) Tools::getValue('minimum_amount') < 0) {
                 $this->errors[] = Tools::displayError('The minimum amount cannot be lower than zero.');
             }
-            if ((float) Tools::getValue('reduction_percent') < 0 || (float) Tools::getValue('reduction_percent') > 100) {
+            if (Tools::getNumberValue('reduction_percent') < 0 || Tools::getNumberValue('reduction_percent') > 100) {
                 $this->errors[] = Tools::displayError('Reduction percentage must be between 0% and 100%');
             }
             if ((int) Tools::getValue('reduction_amount') < 0) {
@@ -254,12 +254,8 @@ class AdminCartRulesControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('An action is required for this cart rule.');
             }
 
-            $_POST['minimum_amount'] = priceval(
-                Tools::getValue('minimum_amount')
-            );
-            $_POST['reduction_amount'] = priceval(
-                Tools::getValue('reduction_amount')
-            );
+            $_POST['minimum_amount'] = Tools::getNumberValue('minimum_amount');
+            $_POST['reduction_amount'] = Tools::getNumberValue('reduction_amount');
         }
 
         return parent::postProcess();

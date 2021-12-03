@@ -252,10 +252,10 @@ class StoresControllerCore extends FrontController
 			SELECT s.*, cl.name country, st.iso_code state,
 			('.(int) $multiplicator.'
 				* acos(
-					cos(radians('.(float) Tools::getValue('latitude').'))
+					cos(radians('. Tools::getNumberValue('latitude').'))
 					* cos(radians(latitude))
-					* cos(radians(longitude) - radians('.(float) Tools::getValue('longitude').'))
-					+ sin(radians('.(float) Tools::getValue('latitude').'))
+					* cos(radians(longitude) - radians('.Tools::getNumberValue('longitude').'))
+					+ sin(radians('.Tools::getNumberValue('latitude').'))
 					* sin(radians(latitude))
 				)
 			) distance,

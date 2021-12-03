@@ -91,7 +91,7 @@ function includeDatepicker($id, $time = false)
  * @since 1.1.0
  */
 function priceval($price) {
-    return round(floatval($price), _TB_PRICE_DATABASE_PRECISION_);
+    return Tools::parseNumber($price);
 }
 
 /**

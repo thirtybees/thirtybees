@@ -840,8 +840,7 @@ class AdminOrdersControllerCore extends AdminController
                             $orderDetailList[$idOrderDetail]['unit_price'] = (!Tools::getValue('TaxMethod') ? $orderDetail->unit_price_tax_excl : $orderDetail->unit_price_tax_incl);
                             $orderDetailList[$idOrderDetail]['amount'] = $orderDetail->unit_price_tax_incl * $orderDetailList[$idOrderDetail]['quantity'];
                         } else {
-                            $orderDetailList[$idOrderDetail]['amount']
-                                = (float) $amountDetail;
+                            $orderDetailList[$idOrderDetail]['amount'] = Tools::parseNumber($amountDetail);
                             $orderDetailList[$idOrderDetail]['unit_price'] = round(
                                 $orderDetailList[$idOrderDetail]['amount']
                                 / $orderDetailList[$idOrderDetail]['quantity'],
@@ -854,11 +853,7 @@ class AdminOrdersControllerCore extends AdminController
                         }
                     }
 
-                    $shippingCostAmount
-                        = (float) Tools::getValue('partialRefundShippingCost') ?
-                            (float) Tools::getValue('partialRefundShippingCost') :
-                            false;
-
+                    $shippingCostAmount = Tools::getNumberValue('partialRefundShippingCost');
                     if ($amount == 0 && $shippingCostAmount == 0) {
                         if (!empty($refunds)) {
                             $this->errors[] = Tools::displayError('Please enter a quantity to proceed with your refund.');
@@ -873,10 +868,10 @@ class AdminOrdersControllerCore extends AdminController
                     $voucher = 0;
 
                     if ((int) Tools::getValue('refund_voucher_off') == 1) {
-                        $amount -= $voucher = (float) Tools::getValue('order_discount_price');
+                        $amount -= $voucher = Tools::getNumberValue('order_discount_price');
                     } elseif ((int) Tools::getValue('refund_voucher_off') == 2) {
                         $chosen = true;
-                        $amount = $voucher = (float) Tools::getValue('refund_voucher_choose');
+                        $amount = $voucher = Tools::getNumberValue('refund_voucher_choose');
                     }
 
                     if ($shippingCostAmount > 0) {
@@ -1158,10 +1153,10 @@ class AdminOrdersControllerCore extends AdminController
 
                             $chosen = false;
                             if ((int) Tools::getValue('refund_total_voucher_off') == 1) {
-                                $amount -= $voucher = (float) Tools::getValue('order_discount_price');
+                                $amount -= $voucher = Tools::getNumberValue('order_discount_price');
                             } elseif ((int) Tools::getValue('refund_total_voucher_off') == 2) {
                                 $chosen = true;
-                                $amount = $voucher = (float) Tools::getValue('refund_total_voucher_choose');
+                                $amount = $voucher = Tools::getNumberValue('refund_total_voucher_choose');
                             }
                             foreach ($fullProductList as $idOrderDetail) {
                                 $orderDetail = new OrderDetail((int) $idOrderDetail);
@@ -1230,9 +1225,9 @@ class AdminOrdersControllerCore extends AdminController
                             }
 
                             if ((int) Tools::getValue('refund_total_voucher_off') == 1) {
-                                $total -= (float) Tools::getValue('order_discount_price');
+                                $total -= Tools::getNumberValue('order_discount_price');
                             } elseif ((int) Tools::getValue('refund_total_voucher_off') == 2) {
-                                $total = (float) Tools::getValue('refund_total_voucher_choose');
+                                $total = Tools::getNumberValue('refund_total_voucher_choose');
                             }
 
                             $cartRule->reduction_amount = $total;
@@ -1288,7 +1283,7 @@ class AdminOrdersControllerCore extends AdminController
             Message::markAsReaded(Tools::getValue('messageReaded'), $this->context->employee->id);
         } elseif (Tools::isSubmit('submitAddPayment') && isset($order)) {
             if ($this->tabAccess['edit'] === '1') {
-                $amount = Tools::getValue('payment_amount');
+                $amount = Tools::getNumberValue('payment_amount');
                 $currency = new Currency(Tools::getValue('payment_currency'));
                 $orderHasInvoice = $order->hasInvoice();
                 if ($orderHasInvoice) {
@@ -1299,7 +1294,7 @@ class AdminOrdersControllerCore extends AdminController
 
                 if (!Validate::isLoadedObject($order)) {
                     $this->errors[] = Tools::displayError('The order cannot be found');
-                } elseif (!Validate::isNegativePrice($amount) || !(float) $amount) {
+                } elseif (!Validate::isNegativePrice($amount) || !$amount) {
                     $this->errors[] = Tools::displayError('The amount is invalid.');
                 } elseif (!Validate::isGenericName(Tools::getValue('payment_method'))) {
                     $this->errors[] = Tools::displayError('The selected payment method is invalid.');
@@ -1560,20 +1555,14 @@ class AdminOrdersControllerCore extends AdminController
                     }
 
                     $cartRules = [];
-                    $discountValue = (float) Tools::getValue('discount_value');
+                    $discountValue = Tools::getNumberValue('discount_value');
                     switch (Tools::getValue('discount_type')) {
                         // Percent type
                         case 1:
                             if ($discountValue < 100) {
                                 if (isset($orderInvoice)) {
-                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
-                                        $orderInvoice->total_paid_tax_incl * $discountValue / 100,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
-                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
-                                        $orderInvoice->total_paid_tax_excl * $discountValue / 100,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
+                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::roundPrice($orderInvoice->total_paid_tax_incl * $discountValue / 100);
+                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::roundPrice($orderInvoice->total_paid_tax_excl * $discountValue / 100);
 
                                     // Update OrderInvoice
                                     $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1581,27 +1570,15 @@ class AdminOrdersControllerCore extends AdminController
                                     $orderInvoicesCollection = $order->getInvoicesCollection();
                                     foreach ($orderInvoicesCollection as $orderInvoice) {
                                         /** @var OrderInvoice $orderInvoice */
-                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
-                                            $orderInvoice->total_paid_tax_incl * $discountValue / 100,
-                                            _TB_PRICE_DATABASE_PRECISION_
-                                        );
-                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
-                                            $orderInvoice->total_paid_tax_excl * $discountValue / 100,
-                                            _TB_PRICE_DATABASE_PRECISION_
-                                        );
+                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::roundPrice($orderInvoice->total_paid_tax_incl * $discountValue / 100);
+                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::roundPrice($orderInvoice->total_paid_tax_excl * $discountValue / 100);
 
                                         // Update OrderInvoice
                                         $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
                                     }
                                 } else {
-                                    $cartRules[0]['value_tax_incl'] = round(
-                                        $order->total_paid_tax_incl * $discountValue / 100,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
-                                    $cartRules[0]['value_tax_excl'] = round(
-                                        $order->total_paid_tax_excl * $discountValue / 100,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
+                                    $cartRules[0]['value_tax_incl'] = Tools::roundPrice($order->total_paid_tax_incl * $discountValue / 100);
+                                    $cartRules[0]['value_tax_excl'] = Tools::roundPrice($order->total_paid_tax_excl * $discountValue / 100);
                                 }
                             } else {
                                 $this->errors[] = Tools::displayError('The discount value is invalid.');
@@ -1613,14 +1590,8 @@ class AdminOrdersControllerCore extends AdminController
                                 if ($discountValue > $orderInvoice->total_paid_tax_incl) {
                                     $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.');
                                 } else {
-                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
-                                        $discountValue,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
-                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
-                                        $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
+                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::roundPrice($discountValue);
+                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::roundPrice($discountValue / (1 + $order->getTaxesAverageUsed() / 100));
 
                                     // Update OrderInvoice
                                     $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1632,14 +1603,8 @@ class AdminOrdersControllerCore extends AdminController
                                     if ($discountValue > $orderInvoice->total_paid_tax_incl) {
                                         $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.').$orderInvoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop).')';
                                     } else {
-                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
-                                            $discountValue,
-                                            _TB_PRICE_DATABASE_PRECISION_
-                                        );
-                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
-                                            $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
-                                            _TB_PRICE_DATABASE_PRECISION_
-                                        );
+                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::roundPrice($discountValue);
+                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::roundPrice($discountValue / (1 + $order->getTaxesAverageUsed() / 100));
 
                                         // Update OrderInvoice
                                         $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1649,14 +1614,8 @@ class AdminOrdersControllerCore extends AdminController
                                 if ($discountValue > $order->total_paid_tax_incl) {
                                     $this->errors[] = Tools::displayError('The discount value is greater than the order total.');
                                 } else {
-                                    $cartRules[0]['value_tax_incl'] = round(
-                                        $discountValue,
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
-                                    $cartRules[0]['value_tax_excl'] = round(
-                                        $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
-                                        _TB_PRICE_DATABASE_PRECISION_
-                                    );
+                                    $cartRules[0]['value_tax_incl'] = Tools::roundPrice($discountValue);
+                                    $cartRules[0]['value_tax_excl'] = Tools::roundPrice($discountValue / (1 + $order->getTaxesAverageUsed() / 100));
                                 }
                             }
                             break;

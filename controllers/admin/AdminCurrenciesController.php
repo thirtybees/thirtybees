@@ -389,7 +389,7 @@ class AdminCurrenciesControllerCore extends AdminController
         ) {
             $this->errors[] = Tools::displayError('This currency already exists.');
         }
-        if (Tools::isSubmit('submitAddcurrency') && (float) Tools::getValue('conversion_rate') <= 0) {
+        if (Tools::isSubmit('submitAddcurrency') && Tools::getNumberValue('conversion_rate') <= 0) {
             $this->errors[] = Tools::displayError('The currency conversion rate can not be equal to 0.');
         }
         parent::initProcess();

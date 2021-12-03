@@ -97,11 +97,9 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $attributes = [];
         foreach ($tab as $group) {
             foreach ($group as $attribute) {
-                $price = priceval(
-                    Tools::getValue('price_impact_'.(int) $attribute)
-                );
-                $weight = Tools::getValue('weight_impact_'.(int) $attribute);
-                $attributes[] = '('.(int) $idProduct.', '.(int) $attribute.', '.(float) $price.', '.(float) $weight.')';
+                $price = Tools::getNumberValue('price_impact_'.(int) $attribute);
+                $weight = Tools::getNumberValue('weight_impact_'.(int) $attribute);
+                $attributes[] = '('.(int) $idProduct.', '.(int) $attribute.', '.$price.', '.$weight.')';
             }
         }
 
@@ -315,25 +313,25 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     /**
      * @param array $attributes
      * @param float $price
-     * @param int   $weight
+     * @param float   $weight
      *
      * @return array
      *
      * @since 1.0.0
      */
-    protected function addAttribute($attributes, $price = 0.0000, $weight = 0)
+    protected function addAttribute($attributes, $price = 0.0, $weight = 0.0)
     {
+        $price = Tools::roundPrice($price);
+        $weight = Tools::roundPrice($weight);
         foreach ($attributes as $attribute) {
-            $price += priceval(
-                Tools::getValue('price_impact_'.(int) $attribute)
-            );
-            $weight += (float) Tools::getValue('weight_impact_'.(int) $attribute);
+            $price += Tools::getNumberValue('price_impact_'.(int) $attribute);
+            $weight += Tools::getNumberValue('weight_impact_'.(int) $attribute);
         }
         if ($this->product->id) {
             return [
                 'id_product'     => (int) $this->product->id,
-                'price'          => priceval($price),
-                'weight'         => (float) $weight,
+                'price'          => $price,
+                'weight'         => $weight,
                 'ecotax'         => 0,
                 'quantity'       => (int) Tools::getValue('quantity'),
                 'reference'      => pSQL($_POST['reference']),

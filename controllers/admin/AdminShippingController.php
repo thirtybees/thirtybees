@@ -169,7 +169,7 @@ class AdminShippingControllerCore extends AdminController
                             if (strstr($key, 'fees_')) {
                                 $tmpArray = explode('_', $key);
 
-                                $price = priceval($value);
+                                $price = Tools::parseNumber($value);
                                 $current = 0;
                                 foreach ($currentList as $item) {
                                     if ($item['id_zone'] == $tmpArray[1] && $item['id_'.$rangeTable] == $tmpArray[2]) {

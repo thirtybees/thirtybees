@@ -599,10 +599,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected static function getPrice($field)
     {
-        $field = ((float) str_replace(',', '.', $field));
-        $field = ((float) str_replace('%', '', $field));
-
-        return $field;
+        return Tools::parseNumber($field);
     }
 
     /**
@@ -2760,7 +2757,7 @@ class AdminImportControllerCore extends AdminController
         foreach (Product::$definition['fields'] as $key => $array) {
             if ($array['type'] == Product::TYPE_FLOAT
                 || $array['type'] == Product::TYPE_PRICE) {
-                $product->{$key} = str_replace(',', '.', $product->{$key});
+                $product->{$key} = Tools::parseNumber($product->{$key});
             }
         }
 
@@ -3134,10 +3131,7 @@ class AdminImportControllerCore extends AdminController
                     // if depends on stock and quantity, add quantity to stock
                     if ($product->depends_on_stock == 1) {
                         $stockManager = StockManagerFactory::getManager();
-                        $price = round(
-                            str_replace(',', '.', $product->wholesale_price),
-                            _TB_PRICE_DATABASE_PRECISION_
-                        );
+                        $price = Tools::parseNumber($product->wholesale_price);
                         $warehouse = new Warehouse($product->warehouse);
                         if ($stockManager->addProduct((int) $product->id, 0, $warehouse, (int) $product->quantity, 1, $price, true)) {
                             StockAvailable::synchronize((int) $product->id);
@@ -4121,19 +4115,10 @@ class AdminImportControllerCore extends AdminController
 
                     $info['minimal_quantity'] = isset($info['minimal_quantity']) && $info['minimal_quantity'] ? (int) $info['minimal_quantity'] : 1;
 
-                    $info['wholesale_price'] = round(
-                        str_replace(',', '.', $info['wholesale_price']),
-                        _TB_PRICE_DATABASE_PRECISION_
-                    );
-                    $info['price'] = round(
-                        str_replace(',', '.', $info['price']),
-                        _TB_PRICE_DATABASE_PRECISION_
-                    );
-                    $info['ecotax'] = round(
-                        str_replace(',', '.', $info['ecotax']),
-                        _TB_PRICE_DATABASE_PRECISION_
-                    );
-                    $info['weight'] = str_replace(',', '.', $info['weight']);
+                    $info['wholesale_price'] = Tools::parseNumber($info['wholesale_price']);
+                    $info['price'] = Tools::parseNumber($info['price']);
+                    $info['ecotax'] = Tools::parseNumber($info['ecotax']);
+                    $info['weight'] = Tools::parseNumber($info['weight']);
                     $info['available_date'] = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['available_date']);
 
                     if (!Validate::isEan13($info['ean13'])) {
@@ -4307,10 +4292,7 @@ class AdminImportControllerCore extends AdminController
                     // if depends on stock and quantity, add quantity to stock
                     if ($info['depends_on_stock'] == 1) {
                         $stockManager = StockManagerFactory::getManager();
-                        $price = round(
-                            str_replace(',', '.', $info['wholesale_price']),
-                            _TB_PRICE_DATABASE_PRECISION_
-                        );
+                        $price = Tools::parseNumber($info['wholesale_price']);
                         $warehouse = new Warehouse($info['warehouse']);
                         if (!$validateOnly && $stockManager->addProduct((int) $product->id, $idProductAttribute, $warehouse, (int) $info['quantity'], 1, $price, true)) {
                             StockAvailable::synchronize((int) $product->id);

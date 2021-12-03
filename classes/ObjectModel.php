@@ -530,16 +530,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         switch ($type) {
             case self::TYPE_INT:
-                return (int) $value;
-
             case self::TYPE_BOOL:
                 return (int) $value;
 
             case self::TYPE_FLOAT:
-                return (float) str_replace(',', '.', $value);
-
             case self::TYPE_PRICE:
-                return round($value, _TB_PRICE_DATABASE_PRECISION_);
+                return Tools::parseNumber($value);
 
             case self::TYPE_DATE:
                 if (!$value) {

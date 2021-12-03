@@ -1144,7 +1144,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 foreach ($products as &$item) {
                     // calculate md5 checksum on each product for use in tpl
                     $item['checksum'] = md5(_COOKIE_KEY_.$item['id_product'].'_'.$item['id_product_attribute']);
-                    $item['unit_price_te'] = priceval($item['unit_price_te']);
+                    $item['unit_price_te'] = Tools::roundPrice($item['unit_price_te']);
 
                     // add id to ids list
                     $productIds[] = $item['id_product'].'_'.$item['id_product_attribute'];
@@ -1259,9 +1259,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 $_POST['supplier_name'] = Supplier::getNameById($idSupplier);
 
                 //specific discount check
-                $_POST['discount_rate'] = priceval(
-                    Tools::getValue('discount_rate', 0)
-                );
+                $_POST['discount_rate'] = Tools::getNumberValue('discount_rate');
             }
 
             // manage each associated product
@@ -1512,12 +1510,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         // get product informations
                         $entry->id_product = substr($id, 0, $pos);
                         $entry->id_product_attribute = substr($id, $pos + 1);
-                        $entry->unit_price_te = priceval(
-                            Tools::getValue('input_unit_price_te_'.$id, 0)
-                        );
+                        $entry->unit_price_te = Tools::getNumberValue('input_unit_price_te_'.$id);
                         $entry->quantity_expected = (int) Tools::getValue('input_quantity_expected_'.$id, 0);
-                        $entry->discount_rate = (float) Tools::getValue('input_discount_rate_'.$id, 0);
-                        $entry->tax_rate = (float) Tools::getValue('input_tax_rate_'.$id, 0);
+                        $entry->discount_rate = Tools::getNumberValue('input_discount_rate_'.$id);
+                        $entry->tax_rate = Tools::getNumberValue('input_tax_rate_'.$id);
                         $entry->reference = Tools::getValue('input_reference_'.$id, '');
                         $entry->supplier_reference = Tools::getValue('input_supplier_reference_'.$id, '');
                         $entry->ean13 = Tools::getValue('input_ean13_'.$id, '');
