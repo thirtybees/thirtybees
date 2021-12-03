@@ -8,16 +8,25 @@ class ToolsTest extends \Codeception\TestCase\Test
      */
     protected $tester;
 
+    /**
+     * Preparation
+     */
     protected function _before()
     {
         $_GET = [];
         $_POST = [];
     }
 
+    /**
+     * Cleanup
+     */
     protected function _after()
     {
     }
 
+    /**
+     * Default getValue test
+     */
     public function testGetValueBaseCase()
     {
         $_GET = [
@@ -27,16 +36,25 @@ class ToolsTest extends \Codeception\TestCase\Test
         $this->assertEquals('world', Tools::getValue('hello'));
     }
 
+    /**
+     * Test non existing value
+     */
     public function testGetValueDefaultValueIsFalse()
     {
         $this->assertEquals(false, Tools::getValue('hello'));
     }
 
+    /**
+     * test vetValue with default
+     */
     public function testGetValueUsesDefaultValue()
     {
         $this->assertEquals('I AM DEFAULT', Tools::getValue('hello', 'I AM DEFAULT'));
     }
 
+    /**
+     * Test priority
+     */
     public function testGetValuePrefersPost()
     {
         $_GET = [
@@ -49,6 +67,9 @@ class ToolsTest extends \Codeception\TestCase\Test
         $this->assertEquals('cruel world', Tools::getValue('hello'));
     }
 
+    /**
+     * Test keys
+     */
     public function testGetValueAcceptsOnlyTruthyStringsAsKeys()
     {
         $_GET = [
@@ -62,6 +83,11 @@ class ToolsTest extends \Codeception\TestCase\Test
         $this->assertEquals(false, Tools::getValue(null, true));
     }
 
+    /**
+     * Data provider
+     *
+     * @return array[]
+     */
     public function testGetValueStripsNullCharsFromReturnedStringsExamples()
     {
         return [
@@ -72,6 +98,11 @@ class ToolsTest extends \Codeception\TestCase\Test
     }
 
     /**
+     * Test sanitation
+     *
+     * @param string $rawString
+     * @param string $cleanedString
+     *
      * @dataProvider testGetValueStripsNullCharsFromReturnedStringsExamples
      */
     public function testGetValueStripsNullCharsFromReturnedStrings($rawString, $cleanedString)
@@ -101,6 +132,11 @@ class ToolsTest extends \Codeception\TestCase\Test
         $this->assertEquals($cleanedString, Tools::getValue('NON EXISTING KEY', $rawString));
     }
 
+    /**
+     * Data provider for testSpreadAmount
+     *
+     * @return array[]
+     */
     public function testSpreadAmountExamples()
     {
         return [
@@ -184,11 +220,100 @@ class ToolsTest extends \Codeception\TestCase\Test
     }
 
     /**
+     * Test spreadAmount
+     *
+     * @param array $expectedRows
+     * @param float $amount
+     * @param int $precision
+     * @param array $rows
+     * @param string $column
+     *
      * @dataProvider testSpreadAmountExamples
      */
     public function testSpreadAmount($expectedRows, $amount, $precision, $rows, $column)
     {
         Tools::spreadAmount($amount, $precision, $rows, $column);
         $this->assertEquals(array_values($expectedRows), array_values($rows));
+    }
+
+    /**
+     * Data provider for testParseNumber test
+     */
+    public function parseNumberData()
+    {
+        return [
+            // valid cases - float input
+            [1.5, 1.5],
+            [5, 5.0],
+            ["1", 1.0],
+            ["1.1", 1.1],
+            ["92233720368547758011", 92233720368547758011.0],
+
+            // rounding
+            ["1.111111111", 1.111111],
+            ["1.555555555", 1.555556],
+            [1.555555555, 1.555556],
+            ["9223.3720368547758011", 9223.372037],
+
+            // invalid inputs
+            [[], 0.0],
+            [ [0.1, "1.2"], 0.0],
+            [null, 0.0],
+            [false, 0.0],
+            ['', 0.0],
+            [' ', 0.0],
+            ['invalid input', 0.0],
+            ['$', 0.0],
+            ['.', 0.0],
+            [',', 0.0],
+
+            // invalid separator combinations
+            ["22'33,44.123", 0.0],
+            ["99.33,44.123", 0.0],
+
+            // corrected inputs
+            ["9,", 9.0],
+            ["8.", 8.0],
+            [".7", 0.7],
+            [",6", 0.6],
+            ["1,2", 1.2],
+            ["1,2", 1.2],
+            ["$1,3", 1.3],
+            ["1,4 USD", 1.4],
+            ["USD 1,41", 1.41],
+            ["USD1,42", 1.42],
+            ["USD 1.51", 1.51],
+            ["1.52USD", 1.52],
+            ["1.53 USD", 1.53],
+            ["1,666666666 €", 1.666667],
+            ["€ 1.111111111123", 1.111111],
+            ["1'000,001 EUR", 1000.001],
+            ["1 000.002$", 1000.002],
+            ["1,000.003$", 1000.003],
+            ["1.000,004 EURO", 1000.004],
+            ["1.000.555,005 EURO", 1000555.005],
+            ["2,000,555.005 EURO", 2000555.005],
+            ["3,000,000", 3000000.0],
+            ["3,000,001.0", 3000001.0],
+            ["4.000.000", 4000000.0],
+            ["4.000.001,0", 4000001.0],
+            ["1.234.567'89", 1234567.89],
+            ["1'234'567'89.888888888", 123456789.888889]
+        ];
+    }
+
+    /**
+     * Tests parsePrice method
+     *
+     * @param string $input
+     * @param float $expectedValue
+     *
+     * @dataProvider parseNumberData
+     */
+    public function testParseNumber($input, $expectedValue)
+    {
+        $actualValue = Tools::parseNumber($input);
+        $this->assertTrue(is_float($actualValue));
+        $this->assertEquals($expectedValue, $actualValue, "Failed to parse input string: ".print_r($input, true));
     }
 }

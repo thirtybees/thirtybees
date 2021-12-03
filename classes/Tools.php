@@ -531,6 +531,21 @@ class ToolsCore
     }
 
     /**
+     * Extract price value from $_POST / $_GET
+     *
+     * @param string $key Value key
+     * @param int $precision Precisions
+     *
+     * @return float parsed price, rounded to $precision
+     *
+     * @since 1.4.0
+     */
+    public static function getNumberValue($key, $precision=_TB_PRICE_DATABASE_PRECISION_)
+    {
+        return static::parseNumber(static::getValueRaw($key), $precision);
+    }
+
+    /**
      * Get a value from $_POST / $_GET
      * if unavailable, take a default value
      *
@@ -5296,6 +5311,84 @@ FileETag none
             }
         }
         return true;
+    }
+
+    /**
+     * Parse input string number value and returns float
+     *
+     * @param $input float|string|int The input value
+     * @return float price, rounded to _TB_PRICE_DATABASE_PRECISION_.
+     *
+     * @see ToolsTest::parsePriceData() for more information
+     *
+     * @since 1.4.0
+     */
+    public static function parseNumber($input, $precision=_TB_PRICE_DATABASE_PRECISION_)
+    {
+        $precision = (int)$precision;
+
+        if (is_float($input)) {
+            return round((float)$input, $precision);
+        }
+        if (is_int($input)) {
+            return (float)$input;
+        }
+
+        if (is_numeric($input)) {
+            return round((float)$input, $precision);
+        }
+
+        if (is_string($input) && $input !== '') {
+            // remove everything except numbers and separators
+            $s = preg_replace("/[^0-9.,']/", "", $input);
+            if ($s !== '') {
+                // if the string contains only numbers, it's integer
+                if (preg_match("/^[0-9]$/", $s)) {
+                    return round((float)$s, $precision);
+                }
+
+                // if the number contains one separator, it will be considered decimal point
+                if (preg_match("/^([0-9])*([,.'])?([0-9])*$/", $s)) {
+                    $s = preg_replace("/[,']/", ".", $s);
+                    return round((float)$s, $precision);
+                }
+
+                // find out all separators
+                preg_match_all("/[^0-9]/", $s, $matches);
+                $separators = isset($matches[0]) ? $matches[0] : [];
+                $unique = array_count_values($separators);
+
+                // if there is only unique separator, it s considered thousand separator.
+                if (count($unique) == 1) {
+                    $s = preg_replace("/[,'.]/", "", $s);
+                    return round((float)$s, $precision);
+                }
+
+                if (count($unique) == 2) {
+                    $decimalSeparator = array_pop($separators);
+                    if ($unique[$decimalSeparator] === 1) {
+                        foreach ($unique as $key => $_) {
+                            if ($key !== $decimalSeparator) {
+                                $s = str_replace($key, "", $s);
+                            }
+                        }
+                        if ($decimalSeparator !== '.') {
+                            $s = str_replace($decimalSeparator, ".", $s);
+
+                        }
+                        return round((float)$s, $precision);
+                    }  else {
+                        // the decimal separator is used multiple times, invalid input. ie: 1.100,2000.123
+                        return 0.0;
+                    }
+                }
+
+                // there are more than 2 separators, that is not a valid input
+                return 0.0;
+            }
+        }
+
+        return 0.0;
     }
 }
 
