@@ -496,10 +496,11 @@ class LinkCore
             unset($params['id_lang']);
         }
 
-        $controller = Dispatcher::getInstance()->getController();
 
         if (!empty($context->controller->php_self)) {
             $controller = $context->controller->php_self;
+        } else {
+            $controller = Dispatcher::getInstance()->getController();
         }
 
         if ($controller == 'product' && isset($params['id_product'])) {
@@ -840,15 +841,26 @@ class LinkCore
 
         $url = $this->getBaseLink($idShop, $ssl, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
 
+        $controller = $controller ? $controller : 'default';
+
+        $dispatcher = Dispatcher::getInstance();
+
+        // allow passing full module routeId instead of a controller
+        if ($info = $dispatcher->isModuleControllerRoute($controller)) {
+            if ($module === $info['module'] && $dispatcher->hasRoute($controller)) {
+                $controller = $info['controller'];
+            }
+        }
+
         // Set available keywords
         $params['module'] = $module;
-        $params['controller'] = $controller ? $controller : 'default';
+        $params['controller'] = $controller;
 
         // If the module has its own route ... just use it !
-        if (Dispatcher::getInstance()->hasRoute('module-'.$module.'-'.$controller, $idLang, $idShop)) {
+        if ($dispatcher->hasRoute('module-'.$module.'-'.$controller, $idLang, $idShop)) {
             return $this->getPageLink('module-'.$module.'-'.$controller, $ssl, $idLang, $params);
         } else {
-            return $url.Dispatcher::getInstance()->createUrl('module', $idLang, $params, $this->allow, '', $idShop);
+            return $url . $dispatcher->createUrl('module', $idLang, $params, $this->allow, '', $idShop);
         }
     }
 
