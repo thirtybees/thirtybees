@@ -346,6 +346,7 @@ class DispatcherCore
         }
 
         $regexp = preg_quote($rule, '#');
+        $aliases = [];
         if ($keywords) {
             $transformKeywords = [];
             preg_match_all('#\\\{(([^{}]*)\\\:)?('.implode('|', array_keys($keywords)).')(\\\:([^{}]*))?\\\}#', $regexp, $m);
@@ -353,11 +354,20 @@ class DispatcherCore
                 $prepend = $m[2][$i];
                 $keyword = $m[3][$i];
                 $append = $m[5][$i];
+                $hasParam = isset($keywords[$keyword]['param']);
+                $keywordParam = $hasParam ? $keywords[$keyword]['param'] : null;
+                $keywordRegexp = $keywords[$keyword]['regexp'];
+
                 $transformKeywords[$keyword] = [
                     'required' => isset($keywords[$keyword]['param']),
                     'prepend'  => stripslashes($prepend),
                     'append'   => stripslashes($append),
                 ];
+
+                // if keyword 'id' and 'param' are different, let's register param as keyword id alias
+                if ($keywordParam && $keywordParam !== $keyword) {
+                    $aliases[$keywordParam] = $keyword;
+                }
 
                 $prependRegexp = $appendRegexp = '';
                 if ($prepend || $append) {
@@ -365,12 +375,12 @@ class DispatcherCore
                     $appendRegexp = $append.')?';
                 }
 
-                if (isset($keywords[$keyword]['param']) && $keywords[$keyword]['param']) {
-                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<'.$keywords[$keyword]['param'].'>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
+                if ($keywordParam) {
+                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<'.$keywordParam.'>'.$keywordRegexp.')'.$appendRegexp, $regexp);
                 } elseif ($keyword === 'id') {
-                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<id>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
+                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<id>'.$keywordRegexp.')'.$appendRegexp, $regexp);
                 } else {
-                    $regexp = str_replace($m[0][$i], $prependRegexp.'('.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
+                    $regexp = str_replace($m[0][$i], $prependRegexp.'('.$keywordRegexp.')'.$appendRegexp, $regexp);
                 }
             }
             $keywords = $transformKeywords;
@@ -390,6 +400,7 @@ class DispatcherCore
             'controller' => $controller,
             'keywords'   => $keywords,
             'params'     => $params,
+            'aliases'    => $aliases,
         ];
     }
 
@@ -962,7 +973,10 @@ class DispatcherCore
                                         && $k !== 'cms_rewrite'
                                         && $k !== 'cms_cat_rewrite'
                                     )) {
-                                        $_GET[$k] = $v;
+                                    $_GET[$k] = $v;
+                                    if (isset($route['aliases'][$k])) {
+                                        $_GET[$route['aliases'][$k]] = $v;
+                                    }
                                 }
                             }
                             $controller = $route['controller'] ? $route['controller'] : $_GET['controller'];
@@ -1218,14 +1232,26 @@ class DispatcherCore
         // Skip if we are not using routes
         // Build an url which match a route
         if ($this->use_routes || $forceRoutes) {
+            $aliases = array_flip($route['aliases']);
             foreach ($route['keywords'] as $key => $data) {
                 if (!$data['required']) {
                     continue;
                 }
 
-                if (!array_key_exists($key, $params)) {
-                    throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
+                $alias = isset($aliases[$key]) ? $aliases[$key] : null;
+                if ($alias && array_key_exists($alias, $params)) {
+                    $params[$key] = $params[$alias];
+                    unset($params[$alias]);
                 }
+
+                if (! array_key_exists($key, $params)) {
+                    if ($alias) {
+                        throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$alias.'" or it\'s alias "'.$key.'"for route "'.$routeId.'"');
+                    } else {
+                        throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
+                    }
+                }
+
                 if (isset($this->default_routes[$routeId])) {
                     $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
                 }
@@ -1240,8 +1266,8 @@ class DispatcherCore
                         $addParam[$key] = $value;
                     }
                 } else {
-                    if ($params[$key]) {
-                        $replace = $route['keywords'][$key]['prepend'].$params[$key].$route['keywords'][$key]['append'];
+                    if ($value) {
+                        $replace = $route['keywords'][$key]['prepend'].$value.$route['keywords'][$key]['append'];
                     } else {
                         $replace = '';
                     }

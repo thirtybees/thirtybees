@@ -66,36 +66,39 @@ class DispatcherTest extends \Codeception\Test\Unit
             'Rewrite on | category controller' => [true, '/coffee-and-tea/tea', 'category', ['controller' => 'category', 'id_category' => '5']],
             'Rewrite on | product controller' => [true, '/gifts/1-candle', 'product', ['controller' => 'product', 'id_product' => '1']],
             'Rewrite on | product controller - wrong rewrite' => [true, '/gifts/2-not-existing-rewrite', 'product', ['controller' => 'product', 'id_product' => '2']],
+            'Rewrite on | custom controller | backwards support' => [true, '/custom-url/2/friendly.html', 'controllername', [
+                'fc' => 'module',
+                'module' => 'samplemodule',
+                'controller' => 'controllername',
+                'rewrite' => 'friendly',
+                // for backwards compatibility we populate 'keyword' as well as param
+                'id_key' => '2',
+                'id_param' => '2',
+            ]],
         ]);
     }
 
-
     /**
-     * @dataProvider urlDefaultRoutes
-     *
-     * @param bool $useFriendlyUrl
-     * @param string $uri
-     * @param string $expected
-     * @param array $expectedGet
-     * @throws PrestaShopException
+     * Data provider for testCreateUrl
      */
-    public function testDefaultRoutes($useFriendlyUrl, $uri, $expected, $expectedGet)
+    public function creteUrlData()
     {
-        $this->performTest($useFriendlyUrl, $uri, [], $expected, $expectedGet);
+        return [
+            [ 'product_rule', [ 'categories' => 'category', 'id' => '1', 'rewrite' => 'product-rewrite' ], 'category/1-product-rewrite' ],
+            [ 'module-samplemodule-controllername', [ 'id_key' => '1', 'rewrite' => 'r' ], 'custom-url/1/r.html' ],
+            [ 'module-samplemodule-controllername', [ 'id_param' => '1', 'rewrite' => 'r' ], 'custom-url/1/r.html' ],
+            [ 'module-samplemodule-controllername', [ 'id_param' => '1', 'id_key' => '2', 'rewrite' => 'r' ], 'custom-url/1/r.html' ],
+            [ 'module-samplemodule-controllername', [ 'id_param' => '1', 'id_key' => '2', 'extra' => 'e', 'rewrite' => 'r' ], 'custom-url/1/r.html?extra=e' ],
+        ];
     }
 
     /**
-     * @dataProvider urlCustomRoutes
-     *
-     * @param bool $useFriendlyUrl
-     * @param string $uri
-     * @param string $expected
-     * @param array $expectedGet
-     * @throws PrestaShopException
+     * Returns custom routes for tests
+     * @return array[]
      */
-    public function testCustomRoutes($useFriendlyUrl, $uri, $expected, $expectedGet)
+    public function getCustomRoutes()
     {
-        $this->performTest($useFriendlyUrl, $uri, [
+        return [
             [
                 'id' => 'category_rule',
                 'controller' => 'category',
@@ -128,7 +131,62 @@ class DispatcherTest extends \Codeception\Test\Unit
                     ],
                 ],
             ],
-        ], $expected, $expectedGet);
+            'module-samplemodule-controllername' => [
+                'id' => 'module-samplemodule-controllername',
+                'controller' => 'controllername',
+                'rule' =>'custom-url/{id_key}/{rewrite}.html',
+                'keywords' => [
+                    'id_key' => ['regexp' => '[0-9]+', 'param' => 'id_param'],
+                    'rewrite' => ['regexp' => '[_a-zA-Z0-9-\pL]*', 'param' => 'rewrite'],
+                    'module' => ['regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'module'],
+                    'controller' => ['regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'controller'],
+                ],
+                'params' => [
+                    'fc' => 'module',
+                    'module' => 'samplemodule',
+                    'controller' => 'controllername',
+                ],
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider urlDefaultRoutes
+     *
+     * @param bool $useFriendlyUrl
+     * @param string $uri
+     * @param string $expected
+     * @param array $expectedGet
+     * @throws PrestaShopException
+     */
+    public function testDefaultRoutes($useFriendlyUrl, $uri, $expected, $expectedGet)
+    {
+        $this->performTest($useFriendlyUrl, $uri, [], $expected, $expectedGet);
+    }
+
+    /**
+     * @dataProvider urlCustomRoutes
+     *
+     * @param bool $useFriendlyUrl
+     * @param string $uri
+     * @param string $expected
+     * @param array $expectedGet
+     * @throws PrestaShopException
+     */
+    public function testCustomRoutes($useFriendlyUrl, $uri, $expected, $expectedGet)
+    {
+        $this->performTest($useFriendlyUrl, $uri, $this->getCustomRoutes(), $expected, $expectedGet);
+    }
+
+    /**
+     * @dataProvider  creteUrlData
+     * @throws PrestaShopException
+     */
+    public function testCreateUrl($routeId, $params, $expectedUrl)
+    {
+        $dispatcher = $this->getDispatcher(true, '', $this->getCustomRoutes());
+        $actualUrl = $dispatcher->createUrl($routeId, 1, $params);
+        static::assertEquals($expectedUrl, $actualUrl, "createURL does not match");
     }
 
     /**
