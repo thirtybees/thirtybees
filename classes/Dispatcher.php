@@ -987,11 +987,12 @@ class DispatcherCore
                             }
 
                             // A patch for module friendly urls
-                            if (preg_match('#module-([a-z0-9_-]+)-([a-z0-9_]+)$#i', $controller, $m)) {
-                                $_GET['module'] = $m[1];
+                            if ($info = $this->isModuleControllerRoute($controller)) {
                                 $_GET['fc'] = 'module';
-                                $controller = $m[2];
+                                $_GET['module'] = $info['module'];
+                                $controller = $info['controller'];
                             }
+
                             if (isset($_GET['fc']) && $_GET['fc'] == 'module') {
                                 $this->front_controller = self::FC_MODULE;
                             }
@@ -1112,6 +1113,23 @@ class DispatcherCore
      */
     public function hasRoute($routeId, $idLang = null, $idShop = null)
     {
+        return !!$this->getRoute($routeId, $idLang, $idShop);
+    }
+
+    /**
+     * Returns route by its routeId
+     *
+     * @param string $routeId
+     * @param int    $idLang
+     * @param int    $idShop
+     *
+     * @return array | null
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getRoute($routeId, $idLang = null, $idShop = null)
+    {
         if (isset(Context::getContext()->language) && $idLang === null) {
             $idLang = (int) Context::getContext()->language->id;
         }
@@ -1119,7 +1137,9 @@ class DispatcherCore
             $idShop = (int) Context::getContext()->shop->id;
         }
 
-        return isset($this->routes[$idShop]) && isset($this->routes[$idShop][$idLang]) && isset($this->routes[$idShop][$idLang][$routeId]);
+        return isset($this->routes[$idShop][$idLang][$routeId])
+            ? $this->routes[$idShop][$idLang][$routeId]
+            : null;
     }
 
     /**
@@ -1718,5 +1738,48 @@ class DispatcherCore
             return $this->matchers[$routeId];
         }
         return null;
+    }
+
+    /**
+     * Returns array with information about module/controller, if $routeId matches module controller route
+     *
+     * @param string $routeId
+     * @return false| array
+     * @since 1.4.0
+     */
+    public function isModuleControllerRoute($routeId)
+    {
+        if (preg_match('#module-([a-z0-9_-]+)-([a-z0-9_]+)$#i', $routeId, $m)) {
+            return [
+                'module' => $m[1],
+                'controller' => $m[2]
+            ];
+        }
+        return false;
+    }
+
+    /**
+     * Returns parameters names required by route with id $routeId
+     *
+     * @return array
+     * @since 1.4.0
+     */
+    public function getRouteRequiredParams($routeId)
+    {
+        $params = [];
+        $route = $this->getRoute($routeId);
+        if ($route) {
+            $aliases = array_flip($route['aliases']);
+            foreach ($route['keywords'] as $keyword => $info) {
+                if ($info['required']) {
+                    if (isset($aliases[$keyword]) && $aliases[$keyword]) {
+                        $alias = $aliases[$keyword];
+                        $params[$alias] = $alias;
+                    }
+                    $params[$keyword] = $keyword;
+                }
+            }
+        }
+        return $params;
     }
 }

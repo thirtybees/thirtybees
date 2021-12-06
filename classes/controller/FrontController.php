@@ -458,11 +458,14 @@ class FrontControllerCore extends Controller
 
                 break;
             default:
-                if (strstr($this->php_self, 'module')) {
-                    $nameParts = explode('-', $this->php_self);
-                    $canonical = $this->context->link->getModuleLink($nameParts[1], $nameParts[2]);
-                } else 
+                $dispatcher = Dispatcher::getInstance();
+                if ($info = $dispatcher->isModuleControllerRoute($this->php_self)) {
+                    // include only required $_GET parameters and ignore others
+                    $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($this->php_self));
+                    $canonical = $this->context->link->getModuleLink($info['module'], $info['controller'], $params);
+                } else {
                     $canonical = $this->context->link->getPageLink($this->php_self);
+                }
                 $hreflang = $this->getHrefLang($this->php_self, 0, $languages, $defaultLang);
                 break;
 
@@ -481,16 +484,17 @@ class FrontControllerCore extends Controller
     /**
      * creates hrefLang links for various entities.
      *
-     * @param string $entity        name of the object/page to get the link for
-     * @param int    $idItem        eventual id of the object (if any)
-     * @param array  $languages     list of languages
-     * @param int    $idLangDefault id of the default language
+     * @param string $entity name of the object/page to get the link for
+     * @param int $idItem eventual id of the object (if any)
+     * @param array $languages list of languages
+     * @param int $idLangDefault id of the default language
      *
      * @return string[] HTML of the hreflang tags
      *
+     * @throws PrestaShopException
+     * @version 1.0.0 Initial version
      * @since   1.0.0
      *
-     * @version 1.0.0 Initial version
      */
     public function getHrefLang($entity, $idItem, $languages, $idLangDefault)
     {
@@ -524,11 +528,14 @@ class FrontControllerCore extends Controller
                     $lnk = $this->context->link->getCMSCategoryLink((int) $idItem, null, $lang['id_lang']);
                     break;
                 default:
-                    if (strstr($entity, 'module')) {
-                        $nameParts = explode('-', $entity);
-                        $lnk = $this->context->link->getModuleLink($nameParts[1], $nameParts[2], [], null, $lang['id_lang']);
-                    } else 
+                    $dispatcher = Dispatcher::getInstance();
+                    if ($info = $dispatcher->isModuleControllerRoute($entity)) {
+                        // include only required $_GET parameters and ignore others
+                        $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($entity));
+                        $lnk = $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $lang['id_lang']);
+                    } else  {
                         $lnk = $this->context->link->getPageLink($entity, null, $lang['id_lang']);
+                    }
                     break;
             }
 
