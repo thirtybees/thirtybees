@@ -168,43 +168,54 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         return $res;
     }
 
+    /**
+     * Reset context
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function initializeContext()
     {
-        global $smarty;
-
         // Clean all cache values
         Cache::clean('*');
 
-        Context::getContext()->shop = new Shop(1);
+
+        $context = Context::getContext();
+
+        // load configuration
+        $context->shop = new Shop(1);
         Shop::setContext(Shop::CONTEXT_SHOP, 1);
         Configuration::loadConfiguration();
-        if (!isset(Context::getContext()->language) || !Validate::isLoadedObject(Context::getContext()->language)) {
+
+        if (!isset($context->language) || !Validate::isLoadedObject($context->language)) {
             if ($idLang = (int) Configuration::get('PS_LANG_DEFAULT')) {
-                Context::getContext()->language = new Language($idLang);
+                $context->language = new Language($idLang);
             }
         }
-        if (!isset(Context::getContext()->country) || !Validate::isLoadedObject(Context::getContext()->country)) {
+
+        if (!isset($context->country) || !Validate::isLoadedObject($context->country)) {
             if ($idCountry = (int) Configuration::get('PS_COUNTRY_DEFAULT')) {
-                Context::getContext()->country = new Country((int) $idCountry);
+                $context->country = new Country((int) $idCountry);
             }
         }
-        if (!isset(Context::getContext()->currency) || !Validate::isLoadedObject(Context::getContext()->currency)) {
+
+        if (!isset($context->currency) || !Validate::isLoadedObject($context->currency)) {
             if ($idCurrency = (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
-                Context::getContext()->currency = new Currency((int) $idCurrency);
+                $context->currency = new Currency((int) $idCurrency);
             }
         }
 
-        Context::getContext()->cart = new Cart();
-        Context::getContext()->employee = new Employee(1);
-        if (!defined('_PS_SMARTY_FAST_LOAD_')) {
-            define('_PS_SMARTY_FAST_LOAD_', true);
+        $context->cart = new Cart();
+        $context->employee = new Employee(1);
+
+        if (! isset($context->smarty)) {
+            $context->smarty = require_once(_PS_ROOT_DIR_.'/config/smarty.config.inc.php');
         }
-        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
 
-        Context::getContext()->smarty = $smarty;
-
-        $protocol = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
-        Context::getContext()->link = new Link($protocol, $protocol);
+        if (! isset($context->link)) {
+            $protocol = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+            $context->link = new Link($protocol, $protocol);
+        }
     }
 
     /**

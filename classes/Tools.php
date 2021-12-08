@@ -1578,8 +1578,8 @@ class ToolsCore
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array $params
+     * @param Smarty $smarty
      *
      * @return bool|string
      *
@@ -1665,7 +1665,7 @@ class ToolsCore
     }
 
     /**
-     * @param     $string
+     * @param array|string $string
      * @param int $type
      *
      * @return array|string

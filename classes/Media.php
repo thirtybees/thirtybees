@@ -165,8 +165,7 @@ class MediaCore
 
     /**
      * @param string $htmlContent
-     *
-     * @return bool|mixed
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -199,7 +198,7 @@ class MediaCore
             return $htmlContent;
         }
 
-        return false;
+        return '';
     }
 
     /**

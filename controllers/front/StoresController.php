@@ -325,12 +325,11 @@ class StoresControllerCore extends FrontController
      *
      * @return bool|string
      *
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderStoreWorkingHours($store)
     {
-        global $smarty;
-
         $days[1] = 'Monday';
         $days[2] = 'Tuesday';
         $days[3] = 'Wednesday';
@@ -367,8 +366,8 @@ class StoresControllerCore extends FrontController
                     $daysDatas[] = $hoursDatas;
                 }
             }
-            $smarty->assign('days_datas', $daysDatas);
-            $smarty->assign('id_country', $store['id_country']);
+            $this->context->smarty->assign('days_datas', $daysDatas);
+            $this->context->smarty->assign('id_country', $store['id_country']);
 
             return $this->context->smarty->fetch(_PS_THEME_DIR_.'store_infos.tpl');
         }

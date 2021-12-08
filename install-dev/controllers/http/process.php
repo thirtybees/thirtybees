@@ -199,8 +199,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      */
     public function initializeContext()
     {
-        global $smarty;
-
         Context::getContext()->shop = new Shop(1);
         Shop::setContext(Shop::CONTEXT_SHOP, 1);
         Configuration::loadConfiguration();
@@ -211,10 +209,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         Context::getContext()->employee = new Employee(1);
         $protocol = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
         Context::getContext()->link = new Link($protocol, $protocol);
-        define('_PS_SMARTY_FAST_LOAD_', true);
-        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
-
-        Context::getContext()->smarty = $smarty;
+        Context::getContext()->smarty = require_once(_PS_ROOT_DIR_.'/config/smarty.config.inc.php');
     }
 
     /**

@@ -81,7 +81,7 @@ class TranslateCore
             $classNameController = $class.'controller';
             // if the class is extended by a module, use modules/[module_name]/xx.php lang file
             if (class_exists($classNameController) && Module::getModuleNameFromClass($classNameController)) {
-                return Translate::getModuleTranslation(Module::$classInModule[$classNameController], $string, $classNameController, $sprintf, $addslashes);
+                return static::getModuleTranslation(Module::$classInModule[$classNameController], $string, $classNameController, $sprintf, $addslashes);
             }
         }
 
@@ -90,7 +90,7 @@ class TranslateCore
         if (isset($_LANGADM[$class.$key]) && $_LANGADM[$class.$key] !== '') {
             $str = $_LANGADM[$class.$key];
         } else {
-            $str = Translate::getGenericAdminTranslation($string, $key, $_LANGADM);
+            $str = static::getGenericAdminTranslation($string, $key, $_LANGADM);
         }
 
         if ($htmlentities) {
@@ -99,7 +99,7 @@ class TranslateCore
         $str = str_replace('"', '&quot;', $str);
 
         if ($sprintf !== null) {
-            $str = Translate::checkAndReplaceArgs($str, $sprintf);
+            $str = static::checkAndReplaceArgs($str, $sprintf);
         }
 
         return ($addslashes ? addslashes($str) : stripslashes($str));
@@ -183,7 +183,7 @@ class TranslateCore
             } elseif (!empty($_MODULES[$prestaShopKey])) {
                 $ret = $_MODULES[$prestaShopKey];
             } elseif (!empty($_LANGADM)) {
-                $ret = Translate::getGenericAdminTranslation($string, $key, $_LANGADM);
+                $ret = static::getGenericAdminTranslation($string, $key, $_LANGADM);
             } else {
                 $ret = $string;
             }
@@ -218,7 +218,7 @@ class TranslateCore
         $ret = stripslashes($input);
 
         if ($sprintf !== null) {
-            $ret = Translate::checkAndReplaceArgs($ret, $sprintf);
+            $ret = static::checkAndReplaceArgs($ret, $sprintf);
         }
 
         return $js ? addslashes($ret) : htmlspecialchars($ret, ENT_COMPAT, 'UTF-8');
@@ -322,7 +322,7 @@ class TranslateCore
         $str = array_key_exists($key, $_LANGPDF) && $_LANGPDF[$key] !== '' ? $_LANGPDF[$key] : $string;
 
         if ($sprintf !== null) {
-            $str = Translate::checkAndReplaceArgs($str, $sprintf);
+            $str = static::checkAndReplaceArgs($str, $sprintf);
         }
 
         return $str;
@@ -335,7 +335,7 @@ class TranslateCore
      */
     public static function smartyPostProcessTranslation($string, $params)
     {
-        return Translate::postProcessTranslation($string, $params);
+        return static::postProcessTranslation($string, $params);
     }
 
     /**
@@ -385,7 +385,7 @@ class TranslateCore
      */
     public static function ppTags($string, $tags)
     {
-        return Translate::postProcessTranslation($string, ['tags' => $tags]);
+        return static::postProcessTranslation($string, ['tags' => $tags]);
     }
 
     /**
@@ -418,9 +418,102 @@ class TranslateCore
         $msg = $js ? addslashes($msg) : stripslashes($msg);
 
         if ($sprintf !== null) {
-            $msg = Translate::checkAndReplaceArgs($msg, $sprintf);
+            $msg = static::checkAndReplaceArgs($msg, $sprintf);
         }
 
         return $js ? $msg : Tools::safeOutput($msg);
+    }
+
+    /**
+     * Performs front office template translations
+     *
+     * This method is called when {l s='xxx'} is used in front office templates
+     *
+     * @param array $params
+     * @param Smarty $smarty
+     * @return string
+     */
+    public static function smartyFrontTranslate($params, $smarty)
+    {
+        if (!isset($params['js'])) {
+            $params['js'] = false;
+        }
+        if (!isset($params['pdf'])) {
+            $params['pdf'] = false;
+        }
+        if (!isset($params['mod'])) {
+            $params['mod'] = false;
+        }
+        if (!isset($params['sprintf'])) {
+            $params['sprintf'] = null;
+        }
+
+        $filename = ((!isset($smarty->compiler_object) || !is_object($smarty->compiler_object->template)) ? $smarty->template_resource : $smarty->compiler_object->template->getTemplateFilepath());
+        $basename = basename($filename, '.tpl');
+
+        if ($params['mod']) {
+            return static::postProcessTranslation(static::getModuleTranslation($params['mod'], $params['s'], $basename, $params['sprintf'], $params['js']), $params);
+        } elseif ($params['pdf']) {
+            return static::postProcessTranslation(static::getPdfTranslation($params['s'], $params['sprintf']), $params);
+        }
+
+        if (isset($smarty->source) && (strpos($smarty->source->filepath, DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR) !== false)) {
+            $basename = 'override_' . $basename;
+        }
+        return static::postProcessTranslation(static::getFrontTranslation($params['s'], $basename, $params['sprintf'], $params['js']), $params);
+    }
+
+    /**
+     * Performs back office template translations
+     *
+     * This method is called when {l s='xxx'} is used in back office templates
+     *
+     * @param array $params
+     * @param Smarty $smarty
+     * @return string
+     */
+    public static function smartyAdminTranslate($params, $smarty)
+    {
+        $htmlentities = !isset($params['js']);
+        $pdf = isset($params['pdf']);
+        $addslashes = (isset($params['slashes']) || isset($params['js']));
+        $sprintf = isset($params['sprintf']) ? $params['sprintf'] : null;
+
+        if ($pdf) {
+            return static::postProcessTranslation(Translate::getPdfTranslation($params['s'], $sprintf), $params);
+        }
+
+        $filename = ((!isset($smarty->compiler_object) || !is_object($smarty->compiler_object->template)) ? $smarty->template_resource : $smarty->compiler_object->template->getTemplateFilepath());
+
+        // If the template is part of a module
+        if (!empty($params['mod'])) {
+            return static::postProcessTranslation(static::getModuleTranslation($params['mod'], $params['s'], basename($filename, '.tpl'), $sprintf, isset($params['js'])), $params);
+        }
+
+        // If the tpl is at the root of the template folder
+        if (dirname($filename) == '.') {
+            $class = 'index';
+        }
+
+        if (!empty(Context::getContext()->override_controller_name_for_translations)) {
+            $class = Context::getContext()->override_controller_name_for_translations;
+        } elseif (isset(Context::getContext()->controller)) {
+            $className = get_class(Context::getContext()->controller);
+            $class = substr($className, 0, strpos(strtolower($className), 'controller'));
+        } else {
+            // Split by \ and / to get the folder tree for the file
+            $folderTree = preg_split('#[/\\\]#', $filename);
+            $key = array_search('controllers', $folderTree);
+
+            // If there was a match, construct the class name using the child folder name
+            // Eg. xxx/controllers/customers/xxx => AdminCustomers
+            if ($key !== false) {
+                $class = 'Admin'.Tools::toCamelCase($folderTree[$key + 1], true);
+            } elseif (isset($folderTree[0])) {
+                $class = 'Admin'.Tools::toCamelCase($folderTree[0], true);
+            }
+        }
+
+        return static::postProcessTranslation(Translate::getAdminTranslation($params['s'], $class, $addslashes, $htmlentities, $sprintf), $params);
     }
 }

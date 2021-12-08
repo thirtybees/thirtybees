@@ -29,9 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection PhpUnused */
+
 define('_PS_SMARTY_DIR_', _PS_TOOL_DIR_.'smarty/');
 
+// smarty is declared as global for backwards compatibility reasons
 global $smarty;
+
 $smarty = new SmartyCustom();
 $smarty->setCompileDir(_PS_CACHE_DIR_.'smarty/compile');
 $smarty->setCacheDir(_PS_CACHE_DIR_.'smarty/cache');
@@ -42,29 +47,16 @@ if (Configuration::get('PS_SMARTY_CACHING_TYPE') == 'mysql') {
     include(_PS_CLASS_DIR_.'/SmartyCacheResourceMysql.php');
     $smarty->caching_type = 'mysql';
 }
-$smarty->force_compile = (Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SMARTY_FORCE_COMPILE_) ? true : false;
-$smarty->compile_check = (Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_) ? true : false;
+$smarty->force_compile = Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SMARTY_FORCE_COMPILE_;
+$smarty->compile_check = Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_;
 $smarty->debug_tpl = _PS_ALL_THEMES_DIR_.'debug.tpl';
-
-/* Use this constant if you want to load smarty without all PrestaShop functions */
-if (defined('_PS_SMARTY_FAST_LOAD_') && _PS_SMARTY_FAST_LOAD_) {
-    return;
-}
-
-if (defined('_PS_ADMIN_DIR_')) {
-    require_once(dirname(__FILE__).'/smartyadmin.config.inc.php');
-} else {
-    require_once(dirname(__FILE__).'/smartyfront.config.inc.php');
-}
 
 smartyRegisterFunction($smarty, 'modifier', 'truncate', 'smarty_modifier_truncate');
 smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', ['Tools', 'secureReferrer']);
-
 smartyRegisterFunction($smarty, 'function', 't', 'smartyTruncate'); // unused
 smartyRegisterFunction($smarty, 'function', 'm', 'smartyMaxWords'); // unused
 smartyRegisterFunction($smarty, 'function', 'p', 'smartyShowObject'); // Debug only
 smartyRegisterFunction($smarty, 'function', 'd', 'smartyDieObject'); // Debug only
-smartyRegisterFunction($smarty, 'function', 'l', 'smartyTranslate', false);
 smartyRegisterFunction($smarty, 'function', 'hook', 'smartyHook');
 smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
 smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
@@ -85,20 +77,45 @@ smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
 smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
-smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImplode'));
-smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', array('Tools', 'convertEmailToIdn'));
-smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', array('Tools', 'convertEmailFromIdn'));
+smartyRegisterFunction($smarty, 'function', 'implode', ['Tools', 'smartyImplode']);
+smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', ['Tools', 'convertEmailToIdn']);
+smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
 
+if (defined('_PS_ADMIN_DIR_')) {
+    smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyAdminTranslate'], false);
+} else {
+    smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyFrontTranslate'], false);
+    $smarty->setTemplateDir(_PS_THEME_DIR_.'tpl');
+    if (Configuration::get('PS_JS_HTML_THEME_COMPRESSION')) {
+        $smarty->registerFilter('output', 'smartyPackJSinHTML');
+    }
+}
+
+/**
+ * @param array $params
+ * @param Smarty $smarty
+ * @return mixed
+ */
 function smartyDieObject($params, $smarty)
 {
     return Tools::d($params['var']);
 }
 
+/**
+ * @param array $params
+ * @param Smarty $smarty
+ * @return mixed|void
+ */
 function smartyShowObject($params, $smarty)
 {
     return Tools::p($params['var']);
 }
 
+/**
+ * @param array $params
+ * @param Smarty $smarty
+ * @return string
+ */
 function smartyMaxWords($params, $smarty)
 {
     Tools::displayAsDeprecated();
@@ -106,28 +123,47 @@ function smartyMaxWords($params, $smarty)
     $words = explode(' ', $params['s']);
 
     foreach ($words as &$word) {
-        if (Tools::strlen($word) > $params['n']) {
-            $word = Tools::substr(trim(chunk_split($word, $params['n']-1, '- ')), 0, -1);
+        if (mb_strlen($word) > $params['n']) {
+            $word = mb_substr(trim(chunk_split($word, $params['n']-1, '- ')), 0, -1);
         }
     }
 
     return implode(' ',  Tools::htmlentitiesUTF8($words));
 }
 
+/**
+ * @param array $params
+ * @param Smarty $smarty
+ * @return string
+ */
 function smartyTruncate($params, $smarty)
 {
     Tools::displayAsDeprecated();
-    $text = isset($params['strip']) ? strip_tags($params['text']) : $params['text'];
+
+    $text = isset($params['strip'])
+        ? strip_tags($params['text'])
+        : $params['text'];
     $length = $params['length'];
     $sep = isset($params['sep']) ? $params['sep'] : '...';
 
-    if (Tools::strlen($text) > $length + Tools::strlen($sep)) {
-        $text = Tools::substr($text, 0, $length).$sep;
+    if (mb_strlen($text) > $length + mb_strlen($sep)) {
+        $text = mb_substr($text, 0, $length).$sep;
     }
 
-    return (isset($params['encode']) ? Tools::htmlentitiesUTF8($text, ENT_NOQUOTES) : $text);
+    return isset($params['encode'])
+        ? Tools::htmlentitiesUTF8($text, ENT_NOQUOTES)
+        : $text;
 }
 
+/**
+ * @param string $string
+ * @param int $length
+ * @param string $etc
+ * @param false $break_words
+ * @param false $middle
+ * @param string $charset
+ * @return string
+ */
 function smarty_modifier_truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false, $charset = 'UTF-8')
 {
     if (!$length) {
@@ -136,45 +172,69 @@ function smarty_modifier_truncate($string, $length = 80, $etc = '...', $break_wo
 
     $string = trim($string);
 
-    if (Tools::strlen($string) > $length) {
-        $length -= min($length, Tools::strlen($etc));
+    if (mb_strlen($string) > $length) {
+        $length -= min($length, mb_strlen($etc));
         if (!$break_words && !$middle) {
-            $string = preg_replace('/\s+?(\S+)?$/u', '', Tools::substr($string, 0, $length+1, $charset));
+            $string = preg_replace('/\s+?(\S+)?$/u', '', mb_substr($string, 0, $length+1, $charset));
         }
-        return !$middle ? Tools::substr($string, 0, $length, $charset).$etc : Tools::substr($string, 0, $length/2, $charset).$etc.Tools::substr($string, -$length/2, $length, $charset);
+        return !$middle
+            ? mb_substr($string, 0, $length, $charset).$etc
+            : mb_substr($string, 0, $length/2, $charset).$etc.mb_substr($string, -$length/2, $length, $charset);
     } else {
         return $string;
     }
 }
 
+/**
+ * @param string $string
+ * @return string
+ */
 function smarty_modifier_htmlentitiesUTF8($string)
 {
     return Tools::htmlentitiesUTF8($string);
 }
-function smartyMinifyHTML($tpl_output, $smarty)
+
+/**
+ * @param string $tplOutput
+ * @param Smarty $smarty
+ * @return string
+ */
+function smartyMinifyHTML($tplOutput, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
-        return $tpl_output;
+        return $tplOutput;
     }
-    $tpl_output = Media::minifyHTML($tpl_output);
-    return $tpl_output;
+    return Media::minifyHTML($tplOutput);
 }
 
-function smartyPackJSinHTML($tpl_output, $smarty)
+/**
+ * @param string $tplOutput
+ * @param Smarty $smarty
+ * @return string
+ */
+function smartyPackJSinHTML($tplOutput, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
-        return $tpl_output;
+        return $tplOutput;
     }
-    $tpl_output = Media::packJSinHTML($tpl_output);
-    return $tpl_output;
+    return Media::packJSinHTML($tplOutput);
 }
 
+/**
+ * @param Smarty $smarty
+ * @param string $type
+ * @param string $function
+ * @param mixed $params
+ * @param bool $lazy
+ * @throws PrestaShopException
+ * @throws SmartyException
+ */
 function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true)
 {
     if (!in_array($type, ['function', 'modifier', 'block'])) {
-        return false;
+        return;
     }
 
     // lazy is better if the function is not called on every page
@@ -190,6 +250,13 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
     }
 }
 
+/**
+ * @param mixed $params
+ * @param Smarty $smarty
+ * @return string|null
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ */
 function smartyHook($params, $smarty)
 {
     if (!empty($params['h'])) {
@@ -208,16 +275,28 @@ function smartyHook($params, $smarty)
         unset($hook_params['h']);
         return Hook::exec($params['h'], $hook_params, $id_module);
     }
+    return null;
 }
 
+/**
+ * @param mixed $data
+ * @return mixed|null
+ */
 function smartyCleanHtml($data)
 {
     // Prevent xss injection.
     if (Validate::isCleanHtml($data)) {
         return $data;
     }
+    return null;
 }
 
+/**
+ * Helper method
+ * @param array $params
+ * @param Smarty $smarty
+ * @return float
+ */
 function toolsConvertPrice($params, $smarty)
 {
     return Tools::convertPrice($params['price'], Context::getContext()->currency);
@@ -237,6 +316,7 @@ function toolsConvertPrice($params, $smarty)
  *
  * @return string Price prettified, without currency sign.
  *
+ * @throws PrestaShopException
  * @since 1.1.0
  */
 function displayPriceValue($params, $smarty)
@@ -261,6 +341,23 @@ function displayPriceValue($params, $smarty)
 }
 
 /**
+ * Method to perform smarty translate. This method should not be called directly,
+ * it exists for backwards compatibility reasons only
+ *
+ * @param array $params
+ * @param Smarty $smarty
+ */
+function smartyTranslate($params, $smarty)
+{
+    Tools::displayAsDeprecated();
+    if (defined('_PS_ADMIN_DIR_')) {
+        return Translate::smartyAdminTranslate($params, $smarty);
+    } else {
+        return Translate::smartyFrontTranslate($params, $smarty);
+    }
+}
+
+/**
  * Used to delay loading of external classes with smarty->register_plugin
  */
 class SmartyLazyRegister
@@ -270,7 +367,11 @@ class SmartyLazyRegister
 
     /**
      * Register a function or method to be dynamically called later
-     * @param string|array $params function name or array(object name, method name)
+     *
+     * @param string|array $name function name or array(object name, method name)
+     * @param string $type
+     * @param callable|null $callable
+     * @throws PrestaShopException
      */
     public function register($name, $type = 'function', $callable = null)
     {
@@ -313,6 +414,9 @@ class SmartyLazyRegister
         }
     }
 
+    /**
+     * @return SmartyLazyRegister
+     */
     public static function getInstance()
     {
         if (!self::$instance) {
@@ -321,3 +425,5 @@ class SmartyLazyRegister
         return self::$instance;
     }
 }
+
+return $smarty;

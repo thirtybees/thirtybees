@@ -208,8 +208,7 @@ if (!isset($language) || !Validate::isLoadedObject($language)) {
 $context->language = $language;
 
 /* Get smarty */
-require_once($currentDir.'/smarty.config.inc.php');
-$context->smarty = $smarty;
+$context->smarty = require_once(__DIR__.'/smarty.config.inc.php');
 
 if (!defined('_PS_ADMIN_DIR_')) {
     if (isset($cookie->id_customer) && (int)$cookie->id_customer) {
