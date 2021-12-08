@@ -82,7 +82,7 @@ class Core_Foundation_IoC_Container
 
     /**
      * @param string $serviceName
-     * @param string | callable $constructor
+     * @param string|callable|object $constructor
      * @param bool   $shared
      *
      * @return $this
@@ -164,41 +164,40 @@ class Core_Foundation_IoC_Container
 
         try {
             $refl = new ReflectionClass($className);
-        } catch (ReflectionException $re) {
-            throw new Core_Foundation_IoC_Exception(sprintf('This doesn\'t seem to be a class name: `%s`.', $className), 0, $re);
-        }
+            $args = [];
 
-        $args = [];
+            if ($refl->isAbstract()) {
+                throw new Core_Foundation_IoC_Exception(sprintf('Cannot build abstract class: `%s`.', $className));
+            }
 
-        if ($refl->isAbstract()) {
-            throw new Core_Foundation_IoC_Exception(sprintf('Cannot build abstract class: `%s`.', $className));
-        }
+            $classConstructor = $refl->getConstructor();
 
-        $classConstructor = $refl->getConstructor();
-
-        if ($classConstructor) {
-            foreach ($classConstructor->getParameters() as $param) {
-                $paramClass = $param->getClass();
-                if ($paramClass) {
-                    $args[] = $this->doMake($param->getClass()->getName(), $alreadySeen);
-                } elseif ($param->isDefaultValueAvailable()) {
-                    try {
-                        $args[] = $param->getDefaultValue();
-                    } catch (Exception $e) {
-                        throw new Core_Foundation_IoC_Exception("Failed to resolve default parameter", 0, $e);
+            if ($classConstructor) {
+                foreach ($classConstructor->getParameters() as $param) {
+                    $paramClass = $param->getClass();
+                    if ($paramClass) {
+                        $args[] = $this->doMake($param->getClass()->getName(), $alreadySeen);
+                    } elseif ($param->isDefaultValueAvailable()) {
+                        try {
+                            $args[] = $param->getDefaultValue();
+                        } catch (Exception $e) {
+                            throw new Core_Foundation_IoC_Exception("Failed to resolve default parameter", 0, $e);
+                        }
+                    } else {
+                        throw new Core_Foundation_IoC_Exception(sprintf('Cannot build a `%s`.', $className));
                     }
-                } else {
-                    throw new Core_Foundation_IoC_Exception(sprintf('Cannot build a `%s`.', $className));
                 }
             }
-        }
 
-        if (count($args) > 0) {
-            return $refl->newInstanceArgs($args);
-        } else {
-            // newInstanceArgs with empty array fails in PHP 5.3 when the class
-            // doesn't have an explicitly defined constructor
-            return $refl->newInstance();
+            if (count($args) > 0) {
+                return $refl->newInstanceArgs($args);
+            } else {
+                // newInstanceArgs with empty array fails in PHP 5.3 when the class
+                // doesn't have an explicitly defined constructor
+                return $refl->newInstance();
+            }
+        } catch (ReflectionException $re) {
+            throw new Core_Foundation_IoC_Exception(sprintf('This doesn\'t seem to be a class name: `%s`.', $className), 0, $re);
         }
     }
 
