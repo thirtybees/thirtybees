@@ -185,7 +185,8 @@ GitHub contributors:
 - Jerome Nadaud
 - jeromenadaud
 - jessylenne
-- JeÌroÌ‚me Nadaud
+- Jérome Nadaud
+- JF viguier
 - Joan
 - Joan Juvanteny
 - joce
