@@ -336,10 +336,10 @@ class ConfigurationTestCore
             // As the request doesn't provide authentication credentials,
             // it obviously never authenticates. But getting an authentication
             // failure response already proves a working TLS v1.2 connection.
-            if ($e->getCode() == 401
-                && strpos($e->getMessage(), 'AUTHENTICATION_FAILURE')
-            ) {
-                return true;
+            $response = $e->getResponse();
+            if ($response && $response->getBody()) {
+                $json = json_decode($e->getResponse()->getBody(), true);
+                return isset($json['error']);
             }
         } catch (\GuzzleHttp\Exception\RequestException $e) {
         }
