@@ -50,7 +50,11 @@ composer.dev.lock
 
 /modules/*
 /override/*
-/themes/community-theme-default/*
+/themes/*
+!/themes/.htaccess
+!/themes/debug.tpl
+!/themes/javascript.tpl
+!/themes/live_edit.tpl
 
 /admin-dev/themes/default/sass/ie.sass
 /admin-dev/themes/default/sass/print.sass
