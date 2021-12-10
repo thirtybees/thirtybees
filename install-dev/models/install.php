@@ -133,10 +133,6 @@ class InstallModelInstall extends InstallAbstractModel
         $settingsContent = "<?php\n";
 
         foreach ($settingsConstants as $constant => $value) {
-            if ($constant == '_TB_VERSION_') {
-                $settingsContent .= 'if (!defined(\''.$constant.'\'))'."\n\t";
-            }
-
             $settingsContent .= "define('$constant', '".str_replace('\'', '\\\'', $value)."');\n";
         }
 
