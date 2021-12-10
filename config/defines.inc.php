@@ -38,8 +38,9 @@ if (!defined('_PS_DISPLAY_COMPATIBILITY_WARNING_')) {
     define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
 }
 
+/* Check SQL errors by default */
 if (!defined('_PS_DEBUG_SQL_')) {
-    define('_PS_DEBUG_SQL_', _PS_MODE_DEV_);
+    define('_PS_DEBUG_SQL_', true);
 }
 
 if (!defined('_PS_DEBUG_PROFILING_')) {

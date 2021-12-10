@@ -331,6 +331,26 @@ class AdminPerformanceControllerCore extends AdminController
                     ],
                     'hint'    => $this->l('Enable or disable profiling.'),
                 ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Ignore SQL errors'),
+                    'name'    => 'ignore_sql_errors',
+                    'class'   => 't',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'ignore_sql_errors_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'ignore_sql_errors_on',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                    'hint'    => $this->l('Silently ignore errors raised by database when executing SQL queries. Not recommended.'),
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -341,6 +361,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
         $this->fields_value['debug_mode'] = $this->isDebugModeEnabled();
         $this->fields_value['profiling'] = $this->isProfilingEnabled();
+        $this->fields_value['ignore_sql_errors'] = !$this->isDebugSqlEnabled();
     }
 
     /**
@@ -1285,6 +1306,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->updateCustomDefines([
                 '_PS_MODE_DEV_' => (bool)Tools::getValue('debug_mode'),
                 '_PS_DEBUG_PROFILING_' => (bool)Tools::getValue('profiling'),
+                '_PS_DEBUG_SQL_' => !Tools::getValue('ignore_sql_errors'),
             ]);
 
             Tools::generateIndex();
@@ -1372,6 +1394,16 @@ class AdminPerformanceControllerCore extends AdminController
     public function isProfilingEnabled()
     {
         return defined('_PS_DEBUG_PROFILING_') && _PS_DEBUG_PROFILING_;
+    }
+
+    /**
+     * Is SQL debugging enabled?
+     *
+     * @return bool Whether debug mode is enabled
+     */
+    public function isDebugSqlEnabled()
+    {
+        return defined('_PS_DEBUG_SQL_') && _PS_DEBUG_SQL_;
     }
 
     /**
