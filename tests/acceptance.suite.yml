@@ -10,3 +10,4 @@ modules:
         - Asserts
         - WebDriver
         - \Helper\Acceptance
+bootstrap: _bootstrap.php

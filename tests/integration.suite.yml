@@ -8,3 +8,4 @@ modules:
         - Asserts
         - Db
         - \Helper\Unit
+bootstrap: _bootstrap.php

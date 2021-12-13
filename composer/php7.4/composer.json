@@ -1,7 +1,7 @@
 {
     "require": {
         "php": "^7.4",
-        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/guzzle": "^7.4",
         "swiftmailer/swiftmailer": "~5.4",
         "tecnickcom/tcpdf": "~6.2",
         "phpoffice/phpexcel": "^1.8",
@@ -21,11 +21,15 @@
         "psr/log": "^1.1"
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^1.0",
+        "php-coveralls/php-coveralls": "^2.5.2",
         "phpunit/phpunit": "~4.8 || ~5.7 || ~6.0",
-        "codeception/codeception": "2.2.9",
+        "codeception/codeception": "^4.1",
         "codeception/aspect-mock": "^1.0 || ^2.0",
-        "symfony/polyfill-php80": "2.0.0"
+        "codeception/module-asserts": "^2.0",
+        "codeception/module-webdriver": "^2.0",
+        "codeception/module-db": "^2.0",
+        "symfony/polyfill-php80": "2.0.0",
+        "codeception/module-phpbrowser": "^2.0"
     },
     "config": {
         "platform": {

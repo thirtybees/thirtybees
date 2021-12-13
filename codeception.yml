@@ -6,9 +6,9 @@ paths:
     support: tests/_support
     envs: tests/_envs
 settings:
-    bootstrap: _bootstrap.php
     colors: true
     memory_limit: 1280M
+bootstrap: _bootstrap.php
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
@@ -35,3 +35,4 @@ coverage:
         - controllers/*
     low_limit: 30
     high_limit: 70
+

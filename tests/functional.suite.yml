@@ -9,3 +9,4 @@ modules:
     enabled:
         - PhpBrowser
         - \Helper\Functional
+bootstrap: _bootstrap.php
