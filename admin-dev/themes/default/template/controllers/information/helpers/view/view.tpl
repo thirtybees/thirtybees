@@ -176,8 +176,10 @@
 				<p>
 					<strong>{l s='Mail method:'}</strong>
 
-			{if $mail}
+			{if $mailMethod == Mail::MAIL_METHOD_MAIL}
 				{l s='You are using the PHP mail() function.'}</p>
+			{elseif $mailMethod == Mail::MAIL_METHOD_NONE}
+				{l s='Mail functionality is disabled.'}</p>
 			{else}
 				{l s='You are using your own SMTP parameters.'}</p>
 				<p>

@@ -119,9 +119,9 @@ class AdminEmailsControllerCore extends AdminController
                         'type'       => 'radio',
                         'required'   => true,
                         'choices'    => [
-                            1 => $this->l('Use PHP\'s mail() function'),
-                            2 => $this->l('Set my own SMTP parameters (for advanced users ONLY)'),
-                            3 => $this->l('Never send emails (may be useful for testing purposes)'),
+                            Mail::MAIL_METHOD_MAIL => $this->l('Use PHP\'s mail() function'),
+                            Mail::MAIL_METHOD_SMTP => $this->l('Set my own SMTP parameters (for advanced users ONLY)'),
+                            Mail::MAIL_METHOD_NONE => $this->l('Never send emails (may be useful for testing purposes)'),
                         ],
                     ],
                     'PS_MAIL_TYPE'          => [
@@ -374,7 +374,7 @@ class AdminEmailsControllerCore extends AdminController
             $_POST['PS_SHOP_EMAIL'] = Configuration::get('PS_SHOP_EMAIL');
         }
 
-        if (isset($_POST['PS_MAIL_METHOD']) && $_POST['PS_MAIL_METHOD'] == 2
+        if (isset($_POST['PS_MAIL_METHOD']) && $_POST['PS_MAIL_METHOD'] == Mail::MAIL_METHOD_SMTP
             && (empty($_POST['PS_MAIL_SERVER']) || empty($_POST['PS_MAIL_SMTP_PORT']))
         ) {
             $this->errors[] = Tools::displayError('You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.');

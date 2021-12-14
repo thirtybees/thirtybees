@@ -40,6 +40,10 @@ class MailCore extends ObjectModel
     const TYPE_TEXT = 2;
     const TYPE_BOTH = 3;
 
+    const MAIL_METHOD_MAIL = 1;
+    const MAIL_METHOD_SMTP = 2;
+    const MAIL_METHOD_NONE = 3;
+
     // @codingStandardsIgnoreStart
     /** @var string Recipient */
     public $recipient;
@@ -299,7 +303,7 @@ class MailCore extends ObjectModel
 
         try {
             /* Connect with the appropriate configuration */
-            if ($configuration['PS_MAIL_METHOD'] == 2) {
+            if ($configuration['PS_MAIL_METHOD'] == static::MAIL_METHOD_SMTP) {
                 if (empty($configuration['PS_MAIL_SERVER']) || empty($configuration['PS_MAIL_SMTP_PORT'])) {
                     return static::logError(Tools::displayError('Error: invalid SMTP server or SMTP port'), $die);
                 }
@@ -437,7 +441,7 @@ class MailCore extends ObjectModel
             }
             /* Send mail */
             $message->setFrom([$from => $fromName]);
-            $shouldSend = $configuration['PS_MAIL_METHOD'] != 3;
+            $shouldSend = $configuration['PS_MAIL_METHOD'] != static::MAIL_METHOD_NONE;
             $send = $shouldSend ? $swift->send($message) : true;
 
             ShopUrl::resetMainDomainCache();

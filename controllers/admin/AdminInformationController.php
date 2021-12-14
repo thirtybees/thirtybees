@@ -123,7 +123,7 @@ class AdminInformationControllerCore extends AdminController
                 'url'      => $this->context->shop->getBaseURL(),
                 'theme'    => $this->context->shop->theme_name,
             ],
-            'mail'            => Configuration::get('PS_MAIL_METHOD') == 1,
+            'mailMethod'            => Configuration::get('PS_MAIL_METHOD'),
             'smtp'            => [
                 'server'     => Configuration::get('PS_MAIL_SERVER'),
                 'user'       => Configuration::get('PS_MAIL_USER'),

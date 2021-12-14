@@ -655,7 +655,7 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configurationAgreement']);
 
         // Set mails configuration
-        Configuration::updateGlobalValue('PS_MAIL_METHOD', ($data['useSmtp']) ? 2 : 1);
+        Configuration::updateGlobalValue('PS_MAIL_METHOD', ($data['useSmtp']) ? Mail::MAIL_METHOD_SMTP : Mail::MAIL_METHOD_MAIL);
         Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', $data['smtpEncryption']);
         Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', $data['smtpPort']);
 
