@@ -29,6 +29,10 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+if (! defined('_TB_VERSION_')) {
+    exit;
+}
+
 if (isset(Context::getContext()->controller)) {
     $controller = Context::getContext()->controller;
 } else {
