@@ -435,9 +435,9 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @param $idAddress
+     * @param int $idAddress
      *
-     * @return array|bool|mixed|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -446,6 +446,7 @@ class AddressCore extends ObjectModel
      */
     public static function getCountryAndState($idAddress)
     {
+        $idAddress = (int)$idAddress;
         if (isset(static::$_idCountries[$idAddress])) {
             return static::$_idCountries[$idAddress];
         }
@@ -454,8 +455,9 @@ class AddressCore extends ObjectModel
                 (new DbQuery())
                     ->select('`id_country`, `id_state`, `vat_number`, `postcode`')
                     ->from('address')
-                    ->where('`id_address` = '.(int) $idAddress)
+                    ->where('`id_address` = '.$idAddress)
             );
+            $result = is_array($result) ? $result : false;
         } else {
             $result = false;
         }

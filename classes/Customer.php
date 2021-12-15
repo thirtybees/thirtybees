@@ -475,7 +475,7 @@ class CustomerCore extends ObjectModel
      * @param int       $idCustomer
      * @param Cart|null $cart
      *
-     * @return string
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -498,9 +498,15 @@ class CustomerCore extends ObjectModel
         } else {
             $idAddress = $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
         }
-        $ids = Address::getCountryAndState($idAddress);
 
-        return (int) $ids['id_country'] ? $ids['id_country'] : Configuration::get('PS_COUNTRY_DEFAULT');
+        if ($idAddress) {
+            $ids = Address::getCountryAndState($idAddress);
+            if (is_array($ids) && (int)$ids['id_country']) {
+                return (int)$ids['id_country'];
+            }
+        }
+
+        return (int) Configuration::get('PS_COUNTRY_DEFAULT');
     }
 
     /**
