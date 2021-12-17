@@ -86,7 +86,7 @@ class ParentOrderControllerCore extends FrontController
 
         if (Tools::isSubmit('submitReorder')
             && $this->context->customer->isLogged()
-            && $id_order = (int)Tools::getValue('id_order')
+            && $idOrder = (int)Tools::getValue('id_order')
         ) {
             $oldCart = new Cart(Order::getCartIdStatic($idOrder, $this->context->customer->id));
             $duplication = $oldCart->duplicate();
