@@ -1732,6 +1732,7 @@ class FrontControllerCore extends Controller
                 'base_uri'            => $protocolContent.Tools::getHttpHost().__PS_BASE_URI__.(!Configuration::get('PS_REWRITING_SETTINGS') ? 'index.php' : ''),
                 'tpl_dir'             => _PS_THEME_DIR_,
                 'tpl_uri'             => _THEME_DIR_,
+                'root_dir'            => _PS_ROOT_DIR_,
                 'modules_dir'         => _MODULE_DIR_,
                 'mail_dir'            => _MAIL_DIR_,
                 'lang_iso'            => $this->context->language->iso_code,
