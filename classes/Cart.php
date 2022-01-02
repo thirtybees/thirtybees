@@ -2239,38 +2239,33 @@ class CartCore extends ObjectModel
     public function isCarrierInRange($idCarrier, $idZone)
     {
         $carrier = new Carrier((int) $idCarrier, Configuration::get('PS_LANG_DEFAULT'));
-        $shippingMethod = $carrier->getShippingMethod();
-        if (!$carrier->range_behavior) {
+
+        if (! $carrier->range_behavior) {
             return true;
         }
 
-        if ($shippingMethod == Carrier::SHIPPING_METHOD_FREE) {
-            return true;
+        switch ($carrier->getShippingMethod()) {
+            case Carrier::SHIPPING_METHOD_FREE:
+                return true;
+            case Carrier::SHIPPING_METHOD_WEIGHT:
+                return Carrier::checkDeliveryPriceByWeight(
+                    (int)$idCarrier,
+                    $this->getTotalWeight(),
+                    $idZone
+                );
+            case Carrier::SHIPPING_METHOD_PRICE:
+                return Carrier::checkDeliveryPriceByPrice(
+                    (int) $idCarrier,
+                    $this->getOrderTotal(
+                        true,
+                        static::BOTH_WITHOUT_SHIPPING
+                    ),
+                    $idZone,
+                    (int) $this->id_currency
+                );
+            default:
+                return false;
         }
-
-        $checkDeliveryPriceByWeight = Carrier::checkDeliveryPriceByWeight(
-            (int) $idCarrier,
-            $this->getTotalWeight(),
-            $idZone
-        );
-        if ($shippingMethod == Carrier::SHIPPING_METHOD_WEIGHT && $checkDeliveryPriceByWeight) {
-            return true;
-        }
-
-        $checkDeliveryPriceByPrice = Carrier::checkDeliveryPriceByPrice(
-            (int) $idCarrier,
-            $this->getOrderTotal(
-                true,
-                static::BOTH_WITHOUT_SHIPPING
-            ),
-            $idZone,
-            (int) $this->id_currency
-        );
-        if ($shippingMethod == Carrier::SHIPPING_METHOD_PRICE && $checkDeliveryPriceByPrice) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -97,13 +97,16 @@
             </tr>
             <tr class="fees_all">
                 <td class="border_top border_bottom border_bold">
-                    <span class="fees_all">All</span>
+                    <span class="fees_all">{l s='All'}</span>
                 </td>
-                <td style="">
-                    <input type="checkbox" onclick="checkAllZones(this);" class="form-control">
+                <td class="zone" style="min-width:30px">
+                    <input type="checkbox"
+                           onclick="toggleAllZones()"
+                           class="form-control"
+                    />
                 </td>
                 {foreach from=$ranges key=r item=range}
-                <td class="border_top border_bottom {if $range.id_range != 0} validated {/if}"  >
+                <td class="border_top border_bottom {if $range.id_range != 0} validated {/if} fees_range"  >
                     <div class="input-group fixed-width-md">
                         <span class="input-group-addon currency_sign">{$currency_sign}</span>
                         <input class="form-control" type="text" {if isset($form_id) && !$form_id} disabled="disabled"{/if} autocomplete="off" />
@@ -123,27 +126,48 @@
                 <td>
                     <label for="zone_{$zone.id_zone}">{$zone.name}</label>
                 </td>
+
                 <td class="zone">
-                    <input class="form-control input_zone" id="zone_{$zone.id_zone}" name="zone_{$zone.id_zone}" value="1" type="checkbox" {if isset($fields_value['zones'][$zone.id_zone]) && $fields_value['zones'][$zone.id_zone]} checked="checked"{/if}/>
+                    <input class="form-control input_zone"
+                           id="zone_{$zone.id_zone}"
+                           name="zone_{$zone.id_zone}"
+                           value="1"
+                           type="checkbox"
+                           onclick="toggleZone({$zone.id_zone});"
+                           tabindex="-1"
+                           {if isset($fields_value['zones'][$zone.id_zone]) && $fields_value['zones'][$zone.id_zone]} checked="checked"{/if}
+                    />
                 </td>
+
                 {foreach from=$ranges key=r item=range}
-                <td>
+                <td class="fees_range">
                     <div class="input-group fixed-width-md">
-                        <span class="input-group-addon">{$currency_sign}</span>
+                        <span class="input-group-addon">
+                            {$currency_sign}
+                        </span>
+
                         <input type="text"
-                            class="form-control"
-                            name="fees[{$zone.id_zone|intval}][{$range.id_range|intval}]"
-                            {if !isset($fields_value['zones'][$zone.id_zone]) || (isset($fields_value['zones'][$zone.id_zone]) && !$fields_value['zones'][$zone.id_zone])}
-                                disabled="disabled"
-                            {/if}
-                            {if isset($price_by_range[$range.id_range][$zone.id_zone]) && $price_by_range[$range.id_range][$zone.id_zone] && isset($fields_value['zones'][$zone.id_zone]) && $fields_value['zones'][$zone.id_zone]}
+                                class="form-control fees_{$zone.id_zone|intval}"
+                                name="fees[{$zone.id_zone|intval}][{$range.id_range|intval}]"
+                            {if isset($price_by_range[$range.id_range][$zone.id_zone])}
                                 value="{displayPriceValue price=$price_by_range[$range.id_range][$zone.id_zone]}"
                             {else}
+                                disabled="disabled"
                                 value=""
                             {/if}
-                            onkeyup="if (isArrowKey(event)) return;
-                                     this.value = this.value.replace(/,/g, '.');"
+                                onkeyup="if (isArrowKey(event)) return; this.value = this.value.replace(/,/g, '.');"
                         />
+
+                        <span class="input-group-addon">
+                            <input type="checkbox"
+                                   tabindex="-1"
+                                   class="enable_fees enable_fees_{$zone.id_zone|intval}"
+                                   id="enable_fees[{$zone.id_zone|intval}][{$range.id_range|intval}]"
+                                   {if isset($price_by_range[$range.id_range][$zone.id_zone])}
+                                       checked="checked"
+                                   {/if}
+                            />
+                        </span>
                     </div>
                 </td>
                 {/foreach}

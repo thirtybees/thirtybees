@@ -355,13 +355,6 @@ function displayError(errors, step_number) {
 }
 
 function resizeWizard() {
-  // @TODO: should be:
-  //resizeInterval = setInterval(function (){$("#carrier_wizard").smartWizard('fixHeight'); clearInterval(resizeInterval)}, 100);
-
-  // Because helpers/form/form.tpl adds inline scripts (ouch, this gives us
-  // 4 times the same script node) and jQuery gives script nodes a height
-  // (see https://bugs.jquery.com/ticket/10159), the above doesn't work
-  // properly. Instead:
   $('#carrier_wizard').find('.step_container:visible').each(function () {
     var container = $(this);
     var height = 0;
@@ -374,8 +367,8 @@ function resizeWizard() {
 }
 
 function bind_inputs() {
-  $('#zone_ranges .fees td input:checkbox').off('change').on('change', function () {
-    var priceField = $(this).closest('tr').find('input:text');
+  $('#zone_ranges .fees td input.enable_fees').off('change').on('change', function() {
+    var priceField = $(this).closest('td').find('input:text');
     if ($(this).prop('checked')) {
       priceField.removeAttr('disabled');
       if (priceField.val().length === 0) {
@@ -427,18 +420,13 @@ function bind_inputs() {
 }
 
 function hideFees() {
-  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input[type="text"],#zone_ranges .fees td input[type="text"]').attr('disabled', 'disabled');
+  $('.fees_range, .range_inf, .range_sup, .delete_range, .new_range').hide()
+  resizeWizard();
 }
 
 function showFees() {
-  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input').removeAttr('disabled');
-  $('#zone_ranges .fees td input:checkbox').each(function () {
-    var checkbox = $(this);
-    checkbox.removeAttr('disabled');
-    if (checkbox.prop('checked')) {
-      checkbox.closest('tr').find('input:text').removeAttr('disabled');
-    }
-  });
+  $('.fees_range, .range_inf, .range_sup, .delete_range, .new_range').show()
+  resizeWizard();
 }
 
 function add_new_range() {
@@ -508,13 +496,44 @@ function rebuildTabindex() {
   });
 }
 
-function checkAllZones(elem) {
-  if ($(elem).is(':checked')) {
-    $('.input_zone').attr('checked', 'checked');
-    $('#zone_ranges .fees div.input-group input:text').removeAttr('disabled');
+function initPriceField(index, element) {
+  var input = $(element);
+  if (input.val().length === 0) {
+    input.val(displayPriceValue(0));
   }
-  else {
+}
+
+function toggleAllZones() {
+  var unchecked = $('.input_zone:not(:checked)').length > 0;
+  if (unchecked) {
+    $('.input_zone').attr('checked', 'checked');
+    $('.enable_fees').attr('checked', 'checked');
+    $('#zone_ranges .fees div.input-group input:text')
+        .removeAttr('disabled')
+        .each(initPriceField);
+  } else {
     $('.input_zone').removeAttr('checked');
-    $('#zone_ranges .fees div.input-group input:text').attr('disabled', 'disabled');
+    $('.enable_fees').removeAttr('checked');
+    $('#zone_ranges .fees div.input-group input:text')
+        .attr('disabled', 'disabled')
+        .val('');
+  }
+}
+
+function toggleZone(zoneId) {
+  var zone = $('#zone_'+zoneId);
+  var checked = zone.is(':checked');
+  if (checked) {
+    zone.attr('checked', 'checked');
+    $('.enable_fees_'+zoneId).attr('checked', 'checked');
+    $('#zone_ranges .fees div.input-group input.fees_'+zoneId)
+        .removeAttr('disabled')
+        .each(initPriceField);
+  } else {
+    zone.removeAttr('checked');
+    $('.enable_fees_'+zoneId).removeAttr('checked');
+    $('#zone_ranges .fees div.input-group input.fees_'+zoneId)
+        .attr('disabled', 'disabled')
+        .val('');
   }
 }

@@ -571,7 +571,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         }
 
         foreach ($priceByRange as $price) {
-            $tplVars['price_by_range'][$price['id_'.$rangeTable]][$price['id_zone']] = $price['price'];
+            $tplVars['price_by_range'][$price['id_'.$rangeTable]][$price['id_zone']] = (float)$price['price'];
         }
 
         $tmpRange = $rangeObj->getRanges((int) $carrier->id);
@@ -1137,13 +1137,15 @@ class AdminCarrierWizardControllerCore extends AdminController
                 $priceList = [];
                 if (is_array($fees) && count($fees)) {
                     foreach ($fees as $idZone => $fee) {
-                        $priceList[] = [
-                            'id_range_price'  => ($rangeType == Carrier::SHIPPING_METHOD_PRICE ? (int) $range->id : null),
-                            'id_range_weight' => ($rangeType == Carrier::SHIPPING_METHOD_WEIGHT ? (int) $range->id : null),
-                            'id_carrier'      => (int) $carrier->id,
-                            'id_zone'         => (int) $idZone,
-                            'price'           => isset($fee[$key]) ? Tools::parseNumber($fee[$key]) : 0,
-                        ];
+                        if (isset($fee[$key])) {
+                            $priceList[] = [
+                                'id_range_price' => ($rangeType == Carrier::SHIPPING_METHOD_PRICE ? (int)$range->id : null),
+                                'id_range_weight' => ($rangeType == Carrier::SHIPPING_METHOD_WEIGHT ? (int)$range->id : null),
+                                'id_carrier' => (int)$carrier->id,
+                                'id_zone' => (int)$idZone,
+                                'price' => Tools::parseNumber($fee[$key])
+                            ];
+                        }
                     }
                 }
 

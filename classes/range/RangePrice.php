@@ -142,42 +142,4 @@ class RangePriceCore extends ObjectModel
         );
     }
 
-    /**
-     * Override add to create delivery value for all zones
-     *
-     * @see     classes/ObjectModelCore::add()
-     *
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool Insertion result
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
-            return false;
-        }
-        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
-            return true;
-        }
-        $carrier = new Carrier((int) $this->id_carrier);
-        $priceList = [];
-        foreach ($carrier->getZones() as $zone) {
-            $priceList[] = [
-                'id_range_price'  => (int) $this->id,
-                'id_range_weight' => null,
-                'id_carrier'      => (int) $this->id_carrier,
-                'id_zone'         => (int) $zone['id_zone'],
-                'price'           => 0,
-            ];
-        }
-        $carrier->addDeliveryPrice($priceList);
-
-        return true;
-    }
 }
