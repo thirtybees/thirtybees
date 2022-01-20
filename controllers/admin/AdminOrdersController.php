@@ -900,7 +900,7 @@ class AdminOrdersControllerCore extends AdminController
                             $shippingCostAmount,
                             $voucher,
                             $chosen,
-                            (Tools::getValue('TaxMethod') ? false : true)
+                            !Tools::getValue('TaxMethod')
                         )) {
                             $this->errors[] = Tools::displayError('You cannot generate a partial credit slip.');
                         } else {
@@ -1168,9 +1168,8 @@ class AdminOrdersControllerCore extends AdminController
                                 ];
                             }
 
-                            $shipping = Tools::isSubmit('shippingBack') ? null : false;
-
-                            if (!OrderSlip::create($order, $productList, $shipping, $amount, $chosen)) {
+                            $refundShipping = Tools::isSubmit('shippingBack');
+                            if (!OrderSlip::create($order, $productList, $refundShipping, $amount, $chosen)) {
                                 $this->errors[] = Tools::displayError('A credit slip cannot be generated. ');
                             } else {
                                 Hook::exec('actionOrderSlipAdd', ['order' => $order, 'productList' => $fullProductList, 'qtyList' => $fullQuantityList], null, false, true, false, $order->id_shop);

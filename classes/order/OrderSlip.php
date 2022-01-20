@@ -264,7 +264,6 @@ class OrderSlipCore extends ObjectModel
         Tools::displayAsDeprecated();
 
         $newProductList = [];
-        $shipping = false;
         foreach ($productList as $idOrderDetail) {
             $orderDetail = new OrderDetail((int) $idOrderDetail);
             $newProductList[$idOrderDetail] = [
@@ -274,19 +273,19 @@ class OrderSlipCore extends ObjectModel
                 'amount'          => $orderDetail->unit_price_tax_incl * $qtyList[$idOrderDetail],
             ];
 
-            $shipping = $shippingCost ? null : false;
         }
 
-        return static::create($order, $newProductList, $shipping);
+        return static::create($order, $newProductList, $shippingCost);
     }
 
     /**
-     * @param Order $order          The order this refunding is related to.
-     * @param array $productList    List of arrays with product descriptions.
-     * @param bool  $shippingCost   Shipping costs.
-     * @param int   $amount         Appears to be always zero as of 1.0.8.
-     * @param bool  $amountChoosen  Appears to be always false as of 1.0.8.
-     * @param bool  $addTax         True if prices are without tax, else false.
+     * @param Order $order The order this refunding is related to.
+     * @param array $productList List of arrays with product descriptions.
+     * @param float|bool $shippingCost Shipping costs to be refunded. Explicit shipping costs amount can be passed,
+     *                                 or boolean value to indicate if total shipping costs should be refunded
+     * @param int $amount Appears to be always zero as of 1.0.8.
+     * @param bool $amountChoosen Appears to be always false as of 1.0.8.
+     * @param bool $addTax True if prices are without tax, else false.
      *
      * @return bool
      *
@@ -308,15 +307,17 @@ class OrderSlipCore extends ObjectModel
         // TODO: deprecate this, nowhere in use.
         $orderSlip->partial = 0;
 
-        if ($shippingCost !== false) {
+        $shippingCost = static::resolveShippingCost($shippingCost, $order, $addTax);
+
+        if ($shippingCost > 0.0) {
             $orderSlip->shipping_cost = true;
+            $orderSlip->shipping_cost_amount = $shippingCost;
 
             // Use taxes from the given order.
             $tax = new Tax();
             $tax->rate = $order->carrier_tax_rate;
             $taxCalculator = new TaxCalculator([$tax]);
 
-            $shippingCost = round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
             if ($addTax == true) {
                 $orderSlip->total_shipping_tax_excl = $shippingCost;
                 $orderSlip->total_shipping_tax_incl = $taxCalculator->addTaxes(
@@ -330,8 +331,8 @@ class OrderSlipCore extends ObjectModel
             }
         } else {
             $orderSlip->shipping_cost = false;
+            $orderSlip->shipping_cost_amount = 0;
         }
-        $orderSlip->shipping_cost_amount = (float) $shippingCost;
 
         $orderSlip->total_products_tax_excl = 0;
         $orderSlip->total_products_tax_incl = 0;
@@ -755,4 +756,35 @@ class OrderSlipCore extends ObjectModel
             ),
         ]);
     }
+
+    /**
+     * Returns shipping costs for refund
+     *
+     * The shipping cost can either be explicitly specified by $shippingCost parameter. Alternatively, boolean
+     * value can be provided to specify if total order shipping cost should be returned
+     *
+     * @param float|bool $shippingCost Explicit value, or boolean to indicate if order total shipping cost should be used
+     * @param Order $order associated order
+     * @param bool $withoutTax
+     *
+     * @return float
+     * @since 1.4.0
+     */
+    protected static function resolveShippingCost($shippingCost, Order $order, $withoutTax)
+    {
+        if ($shippingCost === false) {
+            return 0.0;
+        }
+
+        if (! is_numeric($shippingCost)) {
+            if ($withoutTax) {
+                $shippingCost = $order->total_shipping_tax_excl;
+            } else {
+                $shippingCost = $order->total_shipping_tax_incl;
+            }
+        }
+
+        return (float)round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
+    }
+
 }
