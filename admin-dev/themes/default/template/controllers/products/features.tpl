@@ -54,24 +54,40 @@
           {* predefined values *}
           <td>
             {if sizeof($available_feature.featureValues)}
-              <select id="feature_{$available_feature.id_feature}_value"
-                      name="feature_{$available_feature.id_feature}_value[]"
-                      onchange="$('.custom_{$available_feature.id_feature}_').val('');"
-                      {if $available_feature.allows_multiple_values}
-                      size="{min(3, count($available_feature.featureValues))}"
-                      multiple
-                      {/if}
-              >
-                {if !$available_feature.allows_multiple_values}
-                  <option value="0">---</option>
-                {/if}
-                {foreach from=$available_feature.featureValues item=value}
-                  <option value="{$value.id_feature_value}"
-                          {if in_array($value.id_feature_value, $available_feature.current_item)}selected="selected"{/if} >
-                    {$value.value|truncate:80}
-                  </option>
-                {/foreach}
-              </select>
+              {if !$available_feature.allows_multiple_values}
+                <select id="feature_{$available_feature.id_feature}_value"
+                        class="feature_{$available_feature.id_feature}_value"
+                        name="feature_{$available_feature.id_feature}_value[]"
+                        onchange="$('.custom_{$available_feature.id_feature}').val('');"
+                >
+                  {if !$available_feature.allows_multiple_values}
+                    <option value="0">---</option>
+                  {/if}
+                  {foreach from=$available_feature.featureValues item=value}
+                    <option value="{$value.id_feature_value}"
+                            {if in_array($value.id_feature_value, $available_feature.current_item)}selected="selected"{/if} >
+                      {$value.value|truncate:80}
+                    </option>
+                  {/foreach}
+                </select>
+              {else}
+                <div>
+                  {foreach from=$available_feature.featureValues item=value}
+                    <div>
+                      <label>
+                        <input type="checkbox"
+                               class="feature_{$available_feature.id_feature}_value"
+                               name="feature_{$available_feature.id_feature}_value[]"
+                               value="{$value.id_feature_value}"
+                               {if in_array($value.id_feature_value, $available_feature.current_item)}checked{/if}
+                               onchange="$('.custom_{$available_feature.id_feature}').val('');"
+                        />
+                        {$value.value|truncate:80}
+                      </label>
+                    </div>
+                  {/foreach}
+                </div>
+              {/if}
             {else}
               <input type="hidden" name="feature_{$available_feature.id_feature}_value" value="0"/>
               <span>
@@ -94,7 +110,7 @@
                   <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
                     <div class="row lang-0" style='display: none;'>
                       <div class="col-lg-9">
-                        <textarea class="textarea-autosize"
+                        <textarea class="textarea-autosize custom_{$available_feature.id_feature}"
                                   name="custom_{$available_feature.id_feature}_{$customValueIndex}_ALL"
                                   cols="60" style='background-color:#CCF'
                                   rows="1"
@@ -126,11 +142,15 @@
                       <div class="row translatable-field lang-{$language.id_lang}">
                         <div class="col-lg-9">
                           <textarea
-                                  class="textarea-autosize"
+                                  class="textarea-autosize custom_{$available_feature.id_feature}"
                                   name="custom_{$available_feature.id_feature}_{$customValueIndex}_{$language.id_lang}"
                                   cols="60"
                                   rows="1"
-                                  onkeyup="if (isArrowKey(event)) return ;$('#feature_{$available_feature.id_feature}_value').val(0);"
+                                  {if !$available_feature.allows_multiple_values}
+                                  onkeyup="if (isArrowKey(event)) return ;$('.feature_{$available_feature.id_feature}_value').val(0);"
+                                  {else}
+                                  onkeyup="if (isArrowKey(event)) return ;$('.feature_{$available_feature.id_feature}_value').prop('checked', false);"
+                                  {/if}
                           >{$customValue[$language.id_lang]|escape:'html':'UTF-8'|default:""}</textarea>
                         </div>
 
