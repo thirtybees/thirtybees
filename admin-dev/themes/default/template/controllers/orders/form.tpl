@@ -44,6 +44,7 @@
 	var currency_blank = false;
   var priceDisplayPrecision = 0; {* Set in displaySummary(). *}
   var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
+  var request = null;
 
 	{foreach from=$defaults_order_state key='module' item='id_order_state'}
 		defaults_order_state['{$module}'] = '{$id_order_state}';
@@ -605,7 +606,7 @@
 	function searchProducts()
 	{
 		$('#products_part').show();
-		$.ajax({
+		request = $.ajax({
 			type:"POST",
 			url: "{$link->getAdminLink('AdminOrders')|addslashes}",
 			async: true,
@@ -619,8 +620,12 @@
 				id_customer: id_customer,
 				id_currency: id_currency,
 				product_search: $('#product').val()},
-			success : function(res)
-			{
+			beforeSend: function() {
+				if (request !== null) {
+					request.abort();
+				}
+			},
+			success : function(res) {
 				var products_found = '';
 				var attributes_html = '';
 				var customization_html = '';
@@ -688,6 +693,7 @@
 					$('#products_err').html('{l s='No products found'}');
 					$('#products_err').removeClass('hide');
 				}
+				request = null;
 				resetBind();
 			}
 		});
