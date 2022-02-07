@@ -60,7 +60,14 @@ class AdminFeaturesControllerCore extends AdminController
                 'filter_key' => 'b!name',
             ],
             'value'      => [
-                'title'   => $this->l('Values'),
+                'title'   => $this->l('Values (predefined)'),
+                'orderby' => false,
+                'search'  => false,
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+            ],
+            'custom'      => [
+                'title'   => $this->l('Values (custom)'),
                 'orderby' => false,
                 'search'  => false,
                 'align'   => 'center',
@@ -387,7 +394,6 @@ class AdminFeaturesControllerCore extends AdminController
      * @return false|string|void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws PrestaShopExceptionCore
      */
     public function renderView()
     {
@@ -700,18 +706,37 @@ class AdminFeaturesControllerCore extends AdminController
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
         if ($this->table == 'feature') {
-            $nb_items = count($this->_list);
-            for ($i = 0; $i < $nb_items; ++$i) {
-                $item = &$this->_list[$i];
 
-                $query = new DbQuery();
-                $query->select('COUNT(fv.id_feature_value) as count_values');
-                $query->from('feature_value', 'fv');
-                $query->where('fv.id_feature ='.(int) $item['id_feature']);
-                $query->where('(fv.custom=0 OR fv.custom IS NULL)');
-                $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
-                $item['value'] = (int) $res;
-                unset($query);
+            $ids = array_map('intval', array_column($this->_list, 'id_feature'));
+
+            $query = new DbQuery();
+            $query->select('id_feature, IFNULL(fv.custom, 0) as is_custom, COUNT(fv.id_feature_value) as count_values');
+            $query->from('feature_value', 'fv');
+            $query->where('fv.id_feature IN ('. implode(',', $ids).')');
+            $query->groupBy('id_feature, IFNULL(fv.custom, 0)');
+            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $values = [];
+            if (is_array($res)) {
+                foreach ($res as $row) {
+                    $id = (int)$row['id_feature'];
+                    if (! isset($values[$id])) {
+                        $values[$id] = [
+                            'predefined' => 0,
+                            'custom' => 0
+                        ];
+                    }
+                    if ($row['is_custom']) {
+                        $values[$id]['custom'] = (int)$row['count_values'];
+                    } else {
+                        $values[$id]['predefined'] = (int)$row['count_values'];
+                    }
+                }
+            }
+
+            foreach ($this->_list as &$item) {
+                $id = (int) $item['id_feature'];
+                $item['value'] = isset($values[$id]['predefined']) ? $values[$id]['predefined'] : 0;
+                $item['custom'] = isset($values[$id]['custom']) ? $values[$id]['custom'] : 0;
             }
         }
     }
