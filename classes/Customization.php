@@ -325,7 +325,7 @@ class CustomizationCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -334,22 +334,27 @@ class CustomizationCore extends ObjectModel
      */
     public function getWsCustomizedDataTextFields()
     {
-        if (!$results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
+        $id = (int) $this->id;
+        if ($id) {
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
                 ->where('`id_product` = '.(int) $this->id_product)
+                ->where('cd.`id_customization` = ' . $id)
                 ->where('cf.`type` = 1')
-        )) {
-            return [];
+            );
+
+            if (is_array($results)) {
+                return $results;
+            }
         }
 
-        return $results;
+        return [];
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -358,18 +363,24 @@ class CustomizationCore extends ObjectModel
      */
     public function getWsCustomizedDataImages()
     {
-        if (!$results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
+        $id = (int) $this->id;
+        if ($id) {
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
                 ->where('`id_product` = '.(int) $this->id_product)
+                ->where('cd.`id_customization` = ' . $id)
                 ->where('cf.`type` = 0')
-        )) {
-            return [];
+            );
+
+            if (is_array($results)) {
+                return $results;
+            }
+
         }
 
-        return $results;
+        return [];
     }
 
     /**
