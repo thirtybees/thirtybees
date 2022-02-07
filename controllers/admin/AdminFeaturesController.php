@@ -430,6 +430,13 @@ class AdminFeaturesControllerCore extends AdminController
                 'value'            => [
                     'title' => $this->l('Value'),
                 ],
+                'products'      => [
+                    'title'   => $this->l('Products'),
+                    'orderby' => false,
+                    'search'  => false,
+                    'align'   => 'center',
+                    'class'   => 'fixed-width-xs',
+                ],
             ];
 
             $this->_where = sprintf('AND `id_feature` = %d', $id);
@@ -708,6 +715,7 @@ class AdminFeaturesControllerCore extends AdminController
     {
         if ($this->table == 'feature_value') {
             $this->_where .= ' AND (a.custom = 0 OR a.custom IS NULL)';
+            $this->_select .= ' COALESCE((SELECT COUNT(DISTINCT fp.id_product) FROM '. _DB_PREFIX_ . 'feature_product fp WHERE fp.id_feature = a.id_feature AND fp.id_feature_value = a.id_feature_value), 0) as products';
         }
 
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
