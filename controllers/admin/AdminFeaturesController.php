@@ -73,6 +73,13 @@ class AdminFeaturesControllerCore extends AdminController
                 'align'   => 'center',
                 'class'   => 'fixed-width-xs',
             ],
+            'products'      => [
+                'title'   => $this->l('Products'),
+                'orderby' => false,
+                'search'  => false,
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+            ],
             'allows_multiple_values' => [
                 'title' => $this->l("Allows multiple values"),
                 'active'     => 'set_allow_multiple_values',
@@ -708,35 +715,51 @@ class AdminFeaturesControllerCore extends AdminController
         if ($this->table == 'feature') {
 
             $ids = array_map('intval', array_column($this->_list, 'id_feature'));
+            $extra = [];
+            foreach ($ids as $id) {
+                $extra[$id] = [
+                    'value' => 0,
+                    'custom' => 0,
+                    'products' => 0,
+                ];
+            }
 
-            $query = new DbQuery();
-            $query->select('id_feature, IFNULL(fv.custom, 0) as is_custom, COUNT(fv.id_feature_value) as count_values');
-            $query->from('feature_value', 'fv');
-            $query->where('fv.id_feature IN ('. implode(',', $ids).')');
-            $query->groupBy('id_feature, IFNULL(fv.custom, 0)');
-            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
-            $values = [];
+            $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
+            // count feature values
+            $valuesQuery = new DbQuery();
+            $valuesQuery->select('id_feature, IFNULL(fv.custom, 0) as is_custom, COUNT(fv.id_feature_value) as count_values');
+            $valuesQuery->from('feature_value', 'fv');
+            $valuesQuery->where('fv.id_feature IN ('. implode(',', $ids).')');
+            $valuesQuery->groupBy('fv.id_feature, IFNULL(fv.custom, 0)');
+            $res = $conn->executeS($valuesQuery);
             if (is_array($res)) {
                 foreach ($res as $row) {
                     $id = (int)$row['id_feature'];
-                    if (! isset($values[$id])) {
-                        $values[$id] = [
-                            'predefined' => 0,
-                            'custom' => 0
-                        ];
-                    }
                     if ($row['is_custom']) {
-                        $values[$id]['custom'] = (int)$row['count_values'];
+                        $extra[$id]['custom'] = (int)$row['count_values'];
                     } else {
-                        $values[$id]['predefined'] = (int)$row['count_values'];
+                        $extra[$id]['value'] = (int)$row['count_values'];
                     }
+                }
+            }
+            // count products using this feature
+            $productsQuery = new DbQuery();
+            $productsQuery->select('fp.id_feature, COUNT(DISTINCT fp.id_product) as count_products');
+            $productsQuery->from('feature_product', 'fp');
+            $productsQuery->where('fp.id_feature IN ('. implode(',', $ids).')');
+            $productsQuery->groupBy('fp.id_feature');
+            $res = $conn->executeS($productsQuery);
+            if (is_array($res)) {
+                foreach ($res as $row) {
+                    $id = (int)$row['id_feature'];
+                    $extra[$id]['products'] = (int)$row['count_products'];
                 }
             }
 
             foreach ($this->_list as &$item) {
                 $id = (int) $item['id_feature'];
-                $item['value'] = isset($values[$id]['predefined']) ? $values[$id]['predefined'] : 0;
-                $item['custom'] = isset($values[$id]['custom']) ? $values[$id]['custom'] : 0;
+                $item = array_merge($item, $extra[$id]);
             }
         }
     }
