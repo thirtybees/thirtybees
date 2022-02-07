@@ -79,6 +79,7 @@ class AdminFeaturesControllerCore extends AdminController
                 'search'  => false,
                 'align'   => 'center',
                 'class'   => 'fixed-width-xs',
+                'callback'=> 'getProductsLink',
             ],
             'allows_multiple_values' => [
                 'title' => $this->l("Allows multiple values"),
@@ -436,6 +437,7 @@ class AdminFeaturesControllerCore extends AdminController
                     'search'  => false,
                     'align'   => 'center',
                     'class'   => 'fixed-width-xs',
+                    'callback'=> 'getProductsLink',
                 ],
             ];
 
@@ -907,5 +909,21 @@ class AdminFeaturesControllerCore extends AdminController
             ->where('custom = 1');
 
         return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+    /**
+     * @param int $value
+     * @param array $row
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getProductsLink($value, $row)
+    {
+        $params = [ 'id_feature' => (int)$row['id_feature'] ];
+        if (isset($row['id_feature_value'])) {
+            $params['id_feature_value'] = (int)$row['id_feature_value'];
+        }
+        $link = Context::getContext()->link->getAdminLink('AdminProducts', true, $params);
+        return "<a href=\"$link\">$value</a>";
     }
 }

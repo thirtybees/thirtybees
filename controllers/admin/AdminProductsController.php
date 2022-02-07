@@ -231,6 +231,17 @@ class AdminProductsControllerCore extends AdminController
             $this->_join .= ' INNER JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_product` = a.`id_product` AND cp.`id_category` = '.(int) $this->_category->id.') ';
             $this->_select .= ' , cp.`position`, ';
         }
+
+        $featureId = (int)Tools::getValue('id_feature');
+        $featureValueId = (int)Tools::getValue('id_feature_value');
+        if ($featureId) {
+            $this->_where .= ' AND EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'feature_product` fp WHERE fp.id_product = a.id_product AND fp.id_feature = ' . $featureId;
+            if ($featureValueId) {
+                $this->_where.= ' AND fp.id_feature_value = ' . $featureValueId;
+            }
+            $this->_where .= ')';
+        }
+
         $this->_use_found_rows = false;
         $this->_group = '';
 
