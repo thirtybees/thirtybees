@@ -141,34 +141,15 @@ class AdminCategoriesControllerCore extends AdminController
         if (($idCategory = Tools::getvalue('id_category')) && $this->action != 'select_delete') {
             $this->_category = new Category($idCategory);
         } else {
-            if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-                $this->_category = new Category($this->context->shop->id_category);
-            } elseif (count(Category::getCategoriesWithoutParent()) > 1 && Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') && count(Shop::getShops(true, null, true)) != 1) {
+            if (count(Category::getCategoriesWithoutParent()) > 1) {
                 $this->_category = Category::getTopCategory();
             } else {
-                $this->_category = new Category(Configuration::get('PS_HOME_CATEGORY'));
+                $this->_category = new Category($this->context->shop->id_category);
             }
         }
 
-        $countCategoriesWithoutParent = count(Category::getCategoriesWithoutParent());
-
-        if (Tools::isSubmit('id_category')) {
-            $idParent = $this->_category->id;
-        } elseif (!Shop::isFeatureActive() && $countCategoriesWithoutParent > 1) {
-            $idParent = (int) Configuration::get('PS_ROOT_CATEGORY');
-        } elseif (Shop::isFeatureActive() && $countCategoriesWithoutParent == 1) {
-            $idParent = (int) Configuration::get('PS_HOME_CATEGORY');
-        } elseif (Shop::isFeatureActive() && $countCategoriesWithoutParent > 1 && Shop::getContext() != Shop::CONTEXT_SHOP) {
-            if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') && count(Shop::getShops(true, null, true)) == 1) {
-                $idParent = $this->context->shop->id_category;
-            } else {
-                $idParent = (int) Configuration::get('PS_ROOT_CATEGORY');
-            }
-        } else {
-            $idParent = $this->context->shop->id_category;
-        }
         $this->_select = 'sa.position position';
-        $this->original_filter = $this->_filter .= ' AND `id_parent` = '.(int) $idParent.' ';
+        $this->original_filter = $this->_filter .= ' AND `id_parent` = '.(int) $this->_category->id .' ';
         $this->_use_found_rows = false;
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
