@@ -393,19 +393,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         //checks if there is no error when connecting imap server
         $errors = imap_errors();
-        if (is_array($errors)) {
-            $errors = array_unique($errors);
-        }
-        $strErrors = '';
+        $strErrors = $errors ? implode(',', array_unique($errors)) : '';
         $strErrorDelete = '';
 
-        if (count($errors) && is_array($errors)) {
-            $strErrors = '';
-            foreach ($errors as $error) {
-                $strErrors .= $error.', ';
-            }
-            $strErrors = rtrim(trim($strErrors), ',');
-        }
         //checks if imap connexion is active
         if (!$mbox) {
             return ['hasError' => true, 'errors' => ['Cannot connect to the mailbox :<br />'.($strErrors)]];
