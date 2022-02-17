@@ -1278,6 +1278,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessSearchCustomers()
@@ -1295,16 +1297,21 @@ class AdminCustomersControllerCore extends AdminController
             }
         }
 
+        if (! headers_sent()) {
+            header('Content-Type: application/json');
+        }
         if (count($customers)) {
             $toReturn = [
-                'customers' => $customers,
                 'found'     => true,
+                'customers' => $customers,
             ];
         } else {
-            $toReturn = ['found' => false];
+            $toReturn = [
+                'found' => false
+            ];
         }
 
-        $this->content = json_encode($toReturn);
+        die(json_encode($toReturn));
     }
 
     /**
