@@ -103,6 +103,9 @@ class HelperListCore extends Helper
     public $shopLinkType;
     // @codingStandardsIgnoreEnd
 
+    /** @var callable method used to generate link */
+    public $linkUrlCallback;
+
     /**
      * HelperListCore constructor.
      *
@@ -581,6 +584,7 @@ class HelperListCore extends Helper
                     'actions'                   => $this->actions,
                     'no_link'                   => $this->no_link,
                     'current_index'             => $this->currentIndex,
+                    'linkUrlCallback'           => is_callable($this->linkUrlCallback) ? $this->linkUrlCallback : null,
                     'view'                      => in_array('view', $this->actions),
                     'edit'                      => in_array('edit', $this->actions),
                     'has_actions'               => !empty($this->actions),

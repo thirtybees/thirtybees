@@ -26,6 +26,11 @@
 <tbody>
 {if count($list)}
 {foreach $list AS $index => $tr}
+	{if isset($linkUrlCallback)}
+		{assign var='linkUrl' value=call_user_func($linkUrlCallback, $tr) }
+		{assign var='no_link' value=!$linkUrl}
+	{/if}
+
 	<tr{if $position_identifier} id="tr_{$position_group_identifier}_{$tr.$identifier}_{if isset($tr.position['position'])}{$tr.position['position']}{else}0{/if}"{/if} class="{if isset($tr.class)}{$tr.class}{/if} {if $tr@iteration is odd by 1}odd{/if}">
 		{if $bulk_actions && $has_bulk_actions}
 			<td class="row-selector text-center"{if isset($tr.color) && $color_on_bg} style="background-color: {$tr.color};color:{if Tools::getBrightness($tr.color) < 128}white{else}#383838{/if}"{/if}>
@@ -50,10 +55,15 @@
 					{if isset($params.align)} {$params.align}{/if}{/strip}"
 					{if isset($tr.color) && $color_on_bg}style="background-color: {$tr.color};color:{if Tools::getBrightness($tr.color) < 128}white{else}#383838{/if}"{/if}
 					{if (!isset($params.position) && !$no_link && !isset($params.remove_onclick))}
-						onclick="document.location = '{$current_index|escape:'html':'UTF-8'}&amp;{$identifier|escape:'html':'UTF-8'}={$tr.$identifier|escape:'html':'UTF-8'}{if $view}&amp;view{else}&amp;update{/if}{$table|escape:'html':'UTF-8'}{if $page > 1}&amp;page={$page|intval}{/if}&amp;token={$token|escape:'html':'UTF-8'}'">
-					{else}
+						{if isset($linkUrlCallback)}
+							{if $linkUrl}
+								onclick="document.location = '{$linkUrl|escape:'html':'UTF-8'}'"
+							{/if}
+						{else}
+							onclick="document.location = '{$current_index|escape:'html':'UTF-8'}&amp;{$identifier|escape:'html':'UTF-8'}={$tr.$identifier|escape:'html':'UTF-8'}{if $view}&amp;view{else}&amp;update{/if}{$table|escape:'html':'UTF-8'}{if $page > 1}&amp;page={$page|intval}{/if}&amp;token={$token|escape:'html':'UTF-8'}'"
+						{/if}
+					{/if}
 					>
-				{/if}
 			{/block}
 			{block name="td_content"}
 				{if isset($params.prefix)}{$params.prefix}{/if}
