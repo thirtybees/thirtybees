@@ -524,7 +524,9 @@ abstract class ModuleCore
      */
     protected static function instantiateModule($moduleName)
     {
-        include_once(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php');
+        if (! class_exists($moduleName, false)) {
+            include_once(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php');
+        }
 
         if (Tools::file_exists_no_cache(_PS_OVERRIDE_DIR_.'modules/'.$moduleName.'/'.$moduleName.'.php')) {
 
@@ -838,7 +840,7 @@ abstract class ModuleCore
      * @param bool     $loggedOnAddons
      * @param int|bool $idEmployee
      *
-     * @return array Modules
+     * @return stdClass[] Modules
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -998,18 +1000,9 @@ abstract class ModuleCore
                         'avg_rate'               => isset($tmpModule->avg_rate) ? (array) $tmpModule->avg_rate : null,
                         'badges'                 => isset($tmpModule->badges) ? (array) $tmpModule->badges : null,
                         'url'                    => isset($tmpModule->url) ? $tmpModule->url : null,
-                        'onclick_option'         => method_exists($module, 'onclickOption') ? true : false,
+                        'onclick_option'         => method_exists($module, 'onclickOption'),
                     ];
 
-                    if ($item['onclick_option']) {
-                        $href = Context::getContext()->link->getAdminLink('Module', true).'&module_name='.$tmpModule->name.'&tab_module='.$tmpModule->tab;
-                        $item['onclick_option_content'] = [];
-                        $optionTab = ['desactive', 'reset', 'configure', 'delete'];
-
-                        foreach ($optionTab as $opt) {
-                            $item['onclick_option_content'][$opt] = $tmpModule->onclickOption($opt, $href);
-                        }
-                    }
 
                     $item = (object) $item;
                     $moduleList[] = $item;

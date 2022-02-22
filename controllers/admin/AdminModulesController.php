@@ -592,10 +592,11 @@ class AdminModulesControllerCore extends AdminController
     /**
      * Is the module filtered?
      *
-     * @param Module $module
+     * @param stdClass $module
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function isModuleFiltered($module)
@@ -812,6 +813,9 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function ajaxProcessGetTabModulesList()
@@ -864,8 +868,11 @@ class AdminModulesControllerCore extends AdminController
      * Filter Configuration Methods
      * Set and reset filter configuration
      *
+     * @param string[] $tabModulesList
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getModulesByInstallation($tabModulesList = null)

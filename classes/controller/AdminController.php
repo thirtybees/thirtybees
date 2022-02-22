@@ -3339,20 +3339,18 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @param Module      $module
-     * @param string      $outputType
+     * @param stdClass $module
+     * @param string $outputType
      * @param string|null $back
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function fillModuleData(&$module, $outputType = 'link', $back = null)
     {
-        /** @var Module $obj */
-        $obj = null;
-        if ($module->onclick_option) {
-            $obj = new $module->name();
-        }
+
         // Fill module data
         $module->logo = '../../img/questionmark.png';
 
@@ -3371,10 +3369,6 @@ class AdminControllerCore extends Controller
 
         $module->optionsHtml = $this->displayModuleOptions($module, $outputType, $back);
 
-        $module->options['uninstall_onclick'] = ((!$module->onclick_option) ?
-            ((empty($module->confirmUninstall)) ? 'return confirm(\''.$this->l('Do you really want to uninstall this module?').'\');' : 'return confirm(\''.addslashes($module->confirmUninstall).'\');') :
-            $obj->onclickOption('uninstall', $module->options['uninstall_url']));
-
         if ((Tools::getValue('module_name') == $module->name || in_array($module->name, explode('|', Tools::getValue('modules_list')))) && (int) Tools::getValue('conf') > 0) {
             $module->message = $this->_conf[(int) Tools::getValue('conf')];
         }
@@ -3387,12 +3381,14 @@ class AdminControllerCore extends Controller
     /**
      * Display modules list
      *
-     * @param Module      $module
-     * @param string      $outputType (link or select)
+     * @param stdClass $module
+     * @param string $outputType (link or select)
      * @param string|null $back
      *
      * @return string|array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3402,11 +3398,10 @@ class AdminControllerCore extends Controller
             $module->enable_device = Context::DEVICE_COMPUTER | Context::DEVICE_TABLET | Context::DEVICE_MOBILE;
         }
 
-        $this->translationsTab['confirm_uninstall_popup'] = (
-            isset($module->confirmUninstall) && $module->confirmUninstall ?
-            $module->confirmUninstall :
-            $this->l('Do you really want to uninstall this module? Other than just disabling, this also removes module settings.')
-        );
+        $this->translationsTab['confirm_uninstall_popup'] = isset($module->confirmUninstall) && $module->confirmUninstall
+            ? $module->confirmUninstall
+            : $this->l('Do you really want to uninstall this module? All its data will be lost!');
+
         if (!isset($this->translationsTab['Disable this module'])) {
             $this->translationsTab['Disable this module'] = $this->l('Disable this module');
             $this->translationsTab['Enable this module for all shops'] = $this->l('Enable this module for all shops');
@@ -3432,9 +3427,39 @@ class AdminControllerCore extends Controller
         $linkAdminModules = $this->context->link->getAdminLink('AdminModules', true);
         $modulesOptions = [];
 
+        $hasReset = false;
+        $onclickOptions = [
+            'desactive' => '',
+            'reset' => '',
+            'configure' => '',
+            'delete' => 'return confirm(\''.$this->translationsTab['This action will permanently remove the module from the server. Are you sure you want to do this?'].'\');',
+            'uninstall' =>  'return confirm(\''.$this->translationsTab['confirm_uninstall_popup'].'\');',
+        ];
+
+        if (Validate::isModuleName($module->name)) {
+            $instance = Module::getInstanceByName($module->name);
+            if ($instance) {
+                // check if module has reset capability
+                if (method_exists($instance, 'reset')) {
+                    $hasReset = true;
+                }
+
+                // check if module provides custom onclick handlers
+                if (method_exists($instance, 'onclickOption')) {
+                    $href = Context::getContext()->link->getAdminLink('Module', true) . '&module_name=' . $instance->name . '&tab_module=' . $instance->tab;
+                    foreach (array_keys($onclickOptions) as $opt) {
+                        $onClick = $instance->onclickOption($opt, $href);
+                        if ($onClick) {
+                            $onclickOptions[$opt] = $onClick;
+                        }
+                    }
+                }
+            }
+        }
+
         $configureModule = [
             'href'    => $linkAdminModules.'&configure='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
-            'onclick' => $module->onclick_option && isset($module->onclick_option_content['configure']) ? $module->onclick_option_content['configure'] : '',
+            'onclick' => $onclickOptions['configure'],
             'title'   => '',
             'text'    => $this->translationsTab['Configure'],
             'cond'    => $module->id && isset($module->is_configurable) && $module->is_configurable,
@@ -3443,7 +3468,7 @@ class AdminControllerCore extends Controller
 
         $deactivateModule = [
             'href'    => $linkAdminModules.'&module_name='.urlencode($module->name).'&'.($module->active ? 'enable=0' : 'enable=1').'&tab_module='.$module->tab,
-            'onclick' => $module->active && $module->onclick_option && isset($module->onclick_option_content['desactive']) ? $module->onclick_option_content['desactive'] : '',
+            'onclick' => $module->active ? $onclickOptions['desactive'] : '',
             'title'   => Shop::isFeatureActive() ? htmlspecialchars($module->active ? $this->translationsTab['Disable this module'] : $this->translationsTab['Enable this module for all shops']) : '',
             'text'    => $module->active ? $this->translationsTab['Disable'] : $this->translationsTab['Enable'],
             'cond'    => $module->id,
@@ -3451,26 +3476,21 @@ class AdminControllerCore extends Controller
         ];
         $linkResetModule = $linkAdminModules.'&module_name='.urlencode($module->name).'&reset&tab_module='.$module->tab;
 
-        $isResetReady = false;
-        if (Validate::isModuleName($module->name)) {
-            if (method_exists(Module::getInstanceByName($module->name), 'reset')) {
-                $isResetReady = true;
-            }
-        }
+
 
         $resetModule = [
             'href'    => $linkResetModule,
-            'onclick' => $module->onclick_option && isset($module->onclick_option_content['reset']) ? $module->onclick_option_content['reset'] : '',
+            'onclick' => $onclickOptions['reset'],
             'title'   => '',
             'text'    => $this->translationsTab['Reset'],
             'cond'    => $module->id && $module->active,
             'icon'    => 'undo',
-            'class'   => ($isResetReady ? 'reset_ready' : ''),
+            'class'   => ($hasReset ? 'reset_ready' : ''),
         ];
 
         $deleteModule = [
             'href'    => $linkAdminModules.'&delete='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
-            'onclick' => $module->onclick_option && isset($module->onclick_option_content['delete']) ? $module->onclick_option_content['delete'] : 'return confirm(\''.$this->translationsTab['This action will permanently remove the module from the server. Are you sure you want to do this?'].'\');',
+            'onclick' => $onclickOptions['delete'],
             'title'   => '',
             'text'    => $this->translationsTab['Delete'],
             'cond'    => true,
@@ -3516,7 +3536,7 @@ class AdminControllerCore extends Controller
 
         $uninstall = [
             'href'    => $linkAdminModules.'&uninstall='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(!is_null($back) ? '&back='.urlencode($back) : ''),
-            'onclick' => (isset($module->onclick_option_content['uninstall']) ? $module->onclick_option_content['uninstall'] : 'return confirm(\''.$this->translationsTab['confirm_uninstall_popup'].'\');'),
+            'onclick' => $onclickOptions['uninstall'],
             'title'   => $this->translationsTab['Uninstall'],
             'text'    => $this->translationsTab['Uninstall'],
             'cond'    => $module->id,
@@ -3627,7 +3647,7 @@ class AdminControllerCore extends Controller
 
                     $html = '<a class="';
 
-                    $isInstall = isset($option['flag_install']) ? true : false;
+                    $isInstall = isset($option['flag_install']);
 
                     if (isset($option['class'])) {
                         $html .= $option['class'];
