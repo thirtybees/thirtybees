@@ -29,12 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class CategoryCore
  *
  * @since 1.0.0
  */
-class CategoryCore extends ObjectModel
+class CategoryCore extends ObjectModel implements InitializationCallback
 {
     // @codingStandardsIgnoreStart
     /**
@@ -51,10 +53,10 @@ class CategoryCore extends ObjectModel
             'level_depth'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(3) unsigned', 'dbDefault' => '0'],
             'nleft'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
             'nright'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
-            'display_from_sub' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
-            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
-            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0', 'shop' => true],
+            'display_from_sub' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0', 'shop' => true],
+            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false, 'shop' => true],
+            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false, 'shop' => true],
             'position'         => ['type' => self::TYPE_INT, 'dbDefault' => '0', 'shop' => true],
             'is_root_category' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             /* Lang fields */
@@ -211,11 +213,15 @@ class CategoryCore extends ObjectModel
 			'.Shop::addSqlAssociation('category', 'c').'
 			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON c.`id_category` = cl.`id_category`'.Shop::addSqlRestrictionOnLang('cl').'
 			WHERE 1 '.$sqlFilter.' '.($idLang ? 'AND `id_lang` = '.(int) $idLang : '').'
-			'.($active ? 'AND `active` = 1' : '').'
+			'.static::getActiveColumnCondition($active, true).'
 			'.(!$idLang ? 'GROUP BY c.id_category' : '').'
 			'.($sqlSort != '' ? $sqlSort : 'ORDER BY c.`level_depth` ASC, category_shop.`position` ASC').'
 			'.($sqlLimit != '' ? $sqlLimit : '')
         );
+
+        if (! is_array($result)) {
+            return [];
+        }
 
         if (!$order) {
             return $result;
@@ -226,7 +232,27 @@ class CategoryCore extends ObjectModel
             $categories[$row['id_parent']][$row['id_category']]['infos'] = $row;
         }
 
+
         return $categories;
+    }
+
+    /**
+     * Helper method to return active column condition
+     *
+     * @param bool $active
+     * @param bool $useShopRestriction
+     * @return string
+     */
+    protected static function getActiveColumnCondition($active, $useShopRestriction)
+    {
+        if ($active) {
+            if ($useShopRestriction) {
+                return 'AND category_shop.`active` = 1';
+            } else {
+                return 'AND EXISTS(SELECT 1 FROM ' . _DB_PREFIX_ . 'category_shop cs WHERE cs.id_category = c.id_category AND cs.active = 1)';
+            }
+        }
+        return '';
     }
 
     /**
@@ -283,7 +309,7 @@ class CategoryCore extends ObjectModel
 				'.(isset($groups) && Group::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'category_group` cg ON c.`id_category` = cg.`id_category`' : '').'
 				'.(isset($rootCategory) ? 'RIGHT JOIN `'._DB_PREFIX_.'category` c2 ON c2.`id_category` = '.(int) $rootCategory.' AND c.`nleft` >= c2.`nleft` AND c.`nright` <= c2.`nright`' : '').'
 				WHERE '.($sqlFilter ? $sqlFilter : '1').' '.($idLang ? 'AND `id_lang` = '.(int) $idLang : '').'
-				'.($active ? ' AND c.`active` = 1' : '').'
+				'.static::getActiveColumnCondition($active, $useShopRestriction).'
 				'.(isset($groups) && Group::isFeatureActive() ? ' AND cg.`id_group` IN ('.implode(',', $groups).')' : '').'
 				'.(!$idLang || (isset($groups) && Group::isFeatureActive()) ? ' GROUP BY c.`id_category`' : '').'
 				'.($sqlSort != '' ? $sqlSort : ' ORDER BY c.`level_depth` ASC').'
@@ -353,7 +379,7 @@ class CategoryCore extends ObjectModel
 				'.(isset($groups) && Group::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'category_group` cg ON c.`id_category` = cg.`id_category`' : '').'
 				'.(isset($rootCategory) ? 'RIGHT JOIN `'._DB_PREFIX_.'category` c2 ON c2.`id_category` = '.(int) $rootCategory.' AND c.`nleft` >= c2.`nleft` AND c.`nright` <= c2.`nright`' : '').'
 				WHERE 1 '.$sqlFilter.' '.($idLang ? 'AND `id_lang` = '.(int) $idLang : '').'
-				'.($active ? ' AND c.`active` = 1' : '').'
+				'.static::getActiveColumnCondition($active, $useShopRestriction).'
 				'.(isset($groups) && Group::isFeatureActive() ? ' AND cg.`id_group` IN ('.implode(',', $groups).')' : '').'
 				'.(!$idLang || (isset($groups) && Group::isFeatureActive()) ? ' GROUP BY c.`id_category`' : '').'
 				'.($sqlSort != '' ? $sqlSort : ' ORDER BY c.`level_depth` ASC').'
@@ -554,7 +580,7 @@ class CategoryCore extends ObjectModel
 			'.Shop::addSqlAssociation('category', 'c').'
 			WHERE `id_lang` = '.(int) $idLang.'
 			AND c.`id_parent` = '.(int) $idParent.'
-			'.($active ? 'AND `active` = 1' : '').'
+			'.static::getActiveColumnCondition($active, true).'
 			GROUP BY c.`id_category`
 			ORDER BY category_shop.`position` ASC';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -594,7 +620,8 @@ class CategoryCore extends ObjectModel
 			'.Shop::addSqlAssociation('category', 'c').'
 			WHERE `id_lang` = '.(int) $idLang.'
 			AND c.`id_parent` = '.(int) $idParent.'
-			'.($active ? 'AND `active` = 1' : '').' LIMIT 1';
+			'.static::getActiveColumnCondition($active, true).'
+			LIMIT 1';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
             Cache::store($cacheId, $result);
 
@@ -1069,7 +1096,7 @@ class CategoryCore extends ObjectModel
      * @param int|null $idLang
      * @param bool     $active
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1082,14 +1109,19 @@ class CategoryCore extends ObjectModel
             $idLang = Context::getContext()->language->id;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('DISTINCT(c.`id_category`), cl.`name`')
                 ->from('category', 'c')
                 ->leftJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category` AND cl.`id_lang`='.(int) $idLang)
                 ->where('`is_root_category` = 1')
-                ->where($active ? '`active` = 1' : '')
+                ->where(static::getActiveColumnCondition($active, false))
         );
+
+        if (is_array($result)) {
+            return $result;
+        }
+        return [];
     }
 
     /**
@@ -1745,7 +1777,7 @@ class CategoryCore extends ObjectModel
 		LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category` AND `id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('cl').')
 		'.$sqlGroupsJoin.'
 		WHERE `id_parent` = '.(int) $this->id.'
-		'.($active ? 'AND `active` = 1' : '').'
+		'.static::getActiveColumnCondition($active, true).'
 		'.$sqlGroupsWhere.'
 		GROUP BY c.`id_category`
 		ORDER BY `level_depth` ASC, category_shop.`position` ASC'
@@ -1967,7 +1999,6 @@ class CategoryCore extends ObjectModel
                 $catsToSearchIn[] = $scat['id_category'];
             }
         }
-
 
         /** Return only the number of products */
         if ($getTotal) {
@@ -2449,7 +2480,7 @@ class CategoryCore extends ObjectModel
 		FROM `'._DB_PREFIX_.'category` c
 		'.Shop::addSqlAssociation('category', 'c').'
 		WHERE c.`id_parent` = '.(int) $this->id.'
-		AND c.`active` = 1
+		AND category_shop.`active` = 1
 		ORDER BY category_shop.`position` ASC'
         );
 
@@ -2522,7 +2553,7 @@ class CategoryCore extends ObjectModel
 				WHERE `'._DB_PREFIX_.'category_product`.id_category = c2.id_category
 					AND c2.nleft > '.(int) $this->nleft.'
 					AND c2.nright < '.(int) $this->nright.'
-					AND c2.active = 1
+					AND category_shop.active = 1
 			)
 		'
         );
@@ -2690,5 +2721,27 @@ class CategoryCore extends ObjectModel
         if ($table->getNameWithoutPrefix() === 'category_lang') {
             $table->reorderColumns(['id_category', 'id_shop', 'id_lang']);
         }
+    }
+
+    /**
+     * Database initialization callback
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        // in 1.4.0 columns 'active', 'display_from_sub', 'date_add', and 'date_upd' were moved to
+        // shop table. We need to initialize them properly
+        $conn->execute('
+            UPDATE ' . _DB_PREFIX_ . 'category_shop cs
+            INNER JOIN '. _DB_PREFIX_ .'category c ON (cs.id_category = c.id_category)
+            SET cs.active = c.active,
+                cs.display_from_sub = c.display_from_sub,
+                cs.date_add = c.date_add,
+                cs.date_upd = c.date_upd
+            WHERE IFNULL(cs.date_add, \'1970-01-01\') < \'1971-01-01\'
+        ');
     }
 }

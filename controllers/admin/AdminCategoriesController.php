@@ -95,6 +95,7 @@ class AdminCategoriesControllerCore extends AdminController
             ],
             'active'      => [
                 'title'   => $this->l('Displayed'),
+                'filter_key' => 'sa!active',
                 'active'  => 'status',
                 'type'    => 'bool',
                 'class'   => 'fixed-width-xs',

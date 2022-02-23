@@ -1767,7 +1767,7 @@ class ToolsCore
 							AND c.nleft >= '.$intervalRoot['nleft'].'
 							AND c.nright <= '.$intervalRoot['nright'].'
 							AND cl.id_lang = '.(int) $context->language->id.'
-							AND c.active = 1
+							AND category_shop.active = 1
 							AND c.level_depth > '.(int) $intervalRoot['level_depth'].'
 						ORDER BY c.level_depth ASC';
                 $categories = Db::getInstance()->executeS($sql);

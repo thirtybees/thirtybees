@@ -408,6 +408,10 @@ CREATE TABLE `PREFIX_category_product` (
 CREATE TABLE `PREFIX_category_shop` (
   `id_category` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL,
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `display_from_sub` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_category`,`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

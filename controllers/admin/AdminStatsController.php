@@ -606,6 +606,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public static function getDisabledCategories()
@@ -615,7 +616,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'category` c
 		'.Shop::addSqlAssociation('category', 'c').'
-		WHERE c.active = 0'
+		WHERE category_shop.active = 0'
         );
     }
 
@@ -684,6 +685,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public static function getEmptyCategories()
@@ -693,7 +695,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'category` c
 		'.Shop::addSqlAssociation('category', 'c').'
-		AND c.active = 1
+		AND category_shop.active = 1
 		AND c.nright = c.nleft + 1'
         );
         $used = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
@@ -702,7 +704,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		FROM `'._DB_PREFIX_.'category` c
 		LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON c.id_category = cp.id_category
 		'.Shop::addSqlAssociation('category', 'c').'
-		AND c.active = 1
+		AND category_shop.active = 1
 		AND c.nright = c.nleft + 1'
         );
 
