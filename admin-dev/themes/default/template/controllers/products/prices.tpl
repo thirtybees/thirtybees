@@ -33,7 +33,8 @@ var ecotax_tax_excl = parseFloat({$ecotax_tax_excl});
   var priceDisplayPrecision = 0;
 {/if}
 var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
-
+</script>
+<script type="text/javascript">
 $(document).ready(function () {
 	Customer = {
 		"hiddenField": jQuery('#id_customer'),
@@ -341,7 +342,7 @@ $(document).ready(function () {
 				<i class="icon-plus-sign"></i> {l s='Add a new specific price'}
 			</a>
 			<a class="btn btn-default" href="#" id="hide_specific_price" style="display:none">
-				<i class="icon-remove text-danger"></i> {l s='Cancel new specific price'}
+				<i class="icon-remove text-danger"></i> {l s='Cancel specific price'}
 			</a>
 		</div>
 	</div>
@@ -351,7 +352,9 @@ $(document).ready(function () {
 			product_prices['{$combination.id_product_attribute}'] = '{$combination.price|@addcslashes:'\''}';
 		{/foreach}
 	</script>
-	<div id="add_specific_price" class="well clearfix" style="display: none;">
+	<div id="specific_price_form" class="well clearfix" style="display: none;">
+        <input type="hidden" id='sp_id_specific_price' name="sp_id_specific_price" value="0" />
+		<input type="hidden" name="submitSpecificPriceForm" value="1" />
 		<div class="col-lg-12">
 			<div class="form-group">
 				<label class="control-label col-lg-2" for="{if !$multi_shop}spm_currency_0{else}sp_id_shop{/if}">{l s='For'}</label>
@@ -508,14 +511,15 @@ $(document).ready(function () {
 	</div>
 	<script type="text/javascript">
 		var currencyName = '{$currency->name|escape:'html':'UTF-8'|@addcslashes:'\''}';
-		$(document).ready(function(){
+		var defaultProductPrice = {displayPriceValue price=$product->price};
+          $(document).ready(function(){
 			product_prices['0'] = $('#sp_current_ht_price').html();
 			$('#id_product_attribute').change(function() {
 				$('#sp_current_ht_price').html(product_prices[$('#id_product_attribute option:selected').val()]);
 			});
 			$('#leave_bprice').click(function() {
 				if (this.checked)
-					$('#sp_price').attr('disabled', 'disabled');
+					$('#sp_price').attr('disabled', 'disabled').val(defaultProductPrice);
 				else
 					$('#sp_price').removeAttr('disabled');
 			});
@@ -536,13 +540,59 @@ $(document).ready(function () {
 				hourText: '{l s='Hour' js=1}',
 				minuteText: '{l s='Minute' js=1}'
 			});
-			$('#sp_reduction_type').on('change', function() {
-				if (this.value == 'percentage')
-					$('#sp_reduction_tax').hide();
-				else
-					$('#sp_reduction_tax').show();
-			});
+			$('#sp_reduction_type').on('change', adjustSpecificPriceForm);
 		});
+
+		function initSpecificPriceForm(specificPrice) {
+          $('#sp_id_specific_price').val(specificPrice.id);
+          $('#sp_id_shop').val(specificPrice.id_shop);
+          $('#sp_currency_1').val(specificPrice.id_currency);
+          $('#sp_id_country').val(specificPrice.id_country);
+          $('#sp_id_group').val(specificPrice.id_group);
+          $('#sp_id_customer').val(specificPrice.id_customer);
+          $('#customer').val(specificPrice.customer_name);
+          $('#sp_id_product_attribute').val(specificPrice.id_product_attribute);
+          $('#sp_from').val(specificPrice.from);
+          $('#sp_to').val(specificPrice.to);
+          $('#sp_from_quantity').val(specificPrice.from_quantity);
+          $('#sp_price').val(specificPrice.price);
+          $('#sp_reduction_tax').val(specificPrice.reduction_tax);
+          var reductionType = specificPrice.reduction_type || 'amount';
+          var reduction = reductionType === 'percentage' ? specificPrice.reduction * 100.0 : specificPrice.reduction;
+          $('#sp_reduction_type').val(reductionType);
+          $('#sp_reduction').val(reduction);
+          adjustSpecificPriceForm();
+
+		  if (specificPrice.id !== 0) {
+			  if (specificPrice.price < 0) {
+				  $('#sp_price').attr('disabled', 'disabled').val(defaultProductPrice);
+				  $('#leave_bprice').prop('checked', true);
+			  } else {
+				  $('#sp_price').removeAttr('disabled');
+				  $('#leave_bprice').prop('checked', false);
+			  }
+		  }
+
+          $('#specific_price_form').slideDown();
+          $('#show_specific_price').hide();
+          $('#hide_specific_price').show();
+        }
+
+		function hideSpecificPriceForm() {
+			$('#specific_price_form').slideUp();
+			$('#hide_specific_price').hide();
+			$('#show_specific_price').show();
+			return false;
+		}
+
+		function adjustSpecificPriceForm() {
+          var reductionType = $('#sp_reduction_type').val();
+            if (reductionType === 'percentage') {
+              $('#sp_reduction_tax').hide();
+            } else {
+              $('#sp_reduction_tax').show();
+            }
+        }
 	</script>
 	<div class="table-responsive">
 	<table id="specific_prices_list" class="table table-bordered">
@@ -563,7 +613,7 @@ $(document).ready(function () {
 				<th>{l s='Impact'}</th>
 				<th>{l s='Period'}</th>
 				<th>{l s='From (quantity)'}</th>
-				<th>{l s='Action'}</th>
+				<th>{l s='Actions'}</th>
 			</tr>
 		</thead>
 		<tbody>

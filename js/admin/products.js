@@ -813,23 +813,29 @@ window.product_tabs.Prices = new function () {
   var self = this;
   // Bind to show/hide new specific price form
   this.toggleSpecificPrice = function () {
+
     $('#show_specific_price').click(function () {
-      $('#add_specific_price').slideToggle();
-
-      $('#add_specific_price').append('<input type="hidden" name="submitPriceAddition"/>');
-
-      $('#hide_specific_price').show();
-      $('#show_specific_price').hide();
+      initSpecificPriceForm({
+        id: 0,
+        id_shop: 0,
+        id_currency: 0,
+        id_country: 0,
+        id_group: 0,
+        id_customer: 0,
+        customer_name: '',
+        id_product_attribute: 0,
+        from: '',
+        to: '',
+        from_quantity: 1,
+        price: defaultProductPrice,
+        reduction_tax: 1,
+        reduction_type: 'amount',
+        reduction: 0.0
+      });
       return false;
     });
 
-    $('#hide_specific_price').click(function () {
-      $('#add_specific_price').slideToggle();
-      $('#add_specific_price').find('input[name=submitPriceAddition]').remove();
-      $('#hide_specific_price').hide();
-      $('#show_specific_price').show();
-      return false;
-    });
+    $('#hide_specific_price').click(hideSpecificPriceForm);
   };
 
   /**
@@ -884,9 +890,44 @@ window.product_tabs.Prices = new function () {
     });
   };
 
+  // Bind to edit specific price link
+  this.bindEdit = function () {
+    $('#specific_prices_list').delegate('a[name="edit_link"]', 'click', function (e) {
+      e.preventDefault();
+      self.editSpecificPrice(this.href, $(this).parents('tr'));
+    });
+  };
+
+  this.editSpecificPrice = function (url, parent) {
+    hideSpecificPriceForm();
+    $.ajax({
+      url: url,
+      data: {
+        id_product: window.id_product,
+        ajax: true,
+        action: 'editSpecificPrice'
+      },
+      dataType: 'json',
+      context: this,
+      async: false,
+      success: function (data) {
+        parent.siblings().removeClass('selected-line');
+        parent.addClass('selected-line');
+        if (data) {
+          if (data.status === 'ok') {
+            initSpecificPriceForm(data.specificPrice);
+          } else {
+            showErrorMessage(data.message);
+          }
+        }
+      }
+    });
+  };
+
   this.onReady = function () {
     self.toggleSpecificPrice();
     self.deleteSpecificPrice();
+    self.bindEdit();
     self.bindDelete();
 
     $('#sp_id_shop').change(function () {
