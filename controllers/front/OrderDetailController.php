@@ -50,10 +50,9 @@ class OrderDetailControllerCore extends FrontController
     /**
      * Initialize order detail controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function init()
@@ -66,10 +65,10 @@ class OrderDetailControllerCore extends FrontController
     /**
      * Start forms process
      *
-     * @see   FrontController::postProcess()
-     *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcess()
@@ -117,12 +116,8 @@ class OrderDetailControllerCore extends FrontController
                     $cm->ip_address = (int) ip2long($_SERVER['REMOTE_ADDR']);
                     $cm->add();
 
-                    if (!Configuration::get('PS_MAIL_EMAIL_MESSAGE')) {
-                        $to = strval(Configuration::get('PS_SHOP_EMAIL'));
-                    } else {
-                        $to = new Contact((int) Configuration::get('PS_MAIL_EMAIL_MESSAGE'));
-                        $to = strval($to->email);
-                    }
+
+                    $to = static::getRecipientEmail();
                     $toName = strval(Configuration::get('PS_SHOP_NAME'));
                     $customer = $this->context->customer;
 
@@ -178,6 +173,7 @@ class OrderDetailControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function displayAjax()
@@ -188,9 +184,10 @@ class OrderDetailControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -284,6 +281,8 @@ class OrderDetailControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -293,5 +292,25 @@ class OrderDetailControllerCore extends FrontController
             $this->addCSS(_THEME_CSS_DIR_.'history.css');
             $this->addCSS(_THEME_CSS_DIR_.'addresses.css');
         }
+    }
+
+    /**
+     * Resolve recipient email address for order contact form
+     *
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getRecipientEmail()
+    {
+        $contactId = (int)Configuration::get('PS_MAIL_EMAIL_MESSAGE');
+        if ($contactId) {
+            $contact = new Contact($contactId);
+            if (Validate::isLoadedObject($contact)) {
+                return $contact->email;
+            }
+        }
+
+        return Configuration::get('PS_SHOP_EMAIL');
     }
 }
