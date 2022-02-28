@@ -354,7 +354,6 @@ $(document).ready(function () {
 	</script>
 	<div id="specific_price_form" class="well clearfix" style="display: none;">
         <input type="hidden" id='sp_id_specific_price' name="sp_id_specific_price" value="0" />
-		<input type="hidden" name="submitSpecificPriceForm" value="1" />
 		<div class="col-lg-12">
 			<div class="form-group">
 				<label class="control-label col-lg-2" for="{if !$multi_shop}spm_currency_0{else}sp_id_shop{/if}">{l s='For'}</label>
@@ -563,6 +562,8 @@ $(document).ready(function () {
           $('#sp_reduction').val(reduction);
           adjustSpecificPriceForm();
 
+		  $('#specific_price_form').append('<input id="submitSpecificPriceForm" type="hidden" name="submitSpecificPriceForm" />');
+
 		  if (specificPrice.id !== 0) {
 			  if (specificPrice.price < 0) {
 				  $('#sp_price').attr('disabled', 'disabled').val(defaultProductPrice);
@@ -579,6 +580,7 @@ $(document).ready(function () {
         }
 
 		function hideSpecificPriceForm() {
+			$('#submitSpecificPriceForm').remove();
 			$('#specific_price_form').slideUp();
 			$('#hide_specific_price').hide();
 			$('#show_specific_price').show();
