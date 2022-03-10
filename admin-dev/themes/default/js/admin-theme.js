@@ -175,7 +175,7 @@ $(document).ready(function() {
 	function navTopbarEllipsis() {
 		navTopbarReset();
 		$('#nav-topbar ul.menu').find('li.maintab').each(function(){
-			if ($(this).position().top > 0) {
+			if ($(this).position().top > 1) {
 				ellipsed.push($(this).html());
 				$(this).addClass('hide');
 			}
