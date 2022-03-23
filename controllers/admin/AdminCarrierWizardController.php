@@ -244,7 +244,8 @@ class AdminCarrierWizardControllerCore extends AdminController
                     [
                         'type'     => 'text',
                         'label'    => $this->l('Carrier name'),
-                        'name'     => 'name',
+                        'name'     => 'display_name',
+                        'lang'      => true,
                         'required' => true,
                         'hint'     => [
                             sprintf($this->l('Allowed characters: letters, spaces and "%s".'), '().-'),
@@ -301,11 +302,11 @@ class AdminCarrierWizardControllerCore extends AdminController
     public function getStepOneFieldsValues($carrier)
     {
         return [
-            'id_carrier' => $this->getFieldValue($carrier, 'id_carrier'),
-            'name'       => $this->getFieldValue($carrier, 'name'),
-            'delay'      => $this->getFieldValue($carrier, 'delay'),
-            'grade'      => $this->getFieldValue($carrier, 'grade'),
-            'url'        => $this->getFieldValue($carrier, 'url'),
+            'id_carrier'   => $this->getFieldValue($carrier, 'id_carrier'),
+            'display_name' => $this->getFieldValue($carrier, 'display_name'),
+            'delay'        => $this->getFieldValue($carrier, 'delay'),
+            'grade'        => $this->getFieldValue($carrier, 'grade'),
+            'url'          => $this->getFieldValue($carrier, 'url'),
         ];
     }
 
@@ -852,6 +853,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     /**
      * @param bool $die
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function validateForm($die = true)
@@ -1171,7 +1173,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         }
 
         $stepFields = [
-            1 => ['name', 'delay', 'grade', 'url'],
+            1 => ['display_name', 'delay', 'grade', 'url'],
             2 => ['is_free', 'id_tax_rules_group', 'shipping_handling', 'shipping_method', 'range_behavior'],
             3 => ['range_behavior', 'max_height', 'max_width', 'max_depth', 'max_weight'],
             4 => [],

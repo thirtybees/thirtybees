@@ -176,6 +176,7 @@ CREATE TABLE `PREFIX_carrier_lang` (
   `id_carrier` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
+  `display_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `delay` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_lang`,`id_shop`,`id_carrier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

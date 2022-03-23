@@ -81,7 +81,7 @@ class AdminCarriersControllerCore extends AdminController
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
             ],
-            'name'       => [
+            'display_name'       => [
                 'title' => $this->l('Name'),
             ],
             'image'      => [
@@ -675,10 +675,9 @@ class AdminCarriersControllerCore extends AdminController
     {
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
-        foreach ($this->_list as $key => $list) {
-            if ($list['name'] == '0') {
-                $this->_list[$key]['name'] = Carrier::getCarrierNameFromShopName();
-            }
+        foreach ($this->_list as &$row) {
+            $name = $row['display_name'] ? $row['display_name'] : $row['name'];
+            $row['display_name'] = Carrier::expandName($name);
         }
     }
 

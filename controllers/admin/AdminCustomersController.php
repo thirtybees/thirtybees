@@ -906,7 +906,7 @@ class AdminCustomersControllerCore extends AdminController
             $carts[$i]['id_cart'] = sprintf('%06d', $carts[$i]['id_cart']);
             $carts[$i]['date_add'] = Tools::displayDate($carts[$i]['date_add'], null, true);
             $carts[$i]['total_price'] = Tools::displayPrice($summary['total_price'], $currency);
-            $carts[$i]['name'] = $carrier->name;
+            $carts[$i]['name'] = $carrier->getName();
         }
 
         $this->context->currency = Currency::getDefaultCurrency();

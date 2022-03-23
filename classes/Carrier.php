@@ -29,12 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class CarrierCore
  *
  * @since 1.0.0
  */
-class CarrierCore extends ObjectModel
+class CarrierCore extends ObjectModel implements InitializationCallback
 {
     /**
      * getCarriers method filter
@@ -73,13 +75,18 @@ class CarrierCore extends ObjectModel
     protected static $cache_tax_rule = [];
     /** @var int common id for carrier historization */
     public $id_reference;
-    /** @var string Name */
+    /**
+     * @var string Name
+     * @deprecated 1.4.0 -- use display name instead
+     */
     public $name;
+    /** @var string Name */
+    public $display_name;
     /** @var string URL with a '@' for */
     public $url;
     /** @var string Delay needed to deliver customer */
     public $delay;
-    /** @var bool Carrier statuts */
+    /** @var bool Carrier status */
     public $active = true;
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
@@ -150,6 +157,7 @@ class CarrierCore extends ObjectModel
             'prices_with_tax'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
 
             /* Lang fields */
+            'display_name'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCarrierName', 'required' => true, 'size' => 64],
             'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
         ],
         'associations' => [
@@ -215,10 +223,7 @@ class CarrierCore extends ObjectModel
          */
         if ($this->id) {
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
-        }
-
-        if ($this->name == '0') {
-            $this->name = static::getCarrierNameFromShopName();
+            $this->fixNames();
         }
 
         $this->image_dir = _PS_SHIP_IMG_DIR_;
@@ -262,9 +267,7 @@ class CarrierCore extends ObjectModel
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
         }
 
-        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
-            $this->name = static::getCarrierNameFromShopName();
-        }
+        $this->fixNames();
     }
 
     /**
@@ -296,9 +299,7 @@ class CarrierCore extends ObjectModel
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
         }
 
-        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
-            $this->name = static::getCarrierNameFromShopName();
-        }
+        $this->fixNames();
     }
 
     /**
@@ -840,7 +841,6 @@ class CarrierCore extends ObjectModel
                 }
             }
 
-            $row['name'] = (strval($row['name']) != '0' ? $row['name'] : static::getCarrierNameFromShopName());
             $row['price'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], true, null, null, $idZone));
             $row['price_tax_exc'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], false, null, null, $idZone));
             $row['img'] = file_exists(_PS_SHIP_IMG_DIR_.(int) $row['id_carrier'].'.jpg') ? _THEME_SHIP_DIR_.(int) $row['id_carrier'].'.jpg' : '';
@@ -904,7 +904,7 @@ class CarrierCore extends ObjectModel
         }
 
         $sql = (new DbQuery())
-            ->select('c.*, cl.`delay`')
+            ->select('c.*, cl.`delay`, cl.`display_name`')
             ->from('carrier', 'c')
             ->leftJoin('carrier_lang', 'cl', 'c.`id_carrier` = cl.`id_carrier` AND cl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('cl'))
             ->leftJoin('carrier_zone', 'cz', 'cz.`id_carrier` = c.`id_carrier`')
@@ -949,10 +949,11 @@ class CarrierCore extends ObjectModel
             $carriers = Cache::retrieve($cacheId);
         }
 
-        foreach ($carriers as $key => $carrier) {
-            if ($carrier['name'] == '0') {
-                $carriers[$key]['name'] = static::getCarrierNameFromShopName();
+        foreach ($carriers as &$carrier) {
+            if ($carrier['display_name']) {
+                $carrier['name'] = $carrier['display_name'];
             }
+            $carrier['name'] =  static::expandName($carrier['name']);
         }
 
         return $carriers;
@@ -1210,6 +1211,9 @@ class CarrierCore extends ObjectModel
         if ($this->position <= 0) {
             $this->position = static::getHigherPosition() + 1;
         }
+
+        $this->fixNames();
+
         if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
@@ -1224,6 +1228,22 @@ class CarrierCore extends ObjectModel
         Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.$this->def['table'].'` SET `id_reference` = '.$this->id.' WHERE `id_carrier` = '.$this->id);
 
         return true;
+    }
+
+    /**
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @since 1.4.0
+     */
+    public function update($nullValues = false)
+    {
+        $this->fixNames();
+        return parent::update($nullValues);
     }
 
     /**
@@ -2085,5 +2105,98 @@ class CarrierCore extends ObjectModel
         if ($table->getNameWithoutPrefix() === 'carrier_lang') {
             $table->reorderColumns(['id_carrier', 'id_shop', 'id_lang']);
         }
+    }
+
+    /**
+     * Helper method to resolve $carrier->name based on displayable name. Property $carrier->name
+     * exists for backwards compatibility only, should not be used directly
+     *
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    protected function fixNames()
+    {
+        // if display_name is not assigned, but name is, we use it for initialization
+        if (is_array($this->display_name)) {
+            $this->display_name = array_filter($this->display_name);
+        }
+        if (!$this->display_name && is_string($this->name) && strlen($this->name) > 0) {
+            if ($this->id_lang) {
+                $this->display_name = static::expandName($this->name);
+            } else {
+                $this->display_name = [];
+                foreach (Language::getLanguages(false, false, true) as $lang)  {
+                    $this->display_name[$lang] = static::expandName($this->name);
+                }
+            }
+        }
+
+        $this->name = $this->getName();
+    }
+
+    /**
+     * Resolves carrier name
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getName()
+    {
+        if (is_string($this->display_name) && strlen($this->display_name) > 0) {
+            return static::expandName($this->display_name);
+        }
+
+        if (is_array($this->display_name)) {
+            $languages = array_unique(array_merge(
+                array_filter([
+                    (int)$this->id_lang,
+                    (int)Context::getContext()->language->id,
+                    (int)Configuration::get('PS_LANG_DEFAULT'),
+                ]),
+                Language::getLanguages(true, null, true)
+            ));
+            foreach ($languages as $lang) {
+                if (array_key_exists($lang, $this->display_name)) {
+                    $name = $this->display_name[$lang];
+                    if (is_string($name) && strlen($name) > 0) {
+                        return static::expandName($name);
+                    }
+                }
+            }
+        }
+
+        return static::expandName($this->name);
+    }
+
+    /**
+     * Helper method that expands placeholder carrier name '0' to Shop Name
+     *
+     * @param string $name
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function expandName($name)
+    {
+        if ($name) {
+            return $name;
+        }
+
+        $carrierName = static::getCarrierNameFromShopName();
+        return $carrierName ? $carrierName : '0';
+    }
+
+    /**
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $conn->execute('UPDATE '._DB_PREFIX_.'carrier_lang l '.
+            'INNER JOIN '._DB_PREFIX_.'carrier c ON (c.id_carrier = l.id_carrier) '.
+            'SET l.display_name = c.name '.
+            'WHERE l.display_name = "" AND c.name != ""'
+        );
     }
 }

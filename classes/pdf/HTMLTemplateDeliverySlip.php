@@ -118,7 +118,6 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
         }
 
         $carrier = new Carrier($this->order->id_carrier);
-        $carrier->name = ($carrier->name == '0' ? Configuration::get('PS_SHOP_NAME') : $carrier->name);
 
         $orderDetails = $this->order_invoice->getProducts();
         if (Configuration::get('PS_PDF_IMG_DELIVERY')) {
