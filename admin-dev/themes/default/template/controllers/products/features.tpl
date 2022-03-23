@@ -40,7 +40,9 @@
       <thead>
       <tr>
         <th><span class="title_box">{l s='Feature'}</span></th>
+        <th><span class="title_box">{l s='Prefix'}</span></th>
         <th><span class="title_box">{l s='Pre-defined value'}</span></th>
+        <th><span class="title_box">{l s='Suffix'}</span></th>
         <th><span class="title_box"><u>{l s='or'}</u> {l s='Customized value'}</span></th>
       </tr>
       </thead>
@@ -51,43 +53,35 @@
           {* feature name *}
           <td>{$available_feature.name}</td>
 
+          {* prefix values *}
+          <td id="prefix_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+            {foreach from=$available_feature.featureValues item=value}
+              <input id="prefix_{$value.id_feature_value}" class="prefix-field" type="text" value="{$value.id_feature_value}" title="{l s='Prefix for'} {$value.value}">
+            {/foreach}
+          </td>
+
           {* predefined values *}
           <td>
             {if sizeof($available_feature.featureValues)}
-              {if !$available_feature.allows_multiple_values}
-                <select id="feature_{$available_feature.id_feature}_value"
-                        class="feature_{$available_feature.id_feature}_value"
-                        name="feature_{$available_feature.id_feature}_value[]"
-                        onchange="$('.custom_{$available_feature.id_feature}').val('');"
-                >
-                  {if !$available_feature.allows_multiple_values}
-                    <option value="0">---</option>
-                  {/if}
-                  {foreach from=$available_feature.featureValues item=value}
-                    <option value="{$value.id_feature_value}"
-                            {if in_array($value.id_feature_value, $available_feature.current_item)}selected="selected"{/if} >
-                      {$value.value|truncate:80}
-                    </option>
-                  {/foreach}
-                </select>
-              {else}
-                <div>
-                  {foreach from=$available_feature.featureValues item=value}
-                    <div>
-                      <label>
-                        <input type="checkbox"
-                               class="feature_{$available_feature.id_feature}_value"
-                               name="feature_{$available_feature.id_feature}_value[]"
-                               value="{$value.id_feature_value}"
-                               {if in_array($value.id_feature_value, $available_feature.current_item)}checked{/if}
-                               onchange="$('.custom_{$available_feature.id_feature}').val('');"
-                        />
-                        {$value.value|truncate:80}
-                      </label>
-                    </div>
-                  {/foreach}
-                </div>
-              {/if}
+              <select id="feature_{$available_feature.id_feature}_value"
+                      class="chosen"
+                      name="feature_{$available_feature.id_feature}_value[]"
+                      onchange="$('.custom_{$available_feature.id_feature}_').val(''); renderSuffixAndPrefixFields(this)"
+                      {if $available_feature.allows_multiple_values}
+                        size="{min(3, count($available_feature.featureValues))}"
+                        multiple
+                      {/if}
+              >
+                {if !$available_feature.allows_multiple_values}
+                  <option value="0">---</option>
+                {/if}
+                {foreach from=$available_feature.featureValues item=value}
+                  <option value="{$value.id_feature_value}"
+                          {if in_array($value.id_feature_value, $available_feature.current_item)}selected="selected"{/if} >
+                    {$value.value|truncate:80}
+                  </option>
+                {/foreach}
+              </select>
             {else}
               <input type="hidden" name="feature_{$available_feature.id_feature}_value" value="0"/>
               <span>
@@ -101,6 +95,21 @@
             {/if}
           </td>
 
+          {* suffix values *}
+          <td id="suffix_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+
+            {foreach from=$available_feature.featureValues item=value}
+              <div id="suffix_{$value.id_feature_value}" class="suffix-field">
+                <div class="col-lg-9">
+                  <input type="text" value="{$value.id_feature_value}" title="{l s='Suffix for'} {$value.value}" />
+                </div>
+              </div>
+            {/foreach}
+
+            {include file="../../helpers/form/form.tpl" fields=[['form' => ['description' => 'yooo']]]}
+
+          </td>
+
           {* custom values *}
           <td>
             {if $available_feature.allows_custom_values}
@@ -110,7 +119,7 @@
                   <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
                     <div class="row lang-0" style='display: none;'>
                       <div class="col-lg-9">
-                        <textarea class="textarea-autosize custom_{$available_feature.id_feature}"
+                        <textarea class="textarea-autosize"
                                   name="custom_{$available_feature.id_feature}_{$customValueIndex}_ALL"
                                   cols="60" style='background-color:#CCF'
                                   rows="1"
@@ -142,34 +151,30 @@
                       <div class="row translatable-field lang-{$language.id_lang}">
                         <div class="col-lg-9">
                           <textarea
-                                  class="textarea-autosize custom_{$available_feature.id_feature}"
+                                  class="textarea-autosize"
                                   name="custom_{$available_feature.id_feature}_{$customValueIndex}_{$language.id_lang}"
                                   cols="60"
                                   rows="1"
-                                  {if !$available_feature.allows_multiple_values}
-                                  onkeyup="if (isArrowKey(event)) return ;$('.feature_{$available_feature.id_feature}_value').val(0);"
-                                  {else}
-                                  onkeyup="if (isArrowKey(event)) return ;$('.feature_{$available_feature.id_feature}_value').prop('checked', false);"
-                                  {/if}
+                                  onkeyup="if (isArrowKey(event)) return ;$('#feature_{$available_feature.id_feature}_value').val(0);"
                           >{$customValue[$language.id_lang]|escape:'html':'UTF-8'|default:""}</textarea>
                         </div>
 
                         <div class="col-lg-3">
                           {if $languages|count > 1}
-                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                {$language.iso_code}
-                                <span class="caret"></span>
-                              </button>
-                              <ul class="dropdown-menu">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                              {$language.iso_code}
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a href="javascript:void(0);" onclick="all_languages($(this));">{l s='ALL'}</a>
+                              </li>
+                              {foreach from=$languages item=language}
                                 <li>
-                                  <a href="javascript:void(0);" onclick="all_languages($(this));">{l s='ALL'}</a>
+                                  <a href="javascript:hideOtherLanguage({$language.id_lang});">{$language.iso_code}</a>
                                 </li>
-                                {foreach from=$languages item=language}
-                                  <li>
-                                    <a href="javascript:hideOtherLanguage({$language.id_lang});">{$language.iso_code}</a>
-                                  </li>
-                                {/foreach}
-                              </ul>
+                              {/foreach}
+                            </ul>
                           {/if}
                           <a href="javascript:void(0);" onclick="deleteCustomValue($(this));">{l s='Delete'}</a>
                         </div>
@@ -272,7 +277,64 @@
       $element.closest('.custom_group_value').find('textarea').val($element.val());
     }
 
+    // Make sure, that the chosen select has not a width of 0px
+    $(document).ready(function() {
+      $('select.chosen').chosen( { width: '100%' } );
+
+      // Render all Suffix/Prefix fields
+      document.querySelectorAll('#product-features tr select').forEach(function(select) {
+        console.log(select);
+        renderSuffixAndPrefixFields(select);
+      })
+    });
+
+    function renderSuffixAndPrefixFields(select) {
+
+      var row = select.closest('tr');
+
+      // Hide all prefix/suffix elements
+      var prefix_elements = row.querySelectorAll('.prefix-field');
+      var suffix_elements = row.querySelectorAll('.suffix-field');
+
+      if (prefix_elements.length || suffix_elements.length) {
+        prefix_elements.forEach((element) => { element.style.display = 'none' });
+        suffix_elements.forEach((element) => { element.style.display = 'none' });
+      }
+
+
+      // Display the selected options
+      var selected_feature_values = Array.from(select.selectedOptions);
+
+      // Hide box if no value or only id_feature_value=0 is selected
+      if (selected_feature_values.length && (selected_feature_values.length>1 || selected_feature_values[0].value!=='0')) {
+        selected_feature_values.forEach(function(selected_feature_value) {
+          row.querySelector('#prefix_'+selected_feature_value.value).style.display = 'inline-block';
+          row.querySelector('#suffix_'+selected_feature_value.value).style.display = 'inline-block';
+        });
+      }
+    }
+
   </script>
+
+  <style>
+    /* Make sure that selected options of a chosen field are always displayed on a new line */
+    #product-features li.search-choice,
+    #product-features input.search-choice {
+      display: inline-block;
+      width: calc(100% - 10px);
+    }
+
+    #product-features input[type="text"].prefix-field,
+    #product-features input[type="text"].suffix-field {
+      height: 24px;
+      margin: 4px 0 3px 0;
+    }
+
+    #product-features input[type="text"].prefix-field {
+      text-align: right;
+    }
+  </style>
+
 {/literal}
 
 {/if}
