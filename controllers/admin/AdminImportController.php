@@ -2941,14 +2941,9 @@ class AdminImportControllerCore extends AdminController
                     $featureName = isset($tabFeature[0]) ? trim($tabFeature[0]) : '';
                     $featureValue = isset($tabFeature[1]) ? trim($tabFeature[1]) : '';
                     $position = isset($tabFeature[2]) ? (int) $tabFeature[2] - 1 : false;
-                    $custom = isset($tabFeature[3]) ? (int) $tabFeature[3] : false;
                     if (!empty($featureName) && !empty($featureValue)) {
                         $idFeature = (int) Feature::addFeatureImport($featureName, $position);
-                        $idProduct = null;
-                        if ($forceIds || $matchRef) {
-                            $idProduct = (int) $product->id;
-                        }
-                        $idFeatureValue = (int) FeatureValue::addFeatureValueImport($idFeature, $featureValue, $idProduct, $idLang, $custom);
+                        $idFeatureValue = (int) FeatureValue::addFeatureValueImport($idFeature, $featureValue, $idLang);
                         Product::addFeatureProductImport($product->id, $idFeature, $idFeatureValue);
                     }
                 }

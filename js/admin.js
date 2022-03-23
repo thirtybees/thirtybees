@@ -1102,6 +1102,20 @@ function hideOtherLanguage(id) {
   updateCurrentText();
 }
 
+function updateAllLanguageFields(element) {
+  var form_group = element.closest('.form-group');
+  if (form_group) {
+    var translatable_fields = form_group.querySelectorAll('.translatable-field');
+    if (translatable_fields.length) {
+      translatable_fields.forEach((translatable_field) => {
+        if (!translatable_field.classList.contains('lang-0')) {
+          translatable_field.querySelector('input').value = element.value;
+        }
+      });
+    }
+  }
+}
+
 function sendBulkAction(form, action) {
   String.prototype.splice = function (index, remove, string) {
     return (this.slice(0, index) + string + this.slice(index + Math.abs(remove)));

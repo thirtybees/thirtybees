@@ -1683,11 +1683,12 @@ class ProductCore extends ObjectModel
 		SELECT id_product, name, value, pf.id_feature
 		FROM '._DB_PREFIX_.'feature_product pf
 		LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+		LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
 		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 		LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature)
 		'.Shop::addSqlAssociation('feature', 'f').'
 		WHERE `id_product` IN ('.implode(',', $productImplode).')
-		ORDER BY f.position ASC'
+		ORDER BY f.position ASC, fv.position ASC'
         );
 
         foreach ($result as $row) {
@@ -1981,17 +1982,82 @@ class ProductCore extends ObjectModel
             return [];
         }
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
-            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT name, value, pf.id_feature
+				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
 				FROM '._DB_PREFIX_.'feature_product pf
+				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.' AND pfl.id_product = '.(int)$idProduct.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+				LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
 				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				'.Shop::addSqlAssociation('feature', 'f').'
 				WHERE pf.id_product = '.(int) $idProduct.'
-				ORDER BY f.position ASC'
+				ORDER BY f.position ASC,
+				    (CASE WHEN f.sorting=\'\' OR f.sorting=\'value_asc\' THEN fvl.value END) ASC,
+				    (CASE WHEN f.sorting=\'value_desc\' THEN fvl.value END) DESC,
+				    (CASE WHEN f.sorting=\'custom\' THEN fv.position END) ASC
+				    '
             );
+
+            $feature_values_helper = [];
+
+            // Get concatenated values, min_value and max_value per id_feature
+            foreach ($feature_values as $feature_value) {
+
+                $id_feature = (int)$feature_value['id_feature'];
+                $display_value = $feature_value['displayable'] ?: $feature_value['value'];
+
+                if (!isset($feature_values_helper[$id_feature])) {
+                    $feature_values_helper[$id_feature]['id_feature'] = $id_feature; // Helpful in cases the keys got lost due to sorting
+                    $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
+                    $feature_values_helper[$id_feature]['values'][] = $display_value;
+                    $feature_values_helper[$id_feature]['values_string'] = $display_value;
+                    $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                    $feature_values_helper[$id_feature]['max_value'] = $feature_value;
+                }
+                else {
+                    $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema']; // Multiple Schema should only apply, if really multiple values were selected
+                    $feature_values_helper[$id_feature]['values'][] = $display_value;
+
+                    // Concatenate values
+                    $display_separator = $feature_value['multiple_separator'] ?: ', ';
+                    $feature_values_helper[$id_feature]['values_string'] .= $display_separator . $display_value;
+
+                    // Update min and max value
+                    if ($feature_values_helper[$id_feature]['min_value']['value'] > $feature_value['value']) {
+                        $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                    }
+
+                    if ($feature_values_helper[$id_feature]['max_value']['value'] < $feature_value['value']) {
+                        $feature_values_helper[$id_feature]['max_value'] = $feature_value;
+                    }
+                }
+            }
+
+            // Now create the 'value' based on the multiple_schema
+            foreach ($feature_values_helper as &$feature_value_helper) {
+                if (isset($feature_value_helper['multiple_schema']) && ($multiple_schema = $feature_value_helper['multiple_schema'])) {
+                    $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
+                    $value = str_replace('{count_values}', count($feature_value_helper['values']), $value);
+                    $value = str_replace('{min_value}', $feature_value_helper['min_value']['value'], $value);
+                    $value = str_replace('{max_value}', $feature_value_helper['max_value']['value'], $value);
+                    $value = str_replace('{first_value}', $feature_value_helper['values'][0], $value);
+                    $value = str_replace('{last_value}', $feature_value_helper['values'][array_key_last($feature_value_helper['values'])], $value);
+
+                    $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
+                    $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
+                    $value = str_replace('{min_displayable}', $display_value_min, $value);
+                    $value = str_replace('{max_displayable}', $display_value_max, $value);
+
+                    $feature_value_helper['value'] = $value;
+                }
+                else {
+                    $feature_value_helper['value'] = $feature_value_helper['values_string'];
+                }
+            }
+
+            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $feature_values_helper;
         }
 
         return static::$_frontFeaturesCache[$idProduct.'-'.$idLang];
@@ -4330,9 +4396,16 @@ class ProductCore extends ObjectModel
 		WHERE `id_product` = '.(int) $this->id
         );
 
+        // Delete product features lang
+        $result_lang = Db::getInstance()->execute(
+            '
+		DELETE FROM `'._DB_PREFIX_.'feature_product_lang`
+		WHERE `id_product` = '.(int) $this->id
+        );
+
         SpecificPriceRule::applyAllRules([(int) $this->id]);
 
-        return ($result);
+        return ($result && $result_lang);
     }
 
     /**
@@ -6237,6 +6310,28 @@ class ProductCore extends ObjectModel
     }
 
     /**
+     * @param $featureValueId
+     * @param $langId
+     * @param $displayable
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function addFeaturesDisplayableToDb($featureValueId, $langId, $displayable) {
+
+        if (!$displayable = pSQL($displayable)) {
+            return false;
+        }
+
+        return Db::getInstance()->insert('feature_product_lang', [
+            'id_product' => (int)$this->id,
+            'id_feature_value' => (int)$featureValueId,
+            'id_lang' => (int)$langId,
+            'displayable' => $displayable
+        ]);
+    }
+
+    /**
      * Get the link of the product page of this product
      *
      * @since   1.0.0
@@ -6941,9 +7036,9 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param int $idFeature
-     * @param int $idValue
-     * @param bool $createCustomValue
+     * @param int $id_feature
+     * @param int $id_feature_value
+     * @param bool $createCustomValue Deprecated
      *
      * @return int
      *
@@ -6952,30 +7047,34 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function addFeaturesToDB($idFeature, $idValue, $createCustomValue = false)
+    public function addFeaturesToDB($id_feature, $id_feature_value, $createCustomValue = null)
     {
-        $idFeature = (int)$idFeature;
-        if ($createCustomValue) {
+        $id_feature = (int)$id_feature;
+        if (! is_null($createCustomValue)) {
+            Tools::displayParameterAsDeprecated('createCustomValue');
+        }
+        $id_feature_value = $createCustomValue ? 0 : (int)$id_feature_value; // Just to be 100% backward compatible
+
+        if (!$id_feature_value) {
             $row = [
-                'id_feature' => $idFeature,
-                'custom' => 1
+                'id_feature' => $id_feature,
+                'custom' => 0,
+                'position' => (int)FeatureValue::getHighestPosition($id_feature)+1,
             ];
             Db::getInstance()->insert('feature_value', $row);
-            $idValue = (int)Db::getInstance()->Insert_ID();
-        } else {
-            $idValue =  (int)$idValue;
+            $id_feature_value = (int)Db::getInstance()->Insert_ID();
         }
 
-        if ($idFeature && $idValue) {
+        if ($id_feature && $id_feature_value) {
             $row = [
-                'id_feature' => $idFeature,
+                'id_feature' => $id_feature,
                 'id_product' => (int)$this->id,
-                'id_feature_value' => $idValue
+                'id_feature_value' => $id_feature_value
             ];
             Db::getInstance()->insert('feature_product', $row);
             SpecificPriceRule::applyAllRules([(int)$this->id]);
         }
-        return $idValue;
+        return $id_feature_value;
     }
 
     /**

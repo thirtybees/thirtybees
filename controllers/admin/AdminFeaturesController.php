@@ -60,14 +60,7 @@ class AdminFeaturesControllerCore extends AdminController
                 'filter_key' => 'b!name',
             ],
             'value'      => [
-                'title'   => $this->l('Values (predefined)'),
-                'orderby' => false,
-                'search'  => false,
-                'align'   => 'center',
-                'class'   => 'fixed-width-xs',
-            ],
-            'custom'      => [
-                'title'   => $this->l('Values (custom)'),
+                'title'   => $this->l('Values'),
                 'orderby' => false,
                 'search'  => false,
                 'align'   => 'center',
@@ -85,16 +78,6 @@ class AdminFeaturesControllerCore extends AdminController
                 'title' => $this->l("Allows multiple values"),
                 'active'     => 'set_allow_multiple_values',
                 'filter_key' => 'a!allows_multiple_values',
-                'align'      => 'text-center',
-                'type'       => 'bool',
-                'class'      => 'fixed-width-xs',
-                'orderby'    => false,
-                'ajax'       => true,
-            ],
-            'allows_custom_values' => [
-                'title' => $this->l("Allows custom values"),
-                'active'     => 'set_allow_custom_values',
-                'filter_key' => 'a!allows_custom_values',
                 'align'      => 'text-center',
                 'type'       => 'bool',
                 'class'      => 'fixed-width-xs',
@@ -312,10 +295,8 @@ class AdminFeaturesControllerCore extends AdminController
     {
         if (Validate::isLoadedObject($this->object)) {
             $multipleValuesDisabled = static::existsProductWithMultipleValues($this->object->id);
-            $customValuesDisabled = static::featureHasCustomValues($this->object->id);
         } else {
             $multipleValuesDisabled = false;
-            $customValuesDisabled = false;
         }
 
         $this->toolbar_title = $this->l('Add a new feature');
@@ -358,27 +339,39 @@ class AdminFeaturesControllerCore extends AdminController
                     ],
                 ],
                 [
-                    'type'     => 'switch',
-                    'label'    => $this->l('Allows custom values'),
-                    'name'     => 'allows_custom_values',
-                    'hint'     => $customValuesDisabled
-                        ? $this->l('Some products contains custom values for this feature. It is not possible to disable this functionality now')
-                        : $this->l('Choose if product can have custom values for this feature'),
-                    'required' => false,
-                    'is_bool'  => true,
-                    'disabled' => $customValuesDisabled,
-                    'values'   => [
-                        [
-                            'id'    => 'allows_custom_values_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled'),
+                    'type'     => 'select',
+                    'label'    => $this->l('Sorting'),
+                    'name'     => 'sorting',
+                    'options'  => [
+                        'query' => [
+                            ['id' => Feature::SORT_VALUE_ASC, 'name' => $this->l('Value ASC')],
+                            ['id' => Feature::SORT_VALUE_DESC, 'name' => $this->l('Value DESC')],
+                            ['id' => Feature::SORT_CUSTOM, 'name' => $this->l('Custom')],
                         ],
-                        [
-                            'id'    => 'allows_custom_values_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled'),
-                        ],
+                        'id'    => 'id',
+                        'name'  => 'name',
                     ],
+                    'col'      => '2',
+                    'hint'     => $this->l('The way multiple values will be sorted'),
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Separator'),
+                    'name'     => 'multiple_separator',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('How should multiple values be concatenated?'),
+                    'required' => false,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Schema'),
+                    'name'     => 'multiple_schema',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('How should multiple values be displayed?'),
+                    'desc'     => $this->l('Keywords: {values}, {count_values}, {first_value}, {last_value}, {min_value}, {max_value}, {min_displayable}, {max_displayable}'),
+                    'required' => false,
                 ],
             ],
         ];
@@ -431,6 +424,9 @@ class AdminFeaturesControllerCore extends AdminController
                 'value'            => [
                     'title' => $this->l('Value'),
                 ],
+                'displayable'            => [
+                    'title' => $this->l('Displayable'),
+                ],
                 'products'      => [
                     'title'   => $this->l('Products'),
                     'orderby' => false,
@@ -439,7 +435,31 @@ class AdminFeaturesControllerCore extends AdminController
                     'class'   => 'fixed-width-xs',
                     'callback'=> 'getProductsLink',
                 ],
+
             ];
+
+            switch ((int) $this->object->sorting) {
+                case Feature::SORT_CUSTOM:
+                    $this->fields_list['position'] = [
+                        'title'      => $this->l('Position'),
+                        'filter_key' => 'a!position',
+                        'align'      => 'center',
+                        'class'      => 'fixed-width-xs',
+                        'position'   => 'position',
+                    ];
+                    $this->_defaultOrderBy = 'position';
+                    $this->_defaultOrderWay = 'ASC';
+                    break;
+                case Feature::SORT_VALUE_DESC:
+                    $this->_defaultOrderBy = 'value';
+                    $this->_defaultOrderWay = 'DESC';
+                    break;
+                case Feature::SORT_VALUE_ASC:
+                default:
+                    $this->_defaultOrderBy = 'value';
+                    $this->_defaultOrderWay = 'ASC';
+                    break;
+            }
 
             $this->_where = sprintf('AND `id_feature` = %d', $id);
             static::$currentIndex = static::$currentIndex.'&id_feature='.$id.'&viewfeature';
@@ -496,6 +516,14 @@ class AdminFeaturesControllerCore extends AdminController
                     'size'     => 33,
                     'hint'     => $this->l('Invalid characters:').' <>;=#{}',
                     'required' => true,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Displayable'),
+                    'name'     => 'displayable',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('If this value is set, it overrides the original value. Note: it does only override for displaying not for filtering.'),
                 ],
             ],
             'submit'  => [
@@ -592,9 +620,10 @@ class AdminFeaturesControllerCore extends AdminController
             }
         } else {
             $this->list_id = 'feature';
-            $this->_defaultOrderBy = 'position';
-            $this->_defaultOrderWay = 'ASC';
         }
+
+        $this->_defaultOrderBy = 'position';
+        $this->_defaultOrderWay = 'ASC';
 
         parent::initProcess();
     }
@@ -708,7 +737,6 @@ class AdminFeaturesControllerCore extends AdminController
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
         if ($this->table == 'feature_value') {
-            $this->_where .= ' AND (a.custom = 0 OR a.custom IS NULL)';
             $this->_select .= ' COALESCE((SELECT COUNT(DISTINCT fp.id_product) FROM '. _DB_PREFIX_ . 'feature_product fp WHERE fp.id_feature = a.id_feature AND fp.id_feature_value = a.id_feature_value), 0) as products';
         }
 
@@ -721,7 +749,6 @@ class AdminFeaturesControllerCore extends AdminController
             foreach ($ids as $id) {
                 $extra[$id] = [
                     'value' => 0,
-                    'custom' => 0,
                     'products' => 0,
                 ];
             }
@@ -730,19 +757,15 @@ class AdminFeaturesControllerCore extends AdminController
 
             // count feature values
             $valuesQuery = new DbQuery();
-            $valuesQuery->select('id_feature, IFNULL(fv.custom, 0) as is_custom, COUNT(fv.id_feature_value) as count_values');
+            $valuesQuery->select('id_feature, COUNT(fv.id_feature_value) as count_values');
             $valuesQuery->from('feature_value', 'fv');
             $valuesQuery->where('fv.id_feature IN ('. implode(',', $ids).')');
-            $valuesQuery->groupBy('fv.id_feature, IFNULL(fv.custom, 0)');
+            $valuesQuery->groupBy('fv.id_feature');
             $res = $conn->executeS($valuesQuery);
             if (is_array($res)) {
                 foreach ($res as $row) {
                     $id = (int)$row['id_feature'];
-                    if ($row['is_custom']) {
-                        $extra[$id]['custom'] = (int)$row['count_values'];
-                    } else {
-                        $extra[$id]['value'] = (int)$row['count_values'];
-                    }
+                    $extra[$id]['value'] = (int)$row['count_values'];
                 }
             }
             // count products using this feature
@@ -766,35 +789,44 @@ class AdminFeaturesControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function ajaxProcessUpdatePositions()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $way = (int) Tools::getValue('way');
-            $id_feature = (int) Tools::getValue('id');
-            $positions = Tools::getValue('feature');
+            $isFeatureValue = Tools::isSubmit('viewfeature');
+            $way = (int)Tools::getValue('way');
+            $id = (int)Tools::getValue('id');
+            $positions = $isFeatureValue
+                ? Tools::getValue('feature_value')
+                : Tools::getValue('feature');
 
-            $new_positions = [];
-            foreach ($positions as $k => $v) {
+            $newPositions = [];
+            foreach ($positions as $v) {
                 if (!empty($v)) {
-                    $new_positions[] = $v;
+                    $newPositions[] = $v;
                 }
             }
 
-            foreach ($new_positions as $position => $value) {
+            foreach ($newPositions as $position => $value) {
                 $pos = explode('_', $value);
+                if (isset($pos[2]) && (int)$pos[2] === $id) {
 
-                if (isset($pos[2]) && (int) $pos[2] === $id_feature) {
-                    if ($feature = new Feature((int) $pos[2])) {
-                        if (isset($position) && $feature->updatePosition($way, $position, $id_feature)) {
-                            echo 'ok position '.(int) $position.' for feature '.(int) $pos[1].'\r\n';
+                    $object = $isFeatureValue
+                        ? new FeatureValue((int)$pos[2])
+                        : new Feature((int)$pos[2]);
+
+                    if (Validate::isLoadedObject($object)) {
+                        if ($object->updatePosition($way, $position)) {
+                            $this->ajaxDie('ok position '.(int) $position.' for feature '.(int) $pos[1]);
                         } else {
-                            echo '{"hasError" : true, "errors" : "Can not update feature '.(int) $id_feature.' to position '.(int) $position.' "}';
+                            $this->ajaxDie('{"hasError" : true, "errors" : "Can not update feature '.(int) $id.' to position '.(int) $position.' "}');
                         }
                     } else {
-                        echo '{"hasError" : true, "errors" : "This feature ('.(int) $id_feature.') can t be loaded"}';
+                        $this->ajaxDie('{"hasError" : true, "errors" : "This feature ('.(int) $id.') can t be loaded"}');
                     }
-
-                    break;
                 }
             }
         }
@@ -853,54 +885,15 @@ class AdminFeaturesControllerCore extends AdminController
     }
 
     /**
-     * Handler for changing custom values checkbox from list
-     */
-    protected function ajaxProcessSetAllowCustomValuesFeature()
-    {
-        try {
-            $feature = new Feature(Tools::getValue('id_feature'));
-            if (! Validate::isLoadedObject($feature)) {
-                throw new PrestaShopException($this->l('Feature not found'));
-            }
-            if ($feature->allows_custom_values) {
-                if (static::featureHasCustomValues($feature->id)) {
-                    throw new PrestaShopException($this->l('Not possible to deactivate this functionality because some custom values already exists'));
-                }
-                $text = $this->l('Custom feature values were disabled for this feature');
-                $feature->allows_custom_values = false;
-            } else {
-                $text = $this->l('Custom feature values were enabled for this feature');
-                $feature->allows_custom_values = true;
-            }
-            $feature->update();
-            $this->ajaxDie(json_encode([
-                'success' => true,
-                'text' => $text
-            ]));
-        } catch (Exception $e) {
-            $this->ajaxDie(json_encode([
-                'success' => false,
-                'text' => $e->getMessage()
-            ]));
-        }
-    }
-
-    /**
      * Return true, if some product has custom values for feature $featureId
      *
      * @param int $featureId
      * @return bool
-     * @throws PrestaShopException
+     * @deprecated 1.4.0
      */
     protected static function featureHasCustomValues($featureId)
     {
-        $sql = (new DbQuery())
-            ->select('count(1)')
-            ->from('feature_value')
-            ->where('id_feature = ' . (int)$featureId)
-            ->where('custom = 1');
-
-        return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return false;
     }
 
     /**

@@ -874,6 +874,7 @@ CREATE TABLE `PREFIX_feature` (
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   `allows_multiple_values` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `allows_custom_values` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `sorting` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_feature`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -881,6 +882,8 @@ CREATE TABLE `PREFIX_feature_lang` (
   `id_feature` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `multiple_separator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `multiple_schema` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_feature`,`id_lang`),
   KEY `id_lang` (`id_lang`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -894,6 +897,15 @@ CREATE TABLE `PREFIX_feature_product` (
   KEY `id_product` (`id_product`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_feature_product_lang` (
+  `id_feature` int(11) unsigned NOT NULL,
+  `id_product` int(11) unsigned NOT NULL,
+  `id_feature_value` int(11) unsigned NOT NULL,
+  `id_lang` int(11) unsigned NOT NULL,
+  `displayable` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id_feature`,`id_product`,`id_feature_value`,`id_lang`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_feature_shop` (
   `id_feature` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL,
@@ -905,6 +917,7 @@ CREATE TABLE `PREFIX_feature_value` (
   `id_feature_value` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_feature` int(11) unsigned NOT NULL,
   `custom` tinyint(3) unsigned DEFAULT NULL,
+  `position` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_feature_value`),
   KEY `feature` (`id_feature`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -913,6 +926,7 @@ CREATE TABLE `PREFIX_feature_value_lang` (
   `id_feature_value` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `displayable` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_feature_value`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

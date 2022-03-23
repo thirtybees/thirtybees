@@ -36,14 +36,16 @@
  */
 class FeatureValueCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int Group id which attribute belongs */
     public $id_feature;
     /** @var string Name */
     public $value;
+    /** @var string Value that will be displayed */
+    public $displayable;
+    /** @var int Position if multiple values are selected */
+    public $position;
     /** @var bool Custom */
     public $custom = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -55,9 +57,11 @@ class FeatureValueCore extends ObjectModel
         'fields'    => [
             'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
             'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned'],
+            'position'   => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
 
             /* Lang fields */
-            'value'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+            'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+            'displayable'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_value' => [
@@ -101,7 +105,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @param int  $idLang    Language id
      * @param bool $idFeature Feature id
-     * @param bool $custom
+     * @param bool $custom Deprecated
      *
      * @return array Array with feature's values
      *
@@ -114,19 +118,20 @@ class FeatureValueCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('*')
+                ->select('v.*, vl.*, COALESCE(NULLIF(vl.displayable, ""), vl.value) AS value')
                 ->from('feature_value', 'v')
                 ->leftJoin('feature_value_lang', 'vl', 'v.`id_feature_value` = vl.`id_feature_value` AND vl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('feature_lang', 'fl', 'v.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('v.`id_feature` = '.(int) $idFeature)
-                ->where(!$custom ? 'v.`custom` IS NULL OR v.`custom` = 0' : '')
-                ->orderBy('vl.`value` ASC')
+                ->orderBy('v.`position` ASC')
         );
     }
 
     /**
      * Get all language for a given value
      *
-     * @param bool $idFeatureValue Feature value id
+     * @param bool $id_feature_value Feature value id
+     * @param int $id_product Product id
      *
      * @return array Array with value's languages
      *
@@ -135,43 +140,27 @@ class FeatureValueCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getFeatureValueLang($idFeatureValue)
+    public static function getFeatureValueLang($id_feature_value, $id_product = 0)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('*')
-                ->from('feature_value_lang')
-                ->where('`id_feature_value` = '.(int) $idFeatureValue)
-                ->orderBy('`id_lang`')
-        );
-    }
 
-    /**
-     * Select the good lang in tab
-     *
-     * @param array $lang   Array with all language
-     * @param int   $idLang Language id
-     *
-     * @return string String value name selected
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function selectLang($lang, $idLang)
-    {
-        foreach ($lang as $tab) {
-            if ($tab['id_lang'] == $idLang) {
-                return $tab['value'];
-            }
+        $query = new DbQuery();
+        $query->select('vl.*');
+        $query->from('feature_value_lang', 'vl');
+
+        if ($id_product > 0) {
+            $query->select('pl.displayable');
+            $query->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND vl.`id_lang`=pl.`id_lang` AND pl.`id_product`='.$id_product);
         }
+        $query->where('vl.`id_feature_value` = '.(int) $id_feature_value);
+        $query->orderBy('vl.`id_lang`, vl.`id_feature_value`');
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 
     /**
      * @param int      $idFeature
      * @param string   $value
-     * @param int|null $idProduct
      * @param int|null $idLang
-     * @param bool     $custom
      *
      * @return int
      *
@@ -180,43 +169,18 @@ class FeatureValueCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function addFeatureValueImport($idFeature, $value, $idProduct = null, $idLang = null, $custom = false)
+    public static function addFeatureValueImport($idFeature, $value, $idLang)
     {
-        $idFeatureValue = false;
-        if (!is_null($idProduct) && $idProduct) {
-            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('fp.`id_feature_value`')
-                    ->from('feature_product', 'fp')
-                    ->innerJoin('feature_value', 'fv', 'fv.`id_feature_value` = fp.`id_feature_value`')
-                    ->where('fp.`id_feature` = '.(int) $idFeature)
-                    ->where('fv.`custom` = '.(int) $custom)
-                    ->where('fp.`id_product` = '.(int) $idProduct)
-            );
 
-            if ($custom && $idFeatureValue && !is_null($idLang) && $idLang) {
-                Db::getInstance()->update(
-                    'feature_value_lang',
-                    [
-                        'value' => pSQL($value),
-                    ],
-                    '`id_feature_value` = '.(int) $idFeatureValue.' AND `value` != \''.pSQL($value).'\' AND `id_lang` = '.(int) $idLang
-                );
-            }
-        }
-
-        if (!$custom) {
-            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('fv.`id_feature_value`')
-                    ->from('feature_value', 'fv')
-                    ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang)
-                    ->where('fvl.`value` = \''.pSQL($value).'\'')
-                    ->where('fv.`id_feature` = '.(int) $idFeature)
-                    ->where('fv.`custom` = 0')
-                    ->groupBy('fv.`id_feature_value`')
-            );
-        }
+        $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('fv.`id_feature_value`')
+                ->from('feature_value', 'fv')
+                ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang)
+                ->where('fvl.`value` = \''.pSQL($value).'\'')
+                ->where('fv.`id_feature` = '.(int) $idFeature)
+                ->groupBy('fv.`id_feature_value`')
+        );
 
         if ($idFeatureValue) {
             return (int) $idFeatureValue;
@@ -225,7 +189,7 @@ class FeatureValueCore extends ObjectModel
         // Feature doesn't exist, create it
         $featureValue = new FeatureValue();
         $featureValue->id_feature = (int) $idFeature;
-        $featureValue->custom = (bool) $custom;
+        $featureValue->custom = false;
         $featureValue->value = array_fill_keys(Language::getIDs(false), $value);
         $featureValue->add();
 
@@ -238,11 +202,16 @@ class FeatureValueCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
+        if (!$this->position) {
+            $this->position = self::getHighestPosition($this->id_feature)+1;
+        }
+
         $return = parent::add($autoDate, $nullValues);
         if ($return) {
             Hook::exec('actionFeatureValueSave', ['id_feature_value' => $this->id]);
@@ -256,7 +225,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -268,6 +237,8 @@ class FeatureValueCore extends ObjectModel
             Hook::exec('actionFeatureValueDelete', ['id_feature_value' => $this->id]);
         }
 
+        self::cleanPositions($this->id_feature);
+
         return $return;
     }
 
@@ -276,6 +247,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -315,5 +287,95 @@ class FeatureValueCore extends ObjectModel
 
         // this is valid feature value
         return null;
+    }
+
+    /**
+     * Move a featureValue
+     *
+     * @param bool $way true = up, false = down
+     * @param int $position
+     *
+     * @return bool Update result
+     *
+     * @throws PrestaShopException
+     * @since   1.4.0
+     */
+    public function updatePosition($way, $position)
+    {
+        if (! isset($position)) {
+            return false;
+        }
+
+        $id = (int) $this->id;
+        if (!$movedFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`position`, `id_feature_value`')
+                ->from('feature_value')
+                ->where('`id_feature_value` = '.$id)
+                ->orderBy('`position` ASC')
+        )) {
+            return false;
+        }
+
+        // < and > statements rather than BETWEEN operator
+        // since BETWEEN is treated differently according to databases
+        return (Db::getInstance()->update(
+                'feature_value',
+                [
+                    'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
+                ],
+                '`position`'.($way ? '> '.(int) $movedFeatureValue['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedFeatureValue['position'].' AND `position` >= '.(int) $position)
+            )
+            && Db::getInstance()->update(
+                'feature_value',
+                [
+                    'position' => (int) $position,
+                ],
+                '`id_feature_value`='.(int) $movedFeatureValue['id_feature_value']
+            ))
+            && static::cleanPositions($this->id_feature);
+    }
+
+    /**
+     * Reorder featureValue position
+     * Call it after deleting a featureValue.
+     *
+     * @return bool $return
+     *
+     * @since   1.4.0
+     * @throws PrestaShopException
+     */
+    public static function cleanPositions($idFeature)
+    {
+        // reset positions of all featureValues within feature
+        return Db::getInstance()->execute('
+            SET @rank:=-1;
+            UPDATE `'._DB_PREFIX_.'feature_value`
+            SET position = @rank:=@rank+1
+            WHERE `id_feature` = '.(int)$idFeature.'
+            ORDER BY `position`, `id_feature_value`
+        ');
+    }
+
+    /**
+     * getHigherPosition
+     *
+     * Get the highest featureValue position
+     *
+     * @return int $position
+     *
+     * @since   1.4.0
+     * @throws PrestaShopException
+     */
+    public static function getHighestPosition($idFeature)
+    {
+        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`position`)')
+                ->from('feature_value')
+                ->where('id_feature='.(int)$idFeature)
+        );
+
+        return (is_numeric($position)) ? $position : -1;
     }
 }

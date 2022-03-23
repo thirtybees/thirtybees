@@ -372,7 +372,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
         }
         $features = Feature::getFeatures((int) $this->context->language->id);
         foreach ($features as &$feature) {
-            $feature['values'] = FeatureValue::getFeatureValuesWithLang((int) $this->context->language->id, $feature['id_feature'], true);
+            $feature['values'] = FeatureValue::getFeatureValuesWithLang((int) $this->context->language->id, $feature['id_feature']);
         }
 
         $this->tpl_form_vars = [

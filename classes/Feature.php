@@ -29,13 +29,19 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class FeatureCore
  *
  * @since 1.0.0
  */
-class FeatureCore extends ObjectModel
+class FeatureCore extends ObjectModel implements InitializationCallback
 {
+    const SORT_VALUE_ASC = 0;
+    const SORT_VALUE_DESC = 1;
+    const SORT_CUSTOM = 2;
+
     /**
      * @var string Feature name
      */
@@ -52,9 +58,25 @@ class FeatureCore extends ObjectModel
     public $allows_multiple_values = false;
 
     /**
-     * @var bool Flag to indicate if feature allows entering custom values, or if predefined values must be used
+     * @var int Sorting method when multiple values were selected
+     */
+    public $sorting;
+
+    /**
+     * @var bool Deprecated
      */
     public $allows_custom_values = true;
+
+    /**
+     * @var string FO separator, when multiple values were selected
+     */
+    public $multiple_separator;
+
+    /**
+     * @var string FO display schema, when multiple values were selected
+     */
+    public $multiple_schema;
+
 
     /**
      * @see ObjectModel::$definition
@@ -64,12 +86,15 @@ class FeatureCore extends ObjectModel
         'primary'   => 'id_feature',
         'multilang' => true,
         'fields'    => [
-            'position'               => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
-            'allows_multiple_values' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
-            'allows_custom_values'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'allows_custom_values'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'sorting'                   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbType' => 'tinyint(1)', 'dbDefault' => self::SORT_VALUE_ASC],
 
             /* Lang fields */
-            'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+            'name'                 => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+            'multiple_separator'   => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => false, 'size' => 128, 'dbNullable' => true],
+            'multiple_schema'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_lang' => [
@@ -171,14 +196,13 @@ class FeatureCore extends ObjectModel
      */
     public static function addFeatureImport($name, $position = false)
     {
-        $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $featureId = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_feature`')
                 ->from('feature_lang')
                 ->where('`name` = \''.pSQL($name).'\'')
-                ->groupBy('`id_feature`')
         );
-        if (empty($rq)) {
+        if (! $featureId) {
             // Feature doesn't exist, create it
             $feature = new Feature();
             $feature->name = array_fill_keys(Language::getIDs(), (string) $name);
@@ -190,15 +214,14 @@ class FeatureCore extends ObjectModel
             $feature->add();
 
             return $feature->id;
-        } elseif (isset($rq['id_feature']) && $rq['id_feature']) {
-            if (is_numeric($position) && $feature = new Feature((int) $rq['id_feature'])) {
+        } else {
+            if (is_numeric($position) && $feature = new Feature($featureId)) {
                 $feature->position = (int) $position;
                 if (Validate::isLoadedObject($feature)) {
                     $feature->update();
                 }
             }
-
-            return (int) $rq['id_feature'];
+            return $featureId;
         }
     }
 
@@ -297,7 +320,7 @@ class FeatureCore extends ObjectModel
      * @param array $listIdsProduct
      * @param int   $idLang
      *
-     * @return array|bool|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -307,7 +330,7 @@ class FeatureCore extends ObjectModel
     public static function getFeaturesForComparison($listIdsProduct, $idLang)
     {
         if (!Feature::isFeatureActive()) {
-            return false;
+            return [];
         }
 
         $ids = '';
@@ -318,10 +341,10 @@ class FeatureCore extends ObjectModel
         $ids = rtrim($ids, ',');
 
         if (empty($ids)) {
-            return false;
+            return [];
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('f.*, fl.*')
                 ->from('feature', 'f')
@@ -481,5 +504,30 @@ class FeatureCore extends ObjectModel
             ],
             '`id_feature`='.(int) $movedFeature['id_feature']
         ));
+    }
+
+    /**
+     * @return Feature[]
+     * @throws PrestaShopException
+     */
+    public static function getAll()
+    {
+        $collection = new PrestaShopCollection('Feature');
+        return $collection->getResults();
+    }
+
+    /**
+     * Reset feature positions
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $features = static::getFeatures(Configuration::get('PS_LANG_DEFAULT'));
+        foreach ($features as $feature) {
+            FeatureValue::cleanPositions((int)$feature['id_feature']);
+        }
     }
 }
