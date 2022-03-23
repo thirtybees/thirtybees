@@ -69,7 +69,7 @@
                 {/if}
                 {foreach from=$available_feature.featureValues item=value}
                   <option value="{$value.id_feature_value}"
-                          {if in_array($value.id_feature_value, $available_feature.current_item)}selected="selected"{/if} >
+                          {if in_array($value.id_feature_value, $available_feature.selected)}selected="selected"{/if} >
                     {$value.value|truncate:80}
                   </option>
                 {/foreach}
@@ -92,10 +92,14 @@
 
             {foreach from=$available_feature.featureValues item=value}
               <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
-                {include file="../../helpers/form/form.tpl"
+
+                {if array_key_exists($value.id_feature_value, $available_feature['displayable_values'])}
+                  {include file="../../helpers/form/form.tpl"
                   fields=[['form' => ['input' => [['type' => 'text', 'name' => "displayable_{$value.id_feature_value}", 'lang' => true, 'class' => 'displayable-input']]]]]
-                  fields_value=["displayable_{$value.id_feature_value}" => [$value.id_lang => {$available_feature.dis[$value.id_lang]}]]
-                }
+                  fields_value=["displayable_{$value.id_feature_value}" => $available_feature['displayable_values'][$value.id_feature_value]]
+                  }
+                {/if}
+
               </div>
             {/foreach}
 
@@ -105,8 +109,8 @@
           <td>
             {if $available_feature.allows_custom_values}
               <div class="custom_group" id="custom_group_{$available_feature.id_feature}">
-                <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature.val)}" />
-                {foreach from=$available_feature.val key=customValueIndex item=customValue}
+                <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature.custom_values)}" />
+                {foreach from=$available_feature.custom_values key=customValueIndex item=customValue}
                   <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
                     <div class="row lang-0" style='display: none;'>
                       <div class="col-lg-9">
@@ -115,7 +119,7 @@
                                   cols="60" style='background-color:#CCF'
                                   rows="1"
                                   onkeyup="updateAll($(this))"
-                        >{$available_feature.val[1].value|escape:'html':'UTF-8'|default:""}</textarea>
+                        >{$customValue[1]|escape:'html':'UTF-8'|default:""}</textarea>
                       </div>
 
                       <div class="col-lg-3">
