@@ -2847,9 +2847,19 @@ class AdminProductsControllerCore extends AdminController
         $product->deleteFeatures();
 
         // save predefined feature values
+        $displayable_values = [];
+
         foreach ($predefined as $featureId => $values) {
             foreach ($values as $value) {
                 $product->addFeaturesToDB($featureId, $value);
+
+                foreach (Language::getIDs() as $id_lang) {
+                    $displayable_values[] = [
+                        'id_feature_value' => $value,
+                        'id_lang' => $id_lang,
+                        'displayable' => Tools::getValue('displayable_'.$value.'_'.$id_lang),
+                    ];
+                }
             }
         }
 
@@ -2862,6 +2872,11 @@ class AdminProductsControllerCore extends AdminController
                 }
             }
         }
+
+        foreach ($displayable_values as $displayable_value) {
+            $product->addFeaturesDisplayableToDb($displayable_value['id_feature_value'], $displayable_value['id_lang'], $displayable_value['displayable']);
+        }
+
     }
 
     /**
@@ -5705,21 +5720,28 @@ class AdminProductsControllerCore extends AdminController
             if ($obj->id) {
                 if ($this->product_exists_in_shop) {
                     $features = Feature::getFeatures($this->context->language->id, (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP));
+                    $ids_feature_value_selected = array_column($obj->getFeatures(), 'id_feature_value');
 
                     foreach ($features as $k => $tab_features) {
-                        $features[$k]['current_item'] = [];
-                        $features[$k]['val'] = [];
+                        // $features[$k]['current_item'] = [];
+                        // $features[$k]['val'] = [];
+                        // $features[$k]['dis'] = [];
 
-                        foreach ($obj->getFeatures() as $tab_products) {
+
+
+                        /*foreach ($obj->getFeatures() as $tab_products) {
                             if ($tab_products['id_feature'] == $tab_features['id_feature']) {
                                 $features[$k]['current_item'][] = $tab_products['id_feature_value'];
                             }
-                        }
+                        }*/
 
                         $features[$k]['featureValues'] = FeatureValue::getFeatureValuesWithLang($this->context->language->id, (int) $tab_features['id_feature']);
                         $custom = true;
                         if (count($features[$k]['featureValues'])) {
-                            foreach ($features[$k]['featureValues'] as $value) {
+                            foreach ($features[$k]['featureValues'] as &$value) {
+
+                                $value['selected'] = in_array($value['id_feature_value'], $ids_feature_value_selected);
+
                                 if (in_array($value['id_feature_value'], $features[$k]['current_item'])) {
                                     $custom = false;
                                     break;
@@ -5728,23 +5750,39 @@ class AdminProductsControllerCore extends AdminController
                         }
 
                         $features[$k]['val'] = [];
-                        if ($custom) {
+                        //if ($custom) {
                             foreach ($features[$k]['current_item'] as $item) {
                                 $itemValues = [];
+                                $displayableValues = [];
                                 foreach (FeatureValue::getFeatureValueLang($item) as $featureValue) {
                                     if ($featureValue && isset($featureValue['id_lang'])) {
-                                        $itemValues[$featureValue['id_lang']] = $featureValue['value'];
+
+                                        if ($custom) {
+                                            $itemValues[$featureValue['id_lang']] = $featureValue['value'];
+                                        }
+
+                                        if (isset($featureValue['displayable'])) {
+                                            $displayableValues[$featureValue['id_feature_value']][$featureValue['id_lang']] = $featureValue['displayable'];
+                                        }
                                     }
                                 }
                                 if ($itemValues) {
                                     $features[$k]['val'][] = $itemValues;
                                 }
+                                if ($displayableValues) {
+                                    $features[$k]['dis'] = $displayableValues;
+                                }
                             }
-                        }
+                        //}
                         if (! $features[$k]['val']) {
                             $features[$k]['val'][] = [];
                         }
                     }
+
+                    echo '<pre>';
+                    print_r($features);
+                    echo '</pre>';
+                    die();
 
                     $data->assign('available_features', $features);
                     $data->assign('product', $obj);

@@ -40,9 +40,8 @@
       <thead>
       <tr>
         <th><span class="title_box">{l s='Feature'}</span></th>
-        <th><span class="title_box">{l s='Prefix'}</span></th>
         <th><span class="title_box">{l s='Pre-defined value'}</span></th>
-        <th><span class="title_box">{l s='Suffix'}</span></th>
+        <th><span class="title_box">{l s='Displayable'}</span></th>
         <th><span class="title_box"><u>{l s='or'}</u> {l s='Customized value'}</span></th>
       </tr>
       </thead>
@@ -53,20 +52,13 @@
           {* feature name *}
           <td>{$available_feature.name}</td>
 
-          {* prefix values *}
-          <td id="prefix_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
-            {foreach from=$available_feature.featureValues item=value}
-              <input id="prefix_{$value.id_feature_value}" class="prefix-field" type="text" value="{$value.id_feature_value}" title="{l s='Prefix for'} {$value.value}">
-            {/foreach}
-          </td>
-
           {* predefined values *}
           <td>
             {if sizeof($available_feature.featureValues)}
               <select id="feature_{$available_feature.id_feature}_value"
                       class="chosen"
                       name="feature_{$available_feature.id_feature}_value[]"
-                      onchange="$('.custom_{$available_feature.id_feature}_').val(''); renderSuffixAndPrefixFields(this)"
+                      onchange="$('.custom_{$available_feature.id_feature}_').val(''); renderDisplayableFields(this)"
                       {if $available_feature.allows_multiple_values}
                         size="{min(3, count($available_feature.featureValues))}"
                         multiple
@@ -95,18 +87,17 @@
             {/if}
           </td>
 
-          {* suffix values *}
-          <td id="suffix_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+          {* displayable values *}
+          <td id="displayable_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
 
             {foreach from=$available_feature.featureValues item=value}
-              <div id="suffix_{$value.id_feature_value}" class="suffix-field">
-                <div class="col-lg-9">
-                  <input type="text" value="{$value.id_feature_value}" title="{l s='Suffix for'} {$value.value}" />
-                </div>
+              <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
+                {include file="../../helpers/form/form.tpl"
+                  fields=[['form' => ['input' => [['type' => 'text', 'name' => "displayable_{$value.id_feature_value}", 'lang' => true, 'class' => 'displayable-input']]]]]
+                  fields_value=["displayable_{$value.id_feature_value}" => [$value.id_lang => {$available_feature.dis[$value.id_lang]}]]
+                }
               </div>
             {/foreach}
-
-            {include file="../../helpers/form/form.tpl" fields=[['form' => ['description' => 'yooo']]]}
 
           </td>
 
@@ -281,25 +272,40 @@
     $(document).ready(function() {
       $('select.chosen').chosen( { width: '100%' } );
 
-      // Render all Suffix/Prefix fields
+      // Render all displayable fields
       document.querySelectorAll('#product-features tr select').forEach(function(select) {
-        console.log(select);
-        renderSuffixAndPrefixFields(select);
+        renderDisplayableFields(select);
       })
     });
 
-    function renderSuffixAndPrefixFields(select) {
+    function renderDisplayableFields(select) {
 
       var row = select.closest('tr');
 
-      // Hide all prefix/suffix elements
-      var prefix_elements = row.querySelectorAll('.prefix-field');
-      var suffix_elements = row.querySelectorAll('.suffix-field');
+      // Hide displayable elements
+      var displayable_elements = row.querySelectorAll('.displayable-field');
 
-      if (prefix_elements.length || suffix_elements.length) {
-        prefix_elements.forEach((element) => { element.style.display = 'none' });
-        suffix_elements.forEach((element) => { element.style.display = 'none' });
+      if (displayable_elements.length) {
+
+        displayable_elements.forEach((element) => {
+          element.style.display = 'none';
+
+          var displayable_input = element.querySelector('.displayable-input');
+
+          if (displayable_input) {
+            element.insertAdjacentHTML('beforeend', displayable_input.closest('.form-group').innerHTML);
+
+            // Remove all unnecessary forms, which where added by include form.tpl
+            var form = element.querySelector('form.defaultForm');
+
+            if (form) {
+              form.remove();
+            }
+          }
+
+        });
       }
+
 
 
       // Display the selected options
@@ -308,8 +314,7 @@
       // Hide box if no value or only id_feature_value=0 is selected
       if (selected_feature_values.length && (selected_feature_values.length>1 || selected_feature_values[0].value!=='0')) {
         selected_feature_values.forEach(function(selected_feature_value) {
-          row.querySelector('#prefix_'+selected_feature_value.value).style.display = 'inline-block';
-          row.querySelector('#suffix_'+selected_feature_value.value).style.display = 'inline-block';
+          row.querySelector('#displayable_'+selected_feature_value.value).style.display = 'block';
         });
       }
     }
@@ -324,8 +329,7 @@
       width: calc(100% - 10px);
     }
 
-    #product-features input[type="text"].prefix-field,
-    #product-features input[type="text"].suffix-field {
+    #product-features input[type="text"].displayble-field {
       height: 24px;
       margin: 4px 0 3px 0;
     }

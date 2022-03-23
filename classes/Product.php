@@ -4332,6 +4332,13 @@ class ProductCore extends ObjectModel
 		WHERE `id_product` = '.(int) $this->id
         );
 
+        // Delete product features lang
+        $result = Db::getInstance()->execute(
+            '
+		DELETE FROM `'._DB_PREFIX_.'feature_product_lang`
+		WHERE `id_product` = '.(int) $this->id
+        );
+
         SpecificPriceRule::applyAllRules([(int) $this->id]);
 
         return ($result);
@@ -6236,6 +6243,16 @@ class ProductCore extends ObjectModel
         $row = ['id_feature_value' => (int) $idValue, 'id_lang' => (int) $idLang, 'value' => pSQL($cust)];
 
         return Db::getInstance()->insert('feature_value_lang', $row);
+    }
+
+    public function addFeaturesDisplayableToDb($id_feature_value, $id_lang, $displayable) {
+
+        if (!$displayable = pSQL($displayable)) {
+            return false;
+        }
+
+        $row = ['id_product' => $this->id, 'id_feature_value' => (int)$id_feature_value, 'id_lang' => (int)$id_lang, 'displayable' => $displayable];
+        return Db::getInstance()->insert('feature_product_lang', $row);
     }
 
     /**
