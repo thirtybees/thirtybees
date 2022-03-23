@@ -82,6 +82,7 @@ class FeatureCore extends ObjectModel
         'fields'    => [
             'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
             'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'allows_custom_values'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
             'sorting'                   => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'dbDefault' => ''],
 
             /* Lang fields */

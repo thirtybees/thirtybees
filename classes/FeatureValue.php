@@ -58,6 +58,7 @@ class FeatureValueCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
+            'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned'],
             'position'   => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
 
             /* Lang fields */
