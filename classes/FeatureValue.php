@@ -144,7 +144,7 @@ class FeatureValueCore extends ObjectModel
                 ->from('feature_value_lang', 'vl')
                 ->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND vl.`id_lang`=pl.`id_lang`')
                 ->where('vl.`id_feature_value` = '.(int) $idFeatureValue)
-                ->orderBy('vl.`id_lang`')
+                ->orderBy('vl.`id_lang`, vl.`id_feature_value`')
         );
     }
 

@@ -2803,7 +2803,6 @@ class AdminProductsControllerCore extends AdminController
 
         // collect predefined information
         $predefined = [];
-
         foreach ($_POST as $key => $val) {
             // match pre-defined values
             if (preg_match('/^feature_([0-9]+)_value/i', $key, $match)) {
@@ -2838,6 +2837,13 @@ class AdminProductsControllerCore extends AdminController
                 }
             }
         }
+
+        /*echo '<pre>';
+        print_r($predefined);
+
+        print_r($custom);
+        echo '</pre>';
+        die();*/
 
         // Don't continue if there was any error
         if ($this->errors) {
@@ -5712,54 +5718,79 @@ class AdminProductsControllerCore extends AdminController
         } else {
             if ($obj->id) {
                 if ($this->product_exists_in_shop) {
-                    $features = Feature::getFeatures($this->context->language->id, (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP));
 
                     // Get all selected/saved values and split them into default and custom values
-                    //$ids_feature_selected = [];
                     $ids_feature_value_selected = [];
-                    //$ids_feature_selected_custom = [];
                     $ids_feature_value_selected_custom = [];
+
                     foreach ($obj->getFeatures() as $feature_selected) {
                         if ($feature_selected['custom']) {
-                            //$ids_feature_selected_custom[$feature_selected['id_feature']] = $feature_selected['id_feature'];
                             $ids_feature_value_selected_custom[$feature_selected['id_feature']][] = $feature_selected['id_feature_value'];
                         }
                         else {
-                            //$ids_feature_selected[$feature_selected['id_feature']] = $feature_selected['id_feature'];
                             $ids_feature_value_selected[$feature_selected['id_feature']][] = $feature_selected['id_feature_value'];
                         }
                     }
 
+                    // Loop through all available features in this store
+                    $features = Feature::getFeatures($this->context->language->id, (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP));
+
                     foreach ($features as $k => $tab_features) {
-                        $features[$k]['selected'] = $ids_feature_value_selected[$tab_features['id_feature']];
+
+                        $features[$k]['selected'] = isset($ids_feature_value_selected[$tab_features['id_feature']]) ? $ids_feature_value_selected[$tab_features['id_feature']] : [];
+                        $features[$k]['custom_values'] = [];
+                        // $features[$k]['selected_custom'] = isset($ids_feature_value_selected_custom[$tab_features['id_feature']]) ? $ids_feature_value_selected_custom[$tab_features['id_feature']] : [];
+                        $features[$k]['displayable_values'] = [];
 
                         $features[$k]['featureValues'] = FeatureValue::getFeatureValuesWithLang($this->context->language->id, (int) $tab_features['id_feature'], true);
 
                         if (count($features[$k]['featureValues'])) {
                             foreach ($features[$k]['featureValues'] as $value) {
 
+                                $id_feature = $value['id_feature'];
+                                $id_feature_value = $value['id_feature_value'];
 
-                                if (array_key_exists($value['id_feature'], $ids_feature_value_selected) || array_key_exists($value['id_feature'], $ids_feature_value_selected_custom)) {
+                                // Check if we need to load any language values (note: in getFeatureValuesWithLang we get only the value in the context language
+                                $custom = array_key_exists($id_feature, $ids_feature_value_selected_custom);
+                                $displayable = array_key_exists($id_feature, $ids_feature_value_selected);
+
+                                if ($custom || $displayable) {
+
+                                    $lang_values = [];
+
+                                    foreach (FeatureValue::getFeatureValueLang($id_feature_value) as $feature_lang) {
+
+                                        $id_lang = $feature_lang['id_lang'];
 
 
-                                    foreach (FeatureValue::getFeatureValueLang($value['id_feature_value']) as $feature_lang) {
 
+                                        if ($custom && in_array($id_feature_value, $ids_feature_value_selected_custom[$id_feature])) {
+                                            $lang_values[$id_lang] = $feature_lang['value'];
 
-                                        if (in_array($value['id_feature_value'], $ids_feature_value_selected_custom[$value['id_feature']])) {
-                                            $features[$k]['custom_values'][$value['id_feature_value']][$feature_lang['id_lang']] = $feature_lang['value'];
                                         }
 
-                                        if (in_array($value['id_feature_value'], $ids_feature_value_selected[$value['id_feature']])) {
-                                            $features[$k]['displayable_values'][$value['id_feature_value']][$feature_lang['id_lang']] = $feature_lang['displayable'];
+                                        if ($displayable && in_array($id_feature_value, $ids_feature_value_selected[$id_feature])) {
+                                            $features[$k]['displayable_values'][$id_feature_value][$id_lang] = $feature_lang['displayable'];
                                         }
+
+
 
                                     }
+                                    if (!empty($lang_values)) {
+                                        $features[$k]['custom_values'][] = $lang_values;
+                                    }
+
+
+                                    // Make sure, that there is always an empty input
+
+
                                 }
                             }
+                            //if ($tab_features['allows_custom_values'] && ($tab_features['allows_multiple_values'] || empty($features[$k]['custom_values'][$id_feature_value]))) {
+                                $features[$k]['custom_values'][][1] = '';
+                            //}
                         }
 
-                        // Make sure, that there is always an empty input
-                        $features[$k]['custom_values'][0][1] = '';
 
                     }
 
@@ -5768,11 +5799,10 @@ class AdminProductsControllerCore extends AdminController
                     echo '</pre>';
                     die();*/
 
-
                     $data->assign('available_features', $features);
                     $data->assign('product', $obj);
                     $data->assign('link', $this->context->link);
-                    $data->assign('default_form_language', $this->default_form_language);
+                    $data->assign('defaultFormLanguage', $this->default_form_language); // Todo: check why it was before default_form_language. (note that this file is defining multiple times default_language_form for smarty)
                 } else {
                     $this->displayWarning($this->l('You must save the product in this shop before adding features.'));
                 }

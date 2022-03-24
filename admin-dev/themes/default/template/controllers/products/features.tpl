@@ -58,7 +58,7 @@
               <select id="feature_{$available_feature.id_feature}_value"
                       class="chosen"
                       name="feature_{$available_feature.id_feature}_value[]"
-                      onchange="$('.custom_{$available_feature.id_feature}_').val(''); renderDisplayableFields(this)"
+                      onchange="$('.custom_{$available_feature.id_feature}_').val('');"
                       {if $available_feature.allows_multiple_values}
                         size="{min(3, count($available_feature.featureValues))}"
                         multiple
@@ -88,14 +88,14 @@
           </td>
 
           {* displayable values *}
-          <td id="displayable_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+          <td class="displayable_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
 
             {foreach from=$available_feature.featureValues item=value}
               <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
 
                 {if array_key_exists($value.id_feature_value, $available_feature['displayable_values'])}
-                  {include file="../../helpers/form/form.tpl"
-                  fields=[['form' => ['input' => [['type' => 'text', 'name' => "displayable_{$value.id_feature_value}", 'lang' => true, 'class' => 'displayable-input']]]]]
+                  {include file="../../helpers/form/form_input.tpl"
+                  input=['type' => 'text', 'name' => "displayable_{$value.id_feature_value}", 'lang' => true, 'class' => 'displayable-input']
                   fields_value=["displayable_{$value.id_feature_value}" => $available_feature['displayable_values'][$value.id_feature_value]]
                   }
                 {/if}
@@ -109,7 +109,8 @@
           <td>
             {if $available_feature.allows_custom_values}
               <div class="custom_group" id="custom_group_{$available_feature.id_feature}">
-                <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature.custom_values)}" />
+                {$available_feature['custom_values']|print_r}<br>
+                <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature['custom_values'])}" />
                 {foreach from=$available_feature.custom_values key=customValueIndex item=customValue}
                   <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
                     <div class="row lang-0" style='display: none;'>
@@ -211,7 +212,7 @@
   </div>
   <script type="text/javascript">
     if (tabs_manager.allow_hide_other_languages)
-      hideOtherLanguage({$default_form_language});
+      hideOtherLanguage({$defaultFormLanguage});
     {literal}
     $(".textarea-autosize").autosize();
 
@@ -275,52 +276,65 @@
     // Make sure, that the chosen select has not a width of 0px
     $(document).ready(function() {
       $('select.chosen').chosen( { width: '100%' } );
-
-      // Render all displayable fields
-      document.querySelectorAll('#product-features tr select').forEach(function(select) {
-        renderDisplayableFields(select);
-      })
     });
 
-    function renderDisplayableFields(select) {
 
-      var row = select.closest('tr');
+    $("#product-features select").on("change", function(element, id_feature_value) {
+      addDisplayableField(id_feature_value.selected);
+      renderAllDisplayableFields(element.target);
+    })
 
-      // Hide displayable elements
-      var displayable_elements = row.querySelectorAll('.displayable-field');
+    function renderAllDisplayableFields(select) {
+
+      // Get the selected values
+      var feature_value_selected = [];
+      var selected_options = Array.from(select.selectedOptions);
+
+      selected_options.forEach(function (option) {
+        feature_value_selected.push('displayable_'+option.value);
+      })
+
+      // Hide all displayable elements, which aren't selected
+      var displayable_elements = select.closest('tr').querySelectorAll('.displayable-field');
 
       if (displayable_elements.length) {
-
         displayable_elements.forEach((element) => {
-          element.style.display = 'none';
-
-          var displayable_input = element.querySelector('.displayable-input');
-
-          if (displayable_input) {
-            element.insertAdjacentHTML('beforeend', displayable_input.closest('.form-group').innerHTML);
-
-            // Remove all unnecessary forms, which where added by include form.tpl
-            var form = element.querySelector('form.defaultForm');
-
-            if (form) {
-              form.remove();
-            }
+          if (!feature_value_selected.includes(element.id)) {
+            element.style.display = 'none';
           }
-
         });
       }
 
+    }
 
+    function addDisplayableField(id_feature_value) {
 
-      // Display the selected options
-      var selected_feature_values = Array.from(select.selectedOptions);
-
-      // Hide box if no value or only id_feature_value=0 is selected
-      if (selected_feature_values.length && (selected_feature_values.length>1 || selected_feature_values[0].value!=='0')) {
-        selected_feature_values.forEach(function(selected_feature_value) {
-          row.querySelector('#displayable_'+selected_feature_value.value).style.display = 'block';
-        });
+      if (!id_feature_value || id_feature_value==='0') {
+        return false;
       }
+
+      var displayable_div = document.getElementById('displayable_'+id_feature_value);
+
+      // Check if the parent div is empty (the field may already be generated before)
+      if (displayable_div.innerHTML.trim().length===0) {
+
+        var displayable_field_html = `{/literal}{include file="../../helpers/form/form_input.tpl" input=['type' => 'text', 'name' => "displayable_fake", 'lang' => true, 'class' => 'displayable-input']}{literal}`;
+
+        // Replace the fake name with the correct one
+        displayable_field_html = displayable_field_html.replaceAll('displayable_fake', 'displayable_'+id_feature_value);
+
+        // Move the input into the parent div
+        displayable_div.insertAdjacentHTML('beforeend', displayable_field_html);
+      }
+
+
+      // Move the parent div to the end of the list
+      var displayable_values_div = displayable_div.closest('.displayable_values');
+      displayable_values_div.appendChild(displayable_div);
+
+      // Show the displayable div
+      displayable_div.style.display = 'block';
+
     }
 
   </script>
@@ -331,16 +345,14 @@
     #product-features input.search-choice {
       display: inline-block;
       width: calc(100% - 10px);
+      font-size: 12px;
+      padding: 7px 8px;
     }
 
-    #product-features input[type="text"].displayble-field {
-      height: 24px;
-      margin: 4px 0 3px 0;
+    #product-features .displayable-field .form-group {
+      margin: 0;
     }
 
-    #product-features input[type="text"].prefix-field {
-      text-align: right;
-    }
   </style>
 
 {/literal}
