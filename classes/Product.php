@@ -1983,10 +1983,11 @@ class ProductCore extends ObjectModel
             return [];
         }
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
-            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT name, value, pf.id_feature
+				SELECT name, IFNULL(pfl.displayable, CONCAT_WS(\' \', fl.prefix, fvl.value, fl.suffix)) AS value, pf.id_feature
 				FROM '._DB_PREFIX_.'feature_product pf
+				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
@@ -1994,6 +1995,23 @@ class ProductCore extends ObjectModel
 				WHERE pf.id_product = '.(int) $idProduct.'
 				ORDER BY f.position ASC'
             );
+
+            // Make sure we are 100% backward compatible
+            $features = [];
+
+            foreach ($feature_values as $feature_value) {
+                $id_feature = $feature_value['id_feature'];
+
+                if (!isset($features[$id_feature])) {
+                    $features[$id_feature]['name'] = $feature_value['name'];
+                    $features[$id_feature]['value'] = $feature_value['value'];
+                }
+                else {
+                    $features[$id_feature]['value'] .= ', '.$feature_value['value'];
+                }
+            }
+
+            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $features;
         }
 
         return static::$_frontFeaturesCache[$idProduct.'-'.$idLang];

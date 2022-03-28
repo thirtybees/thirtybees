@@ -114,10 +114,11 @@ class FeatureValueCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('v.*, vl.*, pl.displayable')
+                ->select('v.*, vl.*, CONCAT_WS(\' \', fl.prefix, vl.value, fl.suffix) AS value_full, pl.displayable')
                 ->from('feature_value', 'v')
                 ->leftJoin('feature_value_lang', 'vl', 'v.`id_feature_value` = vl.`id_feature_value` AND vl.`id_lang` = '.(int) $idLang)
                 ->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND pl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('feature_lang', 'fl', 'v.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('v.`id_feature` = '.(int) $idFeature)
                 ->where(!$custom ? 'v.`custom` IS NULL OR v.`custom` = 0' : '')
                 ->orderBy('vl.`value` ASC')

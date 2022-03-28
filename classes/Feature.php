@@ -40,6 +40,8 @@ class FeatureCore extends ObjectModel
      * @var string Feature name
      */
     public $name;
+    public $prefix;
+    public $suffix;
 
     /**
      * @var int Position of the feature
@@ -70,6 +72,8 @@ class FeatureCore extends ObjectModel
 
             /* Lang fields */
             'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+            'prefix'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => false, 'size' => 128, 'dbNullable' => true],
+            'suffix'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => false, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_lang' => [

@@ -5739,12 +5739,14 @@ class AdminProductsControllerCore extends AdminController
 
                         $features[$k]['selected'] = isset($ids_feature_value_selected[$tab_features['id_feature']]) ? $ids_feature_value_selected[$tab_features['id_feature']] : [];
                         $features[$k]['custom_values'] = [];
-                        // $features[$k]['selected_custom'] = isset($ids_feature_value_selected_custom[$tab_features['id_feature']]) ? $ids_feature_value_selected_custom[$tab_features['id_feature']] : [];
                         $features[$k]['displayable_values'] = [];
 
                         $features[$k]['featureValues'] = FeatureValue::getFeatureValuesWithLang($this->context->language->id, (int) $tab_features['id_feature'], true);
 
                         if (count($features[$k]['featureValues'])) {
+
+                            $index = 0; // features.tpl is expecting an array without keys from 0 upwards (for custom values)
+
                             foreach ($features[$k]['featureValues'] as $value) {
 
                                 $id_feature = $value['id_feature'];
@@ -5756,48 +5758,32 @@ class AdminProductsControllerCore extends AdminController
 
                                 if ($custom || $displayable) {
 
-                                    $lang_values = [];
-
                                     foreach (FeatureValue::getFeatureValueLang($id_feature_value) as $feature_lang) {
 
                                         $id_lang = $feature_lang['id_lang'];
 
-
-
                                         if ($custom && in_array($id_feature_value, $ids_feature_value_selected_custom[$id_feature])) {
-                                            $lang_values[$id_lang] = $feature_lang['value'];
-
+                                            $features[$k]['custom_values'][$index][$id_lang] = $feature_lang['value'];
                                         }
 
                                         if ($displayable && in_array($id_feature_value, $ids_feature_value_selected[$id_feature])) {
                                             $features[$k]['displayable_values'][$id_feature_value][$id_lang] = $feature_lang['displayable'];
                                         }
 
-
-
-                                    }
-                                    if (!empty($lang_values)) {
-                                        $features[$k]['custom_values'][] = $lang_values;
                                     }
 
-
-                                    // Make sure, that there is always an empty input
-
-
+                                    $index++;
                                 }
                             }
-                            //if ($tab_features['allows_custom_values'] && ($tab_features['allows_multiple_values'] || empty($features[$k]['custom_values'][$id_feature_value]))) {
+
+                            // Make sure, that there is always an empty input
+                            if ($tab_features['allows_custom_values'] && ($tab_features['allows_multiple_values'] || empty($features[$k]['custom_values']))) {
                                 $features[$k]['custom_values'][][1] = '';
-                            //}
+                            }
                         }
 
 
                     }
-
-                    /*echo '<pre>';
-                    print_r($features);
-                    echo '</pre>';
-                    die();*/
 
                     $data->assign('available_features', $features);
                     $data->assign('product', $obj);

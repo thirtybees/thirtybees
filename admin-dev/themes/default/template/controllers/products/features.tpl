@@ -68,10 +68,12 @@
                   <option value="0">---</option>
                 {/if}
                 {foreach from=$available_feature.featureValues item=value}
-                  <option value="{$value.id_feature_value}"
-                          {if in_array($value.id_feature_value, $available_feature.selected)}selected="selected"{/if} >
-                    {$value.value|truncate:80}
-                  </option>
+                  {if !$value.custom}
+                    <option value="{$value.id_feature_value}"
+                            {if in_array($value.id_feature_value, $available_feature.selected)}selected="selected"{/if} >
+                      {$value.value_full|truncate:80}
+                    </option>
+                  {/if}
                 {/foreach}
               </select>
             {else}
@@ -109,7 +111,6 @@
           <td>
             {if $available_feature.allows_custom_values}
               <div class="custom_group" id="custom_group_{$available_feature.id_feature}">
-                {$available_feature['custom_values']|print_r}<br>
                 <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature['custom_values'])}" />
                 {foreach from=$available_feature.custom_values key=customValueIndex item=customValue}
                   <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
