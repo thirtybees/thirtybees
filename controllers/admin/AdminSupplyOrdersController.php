@@ -1193,6 +1193,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
             // gets the reference
             $ref = pSQL(Tools::getValue('reference'));
 
+            // Make sure the product reference won't be overridden by the supplier reference (both columns are just called "reference")
+            unset($_POST['reference']);
+
             if (Tools::getValue('id_supply_order') != 0 && SupplyOrder::getReferenceById((int) Tools::getValue('id_supply_order')) != $ref) {
                 if ((int) SupplyOrder::exists($ref) != 0) {
                     $this->errors[] = Tools::displayError('The reference has to be unique.');
@@ -1428,6 +1431,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
         }
 
         if ((!count($this->errors) && $this->is_editing_order) || !$this->is_editing_order) {
+
+            // Make sure that the supply order reference is saved (it was unset above)
+            if (isset($ref) && $ref) {
+                $_POST['reference'] = $ref;
+            }
+
             parent::postProcess();
         }
     }
