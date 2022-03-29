@@ -36,6 +36,9 @@
  */
 class FeatureCore extends ObjectModel
 {
+    const MULTIPLE_VALUES_DISPLAY_COMMA = 1;
+    const MULTIPLE_VALUES_DISPLAY_RANGE = 2;
+
     /**
      * @var string Feature name
      */
@@ -59,6 +62,16 @@ class FeatureCore extends ObjectModel
     public $allows_custom_values = true;
 
     /**
+     * @var int FO display method, when multiple values were selected
+     */
+    public $multiple_values_display;
+
+    // Todo: clean desc
+    public $multiple_separator;
+    public $multiple_schema;
+
+
+    /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
@@ -66,14 +79,17 @@ class FeatureCore extends ObjectModel
         'primary'   => 'id_feature',
         'multilang' => true,
         'fields'    => [
-            'position'               => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
-            'allows_multiple_values' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
-            'allows_custom_values'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'allows_custom_values'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'multiple_values_display'   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => false, 'dbDefault' => '1'],
 
             /* Lang fields */
             'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
             'prefix'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => false, 'size' => 128, 'dbNullable' => true],
             'suffix'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => false, 'size' => 128, 'dbNullable' => true],
+            'multiple_separator'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
+            'multiple_schema'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_lang' => [

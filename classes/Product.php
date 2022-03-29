@@ -1985,7 +1985,7 @@ class ProductCore extends ObjectModel
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
             $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT name, IFNULL(pfl.displayable, CONCAT_WS(\' \', fl.prefix, fvl.value, fl.suffix)) AS value, pf.id_feature
+				SELECT fl.name, fvl.value, pfl.displayable, fl.prefix, fl.suffix, pf.id_feature, f.allows_multiple_values, f.multiple_values_display
 				FROM '._DB_PREFIX_.'feature_product pf
 				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
@@ -1996,19 +1996,59 @@ class ProductCore extends ObjectModel
 				ORDER BY f.position ASC'
             );
 
-            // Make sure we are 100% backward compatible
             $features = [];
+            $minimums = [];
+            $maximums = [];
+
+            // Find all min and max values per id_feature
+            foreach ($feature_values as $feature_value) {
+                if (Validate::isFloat($feature_value['value'])) {
+
+                    $id_feature = $feature_value['id_feature'];
+                    $value = $feature_value['value'];
+
+                    // Minimums
+                    if (!isset($minimums[$id_feature]) || ($minimums[$id_feature] > $value)) {
+                        $minimums[$id_feature] = $value;
+                    }
+
+                    // Maximums
+                    if (!isset($maximums[$id_feature]) || ($maximums[$id_feature] < $value)) {
+                        $maximums[$id_feature] = $value;
+                    }
+                }
+            }
 
             foreach ($feature_values as $feature_value) {
+
                 $id_feature = $feature_value['id_feature'];
+                $value = $feature_value['value'];
+                $displayable = $feature_value['displayable'];
 
                 if (!isset($features[$id_feature])) {
                     $features[$id_feature]['name'] = $feature_value['name'];
-                    $features[$id_feature]['value'] = $feature_value['value'];
+                    $features[$id_feature]['value'] = '';
+                }
+
+
+
+                if ($feature_value['multiple_values_display']==Feature::MULTIPLE_VALUES_DISPLAY_RANGE) {
+                    // Check if it's the minimum
+                    if ($value==$minimums[$id_feature]) {
+                        $features[$id_feature]['value'] = 'from'.' '.$value.' '.$features[$id_feature]['value'];
+                    }
+
+                    // Check if it's the maximum
+                    if ($value==$maximums[$id_feature]) {
+                        $features[$id_feature]['value'] .= 'to'.' '.$value;
+                    }
                 }
                 else {
                     $features[$id_feature]['value'] .= ', '.$feature_value['value'];
                 }
+
+
+
             }
 
             static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $features;
