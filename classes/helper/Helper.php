@@ -322,6 +322,8 @@ class HelperCore
     /**
      * @param string $tpl
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -337,32 +339,22 @@ class HelperCore
      *
      * @return Smarty_Internal_Template|object
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
-        if ($this->override_folder) {
-            if ($this->context->controller instanceof ModuleAdminController) {
-                $overrideTplPath = $this->context->controller->getTemplatePath($tplName).$this->override_folder.$this->base_folder.$tplName;
-            } elseif ($this->module) {
-                $overrideTplPath = _PS_MODULE_DIR_.$this->module->name.'/views/templates/admin/_configure/'.$this->override_folder.$this->base_folder.$tplName;
-            } else {
-                if (file_exists($this->context->smarty->getTemplateDir(1).$this->override_folder.$this->base_folder.$tplName)) {
-                    $overrideTplPath = $this->context->smarty->getTemplateDir(1).$this->override_folder.$this->base_folder.$tplName;
-                } elseif (file_exists($this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$this->base_folder.$tplName)) {
-                    $overrideTplPath = $this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$this->base_folder.$tplName;
-                }
+        if (! Configuration::get('PS_DISABLE_OVERRIDES')) {
+            $overrideTplPath = $this->getOverrideTemplatePath($tplName);
+            if ($overrideTplPath && file_exists($overrideTplPath)) {
+                return $this->context->smarty->createTemplate($overrideTplPath, $this->context->smarty);
             }
-        } elseif ($this->module) {
-            $overrideTplPath = _PS_MODULE_DIR_.$this->module->name.'/views/templates/admin/_configure/'.$this->base_folder.$tplName;
         }
 
-        if (isset($overrideTplPath) && file_exists($overrideTplPath)) {
-            return $this->context->smarty->createTemplate($overrideTplPath, $this->context->smarty);
-        } else {
-            return $this->context->smarty->createTemplate($this->base_folder.$tplName, $this->context->smarty);
-        }
+        return $this->context->smarty->createTemplate($this->base_folder.$tplName, $this->context->smarty);
     }
 
     /**
@@ -435,6 +427,8 @@ class HelperCore
      *
      * @return mixed
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -468,7 +462,6 @@ class HelperCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     protected function l($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true)
     {
@@ -479,5 +472,32 @@ class HelperCore
         }
 
         return Translate::getAdminTranslation($string, get_class($this), $addslashes, $htmlentities);
+    }
+
+    /**
+     * Returns path to override template file. Override template file may or may not exists
+     *
+     * @param string $tplName
+     * @return string | null
+     */
+    protected function getOverrideTemplatePath($tplName)
+    {
+        if ($this->override_folder) {
+            if ($this->context->controller instanceof ModuleAdminController) {
+                return $this->context->controller->getTemplatePath($tplName) . $this->override_folder . $this->base_folder . $tplName;
+            } elseif ($this->module) {
+                return _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->override_folder . $this->base_folder . $tplName;
+            } else {
+                if (file_exists($this->context->smarty->getTemplateDir(1) . $this->override_folder . $this->base_folder . $tplName)) {
+                    return $this->context->smarty->getTemplateDir(1) . $this->override_folder . $this->base_folder . $tplName;
+                } elseif (file_exists($this->context->smarty->getTemplateDir(0) . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $this->base_folder . $tplName)) {
+                    return $this->context->smarty->getTemplateDir(0) . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $this->base_folder . $tplName;
+                }
+            }
+        } elseif ($this->module) {
+            return _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->base_folder . $tplName;
+        }
+
+        return null;
     }
 }
