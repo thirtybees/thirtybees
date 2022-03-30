@@ -1144,7 +1144,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 foreach ($products as &$item) {
                     // calculate md5 checksum on each product for use in tpl
                     $item['checksum'] = md5(_COOKIE_KEY_.$item['id_product'].'_'.$item['id_product_attribute']);
-                    $item['unit_price_te'] = Tools::roundPrice($item['unit_price_te']);
+                    $item['unit_price_te'] = Tools::roundPrice((float)$item['unit_price_te']);
 
                     // add id to ids list
                     $productIds[] = $item['id_product'].'_'.$item['id_product_attribute'];
