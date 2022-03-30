@@ -2225,7 +2225,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
                 'quantity_expected'      => [
                     'title'   => $this->l('Quantity'),
@@ -2241,7 +2241,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
                 'discount_rate'          => [
                     'title'   => $this->l('Discount percentage'),
@@ -2258,7 +2258,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
                 'price_with_discount_te' => [
                     'title'    => $this->l('Price with product discount (tax excl.)'),
@@ -2267,7 +2267,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
                 'tax_rate'               => [
                     'title'   => $this->l('Tax rate'),
@@ -2284,7 +2284,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
                 'price_ti'               => [
                     'title'    => $this->l('Price (tax incl.)'),
@@ -2293,7 +2293,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'filter'   => false,
                     'search'   => false,
                     'type'     => 'price',
-                    'currency' => true,
+                    'currency' => 'id_currency',
                 ],
             ];
 
