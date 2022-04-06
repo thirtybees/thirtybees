@@ -948,6 +948,10 @@ class ImageCore extends ObjectModel
         $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_'.$this->id_product.'.'.$format;
         $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'.'.$format;
 
+        foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+            $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'_'.$id_shop.'.'.$format;
+        }
+
         // perform delete
         $result = true;
         foreach ($filesToDelete as $file) {

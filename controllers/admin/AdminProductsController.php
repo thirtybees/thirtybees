@@ -943,7 +943,14 @@ class AdminProductsControllerCore extends AdminController
                 } else {
                     $productId = (int) Tools::getValue('id_product');
                     @unlink(_PS_TMP_IMG_DIR_.'product_'.$productId.'.jpg');
-                    @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$productId.'_'.$this->context->shop->id.'.jpg');
+                    if (Shop::getContext()==Shop::CONTEXT_ALL) {
+                        foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                            @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$productId.'_'.$id_shop.'.jpg');
+                        }
+                    }
+                    else {
+                        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$productId.'_'.$this->context->shop->id.'.jpg');
+                    }
                     $this->redirect_after = static::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&action=Images&addproduct'.'&token='.$this->token;
                 }
             } elseif (Tools::getIsset('imgPosition') && Tools::getIsset('imgDirection')) {
@@ -1627,8 +1634,16 @@ class AdminProductsControllerCore extends AdminController
         }
         $img->cover = 1;
 
-        @unlink(_PS_TMP_IMG_DIR_.'product_'.(int) $img->id_product.'.jpg');
-        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $img->id_product.'_'.$this->context->shop->id.'.jpg');
+        @unlink(_PS_TMP_IMG_DIR_.'product_'.$img->id_product.'.jpg');
+
+        if (Shop::getContext()==Shop::CONTEXT_ALL) {
+            foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$img->id_product.'_'.$id_shop.'.jpg');
+            }
+        }
+        else {
+            @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$img->id_product.'_'.$this->context->shop->id.'.jpg');
+        }
 
         if ($img->update()) {
             $this->jsonConfirmation($this->_conf[26]);
@@ -1673,9 +1688,21 @@ class AdminProductsControllerCore extends AdminController
         if (file_exists(_PS_TMP_IMG_DIR_.'product_'.$image->id_product.'.jpg')) {
             $res &= @unlink(_PS_TMP_IMG_DIR_.'product_'.$image->id_product.'.jpg');
         }
-        if (file_exists(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg')) {
-            $res &= @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg');
+
+        if (Shop::getContext()==Shop::CONTEXT_ALL) {
+            foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                if (file_exists(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$id_shop.'.jpg')) {
+                    $res &= @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$id_shop.'.jpg');
+                }
+            }
         }
+        else {
+            if (file_exists(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg')) {
+                $res &= @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg');
+            }
+        }
+
+
 
         if ($res) {
             $this->jsonConfirmation($this->_conf[7]);
@@ -1722,7 +1749,15 @@ class AdminProductsControllerCore extends AdminController
             return false;
         }
         @unlink(_PS_TMP_IMG_DIR_.'product_'.$product->id.'.jpg');
-        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$product->id.'_'.$this->context->shop->id.'.jpg');
+
+        if (Shop::getContext()==Shop::CONTEXT_ALL) {
+            foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$product->id.'_'.$id_shop.'.jpg');
+            }
+        }
+        else {
+            @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$product->id.'_'.$this->context->shop->id.'.jpg');
+        }
 
         return ((isset($idImage) && is_int($idImage) && $idImage) ? $idImage : false);
     }
@@ -5093,7 +5128,16 @@ class AdminProductsControllerCore extends AdminController
                 $file['shops'] = $jsonShops;
 
                 @unlink(_PS_TMP_IMG_DIR_.'product_'.(int) $product->id.'.jpg');
-                @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $product->id.'_'.$this->context->shop->id.'.jpg');
+
+                if (Shop::getContext()==Shop::CONTEXT_ALL) {
+                    foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $product->id.'_'.$id_shop.'.jpg');
+                    }
+                }
+                else {
+                    @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $product->id.'_'.$this->context->shop->id.'.jpg');
+                }
+
             }
         }
 

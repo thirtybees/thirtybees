@@ -330,11 +330,11 @@ class AdminCartsControllerCore extends AdminController
                 );
             }
 
-            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int) $idShop);
+            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, $idShop);
 
             if ($image) {
                 $imageProduct = new Image($image);
-                $product['image'] = ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$imageProduct->getExistingImgPath().'.jpg', 'product_mini_'.(int) $product['id_product'].(isset($product['id_product_attribute']) ? '_'.(int) $product['id_product_attribute'] : '').'.jpg', 45, 'jpg');
+                $product['image'] = ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$imageProduct->getExistingImgPath().'.jpg', 'product_mini_'.(int) $product['id_product'].'_'.$idShop.'.jpg', 45);
             } else {
                 $product['image'] = '--';
             }

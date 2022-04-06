@@ -2201,11 +2201,14 @@ class AdminImportControllerCore extends AdminController
 
                     if ($success) {
                         if ($entity == 'products') {
-                            if (is_file(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg');
+                            @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int)$idEntity.'.jpg');
+                            if (Shop::getContext()==Shop::CONTEXT_ALL) {
+                                foreach (Shop::getCompleteListOfShopsID() as $id_shop) {
+                                    @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int)$idEntity.'_'.$id_shop.'.jpg');
+                                }
                             }
-                            if (is_file(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'_'.(int) Context::getContext()->shop->id.'.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'_'.(int) Context::getContext()->shop->id.'.jpg');
+                            else {
+                                @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int)$idEntity.'_'.(int) Context::getContext()->shop->id.'.jpg');
                             }
                         }
                     }
