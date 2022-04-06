@@ -1985,7 +1985,7 @@ class ProductCore extends ObjectModel
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
             $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT fl.name, fvl.value, pfl.displayable, fl.prefix, fl.suffix, pf.id_feature, f.allows_multiple_values, f.multiple_values_display
+				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values, f.multiple_values_display
 				FROM '._DB_PREFIX_.'feature_product pf
 				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
@@ -1996,62 +1996,60 @@ class ProductCore extends ObjectModel
 				ORDER BY f.position ASC'
             );
 
-            $features = [];
-            $minimums = [];
-            $maximums = [];
+            $feature_values_helper = [];
 
-            // Find all min and max values per id_feature
-            foreach ($feature_values as $feature_value) {
-                if (Validate::isFloat($feature_value['value'])) {
-
-                    $id_feature = $feature_value['id_feature'];
-                    $value = $feature_value['value'];
-
-                    // Minimums
-                    if (!isset($minimums[$id_feature]) || ($minimums[$id_feature] > $value)) {
-                        $minimums[$id_feature] = $value;
-                    }
-
-                    // Maximums
-                    if (!isset($maximums[$id_feature]) || ($maximums[$id_feature] < $value)) {
-                        $maximums[$id_feature] = $value;
-                    }
-                }
-            }
-
+            // Get concatenated values, min_value and max_value per id_feature
             foreach ($feature_values as $feature_value) {
 
-                $id_feature = $feature_value['id_feature'];
-                $value = $feature_value['value'];
-                $displayable = $feature_value['displayable'];
+                $id_feature = (int)$feature_value['id_feature'];
+                $display_value = $feature_value['displayable'] ?: $feature_value['value'];
 
-                if (!isset($features[$id_feature])) {
-                    $features[$id_feature]['name'] = $feature_value['name'];
-                    $features[$id_feature]['value'] = '';
-                }
-
-
-
-                if ($feature_value['multiple_values_display']==Feature::MULTIPLE_VALUES_DISPLAY_RANGE) {
-                    // Check if it's the minimum
-                    if ($value==$minimums[$id_feature]) {
-                        $features[$id_feature]['value'] = 'from'.' '.$value.' '.$features[$id_feature]['value'];
-                    }
-
-                    // Check if it's the maximum
-                    if ($value==$maximums[$id_feature]) {
-                        $features[$id_feature]['value'] .= 'to'.' '.$value;
-                    }
+                if (!isset($feature_values_helper[$id_feature])) {
+                    $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
+                    $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema'];
+                    $feature_values_helper[$id_feature]['values'] = $display_value;
+                    $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                    $feature_values_helper[$id_feature]['max_value'] = $feature_value;
                 }
                 else {
-                    $features[$id_feature]['value'] .= ', '.$feature_value['value'];
-                }
 
+                    $display_separator = $feature_value['multiple_separator'] ?: ', ';
+
+                    // Concatenate values
+                    $feature_values_helper[$id_feature]['values'] .= $display_separator . $display_value;
+
+                    // Update min and max value
+                    if ($feature_values_helper[$id_feature]['min_value']['value'] > $feature_value['value']) {
+                        $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                    }
+
+                    if ($feature_values_helper[$id_feature]['max_value']['value'] < $feature_value['value']) {
+                        $feature_values_helper[$id_feature]['max_value'] = $feature_value;
+                    }
+                }
 
 
             }
 
-            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $features;
+            // Now create the 'value' based on the multiple_schema
+            foreach ($feature_values_helper as &$feature_value_helper) {
+                if ($multiple_schema = $feature_value_helper['multiple_schema']) {
+
+                    $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
+                    $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
+
+                    $value = str_replace('{values}', $feature_value_helper['values'], $multiple_schema);
+                    $value = str_replace('{min_value}', $display_value_min, $value);
+                    $value = str_replace('{max_value}', $display_value_max, $value);
+
+                    $feature_value_helper['value'] = $value;
+                }
+                else {
+                    $feature_value_helper['value'] = $feature_value_helper['values'];
+                }
+            }
+
+            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $feature_values_helper;
         }
 
         return static::$_frontFeaturesCache[$idProduct.'-'.$idLang];
@@ -6296,9 +6294,9 @@ class ProductCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function addFeaturesCustomToDB($idValue, $idLang, $cust)
+    public function addFeaturesCustomToDB($idValue, $idLang, $value)
     {
-        $row = ['id_feature_value' => (int) $idValue, 'id_lang' => (int) $idLang, 'value' => pSQL($cust)];
+        $row = ['id_feature_value' => (int) $idValue, 'id_lang' => (int) $idLang, 'value' => pSQL($value)];
 
         return Db::getInstance()->insert('feature_value_lang', $row);
     }
@@ -7029,13 +7027,13 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function addFeaturesToDB($idFeature, $idValue, $createCustomValue = false)
+    public function addFeaturesToDB($idFeature, $idValue = 0, $createCustomValue = false)
     {
         $idFeature = (int)$idFeature;
-        if ($createCustomValue) {
+        if (!$idValue || $createCustomValue) {
             $row = [
                 'id_feature' => $idFeature,
-                'custom' => 1
+                'custom' => 0
             ];
             Db::getInstance()->insert('feature_value', $row);
             $idValue = (int)Db::getInstance()->Insert_ID();

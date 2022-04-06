@@ -41,8 +41,8 @@
       <tr>
         <th><span class="title_box">{l s='Feature'}</span></th>
         <th><span class="title_box">{l s='Pre-defined value'}</span></th>
-        <th><span class="title_box">{l s='Displayable'}</span></th>
-        <th><span class="title_box"><u>{l s='or'}</u> {l s='Customized value'}</span></th>
+        <th><span class="title_box">{l s='Custom displayable'}</span></th>
+        <th><span class="title_box">{l s='Create new value'}</span></th>
       </tr>
       </thead>
 
@@ -58,7 +58,6 @@
               <select id="feature_{$available_feature.id_feature}_value"
                       class="chosen"
                       name="feature_{$available_feature.id_feature}_value[]"
-                      onchange="$('.custom_{$available_feature.id_feature}_').val('');"
                       {if $available_feature.allows_multiple_values}
                         size="{min(3, count($available_feature.featureValues))}"
                         multiple
@@ -68,12 +67,10 @@
                   <option value="0">---</option>
                 {/if}
                 {foreach from=$available_feature.featureValues item=value}
-                  {if !$value.custom}
                     <option value="{$value.id_feature_value}"
                             {if in_array($value.id_feature_value, $available_feature.selected)}selected="selected"{/if} >
-                      {$value.value_full|truncate:80}
+                      {$value.value|truncate:80}
                     </option>
-                  {/if}
                 {/foreach}
               </select>
             {else}
@@ -85,7 +82,7 @@
                    class="confirm_leave btn btn-link">
                   <i class="icon-plus-sign"></i> {l s='Add pre-defined values first'} <i class="icon-external-link-sign"></i>
                 </a>
-					    </span>
+              </span>
             {/if}
           </td>
 
@@ -96,9 +93,17 @@
               <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
 
                 {if array_key_exists($value.id_feature_value, $available_feature['displayable_values'])}
-                  {include file="../../helpers/form/form_input.tpl"
-                  input=['type' => 'text', 'name' => "displayable_{$value.id_feature_value}", 'lang' => true, 'class' => 'displayable-input']
-                  fields_value=["displayable_{$value.id_feature_value}" => $available_feature['displayable_values'][$value.id_feature_value]]
+                  {include
+                    file="../../helpers/form/form_input.tpl"
+                    input=[
+                      'type' => 'text',
+                      'name' => "displayable_{$value.id_feature_value}",
+                      'lang' => true,
+                      'class' => 'displayable-input'
+                    ]
+                    fields_value=[
+                      "displayable_{$value.id_feature_value}" => $available_feature['displayable_values'][$value.id_feature_value]
+                    ]
                   }
                 {/if}
 
@@ -107,87 +112,28 @@
 
           </td>
 
-          {* custom values *}
-          <td>
-            {if $available_feature.allows_custom_values}
-              <div class="custom_group" id="custom_group_{$available_feature.id_feature}">
-                <input type="hidden" id="custom_values_count_{$available_feature.id_feature}" name="custom_values_count_{$available_feature.id_feature}" value="{count($available_feature['custom_values'])}" />
-                {foreach from=$available_feature.custom_values key=customValueIndex item=customValue}
-                  <div class="custom_group_value" id="custom_group_{$available_feature.id_feature}_value_{$customValueIndex}">
-                    <div class="row lang-0" style='display: none;'>
-                      <div class="col-lg-9">
-                        <textarea class="textarea-autosize"
-                                  name="custom_{$available_feature.id_feature}_{$customValueIndex}_ALL"
-                                  cols="60" style='background-color:#CCF'
-                                  rows="1"
-                                  onkeyup="updateAll($(this))"
-                        >{$customValue[1]|escape:'html':'UTF-8'|default:""}</textarea>
-                      </div>
+          {* new values *}
+          <td class="new_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
 
-                      <div class="col-lg-3">
-                        {if $languages|count > 1}
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            {l s='ALL'}
-                            <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu">
-                            {foreach from=$languages item=language}
-                              <li>
-                                <a href="javascript:void(0);"
-                                   onclick="restore_lng($(this),{$language.id_lang});">{$language.iso_code}</a>
-                              </li>
-                            {/foreach}
-                          </ul>
-                        {/if}
-                        <a href="javascript:void(0);" onclick="deleteCustomValue($(this));">{l s='Delete'}</a>
-                      </div>
-                    </div>
-
-                    {foreach from=$languages key=k item=language}
-
-                      <div class="row translatable-field lang-{$language.id_lang}">
-                        <div class="col-lg-9">
-                          <textarea
-                                  class="textarea-autosize"
-                                  name="custom_{$available_feature.id_feature}_{$customValueIndex}_{$language.id_lang}"
-                                  cols="60"
-                                  rows="1"
-                                  onkeyup="if (isArrowKey(event)) return ;$('#feature_{$available_feature.id_feature}_value').val(0);"
-                          >{$customValue[$language.id_lang]|escape:'html':'UTF-8'|default:""}</textarea>
-                        </div>
-
-                        <div class="col-lg-3">
-                          {if $languages|count > 1}
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                              {$language.iso_code}
-                              <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                              <li>
-                                <a href="javascript:void(0);" onclick="all_languages($(this));">{l s='ALL'}</a>
-                              </li>
-                              {foreach from=$languages item=language}
-                                <li>
-                                  <a href="javascript:hideOtherLanguage({$language.id_lang});">{$language.iso_code}</a>
-                                </li>
-                              {/foreach}
-                            </ul>
-                          {/if}
-                          <a href="javascript:void(0);" onclick="deleteCustomValue($(this));">{l s='Delete'}</a>
-                        </div>
-                      </div>
-                    {/foreach}
+              <div class="new_group" id="new_{$available_feature.id_feature}">
+                <input type="hidden" id="new_values_count_{$available_feature.id_feature}" name="new_values_count_{$available_feature.id_feature}" value="1" />
+                <div class="new_group_value">
+                  <div class="col-lg-9">
+                    {include file="../../helpers/form/form_input.tpl" input=[
+                      'type' => 'text',
+                      'name' => "new_field_{$available_feature.id_feature}",
+                      'lang' => true,
+                      'class' => ''
+                    ]}
                   </div>
-                {/foreach}
+                  <div class="col-lg-3" style="margin-top: 10px;">
+                    <a href="javascript:void(0);" onclick="deleteCustomValue($(this));">{l s='Delete'}</a>
+                  </div>
+                </div>
               </div>
               {if $available_feature.allows_multiple_values}
-                <a href="javascript:void(0);" onclick="addCustomValue({$available_feature.id_feature})">{l s='Add another value'}</a>
+                <div class="col-lg-12" style="padding: 5px 0 5px 10px;"><a href="javascript:void(0);" onclick="addCustomValue({$available_feature.id_feature})">{l s='Add another value'}</a></div>
               {/if}
-            {else}
-              <div>
-                {l s='Custom values are not allowed for this feature'}
-              </div>
-            {/if}
           </td>
         </tr>
         {foreachelse}
@@ -242,36 +188,38 @@
     }
 
     function addCustomValue(featureId) {
-      var group = $('#custom_group_' + featureId);
-      var values = group.find('.custom_group_value');
+      var group = $('#new_' + featureId);
+      var values = group.find('.new_group_value');
+
       if (values.length > 0) {
-        var custom = $(values[0]).clone();
-        var cntInput = $('#custom_values_count_' + featureId);
+        var new_field = $(values[0]).clone();
+        var cntInput = $('#new_values_count_' + featureId);
         var newIndex = parseInt(cntInput.val(), 10);
         cntInput.val(newIndex + 1);
-        custom.attr('id', 'custom_group_' + featureId + '_value_' + newIndex);
-        custom.find('textarea').each(function (index, elem) {
+        new_field.find('input').each(function (index, elem) {
           var $elem = $(elem);
           var name = $elem.attr('name');
-          $elem.attr('name', "custom_" + featureId + "_" + newIndex + "_" + name.replace(/^.*_/, ""))
+          var new_identifier = "new_field_" + featureId + "_" + newIndex + "_" + name.replace(/^.*_/, "")
+          $elem.attr('name', new_identifier);
+          $elem.attr('id', new_identifier);
           $elem.attr('value', '');
         });
-        group.append(custom);
+        group.append(new_field);
       }
     }
 
     function deleteCustomValue($element) {
-      var group = $element.closest('.custom_group');
-      var cnt = group.find('.custom_group_value').length;
+      var group = $element.closest('.new_group');
+      var cnt = group.find('.new_group_value').length;
       if (cnt > 1) {
-        $element.closest('.custom_group_value').remove();
+        $element.closest('.new_group_value').remove();
       } else {
-        $element.closest('.custom_group_value').find('textarea').attr('value', '');
+        $element.closest('.new_group_value').find('textarea').attr('value', '');
       }
     }
 
     function updateAll($element) {
-      $element.closest('.custom_group_value').find('textarea').val($element.val());
+      $element.closest('.new_group_value').find('textarea').val($element.val());
     }
 
     // Make sure, that the chosen select has not a width of 0px
@@ -350,8 +298,10 @@
       padding: 7px 8px;
     }
 
-    #product-features .displayable-field .form-group {
+    #product-features td.displayable_values .form-group,
+    #product-features td.new_values .form-group {
       margin: 0;
+      color: red;
     }
 
   </style>

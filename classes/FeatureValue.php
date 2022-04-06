@@ -41,6 +41,8 @@ class FeatureValueCore extends ObjectModel
     public $id_feature;
     /** @var string Name */
     public $value;
+    /** @var string Name */
+    public $displayable;
     /** @var bool Custom */
     public $custom = 0;
     // @codingStandardsIgnoreEnd
@@ -57,7 +59,8 @@ class FeatureValueCore extends ObjectModel
             'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned'],
 
             /* Lang fields */
-            'value'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+            'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+            'displayable'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_value' => [
@@ -114,7 +117,7 @@ class FeatureValueCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('v.*, vl.*, CONCAT_WS(\' \', fl.prefix, vl.value, fl.suffix) AS value_full, pl.displayable')
+                ->select('v.*, vl.*, IFNULL(vl.displayable,vl.value) AS value, pl.displayable')
                 ->from('feature_value', 'v')
                 ->leftJoin('feature_value_lang', 'vl', 'v.`id_feature_value` = vl.`id_feature_value` AND vl.`id_lang` = '.(int) $idLang)
                 ->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND pl.`id_lang` = '.(int) $idLang)
