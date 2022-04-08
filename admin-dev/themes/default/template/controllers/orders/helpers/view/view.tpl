@@ -718,8 +718,8 @@
                         {l s='Edit'}
                       </a>
 
-                      <div ondblclick="copyDivTextContentToClipboard(event);">
-                      {displayAddressDetail address=$addresses.delivery newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);">'}
+                      <div ondblclick="copyDivTextContentToClipboard(event);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
+                      {displayAddressDetail address=$addresses.delivery newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
                       </div>
 
                       {if $addresses.delivery->other}
@@ -778,8 +778,8 @@
                       {l s='Edit'}
                     </a>
 
-                    <div ondblclick="copyDivTextContentToClipboard(event);">
-                    {displayAddressDetail address=$addresses.invoice newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);">'}
+                    <div ondblclick="copyDivTextContentToClipboard(event);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
+                    {displayAddressDetail address=$addresses.invoice newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
                     </div>
 
                     {if $addresses.invoice->other}

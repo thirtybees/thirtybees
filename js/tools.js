@@ -726,9 +726,15 @@ function copyToClipboard(data, e)
   }
 }
 
-function copyDivTextContentToClipboard(e)
+function copyDivTextContentToClipboard(e, popover)
 {
   copyToClipboard(e.target.textContent.trim(), e);
+
+  if (popover)
+  {
+    $(e.target).popover().popover('show');
+    setTimeout(() => { $(e.target).popover('hide'); }, 1000);
+  }
 }
 
 $(document).ready(function () {
