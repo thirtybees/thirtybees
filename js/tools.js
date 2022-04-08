@@ -709,6 +709,28 @@ function executeFunctionByName(functionName, args, context=window) {
   return context[func].apply(context, args);
 }
 
+function copyToClipboard(data, e)
+{
+  if (e != undefined)
+    e.preventDefault();
+
+  try {
+    if (navigator.clipboardData)
+      navigator.clipboardData.setData('Text', data);
+    else
+      navigator.clipboard.writeText(data);
+  }
+  catch (e)
+  {
+    console.error("Failed to write to clipboard: " + data);
+  }
+}
+
+function copyDivTextContentToClipboard(e)
+{
+  copyToClipboard(e.target.textContent.trim(), e);
+}
+
 $(document).ready(function () {
   // Hide all elements with .hideOnSubmit class when parent form is submit
   $('form').submit(function () {

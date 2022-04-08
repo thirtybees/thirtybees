@@ -709,11 +709,19 @@
                 <div class="well">
                   <div class="row">
                     <div class="col-sm-6">
+                      <a class="btn btn-default pull-right" style="margin-left: 5px" onclick="copyToClipboard('{displayAddressDetail address=$addresses.delivery newLine='\n'}', event);">
+                        <i class="icon-copy"></i>
+                        {l s='Copy'}
+                      </a>
                       <a class="btn btn-default pull-right" href="?tab=AdminAddresses&amp;id_address={$addresses.delivery->id}&amp;addaddress&amp;realedit=1&amp;id_order={$order->id}&amp;address_type=1&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
                         <i class="icon-pencil"></i>
                         {l s='Edit'}
                       </a>
-                      {displayAddressDetail address=$addresses.delivery newLine='<br />'}
+
+                      <div ondblclick="copyDivTextContentToClipboard(event);">
+                      {displayAddressDetail address=$addresses.delivery newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);">'}
+                      </div>
+
                       {if $addresses.delivery->other}
                         <hr/>
                         {$addresses.delivery->other}
@@ -761,11 +769,19 @@
               <div class="well">
                 <div class="row">
                   <div class="col-sm-6">
+                    <a class="btn btn-default pull-right" style="margin-left: 5px" onclick="copyToClipboard('{displayAddressDetail address=$addresses.invoice newLine='\n'}', event);">
+                      <i class="icon-copy"></i>
+                      {l s='Copy'}
+                    </a>
                     <a class="btn btn-default pull-right" href="?tab=AdminAddresses&amp;id_address={$addresses.invoice->id}&amp;addaddress&amp;realedit=1&amp;id_order={$order->id}&amp;address_type=2&amp;back={$smarty.server.REQUEST_URI|urlencode}&amp;token={getAdminToken tab='AdminAddresses'}">
                       <i class="icon-pencil"></i>
                       {l s='Edit'}
                     </a>
-                    {displayAddressDetail address=$addresses.invoice newLine='<br />'}
+
+                    <div ondblclick="copyDivTextContentToClipboard(event);">
+                    {displayAddressDetail address=$addresses.invoice newLine='</div><div ondblclick="copyDivTextContentToClipboard(event);">'}
+                    </div>
+
                     {if $addresses.invoice->other}
                       <hr/>
                       {$addresses.invoice->other}
