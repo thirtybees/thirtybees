@@ -55,7 +55,7 @@ class FeatureCore extends ObjectModel
     public $allows_multiple_values = false;
 
     /**
-     * @var bool Flag to indicate if feature allows entering custom values, or if predefined values must be used
+     * @var bool Deprecated (custom functionality was dropped in 1.x.0)
      */
     public $allows_custom_values = true;
 
@@ -79,7 +79,6 @@ class FeatureCore extends ObjectModel
         'fields'    => [
             'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
             'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
-            'allows_custom_values'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
             'multiple_values_display'   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => false, 'dbDefault' => '1'],
 
             /* Lang fields */

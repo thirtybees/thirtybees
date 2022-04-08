@@ -56,12 +56,12 @@
           <td>
             {if sizeof($available_feature.featureValues)}
               <select id="feature_{$available_feature.id_feature}_value"
-                      class="chosen"
-                      name="feature_{$available_feature.id_feature}_value[]"
-                      {if $available_feature.allows_multiple_values}
-                        size="{min(3, count($available_feature.featureValues))}"
-                        multiple
-                      {/if}
+                class="chosen"
+                name="feature_{$available_feature.id_feature}_value[]"
+                {if $available_feature.allows_multiple_values}
+                  size="{min(3, count($available_feature.featureValues))}"
+                  multiple
+                {/if}
               >
                 {if !$available_feature.allows_multiple_values}
                   <option value="0">---</option>
@@ -127,12 +127,12 @@
                     ]}
                   </div>
                   <div class="col-lg-3" style="margin-top: 10px;">
-                    <a href="javascript:void(0);" onclick="deleteCustomValue($(this));">{l s='Delete'}</a>
+                    <a href="javascript:void(0);" onclick="deleteNewValue($(this));">{l s='Delete'}</a>
                   </div>
                 </div>
               </div>
               {if $available_feature.allows_multiple_values}
-                <div class="col-lg-12" style="padding: 5px 0 5px 10px;"><a href="javascript:void(0);" onclick="addCustomValue({$available_feature.id_feature})">{l s='Add another value'}</a></div>
+                <div class="col-lg-12" style="padding: 5px 0 5px 10px;"><a href="javascript:void(0);" onclick="addNewValue({$available_feature.id_feature})">{l s='Add another value'}</a></div>
               {/if}
           </td>
         </tr>
@@ -161,33 +161,8 @@
     if (tabs_manager.allow_hide_other_languages)
       hideOtherLanguage({$defaultFormLanguage});
     {literal}
-    $(".textarea-autosize").autosize();
 
-    function all_languages(pos) {
-      {/literal}
-      {if isset($languages) && is_array($languages)}
-      {foreach from=$languages key=k item=language}
-      pos.parents('td').find('.lang-{$language.id_lang}').addClass('nolang-{$language.id_lang}').removeClass('lang-{$language.id_lang}');
-      {/foreach}
-      {/if}
-      pos.parents('td').find('.translatable-field').hide();
-      pos.parents('td').find('.lang-0').show();
-      {literal}
-    }
-
-    function restore_lng(pos, i) {
-      {/literal}
-      {if isset($languages) && is_array($languages)}
-      {foreach from=$languages key=k item=language}
-      pos.parents('td').find('.nolang-{$language.id_lang}').addClass('lang-{$language.id_lang}').removeClass('nolang-{$language.id_lang}');
-      {/foreach}
-      {/if}
-      {literal}
-      pos.parents('td').find('.lang-0').hide();
-      hideOtherLanguage(i);
-    }
-
-    function addCustomValue(featureId) {
+    function addNewValue(featureId) {
       var group = $('#new_' + featureId);
       var values = group.find('.new_group_value');
 
@@ -208,18 +183,14 @@
       }
     }
 
-    function deleteCustomValue($element) {
+    function deleteNewValue($element) {
       var group = $element.closest('.new_group');
       var cnt = group.find('.new_group_value').length;
       if (cnt > 1) {
         $element.closest('.new_group_value').remove();
       } else {
-        $element.closest('.new_group_value').find('textarea').attr('value', '');
+        $element.closest('.new_group_value').find('input').attr('value', '');
       }
-    }
-
-    function updateAll($element) {
-      $element.closest('.new_group_value').find('textarea').val($element.val());
     }
 
     // Make sure, that the chosen select has not a width of 0px
@@ -276,14 +247,12 @@
         displayable_div.insertAdjacentHTML('beforeend', displayable_field_html);
       }
 
-
       // Move the parent div to the end of the list
       var displayable_values_div = displayable_div.closest('.displayable_values');
       displayable_values_div.appendChild(displayable_div);
 
       // Show the displayable div
       displayable_div.style.display = 'block';
-
     }
 
   </script>

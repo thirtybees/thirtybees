@@ -43,7 +43,7 @@ class FeatureValueCore extends ObjectModel
     public $value;
     /** @var string Name */
     public $displayable;
-    /** @var bool Custom */
+    /** @var bool Custom Deprecated (custom functionality was dropped in 1.x.0) */
     public $custom = 0;
     // @codingStandardsIgnoreEnd
 
@@ -56,7 +56,6 @@ class FeatureValueCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
-            'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned'],
 
             /* Lang fields */
             'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
@@ -175,9 +174,9 @@ class FeatureValueCore extends ObjectModel
     /**
      * @param int      $idFeature
      * @param string   $value
-     * @param int|null $idProduct
+     * @param int|null $idProduct Deprecated (custom functionality was dropped in 1.x.0)
      * @param int|null $idLang
-     * @param bool     $custom
+     * @param bool     $custom Deprecated (custom functionality was dropped in 1.x.0)
      *
      * @return int
      *
@@ -188,41 +187,16 @@ class FeatureValueCore extends ObjectModel
      */
     public static function addFeatureValueImport($idFeature, $value, $idProduct = null, $idLang = null, $custom = false)
     {
-        $idFeatureValue = false;
-        if (!is_null($idProduct) && $idProduct) {
-            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('fp.`id_feature_value`')
-                    ->from('feature_product', 'fp')
-                    ->innerJoin('feature_value', 'fv', 'fv.`id_feature_value` = fp.`id_feature_value`')
-                    ->where('fp.`id_feature` = '.(int) $idFeature)
-                    ->where('fv.`custom` = '.(int) $custom)
-                    ->where('fp.`id_product` = '.(int) $idProduct)
-            );
 
-            if ($custom && $idFeatureValue && !is_null($idLang) && $idLang) {
-                Db::getInstance()->update(
-                    'feature_value_lang',
-                    [
-                        'value' => pSQL($value),
-                    ],
-                    '`id_feature_value` = '.(int) $idFeatureValue.' AND `value` != \''.pSQL($value).'\' AND `id_lang` = '.(int) $idLang
-                );
-            }
-        }
-
-        if (!$custom) {
-            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('fv.`id_feature_value`')
-                    ->from('feature_value', 'fv')
-                    ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang)
-                    ->where('fvl.`value` = \''.pSQL($value).'\'')
-                    ->where('fv.`id_feature` = '.(int) $idFeature)
-                    ->where('fv.`custom` = 0')
-                    ->groupBy('fv.`id_feature_value`')
-            );
-        }
+        $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('fv.`id_feature_value`')
+                ->from('feature_value', 'fv')
+                ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang)
+                ->where('fvl.`value` = \''.pSQL($value).'\'')
+                ->where('fv.`id_feature` = '.(int) $idFeature)
+                ->groupBy('fv.`id_feature_value`')
+        );
 
         if ($idFeatureValue) {
             return (int) $idFeatureValue;
@@ -231,7 +205,7 @@ class FeatureValueCore extends ObjectModel
         // Feature doesn't exist, create it
         $featureValue = new FeatureValue();
         $featureValue->id_feature = (int) $idFeature;
-        $featureValue->custom = (bool) $custom;
+        $featureValue->custom = false;
         $featureValue->value = array_fill_keys(Language::getIDs(false), $value);
         $featureValue->add();
 

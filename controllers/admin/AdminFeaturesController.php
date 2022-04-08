@@ -91,16 +91,6 @@ class AdminFeaturesControllerCore extends AdminController
                 'orderby'    => false,
                 'ajax'       => true,
             ],
-            'allows_custom_values' => [
-                'title' => $this->l("Allows custom values"),
-                'active'     => 'set_allow_custom_values',
-                'filter_key' => 'a!allows_custom_values',
-                'align'      => 'text-center',
-                'type'       => 'bool',
-                'class'      => 'fixed-width-xs',
-                'orderby'    => false,
-                'ajax'       => true,
-            ],
             'position'   => [
                 'title'      => $this->l('Position'),
                 'filter_key' => 'a!position',
@@ -375,29 +365,6 @@ class AdminFeaturesControllerCore extends AdminController
                     'hint'     => $this->l('How should multiple values be displayed?'),
                     'desc'     => $this->l('Keywords: {values}, {min_value}, {max_value}'),
                     'required' => false,
-                ],
-                [
-                    'type'     => 'switch',
-                    'label'    => $this->l('Allows custom values'),
-                    'name'     => 'allows_custom_values',
-                    'hint'     => $customValuesDisabled
-                        ? $this->l('Some products contains custom values for this feature. It is not possible to disable this functionality now')
-                        : $this->l('Choose if product can have custom values for this feature'),
-                    'required' => false,
-                    'is_bool'  => true,
-                    'disabled' => $customValuesDisabled,
-                    'values'   => [
-                        [
-                            'id'    => 'allows_custom_values_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled'),
-                        ],
-                        [
-                            'id'    => 'allows_custom_values_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled'),
-                        ],
-                    ],
                 ],
             ],
         ];
@@ -886,39 +853,6 @@ class AdminFeaturesControllerCore extends AdminController
             ->having('count(1) > 1');
 
         return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-    }
-
-    /**
-     * Handler for changing custom values checkbox from list
-     */
-    protected function ajaxProcessSetAllowCustomValuesFeature()
-    {
-        try {
-            $feature = new Feature(Tools::getValue('id_feature'));
-            if (! Validate::isLoadedObject($feature)) {
-                throw new PrestaShopException($this->l('Feature not found'));
-            }
-            if ($feature->allows_custom_values) {
-                if (static::featureHasCustomValues($feature->id)) {
-                    throw new PrestaShopException($this->l('Not possible to deactivate this functionality because some custom values already exists'));
-                }
-                $text = $this->l('Custom feature values were disabled for this feature');
-                $feature->allows_custom_values = false;
-            } else {
-                $text = $this->l('Custom feature values were enabled for this feature');
-                $feature->allows_custom_values = true;
-            }
-            $feature->update();
-            die(json_encode([
-                'success' => true,
-                'text' => $text
-            ]));
-        } catch (Exception $e) {
-            die(json_encode([
-                'success' => false,
-                'text' => $e->getMessage()
-            ]));
-        }
     }
 
     /**
