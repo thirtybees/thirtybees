@@ -709,6 +709,56 @@ function executeFunctionByName(functionName, args, context=window) {
   return context[func].apply(context, args);
 }
 
+function copyToClipboard(data) {
+  if (navigator.clipboardData) {
+    navigator.clipboardData.setData('Text', data);
+  } else if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(data);
+  } else if (document.execCommand) {
+    // text area method
+    var textArea = document.createElement("textarea");
+    textArea.value = data;
+    // make the textarea out of viewport
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    document.execCommand('copy');
+    textArea.remove();
+  } else {
+    console.error('No clipboard implementation');
+  }
+}
+
+var copyHighlightedTextInDiv_popoverTimeout = null;
+
+function copyHighlightedTextInDiv(e, popover) {
+  if (!e || e.detail < 2) {
+    return;
+  }
+  e.preventDefault();
+
+  var selection = window.getSelection().toString().trim();
+
+  copyToClipboard(selection);
+
+  if (popover) {
+    if (copyHighlightedTextInDiv_popoverTimeout != null) {
+      clearTimeout(copyHighlightedTextInDiv_popoverTimeout);
+    }
+
+    copyHighlightedTextInDiv_popoverTimeout = setTimeout(function() {
+      $(e.target).popover().popover('show');
+      setTimeout(function() {
+        $(e.target).popover('hide');
+      }, 1000);
+      copyHighlightedTextInDiv_popoverTimeout = null;
+    }, 250);
+  }
+}
+
 $(document).ready(function () {
   // Hide all elements with .hideOnSubmit class when parent form is submit
   $('form').submit(function () {
