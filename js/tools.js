@@ -80,9 +80,7 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
   // Really? It's used quite a lot.
   //console.log('Deprecated with v1.1.0. Use displayPrice() directly.');
 
-  var formattedPrice = displayPrice(price, currencyFormat, currencySign, currencyBlank);
-  formattedPrice = formattedPrice.replace(currencySign + String.fromCharCode(160), currencySign);
-  return formattedPrice;
+  return displayPrice(price, currencyFormat, currencySign, currencyBlank);
 }
 
 /*
@@ -104,22 +102,12 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
     price = 0;
   }
 
-  if (typeof window.currencyModes[currency] !== 'undefined' && window.currencyModes[currency]) {
-    price = ps_round(price, priceDisplayPrecision);
-    var locale = document.documentElement.lang;
-    if (locale.length === 5) {
-      locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
-    } else if (typeof window.full_language_code !== 'undefined' && window.full_language_code.length === 5) {
-      locale = window.full_language_code.substring(0, 2).toLowerCase() + '-' + window.full_language_code.substring(3, 5).toUpperCase();
-    } else if (getBrowserLocale().length === 5) {
-      locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
+  if (typeof window['currencyFormatters'] !== 'undefined' && window.currencyFormatters[currency]) {
+    var formatter = window.currencyFormatters[currency];
+    var val = executeFunctionByName(formatter, [price, currencyFormat, currencySign, currencyBlank, priceDisplayPrecision]);
+    if (typeof val === 'string' || val instanceof String) {
+      return val;
     }
-
-    // format number as an USD currency in specific locale, and then replace USD symbol with currencySign
-    return price
-     .toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' })
-     .replace('USD', currencySign || '')
-     .trim();
   }
 
   var blank = '';
@@ -704,6 +692,23 @@ function getBrowserLocale() {
   return navigator.language;
 }
 
+function executeFunctionByName(functionName, args, context=window) {
+  var namespaces = functionName.split(".");
+  var func = namespaces.pop();
+  for (var i = 0; i < namespaces.length; i++) {
+    if (typeof context[namespaces[i]] == "undefined") {
+      console.error("Function " + functionName + " not found, context "+namespaces[i] + " does not exist");
+      return null;
+    }
+    context = context[namespaces[i]];
+  }
+  if (typeof context[func] == "undefined") {
+    console.error("Function " + func + " not found");
+    return null;
+  }
+  return context[func].apply(context, args);
+}
+
 function copyToClipboard(data, e)
 {
   if (e != undefined)
@@ -755,7 +760,6 @@ function copyDivTextContentToClipboardAndSelect(e, popover)
 }
 
 $(document).ready(function () {
-
   // Hide all elements with .hideOnSubmit class when parent form is submit
   $('form').submit(function () {
     $(this).find('.hideOnSubmit').hide();
