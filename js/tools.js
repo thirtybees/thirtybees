@@ -28,7 +28,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
- function formatedNumberToFloat(price, currencyFormat, currencySign) {
+function formatedNumberToFloat(price, currencyFormat, currencySign) {
   price = price.replace(currencySign, '').replace(/ /g, '');
 
   switch (currencyFormat) {
