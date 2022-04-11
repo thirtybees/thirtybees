@@ -718,8 +718,8 @@
                         {l s='Edit'}
                       </a>
 
-                      <div ondblclick="copyDivTextContentToClipboardAndSelect(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
-                      {displayAddressDetail address=$addresses.delivery newLine='</div><div ondblclick="copyDivTextContentToClipboardAndSelect(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
+                      <div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
+                      {displayAddressDetail address=$addresses.delivery newLine='</div><div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
                       </div>
 
                       {if $addresses.delivery->other}
@@ -778,8 +778,8 @@
                       {l s='Edit'}
                     </a>
 
-                    <div ondblclick="copyDivTextContentToClipboardAndSelect(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
-                    {displayAddressDetail address=$addresses.invoice newLine='</div><div ondblclick="copyDivTextContentToClipboardAndSelect(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
+                    <div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
+                    {displayAddressDetail address=$addresses.invoice newLine='</div><div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
                     </div>
 
                     {if $addresses.invoice->other}

@@ -711,9 +711,6 @@ function executeFunctionByName(functionName, args, context=window) {
 
 function copyToClipboard(data, e)
 {
-  if (e != undefined)
-    e.preventDefault();
-
   try {
     if (navigator.clipboardData)
       navigator.clipboardData.setData('Text', data);
@@ -726,36 +723,34 @@ function copyToClipboard(data, e)
   }
 }
 
-function copyDivTextContentToClipboard(e, popover)
-{
-  copyToClipboard(e.target.textContent.trim(), e);
+var copyHighlightedTextInDiv_popoverTimeout = null;
 
-  if (popover)
-  {
-    $(e.target).popover().popover('show');
-    setTimeout(() => { $(e.target).popover('hide'); }, 1000);
-  }
-}
-
-function copyDivTextContentToClipboardAndSelect(e, popover)
+function copyHighlightedTextInDiv(e, popover)
 {
-  copyDivTextContentToClipboard(e, popover);
+  if (!e || e.detail < 2)
+    return;
+
+  e.preventDefault();
 
   try {
-    if (document.selection) {
-      var range = document.body.createTextRange();
-      range.moveToElementText(e.target);
-      range.select();
-    } else if (window.getSelection) {
-      var range = document.createRange();
-      range.selectNode(e.target);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
+    let selection = window.getSelection().toString().trim();
+
+    copyToClipboard(selection, e);
+
+    if (popover)
+    {
+      if (copyHighlightedTextInDiv_popoverTimeout != null)
+        clearTimeout(copyHighlightedTextInDiv_popoverTimeout);
+
+      copyHighlightedTextInDiv_popoverTimeout = setTimeout(() => {
+        $(e.target).popover().popover('show');
+        setTimeout(() => { $(e.target).popover('hide'); }, 1000);
+        copyHighlightedTextInDiv_popoverTimeout = null;
+      }, 250);
     }
   }
-  catch (e)
-  {
-    console.error("Failed to select div");
+  catch (e) {
+    console.error("Failed to copy highlighted text in div");
   }
 }
 
