@@ -41,8 +41,10 @@ class FeatureValueCore extends ObjectModel
     public $id_feature;
     /** @var string Name */
     public $value;
-    /** @var string Name */
+    /** @var string Value that will be displayed */
     public $displayable;
+    /** @var int Position if multiple values are selected */
+    public $position;
     /** @var bool Custom Deprecated (custom functionality was dropped in 1.x.0) */
     public $custom = 0;
     // @codingStandardsIgnoreEnd
@@ -56,10 +58,11 @@ class FeatureValueCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
+            'position'   => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
 
             /* Lang fields */
             'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
-            'displayable'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+            'displayable'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_value' => [
@@ -123,7 +126,7 @@ class FeatureValueCore extends ObjectModel
                 ->leftJoin('feature_lang', 'fl', 'v.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('v.`id_feature` = '.(int) $idFeature)
                 ->where(!$custom ? 'v.`custom` IS NULL OR v.`custom` = 0' : '')
-                ->orderBy('vl.`value` ASC')
+                ->orderBy('v.`position` ASC')
         );
     }
 
@@ -223,6 +226,10 @@ class FeatureValueCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
+        if (!$this->position) {
+            $this->position = self::getHighestPosition($this->id_feature)+1;
+        }
+
         $return = parent::add($autoDate, $nullValues);
         if ($return) {
             Hook::exec('actionFeatureValueSave', ['id_feature_value' => $this->id]);
@@ -247,6 +254,8 @@ class FeatureValueCore extends ObjectModel
         if ($return) {
             Hook::exec('actionFeatureValueDelete', ['id_feature_value' => $this->id]);
         }
+
+        self::cleanPositions($this->id_feature);
 
         return $return;
     }
@@ -295,5 +304,105 @@ class FeatureValueCore extends ObjectModel
 
         // this is valid feature value
         return null;
+    }
+
+    /**
+     * Move a featureValue
+     *
+     * @param bool     $way       Up (1)  or Down (0)
+     * @param int      $position
+     * @param int|null $id_feature_value
+     *
+     * @return bool Update result
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.x
+     * @version 1.0.x Initial version
+     */
+    public function updatePosition($way, $position, $id_feature_value = null)
+    {
+        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`position`, `id_feature_value`')
+                ->from('feature_value')
+                ->where('`id_feature_value` = '.(int) ($id_feature_value ?: $this->id))
+                ->orderBy('`position` ASC')
+        )) {
+            return false;
+        }
+
+        foreach ($res as $feature_value) {
+            if ((int) $feature_value['id_feature_value'] == (int) $this->id) {
+                $movedFeatureValue = $feature_value;
+            }
+        }
+
+        if (!isset($movedFeatureValue) || !isset($position)) {
+            return false;
+        }
+
+        // < and > statements rather than BETWEEN operator
+        // since BETWEEN is treated differently according to databases
+        return (Db::getInstance()->update(
+                'feature_value',
+                [
+                    'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
+                ],
+                '`position`'.($way ? '> '.(int) $movedFeatureValue['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedFeatureValue['position'].' AND `position` >= '.(int) $position)
+            )
+            && Db::getInstance()->update(
+                'feature_value',
+                [
+                    'position' => (int) $position,
+                ],
+                '`id_feature_value`='.(int) $movedFeatureValue['id_feature_value']
+            ));
+    }
+
+    /**
+     * Reorder featureValue position
+     * Call it after deleting a featureValue.
+     *
+     * @return bool $return
+     *
+     * @since   1.0.x
+     * @version 1.0.x Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     */
+    public static function cleanPositions($id_feature)
+    {
+        // reset positions of all featureValues within feature
+        return Db::getInstance()->execute('
+            SET @rank:=-1;
+            UPDATE `'._DB_PREFIX_.'feature_value`
+            SET position = @rank:=@rank+1
+            WHERE `id_feature` = '.(int)$id_feature.'
+            ORDER BY `position`, `id_feature_value`
+        ');
+    }
+
+    /**
+     * getHigherPosition
+     *
+     * Get the highest featureValue position
+     *
+     * @return int $position
+     *
+     * @since   1.0.x
+     * @version 1.0.x Initial version
+     * @throws PrestaShopException
+     */
+    public static function getHighestPosition($id_feature)
+    {
+        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`position`)')
+                ->from('feature_value')
+                ->where('id_feature='.(int)$id_feature)
+        );
+
+        return (is_numeric($position)) ? $position : -1;
     }
 }

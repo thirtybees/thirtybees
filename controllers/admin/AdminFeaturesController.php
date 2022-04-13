@@ -425,6 +425,13 @@ class AdminFeaturesControllerCore extends AdminController
                     'class'   => 'fixed-width-xs',
                     'callback'=> 'getProductsLink',
                 ],
+                'position'   => [
+                    'title'      => $this->l('Position'),
+                    'filter_key' => 'a!position',
+                    'align'      => 'center',
+                    'class'      => 'fixed-width-xs',
+                    'position'   => 'position',
+                ],
             ];
 
             $this->_where = sprintf('AND `id_feature` = %d', $id);
@@ -595,9 +602,10 @@ class AdminFeaturesControllerCore extends AdminController
             }
         } else {
             $this->list_id = 'feature';
-            $this->_defaultOrderBy = 'position';
-            $this->_defaultOrderWay = 'ASC';
         }
+
+        $this->_defaultOrderBy = 'position';
+        $this->_defaultOrderWay = 'ASC';
 
         parent::initProcess();
     }
@@ -772,9 +780,11 @@ class AdminFeaturesControllerCore extends AdminController
     public function ajaxProcessUpdatePositions()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $way = (int) Tools::getValue('way');
-            $id_feature = (int) Tools::getValue('id');
-            $positions = Tools::getValue('feature');
+
+            $is_feature_value = Tools::isSubmit('viewfeature');
+            $way = (int)Tools::getValue('way');
+            $id_object = (int)Tools::getValue('id');
+            $positions = $is_feature_value ? Tools::getValue('feature_value') : Tools::getValue('feature');
 
             $new_positions = [];
             foreach ($positions as $k => $v) {
@@ -786,15 +796,18 @@ class AdminFeaturesControllerCore extends AdminController
             foreach ($new_positions as $position => $value) {
                 $pos = explode('_', $value);
 
-                if (isset($pos[2]) && (int) $pos[2] === $id_feature) {
-                    if ($feature = new Feature((int) $pos[2])) {
-                        if (isset($position) && $feature->updatePosition($way, $position, $id_feature)) {
+                if (isset($pos[2]) && (int) $pos[2] === $id_object) {
+
+                    $object = $is_feature_value ? new FeatureValue((int)$pos[2]) : new Feature((int)$pos[2]);
+
+                    if ($object->id) {
+                        if (isset($position) && $object->updatePosition($way, $position, $id_object)) {
                             echo 'ok position '.(int) $position.' for feature '.(int) $pos[1].'\r\n';
                         } else {
-                            echo '{"hasError" : true, "errors" : "Can not update feature '.(int) $id_feature.' to position '.(int) $position.' "}';
+                            echo '{"hasError" : true, "errors" : "Can not update feature '.(int) $id_object.' to position '.(int) $position.' "}';
                         }
                     } else {
-                        echo '{"hasError" : true, "errors" : "This feature ('.(int) $id_feature.') can t be loaded"}';
+                        echo '{"hasError" : true, "errors" : "This feature ('.(int) $id_object.') can t be loaded"}';
                     }
 
                     break;

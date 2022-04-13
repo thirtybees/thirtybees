@@ -36,9 +36,6 @@
  */
 class FeatureCore extends ObjectModel
 {
-    const MULTIPLE_VALUES_DISPLAY_COMMA = 1;
-    const MULTIPLE_VALUES_DISPLAY_RANGE = 2;
-
     /**
      * @var string Feature name
      */
@@ -60,12 +57,13 @@ class FeatureCore extends ObjectModel
     public $allows_custom_values = true;
 
     /**
-     * @var int FO display method, when multiple values were selected
+     * @var string FO separator, when multiple values were selected
      */
-    public $multiple_values_display;
-
-    // Todo: clean desc
     public $multiple_separator;
+
+    /**
+     * @var string FO display schema, when multiple values were selected
+     */
     public $multiple_schema;
 
 
@@ -79,7 +77,6 @@ class FeatureCore extends ObjectModel
         'fields'    => [
             'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
             'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
-            'multiple_values_display'   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => false, 'dbDefault' => '1'],
 
             /* Lang fields */
             'name'                 => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],

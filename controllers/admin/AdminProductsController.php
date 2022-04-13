@@ -2799,73 +2799,66 @@ class AdminProductsControllerCore extends AdminController
             return;
         }
 
-        $allFeatures = [];
-
-        // collect predefined information
-        $predefined = [];
-        foreach ($_POST as $key => $val) {
-            // match pre-defined values
-            if (preg_match('/^feature_([0-9]+)_value/i', $key, $match)) {
-                $id_feature = (int)$match[1];
-                $allFeatures[$id_feature] = $id_feature;
-                if (is_array($val) && $val) {
-                    // predefined values
-                    foreach ($val as $id_feature_value) {
-                        $id_feature_value = (int)$id_feature_value;
-                        if ($id_feature_value) {
-                            if (!isset($predefined[$id_feature])) {
-                                $predefined[$id_feature] = [];
-                            }
-                            $predefined[$id_feature][] = $id_feature_value;
-                        }
-                    }
-                }
-            }
-            if (preg_match('/^custom_values_count_([0-9]+)/i', $key, $match)) {
-                $id_feature = (int)$match[1];
-                $allFeatures[$id_feature] = $id_feature;
-            }
-        }
-
-        // Don't continue if there was any error
-        if ($this->errors) {
-            return;
-        }
-
         // delete all product features
         $product->deleteFeatures();
 
-        // save predefined feature values
-        foreach ($predefined as $id_feature => $ids_feature_value) {
-            foreach ($ids_feature_value as $id_feature_value) {
-                $product->addFeaturesToDB($id_feature, $id_feature_value);
+        // collect all values
+        $new_feature_values = [];
 
-                foreach (Language::getIDs() as $id_lang) {
-                    // Save displayable values
-                    if ($displayable = pSQL(Tools::getValue('displayable_'.$id_feature_value.'_'.$id_lang))) {
-                        $product->addFeaturesDisplayableToDb($id_feature_value, $id_lang, $displayable);
+        foreach ($_POST as $key => $val) {
+
+            if (!$val || (is_array($val) && empty($val))) {
+                continue;
+            }
+
+            // Save existing feature values
+            if (preg_match('/^feature_([0-9]+)_value/i', $key, $match)) {
+
+                $id_feature = (int)$match[1];
+
+                foreach ($val as $id_feature_value) {
+
+                    // Important: as the default value has value=0
+                    if ($id_feature_value > 0) {
+
+                        $product->addFeaturesToDB($id_feature, $id_feature_value);
+
+                        foreach (Language::getIDs(false) as $id_lang) {
+                            // Save displayable values
+                            if ($displayable = pSQL(Tools::getValue('displayable_' . $id_feature_value . '_' . $id_lang))) {
+                                $product->addFeaturesDisplayableToDb($id_feature_value, $id_lang, $displayable);
+                            }
+                        }
                     }
+                }
+
+            }
+
+            // Get new feature values
+            elseif (preg_match('/^new_feature_value_([0-9]+)/i', $key, $match)) {
+
+                $key_explode = explode('_', $key);
+                $id_feature = $key_explode[3];
+                $index = $key_explode[4];
+                $id_lang = $key_explode[5];
+
+                $new_feature_values[$id_feature][$index][$id_lang] = pSQL($val);
+            }
+        }
+
+        foreach ($new_feature_values as $id_feature => $new) {
+
+            foreach ($new as $new_feature_value) {
+                // Create a new feature value
+                $id_feature_value = $product->addFeaturesToDB($id_feature);
+
+                // Fill the new feature value with all lang values
+                foreach ($new_feature_value as $id_lang => $value_lang) {
+                    $product->addFeaturesCustomToDB($id_feature_value, $id_lang, $value_lang);
                 }
             }
         }
 
-        // save new feature values
-        foreach ($allFeatures as $id_feature) {
-            if (!empty($new_feature_values = $this->getCustomFeatureValues($id_feature))) {
-
-                foreach ($new_feature_values as $new_feature_value) {
-
-                    // Create a new feature value
-                    $id_feature_value = $product->addFeaturesToDB($id_feature);
-
-                    // Fill the new feature value with all lang values
-                    foreach ($new_feature_value as $id_lang => $value_lang) {
-                        $product->addFeaturesCustomToDB($id_feature_value, $id_lang, $value_lang);
-                    }
-
-                }
-            }
-        }
     }
 
     /**
@@ -2891,6 +2884,7 @@ class AdminProductsControllerCore extends AdminController
      * @param int $featureId
      * @return array
      * @throws PrestaShopException
+     * @deprecated 1.x.0
      */
     protected function getCustomFeatureValues($featureId)
     {
@@ -5734,8 +5728,7 @@ class AdminProductsControllerCore extends AdminController
 
                                 $id_feature_value = (int)$value['id_feature_value'];
 
-                                // Check if we need to load any language values (note: in getFeatureValuesWithLang we get only the value in the context language
-
+                                // Check if we need to load any language values (note: in getFeatureValuesWithLang we get only the value in the context language)
                                 if (array_key_exists($id_feature, $ids_feature_value_selected)) {
 
                                     foreach (FeatureValue::getFeatureValueLang($id_feature_value) as $feature_lang) {
@@ -5749,12 +5742,7 @@ class AdminProductsControllerCore extends AdminController
 
                                 }
                             }
-
-                            // Make sure, that there is always an empty input
-                            $features[$k]['custom_values'][][1] = '';
                         }
-
-
                     }
 
                     $data->assign('available_features', $features);

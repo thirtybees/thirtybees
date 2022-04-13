@@ -1,22 +1,24 @@
 {if isset($input.lang) AND $input.lang}
 	{if $languages|count > 1}
 		<div class="form-group">
-			<div class="translatable-field lang-0" style="display: none;">
-				<div class="col-lg-9">
-					<input type="text" value="" onkeyup="updateAllLanguageFields(this); updateFriendlyURL();">
+			{if isset($input.all_lang_button) && $input.all_lang_button}
+				<div class="translatable-field lang-0" style="display: none;">
+					<div class="col-lg-9">
+						<input type="text" value="" class="all_lang_field" onkeyup="updateAllLanguageFields(this); updateFriendlyURL();">
+					</div>
+					<div class="col-lg-2">
+						<button type="button" class="btn btn-default dropdown-toggle" tabindex="-1" data-toggle="dropdown">
+							{l s='ALL'}
+							<i class="icon-caret-down"></i>
+						</button>
+						<ul class="dropdown-menu">
+							{foreach from=$languages item=language}
+								<li><a href="javascript:hideOtherLanguage({$language.id_lang});" tabindex="-1">{$language.name}</a></li>
+							{/foreach}
+						</ul>
+					</div>
 				</div>
-				<div class="col-lg-2">
-					<button type="button" class="btn btn-default dropdown-toggle" tabindex="-1" data-toggle="dropdown">
-						{l s='ALL'}
-						<i class="icon-caret-down"></i>
-					</button>
-					<ul class="dropdown-menu">
-						{foreach from=$languages item=language}
-							<li><a href="javascript:hideOtherLanguage({$language.id_lang});" tabindex="-1">{$language.name}</a></li>
-						{/foreach}
-					</ul>
-				</div>
-			</div>
+			{/if}
 	{/if}
 			{foreach $languages as $language}
 				{if isset($fields_value[$input.name][$language.id_lang])}
@@ -87,13 +89,16 @@
 			{/if}
 				{if $languages|count > 1}
 					</div>
+
 					<div class="col-lg-2">
 						<button type="button" class="btn btn-default dropdown-toggle" tabindex="-1" data-toggle="dropdown">
 							{$language.iso_code}
 							<i class="icon-caret-down"></i>
 						</button>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:hideOtherLanguage(0);" tabindex="-1">{l s='ALL'}</a></li>
+							{if isset($input.all_lang_button)}
+								<li><a href="javascript:hideOtherLanguage(0);" tabindex="-1">{l s='ALL'}</a></li>
+							{/if}
 							{foreach from=$languages item=language}
 								<li><a href="javascript:hideOtherLanguage({$language.id_lang});" tabindex="-1">{$language.name}</a></li>
 							{/foreach}

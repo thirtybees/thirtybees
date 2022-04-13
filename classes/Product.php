@@ -1685,11 +1685,12 @@ class ProductCore extends ObjectModel
 		SELECT id_product, name, value, pf.id_feature
 		FROM '._DB_PREFIX_.'feature_product pf
 		LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+		LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
 		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 		LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature)
 		'.Shop::addSqlAssociation('feature', 'f').'
 		WHERE `id_product` IN ('.implode(',', $productImplode).')
-		ORDER BY f.position ASC'
+		ORDER BY f.position ASC, fv.position ASC'
         );
 
         foreach ($result as $row) {
@@ -1985,15 +1986,16 @@ class ProductCore extends ObjectModel
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
             $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values, f.multiple_values_display
+				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
 				FROM '._DB_PREFIX_.'feature_product pf
 				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+				LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
 				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				'.Shop::addSqlAssociation('feature', 'f').'
 				WHERE pf.id_product = '.(int) $idProduct.'
-				ORDER BY f.position ASC'
+				ORDER BY f.position ASC, fv.position ASC'
             );
 
             $feature_values_helper = [];
@@ -4389,7 +4391,7 @@ class ProductCore extends ObjectModel
         );
 
         // Delete product features lang
-        $result = Db::getInstance()->execute(
+        $result_lang = Db::getInstance()->execute(
             '
 		DELETE FROM `'._DB_PREFIX_.'feature_product_lang`
 		WHERE `id_product` = '.(int) $this->id
@@ -4397,7 +4399,7 @@ class ProductCore extends ObjectModel
 
         SpecificPriceRule::applyAllRules([(int) $this->id]);
 
-        return ($result);
+        return ($result && $result_lang);
     }
 
     /**
@@ -7033,7 +7035,8 @@ class ProductCore extends ObjectModel
         if (!$idValue || $createCustomValue) {
             $row = [
                 'id_feature' => $idFeature,
-                'custom' => 0
+                'custom' => 0,
+                'position' => (int)FeatureValue::getHighestPosition($idFeature)+1,
             ];
             Db::getInstance()->insert('feature_value', $row);
             $idValue = (int)Db::getInstance()->Insert_ID();

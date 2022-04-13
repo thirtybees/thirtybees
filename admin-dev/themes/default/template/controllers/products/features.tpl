@@ -99,6 +99,7 @@
                       'type' => 'text',
                       'name' => "displayable_{$value.id_feature_value}",
                       'lang' => true,
+                      'all_lang_button' => true,
                       'class' => 'displayable-input'
                     ]
                     fields_value=[
@@ -116,14 +117,14 @@
           <td class="new_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
 
               <div class="new_group" id="new_{$available_feature.id_feature}">
-                <input type="hidden" id="new_values_count_{$available_feature.id_feature}" name="new_values_count_{$available_feature.id_feature}" value="1" />
-                <div class="new_group_value">
+                <input type="hidden" id="new_values_count_{$available_feature.id_feature}" name="new_values_count_{$available_feature.id_feature}" value="0" />
+                <div class="new_group_value" id="0">
                   <div class="col-lg-9">
                     {include file="../../helpers/form/form_input.tpl" input=[
                       'type' => 'text',
-                      'name' => "new_field_{$available_feature.id_feature}",
+                      'name' => "new_feature_value_{$available_feature.id_feature}_0",
                       'lang' => true,
-                      'class' => ''
+                      'all_lang_button' => true
                     ]}
                   </div>
                   <div class="col-lg-3" style="margin-top: 10px;">
@@ -162,25 +163,31 @@
       hideOtherLanguage({$defaultFormLanguage});
     {literal}
 
-    function addNewValue(featureId) {
-      var group = $('#new_' + featureId);
-      var values = group.find('.new_group_value');
+    function addNewValue(id_feature) {
 
-      if (values.length > 0) {
-        var new_field = $(values[0]).clone();
-        var cntInput = $('#new_values_count_' + featureId);
-        var newIndex = parseInt(cntInput.val(), 10);
-        cntInput.val(newIndex + 1);
-        new_field.find('input').each(function (index, elem) {
-          var $elem = $(elem);
-          var name = $elem.attr('name');
-          var new_identifier = "new_field_" + featureId + "_" + newIndex + "_" + name.replace(/^.*_/, "")
-          $elem.attr('name', new_identifier);
-          $elem.attr('id', new_identifier);
-          $elem.attr('value', '');
+      var new_group = document.getElementById('new_'+id_feature);
+
+      var new_field_last = new_group.querySelector('.new_group_value:last-of-type');
+
+      var new_field = new_field_last.cloneNode(true);
+      var new_index = parseInt(new_field.id)+1;
+      new_field.id = new_index;
+
+      var inputs = new_field.querySelectorAll('input');
+
+      if (inputs.length) {
+        inputs.forEach((input) => {
+          // The all_lang_field has no name, as it should never be submitted
+          if (input.name) {
+            var new_identifier = 'new_feature_value_' + id_feature + '_' + new_index + '_' + input.name.replace(/^.*_/, "")
+            input.id = new_identifier;
+            input.name = new_identifier;
+          }
+          input.value = '';
         });
-        group.append(new_field);
       }
+
+      new_group.appendChild(new_field);
     }
 
     function deleteNewValue($element) {
@@ -238,7 +245,7 @@
       // Check if the parent div is empty (the field may already be generated before)
       if (displayable_div.innerHTML.trim().length===0) {
 
-        var displayable_field_html = `{/literal}{include file="../../helpers/form/form_input.tpl" input=['type' => 'text', 'name' => "displayable_fake", 'lang' => true, 'class' => 'displayable-input']}{literal}`;
+        var displayable_field_html = `{/literal}{include file="../../helpers/form/form_input.tpl" input=['type' => 'text', 'name' => "displayable_fake", 'lang' => true, 'all_lang_button' => true, 'class' => 'displayable-input']}{literal}`;
 
         // Replace the fake name with the correct one
         displayable_field_html = displayable_field_html.replaceAll('displayable_fake', 'displayable_'+id_feature_value);
