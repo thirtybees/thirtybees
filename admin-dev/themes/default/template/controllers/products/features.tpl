@@ -88,10 +88,8 @@
 
           {* displayable values *}
           <td class="displayable_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
-
             {foreach from=$available_feature.featureValues item=value}
               <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
-
                 {if array_key_exists($value.id_feature_value, $available_feature['displayable_values'])}
                   {include
                     file="../../helpers/form/form_input.tpl"
@@ -107,10 +105,8 @@
                     ]
                   }
                 {/if}
-
               </div>
             {/foreach}
-
           </td>
 
           {* new values *}
@@ -168,7 +164,6 @@
       var new_group = document.getElementById('new_'+id_feature);
 
       var new_field_last = new_group.querySelector('.new_group_value:last-of-type');
-
       var new_field = new_field_last.cloneNode(true);
       var new_index = parseInt(new_field.id)+1;
       new_field.id = new_index;
@@ -186,7 +181,6 @@
           input.value = '';
         });
       }
-
       new_group.appendChild(new_field);
     }
 
@@ -277,7 +271,6 @@
     #product-features td.displayable_values .form-group,
     #product-features td.new_values .form-group {
       margin: 0;
-      color: red;
     }
 
   </style>

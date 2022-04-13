@@ -2014,7 +2014,6 @@ class ProductCore extends ObjectModel
                     $feature_values_helper[$id_feature]['max_value'] = $feature_value;
                 }
                 else {
-
                     $display_separator = $feature_value['multiple_separator'] ?: ', ';
 
                     // Concatenate values
@@ -2029,8 +2028,6 @@ class ProductCore extends ObjectModel
                         $feature_values_helper[$id_feature]['max_value'] = $feature_value;
                     }
                 }
-
-
             }
 
             // Now create the 'value' based on the multiple_schema

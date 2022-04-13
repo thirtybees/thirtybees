@@ -317,8 +317,8 @@ class FeatureValueCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.x
-     * @version 1.0.x Initial version
+     * @since   1.x.0
+     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position, $id_feature_value = null)
     {
