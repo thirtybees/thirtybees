@@ -5729,7 +5729,7 @@ class AdminProductsControllerCore extends AdminController
 
                                 // Check if we need to load any language values (note: in getFeatureValuesWithLang we get only the value in the context language)
                                 if (array_key_exists($id_feature, $ids_feature_value_selected)) {
-                                    foreach (FeatureValue::getFeatureValueLang($id_feature_value) as $feature_lang) {
+                                    foreach (FeatureValue::getFeatureValueLang($id_feature_value, $obj->id) as $feature_lang) {
                                         if (in_array($id_feature_value, $ids_feature_value_selected[$id_feature])) {
                                             $id_lang = $feature_lang['id_lang'];
                                             $features[$k]['displayable_values'][$id_feature_value][$id_lang] = $feature_lang['displayable'];

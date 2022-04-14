@@ -66,13 +66,6 @@ class AdminFeaturesControllerCore extends AdminController
                 'align'   => 'center',
                 'class'   => 'fixed-width-xs',
             ],
-            'custom'      => [
-                'title'   => $this->l('Values (custom)'),
-                'orderby' => false,
-                'search'  => false,
-                'align'   => 'center',
-                'class'   => 'fixed-width-xs',
-            ],
             'products'      => [
                 'title'   => $this->l('Products'),
                 'orderby' => false,
@@ -302,10 +295,8 @@ class AdminFeaturesControllerCore extends AdminController
     {
         if (Validate::isLoadedObject($this->object)) {
             $multipleValuesDisabled = static::existsProductWithMultipleValues($this->object->id);
-            $customValuesDisabled = static::featureHasCustomValues($this->object->id);
         } else {
             $multipleValuesDisabled = false;
-            $customValuesDisabled = false;
         }
 
         $this->toolbar_title = $this->l('Add a new feature');
@@ -497,7 +488,6 @@ class AdminFeaturesControllerCore extends AdminController
                     'lang'     => true,
                     'size'     => 33,
                     'hint'     => $this->l('If this value is set, it overrides the original value. Note: it does only override for displaying not for filtering.'),
-                    'required' => true,
                 ],
             ],
             'submit'  => [
@@ -719,7 +709,6 @@ class AdminFeaturesControllerCore extends AdminController
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
         if ($this->table == 'feature_value') {
-            $this->_where .= ' AND (a.custom = 0 OR a.custom IS NULL)';
             $this->_select .= ' COALESCE((SELECT COUNT(DISTINCT fp.id_product) FROM '. _DB_PREFIX_ . 'feature_product fp WHERE fp.id_feature = a.id_feature AND fp.id_feature_value = a.id_feature_value), 0) as products';
         }
 
@@ -732,7 +721,6 @@ class AdminFeaturesControllerCore extends AdminController
             foreach ($ids as $id) {
                 $extra[$id] = [
                     'value' => 0,
-                    'custom' => 0,
                     'products' => 0,
                 ];
             }
@@ -741,19 +729,15 @@ class AdminFeaturesControllerCore extends AdminController
 
             // count feature values
             $valuesQuery = new DbQuery();
-            $valuesQuery->select('id_feature, IFNULL(fv.custom, 0) as is_custom, COUNT(fv.id_feature_value) as count_values');
+            $valuesQuery->select('id_feature, COUNT(fv.id_feature_value) as count_values');
             $valuesQuery->from('feature_value', 'fv');
             $valuesQuery->where('fv.id_feature IN ('. implode(',', $ids).')');
-            $valuesQuery->groupBy('fv.id_feature, IFNULL(fv.custom, 0)');
+            $valuesQuery->groupBy('fv.id_feature');
             $res = $conn->executeS($valuesQuery);
             if (is_array($res)) {
                 foreach ($res as $row) {
                     $id = (int)$row['id_feature'];
-                    if ($row['is_custom']) {
-                        $extra[$id]['custom'] = (int)$row['count_values'];
-                    } else {
-                        $extra[$id]['value'] = (int)$row['count_values'];
-                    }
+                    $extra[$id]['value'] = (int)$row['count_values'];
                 }
             }
             // count products using this feature
@@ -874,6 +858,7 @@ class AdminFeaturesControllerCore extends AdminController
      * @param int $featureId
      * @return bool
      * @throws PrestaShopException
+     * @deprecated (custom functionality was dropped in 1.x.0)
      */
     protected static function featureHasCustomValues($featureId)
     {

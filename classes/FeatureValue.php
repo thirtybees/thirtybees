@@ -106,7 +106,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @param int  $idLang    Language id
      * @param bool $idFeature Feature id
-     * @param bool $custom
+     * @param bool $custom Deprecated (custom functionality was dropped in 1.x.0)
      *
      * @return array Array with feature's values
      *
@@ -119,13 +119,11 @@ class FeatureValueCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('v.*, vl.*, IFNULL(vl.displayable,vl.value) AS value, pl.displayable')
+                ->select('v.*, vl.*, IF(vl.displayable IS NOT NULL AND vl.displayable!=\'\',vl.displayable,vl.value) AS value')
                 ->from('feature_value', 'v')
                 ->leftJoin('feature_value_lang', 'vl', 'v.`id_feature_value` = vl.`id_feature_value` AND vl.`id_lang` = '.(int) $idLang)
-                ->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND pl.`id_lang` = '.(int) $idLang)
                 ->leftJoin('feature_lang', 'fl', 'v.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('v.`id_feature` = '.(int) $idFeature)
-                ->where(!$custom ? 'v.`custom` IS NULL OR v.`custom` = 0' : '')
                 ->orderBy('v.`position` ASC')
         );
     }
@@ -133,7 +131,8 @@ class FeatureValueCore extends ObjectModel
     /**
      * Get all language for a given value
      *
-     * @param bool $idFeatureValue Feature value id
+     * @param bool $id_feature_value Feature value id
+     * @param int $id_product Product id
      *
      * @return array Array with value's languages
      *
@@ -142,16 +141,21 @@ class FeatureValueCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getFeatureValueLang($idFeatureValue)
+    public static function getFeatureValueLang($id_feature_value, $id_product = 0)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('vl.*, pl.displayable')
-                ->from('feature_value_lang', 'vl')
-                ->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND vl.`id_lang`=pl.`id_lang`')
-                ->where('vl.`id_feature_value` = '.(int) $idFeatureValue)
-                ->orderBy('vl.`id_lang`, vl.`id_feature_value`')
-        );
+
+        $query = new DbQuery();
+        $query->select('vl.*');
+        $query->from('feature_value_lang', 'vl');
+
+        if ($id_product > 0) {
+            $query->select('pl.displayable');
+            $query->leftJoin('feature_product_lang', 'pl', 'vl.`id_feature_value` = pl.`id_feature_value` AND vl.`id_lang`=pl.`id_lang` AND pl.`id_product`='.$id_product);
+        }
+        $query->where('vl.`id_feature_value` = '.(int) $id_feature_value);
+        $query->orderBy('vl.`id_lang`, vl.`id_feature_value`');
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 
     /**

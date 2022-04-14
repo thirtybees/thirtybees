@@ -196,7 +196,7 @@
 
     // Make sure, that the chosen select has not a width of 0px
     $(document).ready(function() {
-      $('select.chosen').chosen( { width: '100%' } );
+       $('select.chosen').chosen( { width: '100%' } );
     });
 
 
@@ -259,6 +259,12 @@
   </script>
 
   <style>
+
+    /* Chosen Plugin has some width issues in BO */
+    #product-features .chosen-container {
+      width: 100%!important;
+    }
+
     /* Make sure that selected options of a chosen field are always displayed on a new line */
     #product-features li.search-choice,
     #product-features input.search-choice {

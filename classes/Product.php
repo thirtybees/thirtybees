@@ -1988,7 +1988,7 @@ class ProductCore extends ObjectModel
                 '
 				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
 				FROM '._DB_PREFIX_.'feature_product pf
-				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.')
+				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.' AND pfl.id_product = '.(int)$idProduct.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
 				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
