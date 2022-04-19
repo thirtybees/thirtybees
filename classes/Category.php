@@ -1114,8 +1114,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 ->select('DISTINCT(c.`id_category`), cl.`name`')
                 ->from('category', 'c')
                 ->leftJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category` AND cl.`id_lang`='.(int) $idLang)
-                ->where('`is_root_category` = 1')
-                ->where(static::getActiveColumnCondition($active, false))
+                ->where('`is_root_category` = 1 ' . static::getActiveColumnCondition($active, false))
         );
 
         if (is_array($result)) {
