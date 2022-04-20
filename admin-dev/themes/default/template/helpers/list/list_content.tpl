@@ -109,7 +109,7 @@
 							{/if}
 						{/if}
 					{elseif isset($params.type) && $params.type == 'price'}
-						{if isset($params.currency)}
+						{if isset($params.currency) && is_string($params.currency)}
 							{displayPrice price=$tr.$key currency=$tr.{$params.currency}}
 						{else}
 							{displayPrice price=$tr.$key}
