@@ -313,8 +313,7 @@ class SupplyOrderDetailCore extends ObjectModel
         parent::hydrate($data, $idLang);
 
         foreach ($data as $key => $value) {
-            if (isset($this->$key)
-                && $this->def['fields'][$key]['validate'] === 'isPrice') {
+            if (property_exists($this, $key) && $this->def['fields'][$key]['validate'] === 'isPrice') {
                 $this->$key = round($value, _TB_PRICE_DATABASE_PRECISION_);
             }
         }
