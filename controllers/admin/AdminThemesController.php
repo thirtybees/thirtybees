@@ -154,7 +154,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'TB_SOURCE_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source.png', 512, 'png', true, true),
+                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source.png', 64, 'png', true, true),
                     ],
                     'TB_SOURCE_FAVICON_CODE'   => [
                         'title'                     => $this->l('Favicon metas'),
