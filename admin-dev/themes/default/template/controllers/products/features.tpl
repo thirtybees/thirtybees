@@ -48,7 +48,7 @@
 
       <tbody>
       {foreach from=$available_features item=available_feature}
-        <tr>
+        <tr class="{if $available_feature.allows_multiple_values}multiple_options{else}single_option{/if}">
           {* feature name *}
           <td>{$available_feature.name}</td>
 
@@ -87,7 +87,7 @@
           </td>
 
           {* displayable values *}
-          <td class="displayable_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+          <td class="displayable_values">
             {foreach from=$available_feature.featureValues item=value}
               <div id="displayable_{$value.id_feature_value}" class="displayable-field" title="{l s='Displayable for'} {$value.value}">
                 {if array_key_exists($value.id_feature_value, $available_feature['displayable_values'])}
@@ -110,7 +110,7 @@
           </td>
 
           {* new values *}
-          <td class="new_values" {if $available_feature.allows_multiple_values}style="vertical-align: top;"{/if}>
+          <td class="new_values">
 
               <div class="new_group" id="new_{$available_feature.id_feature}">
                 <input type="hidden" id="new_values_count_{$available_feature.id_feature}" name="new_values_count_{$available_feature.id_feature}" value="0" />
@@ -259,6 +259,10 @@
   </script>
 
   <style>
+    /* It looks tempting to simplify the following css rules, but keep in mind,
+       that this has to work for single and multiple features as well as for
+       one and multiple languages
+     */
 
     /* Chosen Plugin has some width issues in BO */
     #product-features .chosen-container {
@@ -268,15 +272,39 @@
     /* Make sure that selected options of a chosen field are always displayed on a new line */
     #product-features li.search-choice,
     #product-features input.search-choice {
-      display: inline-block;
+      display: block;
       width: calc(100% - 10px);
       font-size: 12px;
-      padding: 7px 8px;
+      padding: 8px;
+      margin: 5px 5px 0 5px;
+    }
+
+    #product-features tr.single_option td {
+      padding: 6px 7px;
+    }
+
+    #product-features tr.multiple_options td.displayable_values,
+    #product-features tr.multiple_options td.new_values {
+      vertical-align: top;
+    }
+
+    #product-features tr.multiple_options td.displayable_values input,
+    #product-features tr.multiple_options td.displayable_values button,
+    #product-features tr.multiple_options td.new_values input,
+    #product-features tr.multiple_options td.new_values button {
+      margin: 5px 0 0 0;
     }
 
     #product-features td.displayable_values .form-group,
     #product-features td.new_values .form-group {
       margin: 0;
+    }
+
+    #product-features td.displayable_values .form-group:before,
+    #product-features td.displayable_values .form-group:after,
+    #product-features td.new_values .form-group:before,
+    #product-features td.new_values .form-group:after {
+      display: none;
     }
 
   </style>
