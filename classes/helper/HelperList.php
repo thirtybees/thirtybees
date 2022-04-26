@@ -550,7 +550,7 @@ class HelperListCore extends Helper
                     }
                     // Check if given src icon doesn't exit, but exits in admin folder
                     if (isset($this->_list[$index][$key]['src'])) {
-                        if (!file_exists($this->_list[$index][$key]['src']) && file_exists(_PS_IMG_DIR_.'admin/'.$this->_list[$index][$key]['src'])) {
+                        if (!file_exists(dirname(__FILE__).$this->_list[$index][$key]['src']) && file_exists(_PS_IMG_DIR_.'admin/'.$this->_list[$index][$key]['src'])) {
                             $this->_list[$index][$key]['src'] =_PS_ADMIN_IMG_.$this->_list[$index][$key]['src'];
                         }
                     }
