@@ -548,6 +548,13 @@ class HelperListCore extends Helper
                     } elseif (isset($params['icon'][$tr[$key]])) {
                         $this->_list[$index][$key] = $params['icon'][$tr[$key]];
                     }
+                    // backwards compatibility for build-in icon files stored in img/admin directory
+                    if (isset($this->_list[$index][$key]['src'])) {
+                        $iconFile = $this->_list[$index][$key]['src'];
+                        if (file_exists(_PS_IMG_DIR_.'admin/'.$iconFile)) {
+                            $this->_list[$index][$key]['src'] =_PS_ADMIN_IMG_.$iconFile;
+                        }
+                    }
                 } elseif (isset($params['type']) && $params['type'] == 'float') {
                     $this->_list[$index][$key] = rtrim(rtrim($tr[$key], '0'), '.');
                 } elseif (isset($tr[$key])) {

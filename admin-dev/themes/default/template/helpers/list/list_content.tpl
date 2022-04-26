@@ -105,7 +105,7 @@
 							{if isset($tr[$key]['class'])}
 								<i class="{$tr[$key]['class']}"></i>
 							{else}
-								<img src="../img/admin/{$tr[$key]['src']}" alt="{$tr[$key]['alt']}" title="{$tr[$key]['alt']}" />
+								<img src="{$tr[$key]['src']}" alt="{$tr[$key]['alt']}" title="{$tr[$key]['alt']}" {if isset($tr[$key]['width'])}width="{$tr[$key]['width']}"{/if} {if isset($tr[$key]['height'])}height="{$tr[$key]['height']}"{/if} />
 							{/if}
 						{/if}
 					{elseif isset($params.type) && $params.type == 'price'}
