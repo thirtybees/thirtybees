@@ -68,8 +68,14 @@ class AdminStockConfigurationControllerCore extends AdminController
                     '-1' => $this->l('Decrease'),
                 ],
                 'icon'       => [
-                    -1 => 'remove_stock.png',
-                    1  => 'add_stock.png',
+                    -1 => [
+                        'src' => 'remove_stock.png',
+                        'alt' => $this->l('Decrease'),
+                    ],
+                    1  => [
+                        'src' => 'add_stock.png',
+                        'alt' => $this->l('Increase'),
+                    ],
                 ],
                 'orderby'    => false,
                 'class'      => 'fixed-width-sm',

@@ -118,7 +118,7 @@ class AdminCartsControllerCore extends AdminController
                 'type'         => 'bool',
                 'havingFilter' => true,
                 'class'        => 'fixed-width-xs',
-                'icon'         => [0 => 'icon-', 1 => 'icon-user'],
+                'icon'         => [0 => ['class' => 'icon-'], 1 => ['class' => 'icon-user']],
             ],
         ];
         $this->shopLinkType = 'shop';

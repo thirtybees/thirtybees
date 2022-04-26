@@ -548,6 +548,12 @@ class HelperListCore extends Helper
                     } elseif (isset($params['icon'][$tr[$key]])) {
                         $this->_list[$index][$key] = $params['icon'][$tr[$key]];
                     }
+                    // Check if given src icon doesn't exit, but exits in admin folder
+                    if (isset($this->_list[$index][$key]['src'])) {
+                        if (!file_exists($this->_list[$index][$key]['src']) && file_exists(_PS_IMG_DIR_.'admin/'.$this->_list[$index][$key]['src'])) {
+                            $this->_list[$index][$key]['src'] =_PS_ADMIN_IMG_.$this->_list[$index][$key]['src'];
+                        }
+                    }
                 } elseif (isset($params['type']) && $params['type'] == 'float') {
                     $this->_list[$index][$key] = rtrim(rtrim($tr[$key], '0'), '.');
                 } elseif (isset($tr[$key])) {
