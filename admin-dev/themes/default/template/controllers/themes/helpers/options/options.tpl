@@ -97,7 +97,7 @@
       <script type="text/javascript">
         (function () {
           function resetRefreshButton(target) {
-            target.innerHTML = '<i class="icon icon-download"></i> <span>{l s='Download a new template' js=1}</span>';
+            target.innerHTML = '<i class="icon icon-download"></i> <span>{l s='Load default favicon metas' js=1}</span>';
             target.disabled = false;
           }
 
@@ -157,7 +157,7 @@
       <input type="hidden" id="{$key|escape:'htmlall':'UTF-8'}" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']|escape:'html':'UTF-8'}">
       {if !empty($field['grab_favicon_template'])}
         <br />
-        <button type="button" class="btn btn-default clearfix" onclick="downloadNewFaviconTemplate(event);"><i class="icon icon-download"></i> <span>{l s='Download a new template'}</span></button>
+        <button type="button" class="btn btn-default clearfix" onclick="downloadNewFaviconTemplate(event);"><i class="icon icon-download"></i> <span>{l s='Load default favicon metas'}</span></button>
       {/if}
     </div>
     <script>

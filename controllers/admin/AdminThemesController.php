@@ -139,8 +139,8 @@ class AdminThemesControllerCore extends AdminController
                         'thumb' => (Configuration::get('PS_LOGO_INVOICE') !== false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE'))) ? _PS_IMG_.Configuration::get('PS_LOGO_INVOICE') : _PS_IMG_.Configuration::get('PS_LOGO'),
                     ],
                     'PS_FAVICON'      => [
-                        'title' => $this->l('Favicon and phone icon'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser or home phone screen'),
+                        'title' => $this->l('Default Favicon'),
+                        'hint'  => $this->l('Will be converted to .ico format and appear in the address bar of your web browser'),
                         'desc'  => $this->l('Use a square image 512 x 512 for best results.'),
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON',
@@ -149,7 +149,7 @@ class AdminThemesControllerCore extends AdminController
                     ],
                     'TB_SOURCE_FAVICON'  => [
                         'title' => $this->l('Source favicon (PNG)'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
+                        'hint'  => $this->l('This image will be used, to generate the favicon meta rules below'),
                         'desc'  => $this->l('Make sure you upload a big enough favicon. Preferably one that covers all sizes and a square size.'),
                         'type'  => 'file',
                         'name'  => 'TB_SOURCE_FAVICON',
