@@ -40,7 +40,7 @@
 		</div>
 	{/if}
 
-	{if count($errors)} {* @todo what is ??? AND $this->_includeContainer *}
+	{if isset($errors) && is_array($errors) && count($errors)} {* @todo what is ??? AND $this->_includeContainer *}
 		<div class="alert alert-danger">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{if count($errors) == 1}
@@ -57,7 +57,7 @@
 		</div>
 	{/if}
 
-	{if isset($informations) && count($informations) && $informations}
+	{if isset($informations) && is_array($informations) && count($informations)}
 		<div class="alert alert-info" style="display:block;">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{foreach $informations as $info}
@@ -66,7 +66,7 @@
 		</div>
 	{/if}
 
-	{if isset($confirmations) && count($confirmations) && $confirmations}
+	{if isset($confirmations) && is_array($confirmations) && count($confirmations)}
 		<div class="alert alert-success" style="display:block;">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{foreach $confirmations as $confirm}
@@ -75,7 +75,7 @@
 		</div>
 	{/if}
 
-	{if count($warnings)}
+	{if isset($warnings) && is_array($warnings) && count($warnings)}
 		<div class="alert alert-warning">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{if count($warnings) > 1}
