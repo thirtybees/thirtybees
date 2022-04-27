@@ -2009,15 +2009,17 @@ class ProductCore extends ObjectModel
                 if (!isset($feature_values_helper[$id_feature])) {
                     $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
                     $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema'];
-                    $feature_values_helper[$id_feature]['values'] = $display_value;
+                    $feature_values_helper[$id_feature]['values'][] = $display_value;
+                    $feature_values_helper[$id_feature]['values_string'] = $display_value;
                     $feature_values_helper[$id_feature]['min_value'] = $feature_value;
                     $feature_values_helper[$id_feature]['max_value'] = $feature_value;
                 }
                 else {
-                    $display_separator = $feature_value['multiple_separator'] ?: ', ';
+                    $feature_values_helper[$id_feature]['values'][] = $display_value;
 
                     // Concatenate values
-                    $feature_values_helper[$id_feature]['values'] .= $display_separator . $display_value;
+                    $display_separator = $feature_value['multiple_separator'] ?: ', ';
+                    $feature_values_helper[$id_feature]['values_string'] .= $display_separator . $display_value;
 
                     // Update min and max value
                     if ($feature_values_helper[$id_feature]['min_value']['value'] > $feature_value['value']) {
@@ -2037,14 +2039,14 @@ class ProductCore extends ObjectModel
                     $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
                     $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
 
-                    $value = str_replace('{values}', $feature_value_helper['values'], $multiple_schema);
+                    $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
                     $value = str_replace('{min_value}', $display_value_min, $value);
                     $value = str_replace('{max_value}', $display_value_max, $value);
 
                     $feature_value_helper['value'] = $value;
                 }
                 else {
-                    $feature_value_helper['value'] = $feature_value_helper['values'];
+                    $feature_value_helper['value'] = $feature_value_helper['values_string'];
                 }
             }
 
