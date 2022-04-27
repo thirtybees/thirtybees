@@ -7015,9 +7015,9 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param int $idFeature
-     * @param int $idValue
-     * @param bool $createCustomValue
+     * @param int $id_feature
+     * @param int $id_feature_value
+     * @param bool $createCustomValue Deprecated (custom functionality was dropped in 1.x.0)
      *
      * @return int
      *
@@ -7026,31 +7026,31 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function addFeaturesToDB($idFeature, $idValue = 0, $createCustomValue = false)
+    public function addFeaturesToDB($id_feature, $id_feature_value = 0, $createCustomValue = false)
     {
-        $idFeature = (int)$idFeature;
-        if (!$idValue || $createCustomValue) {
+        $id_feature = (int)$id_feature;
+        $id_feature_value = $createCustomValue ? 0 : (int)$id_feature_value; // Just to be 100% backward compatible
+
+        if (!$id_feature_value) {
             $row = [
-                'id_feature' => $idFeature,
+                'id_feature' => $id_feature,
                 'custom' => 0,
-                'position' => (int)FeatureValue::getHighestPosition($idFeature)+1,
+                'position' => (int)FeatureValue::getHighestPosition($id_feature)+1,
             ];
             Db::getInstance()->insert('feature_value', $row);
-            $idValue = (int)Db::getInstance()->Insert_ID();
-        } else {
-            $idValue =  (int)$idValue;
+            $id_feature_value = (int)Db::getInstance()->Insert_ID();
         }
 
-        if ($idFeature && $idValue) {
+        if ($id_feature && $id_feature_value) {
             $row = [
-                'id_feature' => $idFeature,
+                'id_feature' => $id_feature,
                 'id_product' => (int)$this->id,
-                'id_feature_value' => $idValue
+                'id_feature_value' => $id_feature_value
             ];
             Db::getInstance()->insert('feature_product', $row);
             SpecificPriceRule::applyAllRules([(int)$this->id]);
         }
-        return $idValue;
+        return $id_feature_value;
     }
 
     /**
