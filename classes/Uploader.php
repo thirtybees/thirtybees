@@ -353,14 +353,14 @@ class UploaderCore
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getMaxSize()
     {
-        if (!isset($this->_max_size) || empty($this->_max_size)) {
+        if (empty($this->_max_size)) {
             $this->setMaxSize(static::DEFAULT_MAX_SIZE);
         }
 
@@ -377,7 +377,7 @@ class UploaderCore
      */
     public function setMaxSize($value)
     {
-        $this->_max_size = intval($value);
+        $this->_max_size = (int)$value;
 
         return $this;
     }

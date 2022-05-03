@@ -51,7 +51,6 @@ class HelperUploaderCore extends Uploader
     private $_name;
     private $_max_files;
     private $_multiple;
-    private $_post_max_size;
     protected $_template;
     private $_template_directory;
     private $_title;
@@ -135,7 +134,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getId()
     {
@@ -147,7 +146,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param string[] $value
+     * @param array[] $value
      *
      * @return $this
      */
@@ -250,7 +249,6 @@ class HelperUploaderCore extends Uploader
      */
     public function setPostMaxSize($value)
     {
-        $this->_post_max_size = $value;
         $this->setMaxSize($value);
 
         return $this;
@@ -261,14 +259,11 @@ class HelperUploaderCore extends Uploader
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.4.0 Not used anymore
      */
     public function getPostMaxSize()
     {
-        if (!isset($this->_post_max_size)) {
-            $this->_post_max_size = parent::getPostMaxSize();
-        }
-
-        return $this->_post_max_size;
+        return $this->getMaxSize();
     }
 
     /**
@@ -439,8 +434,9 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      *
+     * @throws SmartyException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
