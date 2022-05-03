@@ -66,6 +66,7 @@ class AdminMaintenanceControllerCore extends AdminController
                         'validation' => 'isGenericName',
                         'type'       => 'maintenance_ip',
                         'default'    => '',
+                        'remoteIp'   => Tools::getRemoteAddr(),
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],

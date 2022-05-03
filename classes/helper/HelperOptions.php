@@ -220,23 +220,6 @@ class HelperOptionsCore extends Helper
                     }
                 }
 
-                // pre-assign vars to the tpl
-                // @todo move this
-                if ($field['type'] == 'maintenance_ip') {
-                    $field['script_ip'] = '
-						<script type="text/javascript">
-							function addRemoteAddr()
-							{
-								var length = $(\'input[name=PS_MAINTENANCE_IP]\').attr(\'value\').length;
-								if (length > 0)
-									$(\'input[name=PS_MAINTENANCE_IP]\').attr(\'value\',$(\'input[name=PS_MAINTENANCE_IP]\').attr(\'value\') +\','.Tools::getRemoteAddr().'\');
-								else
-									$(\'input[name=PS_MAINTENANCE_IP]\').attr(\'value\',\''.Tools::getRemoteAddr().'\');
-							}
-						</script>';
-                    $field['link_remove_ip'] = '<button type="button" class="btn btn-default" onclick="addRemoteAddr();"><i class="icon-plus"></i> '.$this->l('Add my IP', 'Helper').'</button>';
-                }
-
                 // Multishop default value
                 $field['multishop_default'] = false;
                 if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && !$isInvisible) {
