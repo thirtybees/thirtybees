@@ -357,6 +357,7 @@ class ConfigurationCore extends ObjectModel
      * @return string
      *
      * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
      */
     public static function getGlobalValue($key, $idLang = null)
@@ -415,12 +416,14 @@ class ConfigurationCore extends ObjectModel
     /**
      * Load all configuration data
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function loadConfiguration()
     {
-        return static::loadConfigurationFromDB(Db::getInstance(_PS_USE_SQL_SLAVE_));
+        static::loadConfigurationFromDB(Db::getInstance(_PS_USE_SQL_SLAVE_));
     }
 
     /**
@@ -428,6 +431,8 @@ class ConfigurationCore extends ObjectModel
      *
      * @param Db $connection Database connection to be used for data retrieval.
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.7
      * @version 1.0.7 Initial version
      */
@@ -476,6 +481,9 @@ class ConfigurationCore extends ObjectModel
      * @param int    $idShop
      *
      * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -602,6 +610,7 @@ class ConfigurationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public static function updateGlobalValue($key, $values, $html = false)
     {
@@ -921,21 +930,23 @@ class ConfigurationCore extends ObjectModel
      */
     public static function isOverridenByCurrentContext($key)
     {
-        if (Configuration::isLangKey($key)) {
-            $testContext = false;
-            foreach (Language::getIDs(false) as $idLang) {
-                if ((Shop::getContext() == Shop::CONTEXT_SHOP && Configuration::hasContext($key, $idLang, Shop::CONTEXT_SHOP))
-                    || (Shop::getContext() == Shop::CONTEXT_GROUP && Configuration::hasContext($key, $idLang, Shop::CONTEXT_GROUP))
-                ) {
-                    $testContext = true;
-                }
-            }
-        } else {
-            $testContext = ((Shop::getContext() == Shop::CONTEXT_SHOP && Configuration::hasContext($key, null, Shop::CONTEXT_SHOP))
-                || (Shop::getContext() == Shop::CONTEXT_GROUP && Configuration::hasContext($key, null, Shop::CONTEXT_GROUP))) ? true : false;
+        if (! Shop::isFeatureActive()) {
+            return false;
+        }
+        if (Shop::getContext() == Shop::CONTEXT_ALL) {
+            return false;
         }
 
-        return (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && $testContext);
+        if (static::isLangKey($key)) {
+            foreach (Language::getIDs(false) as $idLang) {
+                if (static::hasContext($key, $idLang, Shop::getContext())) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return static::hasContext($key, null, Shop::getContext());
+        }
     }
 
     /**
@@ -952,7 +963,7 @@ class ConfigurationCore extends ObjectModel
     {
         static::validateKey($key);
 
-        return (isset(static::$types[$key]) && static::$types[$key] == 'lang') ? true : false;
+        return isset(static::$types[$key]) && static::$types[$key] == 'lang';
     }
 
     /**
@@ -961,6 +972,9 @@ class ConfigurationCore extends ObjectModel
      * @param string $key
      * @param int    $idLang
      * @param int    $context
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1051,7 +1065,7 @@ class ConfigurationCore extends ObjectModel
                 Tools::displayError('[%s] is not a valid configuration key'),
                 Tools::htmlentitiesUTF8($key)
             ));
-            die($e->displayMessage());
+            $e->displayMessage();
         }
     }
 
@@ -1062,6 +1076,7 @@ class ConfigurationCore extends ObjectModel
      * by thirty bees developers only
      *
      * @return string
+     * @throws PrestaShopException
      */
     public static function getApiServer()
     {
@@ -1078,6 +1093,8 @@ class ConfigurationCore extends ObjectModel
      * If this method returns true, then operation-system trust store will be used
      * If this method returns false, then SSL certificates will not be used
      *
+     * @return string | boolean
+     * @throws PrestaShopException
      * @since 1.4.0
      */
     public static function getSslTrustStore()
@@ -1103,6 +1120,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @return string
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public static function getServerTrackingId()
     {
