@@ -78,7 +78,7 @@ class HelperOptionsCore extends Helper
         }
 
         $useMultishop = false;
-        $hideMultishopCheckbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
+        $hideMultishopCheckbox = Shop::getTotalShops(false, null) < 2;
         foreach ($optionList as $category => $categoryData) {
             if (!is_array($categoryData)) {
                 continue;
@@ -159,7 +159,7 @@ class HelperOptionsCore extends Helper
                             [
                                 0 => [
                                     'type'       => HelperUploader::TYPE_IMAGE,
-                                    'image'      => isset($field['image']) ? $field['image'] : null,
+                                    'image'      => $field['image'],
                                     'size'       => isset($field['size']) ? $field['size'] : null,
                                     'delete_url' => isset($field['delete_url']) ? $field['delete_url'] : null,
                                 ],
@@ -174,7 +174,7 @@ class HelperOptionsCore extends Helper
                                     'type'         => HelperUploader::TYPE_FILE,
                                     'size'         => isset($field['size']) ? $field['size'] : null,
                                     'delete_url'   => isset($field['delete_url']) ? $field['delete_url'] : null,
-                                    'download_url' => isset($field['file']) ? $field['file'] : null,
+                                    'download_url' => $field['file'],
                                 ],
                             ]
                         );
@@ -185,7 +185,7 @@ class HelperOptionsCore extends Helper
                             [
                                 0 => [
                                     'type'  => HelperUploader::TYPE_IMAGE,
-                                    'image' => isset($field['thumb']) ? '<img src="'.$field['thumb'].'" alt="'.$field['title'].'" title="'.$field['title'].'" />' : null,
+                                    'image' => '<img src="'.$field['thumb'].'" alt="'.$field['title'].'" title="'.$field['title'].'" />',
                                 ],
                             ]
                         );
