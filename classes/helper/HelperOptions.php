@@ -292,30 +292,6 @@ class HelperOptionsCore extends Helper
     }
 
     /**
-     * Type = price
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function displayOptionTypePrice($key, $field, $value)
-    {
-        echo $this->context->currency->getSign('left');
-        $this->displayOptionTypeText($key, $field, $value);
-        echo $this->context->currency->getSign('right').' '.$this->l('(tax excl.)', 'Helper');
-    }
-
-    /**
-     * Type = disabled
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function displayOptionTypeDisabled($key, $field, $value)
-    {
-        echo $field['disabled'];
-    }
-
-    /**
      * @param string $key
      * @param array  $field
      *
