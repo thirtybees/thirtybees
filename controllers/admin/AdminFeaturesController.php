@@ -339,6 +339,22 @@ class AdminFeaturesControllerCore extends AdminController
                     ],
                 ],
                 [
+                    'type'     => 'select',
+                    'label'    => $this->l('Sorting'),
+                    'name'     => 'sorting',
+                    'options'  => [
+                        'query' => [
+                            ['id' => 'value_asc', 'name' => $this->l('Value ASC')],
+                            ['id' => 'value_desc', 'name' => $this->l('Value DESC')],
+                            ['id' => 'custom', 'name' => $this->l('Custom')],
+                        ],
+                        'id'    => 'id',
+                        'name'  => 'name',
+                    ],
+                    'col'      => '2',
+                    'hint'     => $this->l('The way multiple values will be sorted'),
+                ],
+                [
                     'type'     => 'text',
                     'label'    => $this->l('Separator'),
                     'name'     => 'multiple_separator',
@@ -354,7 +370,7 @@ class AdminFeaturesControllerCore extends AdminController
                     'lang'     => true,
                     'size'     => 33,
                     'hint'     => $this->l('How should multiple values be displayed?'),
-                    'desc'     => $this->l('Keywords: {values}, {min_value}, {max_value}'),
+                    'desc'     => $this->l('Keywords: {values}, {min_value}, {max_value}, {min_displayable}, {max_displayable}'),
                     'required' => false,
                 ],
             ],
@@ -408,6 +424,9 @@ class AdminFeaturesControllerCore extends AdminController
                 'value'            => [
                     'title' => $this->l('Value'),
                 ],
+                'displayable'            => [
+                    'title' => $this->l('Displayable'),
+                ],
                 'products'      => [
                     'title'   => $this->l('Products'),
                     'orderby' => false,
@@ -416,14 +435,29 @@ class AdminFeaturesControllerCore extends AdminController
                     'class'   => 'fixed-width-xs',
                     'callback'=> 'getProductsLink',
                 ],
-                'position'   => [
+
+            ];
+
+            if ($this->object->sorting=='custom') {
+                $this->fields_list['position'] = [
                     'title'      => $this->l('Position'),
                     'filter_key' => 'a!position',
                     'align'      => 'center',
                     'class'      => 'fixed-width-xs',
                     'position'   => 'position',
-                ],
-            ];
+                ];
+
+                $this->_defaultOrderBy = 'position';
+                $this->_defaultOrderWay = 'ASC';
+            }
+            elseif ($this->object->sorting=='value_desc') {
+                $this->_defaultOrderBy = 'value';
+                $this->_defaultOrderWay = 'DESC';
+            }
+            else {
+                $this->_defaultOrderBy = 'value';
+                $this->_defaultOrderWay = 'ASC';
+            }
 
             $this->_where = sprintf('AND `id_feature` = %d', $id);
             static::$currentIndex = static::$currentIndex.'&id_feature='.$id.'&viewfeature';

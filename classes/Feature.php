@@ -52,6 +52,11 @@ class FeatureCore extends ObjectModel
     public $allows_multiple_values = false;
 
     /**
+     * @var string Sorting method when multiple values were selected
+     */
+    public $sorting;
+
+    /**
      * @var bool Deprecated (custom functionality was dropped in 1.x.0)
      */
     public $allows_custom_values = true;
@@ -77,10 +82,11 @@ class FeatureCore extends ObjectModel
         'fields'    => [
             'position'                  => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
             'allows_multiple_values'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'sorting'                   => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'dbDefault' => ''],
 
             /* Lang fields */
             'name'                 => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
-            'multiple_separator'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
+            'multiple_separator'   => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => false, 'size' => 128, 'dbNullable' => true],
             'multiple_schema'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [

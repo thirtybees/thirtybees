@@ -1995,7 +1995,11 @@ class ProductCore extends ObjectModel
 				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				'.Shop::addSqlAssociation('feature', 'f').'
 				WHERE pf.id_product = '.(int) $idProduct.'
-				ORDER BY f.position ASC, fv.position ASC'
+				ORDER BY f.position ASC,
+				    (CASE WHEN f.sorting=\'\' OR f.sorting=\'value_asc\' THEN fvl.value END) ASC,
+				    (CASE WHEN f.sorting=\'value_desc\' THEN fvl.value END) DESC,
+				    (CASE WHEN f.sorting=\'custom\' THEN fv.position END) ASC
+				    '
             );
 
             $feature_values_helper = [];
@@ -2007,14 +2011,15 @@ class ProductCore extends ObjectModel
                 $display_value = $feature_value['displayable'] ?: $feature_value['value'];
 
                 if (!isset($feature_values_helper[$id_feature])) {
+                    $feature_values_helper[$id_feature]['id_feature'] = $id_feature; // Helpful in cases the keys got lost due to sorting
                     $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
-                    $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema'];
                     $feature_values_helper[$id_feature]['values'][] = $display_value;
                     $feature_values_helper[$id_feature]['values_string'] = $display_value;
                     $feature_values_helper[$id_feature]['min_value'] = $feature_value;
                     $feature_values_helper[$id_feature]['max_value'] = $feature_value;
                 }
                 else {
+                    $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema']; // Multiple Schema should only apply, if really multiple values were selected
                     $feature_values_helper[$id_feature]['values'][] = $display_value;
 
                     // Concatenate values
@@ -2034,14 +2039,15 @@ class ProductCore extends ObjectModel
 
             // Now create the 'value' based on the multiple_schema
             foreach ($feature_values_helper as &$feature_value_helper) {
-                if ($multiple_schema = $feature_value_helper['multiple_schema']) {
+                if (isset($feature_value_helper['multiple_schema']) && ($multiple_schema = $feature_value_helper['multiple_schema'])) {
+                    $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
+                    $value = str_replace('{min_value}', $feature_value_helper['min_value']['value'], $value);
+                    $value = str_replace('{max_value}', $feature_value_helper['max_value']['value'], $value);
 
                     $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
                     $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
-
-                    $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
-                    $value = str_replace('{min_value}', $display_value_min, $value);
-                    $value = str_replace('{max_value}', $display_value_max, $value);
+                    $value = str_replace('{min_displayable}', $display_value_min, $value);
+                    $value = str_replace('{max_displayable}', $display_value_max, $value);
 
                     $feature_value_helper['value'] = $value;
                 }
@@ -6286,6 +6292,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.x.0 (custom functionality was dropped in 1.x.0)
      *
      * @param int    $idValue
      * @param int    $idLang
@@ -7028,12 +7035,13 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function addFeaturesToDB($id_feature, $id_feature_value = 0, $createCustomValue = false)
+    public function addFeaturesToDB($id_feature, $id_feature_value, $createCustomValue = false)
     {
         $id_feature = (int)$id_feature;
         $id_feature_value = $createCustomValue ? 0 : (int)$id_feature_value; // Just to be 100% backward compatible
 
         if (!$id_feature_value) {
+            // Todo: Dev note: it's much cleaner to add a featureValue first and only then link it to a product -> maybe we should warn or throw an exception
             $row = [
                 'id_feature' => $id_feature,
                 'custom' => 0,
@@ -7044,6 +7052,7 @@ class ProductCore extends ObjectModel
         }
 
         if ($id_feature && $id_feature_value) {
+            // Todo: it would be much cleaner, to introduce an ObjectModel for FeatureProduct (especially as we introduce the displayable feature)
             $row = [
                 'id_feature' => $id_feature,
                 'id_product' => (int)$this->id,

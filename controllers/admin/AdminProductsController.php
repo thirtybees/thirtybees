@@ -2846,16 +2846,17 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
+        // Adding new values
         foreach ($new_feature_values as $id_feature => $new) {
-
             foreach ($new as $new_feature_value) {
                 // Create a new feature value
-                $id_feature_value = $product->addFeaturesToDB($id_feature);
-
-                // Fill the new feature value with all lang values
-                foreach ($new_feature_value as $id_lang => $value_lang) {
-                    $product->addFeaturesCustomToDB($id_feature_value, $id_lang, $value_lang);
-                }
+                $featureValue = new FeatureValue();
+                $featureValue-> id_feature = $id_feature;
+                $featureValue->value = $new_feature_value;
+                $featureValue->position = (int)FeatureValue::getHighestPosition($id_feature)+1;
+                $featureValue->add();
+                // Link feature value
+                $product->addFeaturesToDB($id_feature, $featureValue->id);
             }
         }
     }
