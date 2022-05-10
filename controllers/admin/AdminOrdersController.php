@@ -465,6 +465,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processBulkUpdateOrderStatus()
@@ -521,13 +522,16 @@ class AdminOrdersControllerCore extends AdminController
                                     ];
                                 }
 
-                                if ($history->addWithemail(true, $templateVars)) {
+                                if ($history->add()) {
                                     if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
                                         foreach ($order->getProducts() as $product) {
                                             if (StockAvailable::dependsOnStock($product['product_id'])) {
                                                 StockAvailable::synchronize($product['product_id'], (int) $product['id_shop']);
                                             }
                                         }
+                                    }
+                                    if (! $history->sendEmail($order, $templateVars)) {
+                                        $this->errors[] = sprintf(Tools::displayError('Failed to send email for order #%d.'), $idOrder);
                                     }
                                 } else {
                                     $this->errors[] = sprintf(Tools::displayError('Cannot change status for order #%d.'), $idOrder);
