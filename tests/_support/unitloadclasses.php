@@ -296,6 +296,8 @@ $kernel->loadFile(__DIR__.'/../../classes/order/OrderCartRule.php');
 $kernel->loadFile(__DIR__.'/override/classes/order/OrderCartRule.php');
 $kernel->loadFile(__DIR__.'/../../classes/order/OrderDetail.php');
 $kernel->loadFile(__DIR__.'/override/classes/order/OrderDetail.php');
+$kernel->loadFile(__DIR__.'/../../classes/order/OrderDetailPack.php');
+$kernel->loadFile(__DIR__.'/override/classes/order/OrderDetailPack.php');
 $kernel->loadFile(__DIR__.'/../../classes/order/OrderHistory.php');
 $kernel->loadFile(__DIR__.'/override/classes/order/OrderHistory.php');
 $kernel->loadFile(__DIR__.'/../../classes/order/OrderInvoice.php');

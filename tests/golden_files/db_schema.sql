@@ -1364,6 +1364,15 @@ CREATE TABLE `PREFIX_order_detail` (
   KEY `product_id` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_order_detail_pack` (
+  `id_order_detail_pack` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_order_detail` int(11) unsigned NOT NULL,
+  `id_product` int(11) unsigned NOT NULL,
+  `id_product_attribute` int(11) unsigned NOT NULL DEFAULT '0',
+  `quantity` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id_order_detail_pack`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_order_detail_tax` (
   `id_order_detail` int(11) NOT NULL,
   `id_tax` int(11) NOT NULL,

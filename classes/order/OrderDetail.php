@@ -1035,11 +1035,20 @@ class OrderDetailCore extends ObjectModel
         $this->id_shop = (int) $product['id_shop'];
 
         // Add new entry to the table
-        $this->save();
+        $this->add();
 
         if ($useTaxes) {
             $this->saveTaxCalculator($order);
         }
         unset($this->tax_calculator);
+
+        foreach (Pack::getPackContent($this->product_id) as $entry) {
+            $packItem = new OrderDetailPack();
+            $packItem->id_order_detail = (int)$this->id;
+            $packItem->id_product = (int)$entry['id_product'];
+            $packItem->id_product_attribute = (int)$entry['id_product_attribute'];
+            $packItem->quantity = (int)$entry['quantity'];
+            $packItem->add();
+        }
     }
 }
