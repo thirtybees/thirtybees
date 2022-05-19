@@ -722,7 +722,7 @@ class AdminFeaturesControllerCore extends AdminController
 
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
-        if ($this->table == 'feature') {
+        if ($this->table == 'feature' && $this->_list) {
 
             $ids = array_map('intval', array_column($this->_list, 'id_feature'));
             $extra = [];
