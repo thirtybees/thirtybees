@@ -34,6 +34,13 @@
  */
 class PackCore extends Product
 {
+    const STOCK_TYPE_DECREMENT_PACK = 0;
+    const STOCK_TYPE_DECREMENT_PRODUCTS = 1;
+    const STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS = 2;
+    const STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS = 3;
+
+    const STOCK_TYPE_ITEMS = 1;
+
     /**
      * @param int $idProduct
      *
@@ -603,5 +610,41 @@ class PackCore extends Product
         }
 
         return $arrayResult;
+    }
+
+    /**
+     * Returns true, if $stockType value is one of the three allowed settings
+     *   - STOCK_TYPE_DECREMENT_PACK,
+     *   - STOCK_TYPE_DECREMENT_PRODUCTS
+     *   - STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS
+     * returns false for anything else, even STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS
+     *
+     * @param $stockType
+     * @return boolean
+     */
+    public static function isValidStockType($stockType)
+    {
+        $stockType = (int)$stockType;
+        return (
+            ($stockType === static::STOCK_TYPE_DECREMENT_PACK) ||
+            ($stockType === static::STOCK_TYPE_DECREMENT_PRODUCTS) ||
+            ($stockType === static::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS)
+        );
+    }
+
+    /**
+     * Returns public configuration for pack quantity adjustment
+     *
+     * @return int
+     */
+    public static function getGlobalStockTypeSettings()
+    {
+        try {
+            $stockType = (int)Configuration::get(Configuration::PACK_STOCK_TYPE);
+            if (self::isValidStockType($stockType)) {
+                return $stockType;
+            }
+        } catch (Exception $ignored) {}
+        return static::STOCK_TYPE_DECREMENT_PACK;
     }
 }

@@ -5524,7 +5524,7 @@ class AdminProductsControllerCore extends AdminController
                         'product'                 => $obj,
                         'show_quantities'         => $show_quantities,
                         'order_out_of_stock'      => Configuration::get('PS_ORDER_OUT_OF_STOCK'),
-                        'pack_stock_type'         => Configuration::get('PS_PACK_STOCK_TYPE'),
+                        'pack_stock_type'         => Pack::getGlobalStockTypeSettings(),
                         'token_preferences'       => Tools::getAdminTokenLite('AdminPPreferences'),
                         'token'                   => $this->token,
                         'languages'               => $this->_languages,
@@ -5770,8 +5770,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process product quantity
      *
-     * @return string|void
-     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessProductQuantity()
@@ -5795,9 +5795,12 @@ class AdminProductsControllerCore extends AdminController
                 if (!$product->advanced_stock_management && (int) Tools::getValue('value') == 1) {
                     $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
                 }
-                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) Tools::getValue('value') == 1 && (Pack::isPack($product->id) && !Pack::allUsesAdvancedStockManagement($product->id)
-                        && ($product->pack_stock_type == 2 || $product->pack_stock_type == 1 ||
-                            ($product->pack_stock_type == 3 && (Configuration::get('PS_PACK_STOCK_TYPE') == 1 || Configuration::get('PS_PACK_STOCK_TYPE') == 2))))
+                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') &&
+                    (int) Tools::getValue('value') == 1 && (
+                        Pack::isPack($product->id) &&
+                        !Pack::allUsesAdvancedStockManagement($product->id) &&
+                        $product->shouldAdjustPackItemsQuantities()
+                    )
                 ) {
                     $this->ajaxDie(
                         json_encode(
@@ -5814,17 +5817,19 @@ class AdminProductsControllerCore extends AdminController
                 break;
 
             case 'pack_stock_type':
-                $value = Tools::getValue('value');
-                if ($value === false) {
-                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
-                }
-                if ((int) $value != 0 && (int) $value != 1
-                    && (int) $value != 2 && (int) $value != 3
-                ) {
+                $value = (int)Tools::getValue('value');
+                if (! in_array($value, [
+                    Pack::STOCK_TYPE_DECREMENT_PACK,
+                    Pack::STOCK_TYPE_DECREMENT_PRODUCTS,
+                    Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS,
+                    Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS
+                ])) {
                     $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
-                if ($product->depends_on_stock && !Pack::allUsesAdvancedStockManagement($product->id) && ((int) $value == 1
-                        || (int) $value == 2 || ((int) $value == 3 && (Configuration::get('PS_PACK_STOCK_TYPE') == 1 || Configuration::get('PS_PACK_STOCK_TYPE') == 2)))
+                $product->pack_stock_type = $value;
+                if ($product->depends_on_stock &&
+                    !Pack::allUsesAdvancedStockManagement($product->id) &&
+                    $product->shouldAdjustPackItemsQuantities()
                 ) {
                     $this->ajaxDie(
                         json_encode(
@@ -5861,13 +5866,6 @@ class AdminProductsControllerCore extends AdminController
 
                 StockAvailable::setQuantity($product->id, (int) Tools::getValue('id_product_attribute'), (int) Tools::getValue('value'));
                 Hook::exec('actionProductUpdate', ['id_product' => (int) $product->id, 'product' => $product]);
-
-                // Catch potential echo from modules
-                $error = ob_get_contents();
-                if (!empty($error)) {
-                    ob_end_clean();
-                    $this->ajaxDie(json_encode(['error' => $error]));
-                }
                 break;
             case 'advanced_stock_management' :
                 if (Tools::getValue('value') === false) {

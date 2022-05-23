@@ -108,25 +108,25 @@
 					<div class="col-lg-9">
 						<p class="radio">
 							<label id="label_pack_stock_1" for="pack_stock_type_1">
-								<input type="radio" class="pack_stock_type" value="0" name="pack_stock_type" id="pack_stock_type_1" {if isset($product->pack_stock_type) && $product->pack_stock_type == 0} checked="checked" {/if}/>
+								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PACK}" name="pack_stock_type" id="pack_stock_type_1" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK} checked="checked" {/if}/>
 								{l s='Decrement pack only.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_2" for="pack_stock_type_2">
-								<input type="radio" class="pack_stock_type" value="1" name="pack_stock_type" id="pack_stock_type_2" {if isset($product->pack_stock_type) && $product->pack_stock_type == 1} checked="checked" {/if}/>
+								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PRODUCTS}" name="pack_stock_type" id="pack_stock_type_2" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PRODUCTS} checked="checked" {/if}/>
 								{l s='Decrement products in pack only.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_3" for="pack_stock_type_3">
-								<input type="radio" class="pack_stock_type" value="2" name="pack_stock_type" id="pack_stock_type_3" {if isset($product->pack_stock_type) && $product->pack_stock_type == 2} checked="checked" {/if}/>
+								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS}" name="pack_stock_type" id="pack_stock_type_3" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS} checked="checked" {/if}/>
 								{l s='Decrement both.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_4" for="pack_stock_type_4">
-								<input type="radio" class="pack_stock_type" value="3" name="pack_stock_type" id="pack_stock_type_4" {if !isset($product->pack_stock_type) || $product->pack_stock_type == 3} checked="checked" {/if}/>
+								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS}" name="pack_stock_type" id="pack_stock_type_4" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS} checked="checked" {/if}/>
 								{l s='Default'}:
 								{if $pack_stock_type == 0}
 									{l s='Decrement pack only.'}

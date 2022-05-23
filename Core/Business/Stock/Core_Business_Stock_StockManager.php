@@ -47,13 +47,14 @@ class Core_Business_Stock_StockManager
      * @param int            $deltaQuantity  The movement of the stock (negative for a decrease)
      * @param int|null       $idShop         Opional shop ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function updatePackQuantity($product, $stockAvailable, $deltaQuantity, $idShop = null)
     {
-        $configuration = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
-        if ($product->pack_stock_type == 1 || $product->pack_stock_type == 2 || ($product->pack_stock_type == 3 && $configuration->get('PS_PACK_STOCK_TYPE') > 0)) {
+        if ($product->shouldAdjustPackItemsQuantities()) {
             /** @var Adapter_PackItemsManager $packItemsManager */
             $packItemsManager = Adapter_ServiceLocator::get('Adapter_PackItemsManager');
             $productsPack = $packItemsManager->getPackItems($product);
@@ -71,10 +72,8 @@ class Core_Business_Stock_StockManager
             }
         }
 
-        $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
-
-        if ($product->pack_stock_type == 0 || $product->pack_stock_type == 2 ||
-            ($product->pack_stock_type == 3 && ($configuration->get('PS_PACK_STOCK_TYPE') == 0 || $configuration->get('PS_PACK_STOCK_TYPE') == 2))) {
+        if ($product->shouldAdjustPackQuantity()) {
+            $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
             $stockAvailable->update();
         }
     }
@@ -104,9 +103,7 @@ class Core_Business_Stock_StockManager
         $packs = $packItemsManager->getPacksContainingItem($product, $idProductAttribute);
         foreach ($packs as $pack) {
             // Decrease stocks of the pack only if pack is in linked stock mode (option called 'Decrement both')
-            if (!((int) $pack->pack_stock_type == 2) &&
-                !((int) $pack->pack_stock_type == 3 && $configuration->get('PS_PACK_STOCK_TYPE') == 2)
-                ) {
+            if ($pack->getPackStockType() !== Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
                 continue;
             }
 

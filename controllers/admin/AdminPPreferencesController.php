@@ -287,20 +287,20 @@ class AdminPPreferencesControllerCore extends AdminController
                         'list'       => $warehouseList,
                         'identifier' => 'id_warehouse',
                     ],
-                    'PS_PACK_STOCK_TYPE'               => [
+                    Configuration::PACK_STOCK_TYPE => [
                         'title'      => $this->l('Default pack stock management'),
                         'type'       => 'select',
                         'list'       => [
                             [
-                                'pack_stock' => 0,
+                                'pack_stock' => Pack::STOCK_TYPE_DECREMENT_PACK,
                                 'name'       => $this->l('Decrement pack only.'),
                             ],
                             [
-                                'pack_stock' => 1,
+                                'pack_stock' => Pack::STOCK_TYPE_DECREMENT_PRODUCTS,
                                 'name'       => $this->l('Decrement products in pack only.'),
                             ],
                             [
-                                'pack_stock' => 2,
+                                'pack_stock' => Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS,
                                 'name'       => $this->l('Decrement both.'),
                             ],
                         ],

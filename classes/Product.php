@@ -211,7 +211,7 @@ class ProductCore extends ObjectModel
     /**
      * @var int tell the type of stock management to apply on the pack
      */
-    public $pack_stock_type = 3;
+    public $pack_stock_type = Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS;
     // @codingStandardsIgnoreEnd
 
     public $packItems;
@@ -8163,4 +8163,64 @@ class ProductCore extends ObjectModel
             ]);
         }
     }
+
+    /**
+     * Returns pack stock type management type, one of
+     *   - Pack::STOCK_TYPE_DECREMENT_PACK,
+     *   - Pack::STOCK_TYPE_DECREMENT_PRODUCTS
+     *   - Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS
+     *
+     * @return int
+     */
+    public function getPackStockType()
+    {
+        $stockType = (int)$this->pack_stock_type;
+        if (Pack::isValidStockType($stockType)) {
+            return $stockType;
+        }
+        if ($stockType === Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS) {
+            return Pack::getGlobalStockTypeSettings();
+        }
+        // should never happen
+        return Pack::STOCK_TYPE_DECREMENT_PACK;
+    }
+
+    /**
+     * Returns true, if quantities of pack items should be adjusted with sale of pack
+     *
+     * @return bool
+     */
+    public function shouldAdjustPackItemsQuantities()
+    {
+        switch ($this->getPackStockType()) {
+            case Pack::STOCK_TYPE_DECREMENT_PACK:
+                return false;
+            case Pack::STOCK_TYPE_DECREMENT_PRODUCTS:
+                return true;
+            case Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS:
+                return true;
+            default:
+                throw new RuntimeException('Invariant: getPackStockType returned invalid value');
+        }
+    }
+
+    /**
+     * Returns true, if quantity of pack itself should be adjusted with sale of pack
+     *
+     * @return bool
+     */
+    public function shouldAdjustPackQuantity()
+    {
+        switch ($this->getPackStockType()) {
+            case Pack::STOCK_TYPE_DECREMENT_PACK:
+                return true;
+            case Pack::STOCK_TYPE_DECREMENT_PRODUCTS:
+                return false;
+            case Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS:
+                return true;
+            default:
+                throw new RuntimeException('Invariant: getPackStockType returned invalid value');
+        }
+    }
+
 }

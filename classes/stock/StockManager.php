@@ -246,13 +246,7 @@ class StockManagerCore implements StockManagerInterface
         if ($this->shouldHandleStockOperationForProductsPack($idProduct, $ignorePack)) {
             if (Validate::isLoadedObject($product = new Product((int) $idProduct))) {
                 // Gets items
-                if (
-                    $product->pack_stock_type == 1 ||
-                    $product->pack_stock_type == 2 || (
-                        $product->pack_stock_type == 3 &&
-                        Configuration::get('PS_PACK_STOCK_TYPE') > 0
-                    )
-                ) {
+                if ($product->shouldAdjustPackItemsQuantities()) {
                     $productsPack = Pack::getItems((int) $idProduct, (int) Configuration::get('PS_LANG_DEFAULT'));
                     // Foreach item
                     foreach ($productsPack as $productPack) {
@@ -282,14 +276,7 @@ class StockManagerCore implements StockManagerInterface
                     }
                 }
 
-                if ($product->pack_stock_type == 0 ||
-                    $product->pack_stock_type == 2 || (
-                        $product->pack_stock_type == 3 && (
-                            Configuration::get('PS_PACK_STOCK_TYPE') == 0 ||
-                            Configuration::get('PS_PACK_STOCK_TYPE') == 2
-                        )
-                    )
-                ) {
+                if ($product->shouldAdjustPackQuantity()) {
                     $removedProducts = array_merge(
                         $removedProducts,
                         $this->removeProduct(
@@ -494,12 +481,7 @@ class StockManagerCore implements StockManagerInterface
 
                 foreach ($packs as $pack) {
                     // Decrease stocks of the pack only if pack is in linked stock mode (option called 'Decrement both')
-                    if (!((int) $pack->pack_stock_type == 2) &&
-                        !(
-                            (int) $pack->pack_stock_type == 3 &&
-                            (int) Configuration::get('PS_PACK_STOCK_TYPE') == 2
-                        )
-                    ) {
+                    if ($pack->getPackStockType() !== Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
                         continue;
                     }
 
@@ -697,9 +679,8 @@ class StockManagerCore implements StockManagerInterface
             )
         ) {
             foreach ($inPack as $value) {
-                if (Validate::isLoadedObject($product = new Product((int) $value['id_product_pack'])) &&
-                    ($product->pack_stock_type == 1 || $product->pack_stock_type == 2 || ($product->pack_stock_type == 3 && Configuration::get('PS_PACK_STOCK_TYPE') > 0))
-                ) {
+                $product = new Product((int) $value['id_product_pack']);
+                if (Validate::isLoadedObject($product) && $product->shouldAdjustPackItemsQuantities()) {
                     $query = new DbQuery();
                     $query->select('od.product_quantity, od.product_quantity_refunded, pk.quantity');
                     $query->from('order_detail', 'od');
@@ -727,11 +708,14 @@ class StockManagerCore implements StockManagerInterface
             }
         }
 
+        $trackingProductQuantity = true;
+        if (Pack::isPack($idProduct)) {
+            $product = new Product((int) $idProduct);
+            $trackingProductQuantity = $product->shouldAdjustPackQuantity();
+        }
+
         // skip if product is a pack without
-        if (!Pack::isPack($idProduct) || (Pack::isPack($idProduct) && Validate::isLoadedObject($product = new Product((int) $idProduct))
-                && $product->pack_stock_type == 0 || $product->pack_stock_type == 2 ||
-                ($product->pack_stock_type == 3 && (Configuration::get('PS_PACK_STOCK_TYPE') == 0 || Configuration::get('PS_PACK_STOCK_TYPE') == 2)))
-        ) {
+        if ($trackingProductQuantity) {
             // Gets client_orders_qty
             $query = new DbQuery();
             $query->select('od.product_quantity, od.product_quantity_refunded');

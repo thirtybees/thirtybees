@@ -736,8 +736,9 @@ abstract class ControllerCore
      * @param string|null $controller
      * @param string|null $method
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     protected function ajaxDie($value = null, $controller = null, $method = null)
     {

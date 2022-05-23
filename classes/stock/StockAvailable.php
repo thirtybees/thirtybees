@@ -164,7 +164,7 @@ class StockAvailableCore extends ObjectModel
         //if product is pack sync recursivly product in pack
         if (Pack::isPack($idProduct)) {
             if (Validate::isLoadedObject($product = new Product((int) $idProduct))) {
-                if ($product->pack_stock_type == 1 || $product->pack_stock_type == 2 || ($product->pack_stock_type == 3 && Configuration::get('PS_PACK_STOCK_TYPE') > 0)) {
+                if ($product->shouldAdjustPackItemsQuantities()) {
                     $productsPack = Pack::getItems($idProduct, (int) Configuration::get('PS_LANG_DEFAULT'));
                     foreach ($productsPack as $productPack) {
                         static::synchronize($productPack->id, $orderIdShop);

@@ -72,7 +72,7 @@ class Adapter_PackItemsManager
      * @param int      $itemAttributeId
      * @param int|bool $idLang
      *
-     * @return array The packs that contains the given item, with special dynamic attribute [pack_item_quantity]
+     * @return Product[] The packs that contains the given item, with special dynamic attribute [pack_item_quantity]
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
