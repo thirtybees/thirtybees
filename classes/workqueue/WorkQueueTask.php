@@ -163,9 +163,6 @@ class WorkQueueTaskCore extends ObjectModel
      * @param WorkQueueContext $context
      *
      * @return static
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     public static function createTask($task, array $parameters, WorkQueueContext $context)
     {

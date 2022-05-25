@@ -34,10 +34,8 @@
  *
  * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_PackItemsManager
 {
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get the Products contained in the given Pack.

@@ -47,6 +47,11 @@ class AdminProductsControllerCore extends AdminController
      */
     const TAB_PERMISSION_FULL = 'full';
 
+    const QUANTITY_METHOD_MANUAL = 0;
+    const QUANTITY_METHOD_ASM = 1;
+    const QUANTITY_METHOD_DYNAMIC_PACK = 2;
+
+
     // @codingStandardsIgnoreStart
     /** @var int Max image size for upload
      * As of 1.5 it is recommended to not set a limit to max image size
@@ -5488,24 +5493,11 @@ class AdminProductsControllerCore extends AdminController
                 // if product is a pack
                 if (Pack::isPack($obj->id)) {
                     $items = Pack::getItems((int) $obj->id, Configuration::get('PS_LANG_DEFAULT'));
-
-                    // gets an array of quantities (quantity for the product / quantity in pack)
-                    $pack_quantities = [];
+                    $pack_quantity = PHP_INT_MAX;
                     foreach ($items as $item) {
-                        /** @var Product $item */
-                        if (!$item->isAvailableWhenOutOfStock((int) $item->out_of_stock)) {
-                            $pack_id_product_attribute = Product::getDefaultAttribute($item->id, 1);
-                            $pack_quantities[] = Product::getQuantity($item->id, $pack_id_product_attribute) / ($item->pack_quantity !== 0 ? $item->pack_quantity : 1);
-                        }
-                    }
-
-                    // gets the minimum
-                    if (count($pack_quantities)) {
-                        $pack_quantity = $pack_quantities[0];
-                        foreach ($pack_quantities as $value) {
-                            if ($pack_quantity > $value) {
-                                $pack_quantity = $value;
-                            }
+                        if ($item->pack_quantity > 0) {
+                            $itemQuantity = StockAvailable::getQuantityAvailableByProduct($item->id, $item->id_pack_product_attribute);
+                            $pack_quantity = min($pack_quantity, floor($itemQuantity / $item->pack_quantity));
                         }
                     }
 
@@ -5522,6 +5514,7 @@ class AdminProductsControllerCore extends AdminController
                         'stock_management_active' => Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
                         'product_designation'     => $product_designation,
                         'product'                 => $obj,
+                        'isPack'                  => Pack::isPack($obj->id),
                         'show_quantities'         => $show_quantities,
                         'order_out_of_stock'      => Configuration::get('PS_ORDER_OUT_OF_STOCK'),
                         'pack_stock_type'         => Pack::getGlobalStockTypeSettings(),
@@ -5783,37 +5776,14 @@ class AdminProductsControllerCore extends AdminController
             $this->ajaxDie(json_encode(['error' => $this->l('Undefined action')]));
         }
 
-        $product = new Product((int) Tools::getValue('id_product'), true);
+        $product = new Product((int)Tools::getValue('id_product'), true);
+        if (! Validate::isLoadedObject($product)) {
+            $this->ajaxDie(json_encode(['error' => $this->l('Product not found')]));
+        }
+
         switch (Tools::getValue('actionQty')) {
             case 'depends_on_stock':
-                if (Tools::getValue('value') === false) {
-                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
-                }
-                if ((int) Tools::getValue('value') != 0 && (int) Tools::getValue('value') != 1) {
-                    $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
-                }
-                if (!$product->advanced_stock_management && (int) Tools::getValue('value') == 1) {
-                    $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
-                }
-                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') &&
-                    (int) Tools::getValue('value') == 1 && (
-                        Pack::isPack($product->id) &&
-                        !Pack::allUsesAdvancedStockManagement($product->id) &&
-                        $product->shouldAdjustPackItemsQuantities()
-                    )
-                ) {
-                    $this->ajaxDie(
-                        json_encode(
-                            [
-                                'error' => $this->l('You cannot use advanced stock management for this pack because').'<br />'.
-                                    $this->l('- advanced stock management is not enabled for these products').'<br />'.
-                                    $this->l('- you have chosen to decrement products quantities.'),
-                            ]
-                        )
-                    );
-                }
-
-                StockAvailable::setProductDependsOnStock($product->id, (int) Tools::getValue('value'));
+                $this->setQuantitiesMethod((int)Tools::getValue('value'), $product);
                 break;
 
             case 'pack_stock_type':
@@ -5886,6 +5856,78 @@ class AdminProductsControllerCore extends AdminController
 
         }
         $this->ajaxDie(json_encode(['error' => false]));
+    }
+
+    /**
+     * @param int $method
+     * @param Product $product
+     * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function setQuantitiesMethod($method, Product $product)
+    {
+        // validate input
+        switch ($method) {
+            case static::QUANTITY_METHOD_MANUAL:
+                StockAvailable::setProductDependsOnStock($product->id, 0);
+                Product::setDynamicPack($product->id, false);
+                break;
+
+            case static::QUANTITY_METHOD_ASM:
+
+                // check that advanced stock management feature is enabled
+                if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                    $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled.')]));
+                }
+
+                // check that advanced stock management is enabled for this product
+                if (!$product->advanced_stock_management) {
+                    $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled.')]));
+                }
+
+                // if the product is pack, and pack quantities settings is set to decrement pack items, then verify that
+                // all items use advances stock management feature as well
+                if (Pack::isPack($product->id) &&
+                    $product->shouldAdjustPackItemsQuantities() &&
+                    !Pack::allUsesAdvancedStockManagement($product->id)
+                ) {
+                    $this->ajaxDie(
+                        json_encode(
+                            [
+                                'error' => (
+                                    $this->l('You cannot use advanced stock management for this pack because').'<br />'.
+                                    $this->l('- advanced stock management is not enabled for these products').'<br />'.
+                                    $this->l('- you have chosen to decrement products quantities.')
+                                )
+                            ]
+                        )
+                    );
+                }
+
+                // set asm for this product
+                StockAvailable::setProductDependsOnStock($product->id, 1);
+                Product::setDynamicPack($product->id, false);
+                break;
+
+            case static::QUANTITY_METHOD_DYNAMIC_PACK:
+                if (!Pack::isPack($product->id)) {
+                    $this->ajaxDie(json_encode(['error' => $this->l('Product is not a pack')]));
+                }
+
+                StockAvailable::setProductDependsOnStock($product->id, 0);
+                Product::setPackStockType($product->id, Pack::STOCK_TYPE_DECREMENT_PRODUCTS);
+                Product::setDynamicPack($product->id, true);
+
+                $this->ajaxDie(json_encode([
+                    'error' => false,
+                    'quantities' => $this->getProductQuantities($product)
+                ]));
+                break;
+            default:
+                $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
+        }
     }
 
     /**
@@ -6227,7 +6269,6 @@ class AdminProductsControllerCore extends AdminController
         return $tabs;
     }
 
-
     /**
      * Returns base identifier from $full, for example 'demo_1' will return 'demo'
      * @param string $full
@@ -6271,5 +6312,30 @@ class AdminProductsControllerCore extends AdminController
             $rewrite = $candidate;
         }
         return $rewrites;
+    }
+
+    /**
+     * @param Product $product
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getProductQuantities(Product $product)
+    {
+        $quantities = [];
+        $attributes = $product->getAttributesResume($this->context->language->id);
+        if (!$attributes) {
+            $attributes = [[
+                'id_product_attribute' => 0,
+                'quantity' => StockAvailable::getQuantityAvailableByProduct($product->id)
+            ]];
+        }
+        foreach ($attributes as $attribute) {
+            $quantities[] = [
+                'id' => (int)$attribute['id_product_attribute'],
+                'value' => (int)$attribute['quantity'],
+            ];
+        }
+        return $quantities;
     }
 }

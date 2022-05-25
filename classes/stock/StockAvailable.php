@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Stock\Synchronization\DynamicPacksSynchronizationTask;
+
 /**
  * Represents quantities available
  * It is either synchronized with Stock or manualy set by the seller
@@ -37,7 +40,6 @@
  */
 class StockAvailableCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int identifier of the current product */
     public $id_product;
     /** @var int identifier of product attribute if necessary */
@@ -52,7 +54,10 @@ class StockAvailableCore extends ObjectModel
     public $depends_on_stock = false;
     /** @var bool determine if a product is out of stock - it was previously in Product class */
     public $out_of_stock = false;
-    // @codingStandardsIgnoreEnd
+
+
+    /** @var int */
+    protected $original_quantity = null;
 
     /**
      * @see ObjectModel::$definition
@@ -98,15 +103,35 @@ class StockAvailableCore extends ObjectModel
     ];
 
     /**
-     * @since   1.0.0
+     * Constructor
+     *
+     * @param int $id
+     * @param int $idLang
+     * @param int $idShop
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function __construct($id = null, $idLang = null, $idShop = null)
+    {
+        parent::__construct($id, $idLang, $idShop);
+        $this->original_quantity = (int)$this->quantity;
+    }
+
+
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
      *
-     * @return bool
+     * @since   1.0.0
      */
     public function updateWs()
     {
         if ($this->depends_on_stock) {
-            return WebserviceRequest::getInstance()->setError(500, Tools::displayError('You cannot update the available stock when it depends on stock.'), 133);
+            WebserviceRequest::getInstance()->setError(500, Tools::displayError('You cannot update the available stock when it depends on stock.'), 133);
+            return false;
         }
 
         return $this->update();
@@ -128,19 +153,31 @@ class StockAvailableCore extends ObjectModel
         if (!Validate::isUnsignedId($idProduct)) {
             return false;
         }
+        $idProduct = (int)$idProduct;
+        $cacheKey = "StockAvailable::getStockAvailableIdByProductId_$idProduct-";
+        $cacheKey .= (is_null($idProductAttribute) ? 'NULL' : (int)$idProductAttribute) . '-';
+        $cacheKey .= (is_null($idShop) ? 'NULL' : (int)$idShop);
 
-        $query = new DbQuery();
-        $query->select('id_stock_available');
-        $query->from('stock_available');
-        $query->where('id_product = '.(int) $idProduct);
+        if (! Cache::isStored($cacheKey)) {
+            $query = new DbQuery();
+            $query->select('id_stock_available');
+            $query->from('stock_available');
+            $query->where("id_product = $idProduct");
 
-        if ($idProductAttribute !== null) {
-            $query->where('id_product_attribute = '.(int) $idProductAttribute);
+            if ($idProductAttribute !== null) {
+                $query->where('id_product_attribute = ' . (int)$idProductAttribute);
+            }
+
+            $query = static::addSqlShopRestriction($query, $idShop);
+
+            $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $id = (int)$conn->getValue($query);
+            if ($id) {
+                Cache::store($cacheKey, $id);
+                return $id;
+            }
         }
-
-        $query = static::addSqlShopRestriction($query, $idShop);
-
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        return (int)Cache::retrieve($cacheKey);
     }
 
     /**
@@ -177,8 +214,8 @@ class StockAvailableCore extends ObjectModel
 
         // gets warehouse ids grouped by shops
         $idsWarehouse = Warehouse::getWarehousesGroupedByShops();
+        $orderWarehouses = [];
         if ($orderIdShop !== null) {
-            $orderWarehouses = [];
             $wh = Warehouse::getWarehouses(false, (int) $orderIdShop);
             foreach ($wh as $warehouse) {
                 $orderWarehouses[] = $warehouse['id_warehouse'];
@@ -226,7 +263,8 @@ class StockAvailableCore extends ObjectModel
                         ]
                     );
                 } // else this product has attributes, hence loops on $ids_product_attribute
-                else {
+                else
+                {
                     foreach ($idsProductAttribute as $idProductAttribute) {
                         $allowedWarehouseForCombination = WareHouse::getProductWarehouseList((int) $idProduct, (int) $idProductAttribute, (int) $idShop);
                         $allowedWarehouseForCombinationClean = [];
@@ -297,7 +335,8 @@ class StockAvailableCore extends ObjectModel
             Db::getInstance()->update('stock_available', ['quantity' => 0], 'id_product = '.(int) $idProduct);
         }
 
-        Cache::clean('StockAvailable::getQuantityAvailableByProduct_'.(int) $idProduct.'*');
+        static::cleanQuantityCache($idProduct);
+        return true;
     }
 
     /**
@@ -345,6 +384,7 @@ class StockAvailableCore extends ObjectModel
         if ($dependsOnStock) {
             static::synchronize($idProduct);
         }
+        return true;
     }
 
     /**
@@ -385,6 +425,8 @@ class StockAvailableCore extends ObjectModel
             static::addSqlShopParams($params, $idShop);
             Db::getInstance()->insert('stock_available', $params, false, true, Db::ON_DUPLICATE_KEY);
         }
+
+        return true;
     }
 
     /**
@@ -402,23 +444,20 @@ class StockAvailableCore extends ObjectModel
      */
     public static function getQuantityAvailableByProduct($idProduct = null, $idProductAttribute = null, $idShop = null)
     {
-        // if null, it's a product without attributes
-        if ($idProductAttribute === null) {
-            $idProductAttribute = 0;
-        }
+        $idProduct = (int)$idProduct;
+        $idProductAttribute = (int)$idProductAttribute;
 
-        $key = 'StockAvailable::getQuantityAvailableByProduct_'.(int) $idProduct.'-'.(int) $idProductAttribute.'-'.(int) $idShop;
+        $key = 'StockAvailable::getQuantityAvailableByProduct_'.$idProduct.'-'.$idProductAttribute.'-'.(int) $idShop;
         if (!Cache::isStored($key)) {
             $query = new DbQuery();
             $query->select('SUM(quantity)');
             $query->from('stock_available');
 
-            // if null, it's a product without attributes
-            if ($idProduct !== null) {
-                $query->where('id_product = '.(int) $idProduct);
+            if ($idProduct) {
+                $query->where("id_product = $idProduct");
             }
 
-            $query->where('id_product_attribute = '.(int) $idProductAttribute);
+            $query->where("id_product_attribute = $idProductAttribute");
             $query = static::addSqlShopRestriction($query, $idShop);
             $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
             Cache::store($key, $result);
@@ -452,6 +491,8 @@ class StockAvailableCore extends ObjectModel
 
         $result &= $this->postSave();
 
+        $this->triggerUpdateHook();
+
         return $result;
     }
 
@@ -471,11 +512,13 @@ class StockAvailableCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        if (!$result = parent::update($nullValues)) {
+        if (! parent::update($nullValues)) {
             return false;
         }
 
-        $result &= $this->postSave();
+        $result = $this->postSave();
+
+        $this->triggerUpdateHook();
 
         return $result;
     }
@@ -533,8 +576,9 @@ class StockAvailableCore extends ObjectModel
      * @param int $idShop             Optional
      *
      * @return bool
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function updateQuantity($idProduct, $idProductAttribute, $deltaQuantity, $idShop = null)
     {
@@ -548,7 +592,7 @@ class StockAvailableCore extends ObjectModel
 
         /** @var Core_Business_Stock_StockManager $stockManager */
         $stockManager = Adapter_ServiceLocator::get('Core_Business_Stock_StockManager');
-        $stockManager->updateQuantity($product, $idProductAttribute, $deltaQuantity, $idShop = null);
+        $stockManager->updateQuantity($product, $idProductAttribute, $deltaQuantity);
 
         return true;
     }
@@ -573,6 +617,13 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
+        // Try to set available quantity if product does not depend on physical stock
+        if (static::dependsOnStock($idProduct)) {
+            return false;
+        }
+
+        $quantity = (int)$quantity;
+
         $context = Context::getContext();
 
         // if there is no $id_shop, gets the context one
@@ -580,51 +631,51 @@ class StockAvailableCore extends ObjectModel
             $idShop = (int) $context->shop->id;
         }
 
-        $dependsOnStock = static::dependsOnStock($idProduct);
-
-        //Try to set available quantity if product does not depend on physical stock
-        if (!$dependsOnStock) {
-            $idStockAvailable = (int) static::getStockAvailableIdByProductId($idProduct, $idProductAttribute, $idShop);
-            if ($idStockAvailable) {
-                $stockAvailable = new StockAvailable($idStockAvailable);
+        $idStockAvailable = (int) static::getStockAvailableIdByProductId($idProduct, $idProductAttribute, $idShop);
+        if ($idStockAvailable) {
+            $stockAvailable = new StockAvailable($idStockAvailable);
+            if ((int)$stockAvailable->quantity !== $quantity) {
                 $stockAvailable->quantity = (int) $quantity;
                 $stockAvailable->update();
+
+                // adjust packs this item might be in
+                $packs = Pack::getPacksContainingItem($idProduct, $idProductAttribute, Configuration::get('PS_LANG_DEFAULT'));
+                $dynamicPacks = [];
+                foreach ($packs as $pack) {
+                    if ($pack->pack_dynamic) {
+                        $dynamicPacks[] = $pack->id;
+                    }
+                }
+                if ($dynamicPacks) {
+                    StockAvailable::synchronizeDynamicPacks($dynamicPacks);
+                }
+            }
+        } else {
+            $outOfStock = static::outOfStock($idProduct, $idShop);
+            $stockAvailable = new StockAvailable();
+            $stockAvailable->out_of_stock = (int) $outOfStock;
+            $stockAvailable->id_product = (int) $idProduct;
+            $stockAvailable->id_product_attribute = (int) $idProductAttribute;
+            $stockAvailable->quantity = (int) $quantity;
+
+            if ($idShop === null) {
+                $shopGroup = Shop::getContextShopGroup();
             } else {
-                $outOfStock = static::outOfStock($idProduct, $idShop);
-                $stockAvailable = new StockAvailable();
-                $stockAvailable->out_of_stock = (int) $outOfStock;
-                $stockAvailable->id_product = (int) $idProduct;
-                $stockAvailable->id_product_attribute = (int) $idProductAttribute;
-                $stockAvailable->quantity = (int) $quantity;
-
-                if ($idShop === null) {
-                    $shopGroup = Shop::getContextShopGroup();
-                } else {
-                    $shopGroup = new ShopGroup((int) Shop::getGroupFromShop((int) $idShop));
-                }
-
-                // if quantities are shared between shops of the group
-                if ($shopGroup->share_stock) {
-                    $stockAvailable->id_shop = 0;
-                    $stockAvailable->id_shop_group = (int) $shopGroup->id;
-                } else {
-                    $stockAvailable->id_shop = (int) $idShop;
-                    $stockAvailable->id_shop_group = 0;
-                }
-                $stockAvailable->add();
+                $shopGroup = new ShopGroup((int) Shop::getGroupFromShop((int) $idShop));
             }
 
-            Hook::exec(
-                'actionUpdateQuantity',
-                [
-                    'id_product'           => $idProduct,
-                    'id_product_attribute' => $idProductAttribute,
-                    'quantity'             => $stockAvailable->quantity,
-                ]
-            );
+            // if quantities are shared between shops of the group
+            if ($shopGroup->share_stock) {
+                $stockAvailable->id_shop = 0;
+                $stockAvailable->id_shop_group = (int) $shopGroup->id;
+            } else {
+                $stockAvailable->id_shop = (int) $idShop;
+                $stockAvailable->id_shop_group = 0;
+            }
+            $stockAvailable->add();
         }
 
-        Cache::clean('StockAvailable::getQuantityAvailableByProduct_'.(int) $idProduct.'*');
+        return true;
     }
 
     /**
@@ -690,14 +741,14 @@ class StockAvailableCore extends ObjectModel
             $stockAvailable->postSave();
         }
 
-        Cache::clean('StockAvailable::getQuantityAvailableByProduct_'.(int) $idProduct.'*');
+        static::cleanQuantityCache($idProduct);
 
         return $res;
     }
 
     /**
      * Removes all product quantities from all a group of shops
-     * If stocks are shared, remoe all old available quantities for all shops of the group
+     * If stocks are shared, remove all old available quantities for all shops of the group
      * Else remove all available quantities for the current group
      *
      * @param ShopGroup $shopGroup the ShopGroup object
@@ -758,7 +809,7 @@ class StockAvailableCore extends ObjectModel
      * @param int $idProduct
      * @param int $idShop    Optional : gets context if null @see Context::getContext()
      *
-     * @return bool : depends on stock @see $depends_on_stock
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -790,6 +841,8 @@ class StockAvailableCore extends ObjectModel
      *
      * @return string|DbQuery DbQuery object or the sql restriction string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -846,6 +899,8 @@ class StockAvailableCore extends ObjectModel
      * @param array $params Reference to the params array
      * @param int   $idShop Optional : The shop ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -920,5 +975,75 @@ class StockAvailableCore extends ObjectModel
             ')';
 
         return Db::getInstance()->execute($query);
+    }
+
+    /**
+     * @param int $productId
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function synchronizeDynamicPack($productId)
+    {
+        static::synchronizeDynamicPacks([
+            $productId
+        ], true);
+    }
+
+    /**
+     * @param int[] $productIds
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function synchronizeDynamicPacks($productIds, $immediateExecution = false)
+    {
+        $task = DynamicPacksSynchronizationTask::createTask($productIds);
+        $workQueueClient = ServiceLocator::getInstance()->getWorkQueueClient();
+        if ($immediateExecution) {
+            $workQueueClient->runImmediately($task);
+        } else {
+            $workQueueClient->enqueue($task);
+        }
+    }
+
+    /**
+     * @param int $productId
+     * @return void
+     */
+    public static function cleanQuantityCache($productId)
+    {
+        $productId = (int)$productId;
+        Cache::clean('StockAvailable::getQuantityAvailableByProduct_'.$productId.'-*');
+        Cache::clean('StockAvailable::getStockAvailableIdByProductId_'.$productId.'-*');
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    protected function triggerUpdateHook()
+    {
+        $newQuantity = (int)$this->quantity;
+        $oldQuantity = (int)$this->original_quantity;
+
+        if ($newQuantity !== $oldQuantity) {
+
+            $this->original_quantity = $newQuantity;
+
+            // first, clear cache
+            static::cleanQuantityCache($this->id_product);
+
+            // and trigger hook
+            Hook::exec(
+                'actionUpdateQuantity',
+                [
+                    'id_product' => (int)$this->id_product,
+                    'id_product_attribute' => (int)$this->id_product_attribute,
+                    'id_shop' => (int)$this->id_shop,
+                    'id_shop_group' => (int)$this->id_shop_group,
+                    'quantity' => $newQuantity,
+                    'old_quantity' => $oldQuantity,
+                ]
+            );
+        }
     }
 }

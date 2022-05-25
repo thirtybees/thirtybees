@@ -212,6 +212,8 @@ class ProductCore extends ObjectModel
      * @var int tell the type of stock management to apply on the pack
      */
     public $pack_stock_type = Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS;
+
+    public $pack_dynamic = 0;
     // @codingStandardsIgnoreEnd
 
     public $packItems;
@@ -271,6 +273,7 @@ class ProductCore extends ObjectModel
             'date_upd'                  => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDate', 'dbNullable' => false],
             'advanced_stock_management' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'pack_stock_type'           => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '3'],
+            'pack_dynamic'              => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
 
             /* Lang fields */
             'description'               => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
@@ -3873,6 +3876,35 @@ class ProductCore extends ObjectModel
     }
 
     /**
+     * @param int $idProduct
+     * @param bool $isDynamic
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     */
+    public static function setDynamicPack($idProduct, $isDynamic)
+    {
+        $isDynamic = (int)$isDynamic;
+        $idProduct = (int)$idProduct;
+        $sql = (
+            'UPDATE '. _DB_PREFIX_.'product p '.
+            Shop::addSqlAssociation('product', 'p').
+            " SET product_shop.pack_dynamic = $isDynamic,".
+            "     p.pack_dynamic = $isDynamic".
+            " WHERE p.id_product = $idProduct"
+        );
+        $ret = Db::getInstance()->execute($sql);
+
+        if ($ret && $isDynamic) {
+            StockAvailable::synchronizeDynamicPack($idProduct);
+        }
+        return $ret;
+    }
+
+    /**
      * @see     ObjectModel::getFieldsShop()
      * @return array
      *
@@ -5586,7 +5618,7 @@ class ProductCore extends ObjectModel
     /**
      * Get all available product attributes resume
      *
-     * @param int    $idLang                  Language id
+     * @param int $idLang Language id
      * @param string $attributeValueSeparator
      * @param string $attributeSeparator
      *
@@ -5609,13 +5641,15 @@ class ProductCore extends ObjectModel
 				ORDER BY pa.`id_product_attribute`'
         );
 
-        if (!$combinations) {
-            return false;
+        if (! $combinations) {
+            return [];
         }
 
         $productAttributes = [];
-        foreach ($combinations as $combination) {
-            $productAttributes[] = (int) $combination['id_product_attribute'];
+        foreach ($combinations as &$combination) {
+            $productAttributeId = (int)$combination['id_product_attribute'];
+            $productAttributes[] = $productAttributeId;
+            $combination['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->id, $productAttributeId);
         }
 
         $lang = Db::getInstance()->executeS(
@@ -5632,22 +5666,6 @@ class ProductCore extends ObjectModel
 
         foreach ($lang as $k => $row) {
             $combinations[$k]['attribute_designation'] = $row['attribute_designation'];
-        }
-
-        //Get quantity of each variations
-        foreach ($combinations as $key => $row) {
-            $cacheKey = $row['id_product'].'_'.$row['id_product_attribute'].'_quantity';
-
-            if (!Cache::isStored($cacheKey)) {
-                $result = StockAvailable::getQuantityAvailableByProduct($row['id_product'], $row['id_product_attribute']);
-                Cache::store(
-                    $cacheKey,
-                    $result
-                );
-                $combinations[$key]['quantity'] = $result;
-            } else {
-                $combinations[$key]['quantity'] = Cache::retrieve($cacheKey);
-            }
         }
 
         return $combinations;

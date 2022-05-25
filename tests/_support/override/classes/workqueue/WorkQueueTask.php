@@ -19,15 +19,6 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use DateInterval;
-use DateTime;
-use Db;
-use Exception;
-use ObjectModel;
-use PrestaShopCollection;
-use PrestaShopDatabaseException;
-use PrestaShopException;
-
 /**
  * Class WorkQueueTask
  *

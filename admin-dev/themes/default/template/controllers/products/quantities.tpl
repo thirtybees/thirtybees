@@ -58,9 +58,9 @@
 								{l s='I want to use the advanced stock management system for this product.'}
 							</label>
 						</p>
-							{if $stock_management_active == 0 && !$product->cache_is_pack}
+							{if $stock_management_active == 0 && !$isPack}
 								<p class="help-block"><i class="icon-warning-sign"></i>&nbsp;{l s='This requires you to enable advanced stock management.'}</p>
-							{elseif $product->cache_is_pack}
+							{elseif $isPack}
 								<p class="help-block">{l s='When enabling advanced stock management for a pack, please make sure it is also enabled for its product(s) – if you choose to decrement product quantities.'}</p>
 							{/if}
 					</div>
@@ -71,8 +71,12 @@
 					<div class="col-lg-9">
 						<p class="radio">
 							<label for="depends_on_stock_1">
-								<input type="radio" id="depends_on_stock_1" name="depends_on_stock" class="depends_on_stock"  value="1"
-									{if $product->depends_on_stock == 1 && $stock_management_active == 1}
+								<input type="radio"
+									   id="depends_on_stock_1"
+									   name="depends_on_stock"
+									   class="depends_on_stock"
+									   value="{AdminProductsController::QUANTITY_METHOD_ASM}"
+									{if $product->depends_on_stock == 1 && $stock_management_active == 1 && $product->pack_dynamic == 0}
 										checked="checked"
 									{/if}
 									{if $stock_management_active == 0 || $product->advanced_stock_management == 0}
@@ -80,21 +84,41 @@
 									{/if}
 								/>
 								{l s='The available quantities for the current product and its combinations are based on the stock in your warehouse (using the advanced stock management system). '}
-								{if ($stock_management_active == 0 || $product->advanced_stock_management == 0) && !$product->cache_is_pack} &nbsp;-&nbsp;{l s='This requires you to enable advanced stock management globally or for this product.'}
+								{if ($stock_management_active == 0 || $product->advanced_stock_management == 0) && !$isPack} &nbsp;-&nbsp;{l s='This requires you to enable advanced stock management globally or for this product.'}
 								{/if}
 							</label>
 						</p>
-						{if $product->cache_is_pack}
+						{if $isPack}
 							<p class="help-block">
 								{l s='You cannot use advanced stock management for this pack if'}<br />
 								{l s='- advanced stock management is not enabled for these products'}<br />
 								{l s='- you have chosen to decrement products quantities.'}
 							</p>
 						{/if}
+						{if $isPack}
+							<p class="radio">
+								<label for="depends_on_stock_2" for="depends_on_stock_2">
+									<input type="radio"
+										   id="depends_on_stock_2"
+										   name="depends_on_stock"
+										   class="depends_on_stock"
+										   value="{AdminProductsController::QUANTITY_METHOD_DYNAMIC_PACK}"
+										 {if $product->pack_dynamic == 1}
+										 	checked="checked"
+										 {/if}
+									/>
+									{l s='Calculate pack quantities automatically based on available quantities of items in pack'}
+								</label>
+						   </p>
+						{/if}
 						<p class="radio">
 							<label for="depends_on_stock_0" for="depends_on_stock_0">
-								<input type="radio"  id="depends_on_stock_0" name="depends_on_stock" class="depends_on_stock" value="0"
-									{if $product->depends_on_stock == 0 || $stock_management_active == 0}
+								<input type="radio"
+									   id="depends_on_stock_0"
+									   name="depends_on_stock"
+									   class="depends_on_stock"
+									   value="{AdminProductsController::QUANTITY_METHOD_MANUAL}"
+									{if ($product->depends_on_stock == 0 || $stock_management_active == 0) && $product->pack_dynamic == 0}
 										checked="checked"
 									{/if}
 								/>
@@ -103,30 +127,73 @@
 						</p>
 					</div>
 				</div>
-				<div class="form-group" {if !$product->cache_is_pack}style="display:none"{/if}>
+				<div class="form-group" {if !$isPack}style="display:none"{/if}>
 					<label class="control-label col-lg-3">{l s='Pack quantities'}</label>
 					<div class="col-lg-9">
 						<p class="radio">
 							<label id="label_pack_stock_1" for="pack_stock_type_1">
-								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PACK}" name="pack_stock_type" id="pack_stock_type_1" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK} checked="checked" {/if}/>
+								<input type="radio"
+									   class="pack_stock_type"
+									   value="{Pack::STOCK_TYPE_DECREMENT_PACK}"
+									   name="pack_stock_type"
+									   id="pack_stock_type_1"
+									{if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK}
+										checked="checked"
+									{/if}
+									{if $product->pack_dynamic}
+										disabled="disabled"
+									{/if}
+								/>
 								{l s='Decrement pack only.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_2" for="pack_stock_type_2">
-								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PRODUCTS}" name="pack_stock_type" id="pack_stock_type_2" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PRODUCTS} checked="checked" {/if}/>
+								<input type="radio"
+									   class="pack_stock_type"
+									   value="{Pack::STOCK_TYPE_DECREMENT_PRODUCTS}"
+									   name="pack_stock_type"
+									   id="pack_stock_type_2"
+									{if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PRODUCTS}
+										checked="checked"
+									{/if}
+									{if $product->pack_dynamic}
+										disabled="disabled"
+									{/if}
+								/>
 								{l s='Decrement products in pack only.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_3" for="pack_stock_type_3">
-								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS}" name="pack_stock_type" id="pack_stock_type_3" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS} checked="checked" {/if}/>
+								<input type="radio"
+									   class="pack_stock_type"
+									   value="{Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS}"
+									   name="pack_stock_type"
+									   id="pack_stock_type_3"
+									{if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS}
+										checked="checked"
+									{/if}
+									{if $product->pack_dynamic}
+										disabled="disabled"
+									{/if}
+								/>
 								{l s='Decrement both.'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_pack_stock_4" for="pack_stock_type_4">
-								<input type="radio" class="pack_stock_type" value="{Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS}" name="pack_stock_type" id="pack_stock_type_4" {if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS} checked="checked" {/if}/>
+								<input type="radio"
+									   class="pack_stock_type"
+									   value="{Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS}"
+									   name="pack_stock_type" id="pack_stock_type_4"
+									{if $product->pack_stock_type == Pack::STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS}
+										checked="checked"
+									{/if}
+									{if $product->pack_dynamic}
+										disabled="disabled"
+									{/if}
+								/>
 								{l s='Default'}:
 								{if $pack_stock_type == 0}
 									{l s='Decrement pack only.'}
@@ -160,8 +227,15 @@
 							{foreach from=$attributes item=attribute}
 								<tr{if isset($attribute['default_on']) && $attribute['default_on']} class="highlighted"{/if}>
 									<td class="available_quantity" id="qty_{$attribute['id_product_attribute']}">
-										<span>{$available_quantity[$attribute['id_product_attribute']]}</span>
-										<input type="text" name="qty_{$attribute['id_product_attribute']}" class="fixed-width-sm" value="{$available_quantity[$attribute['id_product_attribute']]|htmlentities}"/>
+										<span id="qty_text_{$attribute.id_product_attribute}">
+											{$available_quantity[$attribute['id_product_attribute']]}
+										</span>
+										<input type="text"
+											   id="qty_input_{$attribute.id_product_attribute}"
+											   name="qty_{$attribute.id_product_attribute}"
+											   class="fixed-width-sm"
+											   value="{$available_quantity[$attribute['id_product_attribute']]|htmlentities}"
+										/>
 									</td>
 									<td>{$product_designation[$attribute['id_product_attribute']]}</td>
 								</tr>

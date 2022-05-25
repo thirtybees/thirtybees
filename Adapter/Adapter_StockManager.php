@@ -34,10 +34,8 @@
  *
  * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_StockManager
 {
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param Product $product
@@ -46,6 +44,8 @@ class Adapter_StockManager
      *
      * @return StockAvailable
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */

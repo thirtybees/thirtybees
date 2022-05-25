@@ -43,13 +43,23 @@ class WorkQueueClientCore
         if ($executor) {
             return $executor->enqueue($task);
         } else {
-            // no executor exists, fallback to immediate execution
-            return new WorkQueueFuture(
-                static::INSTANT_EXECUTOR,
-                $this->getId($task),
-                $task->run()
-            );
+            return $this->runImmediately($task);
         }
+    }
+
+    /**
+     * Immediately executes work queue task
+     *
+     * @param WorkQueueTask $task
+     * @return WorkQueueFuture
+     */
+    public function runImmediately(WorkQueueTask $task)
+    {
+        return new WorkQueueFuture(
+            static::INSTANT_EXECUTOR,
+            $this->getId($task),
+            $task->run()
+        );
     }
 
     /**

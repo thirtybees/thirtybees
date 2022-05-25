@@ -1559,7 +1559,7 @@ window.product_tabs.Features = new function () {
 
 window.product_tabs.Quantities = new function () {
   var self = this;
-  this.ajaxCall = function (data) {
+  this.ajaxCall = function (data, onSuccess) {
     data.ajaxProductQuantity = 1;
     data.id_product = window.id_product;
     data.token = token;
@@ -1584,7 +1584,14 @@ window.product_tabs.Quantities = new function () {
           showErrorMessage(msg.error);
           return;
         }
-        showSuccessMessage(window.quantities_ajax_success);
+        if (msg.message) {
+          showSuccessMessage(msg.message);
+        } else {
+          showSuccessMessage(window.quantities_ajax_success);
+        }
+        if (onSuccess) {
+          onSuccess(msg);
+        }
       },
       error: function (jqXHR, textStatus, errorThrown) {
         if (jqXHR.status && (textStatus === 'error' || errorThrown)) {
@@ -1599,9 +1606,18 @@ window.product_tabs.Quantities = new function () {
     if ($('#depends_on_stock_0').prop('checked')) {
       $availableQuantity.find('input').show();
       $availableQuantity.find('span').hide();
-    } else {
+      $('.pack_stock_type').removeAttr('disabled');
+    } else if ($('#depends_on_stock_1').prop('checked')) {
       $availableQuantity.find('input').hide();
       $availableQuantity.find('span').show();
+      $('.pack_stock_type').removeAttr('disabled');
+    } else if ($('#depends_on_stock_2').prop('checked')) {
+      $availableQuantity.find('input').hide();
+      $availableQuantity.find('span').show();
+      $('.pack_stock_type')
+          .attr('disabled', 'disabled')
+          .attr('checked', false);
+      $('#pack_stock_type_2').attr('checked', true);
     }
   };
 
@@ -1613,9 +1629,24 @@ window.product_tabs.Quantities = new function () {
     });
 
     $('.depends_on_stock').click(function (e) {
+      var value = $(this).val();
       self.refreshQtyAvailabilityForm();
-      self.ajaxCall({ actionQty: 'depends_on_stock', value: $(this).val() });
-      if (!$(this).val()) {
+      self.ajaxCall({
+        actionQty: 'depends_on_stock',
+        value: value
+      }, function(msg) {
+        if (msg && msg.quantities) {
+          for (var i = 0; i<msg.quantities.length; i++) {
+            var quantity = msg.quantities[i];
+            var id = quantity.id;
+            var qty = quantity.value;
+            $('#qty_text_'+ id).text(qty);
+            $('#qty_input_'+ id).val(qty);
+          }
+        }
+      });
+
+      if (! value) {
         $('.available_quantity input').trigger('change');
       }
     });
@@ -1641,7 +1672,14 @@ window.product_tabs.Quantities = new function () {
     });
 
     $('.available_quantity').find('input').change(function () {
-      self.ajaxCall({ actionQty: 'set_qty', id_product_attribute: $(this).parent().attr('id').split('_')[1], value: $(this).val() });
+      var id = $(this).parent().attr('id').split('_')[1];
+      var value = $(this).val();
+      $('#qty_text_'+ id).text(value)
+      self.ajaxCall({
+        actionQty: 'set_qty',
+        id_product_attribute: id,
+        value: value
+      });
     });
 
     $('.out_of_stock').click(function () {
