@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0aa61c94a5e2d77fa4fe83dce26a3a8",
+    "content-hash": "20e1a334db57e824267586dd97c22c02",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -1363,16 +1363,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.39",
+            "version": "v3.1.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "e27da524f7bcd7361e3ea5cdfa99c4378a7b5419"
+                "reference": "a2713ab89e6d773bc4819f11857af7f6b2e353a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/e27da524f7bcd7361e3ea5cdfa99c4378a7b5419",
-                "reference": "e27da524f7bcd7361e3ea5cdfa99c4378a7b5419",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/a2713ab89e6d773bc4819f11857af7f6b2e353a9",
+                "reference": "a2713ab89e6d773bc4819f11857af7f6b2e353a9",
                 "shasum": ""
             },
             "require": {
@@ -1420,9 +1420,9 @@
                 "forum": "http://www.smarty.net/forums/",
                 "irc": "irc://irc.freenode.org/smarty",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v3.1.39"
+                "source": "https://github.com/smarty-php/smarty/tree/v3.1.45"
             },
-            "time": "2021-02-17T21:57:51+00:00"
+            "time": "2022-05-17T12:57:52+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -5890,5 +5890,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
