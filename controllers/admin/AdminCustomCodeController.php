@@ -34,7 +34,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableBasicAutocompletion' => true,
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
-                'visibility'                => Shop::CONTEXT_ALL,
             ],
             Configuration::CUSTOMCODE_CSS   => [
                 'title'                     => $this->l('Add extra css to your pages'),
@@ -44,7 +43,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableBasicAutocompletion' => true,
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
-                'visibility'                => Shop::CONTEXT_ALL,
             ],
             Configuration::CUSTOMCODE_JS    => [
                 'title'                     => $this->l('Add extra JavaScript to your pages'),
@@ -54,7 +52,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableBasicAutocompletion' => true,
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
-                'visibility'                => Shop::CONTEXT_ALL,
             ],
         ];
 
@@ -67,7 +64,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableBasicAutocompletion' => true,
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
-                'visibility'                => Shop::CONTEXT_ALL,
             ],
         ];
 
