@@ -140,7 +140,7 @@
 							<td><input type="text" name="quantity" value="0" /></td>
 						</tr>
 						<tr>
-							<td>{l s='Default Reference:'}</td>
+							<td>{l s='Default Reference Prefix:'}</td>
 							<td><input type="text" name="reference" value="{$product_reference|escape:'html':'UTF-8'}" /></td>
 						</tr>
 					</tbody>

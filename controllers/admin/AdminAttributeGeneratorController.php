@@ -163,7 +163,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
             if (count($tab) && Validate::isLoadedObject($this->product)) {
                 static::setAttributesImpacts($this->product->id, $tab);
                 $this->combinations = array_values(static::createCombinations($tab));
-                $values = array_values(array_map([$this, 'addAttribute'], $this->combinations));
+
 
                 // @since 1.5.0
                 if ($this->product->depends_on_stock == 0) {
@@ -176,6 +176,14 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 SpecificPriceRule::disableAnyApplication();
 
                 $this->product->deleteProductAttributes();
+                $values = [];
+                $baseReference = Tools::getValueRaw('reference');
+                $counter = Tools::nextAvailableReferenceCounter($baseReference);
+                foreach ($this->combinations as $combination) {
+                    $reference = $baseReference ? ($baseReference . '_' . $counter) : '';
+                    $values[] = $this->addAttribute($combination, $reference);
+                    $counter++;
+                }
                 $this->product->generateMultipleCombinations($values, $this->combinations);
 
                 // Reset cached default attribute for the product and get a new one
@@ -312,29 +320,28 @@ class AdminAttributeGeneratorControllerCore extends AdminController
 
     /**
      * @param array $attributes
-     * @param float $price
-     * @param float   $weight
+     * @param string $reference
      *
      * @return array
      *
      * @since 1.0.0
      */
-    protected function addAttribute($attributes, $price = 0.0, $weight = 0.0)
+    protected function addAttribute($attributes, $reference)
     {
-        $price = Tools::roundPrice($price);
-        $weight = Tools::roundPrice($weight);
-        foreach ($attributes as $attribute) {
-            $price += Tools::getNumberValue('price_impact_'.(int) $attribute);
-            $weight += Tools::getNumberValue('weight_impact_'.(int) $attribute);
-        }
         if ($this->product->id) {
+            $price = 0.0;
+            $weight = 0.0;
+            foreach ($attributes as $attribute) {
+                $price += Tools::getNumberValue('price_impact_'.(int) $attribute);
+                $weight += Tools::getNumberValue('weight_impact_'.(int) $attribute);
+            }
             return [
                 'id_product'     => (int) $this->product->id,
                 'price'          => $price,
                 'weight'         => $weight,
                 'ecotax'         => 0,
                 'quantity'       => (int) Tools::getValue('quantity'),
-                'reference'      => pSQL($_POST['reference']),
+                'reference'      => pSQL($reference),
                 'default_on'     => 0,
                 'available_date' => '0000-00-00',
             ];
