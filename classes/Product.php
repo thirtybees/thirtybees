@@ -5633,7 +5633,19 @@ class ProductCore extends ObjectModel
         }
 
         $combinations = Db::getInstance()->executeS(
-            'SELECT pa.*, product_attribute_shop.*
+            'SELECT
+                    pa.*,
+                    product_attribute_shop.*,
+                    COALESCE((
+                        SELECT GROUP_CONCAT(agl.`name`, \''.pSQL($attributeValueSeparator).'\',al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \''.pSQL($attributeSeparator).'\')
+                         FROM `'._DB_PREFIX_.'product_attribute_combination` pac
+                         LEFT JOIN `'._DB_PREFIX_.'attribute` a ON a.`id_attribute` = pac.`id_attribute`
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang.')
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang.')
+                         WHERE pac.id_product_attribute  = pa.id_product_attribute
+                         GROUP BY pac.id_product_attribute
+                   ), \'-\') as attribute_designation
 				FROM `'._DB_PREFIX_.'product_attribute` pa
 				'.Shop::addSqlAssociation('product_attribute', 'pa').'
 				WHERE pa.`id_product` = '.(int) $this->id.'
@@ -5645,27 +5657,9 @@ class ProductCore extends ObjectModel
             return [];
         }
 
-        $productAttributes = [];
         foreach ($combinations as &$combination) {
             $productAttributeId = (int)$combination['id_product_attribute'];
-            $productAttributes[] = $productAttributeId;
             $combination['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->id, $productAttributeId);
-        }
-
-        $lang = Db::getInstance()->executeS(
-            'SELECT pac.id_product_attribute, GROUP_CONCAT(agl.`name`, \''.pSQL($attributeValueSeparator).'\',al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \''.pSQL($attributeSeparator).'\') as attribute_designation
-				FROM `'._DB_PREFIX_.'product_attribute_combination` pac
-				LEFT JOIN `'._DB_PREFIX_.'attribute` a ON a.`id_attribute` = pac.`id_attribute`
-				LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
-				LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang.')
-				LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang.')
-				WHERE pac.id_product_attribute IN ('.implode(',', $productAttributes).')
-				GROUP BY pac.id_product_attribute
-			   	ORDER BY pac.id_product_attribute'
-        );
-
-        foreach ($lang as $k => $row) {
-            $combinations[$k]['attribute_designation'] = $row['attribute_designation'];
         }
 
         return $combinations;
