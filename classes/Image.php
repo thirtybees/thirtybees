@@ -271,10 +271,6 @@ class ImageCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        if (file_exists(_PS_TMP_IMG_DIR_.'product_'.$idProduct.'.jpg')) {
-            unlink(_PS_TMP_IMG_DIR_.'product_'.$idProduct.'.jpg');
-        }
-
         return (Db::getInstance()->update(
         'image',
             [
@@ -945,7 +941,6 @@ class ImageCore extends ObjectModel
         // delete index.php
         $filesToDelete[] = $this->image_dir.$this->getImgFolder().'index.php';
         // Delete tmp images
-        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_'.$this->id_product.'.'.$format;
         $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'.'.$format;
 
         // perform delete
