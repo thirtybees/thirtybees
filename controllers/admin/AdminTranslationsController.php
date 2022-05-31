@@ -3260,10 +3260,6 @@ class AdminTranslationsControllerCore extends AdminController
         // added for compatibility
         $GLOBALS[$nameVar] = array_change_key_case($GLOBALS[$nameVar]);
 
-        // Thank to this var similar keys are not duplicate
-        // in AndminTranslation::modules_translations array
-        // see below
-        $arrayCheckDuplicate = [];
         foreach ($files as $file) {
             if ((preg_match('/^(.*).tpl$/', $file) || preg_match('/^(.*).php$/', $file)) && file_exists($file_path = $dir.$file)) {
                 // Get content for this file
@@ -3288,12 +3284,10 @@ class AdminTranslationsControllerCore extends AdminController
                     $moduleKey = '<{'.mb_strtolower($moduleName).'}'.strtolower($themeName).'>'.mb_strtolower($templateName).'_'.$md5Key;
                     $defaultKey = '<{'.mb_strtolower($moduleName).'}thirtybees>'.mb_strtolower($templateName).'_'.$md5Key;
                     $prestaShopKey = '<{'.mb_strtolower($moduleName).'}prestashop>'.mb_strtolower($templateName).'_'.$md5Key;
-                    // to avoid duplicate entry
-                    if (!in_array($moduleKey, $arrayCheckDuplicate)) {
-                        $arrayCheckDuplicate[] = $moduleKey;
-                        if (!isset($this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'])) {
-                            $this->total_expression++;
-                        }
+
+                    if (! isset($this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'])) {
+                        $this->total_expression++;
+
                         if ($themeName && array_key_exists($moduleKey, $GLOBALS[$nameVar])) {
                             $this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$moduleKey], ENT_COMPAT, 'UTF-8');
                         } elseif (array_key_exists($defaultKey, $GLOBALS[$nameVar])) {
