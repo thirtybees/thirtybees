@@ -754,8 +754,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
         }
 
+        $className = $definition['classname'];
         /** @var ObjectModel $objectDuplicated */
-        $objectDuplicated = new $definition['classname']((int) $objectId);
+        $objectDuplicated = new $className((int) $objectId);
         $objectDuplicated->duplicateShops((int) $this->id);
 
         return $objectDuplicated;
