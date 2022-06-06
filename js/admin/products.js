@@ -835,7 +835,11 @@ window.product_tabs.Prices = new function () {
       return false;
     });
 
-    $('#hide_specific_price').click(hideSpecificPriceForm);
+    $('#hide_specific_price').click(function() {
+      if (typeof window['hideSpecificPriceForm'] === "function") {
+        window.hideSpecificPriceForm();
+      }
+    });
   };
 
   /**
