@@ -389,7 +389,9 @@ abstract class PaymentModuleCore extends Module
             $this->context = Context::getContext();
         }
         $this->context->cart = new Cart((int) $idCart);
-        $this->context->customer = new Customer((int) $this->context->cart->id_customer);
+        if (!isset($this->context->customer) || (int)$this->context->customer->id !== (int)$this->context->cart->id_customer) {
+            $this->context->customer = new Customer((int) $this->context->cart->id_customer);
+        }
         // The tax cart is loaded before the customer so re-cache the tax calculation method
         $this->context->cart->setTaxCalculationMethod();
 
