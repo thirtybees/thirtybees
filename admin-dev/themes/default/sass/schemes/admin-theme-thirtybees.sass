@@ -49,8 +49,12 @@ $switch-no-bg:      lighten(black, 30%) !default
 $avatar-img: '#{$img-path}/thirty-bees-avatar-header_shopname.png'
 
 // Maintenance #warning
-#header_employee_box span.maintenance-mode > span.label-tooltip
-  color: #fff!important
+#header_employee_box span.maintenance-mode a
+  color: #fff
+  &:hover
+    text-decoration: none
+  & > .label-tooltip
+    color: #fff
 
 // Let's go party!
 @import "admin-theme"
