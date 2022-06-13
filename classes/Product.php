@@ -2041,8 +2041,11 @@ class ProductCore extends ObjectModel
             foreach ($feature_values_helper as &$feature_value_helper) {
                 if (isset($feature_value_helper['multiple_schema']) && ($multiple_schema = $feature_value_helper['multiple_schema'])) {
                     $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
+                    $value = str_replace('{count_values}', count($feature_value_helper['values']), $value);
                     $value = str_replace('{min_value}', $feature_value_helper['min_value']['value'], $value);
                     $value = str_replace('{max_value}', $feature_value_helper['max_value']['value'], $value);
+                    $value = str_replace('{first_value}', $feature_value_helper['values'][0], $value);
+                    $value = str_replace('{last_value}', $feature_value_helper['values'][array_key_last($feature_value_helper['values'])], $value);
 
                     $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
                     $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];

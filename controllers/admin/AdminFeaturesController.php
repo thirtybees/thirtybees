@@ -370,7 +370,7 @@ class AdminFeaturesControllerCore extends AdminController
                     'lang'     => true,
                     'size'     => 33,
                     'hint'     => $this->l('How should multiple values be displayed?'),
-                    'desc'     => $this->l('Keywords: {values}, {min_value}, {max_value}, {min_displayable}, {max_displayable}'),
+                    'desc'     => $this->l('Keywords: {values}, {count_values}, {first_value}, {last_value}, {min_value}, {max_value}, {min_displayable}, {max_displayable}'),
                     'required' => false,
                 ],
             ],
