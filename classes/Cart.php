@@ -3388,35 +3388,33 @@ class CartCore extends ObjectModel
         }
 
         /* Get customization quantity */
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $quantity = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('SUM(`quantity`)')
+                ->select('SUM(`quantity`) AS quantity')
                 ->from('customization')
                 ->where('`id_cart` = '.(int) $this->id)
                 ->where('`id_product` = '.(int) $idProduct)
                 ->where('`id_product_attribute` = '.(int) $idProductAttribute)
         );
 
-        if ($result === false) {
-            return false;
+        $conditions = [
+            'id_product = '.(int) $idProduct,
+            'id_cart = '.(int) $this->id,
+        ];
+        if (!is_null($idProductAttribute)) {
+            $conditions[] = 'id_product_attribute = ' . (int)$idProductAttribute;
+        }
+        if ((int) $idAddressDelivery) {
+            $conditions[] = 'id_address_delivery = ' . (int)$idAddressDelivery;
         }
 
         /* If the product still possesses customization it does not have to be deleted */
-        if (Db::getInstance()->NumRows() && isset($result['quantity']) && (int) $result['quantity']) {
-            return Db::getInstance()->update(
-                'cart_product',
-                [
-                    'quantity' => (int) $result['quantity'],
-                ],
-                '`id_cart` = '.(int) $this->id.' AND `id_product` = '.(int) $idProduct.($idProductAttribute != null ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '')
-            );
+        if ($quantity) {
+            return Db::getInstance()->update( 'cart_product', ['quantity' => $quantity], $conditions);
         }
 
         /* Product deletion */
-        $result = Db::getInstance()->delete(
-            'cart_product',
-            '`id_product` = '.(int) $idProduct.' '.(!is_null($idProductAttribute) ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_cart` = '.(int) $this->id.' '.((int) $idAddressDelivery ? 'AND `id_address_delivery` = '.(int) $idAddressDelivery : '')
-        );
+        $result = Db::getInstance()->delete('cart_product', $conditions);
 
         // Remove any specific price for this cart/product combination
         SpecificPrice::deleteByIdCart((int) $this->id, (int) $idProduct, (int) $idProductAttribute);
@@ -3444,12 +3442,9 @@ class CartCore extends ObjectModel
      *
      * @return bool result
      *
-     * @deprecated 2.0.0
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    // @codingStandardsIgnoreStart
     protected function _deleteCustomization($idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery = 0)
     {
         // @codingStandardsIgnoreEnd

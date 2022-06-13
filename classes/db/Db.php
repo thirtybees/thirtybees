@@ -599,13 +599,13 @@ abstract class DbCore
     /**
      * Executes an UPDATE query
      *
-     * @param string $table      Table name without prefix
-     * @param array  $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
-     * @param string $where      WHERE condition
-     * @param int    $limit
-     * @param bool   $nullValues If we want to use NULL values instead of empty quotes
-     * @param bool   $useCache
-     * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
+     * @param string         $table      Table name without prefix
+     * @param array          $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param string | array $where      WHERE condition
+     * @param int            $limit
+     * @param bool           $nullValues If we want to use NULL values instead of empty quotes
+     * @param bool           $useCache
+     * @param bool           $addPrefix  Add or not _DB_PREFIX_ before table name
      *
      * @return bool
      *
@@ -620,6 +620,10 @@ abstract class DbCore
 
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_.$table;
+        }
+
+        if (is_array($where)) {
+            $where = implode(' AND ', array_filter($where));
         }
 
         $sql = 'UPDATE `'.bqSQL($table).'` SET ';
@@ -648,11 +652,11 @@ abstract class DbCore
     /**
      * Executes a DELETE query
      *
-     * @param string $table     Name of the table to delete
-     * @param string $where     WHERE clause on query
-     * @param int    $limit     Number max of rows to delete
-     * @param bool   $useCache  Use cache or not
-     * @param bool   $addPrefix Add or not _DB_PREFIX_ before table name
+     * @param string       $table     Name of the table to delete
+     * @param string|array $where     WHERE clause on query
+     * @param int          $limit     Number max of rows to delete
+     * @param bool         $useCache  Use cache or not
+     * @param bool         $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
      * @throws PrestaShopDatabaseException
@@ -662,6 +666,10 @@ abstract class DbCore
     {
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_.$table;
+        }
+
+        if (is_array($where)) {
+            $where = implode(' AND ', array_filter($where));
         }
 
         $this->result = false;

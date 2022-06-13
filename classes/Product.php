@@ -7368,7 +7368,7 @@ class ProductCore extends ObjectModel
      * @param int     $idProduct
      * @param Context $context
      *
-     * @return array Product cover image
+     * @return array | false Product cover image
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
