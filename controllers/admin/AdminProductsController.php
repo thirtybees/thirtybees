@@ -419,6 +419,7 @@ class AdminProductsControllerCore extends AdminController
         return $content;
     }
 
+
     /**
      * @return void
      *
@@ -778,11 +779,13 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process duplicate
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processDuplicate()
     {
-        if (Validate::isLoadedObject($product = new Product((int) Tools::getValue('id_product')))) {
+        $product = new Product((int) Tools::getValue('id_product'));
+        if (Validate::isLoadedObject($product)) {
             $idProductOld = $product->id;
             if (empty($product->price) && Shop::getContext() == Shop::CONTEXT_GROUP) {
                 $shops = ShopGroup::getShopsFromGroup(Shop::getContextShopGroupID());
@@ -797,6 +800,7 @@ class AdminProductsControllerCore extends AdminController
             unset($product->id_product);
             $product->indexed = 0;
             $product->active = 0;
+            $product->link_rewrite = static::getUniqueLinkRewrites($product->link_rewrite);
             if ($product->add()
                 && Category::duplicateProductCategories($idProductOld, $product->id)
                 && Product::duplicateSuppliers($idProductOld, $product->id)
@@ -6215,4 +6219,49 @@ class AdminProductsControllerCore extends AdminController
         return $tabs;
     }
 
+
+    /**
+     * Returns base identifier from $full, for example 'demo_1' will return 'demo'
+     * @param string $full
+     * @return array|string|string[]|null
+     */
+    protected static function getBaseIdentifier($full)
+    {
+        if ($full) {
+            return preg_replace('/_[0-9]+$/', '', $full);
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Returns unique link rewrites
+     *
+     * @param array $rewrites link rewrites for all languages
+     * @return array unique link rewrites
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getUniqueLinkRewrites($rewrites)
+    {
+        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        foreach ($rewrites as $langId => &$rewrite) {
+            $base = static::getBaseIdentifier($rewrite);
+            $langId = (int)$langId;
+            $candidates = array_column($conn->executeS((new DbQuery())
+                ->select('DISTINCT link_rewrite')
+                ->from('product_lang')
+                ->where('id_lang = ' . $langId)
+                ->where('link_rewrite LIKE "'.pSQL($base).'%"')
+            ), 'link_rewrite');
+            $i = 1;
+            $candidate = $base;
+            while (in_array($candidate, $candidates)) {
+                $candidate = $base  . '_' . $i;
+                $i++;
+            }
+            $rewrite = $candidate;
+        }
+        return $rewrites;
+    }
 }
