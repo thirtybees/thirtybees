@@ -801,6 +801,7 @@ class AdminProductsControllerCore extends AdminController
             $product->indexed = 0;
             $product->active = 0;
             $product->link_rewrite = static::getUniqueLinkRewrites($product->link_rewrite);
+            $product->reference = Tools::nextAvailableReference(static::getBaseIdentifier($product->reference));
             if ($product->add()
                 && Category::duplicateProductCategories($idProductOld, $product->id)
                 && Product::duplicateSuppliers($idProductOld, $product->id)
