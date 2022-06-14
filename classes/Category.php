@@ -704,8 +704,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 				WHERE `id_product` = '.(int) $idOld;
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        $row = [];
         if ($result) {
+            $row = [];
             foreach ($result as $i) {
                 $row[] = '('.implode(
                         ', ', [
@@ -716,15 +716,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                         ]
                     ).')';
             }
+
+            return Db::getInstance()->execute(
+                '
+                INSERT IGNORE INTO `' . _DB_PREFIX_ . 'category_product` (`id_product`, `id_category`, `position`)
+                VALUES ' . implode(',', $row)
+            );
         }
 
-        $flag = Db::getInstance()->execute(
-            '
-			INSERT IGNORE INTO `'._DB_PREFIX_.'category_product` (`id_product`, `id_category`, `position`)
-			VALUES '.implode(',', $row)
-        );
+        return true;
 
-        return $flag;
     }
 
     /**
