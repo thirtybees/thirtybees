@@ -4342,9 +4342,10 @@ class AdminProductsControllerCore extends AdminController
             }
         } else {
             foreach ($this->_languages as $language) {
-                $rewrittenLinks[(int) $language['id_lang']] = explode(
+                $langId = (int)$language['id_lang'];
+                $rewrittenLinks[$langId] = explode(
                     '[REWRITE]',
-                    $context->link->getProductLink($product->id, '[REWRITE]', (int) $product->id_category_default)
+                    $context->link->getProductLink($product->id, '[REWRITE]', (int) $product->id_category_default, $product->ean13, $langId)
                 );
             }
         }
@@ -4357,6 +4358,7 @@ class AdminProductsControllerCore extends AdminController
                 'ps_ssl_enabled'        => Configuration::get('PS_SSL_ENABLED'),
                 'curent_shop_url'       => $this->context->shop->getBaseURL(),
                 'default_form_language' => $this->default_form_language,
+                'useRoutes'             => (bool)Configuration::get('PS_REWRITING_SETTINGS'),
                 'rewritten_links'       => $rewrittenLinks,
             ]
         );
