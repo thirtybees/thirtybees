@@ -5269,11 +5269,14 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param Product            $product
+     * @param Product $product
      * @param Currency|array|int $currency
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderListAttributes($product, $currency)
@@ -5294,22 +5297,30 @@ class AdminProductsControllerCore extends AdminController
             'upc'        => ['title' => $this->l('UPC'), 'align' => 'left'],
         ];
 
+        $combArray = [];
+
         if ($product->id) {
             /* Build attributes combinations */
             $combinations = $product->getAttributeCombinations($this->context->language->id);
             $groups = [];
-            $combArray = [];
             if (is_array($combinations)) {
                 $combinationImages = $product->getCombinationImages($this->context->language->id);
-                foreach ($combinations as $k => $combination) {
+                foreach ($combinations as $combination) {
                     $priceToConvert = Tools::convertPrice($combination['price'], $currency);
-                    $price = Tools::displayPrice($priceToConvert, $currency);
+                    $price = $priceToConvert != 0.0
+                        ? Tools::displayPrice($priceToConvert, $currency)
+                        : '';
+
+                    $weight = round((float)$combination['weight'], _TB_PRICE_DATABASE_PRECISION_);
+                    $weightImpact = $weight != 0.00
+                        ? $weight . Configuration::get('PS_WEIGHT_UNIT')
+                        : '';
 
                     $combArray[$combination['id_product_attribute']]['id_product_attribute'] = $combination['id_product_attribute'];
                     $combArray[$combination['id_product_attribute']]['attributes'][] = [$combination['group_name'], $combination['attribute_name'], $combination['id_attribute']];
                     $combArray[$combination['id_product_attribute']]['wholesale_price'] = $combination['wholesale_price'];
                     $combArray[$combination['id_product_attribute']]['price'] = $price;
-                    $combArray[$combination['id_product_attribute']]['weight'] = $combination['weight'].Configuration::get('PS_WEIGHT_UNIT');
+                    $combArray[$combination['id_product_attribute']]['weight'] = $weightImpact;
                     $combArray[$combination['id_product_attribute']]['unit_impact'] = $combination['unit_price_impact'];
                     $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
                     $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
@@ -5323,26 +5334,24 @@ class AdminProductsControllerCore extends AdminController
                 }
             }
 
-            if (isset($combArray)) {
-                foreach ($combArray as $id_product_attribute => $product_attribute) {
-                    $list = '';
+            foreach ($combArray as $id_product_attribute => $product_attribute) {
+                $list = '';
 
-                    /* In order to keep the same attributes order */
-                    asort($product_attribute['attributes']);
+                /* In order to keep the same attributes order */
+                asort($product_attribute['attributes']);
 
-                    foreach ($product_attribute['attributes'] as $attribute) {
-                        $list .= $attribute[0].' - '.$attribute[1].', ';
-                    }
+                foreach ($product_attribute['attributes'] as $attribute) {
+                    $list .= $attribute[0].' - '.$attribute[1].', ';
+                }
 
-                    $list = rtrim($list, ', ');
-                    $combArray[$id_product_attribute]['image'] = $product_attribute['id_image'] ? new Image($product_attribute['id_image']) : false;
-                    $combArray[$id_product_attribute]['available_date'] = $product_attribute['available_date'] != 0 ? date('Y-m-d', strtotime($product_attribute['available_date'])) : '0000-00-00';
-                    $combArray[$id_product_attribute]['attributes'] = $list;
-                    $combArray[$id_product_attribute]['name'] = $list;
+                $list = rtrim($list, ', ');
+                $combArray[$id_product_attribute]['image'] = $product_attribute['id_image'] ? new Image($product_attribute['id_image']) : false;
+                $combArray[$id_product_attribute]['available_date'] = $product_attribute['available_date'] != 0 ? date('Y-m-d', strtotime($product_attribute['available_date'])) : '0000-00-00';
+                $combArray[$id_product_attribute]['attributes'] = $list;
+                $combArray[$id_product_attribute]['name'] = $list;
 
-                    if ($product_attribute['default_on']) {
-                        $combArray[$id_product_attribute]['class'] = $defaultClass;
-                    }
+                if ($product_attribute['default_on']) {
+                    $combArray[$id_product_attribute]['class'] = $defaultClass;
                 }
             }
         }
