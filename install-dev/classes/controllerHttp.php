@@ -525,8 +525,25 @@ abstract class InstallControllerHttp
     public static function shutdownHandler()
     {
         $error = error_get_last();
-        if ($error && ($error['type'] === E_USER_ERROR || $error['type'] === E_ERROR)) {
+        if ($error && static::isFatalError($error['type'])) {
             static::sendErrorResponse($error['message']);
         }
+    }
+
+    /**
+     * Returns true, if $errno is a fatar error
+     *
+     * @param int $errno
+     * @return bool
+     */
+    public static function isFatalError($errno)
+    {
+        return (
+            $errno === E_USER_ERROR ||
+            $errno === E_ERROR ||
+            $errno === E_CORE_ERROR ||
+            $errno === E_COMPILE_ERROR ||
+            $errno === E_RECOVERABLE_ERROR
+        );
     }
 }
