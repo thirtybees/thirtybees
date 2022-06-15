@@ -206,7 +206,7 @@ class PrestaShopExceptionCore extends Exception
      * @param Exception $e
      * @return array
      */
-    protected static function describeException($e)
+    public static function describeException($e)
     {
         $smartyTrace = SmartyCustom::$trace;
 
