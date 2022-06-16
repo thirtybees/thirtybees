@@ -175,7 +175,7 @@ class AdminTaxesControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayDeleteLink($token = null, $id)
+    public function displayDeleteLink($token, $id)
     {
         if (!array_key_exists('Delete', static::$cache_lang)) {
             static::$cache_lang['Delete'] = $this->l('Delete');

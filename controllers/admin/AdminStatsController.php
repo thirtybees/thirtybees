@@ -340,7 +340,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return array|int
      */
-    public static function getVisits($unique = false, $dateFrom, $dateTo, $granularity = false)
+    public static function getVisits($unique, $dateFrom, $dateTo, $granularity = false)
     {
         $visits = ($granularity == false) ? 0 : [];
         /** @var Gapi $gapi */

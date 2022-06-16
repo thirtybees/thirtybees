@@ -1044,7 +1044,7 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      */
-    protected function _displayViewLink($token = null, $id)
+    protected function _displayViewLink($token, $id)
     {
         $_cacheLang['View'] = $this->l('View');
         $href = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&view'.$this->table.'&token='.($token != null ? $token : $this->token));
@@ -1059,7 +1059,7 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      */
-    protected function _displayEditLink($token = null, $id)
+    protected function _displayEditLink($token, $id)
     {
         $_cacheLang['Edit'] = $this->l('Edit');
         $href = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token));
@@ -1074,7 +1074,7 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      */
-    protected function _displayDeleteLink($token = null, $id)
+    protected function _displayDeleteLink($token, $id)
     {
         $_cacheLang['Delete'] = $this->l('Delete');
         $_cacheLang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
@@ -1091,7 +1091,7 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      */
-    protected function _displayDuplicate($token = null, $id)
+    protected function _displayDuplicate($token, $id)
     {
         $_cacheLang['Duplicate'] = $this->l('Duplicate');
         $_cacheLang['Copy images too?'] = $this->l('This will copy the images too. If you wish to proceed, click "OK". If not, click "Cancel".', __CLASS__, true, false);

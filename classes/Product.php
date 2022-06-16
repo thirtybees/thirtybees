@@ -4825,7 +4825,7 @@ class ProductCore extends ObjectModel
         $quantity,
         $idImages,
         $reference,
-        $idSupplier = null,
+        $idSupplier,
         $ean13,
         $default,
         $location = null,
@@ -5416,11 +5416,11 @@ class ProductCore extends ObjectModel
         $ecotax,
         $idImages,
         $reference,
-        $idSupplier = null,
+        $idSupplier,
         $ean13,
         $default,
-        $location = null,
-        $upc = null,
+        $location,
+        $upc,
         $minimalQuantity,
         $availableDate
     ) {

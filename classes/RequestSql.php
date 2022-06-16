@@ -168,7 +168,7 @@ class RequestSqlCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function validateParser($tab, $in = false, $sql)
+    public function validateParser($tab, $in, $sql)
     {
         if (!$tab) {
             return false;
@@ -430,7 +430,7 @@ class RequestSqlCore extends ObjectModel
      *
      * @return array|false
      */
-    public function returnNameTable($alias = false, $tables, $attr = null)
+    public function returnNameTable($alias, $tables, $attr = null)
     {
         if ($alias) {
             foreach ($tables as $table) {

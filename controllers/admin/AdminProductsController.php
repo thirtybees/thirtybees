@@ -6082,7 +6082,7 @@ class AdminProductsControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayPreviewLink($token = null, $id, $name = null)
+    public function displayPreviewLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_preview.tpl');
         if (!array_key_exists('Bad SQL query', static::$cache_lang)) {

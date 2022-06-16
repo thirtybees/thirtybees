@@ -156,7 +156,7 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayEditaddressesLink($token = null, $id)
+    public function displayEditaddressesLink($token, $id)
     {
         if (!array_key_exists('editaddresses', static::$cache_lang)) {
             static::$cache_lang['editaddresses'] = $this->l('Edit');

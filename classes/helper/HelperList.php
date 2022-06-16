@@ -677,7 +677,7 @@ class HelperListCore extends Helper
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function displayDuplicateLink($token = null, $id, $name = null)
+    public function displayDuplicateLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_duplicate.tpl');
         // @codingStandardsIgnoreStart
@@ -749,7 +749,7 @@ class HelperListCore extends Helper
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function displayDetailsLink($token = null, $id, $name = null)
+    public function displayDetailsLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_details.tpl');
         // @codingStandardsIgnoreStart
@@ -793,7 +793,7 @@ class HelperListCore extends Helper
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function displayViewLink($token = null, $id, $name = null)
+    public function displayViewLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_view.tpl');
         // @codingStandardsIgnoreStart
@@ -824,7 +824,7 @@ class HelperListCore extends Helper
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function displayEditLink($token = null, $id, $name = null)
+    public function displayEditLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_edit.tpl');
         // @codingStandardsIgnoreStart
@@ -857,7 +857,7 @@ class HelperListCore extends Helper
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function displayDeleteLink($token = null, $id, $name = null)
+    public function displayDeleteLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_delete.tpl');
 
@@ -903,7 +903,7 @@ class HelperListCore extends Helper
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function displayDefaultLink($token = null, $id, $name = null)
+    public function displayDefaultLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_default.tpl');
         // @codingStandardsIgnoreStart

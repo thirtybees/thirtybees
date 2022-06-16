@@ -1405,7 +1405,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayAddstockLink($token = null, $id)
+    public function displayAddstockLink($token, $id)
     {
         if (!array_key_exists('AddStock', static::$cache_lang)) {
             static::$cache_lang['AddStock'] = $this->l('Add stock');
@@ -1431,7 +1431,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayRemovestockLink($token = null, $id)
+    public function displayRemovestockLink($token, $id)
     {
         if (!array_key_exists('RemoveStock', static::$cache_lang)) {
             static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
@@ -1457,7 +1457,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayTransferstockLink($token = null, $id)
+    public function displayTransferstockLink($token, $id)
     {
         if (!array_key_exists('TransferStock', static::$cache_lang)) {
             static::$cache_lang['TransferStock'] = $this->l('Transfer stock');
@@ -1483,7 +1483,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayPrepareRemovestockLink($token = null, $id)
+    public function displayPrepareRemovestockLink($token, $id)
     {
         if (!array_key_exists('RemoveStock', static::$cache_lang)) {
             static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
@@ -1511,7 +1511,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayPrepareTransferstockLink($token = null, $id)
+    public function displayPrepareTransferstockLink($token, $id)
     {
         if (!array_key_exists('TransferStock', static::$cache_lang)) {
             static::$cache_lang['TransferStock'] = $this->l('Transfer stock');

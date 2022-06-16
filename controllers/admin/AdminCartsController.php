@@ -1017,7 +1017,7 @@ class AdminCartsControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayDeleteLink($token = null, $id, $name = null)
+    public function displayDeleteLink($token, $id, $name = null)
     {
         // don't display ordered carts
         foreach ($this->_list as $row) {

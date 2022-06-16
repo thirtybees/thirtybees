@@ -431,7 +431,7 @@ class AdminTrackingControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayDeleteLink($token = null, $id, $name = null)
+    public function displayDeleteLink($token, $id, $name = null)
     {
         $this->_helper_list->currentIndex = $this->_list_index;
         $this->_helper_list->identifier = $this->identifier;
@@ -449,7 +449,7 @@ class AdminTrackingControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayEditLink($token = null, $id, $name = null)
+    public function displayEditLink($token, $id, $name = null)
     {
         $this->_helper_list->currentIndex = $this->_list_index;
         $this->_helper_list->identifier = $this->identifier;

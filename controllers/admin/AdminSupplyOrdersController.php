@@ -1871,7 +1871,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayUpdateReceiptLink($token = null, $id)
+    public function displayUpdateReceiptLink($token, $id)
     {
         if (!array_key_exists('Receipt', static::$cache_lang)) {
             static::$cache_lang['Receipt'] = $this->l('Update ongoing receipt of products');
@@ -1897,7 +1897,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayChangestateLink($token = null, $id)
+    public function displayChangestateLink($token, $id)
     {
         if (!array_key_exists('State', static::$cache_lang)) {
             static::$cache_lang['State'] = $this->l('Change status');
@@ -1923,7 +1923,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    public function displayCreateSupplyOrderLink($token = null, $id)
+    public function displayCreateSupplyOrderLink($token, $id)
     {
         if (!array_key_exists('CreateSupplyOrder', static::$cache_lang)) {
             static::$cache_lang['CreateSupplyOrder'] = $this->l('Use this template to create a supply order');
