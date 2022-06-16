@@ -158,17 +158,22 @@ class AdminModulesControllerCore extends AdminController
      * @param array $a
      * @param array $b
      *
-     * @return bool
+     * @return int
      *
      * @since 1.0.0
      */
     public function checkCategoriesNames($a, $b)
     {
-        if ($a['name'] === $this->l('Other Modules')) {
-            return true;
+        if ($a['name'] === $b['name']) {
+            return 0;
         }
-
-        return (bool) ($a['name'] > $b['name']);
+        if ($a['name'] === $this->l('Other Modules')) {
+            return 1;
+        }
+        if ($b['name'] === $this->l('Other Modules')) {
+            return -1;
+        }
+        return ($a['name'] > $b['name']) ? 1 : -1;
     }
 
     /**
