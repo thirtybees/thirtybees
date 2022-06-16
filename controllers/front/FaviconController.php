@@ -36,10 +36,8 @@
  */
 class FaviconControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'favicon';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize content
@@ -52,21 +50,30 @@ class FaviconControllerCore extends FrontController
     {
         if (Tools::getValue('icon') === 'apple-touch-icon') {
             if (Tools::getIsset('width') && Tools::getIsset('height')) {
-                $width = Tools::getValue('width');
-                $height = Tools::getValue('height');
+                $width = (int)Tools::getValue('width');
+                $height = (int)Tools::getValue('height');
 
-                header('Content-Type: image/png');
-                readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_{$width}_{$height}.png");
-                exit;
+                if (file_exists(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_{$width}_{$height}.png")) {
+                    header('Content-Type: image/png');
+                    readfile(_PS_IMG_DIR_ . "favicon/favicon_{$this->context->shop->id}_{$width}_{$height}.png");
+                    exit;
+                }
             }
 
-            header('Content-Type: image/png');
-            readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_180_180.png");
+            if (file_exists(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_180_180.png")) {
+                header('Content-Type: image/png');
+                readfile(_PS_IMG_DIR_ . "favicon/favicon_{$this->context->shop->id}_180_180.png");
+                exit;
+            }
+        }
+
+        if (file_exists(_PS_IMG_DIR_."favicon-{$this->context->shop->id}.ico")) {
+            header('Content-Type: image/x-icon');
+            readfile(_PS_IMG_DIR_ . "favicon-{$this->context->shop->id}.ico");
             exit;
         }
 
-        header('Content-Type: image/x-icon');
-        readfile(_PS_IMG_DIR_."favicon-{$this->context->shop->id}.ico");
+        http_response_code(404);
         exit;
     }
 }
