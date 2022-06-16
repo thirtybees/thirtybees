@@ -443,7 +443,7 @@ class MediaCore
             // remove PS_BASE_URI on _PS_ROOT_DIR_ for the following
             $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
 
-            if (!@filemtime($fileUri) || @filesize($fileUri) === 0) {
+            if (!(file_exists($fileUri) && is_file($fileUri)) || filesize($fileUri) === 0) {
                 return false;
             }
 

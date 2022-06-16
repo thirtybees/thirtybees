@@ -2654,8 +2654,9 @@ class AdminControllerCore extends Controller
      */
     public function isFresh($file, $timeout = 604800)
     {
-        if (($time = @filemtime(_PS_ROOT_DIR_.$file)) && filesize(_PS_ROOT_DIR_.$file) > 0) {
-            return ((time() - $time) < $timeout);
+        $path = _PS_ROOT_DIR_.$file;
+        if (file_exists($path) && filesize($path) > 0) {
+            return ((time() - filemtime($path)) < $timeout);
         }
 
         return false;
@@ -4771,8 +4772,8 @@ class AdminControllerCore extends Controller
             $path = $parsed['path'];
             $mediaUri = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $path), '/\\');
             $fileUri = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
-            $timestamp = @filemtime($fileUri);
-            if ($timestamp) {
+            if (file_exists($fileUri) && is_file($fileUri)) {
+                $timestamp = filemtime($fileUri);
                 if (isset($parsed['query'])) {
                     $version = '&ts=' . $timestamp;
                 } else {
