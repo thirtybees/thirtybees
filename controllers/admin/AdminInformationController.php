@@ -331,7 +331,7 @@ class AdminInformationControllerCore extends AdminController
                 continue;
             }
 
-            if (md5_file($basePath.$file) != $md5) {
+            if (is_file($basePath.$file) && md5_file($basePath.$file) != $md5) {
                 $this->fileList['updated'][] = ltrim($file, '/');
                 continue;
             }
