@@ -218,13 +218,13 @@ class AdminLocalizationControllerCore extends AdminController
      * @param array $a
      * @param array $b
      *
-     * @return bool
+     * @return int
      *
      * @since 1.0.0
      */
     public function sortLocalizationsPack($a, $b)
     {
-        return $a['name'] > $b['name'];
+        return strcmp($a['name'], $b['name']);
     }
 
     /**
