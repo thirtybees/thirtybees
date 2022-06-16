@@ -312,13 +312,13 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      * @param $a
      * @param $b
      *
-     * @return bool
+     * @return int
      *
      * @since 1.0.0
      */
     public function checkModulesNames($a, $b)
     {
-        return (bool) ($a['displayName'] > $b['displayName']);
+        return strnatcmp($a['displayName'], $b['displayName']);
     }
 
     /**
