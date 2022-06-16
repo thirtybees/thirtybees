@@ -174,9 +174,9 @@ class Core_Foundation_IoC_Container
 
             if ($classConstructor) {
                 foreach ($classConstructor->getParameters() as $param) {
-                    $paramClass = $param->getClass();
+                    $paramClass = $this->getParameterClassName($param);
                     if ($paramClass) {
-                        $args[] = $this->doMake($param->getClass()->getName(), $alreadySeen);
+                        $args[] = $this->doMake($paramClass, $alreadySeen);
                     } elseif ($param->isDefaultValueAvailable()) {
                         try {
                             $args[] = $param->getDefaultValue();
@@ -200,6 +200,7 @@ class Core_Foundation_IoC_Container
             throw new Core_Foundation_IoC_Exception(sprintf('This doesn\'t seem to be a class name: `%s`.', $className), 0, $re);
         }
     }
+
 
     /**
      * @param       $serviceName
@@ -263,5 +264,27 @@ class Core_Foundation_IoC_Container
     public function make($serviceName)
     {
         return $this->doMake($serviceName, []);
+    }
+
+    /**
+     * Returns parameter class name, or null
+     *
+     * @param ReflectionParameter $param
+     * @return string|null
+     */
+    protected function getParameterClassName(ReflectionParameter $param)
+    {
+        if (PHP_VERSION_ID > 80000) {
+            $type = $param->getType();
+            if ($type instanceof ReflectionNamedType) {
+                return $type->getName();
+            }
+        } else {
+            $paramClass = $param->getClass();
+            if ($paramClass) {
+                return $paramClass->getName();
+            }
+        }
+        return null;
     }
 }
