@@ -190,20 +190,32 @@ class ParentOrderControllerCore extends FrontController
     }
 
     /**
-     * Check if order is free
+     * Check if order is free. If so, creates a new order and returns its ID
      *
-     * @return bool
+     * @return bool | int
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function _checkFreeOrder()
     {
         if ($this->context->cart->getOrderTotal() <= 0) {
-            $order = new FreeOrder();
-            $order->free_order_class = true;
-            $order->validateOrder($this->context->cart->id, Configuration::get('PS_OS_PAYMENT'), 0, Tools::displayError('Free order', false), null, [], null, false, $this->context->cart->secure_key);
+            $freePaymentMethod = new FreeOrder();
+            $freePaymentMethod->validateOrder(
+                $this->context->cart->id,
+                Configuration::get('PS_OS_PAYMENT'),
+                0,
+                Tools::displayError('Free order', false),
+                null,
+                [],
+                null,
+                false,
+                $this->context->cart->secure_key
+            );
 
-            return (int) Order::getOrderByCartId($this->context->cart->id);
+            if ($freePaymentMethod->currentOrder) {
+                return $freePaymentMethod->currentOrder;
+            }
         }
 
         return false;
