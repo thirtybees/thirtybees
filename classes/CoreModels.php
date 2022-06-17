@@ -395,6 +395,7 @@ class CoreModelsCore
                 'id_feature'       => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'id_product'       => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'id_feature_value' => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'displayable'      => ['type' => ObjectModel::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             ],
             'keys' => [
                 'feature_product' => [
