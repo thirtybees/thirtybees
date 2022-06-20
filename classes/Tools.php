@@ -2803,30 +2803,61 @@ class ToolsCore
     }
 
     /**
-     * @param $hex
+     * Returns brightness of a color
      *
-     * @return float|int|string
+     * @param string $hex
+     *
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getBrightness($hex)
     {
-        if (mb_strtolower($hex) == 'transparent') {
-            return '129';
+        $hex = mb_strtolower($hex);
+
+        // special cases for known colors
+        if ($hex == 'transparent') {
+            return 129;
+        }
+        $basicColors = [
+            'black' => '#000000',
+            'white' => '#ffffff',
+            'red' => '#ff0000',
+            'lime' => '#00ff00',
+            'blue' => '#0000ff',
+            'yellow' => '#ffff00',
+            'cyan' => '#00ffff',
+            'aqua' => '#00ffff',
+            'magenta' => '#ff00ff',
+            'fuchsia' => '#ff00ff',
+            'silver' => '#c0c0c0',
+            'gray' => '#808080',
+            'maroon' => '#800000',
+            'olive' => '#808000',
+            'green' => '#008000',
+            'purple' => '#800080',
+            'teal' => '#008080',
+            'navy' => '#000080',
+        ];
+        if (isset($basicColors[$hex])) {
+            $hex = $basicColors[$hex];
         }
 
         $hex = str_replace('#', '', $hex);
-
         if (mb_strlen($hex) == 3) {
             $hex .= $hex;
         }
 
-        $r = hexdec(substr($hex, 0, 2));
-        $g = hexdec(substr($hex, 2, 2));
-        $b = hexdec(substr($hex, 4, 2));
-
-        return (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+        if (preg_match('/^[0-9a-f]{6}$/', $hex)) {
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+            return (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+        } else {
+            // this is neither hex input nor known color, lets return 0
+            return 0;
+        }
     }
 
     /**
