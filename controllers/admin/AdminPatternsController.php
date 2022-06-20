@@ -153,6 +153,8 @@ class AdminPatternsControllerCore extends AdminController
             'type_color'         => '#8BC954',
             'tab_note'           => 'The tabs are always pushed to the top of the form, wherever they are in the fields_form array.',
             'type_free'          => '<p class="form-control-static">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc lacinia in enim iaculis malesuada. Quisque congue fermentum leo et porta. Pellentesque a quam dui. Pellentesque sed augue id sem aliquet faucibus eu vel odio. Nullam non libero volutpat, pulvinar turpis non, gravida mauris. Nullam tincidunt id est at euismod. Quisque euismod quam in pellentesque mollis. Nulla suscipit porttitor massa, nec eleifend risus egestas in. Aenean luctus porttitor tempus. Morbi dolor leo, dictum id interdum vel, semper ac est. Maecenas justo augue, accumsan in velit nec, consectetur fringilla orci. Nunc ut ante erat. Curabitur dolor augue, eleifend a luctus non, aliquet a mi. Curabitur ultricies lectus in rhoncus sodales. Maecenas quis dictum erat. Suspendisse blandit lacus sed felis facilisis, in interdum quam congue.<p>',
+            'type_select_multiple_chosen[]' => [1, 2, 3],
+            'type_select_chosen' => 1,
         ];
 
         $this->fields_form = [
@@ -349,7 +351,7 @@ class AdminPatternsControllerCore extends AdminController
                     'class'   => 'chosen',
                     'options' => [
                         'query' => Country::getCountries((int) $this->context->cookie->id_lang),
-                        'id'    => 'id_zone',
+                        'id'    => 'id_country',
                         'name'  => 'name',
                     ],
                 ],
@@ -361,7 +363,7 @@ class AdminPatternsControllerCore extends AdminController
                     'multiple' => true,
                     'options'  => [
                         'query' => Country::getCountries((int) $this->context->cookie->id_lang),
-                        'id'    => 'id_zone',
+                        'id'    => 'id_country',
                         'name'  => 'name',
                     ],
                 ],
