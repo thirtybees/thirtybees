@@ -886,7 +886,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         /** @var CustomerThread $thread */
         $thread = $this->loadObject();
-        if (! $thread) {
+        if (! Validate::isLoadedObject($thread)) {
             return '';
         }
         $this->context->cookie->{'customer_threadFilter_cl!id_contact'} = $thread->id_contact;

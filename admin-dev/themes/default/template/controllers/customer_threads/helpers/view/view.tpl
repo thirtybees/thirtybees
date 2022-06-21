@@ -46,6 +46,12 @@
 			<button class="btn btn-default" type="button" data-toggle="modal" data-target="#myModal">
 				{l s="Forward this discussion to another employee"}
 			</button>
+
+			<a href="{$link->getAdminLink('AdminCustomerThreads')|escape:'html':'UTF-8'}&amp;deletecustomer_thread&amp;id_customer_thread={$id_customer_thread|intval}"
+			   class="btn btn-default"
+			   onclick="return confirm('{l s='Delete this customer thread?'|escape:'html':'UTF-8'}');">
+				<i class="icon-trash"></i> {l s="Delete"}
+			</a>
 		</form>
 	</div>
 	<div class="row">
