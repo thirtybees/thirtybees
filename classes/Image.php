@@ -36,7 +36,6 @@
  */
 class ImageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int access rights of created folders (octal) */
     protected static $access_rights = 0775;
     /** @var array $_cacheGetSize */
@@ -59,7 +58,6 @@ class ImageCore extends ObjectModel
     protected $folder;
     /** @var string image path without extension */
     protected $existing_path;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -892,6 +890,8 @@ class ImageCore extends ObjectModel
             Tools::deleteDirectory($directory);
         }
 
+        ImageManager::deleteProductImageThumbnail($this->id);
+
         return $result;
     }
 
@@ -928,10 +928,6 @@ class ImageCore extends ObjectModel
 
         // Delete watermark image
         $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-watermark.'.$format;
-        // delete index.php
-        $filesToDelete[] = $this->image_dir.$this->getImgFolder().'index.php';
-        // Delete tmp images
-        $filesToDelete[] = _PS_TMP_IMG_DIR_.'product_mini_'.$this->id_product.'.'.$format;
 
         // perform delete
         $result = true;
@@ -980,6 +976,20 @@ class ImageCore extends ObjectModel
         }
 
         return $this->getImgFolder().$this->id;
+    }
+
+    /**
+     * @param int $imageId
+     * @param string $extension jpg | webp | png
+     * @return false | string
+     */
+    public static function resolveFilePath($imageId, $extension)
+    {
+        $imageId = (int)$imageId;
+        if ($imageId) {
+            return static::getImgFolderStatic($imageId) . $imageId . '.' . $extension;
+        }
+        return false;
     }
 
     /**

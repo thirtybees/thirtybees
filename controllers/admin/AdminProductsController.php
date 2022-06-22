@@ -951,8 +951,6 @@ class AdminProductsControllerCore extends AdminController
                 if (!$image->update()) {
                     $this->errors[] = Tools::displayError('You cannot change the product\'s cover image.');
                 } else {
-                    $productId = (int) Tools::getValue('id_product');
-                    @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$productId.'_'.$this->context->shop->id.'.jpg');
                     $this->redirect_after = static::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&action=Images&addproduct'.'&token='.$this->token;
                 }
             } elseif (Tools::getIsset('imgPosition') && Tools::getIsset('imgDirection')) {
@@ -1636,8 +1634,6 @@ class AdminProductsControllerCore extends AdminController
         }
         $img->cover = 1;
 
-        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $img->id_product.'_'.$this->context->shop->id.'.jpg');
-
         if ($img->update()) {
             $this->jsonConfirmation($this->_conf[26]);
         } else {
@@ -1676,10 +1672,6 @@ class AdminProductsControllerCore extends AdminController
 			SET i.`cover` = 1
 			WHERE i.`id_product` = '.(int) $image->id_product.' LIMIT 1'
             );
-        }
-
-        if (file_exists(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg')) {
-            $res &= @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$image->id_product.'_'.$this->context->shop->id.'.jpg');
         }
 
         if ($res) {
@@ -1726,8 +1718,6 @@ class AdminProductsControllerCore extends AdminController
         if (count($this->errors)) {
             return false;
         }
-        @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$product->id.'_'.$this->context->shop->id.'.jpg');
-
         return ((isset($idImage) && is_int($idImage) && $idImage) ? $idImage : false);
     }
 
@@ -5097,8 +5087,6 @@ class AdminProductsControllerCore extends AdminController
                 $file['legend'] = $image->legend;
                 $file['path'] = $image->getExistingImgPath();
                 $file['shops'] = $jsonShops;
-
-                @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $product->id.'_'.$this->context->shop->id.'.jpg');
             }
         }
 

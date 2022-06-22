@@ -3332,6 +3332,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getProducts($order)
@@ -3339,12 +3340,12 @@ class AdminOrdersControllerCore extends AdminController
         $products = $order->getProducts();
 
         foreach ($products as &$product) {
-            if ($product['image'] != null) {
-                $name = 'product_mini_'.(int) $product['product_id'].(isset($product['product_attribute_id']) ? '_'.(int) $product['product_attribute_id'] : '').'.jpg';
-                // generate image cache, only for back office
-                $product['image_tag'] = ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$product['image']->getExistingImgPath().'.jpg', $name, 45, 'jpg');
-                if (file_exists(_PS_TMP_IMG_DIR_.$name)) {
-                    $product['image_size'] = getimagesize(_PS_TMP_IMG_DIR_.$name);
+            if ($product['image'] instanceof Image) {
+                $imageId = (int)$product['image']->id;
+                $imagePath = ImageManager::getProductImageThumbnailFilePath($imageId);
+                $product['image_tag'] = ImageManager::getProductImageThumbnailTag($imageId);
+                if (file_exists($imagePath)) {
+                    $product['image_size'] = getimagesize($imagePath);
                 } else {
                     $product['image_size'] = false;
                 }

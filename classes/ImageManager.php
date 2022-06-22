@@ -58,23 +58,51 @@ class ImageManagerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function thumbnail($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
+    {
+        $imagePath = static::getThumbnailUrl($image, $cacheImage, $size, $imageType, $disableCache, $regenerate);
+        if ($imagePath) {
+            return '<img src="'.$imagePath.'" alt="" class="imgm img-thumbnail" />';
+        }
+        return $imagePath;
+    }
+
+    /**
+     * Generate a cached thumbnail for image file and returns url to it
+     *
+     * @param string $image Real image filename
+     * @param string $cacheImage Cached filename
+     * @param int $size Desired size
+     * @param string $imageType Image type
+     * @param bool $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
+     * @param bool $regenerate When turned on and the file already exist, the file will be regenerated
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public static function getThumbnailUrl($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
     {
         if (!file_exists($image)) {
             return '';
         }
 
-        if (file_exists(_PS_TMP_IMG_DIR_.$cacheImage) && $regenerate) {
-            @unlink(_PS_TMP_IMG_DIR_.$cacheImage);
+        $targetFile = _PS_TMP_IMG_DIR_ . $cacheImage;
+
+        // delete existing thumbnail file if we are instructed to regenerate
+        if (file_exists($targetFile) && $regenerate) {
+            @unlink($targetFile);
         }
 
-        if ($regenerate || !file_exists(_PS_TMP_IMG_DIR_.$cacheImage)) {
+        // generate thumbnail file if it not exists yet
+        if (! file_exists($targetFile)) {
             $infos = getimagesize($image);
 
             // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
             if (!ImageManager::checkImageMemoryLimit($image)) {
-                return false;
+                return '';
             }
 
             $x = $infos[0];
@@ -83,7 +111,7 @@ class ImageManagerCore
 
             // Size is already ok
             if ($y < $size && $x <= $maxX) {
-                copy($image, _PS_TMP_IMG_DIR_.$cacheImage);
+                copy($image, $targetFile);
             } // We need to resize */
             else {
                 $ratio_x = $x / ($y / $size);
@@ -92,15 +120,71 @@ class ImageManagerCore
                     $size = $y / ($x / $maxX);
                 }
 
-                ImageManager::resize($image, _PS_TMP_IMG_DIR_.$cacheImage, $ratio_x, $size, $imageType);
+                ImageManager::resize($image, $targetFile, $ratio_x, $size, $imageType);
             }
         }
+
         // Relative link will always work, whatever the base uri set in the admin
         if (Context::getContext()->controller->controller_type == 'admin') {
-            return '<img src="../img/tmp/'.$cacheImage.($disableCache ? '?time='.time() : '').'" alt="" class="imgm img-thumbnail" />';
+            return '../img/tmp/'.$cacheImage.($disableCache ? '?time='.time() : '');
         } else {
-            return '<img src="'._PS_TMP_IMG_.$cacheImage.($disableCache ? '?time='.time() : '').'" alt="" class="imgm img-thumbnail" />';
+            return _PS_TMP_IMG_.$cacheImage.($disableCache ? '?time='.time() : '');
         }
+    }
+
+    /**
+     * Returns file name of product image thumbnail
+     *
+     * @param int $imageId
+     * @return string
+     */
+    public static function getProductImageThumbnailFileName($imageId)
+    {
+        return 'image_mini_'.(int) $imageId . '.jpg';
+    }
+
+    /**
+     * Return path to product image thumbnail
+     *
+     * @param int $imageId
+     * @return string
+     */
+    public static function getProductImageThumbnailFilePath($imageId)
+    {
+        return _PS_TMP_IMG_DIR_ . static::getProductImageThumbnailFileName($imageId);
+    }
+
+    /**
+     * Deletes product image thumbnail, if exists
+     *
+     * @param int $imageId
+     * @return bool
+     */
+    public static function deleteProductImageThumbnail($imageId)
+    {
+        $path = static::getProductImageThumbnailFilePath($imageId);
+        if ($path && file_exists($path)) {
+            return @unlink($path);
+        }
+        return false;
+    }
+
+    /**
+     * @param int $imageId
+     * @param bool $disableCache
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getProductImageThumbnailTag($imageId, $disableCache=true)
+    {
+        $imageId = (int)$imageId;
+        if ($imageId) {
+            $path = _PS_PROD_IMG_DIR_ . Image::resolveFilePath($imageId, 'jpg');
+            $name = static::getProductImageThumbnailFileName($imageId);
+            return static::thumbnail($path, $name, 45, 'jpg', $disableCache);
+        }
+        return '';
     }
 
     /**

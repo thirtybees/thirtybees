@@ -158,18 +158,17 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         if (Configuration::get('PS_PDF_IMG_INVOICE')) {
             foreach ($orderDetails as &$orderDetail) {
                 if ($orderDetail['image'] instanceof Image) {
-                    $name = 'product_mini_'.(int) $orderDetail['product_id'].(isset($orderDetail['product_attribute_id']) ? '_'.(int) $orderDetail['product_attribute_id'] : '').'.jpg';
-                    $path = _PS_PROD_IMG_DIR_.$orderDetail['image']->getExistingImgPath().'.jpg';
-
+                    $imageId = (int)$orderDetail['image']->id;
                     $orderDetail['image_tag'] = preg_replace(
                         '/\.*'.preg_quote(__PS_BASE_URI__, '/').'/',
                         _PS_ROOT_DIR_.DIRECTORY_SEPARATOR,
-                        ImageManager::thumbnail($path, $name, 45, 'jpg', false),
+                        ImageManager::getProductImageThumbnailTag($imageId, false),
                         1
                     );
 
-                    if (file_exists(_PS_TMP_IMG_DIR_.$name)) {
-                        $orderDetail['image_size'] = getimagesize(_PS_TMP_IMG_DIR_.$name);
+                    $imagePath = ImageManager::getProductImageThumbnailFilePath($imageId);
+                    if (file_exists($imagePath)) {
+                        $orderDetail['image_size'] = getimagesize($imagePath);
                     } else {
                         $orderDetail['image_size'] = false;
                     }

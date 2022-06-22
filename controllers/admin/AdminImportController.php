@@ -2076,6 +2076,7 @@ class AdminImportControllerCore extends AdminController
             default:
             case 'products':
                 $imageObj = new Image($idImage);
+                ImageManager::deleteProductImageThumbnail($idImage);
                 $path = $imageObj->getPathForCreation();
                 break;
             case 'categories':
@@ -2199,16 +2200,6 @@ class AdminImportControllerCore extends AdminController
                             );
                     }
 
-                    if ($success) {
-                        if ($entity == 'products') {
-                            if (is_file(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg');
-                            }
-                            if (is_file(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'_'.(int) Context::getContext()->shop->id.'.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'_'.(int) Context::getContext()->shop->id.'.jpg');
-                            }
-                        }
-                    }
                     if (in_array($imageType['id_image_type'], $watermarkTypes)) {
                         Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idEntity]);
                     }
