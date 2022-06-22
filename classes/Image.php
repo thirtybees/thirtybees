@@ -369,9 +369,7 @@ class ImageCore extends ObjectModel
                 $newPath = $imageNew->getPathForCreation();
                 foreach ($imageTypes as $imageType) {
                     if (file_exists(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.jpg')) {
-                        if (!Configuration::get('PS_LEGACY_IMAGES')) {
-                            $imageNew->createImgFolder();
-                        }
+                        $imageNew->createImgFolder();
                         copy(
                             _PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.jpg',
                             $newPath.'-'.$imageType['name'].'.jpg'
@@ -458,22 +456,14 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function getPathForCreation()
     {
         if (!$this->id) {
             return false;
         }
-        if (Configuration::get('PS_LEGACY_IMAGES')) {
-            if (!$this->id_product) {
-                return false;
-            }
-            $path = $this->id_product.'-'.$this->id;
-        } else {
-            $path = $this->getImgPath();
-            $this->createImgFolder();
-        }
+        $path = $this->getImgPath();
+        $this->createImgFolder();
 
         return _PS_PROD_IMG_DIR_.$path;
     }
@@ -961,7 +951,6 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function getExistingImgPath()
     {
@@ -970,11 +959,7 @@ class ImageCore extends ObjectModel
         }
 
         if (!$this->existing_path) {
-            if (Configuration::get('PS_LEGACY_IMAGES') && file_exists(_PS_PROD_IMG_DIR_.$this->id_product.'-'.$this->id.'.'.$this->image_format)) {
-                $this->existing_path = $this->id_product.'-'.$this->id;
-            } else {
-                $this->existing_path = $this->getImgPath();
-            }
+            $this->existing_path = $this->getImgPath();
         }
 
         return $this->existing_path;
@@ -994,9 +979,7 @@ class ImageCore extends ObjectModel
             return false;
         }
 
-        $path = $this->getImgFolder().$this->id;
-
-        return $path;
+        return $this->getImgFolder().$this->id;
     }
 
     /**

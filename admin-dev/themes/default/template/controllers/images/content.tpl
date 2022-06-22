@@ -28,29 +28,6 @@
   {$content}
 {/if}
 
-{if isset($display_move) && $display_move}
-    <form action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post" class="form-horizontal">
-        <div class="panel">
-            <h3>
-                <i class="icon-picture"></i>
-                {l s='Move images'}
-            </h3>
-            <div class="alert alert-warning">
-                <p>{l s='You can choose to keep your images stored in the previous system. There\'s nothing wrong with that.'}</p>
-                <p>{l s='You can also decide to move your images to the new storage system. In this case, click on the "Move images" button below. Please be patient. This can take several minutes.'}</p>
-            </div>
-            <div class="alert alert-info">&nbsp;
-                {l s='After moving all of your product images, set the "Use the legacy image filesystem" option above to "No" for best performance.'}
-            </div>
-            <div class="row">
-                <div class="col-lg-12 pull-right">
-                    <button type="submit" name="submitMoveImages{$table|escape:'html':'UTF-8'}" class="btn btn-default pull-right" onclick="return confirm('{l s='Are you sure?'}');"><i class="process-icon-cogs"></i> {l s='Move images'}</button>
-                </div>
-            </div>
-        </div>
-    </form>
-{/if}
-
 {if isset($display_regenerate)}
   <form class="form-horizontal" action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post">
     <div class="panel">

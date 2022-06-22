@@ -36,14 +36,10 @@
  */
 class AdminImagesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var int $start_time */
     protected $start_time = 0;
     /** @var int $max_execution_time */
     protected $max_execution_time = 7200;
-    /** @var bool $display_move */
-    protected $display_move;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminImagesControllerCore constructor.
@@ -87,20 +83,6 @@ class AdminImagesControllerCore extends AdminController
         // Scenes tab has been removed by default from the installation, but may still exists in updates
         if (Tab::getIdFromClassName('AdminScenes')) {
             $this->fields_list['scenes'] = ['title' => $this->l('Scenes'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false];
-        }
-
-        // No need to display the old image system migration tool except if product images are in _PS_PROD_IMG_DIR_
-        $this->display_move = false;
-        $dir = _PS_PROD_IMG_DIR_;
-        if (is_dir($dir)) {
-            if ($dh = opendir($dir)) {
-                while (($file = readdir($dh)) !== false && $this->display_move == false) {
-                    if (!is_dir($dir.DIRECTORY_SEPARATOR.$file) && $file[0] != '.' && is_numeric($file[0])) {
-                        $this->display_move = true;
-                    }
-                }
-                closedir($dh);
-            }
         }
 
         $this->fields_options = [
@@ -203,18 +185,6 @@ class AdminImagesControllerCore extends AdminController
                 'submit'      => ['title' => $this->l('Save')],
             ],
         ];
-
-        if ($this->display_move) {
-            $this->fields_options['product_images']['fields']['PS_LEGACY_IMAGES'] = [
-                'title'      => $this->l('Use the legacy image filesystem'),
-                'hint'       => $this->l('This should be set to yes unless you successfully moved images in "Images" page under the "Preferences" menu.'),
-                'validation' => 'isBool',
-                'cast'       => 'intval',
-                'required'   => false,
-                'type'       => 'bool',
-                'visibility' => Shop::CONTEXT_ALL,
-            ];
-        }
 
         $themeConfiguration = $this->context->theme->getConfiguration();
         if (!empty($themeConfiguration['lazy_load'])) {
@@ -468,14 +438,6 @@ class AdminImagesControllerCore extends AdminController
             if ($this->tabAccess['edit'] === '1') {
                 if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&conf=9'.'&token='.$this->token);
-                }
-            } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
-            }
-        } elseif (Tools::isSubmit('submitMoveImages'.$this->table)) {
-            if ($this->tabAccess['edit'] === '1') {
-                if ($this->_moveImagesToNewFileSystem()) {
-                    Tools::redirectAdmin(static::$currentIndex.'&conf=25'.'&token='.$this->token);
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -1191,31 +1153,6 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
-     * Move product images to the new filesystem
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected function _moveImagesToNewFileSystem()
-    {
-        if (!Image::testFileSystem()) {
-            $this->errors[] = Tools::displayError('Error: Your server configuration is not compatible with the new image system. No images were moved.');
-        } else {
-            ini_set('max_execution_time', $this->max_execution_time); // ini_set may be disabled, we need the real value
-            $this->max_execution_time = (int) ini_get('max_execution_time');
-            $result = Image::moveToNewFileSystem($this->max_execution_time);
-            if ($result === 'timeout') {
-                $this->errors[] = Tools::displayError('Not all images have been moved. The server timed out before finishing. Click on "Move images" again to resume the moving process.');
-            } elseif ($result === false) {
-                $this->errors[] = Tools::displayError('Error: Some -- or all -- images cannot be moved.');
-            }
-        }
-
-        return (count($this->errors) > 0 ? false : true);
-    }
-
-    /**
      * Initialize page header toolbar
      *
      * @return void
@@ -1250,12 +1187,10 @@ class AdminImagesControllerCore extends AdminController
     {
         if ($this->display != 'edit' && $this->display != 'add') {
             $this->initRegenerate();
-            $this->initMoveImages();
 
             $this->context->smarty->assign(
                 [
                     'display_regenerate' => true,
-                    'display_move'       => $this->display_move,
                     'image_indexation' => $this->getIndexationStatus(),
                 ]
             );
@@ -1297,24 +1232,6 @@ class AdminImagesControllerCore extends AdminController
             [
                 'types'   => $types,
                 'formats' => $formats,
-            ]
-        );
-    }
-
-    /**
-     * Init display for moving the images block
-     *
-     * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    public function initMoveImages()
-    {
-        $this->context->smarty->assign(
-            [
-                'link_ppreferences' => 'index.php?tab=AdminPPreferences&token='.Tools::getAdminTokenLite('AdminPPreferences').'#PS_LEGACY_IMAGES_on',
             ]
         );
     }

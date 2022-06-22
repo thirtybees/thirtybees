@@ -3230,26 +3230,6 @@ class ToolsCore
                 }
 
                 if ($rewrite_settings) {
-                    // Compatibility with the old image filesystem
-                    if (Configuration::get('PS_LEGACY_IMAGES')) {
-                        fwrite($write_fd, "# Legacy image rewrites\n");
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9\s-]*)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.jpg [L]'."\n");
-
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9\s-]*)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.webp [L]'."\n");
-
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.jpg [L]'."\n");
-
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.webp$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.webp [L]'."\n\n");
-                    }
-
                     fwrite($write_fd, "# Images\n");
                     // Rewrite product images < 100 millions
                     for ($i = 1; $i <= 8; $i++) {

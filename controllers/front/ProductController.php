@@ -699,7 +699,7 @@ class ProductControllerCore extends FrontController
             if ($image['cover']) {
                 $this->context->smarty->assign('mainImage', $image);
                 $cover = $image;
-                $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$image['id_image']) : $image['id_image']);
+                $cover['id_image'] = $image['id_image'];
                 $cover['id_image_only'] = (int) $image['id_image'];
             }
             $productImages[(int) $image['id_image']] = $image;
@@ -708,7 +708,7 @@ class ProductControllerCore extends FrontController
         if (!isset($cover)) {
             if (isset($images[0])) {
                 $cover = $images[0];
-                $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$images[0]['id_image']) : $images[0]['id_image']);
+                $cover['id_image'] = $images[0]['id_image'];
                 $cover['id_image_only'] = (int) $images[0]['id_image'];
             } else {
                 $cover = [
@@ -855,7 +855,7 @@ class ProductControllerCore extends FrontController
                                 if (isset($productImages[$idImage])) {
                                     $cover = $productImages[$idImage];
                                 }
-                                $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$idImage) : (int) $idImage);
+                                $cover['id_image'] = (int) $idImage;
                                 $cover['id_image_only'] = (int) $idImage;
                                 $this->context->smarty->assign('cover', $cover);
                             }

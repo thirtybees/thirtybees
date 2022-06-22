@@ -317,7 +317,6 @@ class LinkCore
 
     /**
      * Returns a link to a product image for display
-     * Note: the new image filesystem stores product images in subdirectories of img/p/
      *
      * @param string $name    Rewrite link of the image
      * @param string $ids     ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
@@ -336,7 +335,6 @@ class LinkCore
         if (!$format) {
             $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
         }
-        $notDefault = false;
 
         $type = ImageType::getFormatedName($type);
 
@@ -354,17 +352,10 @@ class LinkCore
             }
         }
 
-        // legacy mode or default image
-        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
-        if ((Configuration::get('PS_LEGACY_IMAGES')
-                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format)))
-            || ($notDefault = strpos($ids, 'default') !== false)
-        ) {
-            if ($this->allow == 1 && !$notDefault) {
-                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.($highDpi ? '2x.' : '.').$format;
-            } else {
-                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
-            }
+        // default image
+        if (strpos($ids, 'default') !== false) {
+            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
+            $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
         } else {
             // if ids if of the form id_product-id_image, we want to extract the id_image part
             $splitIds = explode('-', $ids);
