@@ -299,32 +299,36 @@ class DatabaseMigrationTest extends \Codeception\Test\Unit
      */
     public function testMigration($sourceTable, $targetTable)
     {
-        $connection = Db::getInstance();
-        $table = _DB_PREFIX_ . static::TEST_TABLE;
-        $builder = new InformationSchemaBuilder($connection, null, [$table]);
+        try {
+            $connection = Db::getInstance();
+            $table = _DB_PREFIX_ . static::TEST_TABLE;
+            $builder = new InformationSchemaBuilder($connection, null, [$table]);
 
-        // figure out what target schema should look like
-        $this->createTestTable($targetTable);
-        $targetSchema = $builder->getSchema(true);
+            // figure out what target schema should look like
+            $this->createTestTable($targetTable);
+            $targetSchema = $builder->getSchema(true);
 
-        // revert to source state
-        $this->createTestTable($sourceTable);
-        $sourceSchema = $builder->getSchema(true);
+            // revert to source state
+            $this->createTestTable($sourceTable);
+            $sourceSchema = $builder->getSchema(true);
 
-        // perform migration
-        $comparator = new DatabaseSchemaComparator();
-        $differences = $comparator->getDifferences($sourceSchema, $targetSchema);
-        foreach ($differences as $difference) {
-            if (! $difference->applyFix($connection)) {
-               self::fail("Failed to apply fix: " . $difference->getUniqueId() . ": " . $connection->getMsgError());
+            // perform migration
+            $comparator = new DatabaseSchemaComparator();
+            $differences = $comparator->getDifferences($sourceSchema, $targetSchema);
+            foreach ($differences as $difference) {
+                if (!$difference->applyFix($connection)) {
+                    self::fail("Failed to apply fix: " . $difference->getUniqueId() . ": " . $connection->getMsgError());
+                }
             }
-        }
 
-        // verify that there are no differences
-        $resultSchema = $builder->getSchema(true);
-        $differences = $comparator->getDifferences($resultSchema, $targetSchema);
-        foreach ($differences as $difference) {
-            self::fail($difference->describe());
+            // verify that there are no differences
+            $resultSchema = $builder->getSchema(true);
+            $differences = $comparator->getDifferences($resultSchema, $targetSchema);
+            foreach ($differences as $difference) {
+                self::fail($difference->describe());
+            }
+        } finally {
+            $this->cleanUp();
         }
     }
 
@@ -334,9 +338,8 @@ class DatabaseMigrationTest extends \Codeception\Test\Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function tearDown()
+    public function cleanUp()
     {
-        parent::tearDown();
         $this->dropTestTable();
     }
 
