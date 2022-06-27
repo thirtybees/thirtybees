@@ -525,6 +525,11 @@ class AdminCarrierWizardControllerCore extends AdminController
 
         $shippingHandling = (is_object($this->object) && !$this->object->id) ? 0 : $this->getFieldValue($carrier, 'shipping_handling');
 
+        $zones = $this->getFieldValue($carrier, 'zones');
+        if (! $zones) {
+            $zones = [];
+        }
+
         return [
             'is_free'            => $this->getFieldValue($carrier, 'is_free'),
             'id_tax_rules_group' => (int) $idTaxRulesGroup,
@@ -532,7 +537,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             'shipping_method'    => $this->getFieldValue($carrier, 'shipping_method'),
             'range_behavior'     => $this->getFieldValue($carrier, 'range_behavior'),
             'prices_with_tax'    => $this->getFieldValue($carrier, 'prices_with_tax'),
-            'zones'              => $this->getFieldValue($carrier, 'zones'),
+            'zones'              => $zones,
         ];
     }
 
@@ -541,6 +546,8 @@ class AdminCarrierWizardControllerCore extends AdminController
      * @param array   $tplVars
      * @param array   $fieldsValue
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getTplRangesVarsAndValues($carrier, &$tplVars, &$fieldsValue)
@@ -559,7 +566,8 @@ class AdminCarrierWizardControllerCore extends AdminController
 
         $zones = Zone::getZones(false);
         foreach ($zones as $zone) {
-            $fieldsValue['zones'][$zone['id_zone']] = Tools::getValue('zone_'.$zone['id_zone'], (in_array($zone['id_zone'], $carrierZonesIds)));
+            $zoneId = (int)$zone['id_zone'];
+            $fieldsValue['zones'][$zoneId] = Tools::getValue('zone_'.$zoneId, in_array($zoneId, $carrierZonesIds));
         }
 
         if ($shippingMethod == Carrier::SHIPPING_METHOD_FREE) {
