@@ -61,9 +61,9 @@
 							</div>
 							<div class="form-date-body" id="form-date-body-compare"{if is_null($compare_date_from) || is_null($compare_date_to)} style="display: none;"{/if}>
 								<label>{l s='From'}</label>
-								<input id="date-start-compare" class="date-input form-control" type="text" placeholder="Start" name="compare_date_from" value="{$compare_date_from|escape:'html'}" data-date-format="{$date_format|escape:'html'}" tabindex="4" />
+								<input id="date-start-compare" class="date-input form-control" type="text" placeholder="Start" name="compare_date_from" value="{if isset($compare_date_from)}{$compare_date_from|escape:'html'}{/if}" data-date-format="{$date_format|escape:'html'}" tabindex="4" />
 								<label>{l s='to'}</label>
-								<input id="date-end-compare" class="date-input form-control" type="text" placeholder="End" name="compare_date_to" value="{$compare_date_to|escape:'html'}" data-date-format="{$date_format|escape:'html'}"
+								<input id="date-end-compare" class="date-input form-control" type="text" placeholder="End" name="compare_date_to" value="{if isset($compare_date_to)}{$compare_date_to|escape:'html'}{/if}" data-date-format="{$date_format|escape:'html'}"
 								tabindex="5" />
 							</div>
 						</div>
