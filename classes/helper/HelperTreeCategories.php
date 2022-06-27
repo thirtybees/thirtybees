@@ -77,9 +77,7 @@ class HelperTreeCategoriesCore extends TreeCore
     ) {
         parent::__construct($id);
 
-        if (isset($title)) {
-            $this->setTitle($title);
-        }
+        $this->setTitle($title);
 
         if (isset($rootCategory)) {
             $this->setRootCategory($rootCategory);

@@ -56,7 +56,10 @@ class TreeCore
 
     /** @var string */
     private $_template_directory;
-    private $_title;
+
+    /** @var string */
+    private $_title = '';
+
     private $_no_js;
 
     /** @var TreeToolbar|ITreeToolbar */
@@ -567,7 +570,7 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -576,13 +579,15 @@ class TreeCore
      */
     public function setTitle($value)
     {
-        $this->_title = $value;
+        if ($value) {
+            $this->_title = trim($value);
+        }
 
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -711,7 +716,7 @@ class TreeCore
             $this->getContext()->smarty
         );
 
-        if (trim($this->getTitle()) != '' || $this->useToolbar()) {
+        if ($this->getTitle() || $this->useToolbar()) {
             //Create Tree Header Template
             $headerTemplate = $this->getContext()->smarty->createTemplate(
                 $this->getTemplateFile($this->getHeaderTemplate()),
