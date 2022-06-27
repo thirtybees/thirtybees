@@ -271,7 +271,7 @@ class AdminLocalizationControllerCore extends AdminController
      */
     public function renderForm()
     {
-        $localizationsPack = false;
+        $localizationsPack = [];
         $this->tpl_option_vars['options_content'] = $this->renderOptions();
 
         $localizationFile = _PS_ROOT_DIR_.'/localization/localization.xml';
@@ -310,9 +310,7 @@ class AdminLocalizationControllerCore extends AdminController
             }
         }
 
-        if (is_array($localizationsPack)) {
-            usort($localizationsPack, [$this, 'sortLocalizationsPack']);
-        }
+        usort($localizationsPack, [$this, 'sortLocalizationsPack']);
 
         $selectionImport = [
             [
