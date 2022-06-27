@@ -4626,7 +4626,9 @@ FileETag none
 
                 $purifier = new HTMLPurifier($config);
             }
-            $html = $purifier->purify($html);
+            if (! is_null($html)) {
+                $html = $purifier->purify($html);
+            }
         }
 
         return $html;
