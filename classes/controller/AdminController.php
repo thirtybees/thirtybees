@@ -2252,7 +2252,7 @@ class AdminControllerCore extends Controller
                 $img = '../img/t/'.$tab['class_name'].'.png';
             }
 
-            if (trim($tab['module']) != '') {
+            if (Validate::isModuleName($tab['module'])) {
                 $pathImg = _PS_MODULE_DIR_.$tab['module'].'/'.$tab['class_name'].'.png';
                 // Relative link will always work, whatever the base uri set in the admin
                 $img = '../modules/'.$tab['module'].'/'.$tab['class_name'].'.png';
