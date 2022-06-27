@@ -23,7 +23,7 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<{if isset($href) && $href}a style="display:block" href="{$href|escape:'html':'UTF-8'}"{else}div{/if} id="{$id|escape:'html':'UTF-8'}" data-toggle="tooltip" class="box-stats label-tooltip {$color|escape}" data-original-title="{$tooltip|escape}">
+<{if isset($href) && $href}a style="display:block" href="{$href|escape:'html':'UTF-8'}"{else}div{/if} id="{$id|escape:'html':'UTF-8'}" data-toggle="tooltip" class="box-stats label-tooltip{if isset($color)} {$color|escape}{/if}"{if isset($tooltip)} data-original-title="{$tooltip|escape}"{/if}>
 	<div class="kpi-content">
 	{if isset($icon) && $icon}
 		<i class="{$icon|escape}"></i>
@@ -34,9 +34,13 @@
 			</div>
 		</div>
 	{/if}
+	{if isset($title)}
 		<span class="title">{$title|escape}</span>
-		<span cLass="subtitle">{$subtitle|escape}</span>
-		<span class="value">{$value|escape|replace:'&amp;':'&'}</span>
+	{/if}
+	{if isset($subtitle)}
+		<span class="subtitle">{$subtitle|escape}</span>
+	{/if}
+	<span class="value">{if isset($value)}{$value|escape|replace:'&amp;':'&'}{/if}</span>
 	</div>
 	
 </{if isset($href) && $href}a{else}div{/if}>
