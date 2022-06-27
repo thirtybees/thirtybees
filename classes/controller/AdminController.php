@@ -1063,7 +1063,7 @@ class AdminControllerCore extends Controller
         }
 
         if ($this->multishop_context && Shop::isTableAssociated($this->table) && !empty($this->className)) {
-            if (Shop::getContext() != Shop::CONTEXT_ALL || !$this->context->employee->isSuperAdmin()) {
+            if ($this->_join && Shop::getContext() != Shop::CONTEXT_ALL || !$this->context->employee->isSuperAdmin()) {
                 $testJoin = !preg_match('#`?'.preg_quote(_DB_PREFIX_.$this->table.'_shop').'`? *sa#', $this->_join);
                 if (Shop::isFeatureActive() && $testJoin && Shop::isTableAssociated($this->table)) {
                     $this->_where .= ' AND EXISTS (
@@ -1116,7 +1116,7 @@ class AdminControllerCore extends Controller
                         $this->_listsql .= str_replace('!', '.`', $arrayValue['filter_key']).'` AS `'.$key.'`, ';
                     } elseif ($key == 'id_'.$this->table) {
                         $this->_listsql .= 'a.`'.bqSQL($key).'`, ';
-                    } elseif ($key != 'image' && !preg_match('/'.preg_quote($key, '/').'/i', $this->_select)) {
+                    } elseif ($key != 'image' && $this->_select && !preg_match('/'.preg_quote($key, '/').'/i', $this->_select)) {
                         $this->_listsql .= '`'.bqSQL($key).'`, ';
                     }
                 }
