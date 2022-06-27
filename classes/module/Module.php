@@ -993,7 +993,7 @@ abstract class ModuleCore
                         'currencies'             => isset($tmpModule->currencies) ? $tmpModule->currencies : null,
                         'currencies_mode'        => isset($tmpModule->currencies_mode) ? $tmpModule->currencies_mode : null,
                         'confirmUninstall'       => isset($tmpModule->confirmUninstall) ? html_entity_decode($tmpModule->confirmUninstall) : null,
-                        'description_full'       => stripslashes($tmpModule->description_full),
+                        'description_full'       => isset($tmpModule->description_full) ? stripslashes($tmpModule->description_full) : null,
                         'additional_description' => isset($tmpModule->additional_description) ? stripslashes($tmpModule->additional_description) : null,
                         'compatibility'          => isset($tmpModule->compatibility) ? (array) $tmpModule->compatibility : null,
                         'nb_rates'               => isset($tmpModule->nb_rates) ? (array) $tmpModule->nb_rates : null,
