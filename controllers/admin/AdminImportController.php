@@ -94,9 +94,6 @@ class AdminImportControllerCore extends AdminController
     {
         @ini_set('max_execution_time', 0);
 
-        /** correct Mac error on eof */
-        @ini_set('auto_detect_line_endings', '1');
-
         $this->bootstrap = true;
 
         parent::__construct();
