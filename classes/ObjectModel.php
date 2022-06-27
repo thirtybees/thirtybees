@@ -1216,7 +1216,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $size = ['min' => 0, 'max' => $data['size']];
             }
 
-            $length = mb_strlen($value);
+            $length = is_null($value) ? 0 : mb_strlen($value);
             if ($length < $size['min'] || $length > $size['max']) {
                 if ($humanErrors) {
                     if (isset($data['lang']) && $data['lang']) {
