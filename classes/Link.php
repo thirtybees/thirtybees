@@ -899,11 +899,15 @@ class LinkCore
                 unset($request['controller']);
             }
         } else {
-            $request = html_entity_decode($request);
-            if ($requestUrlEncode) {
-                $request = urlencode($request);
+            if ($request) {
+                $request = html_entity_decode($request);
+                if ($requestUrlEncode) {
+                    $request = urlencode($request);
+                }
+                parse_str($request, $request);
+            } else {
+                $request = [];
             }
-            parse_str($request, $request);
         }
 
         $uriPath = Dispatcher::getInstance()->createUrl($controller, $idLang, $request, false, '', $idShop);
