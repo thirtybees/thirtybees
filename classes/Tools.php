@@ -877,6 +877,10 @@ class ToolsCore
      */
     public static function ps_round($value, $precision = 0, $roundMode = null)
     {
+        if (is_null($value)) {
+            return 0.0;
+        }
+
         if ($roundMode === null) {
             if (Tools::$round_mode == null) {
                 try {
@@ -963,7 +967,7 @@ class ToolsCore
      * @param     $places
      * @param int $mode
      *
-     * @return float|int
+     * @return float
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
