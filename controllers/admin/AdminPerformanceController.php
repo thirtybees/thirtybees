@@ -930,7 +930,12 @@ class AdminPerformanceControllerCore extends AdminController
             return;
         }
 
-        Hook::exec('action'.get_class($this).ucfirst($this->action).'Before', ['controller' => $this]);
+        $action = $this->action ?? Tools::getValue('action');
+        if ($action) {
+            Hook::exec('actionAdmin'.ucfirst($action).'Before', ['controller' => $this]);
+            Hook::exec('action' . get_class($this) . ucfirst($action) . 'Before', ['controller' => $this]);
+        }
+
         if (Tools::isSubmit('submitAddMemcachedServer')) {
             if ($this->tabAccess['add'] === '1') {
                 if (!Tools::getValue('memcachedIp')) {
@@ -1312,8 +1317,12 @@ class AdminPerformanceControllerCore extends AdminController
             Tools::generateIndex();
         }
 
+        if ($action) {
+            Hook::exec('actionAdmin'.ucfirst($action).'After', ['controller' => $this, 'return' => '']);
+            Hook::exec('action' . get_class($this) . ucfirst($action) . 'After', ['controller' => $this, 'return' => '']);
+        }
+
         if ($redirectAdmin && (!isset($this->errors) || !count($this->errors))) {
-            Hook::exec('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => '']);
             Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
         }
     }
