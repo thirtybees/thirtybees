@@ -108,8 +108,8 @@ class AdminControllerCore extends Controller
     public $base_tpl_form = null;
     /** @var bool If you want more fieldsets in the form */
     public $multiple_fieldsets = false;
-    /** @var array|false */
-    public $fields_value = false;
+    /** @var array */
+    public $fields_value = [];
     /** @var array Errors displayed after post processing */
     public $errors = [];
     /** @var bool Automatically join language table if true */
