@@ -719,6 +719,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->getAll();
@@ -736,6 +737,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return isset($this->results[$this->iterator]) ? $this->results[$this->iterator] : null;
@@ -750,6 +752,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->iterator < $this->total;
@@ -764,6 +767,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->iterator;
@@ -777,6 +781,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->iterator++;
@@ -792,6 +797,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $this->getAll();
@@ -810,6 +816,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $this->getAll();
@@ -827,6 +834,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $this->getAll();
@@ -847,6 +855,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (!$value instanceof $this->classname) {
@@ -872,6 +881,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->getAll();
