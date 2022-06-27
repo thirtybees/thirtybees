@@ -615,7 +615,7 @@ class ValidateCore
     /**
      * Check for HTML field validity (no XSS please !)
      *
-     * @param string $html HTML field to validate
+     * @param string|null $html HTML field to validate
      *
      * @return bool Validity is ok or not
      *
@@ -624,6 +624,9 @@ class ValidateCore
      */
     public static function isCleanHtml($html, $allowIframe = false)
     {
+        if (is_null($html)) {
+            return true;
+        }
         $events = 'onmousedown|onmousemove|onmmouseup|onmouseover|onmouseout|onload|onunload|onfocus|onblur|onchange';
         $events .= '|onsubmit|ondblclick|onclick|onkeydown|onkeyup|onkeypress|onmouseenter|onmouseleave|onerror|onselect|onreset|onabort|ondragdrop|onresize|onactivate|onafterprint|onmoveend';
         $events .= '|onafterupdate|onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforeeditfocus|onbeforepaste|onbeforeprint|onbeforeunload|onbeforeupdate|onmove';
