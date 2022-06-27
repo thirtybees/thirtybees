@@ -3808,7 +3808,7 @@ FileETag none
     /**
      * Convert \n and \r\n and \r to <br />
      *
-     * @param string $string String to transform
+     * @param string $str String to transform
      *
      * @return string New string
      *
@@ -3817,6 +3817,9 @@ FileETag none
      */
     public static function nl2br($str)
     {
+        if (is_null($str)) {
+            return '';
+        }
         return str_replace(["\r\n", "\r", "\n"], '<br />', $str);
     }
 
