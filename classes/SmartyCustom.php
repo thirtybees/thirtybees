@@ -297,7 +297,7 @@ class SmartyCustomCore extends Smarty
         static $isInLazyCache = [];
         $templateMd5 = md5($template);
 
-        if (strlen($compileId) > 32) {
+        if (!is_null($compileId) && strlen($compileId) > 32) {
             $compileId = md5($compileId);
         }
 
@@ -359,7 +359,7 @@ class SmartyCustomCore extends Smarty
 
         $sql .= ',"'.pSQL((string) $cacheId).'"';
 
-        if (strlen($compileId) > 32) {
+        if (!is_null($compileId) && strlen($compileId) > 32) {
             $compileId = md5($compileId);
         }
         $sql .= ',"'.pSQL((string) $compileId).'"';
@@ -389,7 +389,7 @@ class SmartyCustomCore extends Smarty
 
         $sql .= ' AND cache_id="'.pSQL((string) $cacheId).'"';
 
-        if (strlen($compileId) > 32) {
+        if (!is_null($compileId) && strlen($compileId) > 32) {
             $compileId = md5($compileId);
         }
         $sql .= ' AND compile_id="'.pSQL((string) $compileId).'"';
