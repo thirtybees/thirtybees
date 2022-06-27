@@ -398,37 +398,17 @@ class AdminDashboardControllerCore extends AdminController
             $articlesLimit = 2;
             if ($rss) {
                 foreach ($rss->channel->item as $item) {
-                    if ($articlesLimit > 0 && Validate::isCleanHtml((string) $item->title) && Validate::isCleanHtml((string) $item->description)
-                        && isset($item->link) && isset($item->title)
+                    if ($articlesLimit > 0
+                        && isset($item->link)
+                        && isset($item->title)
+                        && Validate::isCleanHtml((string) $item->title)
+                        && Validate::isCleanHtml((string) $item->description)
                     ) {
-                        if (in_array($this->context->mode, array(Context::MODE_HOST, Context::MODE_HOST_CONTRIB))) {
-                            $utmContent = 'cloud';
-                        } else {
-                            $utmContent = 'download';
-                        }
-                        $shopDefaultCountryId = (int) Configuration::get('PS_COUNTRY_DEFAULT');
-                        $shopDefaultIsoCountry = (string) mb_strtoupper(Country::getIsoById($shopDefaultCountryId));
-                        $analyticsParams = array(
-                            'utm_source'   => 'back-office',
-                            'utm_medium'   => 'rss',
-                            'utm_campaign' => 'back-office-'.$shopDefaultIsoCountry,
-                            'utm_content'  => $utmContent,
-                        );
-                        $urlQuery = parse_url($item->link, PHP_URL_QUERY);
-                        parse_str($urlQuery, $linkQueryParams);
-                        if ($linkQueryParams) {
-                            $fullUrlParams = array_merge($linkQueryParams, $analyticsParams);
-                            $baseUrl = explode('?', (string) $item->link);
-                            $baseUrl = (string) $baseUrl[0];
-                            $articleLink = $baseUrl.'?'.http_build_query($fullUrlParams);
-                        } else {
-                            $articleLink = (string) $item->link.'?'.http_build_query($analyticsParams);
-                        }
                         $return['rss'][] = array(
                             'date'       => Tools::displayDate(date('Y-m-d', strtotime((string) $item->pubDate))),
                             'title'      => (string) Tools::htmlentitiesUTF8($item->title),
                             'short_desc' => Tools::truncateString(strip_tags((string) $item->description), 150),
-                            'link'       => (string) $articleLink,
+                            'link'       => $this->getArticleLink($item),
                         );
                     } else {
                         break;
@@ -571,6 +551,38 @@ class AdminDashboardControllerCore extends AdminController
             }
         }
         return $defaultValue;
+    }
+
+    /**
+     * @param SimpleXMLElement $item
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getArticleLink(SimpleXMLElement $item): string
+    {
+        $link = (string)$item->link;
+        $shopDefaultCountryId = (int)Configuration::get('PS_COUNTRY_DEFAULT');
+        $shopDefaultIsoCountry = strtoupper(Country::getIsoById($shopDefaultCountryId));
+        $analyticsParams = [
+            'utm_source' => 'back-office',
+            'utm_medium' => 'rss',
+            'utm_campaign' => 'back-office-' . $shopDefaultIsoCountry,
+            'utm_content' => 'download'
+        ];
+
+        $urlQuery = parse_url($link, PHP_URL_QUERY);
+        if ($urlQuery) {
+            parse_str($urlQuery, $linkQueryParams);
+            if ($linkQueryParams) {
+                $fullUrlParams = array_merge($linkQueryParams, $analyticsParams);
+                $baseUrl = explode('?', $link);
+                $baseUrl = (string)$baseUrl[0];
+                return $baseUrl . '?' . http_build_query($fullUrlParams);
+            }
+        }
+
+        return $link . '?' . http_build_query($analyticsParams);
     }
 
 }
