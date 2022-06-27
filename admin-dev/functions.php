@@ -114,11 +114,11 @@ function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
  *
  * @param string $sql_date Date in SQL format (YYYY-MM-DD HH:mm:ss)
  * @param bool $with_time Display both date and time
- * @todo Several formats (french : DD-MM-YYYY)
+ * @deprecated 1.4.0 Use Tools::displayDate instead
 */
 function displayDate($sql_date, $with_time = false)
 {
-    return strftime('%Y-%m-%d'.($with_time ? ' %H:%M:%S' : ''), strtotime($sql_date));
+    return date('Y-m-d'.($with_time ? ' H:i:s' : ''), strtotime($sql_date));
 }
 
 /**

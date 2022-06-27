@@ -5295,7 +5295,6 @@ class AdminProductsControllerCore extends AdminController
         if ($product->id) {
             /* Build attributes combinations */
             $combinations = $product->getAttributeCombinations($this->context->language->id);
-            $groups = [];
             if (is_array($combinations)) {
                 $combinationImages = $product->getCombinationImages($this->context->language->id);
                 foreach ($combinations as $combination) {
@@ -5319,11 +5318,8 @@ class AdminProductsControllerCore extends AdminController
                     $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
                     $combArray[$combination['id_product_attribute']]['upc'] = $combination['upc'];
                     $combArray[$combination['id_product_attribute']]['id_image'] = isset($combinationImages[$combination['id_product_attribute']][0]['id_image']) ? $combinationImages[$combination['id_product_attribute']][0]['id_image'] : 0;
-                    $combArray[$combination['id_product_attribute']]['available_date'] = strftime($combination['available_date']);
+                    $combArray[$combination['id_product_attribute']]['available_date'] = strtotime($combination['available_date']);
                     $combArray[$combination['id_product_attribute']]['default_on'] = $combination['default_on'];
-                    if ($combination['is_color_group']) {
-                        $groups[$combination['id_attribute_group']] = $combination['group_name'];
-                    }
                 }
             }
 
@@ -5339,7 +5335,7 @@ class AdminProductsControllerCore extends AdminController
 
                 $list = rtrim($list, ', ');
                 $combArray[$id_product_attribute]['image'] = $product_attribute['id_image'] ? new Image($product_attribute['id_image']) : false;
-                $combArray[$id_product_attribute]['available_date'] = $product_attribute['available_date'] != 0 ? date('Y-m-d', strtotime($product_attribute['available_date'])) : '0000-00-00';
+                $combArray[$id_product_attribute]['available_date'] = $product_attribute['available_date'] ? date('Y-m-d', $product_attribute['available_date']) : '0000-00-00';
                 $combArray[$id_product_attribute]['attributes'] = $list;
                 $combArray[$id_product_attribute]['name'] = $list;
 

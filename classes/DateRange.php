@@ -74,8 +74,8 @@ class DateRangeCore extends ObjectModel
             // The default range is set to 1 day less 1 second (in seconds)
             $rangeSize = 86399;
             $dateRange = new static();
-            $dateRange->time_start = date('Y-m-d');
-            $dateRange->time_end = strftime('%Y-%m-%d %H:%M:%S', strtotime($dateRange->time_start) + $rangeSize);
+            $dateRange->time_start = date('Y-m-d', time());
+            $dateRange->time_end = date('Y-m-d H:i:s', time() + $rangeSize);
             $dateRange->add();
 
             return $dateRange->id;

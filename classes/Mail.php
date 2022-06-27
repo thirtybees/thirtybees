@@ -572,7 +572,7 @@ class MailCore extends ObjectModel
     protected static function generateId($idstring = null)
     {
         $midparams = [
-            'utctime'   => gmstrftime('%Y%m%d%H%M%S'),
+            'utctime'   => gmdate('YmdHis'),
             'randint'   => mt_rand(),
             'customstr' => (preg_match("/^(?<!\\.)[a-z0-9\\.]+(?!\\.)\$/iD", $idstring) ? $idstring : "swift"),
             'hostname'  => ((isset($_SERVER['SERVER_NAME']) && !empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : php_uname('n')),
