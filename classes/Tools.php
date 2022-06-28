@@ -1847,7 +1847,18 @@ class ToolsCore
             $context = Context::getContext();
         }
 
-        @include_once(_PS_TRANSLATIONS_DIR_.$context->language->iso_code.'/errors.php');
+        if (isset($context->language) && $context->language->iso_code) {
+            $isoCode = $context->language->iso_code;
+        } else if ($defaultIsoCode = Language::getIsoById(Configuration::get('PS_LANG_DEFAULT'))) {
+            $isoCode = $defaultIsoCode;
+        } else {
+            $isoCode = 'en';
+        }
+
+        $errorLangFile = _PS_TRANSLATIONS_DIR_ . $isoCode . '/errors.php';
+        if (file_exists($errorLangFile)) {
+            @include_once($errorLangFile);
+        }
 
         if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_ && $string == 'Fatal error') {
             return ('<pre>'.print_r(debug_backtrace(), true).'</pre>');
