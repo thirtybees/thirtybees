@@ -1228,4 +1228,21 @@ class ThemeCore extends ObjectModel
         return rtrim(str_replace('\\', '/', _PS_ALL_THEMES_DIR_),'/') . '/' . $this->directory . '/';
     }
 
+
+    /**
+     * Returns true, if current theme supports mobile theme variant
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function supportsMobileVariant()
+    {
+        return (
+            isset($_SERVER['HTTP_USER_AGENT']) &&
+            Configuration::get('PS_ALLOW_MOBILE_DEVICE') &&
+            file_exists(_PS_THEME_MOBILE_DIR_) &&
+            is_dir(_PS_THEME_MOBILE_DIR_)
+        );
+    }
+
 }

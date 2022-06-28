@@ -271,6 +271,9 @@ class ContextCore
     /**
      * Checks if mobile context is possible
      *
+     * Returns true, if current theme supports dedicated mobile variant, and user did not
+     * opt out from using it
+     *
      * @return bool
      * @throws PrestaShopException
      *
@@ -279,27 +282,8 @@ class ContextCore
      */
     protected function checkMobileContext()
     {
-        // Check mobile context
-        if (Tools::isSubmit('no_mobile_theme')) {
-            Context::getContext()->cookie->no_mobile = true;
-            if (Context::getContext()->cookie->id_guest) {
-                $guest = new Guest(Context::getContext()->cookie->id_guest);
-                $guest->mobile_theme = false;
-                $guest->update();
-            }
-        } elseif (Tools::isSubmit('mobile_theme_ok')) {
-            Context::getContext()->cookie->no_mobile = false;
-            if (Context::getContext()->cookie->id_guest) {
-                $guest = new Guest(Context::getContext()->cookie->id_guest);
-                $guest->mobile_theme = true;
-                $guest->update();
-            }
-        }
-
-        return isset($_SERVER['HTTP_USER_AGENT'])
-            && isset(Context::getContext()->cookie)
-            && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE')
-            && @filemtime(_PS_THEME_MOBILE_DIR_)
-            && !Context::getContext()->cookie->no_mobile;
+        return $this->theme->supportsMobileVariant() && !$this->cookie->no_mobile;
     }
+
+
 }

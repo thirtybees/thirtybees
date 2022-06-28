@@ -1275,7 +1275,7 @@ class FrontControllerCore extends Controller
                 'conditions'             => Configuration::get(Configuration::CONDITIONS),
                 'id_cgv'                 => Configuration::get(Configuration::CONDITIONS_CMS_ID),
                 'PS_SHOP_NAME'           => Configuration::get(Configuration::SHOP_NAME),
-                'PS_ALLOW_MOBILE_DEVICE' => isset($_SERVER['HTTP_USER_AGENT']) && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE') && @filemtime(_PS_THEME_MOBILE_DIR_),
+                'PS_ALLOW_MOBILE_DEVICE' => Context::getContext()->theme->supportsMobileVariant(),
             ]
         );
 
@@ -1576,6 +1576,13 @@ class FrontControllerCore extends Controller
                     $this->context->cookie->iso_code_country = strtoupper($country->iso_code);
                 }
             }
+        }
+
+        // save user preference about using mobile theme, if submitted
+        if (Tools::isSubmit('no_mobile_theme')) {
+            $this->setMobileThemeAllowed($this->context->cookie, false);
+        } elseif (Tools::isSubmit('mobile_theme_ok')) {
+            $this->setMobileThemeAllowed($this->context->cookie, true);
         }
 
         $currency = Tools::setCurrency($this->context->cookie);
@@ -2374,5 +2381,28 @@ class FrontControllerCore extends Controller
     protected function redirect()
     {
         Tools::redirectLink($this->redirect_after);
+    }
+
+    /**
+     * Saves user preference about 'Mobile Theme' into cookie. This allows
+     * visitors to opt out from using mobile theme variant
+     *
+     * @param Cookie $cookie
+     * @param bool $allowed
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function setMobileThemeAllowed(Cookie $cookie, $allowed)
+    {
+        $allowed = (bool)$allowed;
+        $cookie->no_mobile = !$allowed;
+        if ($cookie->id_guest) {
+            $guest = new Guest($cookie->id_guest);
+            if (Validate::isLoadedObject($guest) && (bool)$guest->mobile_theme !== $allowed) {
+                $guest->mobile_theme = $allowed;
+                $guest->update();
+            }
+        }
     }
 }

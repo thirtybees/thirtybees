@@ -33,6 +33,12 @@
  * Class CookieCore
  *
  * @since 1.0.0
+ *
+ * Known properties set up by core:
+ *
+ * @property int $id_customer
+ * @property int $id_guest
+ * @property bool $no_mobile
  */
 class CookieCore
 {
