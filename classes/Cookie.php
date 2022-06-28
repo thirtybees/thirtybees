@@ -161,25 +161,27 @@ class CookieCore
         if (isset($_COOKIE[$this->_name])) {
             /* Decrypt cookie content */
             $content = $this->getCipherTool()->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
+            if ($content) {
+                /* Get cookie checksum */
+                $tmpTab = explode('¤', $content);
+                array_pop($tmpTab);
+                $contentForChecksum = implode('¤', $tmpTab) . '¤';
+                $checksum = crc32($this->_salt . $contentForChecksum);
 
-            /* Get cookie checksum */
-            $tmpTab = explode('¤', $content);
-            array_pop($tmpTab);
-            $contentForChecksum = implode('¤', $tmpTab).'¤';
-            $checksum = crc32($this->_salt.$contentForChecksum);
-
-            /* Unserialize cookie content */
-            $tmpTab = explode('¤', $content);
-            foreach ($tmpTab as $keyAndValue) {
-                $tmpTab2 = explode('|', $keyAndValue);
-                if (count($tmpTab2) == 2) {
-                    $this->_content[$tmpTab2[0]] = $tmpTab2[1];
+                /* Unserialize cookie content */
+                $tmpTab = explode('¤', $content);
+                foreach ($tmpTab as $keyAndValue) {
+                    $tmpTab2 = explode('|', $keyAndValue);
+                    if (count($tmpTab2) == 2) {
+                        $this->_content[$tmpTab2[0]] = $tmpTab2[1];
+                    }
+                }
+                /* Blowfish fix */
+                if (isset($this->_content['checksum'])) {
+                    $this->_content['checksum'] = (int)($this->_content['checksum']);
                 }
             }
-            /* Blowfish fix */
-            if (isset($this->_content['checksum'])) {
-                $this->_content['checksum'] = (int) ($this->_content['checksum']);
-            }
+
             /* Check if cookie has not been modified */
             if (!isset($this->_content['checksum']) || $this->_content['checksum'] != $checksum) {
                 $this->delete();
