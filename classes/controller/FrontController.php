@@ -1066,18 +1066,21 @@ class FrontControllerCore extends Controller
         ]);
 
         // Automatically add js files from js/autoload directory in the template
-        if (@filemtime($this->getThemeDir().'js/autoload/')) {
-            foreach (scandir($this->getThemeDir().'js/autoload/', 0) as $file) {
+        $autoloadDirJs = $this->getThemeDir() . 'js/autoload/';
+        if (file_exists($autoloadDirJs) && is_dir($autoloadDirJs)) {
+            foreach (scandir($autoloadDirJs) as $file) {
                 if (preg_match('/^[^.].*\.js$/', $file)) {
-                    $this->addJS($this->getThemeDir().'js/autoload/'.$file);
+                    $this->addJS($autoloadDirJs.$file);
                 }
             }
         }
+
         // Automatically add css files from css/autoload directory in the template
-        if (@filemtime($this->getThemeDir().'css/autoload/')) {
-            foreach (scandir($this->getThemeDir().'css/autoload', 0) as $file) {
+        $autoloadDirCss = $this->getThemeDir() . 'css/autoload/';
+        if (file_exists($autoloadDirCss) && is_dir($autoloadDirCss)) {
+            foreach (scandir($autoloadDirCss) as $file) {
                 if (preg_match('/^[^.].*\.css$/', $file)) {
-                    $this->addCSS($this->getThemeDir().'css/autoload/'.$file);
+                    $this->addCSS($autoloadDirCss.$file);
                 }
             }
         }
@@ -1186,9 +1189,9 @@ class FrontControllerCore extends Controller
                         $overridePathCss = str_replace($type.'/'.basename($file), basename($file), $overridePath, $differentCss);
                     }
 
-                    if ($different && @filemtime($overridePath)) {
+                    if ($different && file_exists($overridePath)) {
                         $file = str_replace(__PS_BASE_URI__.'modules/', __PS_BASE_URI__.'themes/'._THEME_NAME_.'/'.$type.'/modules/', $file, $different);
-                    } elseif ($differentCss && isset($overridePathCss) && @filemtime($overridePathCss)) {
+                    } elseif ($differentCss && isset($overridePathCss) && file_exists($overridePathCss)) {
                         $file = $overridePathCss;
                     }
                     if ($cssMediaType) {
