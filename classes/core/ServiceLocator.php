@@ -23,6 +23,7 @@ use Core_Foundation_IoC_Container;
 use Db;
 use Exception;
 use PrestaShopException;
+use function PHPUnit\Framework\throwException;
 
 /**
  * Class ServiceLocatorCore
@@ -80,6 +81,22 @@ class ServiceLocatorCore
     public function getServiceLocator()
     {
         return $this;
+    }
+
+    /**
+     * Instantiates controller class
+     *
+     * @param $controllerClass
+     * @return \Controller
+     * @throws PrestaShopException
+     */
+    public function getController($controllerClass)
+    {
+        $controller = $this->getByServiceName($controllerClass);
+        if (! ($controller instanceof \Controller)) {
+            throw new PrestaShopException("Failed to construct controller, class '$controllerClass' does not extend Controller");
+        }
+        return $controller;
     }
 
     /**

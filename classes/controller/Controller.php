@@ -112,17 +112,20 @@ abstract class ControllerCore
      * returns a new instance of this controller
      *
      * @param string $className
-     * @param bool   $auth
-     * @param bool   $ssl
+     * @param bool $auth
+     * @param bool $ssl
      *
      * @return Controller
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.4.0
      */
     public static function getController($className, $auth = false, $ssl = false)
     {
-        return new $className($auth, $ssl);
+        Tools::displayAsDeprecated();
+        return ServiceLocator::getInstance()->getController($className);
     }
 
     /**
