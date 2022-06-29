@@ -1080,8 +1080,11 @@ class ConfigurationCore extends ObjectModel
     public static function getApiServer()
     {
         $baseUriOverride = static::getGlobalValue(static::API_SERVER_OVERRIDE);
-        if ($baseUriOverride && Validate::isAbsoluteUrl($baseUriOverride)) {
-            return $baseUriOverride;
+        if ($baseUriOverride) {
+            $baseUriOverride = rtrim($baseUriOverride, '/');
+            if (Validate::isAbsoluteUrl($baseUriOverride)) {
+                return $baseUriOverride;
+            }
         }
         return 'https://api.thirtybees.com';
     }
