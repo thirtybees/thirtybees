@@ -277,8 +277,6 @@ $kernel->loadFile(__DIR__.'/../../classes/module/FreeOrder.php');
 $kernel->loadFile(__DIR__.'/override/classes/module/FreeOrder.php');
 $kernel->loadFile(__DIR__.'/../../classes/module/ImportModule.php');
 $kernel->loadFile(__DIR__.'/override/classes/module/ImportModule.php');
-$kernel->loadFile(__DIR__.'/../../classes/module/LibraryModule.php');
-$kernel->loadFile(__DIR__.'/override/classes/module/LibraryModule.php');
 $kernel->loadFile(__DIR__.'/../../classes/module/ModuleGraphEngine.php');
 $kernel->loadFile(__DIR__.'/override/classes/module/ModuleGraphEngine.php');
 $kernel->loadFile(__DIR__.'/../../classes/module/ModuleGraph.php');
