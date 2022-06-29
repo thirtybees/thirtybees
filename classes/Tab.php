@@ -110,7 +110,7 @@ class TabCore extends ObjectModel
      *
      * @param string $className
      *
-     * @return int id_tab
+     * @return int|false Tab ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -119,6 +119,9 @@ class TabCore extends ObjectModel
      */
     public static function getIdFromClassName($className)
     {
+        if (! is_string($className)) {
+            return false;
+        }
         $className = strtolower($className);
         if (static::$_getIdFromClassName === null) {
             static::$_getIdFromClassName = [];
@@ -137,7 +140,9 @@ class TabCore extends ObjectModel
             }
         }
 
-        return (isset(static::$_getIdFromClassName[$className]) ? (int) static::$_getIdFromClassName[$className] : false);
+        return isset(static::$_getIdFromClassName[$className])
+            ? (int) static::$_getIdFromClassName[$className]
+            : false;
     }
 
     /**
