@@ -794,6 +794,7 @@ abstract class ControllerCore
      *
      * @since   1.3.0
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     protected function addSyntheticSchedulerJs()
     {

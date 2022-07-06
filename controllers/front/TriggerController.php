@@ -35,25 +35,35 @@ class TriggerControllerCore extends FrontController
      */
     public function initContent()
     {
+        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+
+        // Allow CORS requests
+        header("Access-Control-Allow-Origin: *");
+        if ($method === 'OPTIONS') {
+            die();
+        }
+
+        // Do heavy work on POST requests only
         header('Content-Type: application/json;charset=UTF-8');
+        if ($method === 'POST') {
+            if (Tools::getValue('secret')) {
+                $secret = Tools::getValue("secret");
+                $scheduler = ServiceLocator::getInstance()->getScheduler();
 
-        if (Tools::getValue('secret')) {
-            $secret = Tools::getValue("secret");
-            $scheduler = ServiceLocator::getInstance()->getScheduler();
-
-            if ($secret == $scheduler->getSyntheticEventSecret()) {
-                try {
-                    $scheduler->deleteSyntheticEventSecret();
-                    $scheduler->run();
-                    die(json_encode([
-                        'status' => 'success'
-                    ]));
-                } catch (Exception $e) {
-                    PrestaShopLogger::addLog("Scheduler failed: " . $e);
-                    die(json_encode([
-                        'status' => 'failed',
-                        'error' => 'Internal server error'
-                    ]));
+                if ($secret == $scheduler->getSyntheticEventSecret()) {
+                    try {
+                        $scheduler->deleteSyntheticEventSecret();
+                        $scheduler->run();
+                        die(json_encode([
+                            'status' => 'success'
+                        ]));
+                    } catch (Exception $e) {
+                        PrestaShopLogger::addLog("Scheduler failed: " . $e);
+                        die(json_encode([
+                            'status' => 'failed',
+                            'error' => 'Internal server error'
+                        ]));
+                    }
                 }
             }
         }

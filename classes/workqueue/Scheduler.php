@@ -23,6 +23,7 @@ use Configuration;
 use DateTime;
 use Db;
 use Exception;
+use HTMLPurifier_Exception;
 use PrestaShopException;
 use Tools;
 
@@ -101,7 +102,6 @@ class SchedulerCore
         $minInterval = max($minInterval, static::MINIMAL_CRON_INTERVAL_HARD_LIMIT);
         $threshold = $lastCronEvent + $minInterval;
         if ($now > $threshold) {
-            Configuration::updateGlobalValue(static::SYNTHETIC_CRON_SECRET, Tools::passwdGen(20));
             return true;
         }
         return false;
@@ -110,6 +110,7 @@ class SchedulerCore
     /**
      * @return string
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public function getSyntheticEventSecret()
     {
