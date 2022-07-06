@@ -582,9 +582,16 @@
 		});
 	}
 
-	function updateDeliveryOptionList(delivery_option_list)
+	function updateDeliveryOptionList(delivery_option_list, isVirtualCart)
 	{
 		var html = '';
+		if (isVirtualCart) {
+			$('#carrier_form').hide();
+			$('#carriers_err').show().html('{l s='No carrier is needed for this order'}');
+			$("button[name=\"submitAddOrder\"]").removeAttr("disabled");
+			return;
+		}
+
 		if (delivery_option_list.length > 0)
 		{
 			$.each(delivery_option_list, function() {
@@ -830,7 +837,7 @@
 		else
 			$('#carriers_part,#summary_part').show();
 
-		updateDeliveryOptionList(jsonSummary.delivery_option_list);
+		updateDeliveryOptionList(jsonSummary.delivery_option_list, jsonSummary.summary.is_virtual_cart);
 
 		if (jsonSummary.cart.gift == 1)
 			$('#order_gift').attr('checked', true);
