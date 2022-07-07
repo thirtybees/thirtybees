@@ -28,7 +28,6 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-use CssSplitter\Splitter;
 
 /**
  * Class MediaCore
@@ -625,9 +624,10 @@ class MediaCore
      *
      * @return array processed css_files
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function cccCss($cssFiles, $cachePath = null)
     {
@@ -735,16 +735,7 @@ class MediaCore
             $cssFiles[$protocolLink.Tools::getMediaServer($url).$url] = $media;
         }
 
-        $compiledCss = array_merge($externalCssFiles, $cssFiles);
-
-        //If browser not IE <= 9, bypass ieCssSplitter
-        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        if (!preg_match('/(?i)msie [1-9]/', $userAgent)) {
-            return $compiledCss;
-        }
-        $splittedCss = static::ieCssSplitter($compiledCss, $cachePath.'ie9', $cssSplitNeedRefresh);
-
-        return array_merge($splittedCss, $compiledCss);
+        return array_merge($externalCssFiles, $cssFiles);
     }
 
     /**
@@ -808,50 +799,8 @@ class MediaCore
      */
     public static function ieCssSplitter($compiledCss, $cachePath, $refresh = false)
     {
-        $splittedCss = [];
-        $protocolLink = Tools::getCurrentUrlProtocolPrefix();
-        //return cached css
-        if (!$refresh) {
-            $files = @scandir($cachePath);
-            if (is_array($files)) {
-                foreach (array_diff($files, ['..', '.']) as $file) {
-                    $cssUrl = str_replace(_PS_ROOT_DIR_, '', $protocolLink.Tools::getMediaServer('').$cachePath.DIRECTORY_SEPARATOR.$file);
-                    $splittedCss[$cssUrl] = 'all';
-                }
-            }
-
-            return ['lteIE9' => $splittedCss];
-        }
-        if (!is_dir($cachePath)) {
-            mkdir($cachePath, 0777, true);
-        }
-        $splitter = new Splitter();
-        $cssRuleLimit = 4095;
-        foreach ($compiledCss as $css => $media) {
-            $fileInfo = parse_url($css);
-            $fileBasename = basename($fileInfo['path']);
-            $cssContent = file_get_contents(
-                _PS_ROOT_DIR_
-                .preg_replace('#^'.__PS_BASE_URI__.'#', '/', $fileInfo['path'])
-            );
-            $count = $splitter->countSelectors($cssContent) - $cssRuleLimit;
-            if (($count / $cssRuleLimit) > 0) {
-                $part = 2;
-                for ($i = $count; $i > 0; $i -= $cssRuleLimit) {
-                    $newCssName = 'ie_split_'.$part.'_'.$fileBasename;
-                    $cssUrl = str_replace(_PS_ROOT_DIR_, '', $protocolLink.Tools::getMediaServer('').$cachePath.DIRECTORY_SEPARATOR.$newCssName);
-                    $splittedCss[$cssUrl] = $media;
-                    file_put_contents($cachePath.DIRECTORY_SEPARATOR.$newCssName, $splitter->split($cssContent, $part));
-                    chmod($cachePath.DIRECTORY_SEPARATOR.$newCssName, 0777);
-                    $part++;
-                }
-            }
-        }
-        if (count($splittedCss) > 0) {
-            return ['lteIE9' => $splittedCss];
-        }
-
-        return ['lteIE9' => []];
+        Tools::displayAsDeprecated();
+        return [];
     }
 
     /**

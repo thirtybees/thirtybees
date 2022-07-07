@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73501022e08670925d3186b0f46bedc7",
+    "content-hash": "2f496842be5d176bcc340112e557ae6e",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -71,53 +71,6 @@
                 "source": "https://github.com/defuse/php-encryption/tree/v2.3.1"
             },
             "time": "2021-04-09T23:57:26+00:00"
-        },
-        {
-            "name": "dlundgren/css-splitter",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dlundgren/php-css-splitter.git",
-                "reference": "27f6e3396cd57e0e693a0f6f8849216a29480b1e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dlundgren/php-css-splitter/zipball/27f6e3396cd57e0e693a0f6f8849216a29480b1e",
-                "reference": "27f6e3396cd57e0e693a0f6f8849216a29480b1e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CssSplitter\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Lundgren",
-                    "email": "dlundgren@syberisle.net",
-                    "role": "lead"
-                }
-            ],
-            "description": "PHP Css Splitter for IE 4096 selector limit",
-            "keywords": [
-                "css splitter"
-            ],
-            "support": {
-                "issues": "https://github.com/dlundgren/php-css-splitter/issues",
-                "source": "https://github.com/dlundgren/php-css-splitter/tree/master"
-            },
-            "time": "2015-10-08T02:44:26+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
