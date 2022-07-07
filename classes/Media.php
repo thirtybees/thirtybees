@@ -271,8 +271,9 @@ class MediaCore
      *
      * @return bool|string
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function replaceByAbsoluteURL($matches)
     {
@@ -280,9 +281,7 @@ class MediaCore
             if (!preg_match('/^(?:https?:)?\/\//iUs', $matches[2])) {
                 $protocolLink = Tools::getCurrentUrlProtocolPrefix();
                 $sep = '/';
-                // @codingStandardsIgnoreStart
                 $tmp = $matches[2][0] == $sep ? $matches[2] : dirname(Media::$current_css_file).$sep.ltrim($matches[2], $sep);
-                // @codingStandardsIgnoreEnd
                 $server = Tools::getMediaServer($tmp);
 
                 return $matches[1].$protocolLink.$server.$tmp;
@@ -757,9 +756,7 @@ class MediaCore
         if (strlen($cssContent) > 0) {
             $limit = Media::getBackTrackLimit();
             $cssContent = preg_replace('#/\*.*?\*/#s', '', $cssContent, $limit);
-            // @codingStandardsIgnoreStart
             $cssContent = preg_replace_callback(Media::$pattern_callback, ['Media', 'replaceByAbsoluteURL'], $cssContent, $limit);
-            // @codingStandardsIgnoreEnd
             $cssContent = preg_replace('#\s+#', ' ', $cssContent, $limit);
             $cssContent = str_replace(["\t", "\n", "\r"], '', $cssContent);
             $cssContent = str_replace(['; ', ': '], [';', ':'], $cssContent);
@@ -769,7 +766,7 @@ class MediaCore
             $cssContent = str_replace([':0px', ':0em', ':0pt', ':0%'], ':0', $cssContent);
             $cssContent = str_replace([' 0px', ' 0em', ' 0pt', ' 0%'], ' 0', $cssContent);
             $cssContent = str_replace('\'images_ie/', '\'images/', $cssContent);
-            $cssContent = preg_replace_callback('#(AlphaImageLoader\(src=\')([^\']*\',)#s', ['Tools', 'replaceByAbsoluteURL'], $cssContent);
+            $cssContent = preg_replace_callback('#(AlphaImageLoader\(src=\')([^\']*\',)#s', ['Media', 'replaceByAbsoluteURL'], $cssContent);
             // Store all import url
             preg_match_all('#@(import|charset) .*?;#i', $cssContent, $m);
             for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
