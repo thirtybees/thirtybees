@@ -1133,9 +1133,9 @@ class AdminImportControllerCore extends AdminController
         $entitySelected = 0;
         if (isset($this->entities[$this->l(ucfirst(Tools::getValue('import_type')))])) {
             $entitySelected = $this->entities[$this->l(ucfirst(Tools::getValue('import_type')))];
-            $this->context->cookie->entity_selected = (int) $entitySelected;
-        } elseif (isset($this->context->cookie->entity_selected)) {
-            $entitySelected = (int) $this->context->cookie->entity_selected;
+            $this->context->cookie->entitySelected = (int) $entitySelected;
+        } elseif (isset($this->context->cookie->entitySelected)) {
+            $entitySelected = (int) $this->context->cookie->entitySelected;
         }
 
         $csvSelected = '';
