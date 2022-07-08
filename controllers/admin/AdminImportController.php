@@ -852,7 +852,6 @@ class AdminImportControllerCore extends AdminController
                 'truncate'                 => Tools::getValue('truncate'),
                 'forceIDs'                 => Tools::getValue('forceIDs'),
                 'regenerate'               => Tools::getValue('regenerate'),
-                'sendemail'                => Tools::getValue('sendemail'),
                 'match_ref'                => Tools::getValue('match_ref'),
                 'separator'                => $this->separator,
                 'multiple_value_separator' => $this->multiple_value_separator,
@@ -5358,47 +5357,6 @@ class AdminImportControllerCore extends AdminController
         }
         if (count($this->informations) > 0) {
             $results['informations'] = $this->informations;
-        }
-
-        if (!$validateOnly && (bool) $results['isFinished'] && !isset($results['oneMoreStep']) && (bool) Tools::getValue('sendemail')) {
-            // Mail::Send() can sometimes throw an error...
-            try {
-                unset($this->context->cookie->csv_selected); // remove CSV selection file if finished with no error.
-
-                $templateVars = [
-                    '{firstname}' => $this->context->employee->firstname,
-                    '{lastname}'  => $this->context->employee->lastname,
-                    '{filename}'  => Tools::getValue('csv'),
-                ];
-
-                $employeeLanguage = new Language((int) $this->context->employee->id_lang);
-                // Mail send in last step because in case of failure, does NOT throw an error.
-                $mailSuccess = @Mail::Send(
-                    (int) $this->context->employee->id_lang,
-                    'import',
-                    $this->l(
-                        'Import complete',
-                        [],
-                        'Emails.Subject',
-                        $employeeLanguage->locale
-                    ),
-                    $templateVars,
-                    $this->context->employee->email,
-                    $this->context->employee->firstname.' '.$this->context->employee->lastname,
-                    null,
-                    null,
-                    null,
-                    null,
-                    _PS_MAIL_DIR_,
-                    false, // do not die in failed! Warn only, it's not an import error, because import finished in fact.
-                    (int) $this->context->shop->id
-                );
-                if (!$mailSuccess) {
-                    $results['warnings'][] = $this->l('The confirmation email couldn\'t be sent, but the import is successful. Yay!');
-                }
-            } catch (\Exception $e) {
-                $results['warnings'][] = $this->l('The confirmation email couldn\'t be sent, but the import is successful. Yay!');
-            }
         }
 
         $this->ajaxDie(json_encode($results));

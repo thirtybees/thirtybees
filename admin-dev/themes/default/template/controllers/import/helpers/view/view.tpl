@@ -98,7 +98,6 @@
 			<input type="hidden" name="regenerate" value="{$fields_value.regenerate}" />
 			<input type="hidden" name="entity" value="{$fields_value.entity}" />
 			<input type="hidden" name="iso_lang" value="{$fields_value.iso_lang}" />
-			<input type="hidden" name="sendemail" value="{$fields_value.sendemail}" />
 			{if $fields_value.truncate}
 				<input type="hidden" name="truncate" value="1" />
 			{/if}
