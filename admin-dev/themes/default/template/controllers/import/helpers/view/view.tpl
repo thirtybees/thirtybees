@@ -94,7 +94,8 @@
 			{l s='This column must be set:'} <span id="missing_column">&nbsp;</span>
 		</div>
 		<form action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post" id="import_form" name="import_form" class="form-horizontal">
-			<input type="hidden" name="csv" value="{$fields_value.csv}" />
+			<input type="hidden" name="filename" value="{$fields_value.filename}" />
+			<input type="hidden" name="importer" value="{$fields_value.importer}" />
 			<input type="hidden" name="regenerate" value="{$fields_value.regenerate}" />
 			<input type="hidden" name="entity" value="{$fields_value.entity}" />
 			<input type="hidden" name="iso_lang" value="{$fields_value.iso_lang}" />

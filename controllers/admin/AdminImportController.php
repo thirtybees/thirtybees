@@ -43,7 +43,6 @@ class AdminImportControllerCore extends AdminController
     const UNFRIENDLY_ERROR = false;
     const MAX_LINE_SIZE = 0;
 
-    // @codingStandardsIgnoreStart
     /** @var mixed $columnMask */
     public static $columnMask;
     /** @var array $defaultValues */
@@ -86,7 +85,13 @@ class AdminImportControllerCore extends AdminController
     public $convert;
     /** @var string $multiple_value_separator */
     public $multiple_value_separator;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * Cached information returned by hook 'actionRegisterImportDataSource'
+     *
+     * @var array
+     */
+    protected $registeredDataSources = null;
 
     /**
      * AdminImportControllerCore constructor.
@@ -685,6 +690,8 @@ class AdminImportControllerCore extends AdminController
     {
         $filenamePrefix = date('YmdHis').'-';
         $filename = preg_replace('/[^A-Za-z0-9._\-]/', '', $_FILES['file']['name']);
+        $extensions = array_keys($this->getFileExtensions());
+        $extensionsRegexp = implode('|', array_map('preg_quote', $extensions));
 
         if (isset($_FILES['file']) && !empty($_FILES['file']['error'])) {
             switch ($_FILES['file']['error']) {
@@ -701,8 +708,8 @@ class AdminImportControllerCore extends AdminController
                     $_FILES['file']['error'] = $this->l('No file was uploaded.');
                     break;
             }
-        } elseif (!preg_match('#([^.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $filename)) {
-            $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
+        } elseif (!preg_match('#([^.]*?)\.('.$extensionsRegexp.')$#is', $filename)) {
+            $_FILES['file']['error'] = $this->l('Unsupported file type. Supported extensions: ') . implode(', ' , $extensions);
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
             !@move_uploaded_file($_FILES['file']['tmp_name'], static::getPath().$filenamePrefix.str_replace("\0", '', $filename))
         ) {
@@ -753,7 +760,7 @@ class AdminImportControllerCore extends AdminController
         $this->initToolbar();
         $this->initPageHeaderToolbar();
         if ($this->display == 'import') {
-            if (Tools::getValue('csv')) {
+            if (Tools::getValue('filename')) {
                 $this->content .= $this->renderView();
             } else {
                 $this->errors[] = $this->l('To proceed, please upload a file first.');
@@ -836,7 +843,7 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->isoLangSelected = urlencode(Tools::getValue('iso_lang'));
         $this->context->cookie->separatorSelected = urlencode($this->separator);
         $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
-        $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
+        $this->context->cookie->fileSelected = urlencode(Tools::getValue('filename'));
 
         // Show date format select only in Products,Combinations and Customer import
         $dateFormats = null;
@@ -859,7 +866,8 @@ class AdminImportControllerCore extends AdminController
         $this->tpl_view_vars = [
             'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
             'fields_value'     => [
-                'csv'                      => Tools::getValue('csv'),
+                'filename'                 => Tools::getValue('filename'),
+                'importer'                 => Tools::getValue('importer'),
                 'entity'                   => (int) Tools::getValue('entity'),
                 'iso_lang'                 => Tools::getValue('iso_lang'),
                 'truncate'                 => Tools::getValue('truncate'),
@@ -890,65 +898,35 @@ class AdminImportControllerCore extends AdminController
      */
     protected function openDataSource($offset = 0)
     {
-        $csv = Tools::getValue('csv');
+        // construct data source
+        $filepath = static::getPath(Tools::getValue('filename'));
+        $importer = Tools::getValue('importer');
+        $implementations = $this->getRegisteredDataSources();
+        if (! isset($implementations[$importer])) {
+            throw new PrestaShopException('Import implementation "'.$importer.'" not found');
+        }
+        $implementation = $implementations[$importer];
+        $constructor = $implementation['constructor'];
+
+        /** @var DataSourceInterface $dataSource */
+        $dataSource = $constructor($filepath, [
+            'separator' => $this->separator,
+            'multipleValueSeparator' => $this->multiple_value_separator,
+        ]);
+        if (! $dataSource instanceof DataSourceInterface) {
+            throw new PrestaShopException('Failed to create datasource using implementation "'.$implementation['name'].'"');
+        }
+
+        // seek current row
         $toSkip = (int)Tools::getValue('skip');
         if ($offset && $offset > 0) {
             $toSkip += $offset;
         }
 
-        $file = $this->excelToCsvFile($csv);
-
-        $dataSource = new CSVDataSource($file, $this->separator);
         for ($i = 0; $i < $toSkip; ++$i) {
             $dataSource->getRow();
         }
         return $dataSource;
-    }
-
-    /**
-     * @param string $filename
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    protected function excelToCsvFile($filename)
-    {
-        if (preg_match('#(.*?)\.(csv)#is', $filename)) {
-            $destFile = static::getPath(strval(preg_replace('/\.{2,}/', '.', $filename)));
-        } else {
-            $csvFolder = static::getPath();
-            $excelFolder = $csvFolder.'csvfromexcel/';
-            $info = pathinfo($filename);
-            $csvName = basename($filename, '.'.$info['extension']).'.csv';
-            $destFile = $excelFolder.$csvName;
-
-            if (!is_dir($excelFolder)) {
-                mkdir($excelFolder);
-            }
-
-            if (!is_file($destFile)) {
-                try {
-                    $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
-                    if (method_exists($readerExcel, 'setReadDataOnly')) {
-                        $readerExcel->setReadDataOnly(true);
-                    }
-                    $excelFile = $readerExcel->load($csvFolder.$filename);
-
-
-                    /** @var PHPExcel_Writer_CSV $csvWriter */
-                    $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
-                    $csvWriter->setSheetIndex(0);
-
-                    $csvWriter->save($destFile);
-                } catch (Exception $e) {
-                    $this->errors[] = $e->getMessage();
-                    return false;
-                }
-            }
-        }
-
-        return $destFile;
     }
 
     /**
@@ -1062,12 +1040,18 @@ class AdminImportControllerCore extends AdminController
             $this->displayWarning($this->l('The import directory must be writable (CHMOD 755 / 777).'));
         }
 
+        $extensions = $this->getFileExtensions();
+
         $filesToImport = scandir(static::getPath());
         uasort($filesToImport, ['self', 'usortFiles']);
         foreach ($filesToImport as $k => &$filename) {
-            //exclude .  ..  .svn and index.php and all hidden files
-            if (preg_match('/^\..*|index\.php/i', $filename) || is_dir(static::getPath().$filename)) {
+            if (is_dir(static::getPath().$filename)) {
                 unset($filesToImport[$k]);
+            } else {
+                $info = pathinfo($filename);
+                if (! array_key_exists($info['extension'], $extensions)) {
+                    unset($filesToImport[$k]);
+                }
             }
         }
         unset($filename);
@@ -1080,6 +1064,7 @@ class AdminImportControllerCore extends AdminController
         // adds fancybox
         $this->addJqueryPlugin(['fancybox']);
 
+
         $entitySelected = 0;
         if (isset($this->entities[$this->l(ucfirst(Tools::getValue('import_type')))])) {
             $entitySelected = $this->entities[$this->l(ucfirst(Tools::getValue('import_type')))];
@@ -1088,17 +1073,17 @@ class AdminImportControllerCore extends AdminController
             $entitySelected = (int) $this->context->cookie->entitySelected;
         }
 
-        $csvSelected = '';
-        if (isset($this->context->cookie->csv_selected) &&
+        $fileSelected = '';
+        if (isset($this->context->cookie->fileSelected) &&
             @filemtime(
                 static::getPath(
-                    urldecode($this->context->cookie->csv_selected)
+                    urldecode($this->context->cookie->fileSelected)
                 )
             )
         ) {
-            $csvSelected = urldecode($this->context->cookie->csv_selected);
+            $fileSelected = urldecode($this->context->cookie->fileSelected);
         } else {
-            $this->context->cookie->csv_selected = $csvSelected;
+            $this->context->cookie->fileSelected = $fileSelected;
         }
 
         $idLangSelected = '';
@@ -1116,13 +1101,21 @@ class AdminImportControllerCore extends AdminController
             $multipleValueSeparatorSelected = urldecode($this->context->cookie->multiple_value_separator_selected);
         }
 
+        $importers = [];
+        foreach ($this->getRegisteredDataSources() as $key => $definition) {
+            $importers[$key] = $definition['name'];
+        }
+
         $this->tpl_form_vars = [
             'post_max_size'                     => Tools::getMaxUploadSize(),
             'module_confirmation'               => Tools::isSubmit('import') && (isset($this->warnings) && !count($this->warnings)),
             'path_import'                       => static::getPath(),
             'entities'                          => $this->entities,
             'entity_selected'                   => $entitySelected,
-            'csv_selected'                      => $csvSelected,
+            'file_selected'                     => $fileSelected,
+            'acceptExtensions'                  => implode('|', array_keys($extensions)),
+            'importers'                         => $importers,
+            'importersExtensions'               => $extensions,
             'separator_selected'                => $separatorSelected,
             'multiple_value_separator_selected' => $multipleValueSeparatorSelected,
             'files_to_import'                   => $filesToImport,
@@ -1295,7 +1288,7 @@ class AdminImportControllerCore extends AdminController
     public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
     {
         // Check if the CSV file exist
-        if (Tools::getValue('csv')) {
+        if (Tools::getValue('filename')) {
             $shopIsFeatureActive = Shop::isFeatureActive();
             // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
             if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
@@ -5271,5 +5264,78 @@ class AdminImportControllerCore extends AdminController
             'modal_title'   => $this->l('Importing...'),
             'modal_content' => $modalContent,
         ];
+    }
+
+    /**
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    protected function getRegisteredDataSources()
+    {
+        if (is_null($this->registeredDataSources)) {
+            $this->registeredDataSources = [
+                'buildin-csv' => [
+                    'name' => $this->l('Build-in CSV import'),
+                    'extensions' => [ 'csv' ],
+                    'constructor' => ['AdminImportController', 'createCsvDataSource']
+                ]
+            ];
+
+            $result = Hook::exec('actionRegisterImportDataSource', null, null, true);
+            if (is_array($result)) {
+                foreach ($result as $moduleId => $mod) {
+                    if (! isset($mod['extensions']) || ! is_array($mod['extensions'])) {
+                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "extensions"');
+                    }
+                    if (! isset($mod['constructor']) || ! is_callable($mod['constructor'])) {
+                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "constructor"');
+                    }
+                    if (! isset($mod['name'])) {
+                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "name"');
+                    }
+                    $this->registeredDataSources['module-' . $moduleId] = [
+                        'name' => $mod['name'],
+                        'extensions' => $mod['extensions'],
+                        'constructor' => $mod['constructor'],
+                    ];
+                }
+            }
+        }
+        return $this->registeredDataSources;
+    }
+
+    /**
+     * Return list of supported file extensions
+     *
+     * @return string[]
+     * @throws PrestaShopException
+     */
+    protected function getFileExtensions()
+    {
+        $extensions = [];
+        foreach ($this->getRegisteredDataSources() as $id => $mod) {
+            foreach ($mod['extensions'] as $ext) {
+                if (! array_key_exists($ext, $extensions)) {
+                    $extensions[$ext] = [];
+                }
+                if (! in_array($id, $extensions[$ext])) {
+                    $extensions[$ext][] = $id;
+                }
+            }
+        }
+        return $extensions;
+    }
+
+    /**
+     * @param string $filename
+     * @param array $params
+     *
+     * @return DataSourceInterface
+     * @throws PrestaShopException
+     */
+    public static function createCsvDataSource($filename, $params)
+    {
+        return new CSVDataSource($filename, $params['separator'] ?? ',');
     }
 }

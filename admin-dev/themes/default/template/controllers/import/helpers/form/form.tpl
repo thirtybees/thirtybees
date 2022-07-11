@@ -84,7 +84,7 @@
 							{l s="Choose from history / FTP"}
 						</button>
 						<p class="help-block">
-							{l s='Allowed formats: .csv, .xls, .xlsx, .xlst, .ods, .ots'}.<br/>
+							{l s='Allowed formats: '} .{str_replace('|', ',&nbsp;.', $acceptExtensions)} <br/>
 							{l s='Only UTF-8 and ISO 8859-1 encodings are allowed'}.<br/>
 							{l s='You can also upload your file via FTP to the following directory: %s .' sprintf=[$path_import]}
 						</p>
@@ -168,9 +168,9 @@
 				</div>
 				<div class="form-group" id="csv_file_selected" style="display: none;">
 					<div class="alert alert-success clearfix">
-						<input type="hidden" value="{$csv_selected}" name="csv" id="csv_selected_value" />
+						<input type="hidden" value="{$file_selected}" name="filename" id="file_selected_value" />
 						<div class="col-lg-8">
-							<span id="csv_selected_filename">{$csv_selected|escape:'html':'UTF-8'}</span>
+							<span id="file_selected_filename">{$file_selected|escape:'html':'UTF-8'}</span>
 						</div>
 						<div class="col-lg-4">
 							<div class="btn-group pull-right">
@@ -179,6 +179,18 @@
 									{l s='Change'}
 								</button>
 							</div>
+						</div>
+					</div>
+					<div class="form-group" {if $importers|count <= 1}style="display: none;"{/if}>
+						<label for="entity" class="control-label col-lg-4">{l s='Import implementation'} </label>
+						<div class="col-lg-8">
+							<select name="importer" id="importer" class="fixed-width-xxl form-control">
+								{foreach $importers AS $importerId => $importerName }
+									<option value="{$importerId}" id="importer-{$importerId}">
+										{$importerName}
+									</option>
+								{/foreach}
+							</select>
 						</div>
 					</div>
 				</div>
@@ -341,6 +353,9 @@
 
 <script type="text/javascript">
 
+	var importers = {$importers|json_encode};
+	var importersExtensions = {$importersExtensions|json_encode};
+
 	function humanizeSize(bytes) {
 	  if (typeof bytes !== 'number') {
           return '';
@@ -363,16 +378,23 @@
 
 	// when user select a .csv
 	function csv_select(filename) {
-		$('#csv_selected_value').val(filename);
-		$('#csv_selected_filename').html(filename);
+		$('#file_selected_value').val(filename);
+		$('#file_selected_filename').html(filename);
 		$('#csv_file_selected').show();
 		$('#csv_file_uploader').hide();
 		$('#csv_files_history').hide();
-		var pattern = /(\.)?(xls[xt]?|o[td]s)$/mgi;
-		if (pattern.exec(filename) != null) {
-			$("#separator-field").hide();
-		} else {
-			$("#separator-field").show();
+		var extension = filename.split('.').pop();
+		if (extension && importersExtensions[extension]) {
+			$('#importer option').attr('disabled', 'disabled');
+			$('#importer option').attr('selected', false);
+			var length = importersExtensions[extension].length;
+			for (var i = 0; i<length; i++) {
+				var importer = importersExtensions[extension][i];
+				$('#importer-' + importer).attr('disabled', false);
+				if (i === 0) {
+					$('#importer-' + importer).attr('selected', true);
+				}
+			}
 		}
 	}
 	// when user unselect the .csv
@@ -393,12 +415,11 @@
 	$(document).ready(function() {
 
 		var file_add_button = Ladda.create(document.querySelector('#file-add-button'));
-		var file_total_files = 0;
 
 		$('#file').fileupload({
 			dataType: 'json',
 			autoUpload: true,
-			acceptFileTypes: /(\.)?(csv|xls[xt]?|o[td]s)$/mgi,
+			acceptFileTypes: /(\.)?({$acceptExtensions})$/mgi,
 			singleFileUploads: true,
 			{if isset ($post_max_size)}maxFileSize: {$post_max_size},{/if}
 			start: function (e) {
@@ -465,7 +486,7 @@
 			$('#csv_file_uploader').toggle();
 		})
 		//show selected csv if exists
-		var selected = '{$csv_selected|@addcslashes:'\''}';
+		var selected = '{$file_selected|@addcslashes:'\''}';
 		if(selected){
 			$('#csv_file_selected').show();
 			$('#csv_file_uploader').hide();

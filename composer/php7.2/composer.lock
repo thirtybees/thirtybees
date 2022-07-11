@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "21169d37437849da3f2fd6ed1ee914d6",
+    "content-hash": "949c4d44a1ca538066db04b62bc7a0b7",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -964,73 +964,6 @@
                 "source": "https://github.com/pear/PEAR_Exception"
             },
             "time": "2021-03-21T15:43:46+00:00"
-        },
-        {
-            "name": "phpoffice/phpexcel",
-            "version": "1.8.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "1441011fb7ecdd8cc689878f54f8b58a6805f870"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/1441011fb7ecdd8cc689878f54f8b58a6805f870",
-                "reference": "1441011fb7ecdd8cc689878f54f8b58a6805f870",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "ext-xml": "*",
-                "ext-xmlwriter": "*",
-                "php": "^5.2|^7.0"
-            },
-            "require-dev": {
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExcel": "Classes/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1"
-            ],
-            "authors": [
-                {
-                    "name": "Maarten Balliauw",
-                    "homepage": "http://blog.maartenballiauw.be"
-                },
-                {
-                    "name": "Erik Tilt"
-                },
-                {
-                    "name": "Franck Lefevre",
-                    "homepage": "http://rootslabs.net"
-                },
-                {
-                    "name": "Mark Baker",
-                    "homepage": "http://markbakeruk.net"
-                }
-            ],
-            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
-            "homepage": "https://github.com/PHPOffice/PHPExcel",
-            "keywords": [
-                "OpenXML",
-                "excel",
-                "php",
-                "spreadsheet",
-                "xls",
-                "xlsx"
-            ],
-            "support": {
-                "issues": "https://github.com/PHPOffice/PHPExcel/issues",
-                "source": "https://github.com/PHPOffice/PHPExcel/tree/master"
-            },
-            "abandoned": "phpoffice/phpspreadsheet",
-            "time": "2018-11-22T23:07:24+00:00"
         },
         {
             "name": "psr/http-message",
