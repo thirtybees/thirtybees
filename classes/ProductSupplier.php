@@ -106,7 +106,7 @@ class ProductSupplierCore extends ObjectModel
      * @param int $idProductAttribute
      * @param int $idSupplier
      *
-     * @return string
+     * @return string|false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

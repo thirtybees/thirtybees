@@ -96,12 +96,8 @@ done < <(git-find HEAD 'classes'; git-find HEAD 'controllers';)
 UNOVERRIDABLES=()
 UNOVERRIDABLES+=('classes/PrestaShopAutoload.php')
 # Interfaces.
-UNOVERRIDABLES+=('classes/tax/TaxManagerInterface.php')
-UNOVERRIDABLES+=('classes/stock/StockManagerInterface.php')
 UNOVERRIDABLES+=('classes/tree/ITreeToolbarButton.php')
 UNOVERRIDABLES+=('classes/tree/ITreeToolbar.php')
-UNOVERRIDABLES+=('classes/webservice/WebserviceOutputInterface.php')
-UNOVERRIDABLES+=('classes/webservice/WebserviceSpecificManagementInterface.php')
 UNOVERRIDABLES+=('classes/workqueue/WorkQueueTaskCallable.php')
 UNOVERRIDABLES+=('classes/core/InitializationCallback.php')
 
@@ -117,6 +113,10 @@ done < <(git-find HEAD 'Adapter'; git-find HEAD 'Core';)
 # Local function to test overridability.
 # $1: candidate.
 function unoverridable {
+  if [[ "${1}" == *Interface.php ]]; then
+    return 0
+  fi
+
   for U in "${UNOVERRIDABLES[@]}"; do
     if [ "${1}" = "${U}" ]; then
       return 0

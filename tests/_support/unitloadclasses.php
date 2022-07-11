@@ -61,6 +61,9 @@ $kernel->loadFile(__DIR__.'/../../Adapter/Adapter_ServiceLocator.php');
 $kernel->loadFile(__DIR__.'/../../Adapter/Adapter_StockManager.php');
 $kernel->loadFile(__DIR__.'/../../Adapter/Adapter_PackItemsManager.php');
 
+$kernel->loadFile(__DIR__.'/../../classes/import/DataSourceInterface.php');
+$kernel->loadFile(__DIR__.'/../../classes/import/CSVDataSource.php');
+$kernel->loadFile(__DIR__.'/override/classes/import/CSVDataSource.php');
 $kernel->loadFile(__DIR__.'/../../classes/ObjectModel.php');
 $kernel->loadFile(__DIR__.'/override/classes/ObjectModel.php');
 $kernel->loadFile(__DIR__.'/../../classes/AddressFormat.php');

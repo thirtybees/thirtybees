@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Import\CSVDataSource;
+use Thirtybees\Core\Import\DataSourceInterface;
+
 /**
  * Class AdminImportControllerCore
  *
@@ -88,6 +91,7 @@ class AdminImportControllerCore extends AdminController
     /**
      * AdminImportControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -570,9 +574,9 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        $this->separator = ($separator = mb_substr(strval(trim(Tools::getValue('separator'))), 0, 1)) ? $separator : ',';
         $this->convert = false;
-        $this->multiple_value_separator = ($separator = mb_substr(strval(trim(Tools::getValue('multiple_value_separator'))), 0, 1)) ? $separator : ';';
+        $this->separator = substr(trim(Tools::getValue('separator', ',')), 0, 1);
+        $this->multiple_value_separator = substr(trim(Tools::getValue('multiple_value_separator', ';')), 0, 1);
     }
 
     /**
@@ -600,15 +604,16 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param string      $infos
-     * @param string      $key
+     * @param string $infos
+     * @param string $key
      * @param ObjectModel $entity
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
-    protected static function fillInfo($infos, $key, &$entity)
+    protected static function fillInfo($infos, $key, $entity)
     {
         $infos = trim($infos);
         if (isset(static::$validators[$key][1]) && static::$validators[$key][1] == 'createMultiLangField' && Tools::getValue('iso_lang')) {
@@ -646,6 +651,7 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -671,7 +677,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @noinspection PhpUnused
      */
     public function ajaxProcessuploadCsv()
     {
@@ -693,7 +701,7 @@ class AdminImportControllerCore extends AdminController
                     $_FILES['file']['error'] = $this->l('No file was uploaded.');
                     break;
             }
-        } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $filename)) {
+        } elseif (!preg_match('#([^.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $filename)) {
             $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
             !@move_uploaded_file($_FILES['file']['tmp_name'], static::getPath().$filenamePrefix.str_replace("\0", '', $filename))
@@ -735,6 +743,8 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -771,42 +781,38 @@ class AdminImportControllerCore extends AdminController
      */
     public function initToolbar()
     {
-        switch ($this->display) {
-            case 'import':
-                // Default cancel button - like old back link
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
+        if ($this->display === 'import') {
+            // Default cancel button - like old back link
+            $back = Tools::safeOutput(Tools::getValue('back', ''));
+            if (empty($back)) {
+                $back = static::$currentIndex . '&token=' . $this->token;
+            }
 
-                $this->toolbar_btn['cancel'] = [
-                    'href' => $back,
-                    'desc' => $this->l('Cancel'),
-                ];
-                // Default save button - action dynamically handled in javascript
-                $this->toolbar_btn['save-import'] = [
-                    'href' => '#',
-                    'desc' => $this->l('Import .CSV data'),
-                ];
-                break;
+            $this->toolbar_btn['cancel'] = [
+                'href' => $back,
+                'desc' => $this->l('Cancel'),
+            ];
+            // Default save button - action dynamically handled in javascript
+            $this->toolbar_btn['save-import'] = [
+                'href' => '#',
+                'desc' => $this->l('Import .CSV data'),
+            ];
         }
     }
 
     /**
      * @return string
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderView()
     {
         $this->addJS(_PS_JS_DIR_.'admin/import.js');
 
-        $handle = $this->openCsvFile();
-        if (!$handle) {
-            return '';
-        }
+        $datasource = $this->openDataSource();
 
-        $nbColumn = $this->getNbrColumn($handle, $this->separator);
+        $nbColumn = $datasource->getNumberOfColumns();
         $nbTable = ceil($nbColumn / static::MAX_COLUMNS);
 
         $res = [];
@@ -814,9 +820,16 @@ class AdminImportControllerCore extends AdminController
             $res[] = '\''.$elem.'\'';
         }
 
+        $previewRows = [];
+        for ($i = 0; $i<10; $i++) {
+            $previewRow = $datasource->getRow();
+            if ($previewRow) {
+                $previewRows[] = $previewRow;
+            }
+        }
         $data = [];
         for ($i = 0; $i < $nbTable; $i++) {
-            $data[$i] = $this->generateContentTable($i, $nbColumn, $handle, $this->separator);
+            $data[$i] = $this->generateContentTable($i, $nbColumn, $previewRows);
         }
 
         $this->context->cookie->entitySelected = (int) Tools::getValue('entity');
@@ -870,43 +883,26 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param int|bool $offset
+     * @param int $offset
+     * @return DataSourceInterface
      *
-     * @return bool|null|resource
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
-    protected function openCsvFile($offset = false)
+    protected function openDataSource($offset = 0)
     {
-        $file = $this->excelToCsvFile(Tools::getValue('csv'));
-        $handle = false;
-        if (is_file($file) && is_readable($file)) {
-            if (!mb_check_encoding(file_get_contents($file), 'UTF-8')) {
-                $this->convert = true;
-            }
-            $handle = fopen($file, 'r');
-        }
-
-        if (!$handle) {
-            $this->errors[] = $this->l('Cannot read the spreadsheet file');
-
-            return null; // error case
-        }
-
-        static::rewindBomAware($handle);
-
-        $toSkip = (int) Tools::getValue('skip');
+        $csv = Tools::getValue('csv');
+        $toSkip = (int)Tools::getValue('skip');
         if ($offset && $offset > 0) {
             $toSkip += $offset;
         }
-        for ($i = 0; $i < $toSkip; ++$i) {
-            $line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator);
-            if ($line === false) {
-                return false; // reached end of file
-            }
-        }
 
-        return $handle;
+        $file = $this->excelToCsvFile($csv);
+
+        $dataSource = new CSVDataSource($file, $this->separator);
+        for ($i = 0; $i < $toSkip; ++$i) {
+            $dataSource->getRow();
+        }
+        return $dataSource;
     }
 
     /**
@@ -932,24 +928,23 @@ class AdminImportControllerCore extends AdminController
             }
 
             if (!is_file($destFile)) {
-                /** @var PHPExcel_Reader_IReader $readerExcel */
-                $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
-                if (method_exists($readerExcel, 'setReadDataOnly')) {
-                    $readerExcel->setReadDataOnly(true);
-                }
                 try {
+                    $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
+                    if (method_exists($readerExcel, 'setReadDataOnly')) {
+                        $readerExcel->setReadDataOnly(true);
+                    }
                     $excelFile = $readerExcel->load($csvFolder.$filename);
-                } catch (PHPExcel_Exception $e) {
-                    $this->errors[] = $e->getMessage();
 
+
+                    /** @var PHPExcel_Writer_CSV $csvWriter */
+                    $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
+                    $csvWriter->setSheetIndex(0);
+
+                    $csvWriter->save($destFile);
+                } catch (Exception $e) {
+                    $this->errors[] = $e->getMessage();
                     return false;
                 }
-
-                /** @var PHPExcel_Writer_CSV $csvWriter */
-                $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
-                $csvWriter->setSheetIndex(0);
-
-                $csvWriter->save($destFile);
             }
         }
 
@@ -957,59 +952,20 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $handle
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected static function rewindBomAware($handle)
-    {
-        // A rewind wrapper that skips BOM signature wrongly
-        if (!is_resource($handle)) {
-            return false;
-        }
-        rewind($handle);
-        if (($bom = fread($handle, 3)) != "\xEF\xBB\xBF") {
-            rewind($handle);
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $handle
-     * @param $glue
-     *
-     * @return bool|int
-     */
-    protected function getNbrColumn($handle, $glue)
-    {
-        if (!is_resource($handle)) {
-            return false;
-        }
-        $tmp = fgetcsv($handle, static::MAX_LINE_SIZE, $glue);
-        static::rewindBomAware($handle);
-
-        return count($tmp);
-    }
-
-    /**
      * @param $currentTable
      * @param $nbColumn
-     * @param $handle
-     * @param $glue
+     * @param array $previewRows
      *
      * @return string
      *
      * @since 1.0.0
      */
-    protected function generateContentTable($currentTable, $nbColumn, $handle, $glue)
+    protected function generateContentTable($currentTable, $nbColumn, array $previewRows)
     {
         $html = '<table id="table'.$currentTable.'" style="display: none;" class="table table-bordered"><thead><tr>';
         // Header
         for ($i = 0; $i < $nbColumn; $i++) {
-            if (static::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < static::MAX_COLUMNS * ((int) $currentTable + 1)) {
+            if (static::MAX_COLUMNS * (int) $currentTable <= $i && $i < static::MAX_COLUMNS * ((int) $currentTable + 1)) {
                 $html .= '<th>
 							<select id="type_value['.$i.']"
 								name="type_value['.$i.']"
@@ -1022,11 +978,7 @@ class AdminImportControllerCore extends AdminController
         $html .= '</tr></thead><tbody>';
 
         static::setLocale();
-        for ($currentLine = 0; $currentLine < 10 && $line = fgetcsv($handle, static::MAX_LINE_SIZE, $glue); $currentLine++) {
-            /* UTF-8 conversion */
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
+        foreach ($previewRows as $currentLine => $line) {
             $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
             foreach ($line as $nbC => $column) {
                 if ((static::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < static::MAX_COLUMNS * ((int) $currentTable + 1))) {
@@ -1036,7 +988,6 @@ class AdminImportControllerCore extends AdminController
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        static::rewindBomAware($handle);
 
         return $html;
     }
@@ -1165,29 +1116,8 @@ class AdminImportControllerCore extends AdminController
             $multipleValueSeparatorSelected = urldecode($this->context->cookie->multiple_value_separator_selected);
         }
 
-        //get post max size
-        $postMaxSize = ini_get('post_max_size');
-        $bytes = (int) trim($postMaxSize);
-        $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
-
-        switch ($last) {
-            case 'g':
-                $bytes *= 1024;
-            // no break to fall-through
-            case 'm':
-                $bytes *= 1024;
-            // no break to fall-through
-            case 'k':
-                $bytes *= 1024;
-                break;
-        }
-
-        if (!isset($bytes) || $bytes == '') {
-            $bytes = 20971520;
-        } // 20Mb
-
         $this->tpl_form_vars = [
-            'post_max_size'                     => (int) $bytes,
+            'post_max_size'                     => Tools::getMaxUploadSize(),
             'module_confirmation'               => Tools::isSubmit('import') && (isset($this->warnings) && !count($this->warnings)),
             'path_import'                       => static::getPath(),
             'entities'                          => $this->entities,
@@ -1249,6 +1179,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @since 1.0.0
      * @throws PrestaShopException
+     * @noinspection PhpUnused
      */
     public function productImportCreateCat($defaultLanguageId, $categoryName, $idParentCategory = null)
     {
@@ -1285,6 +1216,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected static function createMultiLangField($field)
@@ -1299,6 +1231,7 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @return bool|null
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -1326,11 +1259,7 @@ class AdminImportControllerCore extends AdminController
                     $bName = strtolower($bName[count($bName) - 1]);
                     $mimeTypes = ['csv' => 'text/csv'];
 
-                    if (isset($mimeTypes[$bName])) {
-                        $mimeType = $mimeTypes[$bName];
-                    } else {
-                        $mimeType = 'application/octet-stream';
-                    }
+                    $mimeType = $mimeTypes[$bName] ?? 'application/octet-stream';
 
                     if (ob_get_level() && ob_get_length() > 0) {
                         ob_end_clean();
@@ -1348,8 +1277,6 @@ class AdminImportControllerCore extends AdminController
                 }
             }
         }
-        Db::getInstance()->enableCache();
-
         return parent::postProcess();
     }
 
@@ -1362,6 +1289,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
@@ -1383,7 +1311,6 @@ class AdminImportControllerCore extends AdminController
                     $crossStepsVariables = $crossStepsVars;
                 }
             }
-            Db::getInstance()->disableCache();
             switch ((int) Tools::getValue('entity')) {
                 case $this->entities[$importType = $this->l('Categories')]:
                     $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
@@ -1444,15 +1371,9 @@ class AdminImportControllerCore extends AdminController
                 $results['doneCount'] = $offset + $doneCount;
                 if ($offset === 0) {
                     // compute total count only once, because it takes time
-                    $handle = $this->openCsvFile(0);
-                    if ($handle) {
-                        $count = 0;
-                        while (fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) {
-                            $count++;
-                        }
-                        $results['totalCount'] = $count;
-                    }
-                    $this->closeCsvFile($handle);
+                    $datasource = $this->openDataSource(0);
+                    $results['totalCount'] = $datasource->getNumberOfRows();
+                    $datasource->close();
                 }
                 if (!isset($moreStepLabels)) {
                     $moreStepLabels = [];
@@ -1470,7 +1391,7 @@ class AdminImportControllerCore extends AdminController
                 }
             }
 
-            if ($importType !== false) {
+            if ($importType) {
                 $logMessage = sprintf($this->l('%s import'), $importType);
                 if ($offset !== false && $limit !== false) {
                     $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
@@ -1480,8 +1401,6 @@ class AdminImportControllerCore extends AdminController
                 }
                 Logger::addLog($logMessage, 1, null, $importType, null, true, (int) $this->context->employee->id);
             }
-
-            Db::getInstance()->enableCache();
         } else {
             $this->errors[] = $this->l('To proceed, please upload a file first.');
         }
@@ -1492,6 +1411,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function truncateTables($case)
@@ -1530,7 +1450,7 @@ class AdminImportControllerCore extends AdminController
                     return false;
                 }
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_CAT_IMG_DIR_.$d);
                     }
                 }
@@ -1654,7 +1574,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_shop', $e->getMessage());
                 }
                 foreach (scandir(_PS_MANU_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_MANU_IMG_DIR_.$d);
                     }
                 }
@@ -1676,7 +1596,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_shop', $e->getMessage());
                 }
                 foreach (scandir(_PS_SUPP_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_SUPP_IMG_DIR_.$d);
                     }
                 }
@@ -1700,17 +1620,15 @@ class AdminImportControllerCore extends AdminController
      * @param array|bool $crossStepsVariables
      * @param bool       $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
         $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
@@ -1729,7 +1647,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -1766,7 +1684,7 @@ class AdminImportControllerCore extends AdminController
                 $this->warnings[] = sprintf($this->l('Unable to regenerate category tree: %s'), $e->getMessage());
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         if ($crossStepsVariables !== false) {
             $crossStepsVariables['cat_moved'] = $catMoved;
@@ -1995,10 +1913,9 @@ class AdminImportControllerCore extends AdminController
         // If both failed, mysql error
         if (!$res) {
             $this->errors[] = sprintf(
-                $this->l('%1$s (ID: %2$s) cannot be %3$s'),
+                $this->l('%1$s (ID: %2$s) cannot be saved'),
                 (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID',
-                ($validateOnly ? 'validated' : 'saved')
+                (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
             );
             $errorTmp = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
             if ($errorTmp != '') {
@@ -2012,9 +1929,7 @@ class AdminImportControllerCore extends AdminController
                     '`id_category` = '.(int) $category->id
                 );
 
-                if (!$shopIsFeatureActive) {
-                    $info['shop'] = 1;
-                } elseif (!isset($info['shop']) || empty($info['shop'])) {
+                if (empty($info['shop'])) {
                     $info['shop'] = implode($this->multiple_value_separator, Shop::getContextListShopID());
                 }
 
@@ -2053,14 +1968,16 @@ class AdminImportControllerCore extends AdminController
      * according to $entity->$id_entity .
      * $id_image is used if we need to add a watermark
      *
-     * @param int    $idEntity id of product or category (set in entity)
-     * @param int    $idImage  (default null) id of the image if watermark enabled.
-     * @param string $url      path or url to use
-     * @param string $entity   'products' or 'categories'
-     * @param bool   $regenerate
+     * @param int $idEntity id of product or category (set in entity)
+     * @param int $idImage (default null) id of the image if watermark enabled.
+     * @param string $url path or url to use
+     * @param string $entity 'products' or 'categories'
+     * @param bool $regenerate
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected static function copyImg($idEntity, $idImage = null, $url = '', $entity = 'products', $regenerate = true)
@@ -2130,11 +2047,10 @@ class AdminImportControllerCore extends AdminController
             $imagesTypes = ImageType::getImagesTypes($entity, true);
 
             if ($regenerate) {
-                $previousPath = null;
                 foreach ($imagesTypes as $imageType) {
                     $tgtWidthX2 = $tgtWidth * 2;
                     $tgtHeightX2 = $tgtHeight * 2;
-                    $success = ImageManager::resize(
+                    ImageManager::resize(
                         $tmpfile,
                         $path.'-'.stripslashes($imageType['name']).'.jpg',
                         $imageType['width'],
@@ -2149,7 +2065,7 @@ class AdminImportControllerCore extends AdminController
                         $srcHeight
                     );
                     if (ImageManager::retinaSupport()) {
-                        $success &= ImageManager::resize(
+                        ImageManager::resize(
                             $tmpfile,
                             $path.'-'.stripslashes($imageType['name']).'2x.jpg',
                             $imageType['width'] * 2,
@@ -2212,21 +2128,10 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $handle
-     *
      * @return void
      *
      * @since 1.0.0
-     */
-    protected function closeCsvFile($handle)
-    {
-        fclose($handle);
-    }
-
-    /**
-     * @return void
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function clearSmartyCache()
     {
@@ -2240,10 +2145,11 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $crossStepsVariables
      * @param bool $validateOnly
-     * @param int  $moreStep
+     * @param int $moreStep
      *
      * @return int
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
@@ -2252,10 +2158,7 @@ class AdminImportControllerCore extends AdminController
             return $this->productImportAccessories($offset, $limit, $crossStepsVariables);
         }
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
         $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
@@ -2279,7 +2182,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -2309,7 +2212,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
         if (!$validateOnly) {
             Module::processDeferedFuncCall();
             Module::processDeferedClearCache();
@@ -2330,6 +2233,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function productImportAccessories($offset, $limit, &$crossStepsVariables)
@@ -2429,9 +2333,7 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
         // simplify array since there is 1 useless dimension.
-        $results = array_column($results, 'id_product');
-
-        return $results;
+        return array_column($results, 'id_product');
     }
 
     /**
@@ -2528,7 +2430,7 @@ class AdminImportControllerCore extends AdminController
 
         if (!$shopIsFeatureActive) {
             $product->shop = (int) Configuration::get('PS_SHOP_DEFAULT');
-        } elseif (!isset($product->shop) || empty($product->shop)) {
+        } elseif (empty($product->shop)) {
             $product->shop = implode($this->multiple_value_separator, Shop::getContextListShopID());
         }
 
@@ -2885,7 +2787,7 @@ class AdminImportControllerCore extends AdminController
             // SpecificPrice (only the basic reduction feature is supported by the import)
             if (!$shopIsFeatureActive) {
                 $info['shop'] = 1;
-            } elseif (!isset($info['shop']) || empty($info['shop'])) {
+            } elseif (empty($info['shop'])) {
                 $info['shop'] = implode($this->multiple_value_separator, Shop::getContextListShopID());
             }
 
@@ -2937,9 +2839,7 @@ class AdminImportControllerCore extends AdminController
                 if (isset($product->id) && $product->id) {
                     $tags = Tag::getProductTags($product->id);
                     if (is_array($tags) && count($tags)) {
-                        if (!empty($product->tags)) {
-                            $product->tags = $this->fieldExplode($product->tags);
-                        }
+                        $product->tags = $this->fieldExplode($product->tags);
                         if (is_array($product->tags) && count($product->tags)) {
                             foreach ($product->tags as $key => $tag) {
                                 if (!empty($tag) && !empty(trim($tag))) {
@@ -2978,10 +2878,8 @@ class AdminImportControllerCore extends AdminController
             }
 
             //delete existing images if "delete_existing_images" is set to 1
-            if (!$validateOnly && isset($product->delete_existing_images)) {
-                if ((bool) $product->delete_existing_images) {
-                    $product->deleteImages();
-                }
+            if (!$validateOnly && isset($product->delete_existing_images) && $product->delete_existing_images) {
+                $product->deleteImages();
             }
 
             if (!$validateOnly && isset($product->image) && is_array($product->image) && count($product->image)) {
@@ -2995,14 +2893,17 @@ class AdminImportControllerCore extends AdminController
                         $image = new Image();
                         $image->id_product = (int) $product->id;
                         $image->position = Image::getHighestPosition($product->id) + 1;
-                        $image->cover = (!$key && !$productHasImages) ? true : false;
-                        $alt = substr($product->image_alt[$key], 0, 127); // Auto truncate
-                        if (strlen($alt) > 0) {
-                            $image->legend = static::createMultiLangField($alt);
+                        $image->cover = !$key && !$productHasImages;
+                        if (isset($product->image_alt[$key])) {
+                            $alt = substr($product->image_alt[$key], 0, 127); // Auto truncate
+                            if (strlen($alt) > 0) {
+                                $image->legend = static::createMultiLangField($alt);
+                            }
                         }
                         // file_exists doesn't work with HTTP protocol
-                        if (($fieldError = $image->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $image->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true && $image->add()
+                        if ($image->validateFields(static::UNFRIENDLY_ERROR, true) === true &&
+                            $image->validateFieldsLang(static::UNFRIENDLY_ERROR, true) === true &&
+                            $image->add()
                         ) {
                             // associate image to selected shops
                             $image->associateTo($shops);
@@ -3158,7 +3059,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    protected static function setEntityDefaultValues(&$entity)
+    protected static function setEntityDefaultValues($entity)
     {
         $members = get_object_vars($entity);
         foreach (static::$defaultValues as $k => $v) {
@@ -3214,17 +3115,15 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function customerImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         $defaultLanguageId = (int) Configuration::get('PS_LANG_DEFAULT');
         $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
@@ -3237,7 +3136,7 @@ class AdminImportControllerCore extends AdminController
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -3263,7 +3162,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -3310,13 +3209,13 @@ class AdminImportControllerCore extends AdminController
 
         // Group Importation
         if (isset($info['group']) && !empty($info['group'])) {
-            foreach (explode($this->multiple_value_separator, $info['group']) as $key => $group) {
+            foreach (explode($this->multiple_value_separator, $info['group']) as $group) {
                 $group = trim($group);
                 if (empty($group)) {
                     continue;
                 }
                 $idGroup = false;
-                if (is_numeric($group) && $group) {
+                if (is_numeric($group)) {
                     $myGroup = new Group((int) $group);
                     if (Validate::isLoadedObject($myGroup)) {
                         $customerGroups[] = (int) $group;
@@ -3345,7 +3244,7 @@ class AdminImportControllerCore extends AdminController
                     $customerGroups[] = (int) $idGroup;
                 }
             }
-        } elseif (empty($info['group']) && isset($customer->id) && $customer->id) {
+        } elseif (isset($customer->id) && $customer->id) {
             $customerGroups = [0 => Configuration::get('PS_CUSTOMER_GROUP')];
         }
 
@@ -3496,24 +3395,22 @@ class AdminImportControllerCore extends AdminController
      * @param int|bool $limit
      * @param bool     $validateOnly
      *
-     * @return false|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function addressImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -3536,7 +3433,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -3784,6 +3681,7 @@ class AdminImportControllerCore extends AdminController
      * @param bool $validateOnly
      *
      * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -3808,10 +3706,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
@@ -3819,7 +3714,7 @@ class AdminImportControllerCore extends AdminController
         $shopIsFeatureActive = Shop::isFeatureActive();
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
 
             if ($this->convert) {
@@ -3848,7 +3743,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         if ($crossStepsVariables !== false) {
             $crossStepsVariables['groups'] = $groups;
@@ -3879,7 +3774,7 @@ class AdminImportControllerCore extends AdminController
 
         if (!$shopIsFeatureActive) {
             $info['shop'] = 1;
-        } elseif (!isset($info['shop']) || empty($info['shop'])) {
+        } elseif (empty($info['shop'])) {
             $info['shop'] = implode($this->multiple_value_separator, Shop::getContextListShopID());
         }
 
@@ -3930,7 +3825,7 @@ class AdminImportControllerCore extends AdminController
                     $image = new Image();
                     $image->id_product = (int) $product->id;
                     $image->position = Image::getHighestPosition($product->id) + 1;
-                    $image->cover = (!$productHasImages) ? true : false;
+                    $image->cover = !$productHasImages;
 
                     if (isset($info['image_alt'])) {
                         $alt = static::split($info['image_alt']);
@@ -4127,7 +4022,6 @@ class AdminImportControllerCore extends AdminController
                             $attributeCombinations = $product->getAttributeCombinations($defaultLanguage);
                             foreach ($attributeCombinations as $attributeCombination) {
                                 if ($idProductAttribute && in_array($idProductAttribute, $attributeCombination)) {
-                                    // FIXME: ~3s/declinaison
                                     $product->updateAttribute(
                                         $idProductAttribute,
                                         (float) $info['wholesale_price'],
@@ -4309,7 +4203,7 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param $field
      *
-     * @return array|string
+     * @return array
      *
      * @since 1.0.0
      */
@@ -4357,17 +4251,15 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function manufacturerImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
@@ -4376,7 +4268,7 @@ class AdminImportControllerCore extends AdminController
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4401,7 +4293,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -4497,17 +4389,15 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function supplierImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
@@ -4516,7 +4406,7 @@ class AdminImportControllerCore extends AdminController
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4545,7 +4435,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -4635,23 +4525,21 @@ class AdminImportControllerCore extends AdminController
      * @param bool $validateOnly
      *
      * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function aliasImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return 0;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4674,7 +4562,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -4720,7 +4608,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                     $this->l('%1$s (ID: %2$s) cannot be saved'),
                     $info['name'],
-                    (isset($info['id']) ? $info['id'] : 'null')
+                    $info['id'] ?? 'null'
                 );
             }
         } else {
@@ -4735,22 +4623,20 @@ class AdminImportControllerCore extends AdminController
      * @param bool $validateOnly
      *
      * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
     public function storeContactImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return 0;
-        }
+        $datasource = $this->openDataSource($offset);
 
         $forceIds = Tools::getValue('forceIDs');
         $regenerate = Tools::getValue('regenerate');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4775,7 +4661,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -4900,7 +4786,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                     $this->l('%1$s (ID: %2$s) cannot be saved'),
                     $info['name'],
-                    (isset($info['id']) ? $info['id'] : 'null')
+                    $info['id'] ?? 'null'
                 );
             }
         } else {
@@ -4934,7 +4820,8 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -4942,10 +4829,7 @@ class AdminImportControllerCore extends AdminController
     {
         // opens CSV & sets locale
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
@@ -4953,7 +4837,7 @@ class AdminImportControllerCore extends AdminController
 
         // main loop, for each supply orders to import
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4968,7 +4852,7 @@ class AdminImportControllerCore extends AdminController
             );
         }
         // closes
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         return $lineCount;
     }
@@ -4978,6 +4862,7 @@ class AdminImportControllerCore extends AdminController
      * @param      $forceIds
      * @param      $currentLine
      * @param bool $validateOnly
+     * @throws PrestaShopException
      */
     protected function supplyOrdersImportOne($info, $forceIds, $currentLine, $validateOnly = false)
     {
@@ -5024,8 +4909,6 @@ class AdminImportControllerCore extends AdminController
         }
         if (!Validate::isDateFormat($dateDeliveryExpected)) {
             $error = sprintf($this->l('Date format (%s) is not valid (at line %d). It should be: %s.'), $dateDeliveryExpected, $currentLine + 1, $this->l('YYYY-MM-DD'));
-        } elseif (new DateTime($dateDeliveryExpected) <= new DateTime('yesterday')) {
-            $error = sprintf($this->l('Date (%s) cannot be in the past (at line %d). Format: %s.'), $dateDeliveryExpected, $currentLine + 1, $this->l('YYYY-MM-DD'));
         }
         if ($discountRate < 0 || $discountRate > 100) {
             $error = sprintf($this->l('Discount rate (%d) is not valid (at line %d). %s.'), $discountRate, $currentLine + 1, $this->l('Format: Between 0 and 100'));
@@ -5049,8 +4932,6 @@ class AdminImportControllerCore extends AdminController
             // sets parameters
             array_walk($info, ['self', 'fillInfo'], $supplyOrder);
 
-            $res = false;
-
             if ((int) $supplyOrder->id && ($supplyOrder->exists((int) $supplyOrder->id) || $supplyOrder->exists($supplyOrder->reference))) {
                 $res = ($validateOnly || $supplyOrder->update());
             } else {
@@ -5073,7 +4954,8 @@ class AdminImportControllerCore extends AdminController
      * @param bool $crossStepsVariables
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      */
@@ -5081,10 +4963,7 @@ class AdminImportControllerCore extends AdminController
     {
         // opens CSV & sets locale
         $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
+        $datasource = $this->openDataSource($offset);
 
         static::setLocale();
 
@@ -5101,7 +4980,7 @@ class AdminImportControllerCore extends AdminController
 
         // main loop, for each supply orders details to import
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -5122,7 +5001,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
         // closes
-        $this->closeCsvFile($handle);
+        $datasource->close();
 
         if ($crossStepsVariables !== false) {
             $crossStepsVariables['products'] = $products;
@@ -5263,7 +5142,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @noinspection PhpUnused
      */
     public function ajaxProcessSaveImportMatchs()
     {
@@ -5291,7 +5172,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @noinspection PhpUnused
      */
     public function ajaxProcessLoadImportMatchs()
     {
@@ -5301,21 +5184,28 @@ class AdminImportControllerCore extends AdminController
                     (new DbQuery())
                         ->select('*')
                         ->from('import_match')
-                        ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs')),
-                    true,
-                    false
+                        ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs'))
                 );
+                $this->ajaxDie(json_encode([
+                    'id' => $return[0]['id_import_match'],
+                    'matchs' => $return[0]['match'],
+                    'skip' => $return[0]['skip']
+                ]));
             } catch (PrestaShopException $e) {
-                $this->ajaxDie(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+                $this->ajaxDie(json_encode([
+                    'hasError' => true,
+                    'error' => $e->getMessage()
+                ]));
             }
-            $this->ajaxDie(json_encode(['id' => $return[0]['id_import_match'], 'matchs' => $return[0]['match'], 'skip' => $return[0]['skip']]));
         }
     }
 
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @noinspection PhpUnused
      */
     public function ajaxProcessDeleteImportMatchs()
     {
@@ -5336,7 +5226,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @noinspection PhpUnused
      */
     public function ajaxProcessImport()
     {
@@ -5380,22 +5272,4 @@ class AdminImportControllerCore extends AdminController
             'modal_content' => $modalContent,
         ];
     }
-
-    /**
-     * @param $a
-     * @param $b
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function sortLabels($a, $b)
-    {
-        if ($a['label'] == $b['label']) {
-            return 0;
-        }
-
-        return ($a['label'] < $b['label']) ? -1 : 1;
-    }
-
 }
