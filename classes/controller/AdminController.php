@@ -2355,6 +2355,7 @@ class AdminControllerCore extends Controller
                 'pic_dir'                   => _THEME_PROD_PIC_DIR_,
                 'controller_name'           => htmlentities(Tools::getValue('controller')),
                 'currentIndex'              => static::$currentIndex,
+                'maintenance_mode'          => !(bool) Configuration::get('PS_SHOP_ENABLE'),
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
                 'display_addons_connection' => Tab::checkTabRights(Tab::getIdFromClassName('AdminModulesController')),
