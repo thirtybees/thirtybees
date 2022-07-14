@@ -112,6 +112,7 @@ class InstallModelInstall extends InstallAbstractModel
             '_PS_CREATION_DATE_'  => date('Y-m-d'),
             '_TB_VERSION_'        => _TB_INSTALL_VERSION_,
             '_TB_REVISION_'       => _TB_INSTALL_REVISION_,
+            '_TB_BUILD_PHP_'      => _TB_INSTALL_BUILD_PHP_,
             '_PS_VERSION_'        => '1.6.1.999',
         ];
 

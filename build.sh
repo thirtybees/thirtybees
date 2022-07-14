@@ -462,6 +462,7 @@ done || exit ${?}
   php ./tools/generatemd5list.php                                 || exit ${?}
   rm -f cache/class_index.php # Gets created by running generatemd5list.php.
   sed -i "s/'development'/'${GIT_REVISION}'/g" install/install_version.php
+  sed -i "s/PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION/'${PHP_VERSION}'/g" install/install_version.php
   if [ -z "${TARGET_DIR}" ]; then
     zip -r -q "${PACKAGE_NAME}".zip .                             || exit ${?}
   else

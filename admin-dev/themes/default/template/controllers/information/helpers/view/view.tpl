@@ -150,14 +150,25 @@
 					{l s='Store information'}
 				</h3>
 				<p>
-					<strong>{l s='thirty bees version:'}</strong> {$shop.version|escape:'html':'UTF-8'}
+					<strong>{l s='Thirty bees version:'}</strong> {$shop.version|escape:'html':'UTF-8'}
 				</p>
 				<p>
-					<strong>{l s='thirty bees revision:'}</strong>
+					<strong>{l s='Thirty bees revision:'}</strong>
 					<a target="_blank" href="https://github.com/thirtybees/thirtybees{if $shop.revision != 'development'}/tree/{$shop.revision}{/if}">
 						{$shop.revision|escape:'html':'UTF-8'}
 					</a>
 				</p>
+				{if $shop.build_php}
+				<p>
+					<strong>{l s='Build for PHP version:'}</strong> {$shop.build_php}
+					{if $shop.wrong_php}
+					<div class="text-danger">
+						<i class="icon-warning"></i>
+						{l s='Your server is running on PHP version %s. You should use core updater and fix your installation' sprintf=[$version.php]}
+					</div>
+					{/if}
+				</p>
+				{/if}
 				<p>
 					<strong>{l s='Shop URL:'}</strong>
 					<a target="_blank" href="{$shop.url}">

@@ -31,3 +31,4 @@
 
 define('_TB_INSTALL_VERSION_', '1.4.0');
 define('_TB_INSTALL_REVISION_', 'development');
+define('_TB_INSTALL_BUILD_PHP_', PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION);

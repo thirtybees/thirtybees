@@ -99,6 +99,7 @@ class AdminInformationControllerCore extends AdminController
     public function renderView()
     {
         $this->initPageHeaderToolbar();
+        $buildPhp = defined('_TB_BUILD_PHP_') ? _TB_BUILD_PHP_ : '';
         $vars = [
             'version'         => [
                 'php'                => phpversion(),
@@ -120,6 +121,8 @@ class AdminInformationControllerCore extends AdminController
             'shop'            => [
                 'version'  => _TB_VERSION_,
                 'revision' => _TB_REVISION_,
+                'build_php'=> $buildPhp,
+                'wrong_php'=> $buildPhp != PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION,
                 'url'      => $this->context->shop->getBaseURL(),
                 'theme'    => $this->context->shop->theme_name,
             ],
