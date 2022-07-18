@@ -2148,7 +2148,7 @@ abstract class ModuleCore
         }
 
         if (!isset($toDelete) || $toDelete) {
-            unlink($overridePath);
+            Tools::deleteFile($overridePath);
         } else {
             file_put_contents($overridePath, $code);
 
@@ -3707,7 +3707,7 @@ abstract class ModuleCore
         if (is_writable(_PS_MODULE_DIR_.$this->name.'/')) {
             $iso = substr(Context::getContext()->language->iso_code, 0, 2);
             $file = _PS_MODULE_DIR_.$this->name.'/'.($iso == 'en' ? 'config.xml' : 'config_'.$iso.'.xml');
-            @unlink($file);
+            Tools::deleteFile($file);
             @file_put_contents($file, $xml->saveXml());
             @chmod($file, 0664);
         }
