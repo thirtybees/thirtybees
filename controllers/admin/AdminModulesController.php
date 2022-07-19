@@ -36,7 +36,10 @@
  */
 class AdminModulesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    const CATEGORY_ALL = 'all';
+    const CATEGORY_FAVORITES = 'favorites';
+    const CATEGORY_OTHERS = 'others';
+
     /** @var array map with $_GET keywords and their callback */
     protected $map = [
         'check'          => 'check',
@@ -76,7 +79,6 @@ class AdminModulesControllerCore extends AdminController
      * @deprecated 1.0.1 DO NOT USE THIS!
      */
     protected $xml_modules_list = '';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Admin Modules Controller Constructor
@@ -116,7 +118,7 @@ class AdminModulesControllerCore extends AdminController
         $this->list_modules_categories['slideshows']['name'] = $this->l('Slideshows');
         $this->list_modules_categories['smart_shopping']['name'] = $this->l('Comparison site & Feed management');
         $this->list_modules_categories['market_place']['name'] = $this->l('Marketplace');
-        $this->list_modules_categories['others']['name'] = $this->l('Other Modules');
+        $this->list_modules_categories[static::CATEGORY_OTHERS]['name'] = $this->l('Other Modules');
         $this->list_modules_categories['mobile']['name'] = $this->l('Mobile');
         $this->list_modules_categories['dashboard']['name'] = $this->l('Dashboard');
         $this->list_modules_categories['i18n_localization']['name'] = $this->l('Internationalization & Localization');
@@ -134,8 +136,7 @@ class AdminModulesControllerCore extends AdminController
                 'PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee,
                 'PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee,
                 'PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee,
-                'PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee,
-                'PS_SHOW_CAT_MODULES_'.(int) $this->id_employee,
+                'PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee
             ]
         );
 
@@ -241,15 +242,18 @@ class AdminModulesControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function ajaxProcessReloadModulesList()
     {
         if (Tools::getValue('filterCategory')) {
-            Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, Tools::getValue('filterCategory'));
+            $this->setCategoryFilter(Tools::getValue('filterCategory'));
         }
         if (Tools::getValue('unfilterCategory')) {
-            Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, '');
+            $this->setCategoryFilter(static::CATEGORY_ALL);
         }
 
         $this->initContent();
@@ -262,6 +266,9 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -277,8 +284,12 @@ class AdminModulesControllerCore extends AdminController
         // If we are on a module configuration, no need to load all modules
         if (Tools::getValue('configure') != '') {
             $this->context->smarty->assign(['maintenance_mode' => !(bool) Configuration::Get('PS_SHOP_ENABLE')]);
-
             return;
+        }
+
+        $tabModule = Tools::getValue('tab_module');
+        if ($tabModule && $this->isModuleCategory($tabModule)) {
+            $this->setCategoryFilter($tabModule);
         }
 
         $this->initToolbar();
@@ -287,19 +298,6 @@ class AdminModulesControllerCore extends AdminController
         // Init
         $smarty = $this->context->smarty;
         $autocompleteList = 'var moduleList = [';
-        $categoryFiltered = [];
-        $filterCategories = explode('|', Configuration::get('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee));
-        if (count($filterCategories) > 0) {
-            foreach ($filterCategories as $fc) {
-                if (!empty($fc)) {
-                    $categoryFiltered[$fc] = 1;
-                }
-            }
-        }
-
-        if (empty($categoryFiltered) && Tools::getValue('tab_module')) {
-            $categoryFiltered[Tools::getValue('tab_module')] = 1;
-        }
 
         foreach ($this->list_modules_categories as $k => $v) {
             $this->list_modules_categories[$k]['nb'] = 0;
@@ -374,7 +372,7 @@ class AdminModulesControllerCore extends AdminController
         // Browse modules list
         foreach ($modules as $km => $module) {
             //if we are in favorites view we only display installed modules
-            if (Tools::getValue('select') == 'favorites' && !$module->id) {
+            if (Tools::getValue('select') == static::CATEGORY_FAVORITES && !$module->id) {
                 unset($modules[$km]);
                 continue;
             }
@@ -444,7 +442,7 @@ class AdminModulesControllerCore extends AdminController
             ).', ';
 
             // Apply filter
-            if ($this->isModuleFiltered($module) && Tools::getValue('select') != 'favorites') {
+            if ($this->isModuleFiltered($module) && Tools::getValue('select') != static::CATEGORY_FAVORITES) {
                 unset($modules[$km]);
             } else {
                 if (isset($modulesPreferences[$modules[$km]->name])) {
@@ -452,7 +450,7 @@ class AdminModulesControllerCore extends AdminController
                 }
 
                 $this->fillModuleData($module, 'array');
-                $module->categoryName = (isset($this->list_modules_categories[$module->tab]['name']) ? $this->list_modules_categories[$module->tab]['name'] : $this->list_modules_categories['others']['name']);
+                $module->categoryName = $this->list_modules_categories[$module->tab]['name'] ?? $this->list_modules_categories[static::CATEGORY_OTHERS]['name'];
             }
             unset($object);
             if ($module->installed && isset($module->version_addons) && $module->version_addons) {
@@ -511,7 +509,7 @@ class AdminModulesControllerCore extends AdminController
             'showEnabledModules'        => $this->filter_configuration['PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee],
             'nameCountryDefault'        => Country::getNameById($this->context->language->id, Configuration::get('PS_COUNTRY_DEFAULT')),
             'isoCountryDefault'         => $this->iso_default_country,
-            'categoryFiltered'          => $categoryFiltered,
+            'selectedCategory'          => $this->getCategoryFilter(),
             'modules'                   => $modules,
             'nb_modules'                => $this->nb_modules_total,
             'nb_modules_favorites'      => count($this->context->employee->favoriteModulesList()),
@@ -590,7 +588,7 @@ class AdminModulesControllerCore extends AdminController
         if (isset($this->list_modules_categories[$module->tab]['nb'])) {
             $this->list_modules_categories[$module->tab]['nb']++;
         } else {
-            $this->list_modules_categories['others']['nb']++;
+            $this->list_modules_categories[static::CATEGORY_OTHERS]['nb']++;
         }
     }
 
@@ -638,7 +636,8 @@ class AdminModulesControllerCore extends AdminController
         }
 
         // Filter on favorites
-        if (Configuration::get('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee) == 'favorites') {
+        $selectedCategory = $this->getCategoryFilter();
+        if ($selectedCategory === static::CATEGORY_FAVORITES) {
             if ((int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                 ->select('`id_module_preference`')
@@ -650,23 +649,13 @@ class AdminModulesControllerCore extends AdminController
             ) < 1) {
                 return true;
             }
-        } else {
+        } else if ($selectedCategory !== static::CATEGORY_ALL) {
             // Handle "others" category
-            if (!isset($this->list_modules_categories[$module->tab])) {
-                $module->tab = 'others';
-            }
+            $moduleCategory = $this->isModuleCategory($module->tab)
+                ? $module->tab
+                : static::CATEGORY_OTHERS;
 
-            // Filter on module category
-            $categoryFiltered = [];
-            $filterCategories = explode('|', Configuration::get('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee));
-            if (count($filterCategories) > 0) {
-                foreach ($filterCategories as $fc) {
-                    if (!empty($fc)) {
-                        $categoryFiltered[$fc] = 1;
-                    }
-                }
-            }
-            if (count($categoryFiltered) > 0 && !isset($categoryFiltered[$module->tab])) {
+            if ($moduleCategory !== $selectedCategory) {
                 return true;
             }
         }
@@ -1054,6 +1043,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function resetFilterModules()
@@ -1062,7 +1053,7 @@ class AdminModulesControllerCore extends AdminController
         Configuration::updateValue('PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee, 0);
         Configuration::updateValue('PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee, 'installedUninstalled');
         Configuration::updateValue('PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee, 'enabledDisabled');
-        Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, '');
+        $this->setCategoryFilter(static::CATEGORY_ALL);
     }
 
     /**
@@ -1070,12 +1061,14 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcessFilterCategory()
     {
         // Save configuration and redirect employee
-        Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, Tools::getValue('filterCategory'));
+        $this->setCategoryFilter(Tools::getValue('filterCategory'));
         Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
@@ -1084,12 +1077,14 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcessUnfilterCategory()
     {
         // Save configuration and redirect employee
-        Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, '');
+        $this->setCategoryFilter(static::CATEGORY_ALL);
         Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
@@ -1863,5 +1858,60 @@ class AdminModulesControllerCore extends AdminController
             ]
         );
         $this->smartyOutputContent('controllers/modules/quickview.tpl');
+    }
+
+    /**
+     * Returns selected category filter
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getCategoryFilter()
+    {
+        $value = Configuration::get($this->getCategoryFilterConfigKey());
+        if ($value && $this->isModuleCategory($value)) {
+            return $value;
+        }
+        return static::CATEGORY_ALL;
+    }
+
+    /**
+     * Updates selected category filter
+     *
+     * @param string $category
+     * @return void
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
+    public function setCategoryFilter($category)
+    {
+        if (! $this->isModuleCategory($category)) {
+            $category = static::CATEGORY_ALL;
+        }
+        Configuration::updateValue($this->getCategoryFilterConfigKey(), $category);
+    }
+
+    /**
+     * Returns configuration key for selected category filter
+     *
+     * @return string
+     */
+    protected function getCategoryFilterConfigKey()
+    {
+        return 'PS_SHOW_CAT_MODULES_' . (int)$this->id_employee;
+    }
+
+    /**
+     * Returns true if $category is valid module category
+     *
+     * @param string $category
+     * @return bool
+     */
+    protected function isModuleCategory($category)
+    {
+        if ($category === static::CATEGORY_ALL || $category === static::CATEGORY_FAVORITES) {
+            return true;
+        }
+        return isset($this->list_modules_categories[$category]);
     }
 }

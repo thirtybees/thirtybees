@@ -99,19 +99,19 @@
                    id="moduleQuicksearch" autocomplete="off"/>
           </div>
         </form>
-        <a class="categoryModuleFilterLink list-group-item {if isset($categoryFiltered.favorites)}active{/if}"
-           href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory=favorites"
+        <a class="categoryModuleFilterLink list-group-item {if $selectedCategory === AdminModulesController::CATEGORY_FAVORITES}active{/if}"
+           href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={AdminModulesController::CATEGORY_FAVORITES}"
            id="filter_favorite">
           {l s='Favorites'} <span id="favorite-count" class="badge pull-right">{$nb_modules_favorites}</span>
         </a>
-        <a class="categoryModuleFilterLink list-group-item {if count($categoryFiltered) lte 0}active{/if}"
-           href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;unfilterCategory=yes"
+        <a class="categoryModuleFilterLink list-group-item {if $selectedCategory === AdminModulesController::CATEGORY_ALL}active{/if}"
+           href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={AdminModulesController::CATEGORY_ALL}"
            id="filter_all">
           {l s='All'} <span class="badge pull-right">{$nb_modules}</span>
         </a>
         {foreach from=$list_modules_categories item=module_category key=module_category_key}
-          <a class="categoryModuleFilterLink list-group-item {if isset($categoryFiltered[$module_category_key])}active{/if}"
-             href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;{if isset($categoryFiltered[$module_category_key])}un{/if}filterCategory={$module_category_key}"
+          <a class="categoryModuleFilterLink list-group-item {if $selectedCategory == $module_category_key}active{/if}"
+             href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={$module_category_key}"
              id="filter_{$module_category_key}">
             {$module_category.name} <span class="badge pull-right">{$module_category.nb}</span>
           </a>
