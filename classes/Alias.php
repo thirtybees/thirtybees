@@ -71,15 +71,17 @@ class AliasCore extends ObjectModel
      */
     public function __construct($id = null, $alias = null, $search = null, $idLang = null)
     {
-        $this->def = Alias::getDefinition($this);
+        $this->def = static::getDefinition($this);
         $this->setDefinitionRetrocompatibility();
 
         if ($id) {
             parent::__construct($id);
         } elseif ($alias && Validate::isValidSearch($alias)) {
+            $alias = trim($alias);
+            $search = trim($search ?? '');
             if (!Alias::isFeatureActive()) {
-                $this->alias = trim($alias);
-                $this->search = trim($search);
+                $this->alias = $alias;
+                $this->search = $search;
             } else {
                 $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                     (new DbQuery())
@@ -91,11 +93,11 @@ class AliasCore extends ObjectModel
 
                 if ($row) {
                     $this->id = (int) $row['id_alias'];
-                    $this->search = $search ? trim($search) : $row['search'];
+                    $this->search = $search ? $search : $row['search'];
                     $this->alias = $row['alias'];
                 } else {
-                    $this->alias = trim($alias);
-                    $this->search = trim($search);
+                    $this->alias = $alias;
+                    $this->search = $search;
                 }
             }
         }
@@ -107,6 +109,8 @@ class AliasCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -131,6 +135,7 @@ class AliasCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public function delete()
     {
