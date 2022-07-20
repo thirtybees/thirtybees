@@ -970,7 +970,7 @@ abstract class ModuleCore
                     }
                 }
 
-                // If class exists, we just instanciate it
+                // If class exists, we just instantiate it
                 if (class_exists($module, false)) {
                     $tmpModule = Adapter_ServiceLocator::get($module);
 
@@ -981,17 +981,17 @@ abstract class ModuleCore
                         'version'                => $tmpModule->version,
                         'tab'                    => $tmpModule->tab,
                         'displayName'            => $tmpModule->displayName,
-                        'description'            => stripslashes($tmpModule->description),
+                        'description'            => stripslashes($tmpModule->description ?? ''),
                         'author'                 => $tmpModule->author,
                         'author_uri'             => (isset($tmpModule->author_uri) && $tmpModule->author_uri) ? $tmpModule->author_uri : false,
                         'limited_countries'      => $tmpModule->limited_countries,
                         'parent_class'           => get_parent_class($module),
                         'is_configurable'        => $tmpModule->is_configurable = method_exists($tmpModule, 'getContent') ? 1 : 0,
-                        'need_instance'          => isset($tmpModule->need_instance) ? $tmpModule->need_instance : 0,
+                        'need_instance'          => $tmpModule->need_instance ?? 0,
                         'active'                 => $tmpModule->active,
                         'trusted'                => true,
-                        'currencies'             => isset($tmpModule->currencies) ? $tmpModule->currencies : null,
-                        'currencies_mode'        => isset($tmpModule->currencies_mode) ? $tmpModule->currencies_mode : null,
+                        'currencies'             => $tmpModule->currencies ?? null,
+                        'currencies_mode'        => $tmpModule->currencies_mode ?? null,
                         'confirmUninstall'       => isset($tmpModule->confirmUninstall) ? html_entity_decode($tmpModule->confirmUninstall) : null,
                         'description_full'       => isset($tmpModule->description_full) ? stripslashes($tmpModule->description_full) : null,
                         'additional_description' => isset($tmpModule->additional_description) ? stripslashes($tmpModule->additional_description) : null,
@@ -999,7 +999,7 @@ abstract class ModuleCore
                         'nb_rates'               => isset($tmpModule->nb_rates) ? (array) $tmpModule->nb_rates : null,
                         'avg_rate'               => isset($tmpModule->avg_rate) ? (array) $tmpModule->avg_rate : null,
                         'badges'                 => isset($tmpModule->badges) ? (array) $tmpModule->badges : null,
-                        'url'                    => isset($tmpModule->url) ? $tmpModule->url : null,
+                        'url'                    => $tmpModule->url ?? null,
                         'onclick_option'         => method_exists($module, 'onclickOption'),
                     ];
 
