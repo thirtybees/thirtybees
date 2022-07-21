@@ -376,8 +376,9 @@ class SearchCore
             $string = preg_replace('/[._-]+/', ' ', $string);
         }
 
-        $blacklist = mb_strtolower(Configuration::get('PS_SEARCH_BLACKLIST', $idLang));
-        if (!empty($blacklist)) {
+        $blacklist = Configuration::get('PS_SEARCH_BLACKLIST', $idLang);
+        if ($blacklist) {
+            $blacklist = mb_strtolower($blacklist);
             $string = preg_replace('/(?<=\s)('.$blacklist.')(?=\s)/Su', '', $string);
             $string = preg_replace('/^('.$blacklist.')(?=\s)/Su', '', $string);
             $string = preg_replace('/(?<=\s)('.$blacklist.')$/Su', '', $string);
