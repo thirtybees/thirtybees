@@ -316,4 +316,33 @@ class ToolsTest extends \Codeception\TestCase\Test
         $this->assertTrue(is_float($actualValue));
         $this->assertEquals($expectedValue, $actualValue, "Failed to parse input string: ".print_r($input, true));
     }
+
+    /**
+     * Data provider for testParseNumber test
+     */
+    public function linkRewriteData()
+    {
+        return [
+            [false, "Product Title", "product-title"],
+            [true, "Product Title", "product-title"],
+            [false, "Příliš Žlutoučký Kůň", "prilis-zlutoucky-kun"],
+            [true, "Příliš Žlutoučký Kůň", "příliš-žlutoučký-kůň"],
+            [false, "מיטת נוער משולשת + 2 מגירות דגם פרובנס", "-2-"],
+            [true, "מיטת נוער משולשת + 2 מגירות דגם פרובנס", "מיטת-נוער-משולשת-2-מגירות-דגם-פרובנס"],
+        ];
+    }
+
+    /**
+     * @param bool $allowAccentedCharacters
+     * @param string $productTitle
+     * @param string $expectedLinkRewrite
+     * @return void
+     *
+     * @dataProvider linkRewriteData
+     */
+    public function testGenerateLinkRewrite($allowAccentedCharacters, $productTitle, $expectedLinkRewrite)
+    {
+        $actualLinkRewrite = Tools::generateLinkRewrite($productTitle, $allowAccentedCharacters);
+        $this->assertEquals($expectedLinkRewrite, $actualLinkRewrite);
+    }
 }

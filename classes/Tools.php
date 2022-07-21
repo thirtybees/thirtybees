@@ -1910,56 +1910,52 @@ class ToolsCore
      */
     public static function str2url($str)
     {
-        static $arrayStr = [];
         static $allowAccentedChars = null;
-        static $hasMbStrtolower = null;
-
-        if ($hasMbStrtolower === null) {
-            $hasMbStrtolower = function_exists('mb_strtolower');
+        if ($allowAccentedChars === null) {
+            $allowAccentedChars = (bool)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
         }
 
-        if (isset($arrayStr[$str])) {
-            return $arrayStr[$str];
+        $cacheKey = 'Tools::str2url_' . $str;
+        if (Cache::isStored($cacheKey)) {
+            return Cache::retrieve($cacheKey);
         }
+        $linkRewrite = static::generateLinkRewrite($str, $allowAccentedChars);
+        Cache::store($cacheKey, $linkRewrite);
+        return $linkRewrite;
+    }
 
-        if (!is_string($str)) {
-            return false;
-        }
-
-        if ($str == '') {
+    /**
+     * Return a friendly url made from the provided string
+     *
+     * @param string $str
+     * @return string
+     *
+     * @since   1.4.0
+     */
+    public static function generateLinkRewrite($str, $allowAccentedChars)
+    {
+        if (! is_string($str)) {
             return '';
         }
 
-        if ($allowAccentedChars === null) {
-            $allowAccentedChars = Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
-        }
-
         $returnStr = trim($str);
+        if ($returnStr === '') {
+            return '';
+        }
 
-        if ($hasMbStrtolower) {
-            $returnStr = mb_strtolower($returnStr, 'utf-8');
-        }
-        if (!$allowAccentedChars) {
-            $returnStr = Tools::replaceAccentedChars($returnStr);
-        }
+        $returnStr = mb_strtolower($returnStr, 'utf-8');
+
 
         // Remove all non-whitelist chars.
         if ($allowAccentedChars) {
-            $returnStr = preg_replace('/[^a-zA-Z0-9\s\'\:\/\[\]\-\p{L}]/u', '', $returnStr);
+            $returnStr = preg_replace('/[^a-zA-Z0-9\s\':\/\[\]\-\p{L}]/u', '', $returnStr);
         } else {
+            $returnStr = Tools::replaceAccentedChars($returnStr);
             $returnStr = preg_replace('/[^a-zA-Z0-9\s\'\:\/\[\]\-]/', '', $returnStr);
         }
 
         $returnStr = preg_replace('/[\s\'\:\/\[\]\-]+/', ' ', $returnStr);
         $returnStr = str_replace([' ', '/'], '-', $returnStr);
-
-        // If it was not possible to lowercase the string with mb_strtolower, we do it after the transformations.
-        // This way we lose fewer special chars.
-        if (!$hasMbStrtolower) {
-            $returnStr = mb_strtolower($returnStr);
-        }
-
-        $arrayStr[$str] = $returnStr;
 
         return $returnStr;
     }
