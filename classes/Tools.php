@@ -4850,7 +4850,7 @@ FileETag none
      */
     public static function convertEmailToIdn($email)
     {
-        if (mb_detect_encoding($email, 'UTF-8', true) && mb_strpos($email, '@') > -1) {
+        if (is_string($email) && mb_detect_encoding($email, 'UTF-8', true) && mb_strpos($email, '@') > -1) {
             // Convert to IDN
             list ($local, $domain) = explode('@', $email, 2);
             $domain = Tools::utf8ToIdn($domain);
