@@ -354,7 +354,7 @@ class MailCore extends ObjectModel
                 if (!$filePath) {
                     return static::logError(Tools::displayError('Text e-mail template is missing:') . ' ' . $template, $die);
                 }
-                $templateTxt .= strip_tags(html_entity_decode(file_get_contents($filePath), null, 'utf-8'));
+                $templateTxt .= strip_tags(html_entity_decode(file_get_contents($filePath), ENT_NOQUOTES, 'utf-8'));
             }
 
             Hook::exec(
