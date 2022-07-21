@@ -368,7 +368,18 @@ class ImageManagerCore
         if ($dstWidth >= $srcWidth && $dstHeight >= $srcHeight) {
             imagecopyresized($destImage, $srcImage, (int) (($dstWidth - $nextWidth) / 2), (int) (($dstHeight - $nextHeight) / 2), 0, 0, $nextWidth, $nextHeight, $srcWidth, $srcHeight);
         } else {
-            ImageManager::imagecopyresampled($destImage, $srcImage, (int) (($dstWidth - $nextWidth) / 2), (int) (($dstHeight - $nextHeight) / 2), 0, 0, $nextWidth, $nextHeight, $srcWidth, $srcHeight, $quality);
+            imagecopyresampled(
+                $destImage,
+                $srcImage,
+                (int) (($dstWidth - $nextWidth) / 2),
+                (int) (($dstHeight - $nextHeight) / 2),
+                0,
+                0,
+                $nextWidth,
+                $nextHeight,
+                $srcWidth,
+                $srcHeight
+            );
         }
         $writeFile = ImageManager::write($fileType, $destImage, $dstFile);
         @imagedestroy($srcImage);
@@ -422,35 +433,12 @@ class ImageManagerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.4.0
      */
-    public static function imagecopyresampled(&$dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH, $quality = 3)
+    public static function imagecopyresampled($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH, $quality = 3)
     {
-        // Plug-and-Play fastimagecopyresampled function replaces much slower imagecopyresampled.
-        // Just include this function and change all "imagecopyresampled" references to "fastimagecopyresampled".
-        // Typically from 30 to 60 times faster when reducing high resolution images down to thumbnail size using the default quality setting.
-        // Author: Tim Eckel - Date: 09/07/07 - Version: 1.1 - Project: FreeRingers.net - Freely distributable - These comments must remain.
-        //
-        // Optional "quality" parameter (defaults is 3). Fractional values are allowed, for example 1.5. Must be greater than zero.
-        // Between 0 and 1 = Fast, but mosaic results, closer to 0 increases the mosaic effect.
-        // 1 = Up to 350 times faster. Poor results, looks very similar to imagecopyresized.
-        // 2 = Up to 95 times faster.  Images appear a little sharp, some prefer this over a quality of 3.
-        // 3 = Up to 60 times faster.  Will give high quality smooth results very close to imagecopyresampled, just faster.
-        // 4 = Up to 25 times faster.  Almost identical to imagecopyresampled for most images.
-        // 5 = No speedup. Just uses imagecopyresampled, no advantage over imagecopyresampled.
-
-        if (empty($srcImage) || empty($dstImage) || $quality <= 0) {
-            return false;
-        }
-        if ($quality < 5 && (($dstW * $quality) < $srcW || ($dstH * $quality) < $srcH)) {
-            $temp = imagecreatetruecolor($dstW * $quality + 1, $dstH * $quality + 1);
-            imagecopyresized($temp, $srcImage, 0, 0, $srcX, $srcY, $dstW * $quality + 1, $dstH * $quality + 1, $srcW, $srcH);
-            imagecopyresampled($dstImage, $temp, $dstX, $dstY, 0, 0, $dstW, $dstH, $dstW * $quality, $dstH * $quality);
-            imagedestroy($temp);
-        } else {
-            imagecopyresampled($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
-        }
-
-        return true;
+        Tools::displayAsDeprecated();
+        return imagecopyresampled($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
     }
 
     /**
