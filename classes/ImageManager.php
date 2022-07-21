@@ -207,10 +207,10 @@ class ImageManagerCore
 
         $memoryLimit = Tools::getMemoryLimit();
         // memory_limit == -1 => unlimited memory
-        if (isset($infos['bits']) && function_exists('memory_get_usage') && (int) $memoryLimit != -1) {
+        if ((int) $memoryLimit != -1) {
             $currentMemory = memory_get_usage();
             $bits = $infos['bits'] / 8;
-            $channel = isset($infos['channels']) ? $infos['channels'] : 1;
+            $channel = $infos['channels'] ?? 1;
 
             // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
             // For perfs, avoid computing static maths formulas in the code. pow(2, 16) = 65536 ; 1024 * 1024 = 1048576
@@ -402,7 +402,6 @@ class ImageManagerCore
             case IMAGETYPE_JPEG :
             default:
                 return imagecreatefromjpeg($filename);
-                break;
         }
     }
 
@@ -530,7 +529,7 @@ class ImageManagerCore
         if ((int) $maxFileSize > 0 && $file['size'] > (int) $maxFileSize) {
             return sprintf(Tools::displayError('Image is too large (%1$d kB). Maximum allowed: %2$d kB'), $file['size'] / 1024, $maxFileSize / 1024);
         }
-        if (!ImageManager::isRealImage($file['tmp_name'], $file['type']) || !ImageManager::isCorrectImageFileExt($file['name'], $types) || preg_match('/\%00/', $file['name'])) {
+        if (!ImageManager::isRealImage($file['tmp_name'], $file['type']) || !ImageManager::isCorrectImageFileExt($file['name'], $types) || preg_match('/%00/', $file['name'])) {
             return Tools::displayError('Image format not recognized, allowed formats are: .gif, .jpg, .png');
         }
         if ($file['error']) {
@@ -663,7 +662,7 @@ class ImageManagerCore
     /**
      * Cut image
      *
-     * @param array  $srcFile   Origin filename
+     * @param string $srcFile   Origin filename
      * @param string $dstFile   Destination filename
      * @param int    $dstWidth  Desired width
      * @param int    $dstHeight Desired height
@@ -785,7 +784,7 @@ class ImageManagerCore
     {
         $images = [];
 
-        if (!$size = getimagesize($source)) {
+        if (! getimagesize($source)) {
             return false;
         }
         if (!$file_data = file_get_contents($source)) {
@@ -950,10 +949,7 @@ class ImageManagerCore
     public static function themeSupportsWebp()
     {
         $config = Context::getContext()->theme->getConfiguration();
-        return (
-            array_key_exists('webp', $config) &&
-            (bool) $config['webp']
-        );
+        return array_key_exists('webp', $config) && $config['webp'];
     }
 
     /**
