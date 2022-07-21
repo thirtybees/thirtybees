@@ -562,7 +562,7 @@ class MailCore extends ObjectModel
     }
 
     /**
-     * @param null $idstring
+     * @param string $idstring
      *
      * @return string
      *
@@ -574,7 +574,7 @@ class MailCore extends ObjectModel
         $midparams = [
             'utctime'   => gmdate('YmdHis'),
             'randint'   => mt_rand(),
-            'customstr' => (preg_match("/^(?<!\\.)[a-z0-9\\.]+(?!\\.)\$/iD", $idstring) ? $idstring : "swift"),
+            'customstr' => 'swift',
             'hostname'  => ((isset($_SERVER['SERVER_NAME']) && !empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : php_uname('n')),
         ];
 
