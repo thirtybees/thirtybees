@@ -314,6 +314,10 @@ class ImageManagerCore
         if (!$srcWidth) {
             return !($error = static::ERROR_FILE_WIDTH);
         }
+
+        $srcWidth = (int)$srcWidth;
+        $srcHeight = (int)$srcHeight;
+
         if (!$dstWidth) {
             $dstWidth = $srcWidth;
         }
@@ -330,12 +334,12 @@ class ImageManagerCore
             $nextHeight = $srcHeight;
         } else {
             if ($psImageGenerationMethod == 2 || (!$psImageGenerationMethod && $widthDiff > $heightDiff)) {
-                $nextHeight = $dstHeight;
-                $nextWidth = round(($srcWidth * $nextHeight) / $srcHeight);
+                $nextHeight = (int) $dstHeight;
+                $nextWidth = (int) round(($srcWidth * $nextHeight) / $srcHeight);
                 $dstWidth = (int) (!$psImageGenerationMethod ? $dstWidth : $nextWidth);
             } else {
-                $nextWidth = $dstWidth;
-                $nextHeight = round($srcHeight * $dstWidth / $srcWidth);
+                $nextWidth = (int) $dstWidth;
+                $nextHeight = (int) round($srcHeight * $dstWidth / $srcWidth);
                 $dstHeight = (int) (!$psImageGenerationMethod ? $dstHeight : $nextHeight);
             }
         }
@@ -343,6 +347,9 @@ class ImageManagerCore
         if (!ImageManager::checkImageMemoryLimit($srcFile)) {
             return !($error = static::ERROR_MEMORY_LIMIT);
         }
+
+        $dstWidth = (int)$dstWidth;
+        $dstHeight = (int)$dstHeight;
 
         $tgtWidth = $dstWidth;
         $tgtHeight = $dstHeight;
@@ -366,7 +373,18 @@ class ImageManagerCore
         }
 
         if ($dstWidth >= $srcWidth && $dstHeight >= $srcHeight) {
-            imagecopyresized($destImage, $srcImage, (int) (($dstWidth - $nextWidth) / 2), (int) (($dstHeight - $nextHeight) / 2), 0, 0, $nextWidth, $nextHeight, $srcWidth, $srcHeight);
+            imagecopyresized(
+                $destImage,
+                $srcImage,
+                (int) (($dstWidth - $nextWidth) / 2),
+                (int) (($dstHeight - $nextHeight) / 2),
+                0,
+                0,
+                $nextWidth,
+                $nextHeight,
+                $srcWidth,
+                $srcHeight
+            );
         } else {
             imagecopyresampled(
                 $destImage,
@@ -793,6 +811,8 @@ class ImageManagerCore
 
         foreach ( (array) $sizes as $size ) {
             list( $width, $height ) = $size;
+            $width = (int)$width;
+            $height = (int)$height;
             $new_im = imagecreatetruecolor( $width, $height );
             imagecolortransparent( $new_im, imagecolorallocatealpha( $new_im, 0, 0, 0, 127 ) );
             imagealphablending( $new_im, false );
