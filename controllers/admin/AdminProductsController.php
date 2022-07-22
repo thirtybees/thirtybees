@@ -660,20 +660,21 @@ class AdminProductsControllerCore extends AdminController
             $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         if (isset($_FILES['attachment_file'])) {
-            if ((int) $_FILES['attachment_file']['error'] === 1) {
+            if ((int) $_FILES['attachment_file']['error'] === UPLOAD_ERR_INI_SIZE) {
                 $_FILES['attachment_file']['error'] = [];
-
-                $maxUpload = (int) ini_get('upload_max_filesize');
-                $maxPost = (int) ini_get('post_max_size');
-                $uploadMb = min($maxUpload, $maxPost);
-                $_FILES['attachment_file']['error'][] = sprintf(
-                    $this->l('File %1$s exceeds the size allowed by the server. The limit is set to %2$d MB.'),
-                    '<b>'.$_FILES['attachment_file']['name'].'</b> ',
-                    '<b>'.$uploadMb.'</b>'
+                $uploadMb = floor(Tools::getMaxUploadSize() / (1024 * 1024));
+                $errorMessage = Translate::ppTags(
+                    sprintf(
+                        $this->l('File [1]%1$s[/1] exceeds the size allowed by the server. The limit is set to [2]%2$s[/2] MB.'),
+                        $_FILES['attachment_file']['name'],
+                        $uploadMb
+                    ),
+                    ['<b>', '<b>']
                 );
+                $_FILES['attachment_file']['error'][] = $errorMessage ;
+            } else {
+                $_FILES['attachment_file']['error'] = [];
             }
-
-            $_FILES['attachment_file']['error'] = [];
 
             $isAttachmentNameValid = false;
             $attachmentNames = Tools::getValue('attachment_name');
