@@ -773,7 +773,9 @@ class AdminProductsControllerCore extends AdminController
                             }
                         }
                     } else {
-                        $_FILES['attachment_file']['error'][] = Tools::displayError('Invalid file');
+                        foreach ($this->errors as $error) {
+                            $_FILES['attachment_file']['error'][] = $error;
+                        }
                     }
                 }
             }
