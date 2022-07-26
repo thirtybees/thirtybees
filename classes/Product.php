@@ -1985,13 +1985,14 @@ class ProductCore extends ObjectModel
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
             static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
-				SELECT name, value, pf.id_feature
+				SELECT name, GROUP_CONCAT(value ORDER BY fvl.`value` SEPARATOR \', \') AS value, pf.id_feature
 				FROM '._DB_PREFIX_.'feature_product pf
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
 				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
 				'.Shop::addSqlAssociation('feature', 'f').'
 				WHERE pf.id_product = '.(int) $idProduct.'
+				GROUP BY name, pf.id_feature
 				ORDER BY f.position ASC'
             );
         }
