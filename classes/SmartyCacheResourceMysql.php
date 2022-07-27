@@ -57,12 +57,19 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
     {
         $row = Db::getInstance()->getRow('SELECT modified, content FROM '._DB_PREFIX_.'smarty_cache WHERE id_smarty_cache = "'.pSQL($id, true).'"');
         if ($row) {
-            $content = $row['content'];
-            $mtime = strtotime($row['modified']);
-        } else {
-            $content = null;
-            $mtime = null;
+            $encoded = $row['content'];
+            if ($encoded) {
+                $encrypted = base64_decode($encoded);
+                if ($encrypted !== false) {
+                    $content = Encryptor::getInstance()->decrypt($encrypted);
+                    $mtime = strtotime($row['modified']);
+                    return;
+                }
+            }
         }
+
+        $content = null;
+        $mtime = null;
     }
 
     /**
@@ -114,7 +121,7 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
 			"'.pSQL($id, true).'",
 			"'.pSQL(sha1($name)).'",
 			"'.pSQL($cacheId, true).'",
-			"'.pSQL($content, true).'"
+			"'.base64_encode(Encryptor::getInstance()->encrypt($content)).'"
 		)'
         );
 
