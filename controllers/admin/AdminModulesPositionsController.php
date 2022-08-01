@@ -643,16 +643,15 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessGetHookableModuleList()
     {
         if ($this->tabAccess['view'] === '1') {
-            /* PrestaShop demo mode */
             if (_PS_MODE_DEMO_) {
                 $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
-            /* PrestaShop demo mode*/
 
             $hookName = Tools::getValue('hook');
             $hookableModulesList = [];
@@ -666,12 +665,11 @@ class AdminModulesPositionsControllerCore extends AdminController
                     continue;
                 }
                 if (file_exists(_PS_MODULE_DIR_.$module['name'].'/'.$module['name'].'.php')) {
-                    include_once(_PS_MODULE_DIR_.$module['name'].'/'.$module['name'].'.php');
-
-                    /** @var Module $mod */
-                    $mod = new $module['name']();
-                    if ($mod->isHookableOn($hookName)) {
-                        $hookableModulesList[] = ['id' => (int) $mod->id, 'name' => $mod->displayName, 'display' => Hook::exec($hookName, [], (int) $mod->id)];
+                    $mod = Module::getInstanceByName($module['name']);
+                    if ($mod instanceof Module) {
+                        if ($mod->isHookableOn($hookName)) {
+                            $hookableModulesList[] = ['id' => (int)$mod->id, 'name' => $mod->displayName, 'display' => Hook::exec($hookName, [], (int)$mod->id)];
+                        }
                     }
                 }
             }
