@@ -1816,7 +1816,7 @@ abstract class ModuleCore
      */
     public function addOverride($classname)
     {
-        $origPath = $path = PrestaShopAutoload::getInstance()->getClassPath($classname.'Core');
+        $path = PrestaShopAutoload::getInstance()->getClassPath($classname.'Core');
         if (!$path) {
             $path = 'modules'.DIRECTORY_SEPARATOR.$classname.DIRECTORY_SEPARATOR.$classname.'.php';
         }
@@ -1829,39 +1829,26 @@ abstract class ModuleCore
         }
 
         $patternEscapeCom = '#(^\s*?\/\/.*?\n|\/\*(?!\n\s+\* module:.*?\* date:.*?\* version:.*?\*\/).*?\*\/)#ism';
-        // Check if there is already an override file, if not, we just need to copy the file
-        if ($file = PrestaShopAutoload::getInstance()->getClassPath($classname)) {
-            // Check if override file is writable
-            $overridePath = _PS_ROOT_DIR_.'/'.$file;
 
-            if ((!file_exists($overridePath) && !is_writable(dirname($overridePath))) || (file_exists($overridePath) && !is_writable($overridePath))) {
+        // resolve path to existing system override file
+        $overridePath = null;
+        $file = PrestaShopAutoload::getInstance()->getClassPath($classname);
+        if ($file && file_exists(_PS_ROOT_DIR_.'/'.$file)) {
+            $overridePath = _PS_ROOT_DIR_.'/'.$file;
+        }
+
+        if ($overridePath) {
+            // System override file already exists, we have to merge module override file into it
+            if (! is_writable($overridePath)) {
                 throw new Exception(sprintf(Tools::displayError('file (%s) not writable'), $overridePath));
             }
 
-            // Get a uniq id for the class, because you can override a class (or remove the override) twice in the same session and we need to avoid redeclaration
-            do {
-                $uniq = uniqid();
-            } while (class_exists($classname.'OverrideOriginal_remove', false));
-
             // Make a reflection of the override class and the module override class
-            $overrideFile = file($overridePath);
-            if (empty($overrideFile)) {
-                // class_index was out of sync, so we just create a new override on the fly
-                $overrideFile = [
-                    "<?php\n",
-                    "class {$classname} extends {$classname}Core\n",
-                    "{\n",
-                    "}\n",
-                ];
-            }
-            $overrideFile = array_diff($overrideFile, ["\n"]);
-            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?#i'], [' ', 'class '.$classname.'OverrideOriginal'.$uniq], implode('', $overrideFile)));
-            $overrideClass = new ReflectionClass($classname.'OverrideOriginal'.$uniq);
+            $overrideFile = $this->loadOverrideFile($overridePath);
+            $overrideClass = $this->getOverrideFileReflectionClass($classname, $overrideFile, 'OverrideOriginal', $overridePath);
 
-            $moduleFile = file($pathOverride);
-            $moduleFile = array_diff($moduleFile, ["\n"]);
-            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'(\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?)?#i'], [' ', 'class '.$classname.'Override'.$uniq], implode('', $moduleFile)));
-            $moduleClass = new ReflectionClass($classname.'Override'.$uniq);
+            $moduleFile = $this->loadOverrideFile($pathOverride);
+            $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, 'Override', $pathOverride);
 
             // Check if none of the methods already exists in the override class
             foreach ($moduleClass->getMethods() as $method) {
@@ -1913,53 +1900,47 @@ abstract class ModuleCore
 
             file_put_contents($overridePath, preg_replace($patternEscapeCom, '', $code));
         } else {
+            // system override file does not exist yet, we have to create a new one
             $overrideSrc = $pathOverride;
-
             $overrideDest = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR.$path;
-            $dirName = dirname($overrideDest);
 
-            if (!$origPath && !is_dir($dirName)) {
+            // create destination directory, if needed
+            $dirName = dirname($overrideDest);
+            if (!is_dir($dirName)) {
                 $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
                 $oldumask = umask($definedUmask);
                 @mkdir($dirName, 0777);
                 umask($oldumask);
             }
-
             if (!is_writable($dirName)) {
                 throw new Exception(sprintf(Tools::displayError('directory (%s) not writable'), $dirName));
             }
-            $moduleFile = file($overrideSrc);
-            $moduleFile = array_diff($moduleFile, ["\n"]);
 
-            if ($origPath) {
-                do {
-                    $uniq = uniqid();
-                } while (class_exists($classname.'OverrideOriginal_remove', false));
-                eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'(\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?)?#i'], [' ', 'class '.$classname.'Override'.$uniq], implode('', $moduleFile)));
-                $moduleClass = new ReflectionClass($classname.'Override'.$uniq);
+            // Load module override file
+            $moduleFile = $this->loadOverrideFile($overrideSrc);
+            $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, 'Override', $overrideSrc);
 
-                // For each method found in the override, prepend a comment with the module name and version
-                foreach ($moduleClass->getMethods() as $method) {
-                    $moduleFile = preg_replace('/((:?public|private|protected)\s+(static\s+)?function\s+(?:\b'.$method->getName().'\b))/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1", $moduleFile);
-                    if ($moduleFile === null) {
-                        throw new Exception(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
-                    }
+            // For each method found in the override, prepend a comment with the module name and version
+            foreach ($moduleClass->getMethods() as $method) {
+                $moduleFile = preg_replace('/((:?public|private|protected)\s+(static\s+)?function\s+(?:\b'.$method->getName().'\b))/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1", $moduleFile);
+                if ($moduleFile === null) {
+                    throw new Exception(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
                 }
+            }
 
-                // Same loop for properties
-                foreach ($moduleClass->getProperties() as $property) {
-                    $moduleFile = preg_replace('/((?:public|private|protected)\s)\s*(static\s)?\s*(\$\b'.$property->getName().'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2$3", $moduleFile);
-                    if ($moduleFile === null) {
-                        throw new Exception(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
-                    }
+            // Same loop for properties
+            foreach ($moduleClass->getProperties() as $property) {
+                $moduleFile = preg_replace('/((?:public|private|protected)\s)\s*(static\s)?\s*(\$\b'.$property->getName().'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2$3", $moduleFile);
+                if ($moduleFile === null) {
+                    throw new Exception(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
                 }
+            }
 
-                // Same loop for constants
-                foreach ($moduleClass->getConstants() as $constant => $value) {
-                    $moduleFile = preg_replace('/(const\s)\s*(\b'.$constant.'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2", $moduleFile);
-                    if ($moduleFile === null) {
-                        throw new Exception(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
-                    }
+            // Same loop for constants
+            foreach ($moduleClass->getConstants() as $constant => $value) {
+                $moduleFile = preg_replace('/(const\s)\s*(\b'.$constant.'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2", $moduleFile);
+                if ($moduleFile === null) {
+                    throw new Exception(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
                 }
             }
 
@@ -2038,20 +2019,13 @@ abstract class ModuleCore
         file_put_contents($overridePath, preg_replace('#(\r\n|\r)#ism', "\n", file_get_contents($overridePath)));
 
         if ($origPath) {
-            // Get a uniq id for the class, because you can override a class (or remove the override) twice in the same session and we need to avoid redeclaration
-            do {
-                $uniq = uniqid();
-            } while (class_exists($classname.'OverrideOriginal_remove', false));
-
             // Make a reflection of the override class and the module override class
-            $overrideFile = file($overridePath);
+            $overrideFile = $this->loadOverrideFile($overridePath);
+            $overrideClass = $this->getOverrideFileReflectionClass($classname, $overrideFile, 'OverrideOriginal_remove', $overridePath);
 
-            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?#i'], [' ', 'class '.$classname.'OverrideOriginal_remove'.$uniq], implode('', $overrideFile)));
-            $overrideClass = new ReflectionClass($classname.'OverrideOriginal_remove'.$uniq);
-
-            $moduleFile = file($this->getLocalPath().'override/'.$path);
-            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'(\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?)?#i'], [' ', 'class '.$classname.'Override_remove'.$uniq], implode('', $moduleFile)));
-            $moduleClass = new ReflectionClass($classname.'Override_remove'.$uniq);
+            $modulePath = $this->getLocalPath().'override/'.$path;
+            $moduleFile = $this->loadOverrideFile($modulePath);
+            $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, 'Override_remove', $modulePath);
 
             // Remove methods from override file
             foreach ($moduleClass->getMethods() as $method) {
@@ -3729,6 +3703,78 @@ abstract class ModuleCore
             return;
         }
         $this->context->controller->informations[] = $msg;
+    }
+
+    /**
+     * Returns reflection class for override file.
+     *
+     * @param string $classname class name that should be inside override file
+     *
+     * @param string[] $fileLines override file content
+     * @param string $tempClassSuffix suffix for temp class
+     * @param string $filename path to override file
+     *
+     * @throws PrestaShopException
+     */
+    protected function getOverrideFileReflectionClass($classname, $fileLines, $tempClassSuffix, $filename): ReflectionClass
+    {
+        // generate temp class name for override
+        $overrideClassName = $classname . $tempClassSuffix;
+        while (class_exists($overrideClassName, false)) {
+            $overrideClassName = $classname . $tempClassSuffix . uniqid();
+        }
+
+        $overrideContent = preg_replace(
+            [
+                '#^\s*<\?(?:php)?#',
+                '#class\s+' . $classname . '(\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?)?#i'
+            ],
+            [
+                ' ',
+                'class ' . $overrideClassName . ' extends \stdClass'
+            ],
+            implode('', $fileLines)
+        );
+
+
+
+        try {
+            eval($overrideContent);
+        } catch (Exception $e) {
+            throw new PrestaShopException(sprintf(Tools::displayError("Failed to evaluate override file %s"), $filename), 0, $e);
+        } catch (Throwable $e) {
+            $message = $e->getMessage() . " at line " . $e->getLine();
+            throw new PrestaShopException(sprintf(Tools::displayError("Failed to evaluate override file %s: %s"), $filename, $message));
+        }
+
+        if (! class_exists($overrideClassName, false)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('Override file %s does not contain class %s'), $filename, $classname));
+        }
+        try {
+            return new ReflectionClass($overrideClassName);
+        } catch (ReflectionException $e) {
+            throw new PrestaShopException(sprintf(Tools::displayError("Failed to create reflection class for file %s"), $filename), 0, $e);
+        }
+    }
+
+    /**
+     * @param string $filePath
+     * @return string[]
+     * @throws PrestaShopException
+     */
+    protected function loadOverrideFile(string $filePath)
+    {
+        if (! file_exists($filePath)) {
+            throw new PrestaShopException(sprintf(Tools::displayError("Override file %s does not exists"), $filePath));
+        }
+        $contentLines = file($filePath);
+        if ($contentLines === false) {
+            return [];
+        }
+        // remove empty lines
+        return array_filter($contentLines, function($line) {
+            return !preg_match("/^\s*$/", $line);
+        });
     }
 }
 
