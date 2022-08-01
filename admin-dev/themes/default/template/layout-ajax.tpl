@@ -26,10 +26,10 @@
 {strip}
 {
 {if isset($status) && is_string($status) && trim($status) != ''}{assign 'hasresult' 'ok'}"status" : "{$status}"{/if}
-{if isset($confirmations) && $confirmations|count > 0}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"confirmations" : {$confirmations}{/if}
-{if isset($informations) && $informations|count > 0}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"informations" : {$informations}{/if}
-{if isset($errors) && $errors|count > 0}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"error" : {$errors}{/if}
-{if isset($warnings) && $warnings|count > 0}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"warnings" : {$warnings}{/if}
+{if isset($confirmations) && $confirmations}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"confirmations" : {$confirmations}{/if}
+{if isset($informations) && $informations}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"informations" : {$informations}{/if}
+{if isset($errors) && $errors}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"error" : {$errors}{/if}
+{if isset($warnings) && $warnings}{if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"warnings" : {$warnings}{/if}
 {if $hasresult == 'ok'},{/if}{assign 'hasresult' 'ok'}"content" : {$page}
 }
 {/strip}
@@ -40,7 +40,7 @@
 		</div>
 	{/if}
 
-	{if isset($errors) && is_array($errors) && count($errors)} {* @todo what is ??? AND $this->_includeContainer *}
+	{if isset($errors) && is_array($errors) && $errors} {* @todo what is ??? AND $this->_includeContainer *}
 		<div class="alert alert-danger">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{if count($errors) == 1}
@@ -57,7 +57,7 @@
 		</div>
 	{/if}
 
-	{if isset($informations) && is_array($informations) && count($informations)}
+	{if isset($informations) && is_array($informations) && $informations}
 		<div class="alert alert-info" style="display:block;">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{foreach $informations as $info}
@@ -66,7 +66,7 @@
 		</div>
 	{/if}
 
-	{if isset($confirmations) && is_array($confirmations) && count($confirmations)}
+	{if isset($confirmations) && is_array($confirmations) && $confirmations}
 		<div class="alert alert-success" style="display:block;">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{foreach $confirmations as $confirm}
@@ -75,7 +75,7 @@
 		</div>
 	{/if}
 
-	{if isset($warnings) && is_array($warnings) && count($warnings)}
+	{if isset($warnings) && is_array($warnings) && $warnings}
 		<div class="alert alert-warning">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			{if count($warnings) > 1}
