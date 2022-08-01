@@ -173,7 +173,6 @@ class MediaCore
     {
         if (strlen($htmlContent) > 0) {
             $htmlContentCopy = $htmlContent;
-            // @codingStandardsIgnoreStart
             if (!preg_match('/'.Media::$pattern_keepinline.'/', $htmlContent)) {
                 $htmlContent = preg_replace_callback(
                     Media::$pattern_js,
@@ -181,15 +180,11 @@ class MediaCore
                     $htmlContent,
                     Media::getBackTrackLimit()
                 );
-                // @codingStandardsIgnoreEnd
 
                 // If the string is too big preg_replace return an error
                 // In this case, we don't compress the content
-                if (function_exists('preg_last_error') && preg_last_error() == PREG_BACKTRACK_LIMIT_ERROR) {
-                    if (_PS_MODE_DEV_) {
-                        Tools::error_log('ERROR: PREG_BACKTRACK_LIMIT_ERROR in function packJSinHTML');
-                    }
-
+                if (preg_last_error() == PREG_BACKTRACK_LIMIT_ERROR) {
+                    trigger_error('ERROR: PREG_BACKTRACK_LIMIT_ERROR in function packJSinHTML', E_USER_NOTICE);
                     return $htmlContentCopy;
                 }
             }
@@ -255,10 +250,7 @@ class MediaCore
             try {
                 $jsContent = JSMin::minify($jsContent);
             } catch (Exception $e) {
-                if (_PS_MODE_DEV_) {
-                    echo $e->getMessage();
-                }
-
+                trigger_error($e->getMessage(), E_USER_NOTICE);
                 return ';'.trim($jsContent, ';').';';
             }
         }

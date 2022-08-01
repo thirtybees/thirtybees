@@ -445,10 +445,7 @@ abstract class ModuleCore
     public static function getInstanceByName($moduleName)
     {
         if (!Validate::isModuleName($moduleName)) {
-            if (_PS_MODE_DEV_) {
-                die(Tools::displayError(Tools::safeOutput($moduleName).' is not a valid module name.'));
-            }
-
+            trigger_error(Tools::displayError(Tools::safeOutput($moduleName).' is not a valid module name.'), E_USER_NOTICE);
             return false;
         }
 
