@@ -511,10 +511,7 @@ class AuthControllerCore extends FrontController
                 $this->processCustomerNewsletter($customer);
 
                 $customer->firstname = Tools::ucwords($customer->firstname);
-                $customer->birthday = (empty($_POST['years']) ? '' : (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days'));
-                if (!Validate::isBirthDate($customer->birthday)) {
-                    $this->errors[] = Tools::displayError('Invalid date of birth.');
-                }
+                $customer->birthday = $this->getBirthDate();
 
                 // New Guest customer
                 $customer->is_guest = $isGuestAccount;
@@ -634,17 +631,9 @@ class AuthControllerCore extends FrontController
             }
         }
 
-        if (!@checkdate(Tools::getValue('months'), Tools::getValue('days'), Tools::getValue('years')) && !(Tools::getValue('months') == '' && Tools::getValue('days') == '' && Tools::getValue('years') == '')) {
-            $this->errors[] = Tools::displayError('Invalid date of birth');
-        }
-
         if (!count($this->errors)) {
             $this->processCustomerNewsletter($customer);
-
-            $customer->birthday = (empty($_POST['years']) ? '' : (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days'));
-            if (!Validate::isBirthDate($customer->birthday)) {
-                $this->errors[] = Tools::displayError('Invalid date of birth');
-            }
+            $customer->birthday = $this->getBirthDate();
 
             if (!count($this->errors)) {
                 $customer->active = 1;
@@ -850,5 +839,23 @@ class AuthControllerCore extends FrontController
             $customer->email,
             $customer->firstname.' '.$customer->lastname
         );
+    }
+
+    /**
+     * @return string | null
+     */
+    protected function getBirthDate()
+    {
+        $years = Tools::getValue('years');
+        $months = Tools::getValue('months');
+        $days = Tools::getValue('days');
+        if ($years || $months || $days) {
+            $birthday = (int)$years . '-' . (int)$months . '-' . (int)$days;
+            if (!Validate::isBirthDate($birthday)) {
+                $this->errors[] = Tools::displayError('Invalid date of birth.');
+            }
+            return $birthday;
+        }
+        return null;
     }
 }
