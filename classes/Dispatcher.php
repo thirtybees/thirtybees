@@ -1241,10 +1241,18 @@ class DispatcherCore
         }
 
         if (!isset($this->routes[$idShop][$idLang][$routeId])) {
-            $query = http_build_query($params, '', '&');
-            $indexLink = $this->use_routes ? '' : 'index.php';
-
-            return ($routeId == 'index') ? $indexLink.(($query) ? '?'.$query : '') : ((trim($routeId) == '') ? '' : 'index.php?controller='.$routeId).(($query) ? '&'.$query : '').$anchor;
+            $routeId = trim($routeId ?? '');
+            switch ($routeId) {
+                case '':
+                    return '';
+                case 'index':
+                    $query = http_build_query($params, '', '&');
+                    $indexLink = $this->use_routes ? '' : 'index.php';
+                    return $indexLink.($query ? '?'.$query : '') ;
+                default:
+                    $query = http_build_query($params, '', '&');
+                    return 'index.php?controller=' . $routeId . ($query ? '&' . $query : '') . $anchor;
+            }
         }
         $route = $this->routes[$idShop][$idLang][$routeId];
         // Check required fields
