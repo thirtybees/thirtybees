@@ -1237,16 +1237,19 @@ class LanguageCore extends ObjectModel
 
             $modList = scandir(_PS_MODULE_DIR_);
             foreach ($modList as $mod) {
-                Tools::deleteDirectory(_PS_MODULE_DIR_.$mod.'/mails/'.$this->iso_code);
-                $files = @scandir(_PS_MODULE_DIR_.$mod.'/mails/');
-                if (count($files) <= 2) {
-                    Tools::deleteDirectory(_PS_MODULE_DIR_.$mod.'/mails/');
+                $moduleMailsDir = _PS_MODULE_DIR_ . $mod . '/mails/';
+                if (file_exists($moduleMailsDir) && is_dir($moduleMailsDir)) {
+                    Tools::deleteDirectory($moduleMailsDir . $this->iso_code);
+                    $files = @scandir($moduleMailsDir);
+                    if (is_array($files) && count($files) <= 2) {
+                        Tools::deleteDirectory($moduleMailsDir);
+                    }
                 }
 
                 if (file_exists(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php')) {
                     unlink(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php');
                     $files = @scandir(_PS_MODULE_DIR_.$mod);
-                    if (count($files) <= 2) {
+                    if (is_array($files) && count($files) <= 2) {
                         Tools::deleteDirectory(_PS_MODULE_DIR_.$mod);
                     }
                 }
