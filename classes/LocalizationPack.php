@@ -494,7 +494,7 @@ class LocalizationPackCore
         $attributes = [];
         if (isset($xml->languages->language)) {
             foreach ($xml->languages->language as $data) {
-                $attributes = current($data->attributes());
+                $attributes = $data->attributes();
                 // if we are not in an installation context or if the pack is not available in the local directory
                 if (Language::getIdByIso($attributes['iso_code']) && !$installMode) {
                     continue;
