@@ -97,6 +97,41 @@ class GenderCore extends ObjectModel
     }
 
     /**
+     * @return array[]
+     */
+    public static function getIconList(): array
+    {
+        $gendersIcon = [
+            'default' => [
+                'src' => static::getGenderImage(null),
+                'alt' => Translate::getAdminTranslation('Unknown gender', 'Gender')
+            ]
+        ];
+        foreach (GenderCore::getGenders() as $gender) {
+            /** @var Gender $gender */
+            $gendersIcon[$gender->id] = [
+                'src' => $gender->getImage(),
+                'alt' => $gender->name
+            ];
+        }
+        return $gendersIcon;
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    protected static function getGenderImage($id)
+    {
+        $id = (int)$id;
+        if (!$id || !file_exists(_PS_GENDERS_DIR_ . $id . '.jpg')) {
+            return _THEME_GENDERS_DIR_ . 'Unknown.jpg';
+        }
+
+        return _THEME_GENDERS_DIR_ . $id . '.jpg';
+    }
+
+    /**
      * @param bool $useUnknown
      *
      * @return string
@@ -106,10 +141,6 @@ class GenderCore extends ObjectModel
      */
     public function getImage($useUnknown = false)
     {
-        if (!isset($this->id) || empty($this->id) || !file_exists(_PS_GENDERS_DIR_.$this->id.'.jpg')) {
-            return _THEME_GENDERS_DIR_.'Unknown.jpg';
-        }
-
-        return _THEME_GENDERS_DIR_.$this->id.'.jpg';
+        return static::getGenderImage($this->id);
     }
 }

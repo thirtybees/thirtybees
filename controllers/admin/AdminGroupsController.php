@@ -219,13 +219,6 @@ class AdminGroupsControllerCore extends AdminController
 
     protected function renderCustomersList($group)
     {
-        $genders = [0 => '?'];
-        $genders_icon = ['default' => 'unknown.gif'];
-        foreach (Gender::getGenders() as $gender) {
-            /** @var Gender $gender */
-            $genders_icon[$gender->id] = '../genders/'.(int)$gender->id.'.jpg';
-            $genders[$gender->id] = $gender->name;
-        }
         $this->table = 'customer_group';
         $this->lang = false;
         $this->list_id = 'customer_group';
@@ -238,7 +231,7 @@ class AdminGroupsControllerCore extends AdminController
 
         $this->fields_list = ([
             'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'filter_key' => 'c!id_customer', 'class' => 'fixed-width-xs'],
-            'id_gender' => ['title' => $this->l('Social title'), 'icon' => $genders_icon, 'list' => $genders],
+            'id_gender' => ['title' => $this->l('Social title'), 'icon' => Gender::getIconList()],
             'firstname' => ['title' => $this->l('First name')],
             'lastname' => ['title' => $this->l('Last name')],
             'email' => ['title' => $this->l('Email address'), 'filter_key' => 'c!email', 'orderby' => true],

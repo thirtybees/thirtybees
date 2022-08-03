@@ -485,16 +485,9 @@ class AdminSearchControllerCore extends AdminController
      */
     protected function initCustomerList()
     {
-        $gendersIcon = ['default' => 'unknown.gif'];
-        $genders = [0 => $this->l('?')];
-        foreach (Gender::getGenders() as $gender) {
-            /** @var Gender $gender */
-            $gendersIcon[$gender->id] = '../genders/'.(int) $gender->id.'.jpg';
-            $genders[$gender->id] = $gender->name;
-        }
         $this->fields_list['customers'] = ([
             'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
-            'id_gender'   => ['title' => $this->l('Social title'), 'align' => 'center', 'icon' => $gendersIcon, 'list' => $genders, 'width' => 25],
+            'id_gender'   => ['title' => $this->l('Social title'), 'align' => 'center', 'icon' => Gender::getIconList(), 'width' => 25],
             'firstname'   => ['title' => $this->l('First Name'), 'align' => 'left', 'width' => 150],
             'lastname'    => ['title' => $this->l('Name'), 'align' => 'left', 'width' => 'auto'],
             'email'       => ['title' => $this->l('Email address'), 'align' => 'left', 'width' => 250],
