@@ -560,7 +560,7 @@ class HelperListCore extends Helper
                     }
                 } elseif (isset($params['type']) && $params['type'] == 'float') {
                     $this->_list[$index][$key] = rtrim(rtrim($dataValue, '0'), '.');
-                } elseif ($dataValue) {
+                } elseif (isset($dataValue)) {
                     if (isset($params['callback'])) {
                         $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $this->context->controller;
                         $this->_list[$index][$key] = call_user_func_array([$callbackObj, $params['callback']], [$dataValue, $tr]);
