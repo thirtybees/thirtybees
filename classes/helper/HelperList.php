@@ -485,7 +485,8 @@ class HelperListCore extends Helper
             // $this->_list[$index]['has_bulk_actions'] = true;
             foreach ($this->fields_list as $key => $params) {
                 $tmp = explode('!', $key);
-                $key = isset($tmp[1]) ? $tmp[1] : $tmp[0];
+                $key = $tmp[1] ?? $tmp[0];
+                $dataValue = $tr[$key] ?? null;
 
                 if (isset($params['active'])) {
                     // If method is defined in calling controller, use it instead of the Helper method
@@ -503,17 +504,17 @@ class HelperListCore extends Helper
                     $this->_list[$index][$key] = $callingObj->displayEnableLink(
                         $this->token,
                         $id,
-                        $tr[$key],
+                        $dataValue,
                         $params['active'],
                         Tools::getValue('id_category'),
                         Tools::getValue('id_product'),
                         $params['ajax']
                     );
                 } elseif (isset($params['activeVisu'])) {
-                    $this->_list[$index][$key] = (bool) $tr[$key];
+                    $this->_list[$index][$key] = (bool) $dataValue;
                 } elseif (isset($params['position'])) {
                     $this->_list[$index][$key] = [
-                        'position'          => $tr[$key],
+                        'position'          => $dataValue,
                         'position_url_down' => $this->currentIndex.
                             (isset($keyToGet) ? '&'.$keyToGet.'='.(int) $positionGroupIdentifier : '').
                             '&'.$this->position_identifier.'='.$id.
@@ -532,21 +533,23 @@ class HelperListCore extends Helper
                     } else {
                         $this->_list[$index][$key] = ImageManager::getProductImageThumbnailTag($tr['id_image']);
                     }
-                } elseif (isset($params['icon']) && isset($tr[$key]) && (isset($params['icon'][$tr[$key]]) || isset($params['icon']['default']))) {
-                    if (!$this->bootstrap) {
-                        if (isset($params['icon'][$tr[$key]]) && is_array($params['icon'][$tr[$key]])) {
-                            $this->_list[$index][$key] = [
-                                'src' => $params['icon'][$tr[$key]]['src'],
-                                'alt' => $params['icon'][$tr[$key]]['alt'],
-                            ];
+                } elseif (isset($params['icon']) && (isset($params['icon'][$dataValue]) || isset($params['icon']['default']))) {
+                    $defaultIcon = 'unknown.gif';
+                    if (isset($params['icon']['default'])) {
+                        if (is_array($params['icon']['default'])) {
+                            $defaultIcon = $params['icon']['default']['src'];
                         } else {
-                            $this->_list[$index][$key] = [
-                                'src' => isset($params['icon'][$tr[$key]]) ? $params['icon'][$tr[$key]] : $params['icon']['default'],
-                                'alt' => isset($params['icon'][$tr[$key]]) ? $params['icon'][$tr[$key]] : $params['icon']['default'],
-                            ];
+                            $defaultIcon = $params['icon']['default'];
                         }
-                    } elseif (isset($params['icon'][$tr[$key]])) {
-                        $this->_list[$index][$key] = $params['icon'][$tr[$key]];
+                    }
+                    $iconValue = $params['icon'][$dataValue] ?? $defaultIcon;
+                    if (is_array($iconValue)) {
+                        $this->_list[$index][$key] = $iconValue;
+                    } else {
+                        $this->_list[$index][$key] = [
+                            'src' => $iconValue,
+                            'alt' => sprintf($this->l("Value: %s"), $dataValue),
+                        ];
                     }
                     // backwards compatibility for build-in icon files stored in img/admin directory
                     if (isset($this->_list[$index][$key]['src'])) {
@@ -556,14 +559,13 @@ class HelperListCore extends Helper
                         }
                     }
                 } elseif (isset($params['type']) && $params['type'] == 'float') {
-                    $this->_list[$index][$key] = rtrim(rtrim($tr[$key], '0'), '.');
-                } elseif (isset($tr[$key])) {
-                    $echo = $tr[$key];
+                    $this->_list[$index][$key] = rtrim(rtrim($dataValue, '0'), '.');
+                } elseif ($dataValue) {
                     if (isset($params['callback'])) {
                         $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $this->context->controller;
-                        $this->_list[$index][$key] = call_user_func_array([$callbackObj, $params['callback']], [$echo, $tr]);
+                        $this->_list[$index][$key] = call_user_func_array([$callbackObj, $params['callback']], [$dataValue, $tr]);
                     } else {
-                        $this->_list[$index][$key] = $echo;
+                        $this->_list[$index][$key] = $dataValue;
                     }
                 }
             }
