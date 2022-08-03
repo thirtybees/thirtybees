@@ -487,6 +487,7 @@ class AdminSearchControllerCore extends AdminController
     {
         $this->fields_list['customers'] = ([
             'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
+            'is_guest'    => ['title' => $this->l('Type'), 'align' => 'center', 'callback' => 'renderCustomerType'],
             'id_gender'   => ['title' => $this->l('Social title'), 'align' => 'center', 'icon' => Gender::getIconList(), 'width' => 25],
             'firstname'   => ['title' => $this->l('First Name'), 'align' => 'left', 'width' => 150],
             'lastname'    => ['title' => $this->l('Name'), 'align' => 'left', 'width' => 'auto'],
@@ -516,5 +517,20 @@ class AdminSearchControllerCore extends AdminController
             'osname'              => ['title' => $this->l('Status'), 'width' => 280],
             'date_add'            => ['title' => $this->l('Date'), 'width' => 130, 'align' => 'right', 'type' => 'datetime'],
         ];
+    }
+
+    /**
+     * Callback to display customer type
+     *
+     * @param int $isGuest
+     * @return string
+     */
+    public function renderCustomerType($isGuest)
+    {
+        if ($isGuest) {
+            return $this->l('Guest');
+        } else {
+            return $this->l('Customer');
+        }
     }
 }
