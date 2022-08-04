@@ -960,6 +960,7 @@ class AdminImportControllerCore extends AdminController
         foreach ($previewRows as $currentLine => $line) {
             $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
             foreach ($line as $nbC => $column) {
+                $column = $column ?? '';
                 if ((static::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < static::MAX_COLUMNS * ((int) $currentTable + 1))) {
                     $html .= '<td>'.htmlentities(mb_substr($column, 0, 200), ENT_QUOTES, 'UTF-8').'</td>';
                 }
