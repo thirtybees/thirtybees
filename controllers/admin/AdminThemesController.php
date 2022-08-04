@@ -169,7 +169,7 @@ class AdminThemesControllerCore extends AdminController
                         'tab'                       => 'icons',
                         'grab_favicon_template'     => true,
                         'auto_value'                => false,
-                        'value'                     => preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('TB_SOURCE_FAVICON_CODE')),
+                        'value'                     => preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('TB_SOURCE_FAVICON_CODE') ?? ''),
                     ],
                     'PS_STORES_ICON'  => [
                         'title' => $this->l('Store icon'),
@@ -2173,85 +2173,89 @@ class AdminThemesControllerCore extends AdminController
         $this->uploadIco('TB_SOURCE_FAVICON', _PS_IMG_DIR_."favicon/favicon_{$idShop}_source.png");
 
         $newTemplate = Tools::getValue('TB_SOURCE_FAVICON_CODE');
+        if ($newTemplate) {
 
-        // Generate the new header HTML
-        $filteredHtml = '';
+            // Generate the new header HTML
+            $filteredHtml = '';
 
-        // Generate a browserconfig.xml
-        $browserConfig = new DOMDocument('1.0', 'UTF-8');
-        $main = $browserConfig->createElement('browserconfig');
-        $ms = $browserConfig->createElement('msapplication');
-        $tile = $browserConfig->createElement('tile');
-        $ms->appendChild($tile);
-        $main->appendChild($ms);
-        $browserConfig->appendChild($main);
-        $browserConfig->formatOutput = true;
+            // Generate a browserconfig.xml
+            $browserConfig = new DOMDocument('1.0', 'UTF-8');
+            $main = $browserConfig->createElement('browserconfig');
+            $ms = $browserConfig->createElement('msapplication');
+            $tile = $browserConfig->createElement('tile');
+            $ms->appendChild($tile);
+            $main->appendChild($ms);
+            $browserConfig->appendChild($main);
+            $browserConfig->formatOutput = true;
 
-        // Generate a new manifest.json
-        $manifest = [
-            'name'             => Configuration::get('PS_SHOP_NAME'),
-            'icons'            => [],
-            'theme_color'      => '#fad629',
-            'background_color' => '#fad629',
-            'display'          => 'standalone',
-        ];
+            // Generate a new manifest.json
+            $manifest = [
+                'name' => Configuration::get('PS_SHOP_NAME'),
+                'icons' => [],
+                'theme_color' => '#fad629',
+                'background_color' => '#fad629',
+                'display' => 'standalone',
+            ];
 
-        // Filter and detect sizes
-        $dom = new DOMDocument();
-        $dom->loadHTML($newTemplate);
-        $links = [];
-        foreach ($dom->getElementsByTagName('link') as $elem) {
-            $links[] = $elem;
-        }
-        foreach ($dom->getElementsByTagName('meta') as $elem) {
-            $links[] = $elem;
-        }
-        foreach ($links as $link) {
-            foreach ($link->attributes as $attribute) {
-                /** @var DOMElement $link */
-                if ($favicon = Tools::parseFaviconSizeTag(urldecode($attribute->value))) {
-                    ImageManager::resize(
-                        _PS_IMG_DIR_."favicon/favicon_{$idShop}_source.png",
-                        _PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png",
-                        (int) $favicon['width'],
-                        (int) $favicon['height'],
-                        'png'
-                    );
+            // Filter and detect sizes
+            $dom = new DOMDocument();
+            $dom->loadHTML($newTemplate);
+            $links = [];
+            foreach ($dom->getElementsByTagName('link') as $elem) {
+                $links[] = $elem;
+            }
+            foreach ($dom->getElementsByTagName('meta') as $elem) {
+                $links[] = $elem;
+            }
+            foreach ($links as $link) {
+                foreach ($link->attributes as $attribute) {
+                    /** @var DOMElement $link */
+                    if ($favicon = Tools::parseFaviconSizeTag(urldecode($attribute->value))) {
+                        ImageManager::resize(
+                            _PS_IMG_DIR_ . "favicon/favicon_{$idShop}_source.png",
+                            _PS_IMG_DIR_ . "favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png",
+                            (int)$favicon['width'],
+                            (int)$favicon['height'],
+                            'png'
+                        );
 
-                    if (in_array("{$favicon['width']}x{$favicon['height']}", [
-                        '70x70',
-                        '150x150',
-                        '310x310',
-                        '310x150'
-                    ])) {
-                        $path = Media::getMediaPath(_PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png");
-                        $logo = $favicon['width'] == $favicon['height']
-                            ? $browserConfig->createElement("square{$favicon['width']}x{$favicon['height']}logo", $path)
-                            : $browserConfig->createElement("wide{$favicon['width']}x{$favicon['height']}logo", $path);
-                        $tile->appendChild($logo);
+                        if (in_array("{$favicon['width']}x{$favicon['height']}", [
+                            '70x70',
+                            '150x150',
+                            '310x310',
+                            '310x150'
+                        ])) {
+                            $path = Media::getMediaPath(_PS_IMG_DIR_ . "favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png");
+                            $logo = $favicon['width'] == $favicon['height']
+                                ? $browserConfig->createElement("square{$favicon['width']}x{$favicon['height']}logo", $path)
+                                : $browserConfig->createElement("wide{$favicon['width']}x{$favicon['height']}logo", $path);
+                            $tile->appendChild($logo);
+                        }
+
+                        $manifest['icons'][] = [
+                            'src' => Media::getMediaPath(_PS_IMG_DIR_ . "favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png"),
+                            'sizes' => "{$favicon['width']}x{$favicon['height']}",
+                            'type' => "image/{$favicon['type']}",
+                        ];
                     }
 
-                    $manifest['icons'][] = [
-                        'src'   => Media::getMediaPath(_PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png"),
-                        'sizes' => "{$favicon['width']}x{$favicon['height']}",
-                        'type'  => "image/{$favicon['type']}",
-                    ];
+                    if ($link->hasAttribute('name') && $link->getAttribute('name') === 'theme-color') {
+                        $manifest['theme_color'] = $link->getAttribute('content');
+                    }
+                    if ($link->hasAttribute('name') && $link->getAttribute('name') === 'background-color') {
+                        $manifest['background_color'] = $link->getAttribute('content');
+                    }
                 }
-
-                if ($link->hasAttribute('name') && $link->getAttribute('name') === 'theme-color') {
-                    $manifest['theme_color'] = $link->getAttribute('content');
-                }
-                if ($link->hasAttribute('name') && $link->getAttribute('name') === 'background-color') {
-                    $manifest['background_color'] = $link->getAttribute('content');
-                }
+                $filteredHtml .= $dom->saveHTML($link) . "\n";
             }
-            $filteredHtml .= $dom->saveHTML($link) . "\n";
+
+            file_put_contents(_PS_IMG_DIR_ . "favicon/browserconfig_{$idShop}.xml", $browserConfig->saveXML());
+            file_put_contents(_PS_IMG_DIR_ . "favicon/manifest_{$idShop}.json", json_encode($manifest, JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
+
+            Configuration::updateValueRaw('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml));
+        } else {
+            Configuration::updateValue('TB_SOURCE_FAVICON_CODE', '');
         }
-
-        file_put_contents(_PS_IMG_DIR_."favicon/browserconfig_{$idShop}.xml", $browserConfig->saveXML());
-        file_put_contents(_PS_IMG_DIR_."favicon/manifest_{$idShop}.json", json_encode($manifest, JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
-
-        Configuration::updateValueRaw('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml));
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
