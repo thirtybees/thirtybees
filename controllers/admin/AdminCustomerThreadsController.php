@@ -63,8 +63,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         $iconArray = [
-            'open'     => ['class' => 'icon-circle text-success', 'alt' => $this->l('Open')],
-            'closed'   => ['class' => 'icon-circle text-danger', 'alt' => $this->l('Closed')],
+            'open'     => ['class' => 'icon-circle text-danger', 'alt' => $this->l('Open')],
+            'closed'   => ['class' => 'icon-circle text-success', 'alt' => $this->l('Closed')],
             'pending1' => ['class' => 'icon-circle text-warning', 'alt' => $this->l('Pending 1')],
             'pending2' => ['class' => 'icon-circle text-warning', 'alt' => $this->l('Pending 2')],
         ];
@@ -931,7 +931,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         if ($thread->status != 'closed') {
             $actions['closed'] = [
                 'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=2&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
-                'label' => $this->l('Mark as "handled"'),
+                'label' => $this->l('Mark as "Closed"'),
                 'name'  => 'setstatus',
                 'value' => 2,
             ];
@@ -947,7 +947,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         if ($thread->status != 'pending1') {
             $actions['pending1'] = [
                 'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=3&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
-                'label' => $this->l('Mark as "pending 1" (will be answered later)'),
+                'label' => $this->l('Mark as "Pending 1" (will be answered later)'),
                 'name'  => 'setstatus',
                 'value' => 3,
             ];
@@ -963,7 +963,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         if ($thread->status != 'pending2') {
             $actions['pending2'] = [
                 'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=4&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
-                'label' => $this->l('Mark as "pending 2" (will be answered later)'),
+                'label' => $this->l('Mark as "Pending 2" (will be answered later)'),
                 'name'  => 'setstatus',
                 'value' => 4,
             ];

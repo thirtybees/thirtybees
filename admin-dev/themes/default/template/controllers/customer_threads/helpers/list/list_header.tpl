@@ -64,8 +64,8 @@
 					{l s='Meaning of status'}
 				</div>
 				<ul class="list-unstyled">
-					<li class="text-success"><i class="icon-circle"></i> {l s='Open'}</li>
-					<li class="text-danger"><i class="icon-circle"></i> {l s='Closed'}</li>
+					<li class="text-danger"><i class="icon-circle"></i> {l s='Open'}</li>
+					<li class="text-success"><i class="icon-circle"></i> {l s='Closed'}</li>
 					<li class="text-warning"><i class="icon-circle"></i> {l s='Pending 1'}</li>
 					<li class="text-warning"><i class="icon-circle"></i> {l s='Pending 2'}</li>
 				</ul>
