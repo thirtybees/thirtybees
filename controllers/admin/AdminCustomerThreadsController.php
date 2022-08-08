@@ -62,18 +62,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
             $languageArray[$language['id_lang']] = $language['name'];
         }
 
-        $iconArray = [
-            'open'     => ['class' => 'icon-circle text-success', 'alt' => $this->l('Open')],
-            'closed'   => ['class' => 'icon-circle text-danger', 'alt' => $this->l('Closed')],
-            'pending1' => ['class' => 'icon-circle text-warning', 'alt' => $this->l('Pending 1')],
-            'pending2' => ['class' => 'icon-circle text-warning', 'alt' => $this->l('Pending 2')],
-        ];
-
-        $statusArray = [];
-        foreach ($iconArray as $k => $v) {
-            $statusArray[$k] = $v['alt'];
-        }
-
         $this->fields_list = [
             'id_customer_thread' => [
                 'title' => $this->l('ID'),
@@ -105,12 +93,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
             ],
             'status'             => [
                 'title'       => $this->l('Status'),
-                'type'        => 'select',
-                'list'        => $statusArray,
-                'icon'        => $iconArray,
+                'type'        => 'text',
                 'align'       => 'center',
                 'filter_key'  => 'a!status',
                 'filter_type' => 'string',
+                'callback'    => 'renderStatus',
             ],
             'employee'           => [
                 'title'          => $this->l('Employee'),
@@ -1272,5 +1259,26 @@ class AdminCustomerThreadsControllerCore extends AdminController
     protected function displayButton($content)
     {
         return '<div><p>'.$content.'</p></div>';
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    public function renderStatus($value)
+    {
+        $statuses = [
+            'unknown'  => ['class' => 'badge', 'text' => $this->l('Unknown')],
+            'open'     => ['class' => 'badge badge-danger', 'text' => $this->l('Open')],
+            'closed'   => ['class' => 'badge badge-success', 'text' => $this->l('Closed')],
+            'pending1' => ['class' => 'badge badge-warning', 'text' => $this->l('Pending 1')],
+            'pending2' => ['class' => 'badge badge-warning', 'text' => $this->l('Pending 2')],
+        ];
+
+        if (! array_key_exists($value, $statuses)) {
+            $value = 'unknown';
+        }
+
+        return '<span class="'.$statuses[$value]['class'] . '">' . $statuses[$value]['text'] . '</span>';
     }
 }

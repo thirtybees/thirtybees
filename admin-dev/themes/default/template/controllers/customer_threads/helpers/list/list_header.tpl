@@ -63,12 +63,12 @@
 				<div class="panel-heading">
 					{l s='Meaning of status'}
 				</div>
-				<ul class="list-unstyled">
-					<li class="text-success"><i class="icon-circle"></i> {l s='Open'}</li>
-					<li class="text-danger"><i class="icon-circle"></i> {l s='Closed'}</li>
-					<li class="text-warning"><i class="icon-circle"></i> {l s='Pending 1'}</li>
-					<li class="text-warning"><i class="icon-circle"></i> {l s='Pending 2'}</li>
-				</ul>
+				<div>
+					<span class="badge badge-danger">{l s='Open'}</span>
+					<span class="badge badge-success">{l s='Closed'}</span>
+					<span class="badge badge-warning">{l s='Pending 1'}</span>
+					<span class="badge badge-warning">{l s='Pending 2'}</span>
+				</div>
 			</div>
 		</div>
 		<div class="col-lg-3">
