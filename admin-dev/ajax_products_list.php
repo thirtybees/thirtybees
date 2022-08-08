@@ -28,12 +28,19 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+/** @noinspection PhpUnhandledExceptionInspection */
+
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\Response\JSendErrorResponse;
+
 if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', getcwd());
 }
 include(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 /* Getting cookie or logout */
 require_once(_PS_ADMIN_DIR_.'/init.php');
+
+ServiceLocator::getInstance()->getErrorHandler()->setErrorResponseHandler(new JSendErrorResponse(_PS_MODE_DEV_));
 
 $query = Tools::getValue('q', false);
 if (!$query or $query == '' or strlen($query) < 1) {
@@ -128,7 +135,7 @@ if ($items && ($excludeIds || strpos($_SERVER['HTTP_REFERER'], 'AdminScenes') !=
                     'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
                     'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
                 ];
-                array_push($results, $product);
+                $results[] = $product;
             }
         } else {
             $product = [
@@ -137,7 +144,7 @@ if ($items && ($excludeIds || strpos($_SERVER['HTTP_REFERER'], 'AdminScenes') !=
                 'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
                 'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
             ];
-            array_push($results, $product);
+            $results[] = $product;
         }
     }
     $results = array_values($results);

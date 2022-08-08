@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 $currentDir = dirname(__FILE__);
 
 /* Custom defines made by users */
@@ -70,9 +72,6 @@ if (! defined('_TB_REVISION_')) {
     define('_TB_REVISION_', _TB_VERSION_);
 }
 
-/* Initialize error reporting logic */
-ErrorHandler::getInstance()->init();
-
 require_once $currentDir . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
 /* Custom config made by users */
@@ -96,7 +95,7 @@ if (Tools::isPHPCLI() && isset($argc) && isset($argv)) {
 }
 
 /* Redefine REQUEST_URI if empty (on some webservers...) */
-if (!isset($_SERVER['REQUEST_URI']) || empty($_SERVER['REQUEST_URI'])) {
+if (empty($_SERVER['REQUEST_URI'])) {
     if (!isset($_SERVER['SCRIPT_NAME']) && isset($_SERVER['SCRIPT_FILENAME'])) {
         $_SERVER['SCRIPT_NAME'] = $_SERVER['SCRIPT_FILENAME'];
     }
@@ -113,21 +112,17 @@ if (!isset($_SERVER['REQUEST_URI']) || empty($_SERVER['REQUEST_URI'])) {
 }
 
 /* Trying to redefine HTTP_HOST if empty (on some webservers...) */
-if (!isset($_SERVER['HTTP_HOST']) || empty($_SERVER['HTTP_HOST'])) {
+if (empty($_SERVER['HTTP_HOST'])) {
     $_SERVER['HTTP_HOST'] = @getenv('HTTP_HOST');
 }
 
 $context = Context::getContext();
 
 /* Initialize the current Shop */
-try {
-    $context->shop = Shop::initialize();
-    $context->theme = new Theme((int)$context->shop->id_theme);
-    if ((Tools::isEmpty($theme_name = $context->shop->getTheme()) || !Validate::isLoadedObject($context->theme)) && !defined('_PS_ADMIN_DIR_')) {
-        throw new PrestaShopException(Tools::displayError('Current theme unselected. Please check your theme configuration.'));
-    }
-} catch (PrestaShopException $e) {
-    $e->displayMessage();
+$context->shop = Shop::initialize();
+$context->theme = new Theme((int)$context->shop->id_theme);
+if ((Tools::isEmpty($theme_name = $context->shop->getTheme()) || !Validate::isLoadedObject($context->theme)) && !defined('_PS_ADMIN_DIR_')) {
+    throw new PrestaShopException(Tools::displayError('Current theme unselected. Please check your theme configuration.'));
 }
 define('_THEME_NAME_', $theme_name);
 define('__PS_BASE_URI__', $context->shop->getBaseURI());

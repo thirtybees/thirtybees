@@ -137,25 +137,24 @@ class AdminLogsControllerCore extends AdminController
             try {
                 $upload = Tools::fileAttachment('exception');
                 if ($upload && $upload['content']) {
-                    $errorDescription = json_decode(Encryptor::getInstance()->decrypt($upload['content']), true);
-                    if (is_array($errorDescription)) {
-                        $errorDescription['errorName'] = 'Decoded exception';
-                        $decoded = PrestaShopException::renderDebugPage($errorDescription);
-                        $this->fields_options = array_merge($this->fields_options, [
-                            'decrypted_exception' => [
-                                'title'  => $this->l('Decrypted exception message'),
-                                'icon'   => 'icon-bug',
-                                'fields' => [
-                                    'decrypted_exception'    => [
-                                        'type'                      => 'iframe',
-                                        'srcdoc'                    => $decoded,
-                                    ],
+                    $encrypted = $upload['content'];
+                    $errorDescription = \Thirtybees\Core\Error\ErrorDescription::decrypt($encrypted);
+                    $debugErrorPage = new \Thirtybees\Core\Error\Response\DebugErrorPage();
+                    $this->fields_options = array_merge($this->fields_options, [
+                        'decrypted_exception' => [
+                            'title'  => $this->l('Decrypted exception message'),
+                            'icon'   => 'icon-bug',
+                            'fields' => [
+                                'decrypted_exception'    => [
+                                    'type' => 'iframe',
+                                    'srcdoc' => $debugErrorPage->getPageContent($errorDescription)
                                 ],
                             ],
-                        ]);
-                    }
+                        ],
+                    ]);
                 }
             } catch (Exception $e) {
+                $this->errors[] = Tools::displayError("Failed to parse exception message: " . $e->getMessage());
             }
         }
 

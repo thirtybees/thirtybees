@@ -30,6 +30,7 @@
  */
 
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorHandler;
 
 /**
  * Class ControllerCore
@@ -768,7 +769,7 @@ abstract class ControllerCore
      */
     protected function getErrorMessagesScript()
     {
-        $messages = ErrorHandler::getInstance()->getErrorMessages(false);
+        $messages = static::getErrorHandler()->getErrorMessages(false);
         if ($messages) {
             $messagesList = [];
             foreach ($messages as $msg) {
@@ -810,5 +811,13 @@ abstract class ControllerCore
                 $this->addJS(_PS_JS_DIR_ . 'trigger.js');
             }
         }
+    }
+
+    /**
+     * @return ErrorHandler
+     */
+    protected static function getErrorHandler(): ErrorHandler
+    {
+        return ServiceLocator::getInstance()->getErrorHandler();
     }
 }

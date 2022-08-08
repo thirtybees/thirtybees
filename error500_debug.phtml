@@ -1,54 +1,7 @@
-<?php
-/**
- * Copyright (C) 2019 thirty bees
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@thirtybees.com so we can send you a copy immediately.
- *
- * @author    thirty bees <contact@thirtybees.com>
- * @copyright 2019 thirty bees
- * @license   Open Software License (OSL 3.0)
- */
-
-if (! defined('_TB_VERSION_')) {
-    exit;
-}
-
-/**
- * Helper function to render file lines
- *
- * @param $lines array of file lines
- * @return string output
- */
-function errDisplayLines($lines)
-{
-    $ret = '';
-    if ($lines) {
-        $ret = '<pre>';
-        foreach ($lines as $currentLine) {
-            if ($currentLine['highlighted']) {
-                $ret .= "<span class='selected'>";
-            }
-            $ret .= "<span class='line'>" . $currentLine['number'] . ":</span>" . htmlspecialchars($currentLine['line']);
-            if ($currentLine['highlighted']) {
-                $ret .= "</span>";
-            }
-        }
-        $ret .= '</pre>';
-    }
-    return $ret;
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <title>Error: <?= $helper->displayString($errorDescription->getMessage()) ?></title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="description" content="This store is powered by thirty bees." />
         <style>
@@ -74,6 +27,12 @@ function errDisplayLines($lines)
                 padding: 10px 25px;
             }
 
+            .footer {
+                background-color: #f6d426;
+                color: black;
+                padding: 10px 25px;
+            }
+
             .type {
                 margin: 1em 0;
                 color: #444;
@@ -91,7 +50,7 @@ function errDisplayLines($lines)
             }
 
             h2 {
-                margin: 25px 0px 0px 0px;
+                margin: 25px 0 0 0;
                 color: #F20000;
             }
 
@@ -119,7 +78,7 @@ function errDisplayLines($lines)
                 font-family: Consolas, monospace;
                 width: 99%;
                 overflow-x: auto;
-                margin: 12px 0px;
+                margin: 12px 0;
             }
 
             .panel {
@@ -127,7 +86,7 @@ function errDisplayLines($lines)
             }
 
             .stacktrace {
-                margin: 12px 0px;
+                margin: 12px 0;
                 background: #F4F3F1;
                 padding: .1em 1em 1em;
                 border-radius: 8px;
@@ -225,33 +184,33 @@ function errDisplayLines($lines)
     </head>
     <body>
         <div class="header">
-            <span class="type"><?= $errorName ?></span>
-            <h1><?= $errorMessage ?></h1>
+            <span class="type"><?= $helper->displayString($errorDescription->getErrorName()) ?></span>
+            <h1><?= $helper->displayString($errorDescription->getMessage()) ?></h1>
             <div class="subtype">
                 <?php
-                    if ($fileType === 'smarty') {
-                        echo "when rendering smarty template <b>$fileName</b>";
+                    if ($errorDescription->getSourceType() === 'smarty') {
+                        echo "when rendering smarty template <b>" . $helper->displayString($errorDescription->getSourceFile()) . "</b>";
                     } else {
-                        echo "in file <b>$fileName</b> at line <b>$line</b>";
+                        echo "in file <b>" . $helper->displayString($errorDescription->getSourceFile()) . "</b> at line <b>{$errorDescription->getSourceLine()}</b>";
                     }
                 ?>
             </div>
         </div>
 
-        <?php foreach ($extraSections as $id => $section) { ?>
+        <?php foreach ($errorDescription->getExtraSections() as $id => $section) { ?>
         <div class="panel">
-            <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $section['label'] ?></h2>
+            <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $helper->displayString($section['label']) ?></h2>
             <div id="extra-section-<?= $id ?>" class="collapsible">
-                <?= $section['content'] ?>
+                <?= $helper->displayString($section['content']) ?>
             </div>
         </div>
         <?php } ?>
 
-        <?php if (isset($fileContent) && $fileContent) { ?>
+        <?php if ($errorDescription->hasSourceFileContent()) { ?>
         <div class="panel">
-            <h2 data-toggle="main-source" class="opened">Source file: <?= $fileName ?></h2>
+            <h2 data-toggle="main-source" class="opened">Source file: <?= $helper->displayString($errorDescription->getSourceFile()) ?></h2>
             <div id="main-source" class="collapsible">
-                <?= errDisplayLines($fileContent) ?>
+                <?= $helper->displayLines($errorDescription->getSourceFileContent()) ?>
             </div>
         </div>
         <?php } ?>
@@ -259,18 +218,18 @@ function errDisplayLines($lines)
         <div class="panel">
             <h2 data-toggle="stack-trace" class="closed">Stack trace</h2>
             <div id="stack-trace" class="collapsed stacktrace">
-                <?php foreach ($stacktrace as $traceId => $trace) { ?>
+                <?php foreach ($errorDescription->getStackTrace() as $traceId => $trace) { ?>
                 <div>
                     <div class="stacktrace-header <?= $trace['suppressed'] ? 'suppressed' : '' ?>">
                         <span class="line"><?= $traceId+1 ?>.</span>
                         <span class="stacktrace-file">
                             <?php
                                 if ($trace['fileName']) {
-                                    echo dirname($trace['fileName']) . '/';
-                                    echo '<b>' . basename($trace['fileName']) . '</b>';
+                                    echo $helper->displayString(dirname($trace['fileName'])) . '/';
+                                    echo '<b>' . $helper->displayString(basename($trace['fileName'])) . '</b>';
                                 }
                                 if ($trace['line']) {
-                                    echo ':' . $trace['line'];
+                                    echo ':' . $helper->displayString($trace['line']);
                                 }
                             ?>
                         </span>
@@ -279,7 +238,7 @@ function errDisplayLines($lines)
                         <?php } ?>
                         <?php
                             if ($trace['description']) {
-                                echo $trace['description'];
+                                echo $helper->displayString($trace['description']);
                             } else {
                                 echo $trace['class'] . $trace['type'] . $trace['function'] . '(';
                                 if ($trace['args']) {
@@ -290,7 +249,7 @@ function errDisplayLines($lines)
                         ?>
                     </div>
                     <div id="trace-<?= $traceId ?>" class="collapsed">
-                        <?= errDisplayLines($trace['fileContent']) ?>
+                        <?= $helper->displayLines($trace['fileContent']) ?>
                     </div>
                     <?php if ($trace['args']) { ?>
                      <div id="trace-args-<?= $traceId ?>" class="collapsed">
@@ -298,7 +257,7 @@ function errDisplayLines($lines)
                              <?php foreach ($trace['args'] as $argName => $arg) {  ?>
                                  <tr>
                                      <td>#<?= $argName+1 ?></td>
-                                     <td><pre><?= Tools::safeOutput($arg, true) ?></pre></td>
+                                     <td><pre><?= $helper->displayString($arg) ?></pre></td>
                                  </tr>
                             <?php } ?>
                          </table>
@@ -309,33 +268,35 @@ function errDisplayLines($lines)
             </div>
         </div>
 
-        <?php if (isset($previous) && $previous) { ?>
+        <?php if ($errorDescription->hasCause()) { ?>
         <div class="panel">
             <h2 data-toggle="cause-trace" class="closed">Caused by</h2>
             <div id="cause-trace" class="collapsed stacktrace">
                 <?php
                     $prevCnt = 1;
-                    while (isset($previous) && $previous) {
+                    /** @var \Thirtybees\Core\Error\ErrorDescription $previous */
+                    $previous = $errorDescription->getCause();
+                    while ($previous) {
                 ?>
                     <div>
                         <div class="stacktrace-header">
                             <span class="line">Caused by</span>
                             <span class="stacktrace-file">
-                                <i><?= $previous['errorName'] ?></i>: <b><?= $previous['errorMessage'] ?></b>
+                                <i><?= $previous->getErrorName() ?></i>: <b><?= $helper->displayString($previous->getMessage()) ?></b>
                                 <?php
-                                if ($fileType === 'smarty') {
-                                    echo " when rendering smarty template <b>$fileName</b>";
+                                if ($previous->getSourceType() === 'smarty') {
+                                    echo " when rendering smarty template <b>". $helper->displayString($previous->getSourceFile()) ."</b>";
                                 } else {
-                                    echo " in file <b>$fileName</b> at line <b>$line</b>";
+                                    echo " in file <b>" . $helper->displayString($previous->getSourceFile()) ."</b> at line <b>{$previous->getSourceLine()}</b>";
                                 }
                                 ?>
                             </span>
-                            <?php if (isset($previous['fileContent']) && $previous['fileContent']) { ?>
+                            <?php if ($previous->hasSourceFileContent()) { ?>
                                 &nbsp;
                                 <a data-toggle="previous-<?= $prevCnt ?>-source" class="closed">Source</a>
                                 <div class="panel">
                                     <div id="previous-<?= $prevCnt ?>-source" class="collapsed">
-                                        <?= errDisplayLines($previous['fileContent']) ?>
+                                        <?= $helper->displayLines($previous->getSourceFileContent()) ?>
                                     </div>
                                 </div>
                             <?php } ?>
@@ -343,7 +304,7 @@ function errDisplayLines($lines)
                     </div>
                     <?php
                         $prevCnt++;
-                        $previous = $previous['previous'];
+                        $previous = $previous->getCause();
                     }
                     ?>
             </div>
@@ -351,6 +312,11 @@ function errDisplayLines($lines)
         <?php } ?>
 
         <br />
+
+        <div class="footer">
+            <span>PHP version: <b><?= $helper->displayString($errorDescription->getPhpVersion()) ?></b>.</span>&nbsp;
+            <span>Code revision: <b><?= $helper->displayString($errorDescription->getCodeRevision()) ?></b> build for PHP <b><?= $helper->displayString($errorDescription->getCodeBuildFor()) ?></b></span>
+        </div>
 
         <script type="text/javascript">
             document.querySelectorAll('[data-toggle]').forEach(function (el) {

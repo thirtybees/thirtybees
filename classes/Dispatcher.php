@@ -850,18 +850,13 @@ class DispatcherCore
         }
 
         // Instantiate controller
-        try {
-            // Loading controller
-            $controller = ServiceLocator::getInstance()->getController($controllerClass);
+        $controller = ServiceLocator::getInstance()->getController($controllerClass);
 
-            // Execute hook dispatcher
-            Hook::exec('actionDispatcher', $paramsHookActionDispatcher);
+        // Execute hook dispatcher
+        Hook::exec('actionDispatcher', $paramsHookActionDispatcher);
 
-            // Running controller
-            $controller->run();
-        } catch (PrestaShopException $e) {
-            $e->displayMessage();
-        }
+        // Running controller
+        $controller->run();
     }
 
     /**

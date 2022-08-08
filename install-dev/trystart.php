@@ -32,14 +32,11 @@
 try {
     require_once(_TB_INSTALL_PATH_.'classes'.DIRECTORY_SEPARATOR.'controllerHttp.php');
     InstallControllerHttp::execute();
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    $errorDescription = Thirtybees\Core\Error\ErrorUtils::describeException($e);
     $isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-    if ($isAjax) {
-        die(json_encode([
-            'success' => false,
-            'message' => $e->getMessage()
-        ]));
-    } else {
-        PrestaShopException::renderDebugPage(PrestaShopException::describeException($e));
-    }
+    $errorResponse = $isAjax
+        ? new Thirtybees\Core\Error\Response\JSendErrorResponse(true)
+        : new Thirtybees\Core\Error\Response\DebugErrorPage();
+    $errorResponse->sendResponse($errorDescription);
 }

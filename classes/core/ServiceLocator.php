@@ -23,7 +23,11 @@ use Core_Foundation_IoC_Container;
 use Db;
 use Exception;
 use PrestaShopException;
-use function PHPUnit\Framework\throwException;
+use Thirtybees\Core\Error\ErrorHandler;
+use Thirtybees\Core\Error\Response\CliErrorResponse;
+use Thirtybees\Core\Error\Response\DebugErrorPage;
+use Thirtybees\Core\Error\Response\ErrorResponseInterface;
+use Thirtybees\Core\Error\Response\ProductionErrorPage;
 
 /**
  * Class ServiceLocatorCore
@@ -38,6 +42,8 @@ class ServiceLocatorCore
     const SERVICE_SCHEDULER = 'Thirtybees\Core\WorkQueue\Scheduler';
     const SERVICE_WORK_QUEUE_CLIENT = 'Thirtybees\Core\WorkQueue\WorkQueueClient';
     const SERVICE_READ_WRITE_CONNECTION = 'Db';
+    const SERVICE_ERROR_HANDLER = 'Thirtybees\Core\Error\ErrorHandler';
+    const SERVICE_ERROR_RESPONSE = 'Thirtybees\Core\Error\Response\ErrorResponseInterface';
 
     // Legacy services
     const SERVICE_ADAPTER_CONFIGURATION = 'Core_Business_ConfigurationInterface';
@@ -63,6 +69,15 @@ class ServiceLocatorCore
         $this->container = is_null($container)
             ? new Core_Foundation_IoC_Container()
             : $container;
+
+        // initialize error page
+        $this->container->bind(static::SERVICE_ERROR_RESPONSE, $this->getErrorResponse(), true);
+
+        // initialize error handler
+        if (! $this->container->knows(static::SERVICE_ERROR_HANDLER)) {
+            $errorHandler = new ErrorHandler($this->getByServiceName(static::SERVICE_ERROR_RESPONSE));
+            $this->container->bind(static::SERVICE_ERROR_HANDLER, $errorHandler, true);
+        }
 
         // services
         $this->container->bind(static::SERVICE_SERVICE_LOCATOR, $this, true);
@@ -120,12 +135,24 @@ class ServiceLocatorCore
     /**
      * Returns read/write connection
      *
-     * @return \Db
+     * @return Db
      * @throws PrestaShopException
      */
     public function getConnection()
     {
         return $this->getByServiceName(static::SERVICE_READ_WRITE_CONNECTION);
+    }
+
+    /**
+     * @return ErrorHandler
+     */
+    public function getErrorHandler()
+    {
+        try {
+            return $this->getByServiceName(static::SERVICE_ERROR_HANDLER);
+        } catch (PrestaShopException $e) {
+            die('Invariant: error handler must always be known to service locator');
+        }
     }
 
     /**
@@ -144,12 +171,11 @@ class ServiceLocatorCore
 
     /**
      * @return ServiceLocator singleton instance
-     * @throws PrestaShopException
      */
     public static function getInstance()
     {
         if (is_null(static::$instance)) {
-            throw new PrestaShopException("Service locator has not been initialized yet");
+            die("Service locator has not been initialized yet");
         }
         return static::$instance;
     }
@@ -157,17 +183,30 @@ class ServiceLocatorCore
     /**
      * Method to initialize service locator
      * @param Core_Foundation_IoC_Container $container
-     * @throws PrestaShopException
      */
     public static function initialize(Core_Foundation_IoC_Container $container = null)
     {
         if (! is_null(static::$instance)) {
-            throw new PrestaShopException("Service locator is already initialized");
+            die("Service locator is already initialized");
         }
         try {
             static::$instance = new static($container);
-        } catch (Exception $e) {
-            throw new PrestaShopException("Failed to initialize service locator", 0, $e);
+        } catch (\Throwable $e) {
+            die("Failed to initialize service locator: ". $e);
         }
+    }
+
+    /**
+     * @return ErrorResponseInterface
+     */
+    protected function getErrorResponse()
+    {
+        if (php_sapi_name() === 'cli') {
+            return new CliErrorResponse();
+        }
+        if (_PS_MODE_DEV_) {
+            return new DebugErrorPage();
+        }
+        return new ProductionErrorPage();
     }
 }

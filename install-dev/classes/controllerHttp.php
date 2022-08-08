@@ -206,7 +206,7 @@ abstract class InstallControllerHttp
 
             self::$instances[$currentStep]->process();
             self::$instances[$currentStep]->display();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             static::sendErrorResponse($e->getMessage(), $e);
         }
     }
@@ -469,7 +469,7 @@ abstract class InstallControllerHttp
         } else {
             // throw PrestaShopInstallerException for regular requests. This exception will be
             // converted to error page by root exception handler in trystart.php
-            if (!$e || !($e instanceof PrestashopInstallerException)) {
+            if (!($e instanceof PrestashopInstallerException)) {
                 $e = new PrestashopInstallerException($error, 0, $e);
             }
             throw $e;

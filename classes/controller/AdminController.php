@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class AdminControllerCore
  *
@@ -606,8 +608,8 @@ class AdminControllerCore extends Controller
                     return $return;
                 }
             }
-        } catch (PrestaShopException $e) {
-            $e->logError();
+        } catch (Throwable $e) {
+            static::getErrorHandler()->logFatalError(ErrorUtils::describeException($e));
             $this->errors[] = $e->getMessage();
         };
 
@@ -2121,7 +2123,7 @@ class AdminControllerCore extends Controller
             } else {
                 $mask = E_ALL & ~(E_DEPRECATED | E_USER_DEPRECATED);
             }
-            $messages = ErrorHandler::getInstance()->getErrorMessages(false, $mask);
+            $messages = static::getErrorHandler()->getErrorMessages(false, $mask);
             if ($messages) {
                 $this->context->smarty->assign('php_errors', $messages);
             }

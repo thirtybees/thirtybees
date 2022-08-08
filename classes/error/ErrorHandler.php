@@ -17,8 +17,14 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+namespace Thirtybees\Core\Error;
+
+use FileLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use SmartyCustom;
+use Thirtybees\Core\Error\Response\ErrorResponseInterface;
+use Throwable;
 
 /**
  * Class ErrorHandlerCore
@@ -28,14 +34,9 @@ use Psr\Log\LogLevel;
 class ErrorHandlerCore
 {
     /**
-     * @var ErrorHandlerCore singleton instance;
+     * @var ErrorResponseInterface
      */
-    protected static $instance;
-
-    /**
-     * @var bool true if error handling has been set up
-     */
-    protected $initialized = false;
+    protected $errorResponse;
 
     /**
      * @var array list of errors, warnings and notices encountered during request processing
@@ -43,9 +44,9 @@ class ErrorHandlerCore
     protected $errorMessages = [];
 
     /**
-     * @var LoggerInterface psr compliant logger
+     * @var LoggerInterface[] psr compliant logger
      */
-    protected $logger = null;
+    protected $loggers = [];
 
     /**
      * @var callable custom handler of fatal error
@@ -53,33 +54,13 @@ class ErrorHandlerCore
     protected $fatalErrorHandler;
 
     /**
-     * Get instance of error handler
-     *
-     * @return ErrorHandlerCore
+     * Constructs and initialize error handling logic
      *
      * @since 1.1.0
      */
-    public static function getInstance()
+    public function __construct(ErrorResponseInterface $errorResponse)
     {
-        if (! static::$instance) {
-            static::$instance = new static();
-        }
-
-        return static::$instance;
-    }
-
-    /**
-     * Initialize error handling logic
-     *
-     * @throws PrestaShopException
-     *
-     * @since 1.1.0
-     */
-    public function init()
-    {
-        if ($this->initialized) {
-            throw new PrestaShopException('Error handler already initialized');
-        }
+        $this->errorResponse = $errorResponse;
 
         @ini_set('display_errors', 'off');
         @error_reporting(E_ALL | E_STRICT);
@@ -92,8 +73,14 @@ class ErrorHandlerCore
 
         // register shutdown handler to catch fatal errors
         register_shutdown_function([$this, 'shutdown']);
+    }
 
-        $this->initialized = true;
+    /**
+     * @param ErrorResponseInterface $errorResponse
+     */
+    public function setErrorResponseHandler(ErrorResponseInterface $errorResponse)
+    {
+        $this->errorResponse = $errorResponse;
     }
 
     /**
@@ -125,21 +112,56 @@ class ErrorHandlerCore
      * Uncaught exception handler - any uncaught exception will be processed by
      * this method.
      *
-     * @param Exception $e uncaught exception
+     * @param Throwable $e uncaught exception
      *
      * @since 1.1.0
      */
-    public function uncaughtExceptionHandler($e)
+    public function uncaughtExceptionHandler(Throwable $e)
     {
-        $exception = new PrestaShopException(
-            $e->getMessage(),
-            $e->getCode(),
-            $e->getPrevious(),
-            $e->getTrace(),
-            $e->getFile(),
-            $e->getLine()
-        );
-        $exception->displayMessage();
+        static::handleFatalError(ErrorUtils::describeException($e));
+    }
+
+    /**
+     * @param ErrorDescription $errorDescription
+     * @return void
+     */
+    public function handleFatalError(ErrorDescription $errorDescription)
+    {
+        $this->logFatalError($errorDescription);
+        $this->errorResponse->sendResponse($errorDescription);
+        die();
+    }
+
+    /**
+     * @param ErrorDescription $errorDescription
+     * @return void
+     */
+    public function logFatalError(ErrorDescription $errorDescription)
+    {
+        // log all exceptions to file
+        $logger = new FileLogger();
+        $logger->setFilename(_PS_ROOT_DIR_.'/log/'.date('Ymd').'_exception.log');
+        $logger->logError($errorDescription->getExtendedMessage());
+
+        // log exception through custom logger, if set
+        if ($this->loggers) {
+            $error = [
+                'errno' => 0,
+                'errstr' => $errorDescription->getErrorName() . ': ' . $errorDescription->getMessage(),
+                'errfile' => $errorDescription->getSourceFile(),
+                'errline' => $errorDescription->getSourceLine(),
+                'suppressed' => false,
+                'type' => 'Exception',
+                'level' => static::getLogLevel(E_ERROR),
+                'extra' => "Stacktrace:\n" . $errorDescription->getTraceAsString()
+            ];
+            $previous = $errorDescription->getCause();
+            while ($previous) {
+                $error['extra'] .= "\nCaused by: " . $previous->getErrorName() . ': ' . $previous->getMessage() . ' at line ' . $previous->getSourceLine() . ' in file ' . $previous->getSourceFile();
+                $previous = $previous->getCause();
+            }
+            $this->logMessage($error);
+        }
     }
 
     /**
@@ -160,21 +182,32 @@ class ErrorHandlerCore
         $suppressed = error_reporting() === 0;
         $file = $errfile;
         $line = $errline;
+        $realFile = null;
+        $realLine = 0;
 
         if (SmartyCustom::isCompiledTemplate($file)) {
+            $realFile = static::normalizeFileName($errfile);
+            $realLine = $errline;
             $file = SmartyCustom::getCurrentTemplate();
             $line = 0;
         }
 
+        $file = static::normalizeFileName($file);
+
         $error = [
             'errno'       => $errno,
             'errstr'      => $errstr,
-            'errfile'     => static::normalizeFileName($file),
+            'errfile'     => $file,
             'errline'     => $line,
             'suppressed'  => $suppressed,
             'type'        => static::getErrorType($errno),
             'level'       => static::getLogLevel($errno),
         ];
+        if ($realFile) {
+            $error['realFile'] = $realFile;
+            $error['realLine'] = $realLine;
+        }
+
         $this->errorMessages[] = $error;
         if (! $suppressed) {
             $this->logMessage($error);
@@ -193,44 +226,31 @@ class ErrorHandlerCore
         $error = error_get_last();
 
         if (is_array($error) && static::isFatalError($error['type'])) {
+            $errorDescription = ErrorUtils::describeError($error);
             if ($this->fatalErrorHandler && is_callable($this->fatalErrorHandler)) {
+                $this->logFatalError($errorDescription);
                 call_user_func($this->fatalErrorHandler, $error);
             } else {
-                $stack = [
-                    1 => [
-                        'file' => $error['file'],
-                        'line' => $error['line'],
-                        'type' => 'Fatal error',
-                    ]
-                ];
-                $exception = new PrestaShopException(
-                    $error['message'],
-                    0,
-                    null,
-                    $stack,
-                    $error['file'],
-                    $error['line']
-                );
-                $exception->displayMessage();
+                $this->handleFatalError($errorDescription);
             }
         }
     }
 
     /**
-     * Sets external logger. If $replay parameter is true, then any already
+     * Adds external logger. If $replay parameter is true, then any already
      * collected error messages will be emitted.
      *
-     * @param $logger
+     * @param LoggerInterface $logger
      * @param bool $replay
      *
      * @since 1.1.0
      */
-    public function setLogger(LoggerInterface $logger, $replay=false)
+    public function addLogger(LoggerInterface $logger, $replay=false)
     {
-        $this->logger = $logger;
+        $this->loggers[] = $logger;
         if ($replay) {
             foreach($this->getErrorMessages(false) as $errorMessage) {
-                $this->logMessage($errorMessage);
+                $this->sendMessageToLogger($logger, $errorMessage);
             }
         }
     }
@@ -257,37 +277,11 @@ class ErrorHandlerCore
      */
     protected function logMessage($msg)
     {
-        if (! $this->logger) {
+        if (! $this->loggers) {
             return;
         }
-
-        $message = static::formatErrorMessage($msg);
-
-        switch ($msg['level']) {
-            case LogLevel::EMERGENCY:
-                $this->logger->emergency($message);
-                break;
-            case LogLevel::ALERT:
-                $this->logger->alert($message);
-                break;
-            case LogLevel::CRITICAL:
-                $this->logger->critical($message);
-                break;
-            case LogLevel::ERROR:
-                $this->logger->error($message);
-                break;
-            case LogLevel::WARNING:
-                $this->logger->warning($message);
-                break;
-            case LogLevel::NOTICE:
-                $this->logger->notice($message);
-                break;
-            case LogLevel::INFO:
-                $this->logger->info($message);
-                break;
-            case LogLevel::DEBUG:
-                $this->logger->debug($message);
-                break;
+        foreach ($this->loggers as $logger) {
+            $this->sendMessageToLogger($logger, $msg);
         }
     }
 
@@ -303,7 +297,7 @@ class ErrorHandlerCore
         $file = static::normalizeFileName($msg['errfile']);
 
         return $msg['type'].': '
-               .$msg['errstr'].' in '.$file.' at line '.$msg['errline'];
+            .$msg['errstr'].' in '.$file.' at line '.$msg['errline'];
     }
 
     /**
@@ -360,13 +354,13 @@ class ErrorHandlerCore
      */
     public static function isFatalError($errno)
     {
-       return (
-           $errno === E_USER_ERROR ||
-           $errno === E_ERROR ||
-           $errno === E_CORE_ERROR ||
-           $errno === E_COMPILE_ERROR ||
-           $errno === E_RECOVERABLE_ERROR
-       );
+        return (
+            $errno === E_USER_ERROR ||
+            $errno === E_ERROR ||
+            $errno === E_CORE_ERROR ||
+            $errno === E_COMPILE_ERROR ||
+            $errno === E_RECOVERABLE_ERROR
+        );
     }
 
     /**
@@ -423,6 +417,43 @@ class ErrorHandlerCore
                 return false;
             default:
                 return (bool) (int) $value;
+        }
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     * @param $msg
+     * @return void
+     */
+    protected function sendMessageToLogger(LoggerInterface $logger, $msg)
+    {
+        $message = static::formatErrorMessage($msg);
+
+        switch ($msg['level']) {
+            case LogLevel::EMERGENCY:
+                $logger->emergency($message, $msg);
+                break;
+            case LogLevel::ALERT:
+                $logger->alert($message, $msg);
+                break;
+            case LogLevel::CRITICAL:
+                $logger->critical($message, $msg);
+                break;
+            case LogLevel::ERROR:
+                $logger->error($message, $msg);
+                break;
+            case LogLevel::WARNING:
+                $logger->warning($message, $msg);
+                break;
+            case LogLevel::NOTICE:
+                $logger->notice($message, $msg);
+                break;
+            case LogLevel::INFO:
+                $logger->info($message, $msg);
+                break;
+            case LogLevel::DEBUG:
+                $logger->debug($message, $msg);
+                break;
         }
     }
 }

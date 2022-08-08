@@ -19,13 +19,14 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use ErrorHandler;
 use Exception;
 use ObjectModel;
 use ReflectionClass;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use ReflectionException;
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Throwable;
 
 /**
  * Class WorkQueueTaskCore
@@ -211,7 +212,7 @@ class WorkQueueTaskCore extends ObjectModel
      */
     public function run()
     {
-        $errorHandler = ErrorHandler::getInstance();
+        $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
         $previousFatalErrorHandler = $errorHandler->setFatalErrorHandler([$this, 'fatalErrorHandler']);
 
         $this->start = microtime(true);
@@ -225,7 +226,7 @@ class WorkQueueTaskCore extends ObjectModel
             $this->error = null;
             $this->duration = microtime(true) - $this->start;
             $this->saveRecord(false);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->status = static::STATUS_FAILURE;
             $this->duration = date('Y-m-d H:i:s');
             $this->result = null;
@@ -257,7 +258,6 @@ class WorkQueueTaskCore extends ObjectModel
     public function fatalErrorHandler($error)
     {
         $this->status = static::STATUS_FAILURE;
-        $this->duration = date('Y-m-d H:i:s');
         $this->result = null;
         $this->error = "Error: ";
         if (isset($error['message'])) {
@@ -287,8 +287,8 @@ class WorkQueueTaskCore extends ObjectModel
         if ($force || $this->id) {
             try {
                  $this->save();
-            } catch (Exception $e) {
-                $this->error = $e;
+            } catch (Throwable $e) {
+                $this->error = $e->__toString();
             }
         }
     }
@@ -316,7 +316,7 @@ class WorkQueueTaskCore extends ObjectModel
                 $instance = $reflection->newInstance();
                 static::$callableMap[$task] = $instance;
             } else {
-                throw new PrestaShopException("Failed to resolve WorkQueueTaskCallable class " . $task . "");
+                throw new PrestaShopException("Failed to resolve WorkQueueTaskCallable class " . $task);
             }
         }
         return static::$callableMap[$task];

@@ -39,7 +39,7 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
     /**
      * @var string|null contains sql statement associated with error
      */
-    private $sql = null;
+    private $sql;
 
     /**
      * PrestaShopDatabaseExceptionCore constructor.
@@ -89,14 +89,14 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
      *
      * @return array describing sections
      */
-    protected function getExtraSections()
+    public function getExtraSections()
     {
         $sections = parent::getExtraSections();
         if ($this->sql) {
           $sections [] = [
               'label' => 'SQL',
               'content' => '<pre>' . $this->sql . '</pre>'
-          ]   ;
+          ];
         }
         return $sections;
 

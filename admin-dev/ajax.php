@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\Response\JSendErrorResponse;
+
 if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', getcwd());
 }
@@ -38,6 +43,7 @@ include(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 require_once(_PS_ADMIN_DIR_.'/init.php');
 
 $context = Context::getContext();
+ServiceLocator::getInstance()->getErrorHandler()->setErrorResponseHandler(new JSendErrorResponse(_PS_MODE_DEV_));
 
 if (Tools::isSubmit('ajaxReferrers')) {
     if (Tools::isSubmit('ajaxProductFilter')) {
@@ -103,28 +109,18 @@ if (Tools::isSubmit('getNotifications')) {
     if (! headers_sent()) {
         header('Content-Type: application/json');
     }
-    try {
-        $notification = $context->employee->getNotification();
-        die(json_encode($notification->getNotifications()));
-    } catch (PrestaShopException $e) {
-        $e->logError();
-        die([]);
-    }
+    $notification = $context->employee->getNotification();
+    die(json_encode($notification->getNotifications()));
 }
 
 if (Tools::isSubmit('markNotificationsRead')) {
     if (! headers_sent()) {
         header('Content-Type: application/json');
     }
-    try {
-        $notification = $context->employee->getNotification();
-        $type = Tools::getValue('type');
-        $lastId = (int)Tools::getValue('lastId');
-        die(json_encode(['success' => $notification->markAsRead($type, $lastId)]));
-    } catch (PrestaShopException $e) {
-        $e->logError();
-        die(json_encode(['success' => false]));
-    }
+    $notification = $context->employee->getNotification();
+    $type = Tools::getValue('type');
+    $lastId = (int)Tools::getValue('lastId');
+    die(json_encode(['success' => $notification->markAsRead($type, $lastId)]));
 }
 
 if (Tools::isSubmit('searchCategory')) {
@@ -147,7 +143,7 @@ if (Tools::isSubmit('searchCategory')) {
 
 if (Tools::isSubmit('getParentCategoriesId') && $id_category = Tools::getValue('id_category')) {
     $category = new Category((int)$id_category);
-    $results = Db::getInstance()->executeS('SELECT `id_category` FROM `'._DB_PREFIX_.'category` c WHERE c.`nleft` < '.(int)$category->nleft.' AND c.`nright` > '.(int)$category->nright.'');
+    $results = Db::getInstance()->executeS('SELECT `id_category` FROM `'._DB_PREFIX_.'category` c WHERE c.`nleft` < '.(int)$category->nleft.' AND c.`nright` > '.(int)$category->nright);
     $output = [];
     foreach ($results as $result) {
         $output[] = $result;

@@ -816,13 +816,14 @@ class ConfigurationCore extends ObjectModel
      * Note: a need for calling this method directly should be rare.
      *       updateValue() and updateGlobalValue() do this on their own already.
      *
-     * @param string $key         Key wanted
-     * @param mixed  $values      $values is an array if the configuration is multilingual, a single string else.
-     * @param int    $idShopGroup
-     * @param int    $idShop
+     * @param string $key Key wanted
+     * @param mixed $values $values is an array if the configuration is multilingual, a single string else.
+     * @param int $idShopGroup
+     * @param int $idShop
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function set($key, $values, $idShopGroup = null, $idShop = null)
     {
@@ -955,8 +956,9 @@ class ConfigurationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function isLangKey($key)
     {
@@ -1055,16 +1057,18 @@ class ConfigurationCore extends ObjectModel
      *
      * @param string $key
      *
+     * @throws PrestaShopException
      * @since   1.0.8
      */
     protected static function validateKey($key)
     {
         if ( ! Validate::isConfigName($key)) {
-            $e = new PrestaShopException(sprintf(
+            $message= sprintf(
                 Tools::displayError('[%s] is not a valid configuration key'),
                 Tools::htmlentitiesUTF8($key)
-            ));
-            $e->displayMessage();
+            );
+            trigger_error($message, E_USER_WARNING);
+            throw new PrestaShopException($message);
         }
     }
 
