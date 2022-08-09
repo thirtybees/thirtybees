@@ -1847,14 +1847,7 @@ class ToolsCore
             $context = Context::getContext();
         }
 
-        if (isset($context->language) && $context->language->iso_code) {
-            $isoCode = $context->language->iso_code;
-        } else if ($defaultIsoCode = Language::getIsoById(Configuration::get('PS_LANG_DEFAULT'))) {
-            $isoCode = $defaultIsoCode;
-        } else {
-            $isoCode = 'en';
-        }
-
+        $isoCode = static::resolveErrorLanguage($context);
         $errorLangFile = _PS_TRANSLATIONS_DIR_ . $isoCode . '/errors.php';
         if (file_exists($errorLangFile)) {
             @include_once($errorLangFile);
@@ -5502,6 +5495,37 @@ FileETag none
             }
         }
         return $max + 1;
+    }
+
+    /**
+     * Helper method that resolves language for error messages
+     *
+     * @param Context $context
+     * @return string
+     */
+    protected static function resolveErrorLanguage($context)
+    {
+        // use language from context, if set up
+        if (isset($context->language) && $context->language->iso_code) {
+            return$context->language->iso_code;
+        }
+
+        // use default store language
+        if (Configuration::configurationIsLoaded()) {
+            try {
+                $defaultLang = (int)Configuration::get('PS_LANG_DEFAULT');
+                if ($defaultLang) {
+                    $defaultIsoCode = Language::getIsoById($defaultLang);
+                    if ($defaultIsoCode) {
+                        return $defaultIsoCode;
+                    }
+                }
+            } catch (Throwable $ignored) {
+            }
+        }
+
+        // fallback to english
+        return 'en';
     }
 }
 

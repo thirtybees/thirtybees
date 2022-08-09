@@ -118,12 +118,12 @@ class DbPDOCore extends Db
         try {
             $this->link = $this->_getPDO($this->server, $this->user, $this->password, $this->database, 5);
         } catch (PDOException $e) {
-            die(sprintf('Link to database cannot be established: %s', utf8_encode($e->getMessage())));
+            die(sprintf(Tools::displayError('Link to database cannot be established: %s'), utf8_encode($e->getMessage())));
         }
 
         // UTF-8 support
         if ($this->link->exec('SET NAMES \'utf8mb4\'') === false) {
-            die('thirty bees Fatal error: no UTF-8 support. Please check your server configuration.');
+            die(Tools::displayError('thirty bees Fatal error: no UTF-8 support. Please check your server configuration.'));
         }
 
         $this->link->exec('SET SESSION sql_mode = \'\'');
