@@ -1822,7 +1822,7 @@ class ToolsCore
     public static function safeOutput($string, $html = false)
     {
         if (!$html) {
-            $string = strip_tags($string);
+            $string = strip_tags((string)$string);
         }
 
         return @Tools::htmlentitiesUTF8($string, ENT_QUOTES);
