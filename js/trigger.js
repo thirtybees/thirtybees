@@ -15,11 +15,11 @@
  * @copyright 2021 - 2021 thirty bees
  * @license   Academic Free License (AFL 3.0)
  */
-$(window).on('load', function() {
+window.addEventListener("load", function() {
   if (window.triggerToken && window.triggerUrl) {
-    $.post(window.triggerUrl, {
-      ajax: 1,
-      secret: window.triggerToken,
-    });
+    var request = new XMLHttpRequest();
+    request.open("POST", window.triggerUrl, true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.send("ajax=1&secret="+window.triggerToken);
   }
 });
