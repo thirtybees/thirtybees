@@ -650,7 +650,7 @@ class MediaCore
 
             $infos['path'] = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, '/', $urlData['path']);
 
-            if (!@filemtime($infos['path'])) {
+            if (! file_exists($infos['path'])) {
                 $infos['path'] = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, '/', $urlData['path']);
             }
 
@@ -658,10 +658,13 @@ class MediaCore
             if (!array_key_exists('date', $cssFilesByMedia[$media])) {
                 $cssFilesByMedia[$media]['date'] = 0;
             }
-            $cssFilesByMedia[$media]['date'] = max(
-                (int) @filemtime($infos['path']),
-                $cssFilesByMedia[$media]['date']
-            );
+
+            if (file_exists($infos['path'])) {
+                $cssFilesByMedia[$media]['date'] = max(
+                    (int)@filemtime($infos['path']),
+                    $cssFilesByMedia[$media]['date']
+                );
+            }
 
             if (!array_key_exists($media, $compressedCssFilesInfos)) {
                 $compressedCssFilesInfos[$media] = ['key' => ''];
@@ -674,10 +677,11 @@ class MediaCore
         foreach ($compressedCssFilesInfos as $media => &$info) {
             $key = md5($info['key'].$protocolLink);
             $filename = $cachePath.'v_'.$version.'_'.$key.'_'.$media.'.css';
+            $mtime = file_exists($filename) ? (int)@filemtime($filename) : 0;
 
             $info = [
                 'key'  => $key,
-                'date' => (int) @filemtime($filename),
+                'date' => $mtime,
             ];
         }
 
@@ -842,7 +846,7 @@ class MediaCore
         $compressedJsFilename = md5($compressedJsFilename);
         $version = (int) Configuration::get('PS_CCCJS_VERSION');
         $compressedJsPath = $cachePath.'v_'.$version.'_'.$compressedJsFilename.'.js';
-        $compressedJsFileDate = (int) @filemtime($compressedJsPath);
+        $compressedJsFileDate = file_exists($compressedJsPath) ? (int) @filemtime($compressedJsPath) : 0;
 
         // aggregate and compress js files content, write new caches files
         if ($jsFilesDate > $compressedJsFileDate) {
