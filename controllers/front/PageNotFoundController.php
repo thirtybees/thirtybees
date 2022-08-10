@@ -58,17 +58,19 @@ class PageNotFoundControllerCore extends FrontController
      */
     public function initContent()
     {
-        if (preg_match('/\.(webp|gif|jpe?g|png|ico)$/i', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $urlPath = parse_url($requestUri, PHP_URL_PATH);
+        if ($urlPath && preg_match('/\.(webp|gif|jpe?g|png|ico)$/i', $urlPath)) {
             $this->context->cookie->disallowWriting();
 
             // First preg_match() matches friendly URLs, second one plain URLs.
             $imageType = $sourcePath = $sendPath = null;
             if (preg_match('@^'.__PS_BASE_URI__
                 .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(webp|png|jpe?g|gif)$@',
-                $_SERVER['REQUEST_URI'], $matches)
+                    $requestUri, $matches)
                 || preg_match('@^'._PS_PROD_IMG_
                    .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(webp|png|jpe?g|gif)$@',
-                   $_SERVER['REQUEST_URI'], $matches)) {
+                    $requestUri, $matches)) {
                 $imageType = ImageType::getByNameNType($matches[2], 'products');
                 if ($imageType) {
                     $root = _PS_PROD_IMG_DIR_;
@@ -92,10 +94,10 @@ class PageNotFoundControllerCore extends FrontController
                     $dir = str_replace(_PS_IMG_, '', $path);
                     if (preg_match('@^'.__PS_BASE_URI__.$dir
                         .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(webp|png|jpe?g|gif)$@',
-                        $_SERVER['REQUEST_URI'], $matches)
+                            $requestUri, $matches)
                         || preg_match('@^'.$path
                             .'([0-9]+)\-([_a-zA-Z-]+)(\.)(webp|png|jpe?g|gif)$@',
-                            $_SERVER['REQUEST_URI'], $matches)
+                            $requestUri, $matches)
                     ) {
                         $imageType = ImageType::getByNameNType(
                             $matches[2],
@@ -152,7 +154,7 @@ class PageNotFoundControllerCore extends FrontController
             header('Content-Type: image/gif');
             readfile(_PS_IMG_DIR_.'404.gif');
             exit;
-        } elseif (in_array(mb_strtolower(substr($_SERVER['REQUEST_URI'], -3)), ['.js', 'css'])) {
+        } elseif (in_array(mb_strtolower(substr($requestUri, -3)), ['.js', 'css'])) {
             $this->context->cookie->disallowWriting();
             exit;
         }
