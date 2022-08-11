@@ -912,7 +912,7 @@ class ValidateCore
      */
     public static function isOrderBy($order)
     {
-        return (bool) preg_match('/^[a-zA-Z0-9.!_-]+$/', $order);
+        return (bool) preg_match('/^[a-zA-Z0-9.!_-]+$/', (string)$order);
     }
 
     /**
