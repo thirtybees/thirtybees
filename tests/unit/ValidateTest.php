@@ -382,7 +382,7 @@ class ValidateTest extends \Codeception\TestCase\Test
             [true,  '6'],
             [true,  '6.12'],
             [true,  '6.123456'],
-            [false, '6.12345678'],
+            [true, '6.12345678'],
             [false, 'cheap'],
             [false, '6,00'],
             [true,  '006.00'],
