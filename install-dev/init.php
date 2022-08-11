@@ -32,8 +32,8 @@
 ob_start();
 
 // Check PHP version
-if (version_compare(PHP_VERSION, '5.6', '<')) {
-    die('You need at least PHP 5.6 to run thirty bees. Your current PHP version is '.PHP_VERSION);
+if (version_compare(PHP_VERSION, '7.0', '<')) {
+    die('You need at least PHP 7.0 to run thirty bees. Your current PHP version is '.PHP_VERSION);
 }
 
 // we check if theses constants are defined in order to use init.php
