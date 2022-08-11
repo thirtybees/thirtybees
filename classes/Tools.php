@@ -1188,19 +1188,16 @@ class ToolsCore
     {
         $backtrace = debug_backtrace();
         $callee = next($backtrace);
-        $error = 'Parameter '.$parameter.' in function '.(isset($callee['function']) ? $callee['function'] : '').'() is deprecated in '.$callee['file'].' on line '.(isset($callee['line']) ? $callee['line'] : '(undefined)');
-        $message = 'The parameter '.$parameter.' in function '.$callee['function'].' (Line '.(isset($callee['line']) ? $callee['line'] : 'undefined').') is deprecated and will be removed in the next major version.';
-        $class = isset($callee['class']) ? $callee['class'] : null;
+        $error = 'Parameter '.$parameter.' in function '.($callee['function'] ?? '').'() is deprecated in '.$callee['file'].' on line '.($callee['line'] ?? '(undefined)');
+        $message = 'The parameter '.$parameter.' in function '.$callee['function'].' (Line '.($callee['line'] ?? 'undefined').') is deprecated and will be removed in the next major version.';
+        $class = $callee['class'] ?? null;
 
         Tools::throwDeprecated($error, $message, $class);
     }
 
     protected static function throwDeprecated($error, $message, $class)
     {
-        if (_PS_DISPLAY_COMPATIBILITY_WARNING_) {
-            trigger_error($error, E_USER_DEPRECATED);
-            Logger::addLog($message, 3, $class);
-        }
+        trigger_error($error, E_USER_DEPRECATED);
     }
 
     /**
@@ -1471,7 +1468,7 @@ class ToolsCore
     {
         $backtrace = debug_backtrace();
         $callee = next($backtrace);
-        $class = isset($callee['class']) ? $callee['class'] : null;
+        $class = $callee['class'] ?? null;
         if ($message === null) {
             $message = 'The function '.$callee['function'].' (Line '.$callee['line'].') is deprecated and will be removed in the next major version.';
         }
@@ -3465,7 +3462,7 @@ FileETag none
         $callee = current($backtrace);
         $error = 'File '.$callee['file'].' is deprecated';
         $message = 'The file '.$callee['file'].' is deprecated and will be removed in the next major version.';
-        $class = isset($callee['class']) ? $callee['class'] : null;
+        $class = $callee['class'] ?? null;
 
         Tools::throwDeprecated($error, $message, $class);
     }
