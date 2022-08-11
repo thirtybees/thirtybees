@@ -502,11 +502,11 @@ abstract class AdminTabCore
         $this->context->cookie->{$this->table.'_pagination'} = $limit;
 
         /* Check params validity */
-        if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)
-            || !is_numeric($start) || !is_numeric($limit)
-            || !Validate::isUnsignedId($idLang)
-        ) {
-            die(Tools::displayError('get list params is not valid'));
+        if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('Invalid ordering parameters: orderBy=[%s] orderWay=[%s]'), $orderBy, $orderWay));
+        }
+        if (!is_numeric($start) || !is_numeric($limit) || !Validate::isUnsignedId($idLang)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('getList params is not valid: start=[%s] limit=[%s] idLang=[%s]'), $start, $limit, $idLang));
         }
 
         /* Determine offset from current page */
