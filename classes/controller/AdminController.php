@@ -2515,8 +2515,9 @@ class AdminControllerCore extends Controller
      * assign default action in toolbar_btn smarty var, if they are not set.
      * uses override to specifically add, modify or remove items
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function initToolbar()
     {
@@ -2528,32 +2529,17 @@ class AdminControllerCore extends Controller
                     'href' => '#',
                     'desc' => $this->l('Save'),
                 ];
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
-                if (!Validate::isCleanHtml($back)) {
-                    die(Tools::displayError());
-                }
                 if (!$this->lite_display) {
                     $this->toolbar_btn['cancel'] = [
-                        'href' => $back,
+                        'href' => $this->getBackUrlParameter(),
                         'desc' => $this->l('Cancel'),
                     ];
                 }
                 break;
             case 'view':
-                // Default cancel button - like old back link
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
-                if (!Validate::isCleanHtml($back)) {
-                    die(Tools::displayError());
-                }
                 if (!$this->lite_display) {
                     $this->toolbar_btn['back'] = [
-                        'href' => $back,
+                        'href' => $this->getBackUrlParameter(),
                         'desc' => $this->l('Back to list'),
                     ];
                 }
@@ -2680,8 +2666,9 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function initPageHeaderToolbar()
     {
@@ -2696,16 +2683,9 @@ class AdminControllerCore extends Controller
         switch ($this->display) {
             case 'view':
                 // Default cancel button - like old back link
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
-                if (!Validate::isCleanHtml($back)) {
-                    die(Tools::displayError());
-                }
                 if (!$this->lite_display) {
                     $this->page_header_toolbar_btn['back'] = [
-                        'href' => $back,
+                        'href' => $this->getBackUrlParameter(),
                         'desc' => $this->l('Back to list'),
                     ];
                 }
@@ -2899,15 +2879,7 @@ class AdminControllerCore extends Controller
             $helper->tpl_vars = $this->getTemplateFormVars();
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
 
-            $back = Tools::safeOutput(Tools::getValue('back', ''));
-            if (empty($back)) {
-                $back = static::$currentIndex.'&token='.$this->token;
-            }
-            if (!Validate::isCleanHtml($back)) {
-                die(Tools::displayError());
-            }
-
-            $helper->back_url = $back;
+            $helper->back_url = $this->getBackUrlParameter();
             !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
             if ($this->tabAccess['view']) {
                 if (Tools::getValue('back')) {
@@ -4881,5 +4853,21 @@ class AdminControllerCore extends Controller
             }
         }
         return $permissions;
+    }
+
+    /**
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getBackUrlParameter(): string
+    {
+        $back = Tools::safeOutput(Tools::getValue('back', ''));
+        if (empty($back)) {
+            $back = static::$currentIndex . '&token=' . $this->token;
+        }
+        if (!Validate::isCleanHtml($back)) {
+            throw new PrestaShopException(Tools::displayError('Parameter $back is invalid'));
+        }
+        return $back;
     }
 }
