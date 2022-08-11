@@ -365,7 +365,7 @@ abstract class ControllerCore
         }
         $html = trim($html);
 
-        $debugScript = _PS_MODE_DEV_ ? $this->getErrorMessagesScript() : '';
+        $debugScript = $this->getErrorMessagesScript();
         if ($debugScript) {
             $html = str_replace("</body>", $debugScript . "</body>", $html);
         }
@@ -769,7 +769,7 @@ abstract class ControllerCore
      */
     protected function getErrorMessagesScript()
     {
-        $messages = static::getErrorHandler()->getErrorMessages(false);
+        $messages = static::getErrorMessages();
         if ($messages) {
             $messagesList = [];
             foreach ($messages as $msg) {
@@ -819,5 +819,22 @@ abstract class ControllerCore
     protected static function getErrorHandler(): ErrorHandler
     {
         return ServiceLocator::getInstance()->getErrorHandler();
+    }
+
+    /**
+     * Returns error messages collected by ErrorHandler
+     * @return array
+     */
+    protected static function getErrorMessages()
+    {
+        if (_PS_MODE_DEV_) {
+            if (_PS_DISPLAY_COMPATIBILITY_WARNING_) {
+                $mask = E_ALL;
+            } else {
+                $mask = E_ALL & ~(E_DEPRECATED | E_USER_DEPRECATED);
+            }
+            return static::getErrorHandler()->getErrorMessages(false, $mask);
+        }
+        return [];
     }
 }

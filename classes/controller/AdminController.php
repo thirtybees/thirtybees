@@ -2117,16 +2117,9 @@ class AdminControllerCore extends Controller
             );
         }
 
-        if (_PS_MODE_DEV_) {
-            if (_PS_DISPLAY_COMPATIBILITY_WARNING_) {
-                $mask = E_ALL;
-            } else {
-                $mask = E_ALL & ~(E_DEPRECATED | E_USER_DEPRECATED);
-            }
-            $messages = static::getErrorHandler()->getErrorMessages(false, $mask);
-            if ($messages) {
-                $this->context->smarty->assign('php_errors', $messages);
-            }
+        $messages = static::getErrorMessages();
+        if ($messages) {
+            $this->context->smarty->assign('php_errors', $messages);
         }
 
         $this->context->smarty->assign(
