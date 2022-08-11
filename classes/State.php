@@ -193,7 +193,7 @@ class StateCore extends ObjectModel
     /**
      * @param int $idCountry
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -202,11 +202,7 @@ class StateCore extends ObjectModel
      */
     public static function getStatesByIdCountry($idCountry)
     {
-        if (empty($idCountry)) {
-            die(Tools::displayError());
-        }
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('state', 's')
@@ -232,7 +228,7 @@ class StateCore extends ObjectModel
     /**
      * @param int $idState
      *
-     * @return false|null|string
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -240,11 +236,7 @@ class StateCore extends ObjectModel
      */
     public static function getIdZone($idState)
     {
-        if (!Validate::isUnsignedId($idState)) {
-            die(Tools::displayError());
-        }
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_zone`')
                 ->from('state')

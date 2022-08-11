@@ -96,16 +96,17 @@ abstract class ModuleGridCore extends Module
      * @param $sort
      * @param $dir
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function create($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
         if (!Validate::isModuleName($render)) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Failed to resolve renderer module");
         }
         if (!file_exists($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Invalid renderer module: " . $render);
         }
         require_once($file);
         $this->_render = new $render($type);
@@ -138,8 +139,9 @@ abstract class ModuleGridCore extends Module
      *
      * @return mixed
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public function engine($params)
     {
@@ -147,7 +149,7 @@ abstract class ModuleGridCore extends Module
             return Tools::displayError('No grid engine selected');
         }
         if (!Validate::isModuleName($render)) {
-            die(Tools::displayError());
+            return Tools::displayError('Invalid grid engine.');
         }
         if (!file_exists(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
             return Tools::displayError('Grid engine selected is unavailable.');

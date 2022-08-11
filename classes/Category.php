@@ -203,9 +203,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function getCategories($idLang = false, $active = true, $order = true, $sqlFilter = '', $sqlSort = '', $sqlLimit = '')
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             '
 			SELECT *
@@ -282,14 +279,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $sqlSort = '',
         $sqlLimit = ''
     ) {
-        if (isset($rootCategory) && !Validate::isInt($rootCategory)) {
-            die(Tools::displayError());
-        }
-
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         if (isset($groups) && Group::isFeatureActive() && !is_array($groups)) {
             $groups = (array) $groups;
         }
@@ -352,14 +341,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $sqlSort = '',
         $sqlLimit = ''
     ) {
-        if (isset($rootCategory) && !Validate::isInt($rootCategory)) {
-            die(Tools::displayError());
-        }
-
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         if (isset($groups) && Group::isFeatureActive() && !is_array($groups)) {
             $groups = (array) $groups;
         }
@@ -568,10 +549,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function getChildren($idParent, $idLang, $active = true, $idShop = false)
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         $cacheId = 'Category::getChildren_'.(int) $idParent.'-'.(int) $idLang.'-'.(bool) $active.'-'.(int) $idShop;
         if (!Cache::isStored($cacheId)) {
             $query = 'SELECT c.`id_category`, cl.`name`, cl.`link_rewrite`, category_shop.`id_shop`
@@ -608,10 +585,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function hasChildren($idParent, $idLang, $active = true, $idShop = false)
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         $cacheId = 'Category::hasChildren_'.(int) $idParent.'-'.(int) $idLang.'-'.(bool) $active.'-'.(int) $idShop;
         if (!Cache::isStored($cacheId)) {
             $query = 'SELECT c.id_category, "" AS name
@@ -2671,18 +2644,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.4.0 -- not used by core
      */
     protected function recursiveDelete(&$toDelete, $idCategory)
     {
-        if (!is_array($toDelete) || !$idCategory) {
-            die(Tools::displayError());
-        }
-
+        Tools::displayAsDeprecated();
         if (PageCache::isEnabled()) {
             PageCache::invalidateEntity('category', $this->id);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category')

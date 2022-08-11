@@ -125,7 +125,7 @@ class AdminRequestSqlControllerCore extends AdminController
     {
         /* PrestaShop demo mode */
         if (_PS_MODE_DEMO_) {
-            die(Tools::displayError('This functionality has been disabled.'));
+            $this->ajaxDie(Tools::displayError('This functionality has been disabled.'));
         }
         if ($table = Tools::GetValue('table')) {
             $requestSql = new RequestSql();
@@ -504,6 +504,8 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function generateExport()
@@ -511,7 +513,7 @@ class AdminRequestSqlControllerCore extends AdminController
         $id = Tools::getValue($this->identifier);
         $exportDir = _PS_ADMIN_DIR_.'/export/';
         if (!Validate::isFileName($id)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError("Invalid filename [%s]"), Tools::safeOutput($id)));
         }
         $file = 'request_sql_'.$id.'.csv';
         if ($csv = fopen($exportDir.$file, 'w')) {
@@ -544,7 +546,7 @@ class AdminRequestSqlControllerCore extends AdminController
                         header('Content-Disposition: attachment; filename="'.$file.'"');
                         header('Content-Length: '.$filesize);
                         readfile($exportDir.$file);
-                        die();
+                        exit;
                     } else {
                         $this->errors[] = Tools::DisplayError('The file is too large and can not be downloaded. Please use the LIMIT clause in this query.');
                     }

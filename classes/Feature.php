@@ -264,7 +264,7 @@ class FeatureCore extends ObjectModel
         foreach ($fields as $field) {
             foreach (array_keys($field) as $key) {
                 if (!Validate::isTableOrIdentifier($key)) {
-                    die(Tools::displayError());
+                    throw new PrestaShopException('key '.$key.' is not a valid table or identifier');
                 }
             }
 

@@ -64,16 +64,17 @@ class AddressesControllerCore extends FrontController
     /**
      * Initialize addresses controller
      *
+     * @throws PrestaShopException
+     * @since 1.0.0
      * @see   FrontController::init()
      *
-     * @since 1.0.0
      */
     public function init()
     {
         parent::init();
 
         if (!Validate::isLoadedObject($this->context->customer)) {
-            die(Tools::displayError('The customer could not be found.'));
+            throw new PrestaShopException(Tools::displayError('The customer could not be found.'));
         }
     }
 

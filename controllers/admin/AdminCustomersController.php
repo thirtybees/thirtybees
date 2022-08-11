@@ -1311,7 +1311,7 @@ class AdminCustomersControllerCore extends AdminController
             ];
         }
 
-        die(json_encode($toReturn));
+        $this->ajaxDie(json_encode($toReturn));
     }
 
     /**
@@ -1319,6 +1319,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessUpdateCustomerNote()
@@ -1327,16 +1328,16 @@ class AdminCustomersControllerCore extends AdminController
             $note = Tools::htmlentitiesDecodeUTF8(Tools::getValue('note'));
             $customer = new Customer((int) Tools::getValue('id_customer'));
             if (!Validate::isLoadedObject($customer)) {
-                die('error:update');
+                $this->ajaxDie('error:update');
             }
             if (!empty($note) && !Validate::isCleanHtml($note)) {
-                die('error:validation');
+                $this->ajaxDie('error:validation');
             }
             $customer->note = $note;
             if (!$customer->update()) {
-                die('error:update');
+                $this->ajaxDie('error:update');
             }
-            die('ok');
+            $this->ajaxDie('ok');
         }
     }
 

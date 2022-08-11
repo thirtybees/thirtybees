@@ -651,15 +651,7 @@ class AdminStatusesControllerCore extends AdminController
         $helper = $this->initOrderReturnsForm();
         $helper->show_cancel_button = true;
 
-        $back = Tools::safeOutput(Tools::getValue('back', ''));
-        if (empty($back)) {
-            $back = static::$currentIndex.'&token='.$this->token;
-        }
-        if (!Validate::isCleanHtml($back)) {
-            die(Tools::displayError());
-        }
-
-        $helper->back_url = $back;
+        $helper->back_url = $this->getBackUrlParameter();
 
         $this->fields_form[0]['form'] = [
             'tinymce' => true,

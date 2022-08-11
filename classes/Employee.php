@@ -211,10 +211,6 @@ class EmployeeCore extends ObjectModel
      */
     public static function employeeExists($email)
     {
-        if (!Validate::isEmail($email)) {
-            die(Tools::displayError());
-        }
-
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_employee`')
@@ -634,10 +630,6 @@ class EmployeeCore extends ObjectModel
      */
     public static function checkPassword($idEmployee, $hashedPassword)
     {
-        if (!Validate::isUnsignedId($idEmployee) || !Validate::isPasswd($hashedPassword, 8)) {
-            die(Tools::displayError());
-        }
-
         $sql = new DbQuery();
         $sql->select('`id_employee`');
         $sql->from('employee');

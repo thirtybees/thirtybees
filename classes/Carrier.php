@@ -467,10 +467,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getDeliveredCountries($idLang, $activeCountries = false, $activeCarriers = false, $containStates = null)
     {
-        if (!Validate::isBool($activeCountries) || !Validate::isBool($activeCarriers)) {
-            die(Tools::displayError());
-        }
-
         $states = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('s.*')
@@ -1948,7 +1944,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     public function setTaxRulesGroup($idTaxRulesGroup, $allShops = false)
     {
         if (!Validate::isUnsignedId($idTaxRulesGroup)) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Invalid tax rules group ID");
         }
 
         if (!$allShops) {

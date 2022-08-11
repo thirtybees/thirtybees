@@ -1031,7 +1031,7 @@ abstract class DbCore
     {
         Tools::displayAsDeprecated();
         static::s($sql, $useCache);
-        die();
+        exit;
     }
 
     /**

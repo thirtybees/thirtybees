@@ -209,10 +209,6 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getCategories($idLang, $active = true, $order = true)
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             '
 		SELECT *
@@ -289,10 +285,6 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getChildren($idParent, $idLang, $active = true)
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             '
 		SELECT c.`id_cms_category`, cl.`name`, cl.`link_rewrite`
@@ -520,16 +512,14 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return int Level depth
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function calcLevelDepth()
     {
         $parentCMSCategory = new CMSCategory($this->id_parent);
-        if (!$parentCMSCategory) {
-            die('parent CMS Category does not exist');
-        }
-
         return $parentCMSCategory->level_depth + 1;
     }
 
@@ -657,10 +647,6 @@ class CMSCategoryCore extends ObjectModel
      */
     public function getSubCategories($idLang, $active = true)
     {
-        if (!Validate::isBool($active)) {
-            die(Tools::displayError());
-        }
-
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             '
 		SELECT c.*, cl.id_lang, cl.name, cl.description, cl.link_rewrite, cl.meta_title, cl.meta_keywords, cl.meta_description
@@ -791,10 +777,10 @@ class CMSCategoryCore extends ObjectModel
     protected function recursiveDelete(&$toDelete, $idCmsCategory)
     {
         if (!is_array($toDelete) || !$idCmsCategory) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Invalid input parameters");
         }
 
-        $result = Db::getInstance()->executeS(
+        $result = Db::getInstance()->getArray(
             '
 		SELECT `id_cms_category`
 		FROM `'._DB_PREFIX_.'cms_category`

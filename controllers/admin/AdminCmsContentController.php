@@ -48,6 +48,7 @@ class AdminCmsContentControllerCore extends AdminController
     /**
      * AdminCmsContentControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -57,7 +58,7 @@ class AdminCmsContentControllerCore extends AdminController
         $idCmsCategory = (int) Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
         static::$category = new CMSCategory($idCmsCategory);
         if (!Validate::isLoadedObject(static::$category)) {
-            die('Category cannot be loaded');
+            throw new PrestaShopException(Tools::displayError('Category cannot be loaded'));
         }
 
         $this->table = 'cms';
@@ -313,12 +314,12 @@ class AdminCmsContentControllerCore extends AdminController
             $cms = new CMS($idCms);
             if (Validate::isLoadedObject($cms)) {
                 if (isset($position) && $cms->updatePosition($way, $position)) {
-                    die(true);
+                    $this->ajaxDie(true);
                 } else {
-                    die('{"hasError" : true, "errors" : "Can not update cms position"}');
+                    $this->ajaxDie('{"hasError" : true, "errors" : "Can not update cms position"}');
                 }
             } else {
-                die('{"hasError" : true, "errors" : "This cms can not be loaded"}');
+                $this->ajaxDie('{"hasError" : true, "errors" : "This cms can not be loaded"}');
             }
         }
     }
@@ -349,12 +350,12 @@ class AdminCmsContentControllerCore extends AdminController
             $cmsCategory = new CMSCategory($idCmsCategoryToMove);
             if (Validate::isLoadedObject($cmsCategory)) {
                 if (isset($position) && $cmsCategory->updatePosition($way, $position)) {
-                    die(true);
+                    $this->ajaxDie(true);
                 } else {
-                    die('{"hasError" : true, "errors" : "Can not update cms categories position"}');
+                    $this->ajaxDie('{"hasError" : true, "errors" : "Can not update cms categories position"}');
                 }
             } else {
-                die('{"hasError" : true, "errors" : "This cms category can not be loaded"}');
+                $this->ajaxDie('{"hasError" : true, "errors" : "This cms category can not be loaded"}');
             }
         }
     }
@@ -364,6 +365,7 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessPublishCMS()
@@ -372,22 +374,22 @@ class AdminCmsContentControllerCore extends AdminController
             if ($idCms = (int) Tools::getValue('id_cms')) {
                 $boCmsUrl = $this->context->link->getAdminLink('AdminCmsContent', true).'&updatecms&id_cms='.(int) $idCms;
                 if (Tools::getValue('redirect')) {
-                    die($boCmsUrl);
+                    $this->ajaxDie($boCmsUrl);
                 }
 
                 $cms = new CMS((int) (Tools::getValue('id_cms')));
                 if (!Validate::isLoadedObject($cms)) {
-                    die('error: invalid id');
+                    $this->ajaxDie('error: invalid id');
                 }
 
                 $cms->active = 1;
                 if ($cms->save()) {
-                    die($boCmsUrl);
+                    $this->ajaxDie($boCmsUrl);
                 } else {
-                    die('error: saving');
+                    $this->ajaxDie('error: saving');
                 }
             } else {
-                die('error: parameters');
+                $this->ajaxDie('error: parameters');
             }
         }
     }

@@ -50,6 +50,7 @@ class OrderFollowControllerCore extends FrontController
     /**
      * Start forms process
      *
+     * @throws PrestaShopException
      * @see FrontController::postProcess()
      */
     public function postProcess()
@@ -79,7 +80,7 @@ class OrderFollowControllerCore extends FrontController
                 Tools::redirect('index.php?controller=order-follow&errorNotReturnable');
             }
             if ($order->id_customer != $this->context->customer->id) {
-                die(Tools::displayError());
+                throw new PrestaShopException(Tools::displayError("Order was not placed by this customer"));
             }
             $orderReturn = new OrderReturn();
             $orderReturn->id_customer = (int) $this->context->customer->id;

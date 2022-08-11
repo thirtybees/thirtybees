@@ -222,7 +222,7 @@ class AdminModulesControllerCore extends AdminController
      */
     public function ajaxProcessLogOnAddonsWebservices()
     {
-        die('OK');
+        $this->ajaxDie('OK');
     }
 
     /**
@@ -236,7 +236,7 @@ class AdminModulesControllerCore extends AdminController
         $this->context->cookie->password_addons = '';
         $this->context->cookie->is_contributor = 0;
         $this->context->cookie->write();
-        die('OK');
+        $this->ajaxDie('OK');
     }
 
     /**
@@ -924,7 +924,7 @@ class AdminModulesControllerCore extends AdminController
     public function ajaxProcessSetFilter()
     {
         $this->setFilterModules(Tools::getValue('module_type'), Tools::getValue('country_module_value'), Tools::getValue('module_install'), Tools::getValue('module_status'));
-        die('OK');
+        $this->ajaxDie('OK');
     }
 
     /**
@@ -983,7 +983,7 @@ class AdminModulesControllerCore extends AdminController
             }
             Db::getInstance()->insert('module_preference', $insert, true);
         }
-        die('OK');
+        $this->ajaxDie('OK');
     }
 
     /**
@@ -1009,7 +1009,7 @@ class AdminModulesControllerCore extends AdminController
                 }
             }
         }
-        die('OK');
+        $this->ajaxDie('OK');
     }
 
     /**

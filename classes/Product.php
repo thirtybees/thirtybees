@@ -623,8 +623,11 @@ class ProductCore extends ObjectModel
             Tools::displayParameterAsDeprecated('divisor');
         }
 
-        if (!Validate::isBool($usetax) || !Validate::isUnsignedId($idProduct)) {
-            die(Tools::displayError());
+        if (!Validate::isBool($usetax)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('Invalid value for parameter [%s]'), 'usetax'));
+        }
+        if (!Validate::isUnsignedId($idProduct)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('Invalid value for parameter [%s]'), 'idProduct'));
         }
 
         // Initializations
@@ -644,7 +647,7 @@ class ProductCore extends ObjectModel
             * When called from the back office, cart ID can be inexistant
             */
             if (!$idCart && !isset($context->employee)) {
-                die(Tools::displayError());
+                throw new PrestaShopException("ID cart not provided in front office context");
             }
             $curCart = new Cart($idCart);
             // Store cart in context to avoid multiple instantiations in BO
@@ -1244,9 +1247,10 @@ class ProductCore extends ObjectModel
     public static function initPricesComputation($idCustomer = null)
     {
         if ($idCustomer) {
-            $customer = new Customer((int) $idCustomer);
+            $idCustomer = (int)$idCustomer;
+            $customer = new Customer($idCustomer);
             if (!Validate::isLoadedObject($customer)) {
-                die(Tools::displayError());
+                throw new PrestaShopException(sprintf(Tools::displayError("Customer [%s] not found"), $idCustomer));
             }
             static::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
             $curCart = Context::getContext()->cart;
@@ -2216,7 +2220,7 @@ class ProductCore extends ObjectModel
         Context $context = null
     ) {
         if (!Validate::isBool($count)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError('Invalid value for parameter [%s]'), 'count'));
         }
 
         if (!$context) {
@@ -5576,7 +5580,7 @@ class ProductCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
         if (!is_array($attributes)) {
-            die(Tools::displayError());
+            return false;
         }
         if (!count($attributes)) {
             return false;

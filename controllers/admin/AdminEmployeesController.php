@@ -860,15 +860,16 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function ajaxProcessFormLanguage()
     {
         $this->context->cookie->employee_form_lang = (int) Tools::getValue('form_language_id');
         if (!$this->context->cookie->write()) {
-            die('Error while updating cookie.');
+            $this->ajaxDie('Error while updating cookie.');
         }
-        die('Form language updated.');
+        $this->ajaxDie('Form language updated.');
     }
 
     /**

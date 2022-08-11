@@ -1486,12 +1486,13 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function displayAjaxTestMemcachedServer()
     {
         if (_PS_MODE_DEMO_) {
-            die(Tools::displayError('This functionality has been disabled.'));
+            $this->ajaxDie(Tools::displayError('This functionality has been disabled.'));
         }
 
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_memcached_server') {
@@ -1520,7 +1521,7 @@ class AdminPerformanceControllerCore extends AdminController
                 $this->ajaxDie(json_encode([$res]));
             }
         }
-        die;
+        exit;
     }
 
     /**
@@ -1533,7 +1534,7 @@ class AdminPerformanceControllerCore extends AdminController
     {
         /* PrestaShop demo mode */
         if (_PS_MODE_DEMO_) {
-            die(Tools::displayError('This functionality has been disabled.'));
+            $this->ajaxDie(Tools::displayError('This functionality has been disabled.'));
         }
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_redis_server') {
             $host = pSQL(Tools::getValue('sHost', ''));
@@ -1563,7 +1564,7 @@ class AdminPerformanceControllerCore extends AdminController
                 $this->ajaxDie(json_encode([$res]));
             }
         }
-        die;
+        exit;
     }
 
     /**

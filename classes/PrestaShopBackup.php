@@ -107,15 +107,16 @@ class PrestaShopBackupCore
      *
      * @return string The full path of the backup file, or false if the backup file does not exists
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function getBackupPath($filename = '')
     {
         $backupdir = realpath(_PS_ADMIN_DIR_.static::$backupDir);
 
         if ($backupdir === false) {
-            die(Tools::displayError('"Backup" directory does not exist.'));
+            throw new PrestaShopException(Tools::displayError('"Backup" directory does not exist.'));
         }
 
         // Check the realpath so we can validate the backup file is under the backup directory
@@ -126,7 +127,7 @@ class PrestaShopBackupCore
         }
 
         if ($backupfile === false || strncmp($backupdir, $backupfile, strlen($backupdir)) != 0) {
-            die(Tools::displayError());
+            throw new PrestaShopException(Tools::displayError('Failed to resolve backup file path.'));
         }
 
         return $backupfile;
@@ -139,15 +140,16 @@ class PrestaShopBackupCore
      *
      * @return bool true if backup file exist
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public static function backupExist($filename)
     {
         $backupdir = realpath(_PS_ADMIN_DIR_.static::$backupDir);
 
         if ($backupdir === false) {
-            die(Tools::displayError('"Backup" directory does not exist.'));
+            throw new PrestaShopException(Tools::displayError('"Backup" directory does not exist.'));
         }
 
         return @filemtime($backupdir.DIRECTORY_SEPARATOR.$filename);

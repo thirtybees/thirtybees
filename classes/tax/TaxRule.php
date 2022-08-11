@@ -87,10 +87,6 @@ class TaxRuleCore extends ObjectModel
      */
     public static function deleteByGroupId($idGroup)
     {
-        if (empty($idGroup)) {
-            die(Tools::displayError());
-        }
-
         return Db::getInstance()->execute(
             '
 			DELETE FROM `'._DB_PREFIX_.'tax_rule`

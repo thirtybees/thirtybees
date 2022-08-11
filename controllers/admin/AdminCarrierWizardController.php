@@ -847,7 +847,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $template->assign('currency_sign', $currency->sign);
         $template->assign('PS_WEIGHT_UNIT', Configuration::get('PS_WEIGHT_UNIT'));
 
-        die($template->fetch());
+        $this->ajaxDie($template->fetch());
     }
 
     /**
@@ -892,12 +892,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessUploadLogo()
     {
         if (!$this->tabAccess['edit']) {
-            die('<return result="error" message="'.Tools::displayError('You do not have permission to use this wizard.').'" />');
+            $this->ajaxDie('<return result="error" message="'.Tools::displayError('You do not have permission to use this wizard.').'" />');
         }
 
         $logo = (isset($_FILES['carrier_logo_input']) ? $_FILES['carrier_logo_input'] : false);
@@ -912,12 +913,12 @@ class AdminCarrierWizardControllerCore extends AdminController
                 $tmpName = uniqid().'.jpg';
             } while (file_exists(_PS_TMP_IMG_DIR_.$tmpName));
             if (!ImageManager::resize($file, _PS_TMP_IMG_DIR_.$tmpName)) {
-                die('<return result="error" message="Impossible to resize the image into '.Tools::safeOutput(_PS_TMP_IMG_DIR_).'" />');
+                $this->ajaxDie('<return result="error" message="Impossible to resize the image into '.Tools::safeOutput(_PS_TMP_IMG_DIR_).'" />');
             }
             @unlink($file);
-            die('<return result="success" message="'.Tools::safeOutput(_PS_TMP_IMG_.$tmpName).'" />');
+            $this->ajaxDie('<return result="success" message="'.Tools::safeOutput(_PS_TMP_IMG_.$tmpName).'" />');
         } else {
-            die('<return result="error" message="Cannot upload file" />');
+            $this->ajaxDie('<return result="error" message="Cannot upload file" />');
         }
     }
 
@@ -1077,6 +1078,8 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function changeZones($id)
@@ -1084,7 +1087,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $return = true;
         $carrier = new Carrier($id);
         if (!Validate::isLoadedObject($carrier)) {
-            die(Tools::displayError('The object cannot be loaded.'));
+            throw new PrestaShopException(Tools::displayError('The object cannot be loaded.'));
         }
         $zones = Zone::getZones(false);
         foreach ($zones as $zone) {

@@ -841,7 +841,7 @@ class MailCore extends ObjectModel
      * the script.
      *
      * @param string $message Error message to be logged.
-     * @param bool $die Whether to die instead of returning.
+     * @param bool $die Whether to throw exception instead of returning.
      *
      * @return false This method always, if it returns, returns false.
      *
@@ -854,7 +854,7 @@ class MailCore extends ObjectModel
     {
         Logger::addLog($message, 3);
         if ($die) {
-            die($message);
+            throw new PrestaShopException($message);
         } else {
             return false;
         }

@@ -234,13 +234,14 @@ class AdminBackupControllerCore extends AdminController
     }
 
     /**
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|null    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|null $idLangShop
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function getList(
@@ -252,15 +253,7 @@ class AdminBackupControllerCore extends AdminController
         $idLangShop = null
     ) {
         if (!Validate::isTableOrIdentifier($this->table)) {
-            die('filter is corrupted');
-        }
-
-        if (empty($orderBy)) {
-            $orderBy = Tools::getValue($this->table.'Orderby', $this->_defaultOrderBy);
-        }
-
-        if (empty($orderWay)) {
-            $orderWay = Tools::getValue($this->table.'Orderway', 'ASC');
+            throw new PrestaShopException(Tools::displayError('Filter is corrupted'));
         }
 
         // Try and obtain getList arguments from $_GET

@@ -620,6 +620,7 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * @param int $id
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function changeZones($id)
@@ -627,7 +628,7 @@ class AdminCarriersControllerCore extends AdminController
         /** @var Carrier $carrier */
         $carrier = new $this->className($id);
         if (!Validate::isLoadedObject($carrier)) {
-            die(Tools::displayError('The object cannot be loaded.'));
+            throw new PrestaShopException(Tools::displayError('The object cannot be loaded.'));
         }
         $zones = Zone::getZones(false);
         foreach ($zones as $zone) {

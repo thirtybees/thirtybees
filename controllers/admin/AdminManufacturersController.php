@@ -484,16 +484,7 @@ class AdminManufacturersControllerCore extends AdminController
         $this->getlanguages();
         $helper = new HelperForm();
         $helper->show_cancel_button = true;
-
-        $back = Tools::safeOutput(Tools::getValue('back', ''));
-        if (empty($back)) {
-            $back = static::$currentIndex.'&token='.$this->token;
-        }
-        if (!Validate::isCleanHtml($back)) {
-            die(Tools::displayError());
-        }
-
-        $helper->back_url = $back;
+        $helper->back_url = $this->getBackUrlParameter();
         $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = $this->table;

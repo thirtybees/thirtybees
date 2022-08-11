@@ -50,6 +50,7 @@ class PdfOrderReturnControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcess()
@@ -65,11 +66,11 @@ class PdfOrderReturnControllerCore extends FrontController
         }
 
         if (!isset($this->orderReturn) || !Validate::isLoadedObject($this->orderReturn)) {
-            die(Tools::displayError('Order return not found.'));
+            throw new PrestaShopException(Tools::displayError('Order return not found.'));
         } elseif (!$fromAdmin && $this->orderReturn->id_customer != $this->context->customer->id) {
-            die(Tools::displayError('Order return not found.'));
+            throw new PrestaShopException(Tools::displayError('Order return not found.'));
         } elseif ($this->orderReturn->state < 2) {
-            die(Tools::displayError('Order return not confirmed.'));
+            throw new PrestaShopException(Tools::displayError('Order return not confirmed.'));
         }
     }
 
@@ -78,6 +79,8 @@ class PdfOrderReturnControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function display()

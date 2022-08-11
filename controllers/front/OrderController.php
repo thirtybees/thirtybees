@@ -168,12 +168,13 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function _assignCarrier()
     {
         if (!isset($this->context->customer->id)) {
-            die(Tools::displayError('Fatal error: No customer'));
+            throw new PrestaShopException(Tools::displayError('No customer'));
         }
         // Assign carrier
         parent::_assignCarrier();

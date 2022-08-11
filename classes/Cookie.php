@@ -300,7 +300,7 @@ class CookieCore
             return;
         }
         if (is_array($value)) {
-            die(Tools::displayError());
+            throw new Exception("Value can't be array");
         }
         if (preg_match('/¤|\|/', $key.$value)) {
             throw new Exception('Forbidden chars in cookie');

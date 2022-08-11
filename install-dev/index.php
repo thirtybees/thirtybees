@@ -47,7 +47,7 @@ if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
 
 if (!empty($errors)) {
     include(dirname(__FILE__).'/theme/views/errors.phtml');
-    die();
+    exit;
 }
 
 

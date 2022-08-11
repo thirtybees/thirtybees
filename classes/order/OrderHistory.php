@@ -306,11 +306,15 @@ class OrderHistoryCore extends ObjectModel
         $this->id_order_state = (int) $newOrderState;
 
         // changes invoice number of order ?
-        if (!Validate::isLoadedObject($newOs) || !Validate::isLoadedObject($order)) {
-            die(Tools::displayError('Invalid new order status'));
+        if (!Validate::isLoadedObject($newOs)) {
+            throw new PrestaShopException(Tools::displayError('Invalid new order status').' '.(int)$newOrderState);
         }
 
-        // the order is valid if and only if the invoice is available and the order is not cancelled
+        if (!Validate::isLoadedObject($order)) {
+            throw new PrestaShopException(Tools::displayError('Order does not exists'));
+        }
+
+    // the order is valid if and only if the invoice is available and the order is not cancelled
         $order->current_state = $this->id_order_state;
         $order->valid = $newOs->logable;
         $order->update();

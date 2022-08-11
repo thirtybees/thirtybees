@@ -1211,6 +1211,10 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     protected function openUploadedFile()
     {
         $filename = $_GET['filename'];
@@ -1237,7 +1241,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         if (!$extension || !Validate::isFileName($filename)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(Tools::displayError("Invalid parameters"));
         }
 
         if (ob_get_level() && ob_get_length() > 0) {

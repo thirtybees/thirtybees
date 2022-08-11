@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', getcwd());
 }
@@ -48,11 +50,11 @@ $id_lang = (int) (Tools::getValue('id_lang'));
 
 
 if (!isset($cookie->id_employee) || !$cookie->id_employee || $cookie->id_employee != $id_employee) {
-    die(Tools::displayError());
+    throw new PrestaShopException(Tools::displayError("Employee not validated"));
 }
 
 if (!Validate::isModuleName($module)) {
-    die(Tools::displayError());
+    throw new PrestaShopException(sprintf(Tools::displayError("Invalid module name [%s]"), Tools::safeOutput($module)));
 }
 
 $statsModuleInstance = Module::getInstanceByName('statsmodule');
@@ -61,7 +63,7 @@ if ($statsModuleInstance->active && in_array($module, $statsModuleInstance->modu
     $module_path = _PS_ROOT_DIR_.'/modules/statsmodule/stats/'.$module.'.php';
 } else {
     if (!file_exists($module_path = _PS_ROOT_DIR_.'/modules/'.$module.'/'.$module.'.php')) {
-        die(Tools::displayError());
+        throw new PrestaShopException(sprintf(Tools::displayError("Module [%s] not found"), Tools::safeOutput($module)));
     }
 }
 

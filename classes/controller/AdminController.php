@@ -4280,8 +4280,9 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function ajaxProcessGetModuleQuickView()
     {
@@ -4318,7 +4319,7 @@ class AdminControllerCore extends Controller
         // Fetch the translations in the right place - they are not defined by our current controller!
         $this->context->override_controller_name_for_translations = 'AdminModules';
         $this->smartyOutputContent('controllers/modules/quickview.tpl');
-        die(1);
+        $this->ajaxDie(1);
     }
 
     /**
@@ -4610,8 +4611,9 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     protected function ajaxProcessOpenHelp()
     {
@@ -4639,7 +4641,7 @@ class AdminControllerCore extends Controller
 			</head>
 			<body><div id='help-container' class='help-popup'></div></body>
 		</html>";
-        die($popup_content);
+        $this->ajaxDie($popup_content);
     }
 
     /**

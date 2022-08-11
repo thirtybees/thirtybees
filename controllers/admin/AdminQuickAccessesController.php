@@ -211,11 +211,11 @@ class AdminQuickAccessesControllerCore extends AdminController
             $params['submitAddquick_access'] = 1;
             unset($_POST['name']);
             $_POST = array_merge($_POST, $params);
-            die($this->addQuickLink());
+            $this->ajaxDie($this->addQuickLink());
         } elseif (mb_strtolower(Tools::getValue('method')) === 'remove') {
             $params['deletequick_access'] = 1;
             $_POST = array_merge($_POST, $params);
-            die($this->processDelete());
+            $this->ajaxDie($this->processDelete());
         }
     }
 

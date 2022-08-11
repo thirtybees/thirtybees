@@ -550,7 +550,7 @@ class AdminProductsControllerCore extends AdminController
             $tree->setInputName($inputName);
         }
 
-        die($tree->render());
+        $this->ajaxDie($tree->render());
     }
 
     /**
@@ -1019,7 +1019,7 @@ class AdminProductsControllerCore extends AdminController
                 'specificPrice' => $specificPriceData
             ];
         }
-        die(json_encode($json));
+        $this->ajaxDie(json_encode($json));
     }
 
     /**
@@ -3530,6 +3530,11 @@ class AdminProductsControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function ajaxProcessProductManufacturers()
     {
         $manufacturers = Manufacturer::getManufacturers();
@@ -3542,7 +3547,7 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
-        die('['.implode(',', $jsonArray).']');
+        $this->ajaxDie('['.implode(',', $jsonArray).']');
     }
 
     public function initPageHeaderToolbar()
@@ -6030,6 +6035,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process publish product
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessPublishProduct()
@@ -6039,20 +6045,20 @@ class AdminProductsControllerCore extends AdminController
                 $bo_product_url = dirname($_SERVER['PHP_SELF']).'/index.php?tab=AdminProducts&id_product='.$id_product.'&updateproduct&token='.$this->token;
 
                 if (Tools::getValue('redirect')) {
-                    die($bo_product_url);
+                    $this->ajaxDie($bo_product_url);
                 }
 
                 $product = new Product((int) $id_product);
                 if (!Validate::isLoadedObject($product)) {
-                    die('error: invalid id');
+                    $this->ajaxDie('error: invalid id');
                 }
 
                 $product->active = 1;
 
                 if ($product->save()) {
-                    die($bo_product_url);
+                    $this->ajaxDie($bo_product_url);
                 } else {
-                    die('error: saving');
+                    $this->ajaxDie('error: saving');
                 }
             }
         }

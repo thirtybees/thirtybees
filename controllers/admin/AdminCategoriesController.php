@@ -924,6 +924,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessUpdatePositions()
@@ -951,12 +952,12 @@ class AdminCategoriesControllerCore extends AdminController
                     $category->cleanPositions((int) $category->id_parent);
                 }
 
-                die(true);
+                $this->ajaxDie(true);
             } else {
-                die('{"hasError" : true, errors : "Cannot update categories position"}');
+                $this->ajaxDie('{"hasError" : true, errors : "Cannot update categories position"}');
             }
         } else {
-            die('{"hasError" : true, "errors" : "This category cannot be loaded"}');
+            $this->ajaxDie('{"hasError" : true, "errors" : "This category cannot be loaded"}');
         }
     }
 

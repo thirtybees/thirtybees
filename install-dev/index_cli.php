@@ -46,7 +46,7 @@ if (!empty($errors)) {
         $error = strip_tags($error);
         echo "$error\n";
     }
-    die();
+    exit;
 }
 
 /* Redefine REQUEST_URI */

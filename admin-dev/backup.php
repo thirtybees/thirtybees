@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', getcwd());
 }
@@ -42,24 +44,24 @@ $tabAccess = Profile::getProfileAccess(Context::getContext()->employee->id_profi
     Tab::getIdFromClassName('AdminBackup'));
 
 if ($tabAccess['view'] !== '1') {
-    die(Tools::displayError('You do not have permission to view this.'));
+    throw new PrestaShopException(Tools::displayError('You do not have permission to view this.'));
 }
 
 $backupdir = realpath(PrestaShopBackup::getBackupPath());
 
 if ($backupdir === false) {
-    die(Tools::displayError('There is no "/backup" directory.'));
+    throw new PrestaShopException(Tools::displayError('There is no "/backup" directory.'));
 }
 
 if (!$backupfile = Tools::getValue('filename')) {
-    die(Tools::displayError('No file has been specified.'));
+    throw new PrestaShopException(Tools::displayError('No file has been specified.'));
 }
 
 // Check the realpath so we can validate the backup file is under the backup directory
 $backupfile = realpath($backupdir.DIRECTORY_SEPARATOR.$backupfile);
 
 if ($backupfile === false or strncmp($backupdir, $backupfile, strlen($backupdir)) != 0) {
-    die('The backup file does not exist.');
+    throw new PrestaShopException('The backup file does not exist.');
 }
 
 if (substr($backupfile, -4) == '.bz2') {
@@ -72,7 +74,7 @@ if (substr($backupfile, -4) == '.bz2') {
 $fp = @fopen($backupfile, 'r');
 
 if ($fp === false) {
-    die(Tools::displayError('Unable to open backup file(s).').' "'.addslashes($backupfile).'"');
+    throw new PrestaShopException(Tools::displayError('Unable to open backup file(s).').' "'.addslashes($backupfile).'"');
 }
 
 // Add the correct headers, this forces the file is saved
@@ -87,5 +89,5 @@ $ret = @fpassthru($fp);
 fclose($fp);
 
 if ($ret === false) {
-    die(Tools::displayError('Unable to display backup file(s).').' "'.addslashes($backupfile).'"');
+    throw new PrestaShopException(Tools::displayError('Unable to display backup file(s).').' "'.addslashes($backupfile).'"');
 }

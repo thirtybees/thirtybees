@@ -52,6 +52,8 @@ class PdfOrderSlipControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcess()
@@ -65,9 +67,9 @@ class PdfOrderSlipControllerCore extends FrontController
         }
 
         if (!isset($this->order_slip) || !Validate::isLoadedObject($this->order_slip)) {
-            die(Tools::displayError('Order return not found.'));
+            throw new PrestaShopException(Tools::displayError('Order return not found.'));
         } elseif ($this->order_slip->id_customer != $this->context->customer->id) {
-            die(Tools::displayError('Order return not found.'));
+            throw new PrestaShopException(Tools::displayError('Order return not found.'));
         }
     }
 
@@ -76,6 +78,8 @@ class PdfOrderSlipControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function display()

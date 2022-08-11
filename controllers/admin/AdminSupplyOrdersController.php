@@ -2062,7 +2062,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $pattern = pSQL(Tools::getValue('q', false));
 
         if (!$pattern || $pattern == '' || strlen($pattern) < 1) {
-            die('1');
+            $this->ajaxDie('1');
         }
 
         // get supplier id

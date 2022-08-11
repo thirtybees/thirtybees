@@ -203,8 +203,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                 );
                                 $this->ajaxDie(json_encode($return));
                             }
-                            die(Tools::displayError());
-                            break;
+                            exit;
 
                         case 'makeFreeOrder':
                             /* Bypass payment step if total is 0 */
@@ -217,7 +216,6 @@ class OrderOpcControllerCore extends ParentOrderController
                                 $this->ajaxDie('freeorder:'.$order->reference.':'.$email);
                             }
                             exit;
-                            break;
 
                         case 'updateAddressesSelected':
                             if ($this->context->customer->isLogged(true)) {
@@ -300,8 +298,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                     );
                                 }
                             }
-                            die(Tools::displayError());
-                            break;
+                            exit;
 
                         case 'multishipping':
                             $this->_assignSummaryInformations();

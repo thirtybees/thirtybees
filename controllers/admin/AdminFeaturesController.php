@@ -525,15 +525,7 @@ class AdminFeaturesControllerCore extends AdminController
         $helper = new HelperForm();
         $helper->show_cancel_button = true;
 
-        $back = Tools::safeOutput(Tools::getValue('back', ''));
-        if (empty($back)) {
-            $back = static::$currentIndex.'&token='.$this->token;
-        }
-        if (!Validate::isCleanHtml($back)) {
-            die(Tools::displayError());
-        }
-
-        $helper->back_url = $back;
+        $helper->back_url = $this->getBackUrlParameter();
         $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = $this->table;
@@ -829,12 +821,12 @@ class AdminFeaturesControllerCore extends AdminController
                 $feature->allows_multiple_values = true;
             }
             $feature->update();
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'success' => true,
                 'text' => $text
             ]));
         } catch (Exception $e) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'success' => false,
                 'text' => $e->getMessage()
             ]));
@@ -881,12 +873,12 @@ class AdminFeaturesControllerCore extends AdminController
                 $feature->allows_custom_values = true;
             }
             $feature->update();
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'success' => true,
                 'text' => $text
             ]));
         } catch (Exception $e) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'success' => false,
                 'text' => $e->getMessage()
             ]));

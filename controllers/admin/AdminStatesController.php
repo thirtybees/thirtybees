@@ -287,6 +287,7 @@ class AdminStatesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function displayAjaxStates()
@@ -314,6 +315,6 @@ class AdminStatesControllerCore extends AdminController
             $list = 'false';
         }
 
-        die($list);
+        $this->ajaxDie($list);
     }
 }

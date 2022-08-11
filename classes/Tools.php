@@ -1737,7 +1737,7 @@ class ToolsCore
      * @param string  $categoryType
      * @param Context $context
      *
-     * @return
+     * @return string
      * @throws PrestaShopException
      */
     public static function getPath($idCategory, $path = '', $linkOnTheItem = false, $categoryType = 'products', Context $context = null)
@@ -1791,7 +1791,7 @@ class ToolsCore
         } elseif ($categoryType === 'CMS') {
             $category = new CMSCategory($idCategory, $context->language->id);
             if (!Validate::isLoadedObject($category)) {
-                die(Tools::displayError());
+                throw new PrestaShopException(sprintf(Tools::displayError('CMSCategory [%s] not found'), (int)$idCategory));
             }
             $categoryLink = $context->link->getCMSCategoryLink($category);
 
@@ -3787,25 +3787,21 @@ FileETag none
      * Display error and dies or silently log the error.
      *
      * @param string $msg
-     * @param bool   $die
+     * @param bool $die
      *
      * @return bool success of logging
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @deprecated 1.0.7 This function always terminates execution in debug
-     *                   mode, which is dangerous behaviour that can lead to
-     *                   data corruption. For logging, use Logger::addLog()
-     *                   directly.
+     * @deprecated 1.0.7 For logging, use Logger::addLog() directly
      */
     public static function dieOrLog($msg, $die = true)
     {
         Tools::displayAsDeprecated();
-
-        if ($die || (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_)) {
-            die($msg);
+        if ($die) {
+            throw new PrestaShopException($msg);
         }
-
         return Logger::addLog($msg);
     }
 

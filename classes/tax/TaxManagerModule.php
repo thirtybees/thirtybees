@@ -58,21 +58,22 @@ abstract class TaxManagerModuleCore extends Module
      *
      * @return bool
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function hookTaxManager($args)
     {
         $classFile = _PS_MODULE_DIR_.'/'.$this->name.'/'.$this->tax_manager_class.'.php';
 
         if (!isset($this->tax_manager_class) || !file_exists($classFile)) {
-            die(sprintf(Tools::displayError('Incorrect Tax Manager class [%s]'), $this->tax_manager_class));
+            throw new PrestaShopException(sprintf(Tools::displayError('Incorrect Tax Manager class [%s]'), $this->tax_manager_class));
         }
 
         require_once($classFile);
 
         if (!class_exists($this->tax_manager_class)) {
-            die(sprintf(Tools::displayError('Tax Manager class not found [%s]'), $this->tax_manager_class));
+            throw new PrestaShopException(sprintf(Tools::displayError('Tax Manager class not found [%s]'), $this->tax_manager_class));
         }
 
         $class = $this->tax_manager_class;

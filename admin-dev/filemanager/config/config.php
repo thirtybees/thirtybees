@@ -1,4 +1,7 @@
 <?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
+
 session_start();
 
 if (!defined('_PS_ADMIN_DIR_')) {
@@ -16,7 +19,7 @@ $products_accesses = Profile::getProfileAccess(Context::getContext()->employee->
 $cms_accesses = Profile::getProfileAccess(Context::getContext()->employee->id_profile, Tab::getIdFromClassName('AdminCmsContent'));
 
 if (!$products_accesses['edit'] && !$cms_accesses['edit']) {
-    die(Tools::displayError());
+    throw new PrestaShopException(Tools::displayError("Access denied"));
 }
 //------------------------------------------------------------------------------
 // DON'T COPY THIS VARIABLES IN FOLDERS config.php FILES

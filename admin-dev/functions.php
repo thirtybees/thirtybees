@@ -499,15 +499,6 @@ function runAdminTab($tab, $ajax_mode = false)
                         if (ob_get_level() && ob_get_length() > 0) {
                             ob_clean();
                         }
-
-                        // ${1} in the replacement string of the regexp is required, because the token may begin with a number and mix up with it (e.g. $17)
-                        $url = preg_replace('/([&?]token=)[^&]*(&.*)?$/', '${1}'.$admin_obj->token.'$2', $_SERVER['REQUEST_URI']);
-                        if (false === strpos($url, '?token=') && false === strpos($url, '&token=')) {
-                            $url .= '&token='.$admin_obj->token;
-                        }
-
-                        // we can display the correct url
-                        // die(json_encode(array(Translate::getAdminTranslation('Invalid security token'),$url)));
                         die(json_encode(Translate::getAdminTranslation('Invalid security token')));
                     } else {
                         // If this is an XSS attempt, then we should only display a simple, secure page

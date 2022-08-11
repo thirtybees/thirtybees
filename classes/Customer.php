@@ -307,10 +307,6 @@ class CustomerCore extends ObjectModel
     public static function customerExists($email, $returnId = false, $ignoreGuest = true)
     {
         if (!Validate::isEmail($email)) {
-            if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) {
-                die(Tools::displayError('Invalid email'));
-            }
-
             return false;
         }
 
@@ -692,7 +688,7 @@ class CustomerCore extends ObjectModel
      * @param string $plainTextPassword Password is also checked if specified
      * @param bool   $ignoreGuest
      *
-     * @return Customer|bool
+     * @return self | false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -701,8 +697,8 @@ class CustomerCore extends ObjectModel
      */
     public function getByEmail($email, $plainTextPassword = null, $ignoreGuest = true)
     {
-        if (!Validate::isEmail($email) || ($plainTextPassword && !Validate::isPasswd($plainTextPassword))) {
-            die(Tools::displayError());
+        if (! Validate::isEmail($email)) {
+            throw new PrestaShopException(Tools::displayError("Invalid email address"));
         }
 
         $sql = new DbQuery();
@@ -1161,7 +1157,7 @@ class CustomerCore extends ObjectModel
     public static function checkPassword($idCustomer, $plaintextOrHashedPassword)
     {
         if (!Validate::isUnsignedId($idCustomer)) {
-            die(Tools::displayError());
+            return false;
         }
 
         if (Validate::isMd5($plaintextOrHashedPassword) || mb_substr($plaintextOrHashedPassword, 0, 4) === '$2y$') {

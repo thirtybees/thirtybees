@@ -100,14 +100,14 @@ class MetaCore extends ObjectModel
 
         $files = Tools::scandir(_PS_FRONT_CONTROLLER_DIR_, 'php', '', true);
         if ( ! $files) {
-            die(Tools::displayError('Cannot scan root directory'));
+            throw new PrestaShopException(Tools::displayError('Cannot scan root directory'));
         }
         $overrideFiles = Tools::scandir(
             _PS_OVERRIDE_DIR_.'controllers/front/',
             'php', '', true
         );
         if ( ! $overrideFiles) {
-            die(Tools::displayError('Cannot scan override directory'));
+            throw new PrestaShopException(Tools::displayError('Cannot scan override directory'));
         }
 
         $files = array_values(array_unique(array_merge($files, $overrideFiles)));
@@ -632,7 +632,7 @@ class MetaCore extends ObjectModel
     public function deleteSelection($selection)
     {
         if (!is_array($selection)) {
-            die(Tools::displayError());
+            return false;
         }
         $result = true;
         foreach ($selection as $id) {

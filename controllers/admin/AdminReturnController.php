@@ -241,16 +241,17 @@ class AdminReturnControllerCore extends AdminController
                     if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
                         $orderReturn = new OrderReturn($idOrderReturn);
                         if (!Validate::isLoadedObject($orderReturn)) {
-                            die(Tools::displayError());
-                        }
-                        if ((int) ($orderReturn->countProduct()) > 1) {
-                            if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, (int) (Tools::getValue('id_customization', 0)))) {
-                                Tools::redirectAdmin(static::$currentIndex.'&conf=4token='.$this->token);
-                            } else {
-                                $this->errors[] = Tools::displayError('An error occurred while deleting the details of your order return.');
-                            }
+                            $this->errors[] = Tools::displayError('Order return not found');
                         } else {
-                            $this->errors[] = Tools::displayError('You need at least one product.');
+                            if ((int)($orderReturn->countProduct()) > 1) {
+                                if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, (int)(Tools::getValue('id_customization', 0)))) {
+                                    Tools::redirectAdmin(static::$currentIndex . '&conf=4token=' . $this->token);
+                                } else {
+                                    $this->errors[] = Tools::displayError('An error occurred while deleting the details of your order return.');
+                                }
+                            } else {
+                                $this->errors[] = Tools::displayError('You need at least one product.');
+                            }
                         }
                     } else {
                         $this->errors[] = Tools::displayError('The order return is invalid.');

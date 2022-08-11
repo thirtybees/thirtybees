@@ -984,8 +984,9 @@ class HookCore extends ObjectModel
     public static function get($hookName)
     {
         Tools::displayAsDeprecated('Use Hook::getIdByName() instead');
+
         if (!Validate::isHookName($hookName)) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Invalid hook name: " . $hookName);
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(

@@ -268,7 +268,7 @@ class AdminAccessControllerCore extends AdminController
 
             $res = Db::getInstance()->execute($sql) ? 'ok' : 'error';
 
-            die($res);
+            $this->ajaxDie($res);
         }
     }
 
@@ -311,7 +311,7 @@ class AdminAccessControllerCore extends AdminController
 
             $res = Db::getInstance()->execute($sql) ? 'ok' : 'error';
 
-            die($res);
+            $this->ajaxDie($res);
         }
     }
 

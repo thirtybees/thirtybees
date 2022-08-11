@@ -36,8 +36,6 @@
  */
 abstract class PaymentModuleCore extends Module
 {
-    // @codingStandardsIgnoreStart
-    const DEBUG_MODE = false;
     /** @var int Current order's id */
     public $currentOrder;
     /** @var bool $currencies */
@@ -55,7 +53,6 @@ abstract class PaymentModuleCore extends Module
      * @var int $is_eu_compatible
      */
     public $is_eu_compatible = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Allows specified payment modules to be used by a specific currency
@@ -352,19 +349,20 @@ abstract class PaymentModuleCore extends Module
      * Validate an order in database
      * Function called from a payment module
      *
-     * @param int    $idCart
-     * @param int    $idOrderState
-     * @param float  $amountPaid      Amount really paid by customer (in the default currency)
-     * @param string $paymentMethod   Payment method (eg. 'Credit card')
-     * @param null   $message         Message to attach to order
-     * @param array  $extraVars
-     * @param null   $currencySpecial
-     * @param bool   $dontTouchAmount
-     * @param bool   $secureKey
-     * @param Shop   $shop
+     * @param int $idCart
+     * @param int $idOrderState
+     * @param float $amountPaid Amount really paid by customer (in the default currency)
+     * @param string $paymentMethod Payment method (eg. 'Credit card')
+     * @param null $message Message to attach to order
+     * @param array $extraVars
+     * @param null $currencySpecial
+     * @param bool $dontTouchAmount
+     * @param bool $secureKey
+     * @param Shop $shop
      *
      * @return bool
      * @throws PrestaShopException
+     * @throws SmartyException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -381,14 +379,16 @@ abstract class PaymentModuleCore extends Module
         $secureKey = false,
         Shop $shop = null
     ) {
-        if (static::DEBUG_MODE) {
-            Logger::addLog('PaymentModule::validateOrder - Function called', 1, null, 'Cart', (int) $idCart, true);
-        }
+        $idCart = (int)$idCart;
 
         if (!isset($this->context)) {
             $this->context = Context::getContext();
         }
-        $this->context->cart = new Cart((int) $idCart);
+        $this->context->cart = new Cart($idCart);
+        if (! Validate::isLoadedObject($this->context->cart)) {
+            throw new PrestaShopException(sprintf(Tools::displayError('Cart [%s] not found'), $idCart));
+        }
+
         if (!isset($this->context->customer) || (int)$this->context->customer->id !== (int)$this->context->cart->id_customer) {
             $this->context->customer = new Customer((int) $this->context->cart->id_customer);
         }
@@ -407,19 +407,19 @@ abstract class PaymentModuleCore extends Module
         $orderStatus = new OrderState((int) $idOrderState, (int) $this->context->language->id);
         if (!Validate::isLoadedObject($orderStatus)) {
             Logger::addLog('PaymentModule::validateOrder - Order Status cannot be loaded', 3, null, 'Cart', (int) $idCart, true);
-            throw new PrestaShopException('Can\'t load Order status');
+            throw new PrestaShopException(sprintf(Tools::displayError('Can\'t load Order status [%s]'), (int)$idOrderState));
         }
 
         if (!$this->active) {
             Logger::addLog('PaymentModule::validateOrder - Module is not active', 3, null, 'Cart', (int) $idCart, true);
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError('Module [%s] is not active'), $this->name));
         }
 
         // Does order already exists ?
-        if (Validate::isLoadedObject($this->context->cart) && $this->context->cart->OrderExists() == false) {
+        if ($this->context->cart->OrderExists() == false) {
             if ($secureKey !== false && $secureKey != $this->context->cart->secure_key) {
                 Logger::addLog('PaymentModule::validateOrder - Secure key does not match', 3, null, 'Cart', (int) $idCart, true);
-                die(Tools::displayError());
+                throw new PrestaShopException(Tools::displayError('Secure key does not match'));
             }
 
             // For each package, generate an order
@@ -556,10 +556,6 @@ abstract class PaymentModuleCore extends Module
                     $order->invoice_date = '0000-00-00 00:00:00';
                     $order->delivery_date = '0000-00-00 00:00:00';
 
-                    if (static::DEBUG_MODE) {
-                        Logger::addLog('PaymentModule::validateOrder - Order is about to be added', 1, null, 'Cart', (int) $idCart, true);
-                    }
-
                     // Creating order
                     $result = $order->add();
 
@@ -575,18 +571,10 @@ abstract class PaymentModuleCore extends Module
 
                     $orderList[] = $order;
 
-                    if (static::DEBUG_MODE) {
-                        Logger::addLog('PaymentModule::validateOrder - OrderDetail is about to be added', 1, null, 'Cart', (int) $idCart, true);
-                    }
-
                     // Insert new Order detail list using cart for the current order
                     $orderDetail = new OrderDetail(null, null, $this->context);
                     $orderDetail->createList($order, $this->context->cart, $idOrderState, $order->product_list, 0, true, $packageList[$idAddress][$idPackage]['id_warehouse']);
                     $orderDetailList[] = $orderDetail;
-
-                    if (static::DEBUG_MODE) {
-                        Logger::addLog('PaymentModule::validateOrder - OrderCarrier is about to be added', 1, null, 'Cart', (int) $idCart, true);
-                    }
 
                     // Adding an entry in order_carrier table
                     if (!is_null($carrier)) {
@@ -609,10 +597,6 @@ abstract class PaymentModuleCore extends Module
             if (!$this->context->country->active) {
                 Logger::addLog('PaymentModule::validateOrder - Country is not active', 3, null, 'Cart', (int) $idCart, true);
                 throw new PrestaShopException('The order address country is not active.');
-            }
-
-            if (static::DEBUG_MODE) {
-                Logger::addLog('PaymentModule::validateOrder - Payment is about to be added', 1, null, 'Cart', (int) $idCart, true);
             }
 
             // Register Payment only if the order status validate the order
@@ -652,9 +636,6 @@ abstract class PaymentModuleCore extends Module
                         $msg = new Message();
                         $message = strip_tags($message, '<br>');
                         if (Validate::isCleanHtml($message)) {
-                            if (static::DEBUG_MODE) {
-                                Logger::addLog('PaymentModule::validateOrder - Message is about to be added', 1, null, 'Cart', (int) $idCart, true);
-                            }
                             $msg->message = $message;
                             $msg->id_cart = (int) $idCart;
                             $msg->id_customer = (int) ($order->id_customer);
@@ -954,10 +935,6 @@ abstract class PaymentModuleCore extends Module
                         }
                     }
 
-                    if (static::DEBUG_MODE) {
-                        Logger::addLog('PaymentModule::validateOrder - Hook validateOrder is about to be called', 1, null, 'Cart', (int) $idCart, true);
-                    }
-
                     // Hook validate order
                     Hook::exec(
                         'actionValidateOrder',
@@ -974,10 +951,6 @@ abstract class PaymentModuleCore extends Module
                         if ($orderStatus->logable) {
                             ProductSale::addProductSale((int) $product['id_product'], (int) $product['cart_quantity']);
                         }
-                    }
-
-                    if (static::DEBUG_MODE) {
-                        Logger::addLog('PaymentModule::validateOrder - Order Status is about to be added', 1, null, 'Cart', (int) $idCart, true);
                     }
 
                     // Set the order status
@@ -1080,10 +1053,6 @@ abstract class PaymentModuleCore extends Module
                             $fileAttachment = null;
                         }
 
-                        if (static::DEBUG_MODE) {
-                            Logger::addLog('PaymentModule::validateOrder - Mail is about to be sent', 1, null, 'Cart', (int) $idCart, true);
-                        }
-
                         if (Validate::isEmail($this->context->customer->email)) {
                             Mail::Send(
                                 (int) $order->id_lang,
@@ -1119,7 +1088,7 @@ abstract class PaymentModuleCore extends Module
                 } else {
                     $error = Tools::displayError('Order creation failed');
                     Logger::addLog($error, 4, '0000002', 'Cart', intval($order->id_cart));
-                    die($error);
+                    throw new PrestaShopException($error);
                 }
             } // End foreach $order_detail_list
 
@@ -1128,14 +1097,9 @@ abstract class PaymentModuleCore extends Module
                 $this->currentOrder = (int) $order->id;
             }
 
-            if (static::DEBUG_MODE) {
-                Logger::addLog('PaymentModule::validateOrder - End of validateOrder', 1, null, 'Cart', (int) $idCart, true);
-            }
-
             return true;
         } else {
-            $error = Tools::displayError('Cart cannot be loaded or an order has already been placed using this cart');
-            die($error);
+            throw new PrestaShopException(sprintf(Tools::displayError('Order has already been placed using cart [%s]'), (int)$idCart));
         }
     }
 

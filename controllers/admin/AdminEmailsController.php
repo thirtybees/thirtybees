@@ -420,13 +420,14 @@ class AdminEmailsControllerCore extends AdminController
     /**
      * Ajax process send test mail
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessSendMailTest()
     {
         /* PrestaShop demo mode */
         if (_PS_MODE_DEMO_) {
-            die(Tools::displayError('This functionality has been disabled.'));
+            $this->ajaxDie(Tools::displayError('This functionality has been disabled.'));
         }
         /* PrestaShop demo mode */
         if ($this->tabAccess['view'] === '1') {
@@ -450,7 +451,9 @@ class AdminEmailsControllerCore extends AdminController
             $smtpEncryption = Tools::getValue('smtpEnc');
 
             $result = Mail::sendMailTest(Tools::htmlentitiesUTF8($smtpChecked), Tools::htmlentitiesUTF8($smtpServer), $content, $subject, Tools::htmlentitiesUTF8($type), Tools::htmlentitiesUTF8($to), Tools::htmlentitiesUTF8($from), Tools::htmlentitiesUTF8($smtpLogin), $smtpPassword, Tools::htmlentitiesUTF8($smtpPort), Tools::htmlentitiesUTF8($smtpEncryption));
-            die($result === true ? 'ok' : $result);
+            $this->ajaxDie($result === true ? 'ok' : $result);
+        } else {
+            $this->ajaxDie(Tools::displayError('Permissions denied'));
         }
     }
 

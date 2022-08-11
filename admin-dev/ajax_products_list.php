@@ -44,7 +44,7 @@ ServiceLocator::getInstance()->getErrorHandler()->setErrorResponseHandler(new JS
 
 $query = Tools::getValue('q', false);
 if (!$query or $query == '' or strlen($query) < 1) {
-    die();
+    exit;
 }
 
 /*

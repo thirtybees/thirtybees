@@ -302,10 +302,10 @@ class AdminCartRulesControllerCore extends AdminController
     public function ajaxProcess()
     {
         if (Tools::isSubmit('newProductRule')) {
-            die($this->getProductRuleDisplay(Tools::getValue('product_rule_group_id'), Tools::getValue('product_rule_id'), Tools::getValue('product_rule_type')));
+            $this->ajaxDie($this->getProductRuleDisplay(Tools::getValue('product_rule_group_id'), Tools::getValue('product_rule_id'), Tools::getValue('product_rule_type')));
         }
         if (Tools::isSubmit('newProductRuleGroup') && $productRuleGroupId = Tools::getValue('product_rule_group_id')) {
-            die($this->getProductRuleGroupDisplay($productRuleGroupId, Tools::getValue('product_rule_group_'.$productRuleGroupId.'_quantity', 1)));
+            $this->ajaxDie($this->getProductRuleGroupDisplay($productRuleGroupId, Tools::getValue('product_rule_group_'.$productRuleGroupId.'_quantity', 1)));
         }
 
         if (Tools::isSubmit('customerFilter')) {

@@ -86,10 +86,11 @@ class OrderReturnCore extends ObjectModel
      */
     public static function getReturnedCustomizedProducts($idOrder)
     {
+        $idOrder = (int)$idOrder;
         $returns = Customization::getReturnedCustomizations($idOrder);
-        $order = new Order((int) $idOrder);
+        $order = new Order($idOrder);
         if (!Validate::isLoadedObject($order)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError("Order %s not found"), $idOrder));
         }
         $products = $order->getProducts();
 
@@ -229,9 +230,10 @@ class OrderReturnCore extends ObjectModel
      */
     public function checkEnoughProduct($orderDetailList, $productQtyList, $customizationIds, $customizationQtyInput)
     {
-        $order = new Order((int) $this->id_order);
+        $idOrder = (int) $this->id_order;
+        $order = new Order($idOrder);
         if (!Validate::isLoadedObject($order)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError("Order %s not found"), $idOrder));
         }
         $products = $order->getProducts();
         /* Products already returned */

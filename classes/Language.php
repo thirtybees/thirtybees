@@ -212,7 +212,7 @@ class LanguageCore extends ObjectModel
     public static function getLanguageCodeByIso($isoCode)
     {
         if (!Validate::isLanguageIsoCode($isoCode)) {
-            die(Tools::displayError('Fatal error: ISO code is not correct').' '.Tools::safeOutput($isoCode));
+            throw new PrestaShopException(Tools::displayError('Fatal error: ISO code is not correct').' '.Tools::safeOutput($isoCode));
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
@@ -235,7 +235,7 @@ class LanguageCore extends ObjectModel
     public static function getLanguageByIETFCode($code)
     {
         if (!Validate::isLanguageCode($code)) {
-            die(sprintf(Tools::displayError('Fatal error: IETF code %s is not correct'), Tools::safeOutput($code)));
+            throw new PrestaShopException(sprintf(Tools::displayError('Fatal error: IETF code %s is not correct'), Tools::safeOutput($code)));
         }
 
         // $code is in the form of 'xx-YY' where xx is the language code
@@ -679,7 +679,7 @@ class LanguageCore extends ObjectModel
     public static function getIdByIso($isoCode, $noCache = false)
     {
         if (!Validate::isLanguageIsoCode($isoCode)) {
-            die(Tools::displayError('Fatal error: ISO code is not correct').' '.Tools::safeOutput($isoCode));
+            throw new PrestaShopException(Tools::displayError('Fatal error: ISO code is not correct').' '.Tools::safeOutput($isoCode));
         }
 
         $key = 'Language::getIdByIso_'.$isoCode;
@@ -1025,21 +1025,23 @@ class LanguageCore extends ObjectModel
     public static function getFilesList($isoFrom, $themeFrom, $isoTo = false, $themeTo = false, $select = false, $check = false, $modules = false)
     {
         if (empty($isoFrom)) {
-            die(Tools::displayError());
+            throw new PrestaShopException('getFilesList: $isoFrom not provided');
+        } else {
+            $isoFrom = (string)$isoFrom;
         }
 
-        $copy = ($isoTo && $themeTo) ? true : false;
+        $copy = $isoTo && $themeTo;
 
-        $lPathFrom = _PS_TRANSLATIONS_DIR_.(string) $isoFrom.'/';
-        $tPathFrom = _PS_ROOT_DIR_.'/themes/'.(string) $themeFrom.'/';
-        $pPathFrom = _PS_ROOT_DIR_.'/themes/'.(string) $themeFrom.'/pdf/';
-        $mPathFrom = _PS_MAIL_DIR_.(string) $isoFrom.'/';
+        $lPathFrom = _PS_TRANSLATIONS_DIR_. $isoFrom .'/';
+        $tPathFrom = _PS_ROOT_DIR_.'/themes/'. $themeFrom .'/';
+        $pPathFrom = _PS_ROOT_DIR_.'/themes/'. $themeFrom .'/pdf/';
+        $mPathFrom = _PS_MAIL_DIR_. $isoFrom .'/';
 
         if ($copy) {
-            $lPathTo = _PS_TRANSLATIONS_DIR_.(string) $isoTo.'/';
-            $tPathTo = _PS_ROOT_DIR_.'/themes/'.(string) $themeTo.'/';
-            $pPathTo = _PS_ROOT_DIR_.'/themes/'.(string) $themeTo.'/pdf/';
-            $mPathTo = _PS_MAIL_DIR_.(string) $isoTo.'/';
+            $lPathTo = _PS_TRANSLATIONS_DIR_. $isoTo .'/';
+            $tPathTo = _PS_ROOT_DIR_.'/themes/'. $themeTo .'/';
+            $pPathTo = _PS_ROOT_DIR_.'/themes/'. $themeTo .'/pdf/';
+            $mPathTo = _PS_MAIL_DIR_. $isoTo .'/';
         }
 
         $lFiles = ['admin.php', 'errors.php', 'fields.php', 'pdf.php', 'tabs.php'];
@@ -1093,7 +1095,7 @@ class LanguageCore extends ObjectModel
         // and modules files which are not override by theme.
         if (!$copy || $isoFrom != $isoTo) {
             // Translations files
-            if (!$check || ($check && (string) $isoFrom != 'en')) {
+            if (!$check || ($isoFrom != 'en')) {
                 foreach ($lFiles as $file) {
                     $filesTr[$lPathFrom.$file] = ($copy ? $lPathTo.$file : ++$number);
                 }
@@ -1104,7 +1106,7 @@ class LanguageCore extends ObjectModel
             $files = array_merge($files, $filesTr);
 
             // Mail files
-            if (!$check || ($check && (string) $isoFrom != 'en')) {
+            if (!$check || ($isoFrom != 'en')) {
                 $filesMail[$mPathFrom.'lang.php'] = ($copy ? $mPathTo.'lang.php' : ++$number);
             }
             foreach ($mFiles as $file) {
@@ -1121,14 +1123,14 @@ class LanguageCore extends ObjectModel
                 foreach ($modList as $mod) {
                     $modDir = _PS_MODULE_DIR_.$mod;
                     // Lang file
-                    if (file_exists($modDir.'/translations/'.(string) $isoFrom.'.php')) {
-                        $filesModules[$modDir.'/translations/'.(string) $isoFrom.'.php'] = ($copy ? $modDir.'/translations/'.(string) $isoTo.'.php' : ++$number);
-                    } elseif (file_exists($modDir.'/'.(string) $isoFrom.'.php')) {
-                        $filesModules[$modDir.'/'.(string) $isoFrom.'.php'] = ($copy ? $modDir.'/'.(string) $isoTo.'.php' : ++$number);
+                    if (file_exists($modDir.'/translations/'. $isoFrom .'.php')) {
+                        $filesModules[$modDir.'/translations/'. $isoFrom .'.php'] = ($copy ? $modDir.'/translations/'. $isoTo .'.php' : ++$number);
+                    } elseif (file_exists($modDir.'/'. $isoFrom .'.php')) {
+                        $filesModules[$modDir.'/'. $isoFrom .'.php'] = ($copy ? $modDir.'/'. $isoTo .'.php' : ++$number);
                     }
                     // Mails files
-                    $modMailDirFrom = $modDir.'/mails/'.(string) $isoFrom;
-                    $modMailDirTo = $modDir.'/mails/'.(string) $isoTo;
+                    $modMailDirFrom = $modDir.'/mails/'. $isoFrom;
+                    $modMailDirTo = $modDir.'/mails/'. $isoTo;
                     if (file_exists($modMailDirFrom)) {
                         $dirFiles = scandir($modMailDirFrom);
                         foreach ($dirFiles as $file) {
@@ -1148,18 +1150,18 @@ class LanguageCore extends ObjectModel
         }
 
         // Theme files
-        if (!$check || ($check && (string) $isoFrom != 'en')) {
-            $filesTheme[$tPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $tPathTo.'lang/'.(string) $isoTo.'.php' : ++$number);
+        if (!$check || $isoFrom != 'en') {
+            $filesTheme[$tPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $tPathTo.'lang/'. $isoTo .'.php' : ++$number);
 
             // Override for pdf files in the theme
             if (file_exists($pPathFrom.'lang/'.(string) $isoFrom.'.php')) {
-                $filesTheme[$pPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $pPathTo.'lang/'.(string) $isoTo.'.php' : ++$number);
+                $filesTheme[$pPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $pPathTo.'lang/'. $isoTo .'.php' : ++$number);
             }
 
             $moduleThemeFiles = (file_exists($tPathFrom.'modules/') ? scandir($tPathFrom.'modules/') : []);
             foreach ($moduleThemeFiles as $module) {
-                if ($module !== '.' && $module != '..' && $module !== '.svn' && file_exists($tPathFrom.'modules/'.$module.'/translations/'.(string) $isoFrom.'.php')) {
-                    $filesTheme[$tPathFrom.'modules/'.$module.'/translations/'.(string) $isoFrom.'.php'] = ($copy ? $tPathTo.'modules/'.$module.'/translations/'.(string) $isoTo.'.php' : ++$number);
+                if ($module !== '.' && $module != '..' && $module !== '.svn' && file_exists($tPathFrom.'modules/'.$module.'/translations/'. $isoFrom .'.php')) {
+                    $filesTheme[$tPathFrom.'modules/'.$module.'/translations/'. $isoFrom .'.php'] = ($copy ? $tPathTo.'modules/'.$module.'/translations/'. $isoTo .'.php' : ++$number);
                 }
             }
         }
@@ -1185,7 +1187,7 @@ class LanguageCore extends ObjectModel
     public function deleteSelection($selection)
     {
         if (!is_array($selection)) {
-            die(Tools::displayError());
+            return false;
         }
 
         $result = true;

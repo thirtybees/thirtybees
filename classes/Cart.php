@@ -219,7 +219,7 @@ class CartCore extends ObjectModel
     {
         $cart = new Cart((int) $idCart);
         if (!Validate::isLoadedObject($cart)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError('Cart with ID %s not found'), (int)$idCart));
         }
 
         if (!Configuration::get('PS_TAX')) {
@@ -711,12 +711,13 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param int  $idCart
+     * @param int $idCart
      * @param bool $useTaxDisplay
-     * @param int  $type
+     * @param int $type
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -724,7 +725,7 @@ class CartCore extends ObjectModel
     {
         $cart = new Cart($idCart);
         if (!Validate::isLoadedObject($cart)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError('Cart with ID %s not found'), (int)$idCart));
         }
 
         $withTaxes = $useTaxDisplay ? $cart->_taxCalculationMethod !== PS_TAX_EXC : true;
@@ -801,7 +802,7 @@ class CartCore extends ObjectModel
         $virtualContext->cart = $this;
 
         if (!in_array($type, $arrayType)) {
-            die(Tools::displayError());
+            throw new PrestaShopException(sprintf(Tools::displayError('getOrderTotal: Invalid value of $type parameter: %s'), $type));
         }
 
         $withShipping = in_array($type, [static::BOTH, static::ONLY_SHIPPING]);
@@ -3173,6 +3174,9 @@ class CartCore extends ObjectModel
         $idProduct = (int) $idProduct;
         $idProductAttribute = (int) $idProductAttribute;
         $product = new Product($idProduct, false, Configuration::get('PS_LANG_DEFAULT'), $shop->id);
+        if (!Validate::isLoadedObject($product)) {
+            throw new PrestaShopException(sprintf(Tools::displayError("Product with id %s not found"), $idProduct));
+        }
 
         if ($idProductAttribute) {
             $combination = new Combination((int) $idProductAttribute);
@@ -3186,10 +3190,6 @@ class CartCore extends ObjectModel
             $minimalQuantity = (int) ProductAttribute::getAttributeMinimalQty($idProductAttribute);
         } else {
             $minimalQuantity = (int) $product->minimal_quantity;
-        }
-
-        if (!Validate::isLoadedObject($product)) {
-            die(Tools::displayError());
         }
 
         if (isset(static::$_nbProducts[$this->id])) {

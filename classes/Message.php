@@ -116,10 +116,6 @@ class MessageCore extends ObjectModel
      */
     public static function getMessagesByOrderId($idOrder, $private = false, Context $context = null)
     {
-        if (!Validate::isBool($private)) {
-            die(Tools::displayError());
-        }
-
         if (!$context) {
             $context = Context::getContext();
         }
@@ -156,10 +152,6 @@ class MessageCore extends ObjectModel
      */
     public static function getMessagesByCartId($idCart, $private = false, Context $context = null)
     {
-        if (!Validate::isBool($private)) {
-            die(Tools::displayError());
-        }
-
         if (!$context) {
             $context = Context::getContext();
         }
@@ -196,7 +188,7 @@ class MessageCore extends ObjectModel
     public static function markAsReaded($idMessage, $idEmployee)
     {
         if (!Validate::isUnsignedId($idMessage) || !Validate::isUnsignedId($idEmployee)) {
-            die(Tools::displayError());
+            return false;
         }
 
         $result = Db::getInstance()->insert(

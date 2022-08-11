@@ -56,21 +56,22 @@ abstract class StockManagerModuleCore extends Module
     /**
      * @return bool
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function hookStockManager()
     {
         $classFile = _PS_MODULE_DIR_.'/'.$this->name.'/'.$this->stock_manager_class.'.php';
 
         if (!isset($this->stock_manager_class) || !file_exists($classFile)) {
-            die(sprintf(Tools::displayError('Incorrect Stock Manager class [%s]'), $this->stock_manager_class));
+            throw new PrestaShopException(sprintf(Tools::displayError('Incorrect Stock Manager class [%s]'), $this->stock_manager_class));
         }
 
         require_once($classFile);
 
         if (!class_exists($this->stock_manager_class)) {
-            die(sprintf(Tools::displayError('Stock Manager class not found [%s]'), $this->stock_manager_class));
+            throw new PrestaShopException(sprintf(Tools::displayError('Stock Manager class not found [%s]'), $this->stock_manager_class));
         }
 
         $class = $this->stock_manager_class;

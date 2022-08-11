@@ -576,12 +576,12 @@ class AdminModulesPositionsControllerCore extends AdminController
             $module = Module::getInstanceById($idModule);
             if (Validate::isLoadedObject($module)) {
                 if ($module->updatePosition($idHook, $way, $position)) {
-                    die(true);
+                    $this->ajaxDie(true);
                 } else {
-                    die('{"hasError" : true, "errors" : "Cannot update module position."}');
+                    $this->ajaxDie('{"hasError" : true, "errors" : "Cannot update module position."}');
                 }
             } else {
-                die('{"hasError" : true, "errors" : "This module cannot be loaded."}');
+                $this->ajaxDie('{"hasError" : true, "errors" : "This module cannot be loaded."}');
             }
         }
     }
@@ -598,11 +598,11 @@ class AdminModulesPositionsControllerCore extends AdminController
         if ($this->tabAccess['view'] === '1') {
             /* PrestaShop demo mode */
             if (_PS_MODE_DEMO_) {
-                die('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
+                $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
 
             if (!count(Tools::getValue('hooks_list'))) {
-                die('{"hasError" : true, "errors" : ["Live Edit: no module on this page."]}');
+                $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: no module on this page."]}');
             }
 
             $modulesList = Tools::getValue('modules_list');
@@ -616,7 +616,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 }
 
                 if (!Validate::isModuleName($module)) {
-                    die('{"hasError" : true, "errors" : ["Live Edit: module is invalid."]}');
+                    $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: module is invalid."]}');
                 }
 
                 $moduleInstance = Module::getInstanceByName($module);

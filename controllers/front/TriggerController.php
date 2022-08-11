@@ -40,7 +40,7 @@ class TriggerControllerCore extends FrontController
         // Allow CORS requests
         header("Access-Control-Allow-Origin: *");
         if ($method === 'OPTIONS') {
-            die();
+            exit;
         }
 
         // Do heavy work on POST requests only
@@ -54,12 +54,12 @@ class TriggerControllerCore extends FrontController
                     try {
                         $scheduler->deleteSyntheticEventSecret();
                         $scheduler->run();
-                        die(json_encode([
+                        $this->ajaxDie(json_encode([
                             'status' => 'success'
                         ]));
                     } catch (Exception $e) {
                         PrestaShopLogger::addLog("Scheduler failed: " . $e);
-                        die(json_encode([
+                        $this->ajaxDie(json_encode([
                             'status' => 'failed',
                             'error' => 'Internal server error'
                         ]));
@@ -68,7 +68,7 @@ class TriggerControllerCore extends FrontController
             }
         }
 
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'status' => 'failed',
             'error' => 'Forbidden'
         ]));

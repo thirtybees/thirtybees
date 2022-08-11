@@ -265,10 +265,6 @@ class ImageCore extends ObjectModel
      */
     public static function deleteCover($idProduct)
     {
-        if (!Validate::isUnsignedId($idProduct)) {
-            die(Tools::displayError());
-        }
-
         return (Db::getInstance()->update(
         'image',
             [

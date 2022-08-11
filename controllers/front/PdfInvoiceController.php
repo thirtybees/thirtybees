@@ -56,6 +56,7 @@ class PdfInvoiceControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function postProcess()
@@ -65,7 +66,7 @@ class PdfInvoiceControllerCore extends FrontController
         }
 
         if (!(int) Configuration::get('PS_INVOICE')) {
-            die(Tools::displayError('Invoices are disabled in this shop.'));
+            throw new PrestaShopException(Tools::displayError('Invoices are disabled in this shop.'));
         }
 
         $idOrder = (int) Tools::getValue('id_order');
@@ -74,15 +75,15 @@ class PdfInvoiceControllerCore extends FrontController
         }
 
         if (!isset($order) || !Validate::isLoadedObject($order)) {
-            die(Tools::displayError('The invoice was not found.'));
+            throw new PrestaShopException(Tools::displayError('The invoice was not found.'));
         }
 
         if ((isset($this->context->customer->id) && $order->id_customer != $this->context->customer->id) || (Tools::isSubmit('secure_key') && $order->secure_key != Tools::getValue('secure_key'))) {
-            die(Tools::displayError('The invoice was not found.'));
+            throw new PrestaShopException(Tools::displayError('The invoice was not found.'));
         }
 
         if (!OrderState::invoiceAvailable($order->getCurrentState()) && !$order->invoice_number) {
-            die(Tools::displayError('No invoice is available.'));
+            throw new PrestaShopException(Tools::displayError('No invoice is available.'));
         }
 
         $this->order = $order;
@@ -93,6 +94,8 @@ class PdfInvoiceControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function display()

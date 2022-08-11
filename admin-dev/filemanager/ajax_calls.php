@@ -27,7 +27,7 @@ if (isset($_GET['action'])) {
             break;
         case 'image_size':
             if (realpath(dirname(_PS_ROOT_DIR_.$_POST['path'])) != realpath(_PS_ROOT_DIR_.$upload_dir)) {
-                die();
+                exit;
             }
             $pos = strpos($_POST['path'], $upload_dir);
             if ($pos !== false) {

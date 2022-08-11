@@ -129,7 +129,7 @@ class ErrorHandlerCore
     {
         $this->logFatalError($errorDescription);
         $this->errorResponse->sendResponse($errorDescription);
-        die();
+        exit;
     }
 
     /**

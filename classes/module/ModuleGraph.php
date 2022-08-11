@@ -282,16 +282,17 @@ abstract class ModuleGraphCore extends Module
      * @param mixed $height
      * @param mixed $layers
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public function create($render, $type, $width, $height, $layers)
     {
         if (!Validate::isModuleName($render)) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Failed to resolve renderer module");
         }
         if (!file_exists($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            die(Tools::displayError());
+            throw new PrestaShopException("Invalid renderer module: " . $render);
         }
         require_once($file);
         $this->_render = new $render($type);
