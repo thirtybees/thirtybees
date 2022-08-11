@@ -1392,7 +1392,7 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function isDebugModeEnabled()
     {
-        return defined('_PS_MODE_DEV_') && _PS_MODE_DEV_;
+        return _PS_MODE_DEV_;
     }
 
     /**

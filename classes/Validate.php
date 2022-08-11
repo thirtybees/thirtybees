@@ -366,23 +366,10 @@ class ValidateCore
      * @return bool Validity is ok or not
      *
      * @since 1.0.0
-     * @since 1.1.0 Also test for proper rounding, in development mode only.
      */
     public static function isPrice($price)
     {
-        $result = (bool) preg_match('/^[0-9]{1,10}(\.[0-9]{1,9})?$/', $price);
-
-        // Test for proper rounding. For retrocompatibility with modules and
-        // for the time being, do this in development mode, only.
-        if ($result
-            && (_PS_MODE_DEV_ || (defined('TESTS_RUNNING') && TESTS_RUNNING))) {
-            $rounded = round($price, _TB_PRICE_DATABASE_PRECISION_);
-
-            // $price might be a string, so cast to float, first.
-            $result = ((string) (float) $price === (string) $rounded);
-        }
-
-        return $result;
+        return (bool) preg_match('/^[0-9]{1,10}(\.[0-9]{1,9})?$/', $price);
     }
 
     /**
@@ -393,21 +380,10 @@ class ValidateCore
      * @return bool Validity is ok or not
      *
      * @since 1.0.0
-     * @since 1.1.0 Also test for proper rounding, in development mode only.
      */
     public static function isNegativePrice($price)
     {
-        $result = (bool) preg_match('/^[-]?[0-9]{1,10}(\.[0-9]{1,9})?$/', $price);
-
-        // See isPrice().
-        if ($result
-            && (_PS_MODE_DEV_ || (defined('TESTS_RUNNING') && TESTS_RUNNING))) {
-            $rounded = round($price, _TB_PRICE_DATABASE_PRECISION_);
-
-            $result = ((string) (float) $price === (string) $rounded);
-        }
-
-        return $result;
+        return (bool) preg_match('/^[-]?[0-9]{1,10}(\.[0-9]{1,9})?$/', $price);
     }
 
     /**

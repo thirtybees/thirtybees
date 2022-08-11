@@ -706,7 +706,7 @@ abstract class DbCore
      * @param bool           $array    Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
-     * @return array|false|null|PDOStatement
+     * @return array|bool|null|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -720,11 +720,13 @@ abstract class DbCore
         $this->last_query = $sql;
 
         // This method must be used only with queries which display results
-        if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
-            if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) {
-                throw new PrestaShopDatabaseException('Db->executeS() must be used only with select, show, explain or describe queries', $sql);
-            }
-
+        if (! preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
+            $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
+            $error = 'Db::executeS method should be used for SELECT queries only. ';
+            $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
+            $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
+            $error .= 'Illegal SQL: [' . $sql . ']';
+            trigger_error($error, E_USER_DEPRECATED);
             return $this->execute($sql, $useCache);
         }
 
@@ -866,8 +868,8 @@ abstract class DbCore
 
         if ($errno) {
             if ($webserviceCall) {
-                $dbg = debug_backtrace();
-                WebserviceRequest::getInstance()->setError(500, '[SQL Error] ' . $this->getMsgError() . '. From ' . (isset($dbg[3]['class']) ? $dbg[3]['class'] : '') . '->' . $dbg[3]['function'] . '() Query was : ' . $sql, 97);
+                $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
+                WebserviceRequest::getInstance()->setError(500, '[SQL Error] ' . $this->getMsgError() . '. From ' . $callPoint['class'] . '::' . $callPoint['function'] . '() Query was : ' . $sql, 97);
             } else {
                 throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
             }

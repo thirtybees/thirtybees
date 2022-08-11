@@ -30,6 +30,7 @@
  */
 
 use PHPSQLParser\PHPSQLParser;
+use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class ToolsCore
@@ -1187,17 +1188,57 @@ class ToolsCore
     public static function displayParameterAsDeprecated($parameter)
     {
         $backtrace = debug_backtrace();
+        $curr = current($backtrace);
         $callee = next($backtrace);
-        $error = 'Parameter '.$parameter.' in function '.($callee['function'] ?? '').'() is deprecated in '.$callee['file'].' on line '.($callee['line'] ?? '(undefined)');
-        $message = 'The parameter '.$parameter.' in function '.$callee['function'].' (Line '.($callee['line'] ?? 'undefined').') is deprecated and will be removed in the next major version.';
-        $class = $callee['class'] ?? null;
+        $class = $callee['class'] ?? '';
+        $file = ErrorUtils::getRelativeFile($curr['file']);
+        $callFile = ErrorUtils::getRelativeFile($callee['file']);
+        if ($class) {
+            $prefix = 'method ' . $class . '::';
+        } else {
+            $prefix = 'function ';
+        }
+        $error = $file. ': Parameter ' . $parameter . ' in ' . $prefix . $callee['function'].'() is deprecated. Called from ' . $callFile . ':' . $callee['line'];
 
-        Tools::throwDeprecated($error, $message, $class);
+        trigger_error($error, E_USER_DEPRECATED);
     }
 
-    protected static function throwDeprecated($error, $message, $class)
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected static function normalizeClassName($name)
     {
-        trigger_error($error, E_USER_DEPRECATED);
+        return preg_replace('/core$/', '', strtolower($name));
+    }
+
+    /**
+     * @param string[] $ignoreClassNames
+     * @return array|void
+     */
+    public static function getCallPoint($ignoreClassNames = [])
+    {
+        $ignoreClassNames = array_unique(array_map(['Tools', 'normalizeClassName'], $ignoreClassNames));
+        $backtrace = debug_backtrace();
+        $prev = next($backtrace);
+        while ($trace = next($backtrace)) {
+            $class = $trace['class'] ?? '';
+            if (!in_array(static::normalizeClassName($class), $ignoreClassNames)) {
+                return [
+                    'class' => $class,
+                    'function' => $trace['function'],
+                    'line' => $prev['line'],
+                    'file' => $prev['file'],
+                ];
+            }
+            $prev = $trace;
+        }
+        return [
+            'class' => 'unknown',
+            'function' => 'unknown',
+            'line' => 0,
+            'file' => 'unknown'
+        ];
     }
 
     /**
@@ -1467,14 +1508,22 @@ class ToolsCore
     public static function displayAsDeprecated($message = null)
     {
         $backtrace = debug_backtrace();
+        $curr = current($backtrace);
         $callee = next($backtrace);
-        $class = $callee['class'] ?? null;
-        if ($message === null) {
-            $message = 'The function '.$callee['function'].' (Line '.$callee['line'].') is deprecated and will be removed in the next major version.';
+        $class = $callee['class'] ?? '';
+        $file = ErrorUtils::getRelativeFile($curr['file']);
+        $callFile = ErrorUtils::getRelativeFile($callee['file']);
+        if ($class) {
+            $prefix = 'Method ' . $class . '::';
+        } else {
+            $prefix = 'Function ';
         }
-        $error = 'Function '.$callee['function'].'() is deprecated in '.$callee['file'].' on line '.$callee['line'];
+        $error = $file . ': '. $prefix . $callee['function'].'() is deprecated. Called from ' . $callFile . ':' . $callee['line'];
+        if ($message) {
+            $error .= ". Reason: " . $message;
+        }
 
-        Tools::throwDeprecated($error, $message, $class);
+        trigger_error($error, E_USER_DEPRECATED);
     }
 
     /**
@@ -1848,10 +1897,6 @@ class ToolsCore
         $errorLangFile = _PS_TRANSLATIONS_DIR_ . $isoCode . '/errors.php';
         if (file_exists($errorLangFile)) {
             @include_once($errorLangFile);
-        }
-
-        if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_ && $string == 'Fatal error') {
-            return ('<pre>'.print_r(debug_backtrace(), true).'</pre>');
         }
 
         $key = md5(str_replace('\'', '\\\'', $string));
@@ -3460,11 +3505,8 @@ FileETag none
     {
         $backtrace = debug_backtrace();
         $callee = current($backtrace);
-        $error = 'File '.$callee['file'].' is deprecated';
-        $message = 'The file '.$callee['file'].' is deprecated and will be removed in the next major version.';
-        $class = $callee['class'] ?? null;
-
-        Tools::throwDeprecated($error, $message, $class);
+        $error = 'File '.$callee['file'].' is deprecated and will be removed in the next major version.';
+        trigger_error($error, E_USER_DEPRECATED);
     }
 
     /**
