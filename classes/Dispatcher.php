@@ -498,25 +498,27 @@ class DispatcherCore
      */
     protected function setRequestUri()
     {
-        // Get request uri (HTTP_X_REWRITE_URL is used by IIS)
-        if (isset($_SERVER['REQUEST_URI'])) {
-            $this->request_uri = $_SERVER['REQUEST_URI'];
-        } elseif (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-            $this->request_uri = $_SERVER['HTTP_X_REWRITE_URL'];
-        }
-        $this->request_uri = rawurldecode($this->request_uri);
+        $requestUri = static::extractRequestUri();
 
+        // remove shop base uri from requestUri
         if (isset(Context::getContext()->shop) && is_object(Context::getContext()->shop)) {
-            $this->request_uri = preg_replace('#^'.preg_quote(Context::getContext()->shop->getBaseURI(), '#').'#i', '/', $this->request_uri);
+            $requestUri = preg_replace('#^'.preg_quote(Context::getContext()->shop->getBaseURI(), '#').'#i', '/', $requestUri);
         }
 
-        // If there are several languages, get language from uri
+        // remove language from uri
         if ($this->use_routes && Language::isMultiLanguageActivated()) {
-            if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $this->request_uri, $m)) {
+            if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $requestUri, $m)) {
                 $_GET['isolang'] = $m[1];
-                $this->request_uri = substr($this->request_uri, 3);
+                $requestUri = substr($requestUri, 3);
             }
         }
+
+        // fix uri, if it starts with two or more / characters
+        if (strpos($requestUri, '//') === 0) {
+            $requestUri = '/' . ltrim($requestUri, '/');
+        }
+
+        $this->request_uri = $requestUri;
     }
 
     /**
@@ -919,7 +921,8 @@ class DispatcherCore
             // Check basic controllers & params
             $controller = $this->controller_not_found;
             $testRequestUri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
-            if (!preg_match('/\.(css|js)$/i', parse_url($testRequestUri, PHP_URL_PATH))) {
+            $urlPath = parse_url($testRequestUri, PHP_URL_PATH);
+            if ($urlPath && !preg_match('/\.(css|js)$/i', $urlPath)) {
                 // Add empty route as last route to prevent this greedy regexp to match request uri before right time
                 if ($this->empty_route) {
                     $this->addRoute(
@@ -1784,5 +1787,22 @@ class DispatcherCore
             }
         }
         return $params;
+    }
+
+    /**
+     * Extracts request_uri from request
+     *
+     * @return string
+     */
+    protected static function extractRequestUri(): string
+    {
+        // Get request uri (HTTP_X_REWRITE_URL is used by IIS)
+        if (isset($_SERVER['REQUEST_URI'])) {
+            return rawurldecode((string)$_SERVER['REQUEST_URI']);
+        }
+        if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
+            return rawurldecode((string)$_SERVER['HTTP_X_REWRITE_URL']);
+        }
+        return '';
     }
 }
