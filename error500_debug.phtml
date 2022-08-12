@@ -201,7 +201,7 @@
         <div class="panel">
             <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $helper->displayString($section['label']) ?></h2>
             <div id="extra-section-<?= $id ?>" class="collapsible">
-                <?= $helper->displayString($section['content']) ?>
+                <?= $section['content'] ?>
             </div>
         </div>
         <?php } ?>
