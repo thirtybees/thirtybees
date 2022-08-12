@@ -103,7 +103,7 @@ class CompareControllerCore extends FrontController
         parent::initContent();
 
         //Clean compare product table
-        CompareProduct::cleanCompareProducts('week');
+        CompareProduct::cleanCompareProducts();
 
         $hasProduct = false;
 
