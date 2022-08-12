@@ -93,9 +93,9 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
     {
         $sections = parent::getExtraSections();
         if ($this->sql) {
-          $sections [] = [
+          $sections[] = [
               'label' => 'SQL',
-              'content' => '<pre>' . $this->sql . '</pre>'
+              'content' => $this->sql,
           ];
         }
         return $sections;

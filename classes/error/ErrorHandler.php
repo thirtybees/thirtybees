@@ -145,6 +145,21 @@ class ErrorHandlerCore
 
         // log exception through custom logger, if set
         if ($this->loggers) {
+            $extra = $errorDescription->getExtraSections();
+            $stacktrace = $errorDescription->getTraceAsString();
+            $previous = $errorDescription->getCause();
+            while ($previous) {
+                $stacktrace .= "\nCaused by: ";
+                $stacktrace .= $previous->getErrorName() . ': ' . $previous->getMessage();
+                $stacktrace .= ' at line ' . $previous->getSourceLine();
+                $stacktrace .= ' in file ' . ErrorUtils::getRelativeFile($previous->getSourceFile());
+                $previous = $previous->getCause();
+            }
+            $extra[] = [
+                'label' => 'Stacktrace',
+                'content' => $stacktrace
+            ];
+
             $error = [
                 'errno' => 0,
                 'errstr' => $errorDescription->getErrorName() . ': ' . $errorDescription->getMessage(),
@@ -153,16 +168,9 @@ class ErrorHandlerCore
                 'suppressed' => false,
                 'type' => 'Exception',
                 'level' => static::getLogLevel(E_ERROR),
-                'extra' => "Stacktrace:\n" . $errorDescription->getTraceAsString()
+                'extra' => $extra,
             ];
-            $previous = $errorDescription->getCause();
-            while ($previous) {
-                $error['extra'] .= "\nCaused by: ";
-                $error['extra'] .= $previous->getErrorName() . ': ' . $previous->getMessage();
-                $error['extra'] .= ' at line ' . $previous->getSourceLine();
-                $error['extra'] .= ' in file ' . ErrorUtils::getRelativeFile($previous->getSourceFile());
-                $previous = $previous->getCause();
-            }
+
             $this->logMessage($error);
         }
     }
