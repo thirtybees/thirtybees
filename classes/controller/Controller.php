@@ -31,6 +31,7 @@
 
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorHandler;
+use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class ControllerCore
@@ -777,7 +778,7 @@ abstract class ControllerCore
                     'level' => $msg['level'],
                     'type' => $msg['type'],
                     'message' => $msg['errstr'],
-                    'file' => ErrorHandler::normalizeFileName($msg['errfile']),
+                    'file' => ErrorUtils::getRelativeFile($msg['errfile']),
                     'line' => (int)$msg['errline']
                 ];
             }

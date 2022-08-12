@@ -148,7 +148,7 @@ class ErrorHandlerCore
             $error = [
                 'errno' => 0,
                 'errstr' => $errorDescription->getErrorName() . ': ' . $errorDescription->getMessage(),
-                'errfile' => $errorDescription->getSourceFile(),
+                'errfile' => ErrorUtils::getRelativeFile($errorDescription->getSourceFile()),
                 'errline' => $errorDescription->getSourceLine(),
                 'suppressed' => false,
                 'type' => 'Exception',
@@ -157,7 +157,10 @@ class ErrorHandlerCore
             ];
             $previous = $errorDescription->getCause();
             while ($previous) {
-                $error['extra'] .= "\nCaused by: " . $previous->getErrorName() . ': ' . $previous->getMessage() . ' at line ' . $previous->getSourceLine() . ' in file ' . $previous->getSourceFile();
+                $error['extra'] .= "\nCaused by: ";
+                $error['extra'] .= $previous->getErrorName() . ': ' . $previous->getMessage();
+                $error['extra'] .= ' at line ' . $previous->getSourceLine();
+                $error['extra'] .= ' in file ' . ErrorUtils::getRelativeFile($previous->getSourceFile());
                 $previous = $previous->getCause();
             }
             $this->logMessage($error);
@@ -186,13 +189,13 @@ class ErrorHandlerCore
         $realLine = 0;
 
         if (SmartyCustom::isCompiledTemplate($file)) {
-            $realFile = static::normalizeFileName($errfile);
+            $realFile = ErrorUtils::getRelativeFile($errfile);
             $realLine = $errline;
             $file = SmartyCustom::getCurrentTemplate();
             $line = 0;
         }
 
-        $file = static::normalizeFileName($file);
+        $file = ErrorUtils::getRelativeFile($file);
 
         $error = [
             'errno'       => $errno,
@@ -294,26 +297,11 @@ class ErrorHandlerCore
      */
     public static function formatErrorMessage($msg)
     {
-        $file = static::normalizeFileName($msg['errfile']);
+        $file = ErrorUtils::getRelativeFile($msg['errfile']);
 
         return $msg['type'].': '
             .$msg['errstr'].' in '.$file.' at line '.$msg['errline'];
     }
-
-    /**
-     * Returns file name relative to thirtybees root directory.
-     *
-     * @param $file
-     *
-     * @return string file
-     *
-     * @since 1.1.0
-     */
-    public static function normalizeFileName($file)
-    {
-        return ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $file), '/');
-    }
-
 
     /**
      * Returns error type for given error level.
