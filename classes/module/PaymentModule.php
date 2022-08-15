@@ -36,6 +36,7 @@
  */
 abstract class PaymentModuleCore extends Module
 {
+    const DEBUG_MODE = false;
     /** @var int Current order's id */
     public $currentOrder;
     /** @var bool $currencies */
