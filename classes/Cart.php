@@ -2542,11 +2542,15 @@ class CartCore extends ObjectModel
      */
     public static function desintifier($int, $delimiter = ',')
     {
-        $delimiterLen = $int[0];
-        $int = strrev(substr($int, 1));
-        $elm = explode(str_repeat('0', $delimiterLen + 1), $int);
+        $int = (string)$int;
+        if (strlen($int) > 0) {
+            $delimiterLen = (int)$int[0];
+            $int = strrev(substr($int, 1));
+            $elm = explode(str_repeat('0', $delimiterLen + 1), $int);
 
-        return strrev(implode($delimiter, $elm));
+            return strrev(implode($delimiter, $elm));
+        }
+        return '';
     }
 
     /**
