@@ -42,6 +42,7 @@ class AdminControllerCore extends Controller
     const LEVEL_EDIT = 2;
     const LEVEL_ADD = 3;
     const LEVEL_DELETE = 4;
+    const DEFAULT_VIEW_TEMPLATE = 'content.tpl';
 
     // Cache file to make errors/warnings/informations/confirmations
     // survive redirects.
@@ -2140,22 +2141,31 @@ class AdminControllerCore extends Controller
      *
      * @return Smarty_Internal_Template
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
-        // Use override tpl if it exists
-        // If view access is denied, we want to use the default template that will be used to display an error
-        if ($this->viewAccess() && $this->override_folder) {
-            if (!Configuration::get('PS_DISABLE_OVERRIDES') && file_exists($this->context->smarty->getTemplateDir(1).DIRECTORY_SEPARATOR.$this->override_folder.$tplName)) {
-                return $this->context->smarty->createTemplate($this->override_folder.$tplName, $this->context->smarty);
-            } elseif (file_exists($this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tplName)) {
-                return $this->context->smarty->createTemplate('controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tplName, $this->context->smarty);
+        $smarty = $this->context->smarty;
+        $templateDir = $smarty->getTemplateDir(0);
+        if ($this->viewAccess()) {
+            if ($this->override_folder) {
+                // Use override tpl if it exists
+                $overrideTemplateDir = $smarty->getTemplateDir(1);
+                if (!Configuration::get('PS_DISABLE_OVERRIDES') && file_exists($overrideTemplateDir. DIRECTORY_SEPARATOR . $this->override_folder . $tplName)) {
+                    return $smarty->createTemplate($this->override_folder . $tplName, $smarty);
+                }
+                if (file_exists($templateDir . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $tplName)) {
+                    return $smarty->createTemplate('controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $tplName, $smarty);
+                }
             }
+            return $smarty->createTemplate($templateDir.$tplName, $smarty);
+        } else {
+            // If view access is denied, we want to use the default template that will be used to display an error
+            return $smarty->createTemplate($templateDir . static::DEFAULT_VIEW_TEMPLATE, $smarty);
         }
-
-        return $this->context->smarty->createTemplate($this->context->smarty->getTemplateDir(0).$tplName, $this->context->smarty);
     }
 
     /**

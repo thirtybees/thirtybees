@@ -69,15 +69,19 @@ abstract class ModuleAdminControllerCore extends AdminController
      *
      * @return Smarty_Internal_Template
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
-        if (file_exists(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tplName) && $this->viewAccess()) {
-            return $this->context->smarty->createTemplate(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tplName, $this->context->smarty);
-        } elseif (file_exists($this->getTemplatePath().$this->override_folder.$tplName) && $this->viewAccess()) {
-            return $this->context->smarty->createTemplate($this->getTemplatePath().$this->override_folder.$tplName, $this->context->smarty);
+        if ($this->viewAccess()) {
+            if (file_exists(_PS_THEME_DIR_ . 'modules/' . $this->module->name . '/views/templates/admin/' . $tplName)) {
+                return $this->context->smarty->createTemplate(_PS_THEME_DIR_ . 'modules/' . $this->module->name . '/views/templates/admin/' . $tplName, $this->context->smarty);
+            } elseif (file_exists($this->getTemplatePath() . $this->override_folder . $tplName)) {
+                return $this->context->smarty->createTemplate($this->getTemplatePath() . $this->override_folder . $tplName, $this->context->smarty);
+            }
         }
 
         return parent::createTemplate($tplName);
