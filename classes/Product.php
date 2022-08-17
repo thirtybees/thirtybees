@@ -1491,7 +1491,7 @@ class ProductCore extends ObjectModel
      * @param int $idProductAttribute
      * @param int $idLang
      *
-     * @return bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1504,7 +1504,7 @@ class ProductCore extends ObjectModel
             return false;
         }
 
-        $result = Db::getInstance()->executeS(
+        return Db::getInstance()->getRow(
             '
 			SELECT pai.`id_image`, pai.`id_product_attribute`, il.`legend`
 			FROM `'._DB_PREFIX_.'product_attribute_image` pai
@@ -1512,12 +1512,6 @@ class ProductCore extends ObjectModel
 			LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = pai.`id_image`)
 			WHERE pai.`id_product_attribute` = '.(int) $idProductAttribute.' AND il.`id_lang` = '.(int) $idLang.' ORDER BY i.`position` LIMIT 1'
         );
-
-        if (!$result) {
-            return false;
-        }
-
-        return $result[0];
     }
 
     /**
@@ -7384,7 +7378,7 @@ class ProductCore extends ObjectModel
      * @param int     $idProduct
      * @param Context $context
      *
-     * @return array | false Product cover image
+     * @return array|false Product cover image
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

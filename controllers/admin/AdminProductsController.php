@@ -4458,12 +4458,12 @@ class AdminProductsControllerCore extends AdminController
                     $packItems[$i]['pack_quantity'] = $packItem->pack_quantity;
                     $packItems[$i]['name'] = $packItem->name;
                     $packItems[$i]['reference'] = $packItem->reference;
-                    $packItems[$i]['id_product_attribute'] = isset($packItem->id_pack_product_attribute) && $packItem->id_pack_product_attribute ? $packItem->id_pack_product_attribute : 0;
-                    $cover = $packItem->id_pack_product_attribute ? Product::getCombinationImageById($packItem->id_pack_product_attribute, $this->context->language->id) : Product::getCover($packItem->id);
-                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'], 'home_default');
-                    // @todo: don't rely on 'home_default'
-                    //$path_to_image = _PS_IMG_DIR_.'p/'.Image::getImgFolderStatic($cover['id_image']).(int)$cover['id_image'].'.jpg';
-                    //$pack_items[$i]['image'] = ImageManager::thumbnail($path_to_image, 'pack_mini_'.$pack_item->id.'_'.$this->context->shop->id.'.jpg', 120);
+                    $productAttributeId = (int)($packItem->id_pack_product_attribute ?? 0);
+                    $packItems[$i]['id_product_attribute'] = $productAttributeId;
+                    $cover = $productAttributeId
+                        ? Product::getCombinationImageById($productAttributeId, $this->context->language->id)
+                        : Product::getCover($packItem->id);
+                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'] ?? 0, 'home');
                     $i++;
                 }
             }
