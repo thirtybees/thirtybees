@@ -22,6 +22,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
+{if isset($is_category_filter)}
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#filter-by-category').click(function() {
@@ -47,3 +48,8 @@
 		{$title}
 	</label>
 </div>
+{else}
+    <div class="tree-panel-heading-controls clearfix">
+        {if isset($title)}<i class="icon-tag"></i>&nbsp;{l s=$title}{/if}
+    </div>
+{/if}

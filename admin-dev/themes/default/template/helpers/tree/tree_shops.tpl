@@ -53,9 +53,15 @@
 		);
 	}
 
-	$(document).ready(function () {
-		$("#{$id|escape:'html':'UTF-8'}").tree("expandAll");
-		$("#{$id|escape:'html':'UTF-8'}").find(":input[type=checkbox]").click(
+	function initShopsTree()
+	{
+		var $treeElement = $("#{$id|escape:'html':'UTF-8'}");
+		if ($treeElement.length === 0 || !$treeElement.tree) {
+			setTimeout(initShopsTree, 100);
+			return;
+		}
+		$treeElement.tree("expandAll");
+		$treeElement.find(":input[type=checkbox]").click(
 			function()
 			{
 				if($(this).is(':checked'))
@@ -87,7 +93,7 @@
 			{assign var=imploded_selected_shops value='","'|implode:$selected_shops}
 			var selected_shops = new Array("{$imploded_selected_shops}");
 
-			$("#{$id|escape:'html':'UTF-8'}").find(".tree-item :input").each(
+			$treeElement.find(".tree-item :input").each(
 				function()
 				{
 					if ($.inArray($(this).val(), selected_shops) != -1)
@@ -107,5 +113,8 @@
 				}
 			);
 		{/if}
-	});
+	}
+
+	$(document).ready(initShopsTree);
+
 </script>

@@ -1941,6 +1941,7 @@ class AdminProductsControllerCore extends AdminController
         $this->copyFromPost($this->object, $this->table);
         if ($this->object->add()) {
             Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+            $this->updateAssoShop($this->object->id);
             $this->addCarriers($this->object);
             $this->updateAccessories($this->object);
             $this->updatePackItems($this->object);
@@ -2496,6 +2497,7 @@ class AdminProductsControllerCore extends AdminController
 
                 if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
                     $object->setFieldsToUpdate((array) Tools::getValue('multishop_check', []));
+                    $this->updateAssoShop($object->id);
                 }
 
                 // Duplicate combinations if not associated to shop
@@ -4851,6 +4853,14 @@ class AdminProductsControllerCore extends AdminController
             $checkProductAssociationAjax = true;
         }
 
+        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP && count(Shop::getShops(true, null, true)) > 1) {
+            $helper = new HelperForm();
+            $helper->id = $product->id;
+            $helper->table = 'product';
+            $helper->identifier = 'id_product';
+            $this->context->smarty->assign('product_asso_shops', $helper->renderAssoShop());
+        }
+
         // TinyMCE
         $isoTinyMce = $this->context->language->iso_code;
         $isoTinyMce = (file_exists(_PS_ROOT_DIR_.'/js/tiny_mce/langs/'.$isoTinyMce.'.js') ? $isoTinyMce : 'en');
@@ -6164,13 +6174,16 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param int $idObject
      *
+     * @return void | bool
+     * @throws PrestaShopException
      * @since 1.0.0
      *
-     * @return void
      */
     protected function updateAssoShop($idObject)
     {
-        return;
+        if (Tools::isSubmit('submitShopAssociation')) {
+            return parent::updateAssoShop($idObject);
+        }
     }
 
     /**

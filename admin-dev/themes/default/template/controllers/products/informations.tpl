@@ -207,6 +207,18 @@
 		</div>
 	</div>
 
+	{* shop association *}
+	{if isset($product_asso_shops)}
+	<div class="form-group">
+		<div class="col-lg-1"></div>
+		<label class="control-label col-lg-2" for="checkBoxShopAsso_product">
+			{l s='Shop associations'}
+		</label>
+		<div class="col-lg-5">{$product_asso_shops}</div>
+		<input type="hidden" name="submitShopAssociation" value="1" />
+	</div>
+	{/if}
+
 	<div class="form-group redirect_product_options" style="display:none">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="redirect_type" type="radio" onclick=""}</span></div>
 		<label class="control-label col-lg-2" for="redirect_type">
