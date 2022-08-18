@@ -36,6 +36,16 @@
  */
 class ImageTypeCore extends ObjectModel
 {
+
+    const ALLOWED_IMAGE_TYPES = [
+        'products',
+        'categories',
+        'manufacturers',
+        'suppliers',
+        'scenes',
+        'stores',
+    ];
+
     // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
@@ -143,6 +153,13 @@ class ImageTypeCore extends ObjectModel
                 ->select('*')
                 ->from('image_type');
             if (!empty($type)) {
+                if (! in_array($type, static::ALLOWED_IMAGE_TYPES)) {
+                    throw new PrestaShopException(sprintf(
+                        'Invalid value for parameter $type: \'%s\'. Allowed values: [\'%s\']',
+                        Tools::safeOutput($type),
+                        implode('\', \'', static::ALLOWED_IMAGE_TYPES)
+                    ));
+                }
                 $query->where('`'.bqSQL($type).'` = 1');
             }
 
@@ -345,17 +362,9 @@ class ImageTypeCore extends ObjectModel
 
         if ( ! $cache) {
             $results = static::getImagesTypes();
-            $resultTypes = [
-                'products',
-                'categories',
-                'manufacturers',
-                'suppliers',
-                'scenes',
-                'stores',
-            ];
 
             foreach ($results as $result) {
-                foreach ($resultTypes as $resultType) {
+                foreach (static::ALLOWED_IMAGE_TYPES as $resultType) {
                     $key = $result['name'].'_'.$resultType;
                     $cache[$key] = $result;
                 }
