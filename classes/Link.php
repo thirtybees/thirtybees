@@ -204,7 +204,7 @@ class LinkCore
         }
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'category', $idShop)) {
-            $params['category'] = (!is_null($product->category) && !empty($product->category)) ? Tools::str2url($product->category) : Tools::str2url($category);
+            $params['category'] = !empty($product->category) ? Tools::str2url($product->category) : Tools::str2url($category);
         }
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'reference', $idShop)) {
@@ -332,43 +332,61 @@ class LinkCore
      */
     public function getImageLink($name, $ids, $type = null, $format = null, $highDpi = false)
     {
+        $ids = (string)$ids;
+        $context = Context::getContext();
+
         if (!$format) {
             $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
         }
 
-        $type = ImageType::getFormatedName($type);
+        $formattedType = ImageType::getFormatedName($type) ?? '';
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
         // TODO: this functionality should be extracted to post-processing hook
-        if (($type != '')
-                && isset(Context::getContext()->customer->id)
-                && Configuration::get('WATERMARK_LOGGED')
-                && Module::isInstalled('watermark')
-                && Module::isEnabled('watermark')
+        if ($formattedType
+            && isset($context->customer->id)
+            && Configuration::get('WATERMARK_LOGGED')
+            && Module::isInstalled('watermark')
+            && Module::isEnabled('watermark')
         ) {
             $watermarkTypes = static::getWatermarkImageTypes();
-            if (isset($watermarkTypes[$type])) {
-                $type = $watermarkTypes[$type];
+            if (isset($watermarkTypes[$formattedType])) {
+                $formattedType = $watermarkTypes[$formattedType];
             }
         }
 
-        // default image
-        if (strpos($ids, 'default') !== false) {
-            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
-            $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
+        $uriPath = false;
+        if (preg_match("/^([a-zA-Z]{2,3})-default-?([a-zA-Z_]*)$/", $ids, $matches)) {
+            // $ids contains string like 'en-default' or 'es-default-Niara_cart', not actual product image ID
+            $iso = $matches[1];
+            if (isset($matches[2])) {
+                // if $ids contains image type, use it
+                $overrideType = ImageType::getFormatedName($matches[2]) ?? '';
+                $uriPath = $this->getProductDefaultImageUri($iso, $overrideType, $highDpi, $format);
+            }
+            if (! $uriPath) {
+                $uriPath = $this->getProductDefaultImageUri($iso, $formattedType, $highDpi, $format);
+            }
         } else {
-            // if ids if of the form id_product-id_image, we want to extract the id_image part
+            // ids can either be single number, or in format id_product-id_image
             $splitIds = explode('-', $ids);
-            $idImage = (isset($splitIds[1]) ? $splitIds[1] : $splitIds[0]);
-            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
-            if ($this->allow == 1) {
-                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.($highDpi ? '2x.' : '.').$format;
-            } else {
-                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
+            $idImage = (int)($splitIds[1] ?? $splitIds[0]);
+            if ($idImage) {
+                $uriPath = $this->getProductImageUri($idImage, $formattedType, $highDpi, $format, $name);
             }
         }
 
-        return $this->protocol_content.Tools::getMediaServer($uriPath).$uriPath;
+        // fallback to default image uri
+        if (! $uriPath) {
+            $uriPath = $this->getProductDefaultImageUri($context->language->iso_code, $formattedType, $highDpi, $format);
+        }
+
+        // image file not found
+        if (! $uriPath) {
+            $uriPath = _PS_IMG_ . '404.gif';
+        }
+
+        return $this->protocol_content . Tools::getMediaServer($uriPath) . $uriPath;
     }
 
     /**
@@ -979,14 +997,14 @@ class LinkCore
                 if (Configuration::get('PS_REWRITING_SETTINGS') && ($k == 'isolang' || $k == 'id_lang')) {
                     continue;
                 }
-                $ifNb = (!$nb || ($nb && !in_array($k, $varsNb)));
-                $ifSort = (!$sort || ($sort && !in_array($k, $varsSort)));
-                $ifPagination = (!$pagination || ($pagination && !in_array($k, $varsPagination)));
+                $ifNb = (!$nb || !in_array($k, $varsNb));
+                $ifSort = (!$sort || !in_array($k, $varsSort));
+                $ifPagination = (!$pagination || !in_array($k, $varsPagination));
                 if ($ifNb && $ifSort && $ifPagination) {
                     if (!is_array($value)) {
                         $vars[urlencode($k)] = $value;
                     } else {
-                        foreach (explode('&', http_build_query([$k => $value], '', '&')) as $key => $val) {
+                        foreach (explode('&', http_build_query([$k => $value], '', '&')) as $val) {
                             $data = explode('=', $val);
                             $vars[urldecode($data[0])] = $data[1];
                         }
@@ -1096,5 +1114,110 @@ class LinkCore
             }
         }
         return $watermarkTypes;
+    }
+
+    /**
+     * This method returns uri to default product image, for example /img/p/en-default-Niara_home.jpg
+     *
+     * @param string $iso language iso code for which to display image
+     * @param string $formattedType formatted image type, ie. 'Niara_home'
+     * @param bool $highDpi true, if high resolution image should be displayed
+     * @param string $preferredExtension preferred image extension ['jpg', 'webp']
+     *
+     * @return string | false
+     * @throws PrestaShopException
+     */
+    protected function getProductDefaultImageUri(string $iso, string $formattedType, bool $highDpi, string $preferredExtension)
+    {
+        $typeDimension = $formattedType ? '-'.$formattedType : '';
+        $highDpiDimension = $highDpi ? '2x' : '';
+
+        $extensions = [ $preferredExtension ];
+        if ($preferredExtension === 'webp') {
+            $extensions[] = 'jpg';
+        }
+
+        // build list of candidate image files
+        $candidates = [];
+        foreach ($extensions as $extension) {
+            $candidates[] = $iso . '-default' . $typeDimension . $highDpiDimension . '.' . $extension;
+            $candidates[] = $iso . '-default' . $typeDimension . '.' . $extension;
+            $candidates[] = $iso . '-default' . $highDpiDimension . '.' . $extension;
+            $candidates[] = $iso . '-default' . '.' . $extension;
+        }
+        $candidates = array_unique($candidates);
+        foreach ($candidates as $candidate) {
+            if (file_exists(_PS_PROD_IMG_DIR_ . $candidate)) {
+                return _THEME_PROD_DIR_ . $candidate;
+            }
+        }
+
+        // default image file for $iso does not exists, let's try current context language
+        $contextIso = Context::getContext()->language->iso_code;
+        if ($contextIso !== $iso && Validate::isLangIsoCode($contextIso)) {
+            return $this->getProductDefaultImageUri($contextIso, $formattedType, $highDpi, $preferredExtension);
+        }
+
+        // default image file for $iso does not exists, let's try default language
+        $defaultLangIsoCode = Language::getIsoById(Configuration::get('PS_LANG_DEFAULT'));
+        if ($defaultLangIsoCode !== $iso && Validate::isLangIsoCode($defaultLangIsoCode)) {
+            return $this->getProductDefaultImageUri($defaultLangIsoCode, $formattedType, $highDpi, $preferredExtension);
+        }
+
+        // try 'en' iso
+        if ($iso !== 'en') {
+            return $this->getProductDefaultImageUri($defaultLangIsoCode, $formattedType, $highDpi, $preferredExtension);
+        }
+
+        // Default image was not found for requested iso, or any fallback iso as well.
+        return false;
+    }
+
+    /**
+     * This method returns uri to product image, if it exists
+     *
+     * @param int $imageId
+     * @param string $formattedType
+     * @param bool $highDpi
+     * @param string $preferredExtension
+     * @param string $name
+     *
+     * @return string | false
+     */
+    protected function getProductImageUri(int $imageId, string $formattedType, bool $highDpi, string $preferredExtension, string $name): string
+    {
+        // ids can either be single number, or in format id_product-id_image
+        $typeDimension = $formattedType ? '-'.$formattedType : '';
+        $highDpiDimension = $highDpi ? '2x' : '';
+
+        $extensions = [ $preferredExtension ];
+        if ($preferredExtension === 'webp') {
+            $extensions[] = 'jpg';
+        }
+
+        // resolve image dir
+        $imgDir = Image::getImgFolderStatic($imageId);
+
+        // build list of candidate image files
+        $candidates = [];
+        foreach ($extensions as $extension) {
+            $candidates[$imgDir . $imageId . $typeDimension . $highDpiDimension . '.' . $extension] = $imageId . $typeDimension . '/' . $name . $highDpiDimension . '.' . $extension;
+            $candidates[$imgDir . $imageId . $typeDimension . '.' . $extension] = $imageId . $typeDimension . '/' . $name . '.' . $extension;
+            $candidates[$imgDir . $imageId . $highDpiDimension . '.' . $extension] = $imageId . '/' . $name . $highDpiDimension . '.' . $extension;
+            $candidates[$imgDir . $imageId . '.' . $extension] = $imageId . '/' . $name . '.' . $extension;
+        }
+
+        // find first existing file
+        foreach ($candidates as $file => $friendlyUri) {
+            if (file_exists(_PS_PROD_IMG_DIR_ . $file)) {
+                if ($this->allow == 1) {
+                    return __PS_BASE_URI__ . $friendlyUri;
+                } else {
+                    return _THEME_PROD_DIR_ . $file;
+                }
+            }
+        }
+
+        return false;
     }
 }
