@@ -3061,6 +3061,10 @@ abstract class ModuleCore
      */
     public static function isEnabledForShops($moduleId, $shops)
     {
+        if (! $shops) {
+            return false;
+        }
+
         // first, check if module is marked as enabled
         if (! (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
