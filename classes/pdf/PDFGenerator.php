@@ -19030,9 +19030,9 @@ class PDFGeneratorCore extends TCPDF
     public $header;
     public $footer;
     public $pagination;
-public $content;
+    public $content;
     public $font; // end of encoding maps
-public $font_by_lang = [
+    public $font_by_lang = [
         'ja' => 'cid0jp',
         'bg' => 'freeserif',
         'ru' => 'freeserif',
@@ -19051,6 +19051,7 @@ public $font_by_lang = [
         'hr' => 'dejavusans',
         'sr' => 'dejavusans',
         'si' => 'dejavusans',
+        'sl' => 'dejavusans',
         'cs' => 'dejavusans',
         'sk' => 'dejavusans',
         'ka' => 'dejavusans',
