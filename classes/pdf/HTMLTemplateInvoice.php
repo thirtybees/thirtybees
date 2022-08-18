@@ -146,7 +146,10 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             $taxTemp = [];
             foreach ($taxes as $tax) {
                 $obj = new Tax($tax['id_tax']);
-                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), (float) round($obj->rate, 3), '&nbsp;');
+                $taxRate = Validate::isLoadedObject($obj)
+                    ? round($obj->rate, 3)
+                    : 0.0;
+                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), $taxRate, '&nbsp;');
             }
 
             $orderDetail['order_detail_tax'] = $taxes;
