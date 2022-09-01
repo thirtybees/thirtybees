@@ -347,11 +347,9 @@ class HelperCore
      */
     public function createTemplate($tplName)
     {
-        if (! Configuration::get('PS_DISABLE_OVERRIDES')) {
-            $overrideTplPath = $this->getOverrideTemplatePath($tplName);
-            if ($overrideTplPath && file_exists($overrideTplPath)) {
-                return $this->context->smarty->createTemplate($overrideTplPath, $this->context->smarty);
-            }
+        $overrideTplPath = $this->getOverrideTemplatePath($tplName);
+        if ($overrideTplPath) {
+            return $this->context->smarty->createTemplate($overrideTplPath, $this->context->smarty);
         }
 
         return $this->context->smarty->createTemplate($this->base_folder.$tplName, $this->context->smarty);
@@ -475,29 +473,46 @@ class HelperCore
     }
 
     /**
-     * Returns path to override template file. Override template file may or may not exists
+     * Returns path to override template file, if it exists
      *
      * @param string $tplName
-     * @return string | null
+     * @return string | false
+     *
+     * @throws PrestaShopException
      */
     protected function getOverrideTemplatePath($tplName)
     {
         if ($this->override_folder) {
             if ($this->context->controller instanceof ModuleAdminController) {
-                return $this->context->controller->getTemplatePath($tplName) . $this->override_folder . $this->base_folder . $tplName;
+                $path = $this->context->controller->getTemplatePath($tplName) . $this->override_folder . $this->base_folder . $tplName;
+                if (file_exists($path)) {
+                    return $path;
+                }
             } elseif ($this->module) {
-                return _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->override_folder . $this->base_folder . $tplName;
+                $path = _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->override_folder . $this->base_folder . $tplName;
+                if (file_exists($path)) {
+                    return $path;
+                }
             } else {
-                if (file_exists($this->context->smarty->getTemplateDir(1) . $this->override_folder . $this->base_folder . $tplName)) {
-                    return $this->context->smarty->getTemplateDir(1) . $this->override_folder . $this->base_folder . $tplName;
-                } elseif (file_exists($this->context->smarty->getTemplateDir(0) . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $this->base_folder . $tplName)) {
-                    return $this->context->smarty->getTemplateDir(0) . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $this->base_folder . $tplName;
+                if (!Configuration::get('PS_DISABLE_OVERRIDES')) {
+                    // check override file in /override/ directory
+                    $path = $this->context->smarty->getTemplateDir(1) . $this->override_folder . $this->base_folder . $tplName;
+                    if (file_exists($path)) {
+                        return $path;
+                    }
+                }
+                $path = $this->context->smarty->getTemplateDir(0) . 'controllers' . DIRECTORY_SEPARATOR . $this->override_folder . $this->base_folder . $tplName;
+                if (file_exists($path)) {
+                    return $path;
                 }
             }
         } elseif ($this->module) {
-            return _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->base_folder . $tplName;
+            $path = _PS_MODULE_DIR_ . $this->module->name . '/views/templates/admin/_configure/' . $this->base_folder . $tplName;
+            if (file_exists($path)) {
+                return $path;
+            }
         }
 
-        return null;
+        return false;
     }
 }
