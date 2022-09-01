@@ -62,6 +62,7 @@
 {/block}
 
 {block name="defaultForm"}
+{if isset($product)}
 	<div class="row">
 		<div class="productTabs col-lg-2 col-md-3">
 			<div class="list-group">
@@ -312,5 +313,5 @@
 			<input type="hidden" name="key_tab" id="key_tab" value="Informations" />
 		</form>
 	</div>
-
+{/if}
 {/block}
