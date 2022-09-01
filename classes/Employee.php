@@ -351,17 +351,17 @@ class EmployeeCore extends ObjectModel
                             ],
                         ]
                     )->getBody();
+
+                    if ((string) $body) {
+                        // Service itself wasn't successful.
+                        $success = false;
+                        $this->optin = false;
+                    }
+
                 } catch (RequestException $e) {
                     $success = false;
                     $this->optin = false;
                 }
-                if ((string) $body) {
-                    // Service itself wasn't successful.
-                    $success = false;
-                    $this->optin = false;
-                }
-            } else {
-                // TODO: actually unregister
             }
         }
 
