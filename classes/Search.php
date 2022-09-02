@@ -335,7 +335,7 @@ class SearchCore
      * @param bool   $indexation
      * @param bool   $isoCode
      *
-     * @return bool|mixed|string
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -343,7 +343,7 @@ class SearchCore
      */
     public static function sanitize($string, $idLang, $indexation = false, $isoCode = false)
     {
-        $string = trim($string);
+        $string = trim((string)$string);
         if (empty($string)) {
             return '';
         }
