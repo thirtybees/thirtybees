@@ -190,7 +190,7 @@ class WebserviceLoggerCore
     protected function formatPayload($prefix, $payload)
     {
         $formattedPayload = '';
-        $payload = trim($payload);
+        $payload = trim((string)$payload);
         if ($payload) {
             $payload = preg_replace("#\n#", "\n$prefix", $payload);
             $formattedPayload = $prefix . $payload . "\n";
