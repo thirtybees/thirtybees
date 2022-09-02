@@ -50,5 +50,5 @@ interface WebserviceOutputInterface
     public function overrideContent($content);
     public function renderErrorsHeader();
     public function renderErrorsFooter();
-    public function renderErrors($message, $code = null);
+    public function renderErrors($message, $code = null, $extra = []);
 }

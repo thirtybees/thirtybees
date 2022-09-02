@@ -157,21 +157,29 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param      $message
-     * @param null $code
+     * @param string $message
+     * @param int $code
+     * @param array $extra
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function renderErrors($message, $code = null)
+    public function renderErrors($message, $code = null, $extra = [])
     {
         $strOutput = '<error>'."\n";
         if ($code !== null) {
             $strOutput .= '<code><![CDATA['.$code.']]></code>'."\n";
         }
         $strOutput .= '<message><![CDATA['.$message.']]></message>'."\n";
+        if (! is_null($extra)) {
+            $strOutput .= "<additional_info>\n";
+            foreach ($extra as $name => $value) {
+                $strOutput .= '<'.$name.'><![CDATA['.$value.']]></'.$name.'>'."\n";
+            }
+            $strOutput .= "</additional_info>\n";
+        }
         $strOutput .= '</error>'."\n";
 
         return $strOutput;

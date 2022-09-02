@@ -137,17 +137,25 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param      $message
-     * @param null $code
+     * @param string $message
+     * @param int $code
+     * @param array $extra
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function renderErrors($message, $code = null)
+    public function renderErrors($message, $code = null, $extra = [])
     {
-        $this->content['errors'][] = ['code' => $code, 'message' => $message];
+        $error = [ 'message' => $message ];
+        if (! is_null($code)) {
+            $error['code'] = $code;
+        }
+        if (! is_null($extra)) {
+            $error = array_merge($extra, $error);
+        }
+        $this->content['errors'][] = $error;
 
         return '';
     }

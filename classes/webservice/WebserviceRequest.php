@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorHandler;
+
 /**
  * Class WebserviceRequestCore
  *
@@ -523,20 +526,12 @@ class WebserviceRequestCore
      */
     public function fetch($key, $method, $url, $params, $badClassName, $inputXml = null)
     {
+        $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
         $logger = $this->getLogger();
 
         // Time logger
         $this->_startTime = microtime(true);
         $this->objects = [];
-
-        // Error handler
-        set_error_handler([$this, 'webserviceErrorHandler']);
-        ini_set('html_errors', 'off');
-
-        // Two global vars, for compatibility with the PS core...
-        global $webserviceCall, $displayErrors;
-        $webserviceCall = true;
-        $displayErrors = strtolower(ini_get('display_errors')) != 'off';
 
         if (! $params) {
             $params = [];
@@ -549,10 +544,17 @@ class WebserviceRequestCore
         $this->objOutput = new WebserviceOutputBuilder($this->wsUrl);
         $this->_key = trim($key);
 
-
-        $this->outputFormat = isset($params['output_format']) ? $params['output_format'] : $this->outputFormat;
+        $this->outputFormat = $params['output_format'] ?? $this->outputFormat;
         // Set the render object to build the output on the asked format (XML, JSON, CSV, ...)
         $this->objOutput->setObjectRender($this->getOutputObject($this->outputFormat));
+
+        // set fatal error handler
+        $errorHandler->setErrorResponseHandler(new WebserviceFatalErrorResponse(
+            $this->objOutput,
+            $logger,
+            _PS_MODE_DEV_,
+            $this->_startTime
+        ));
 
         // Check webservice activation and request authentication
         if ($this->webserviceChecks()) {
@@ -572,17 +574,9 @@ class WebserviceRequestCore
             $this->_inputXml = $inputXml;
             $this->depth = isset($this->urlFragments['depth']) ? (int) $this->urlFragments['depth'] : $this->depth;
 
-            try {
-                // Method below set a particular fonction to use on the price field for products entity
-                // @see WebserviceRequest::getPriceForProduct() method
-                // @see WebserviceOutputBuilder::setSpecificField() method
-                //$this->objOutput->setSpecificField($this, 'getPriceForProduct', 'price', 'products');
-                if (isset($this->urlFragments['price'])) {
-                    $this->objOutput->setVirtualField($this, 'specificPriceForCombination', 'combinations', $this->urlFragments['price']);
-                    $this->objOutput->setVirtualField($this, 'specificPriceForProduct', 'products', $this->urlFragments['price']);
-                }
-            } catch (Exception $e) {
-                $this->setError(500, $e->getMessage(), $e->getCode());
+            if (isset($this->urlFragments['price'])) {
+                $this->objOutput->setVirtualField($this, 'specificPriceForCombination', 'combinations', $this->urlFragments['price']);
+                $this->objOutput->setVirtualField($this, 'specificPriceForProduct', 'products', $this->urlFragments['price']);
             }
 
             if (isset($this->urlFragments['language'])) {
@@ -663,8 +657,6 @@ class WebserviceRequestCore
             }
         }
         $return = $this->returnOutput();
-        unset($webserviceCall);
-        unset($displayErrors);
 
         return $return;
     }
@@ -755,91 +747,6 @@ class WebserviceRequestCore
         }
 
         return $closest;
-    }
-
-    /**
-     * Used to replace the default PHP error handler, in order to display PHP errors in a XML format
-     *
-     * @param string $errno   contains the level of the error raised, as an integer
-     * @param array  $errstr  contains the error message, as a string
-     * @param array  $errfile errfile, which contains the filename that the error was raised in, as a string
-     * @param array  $errline errline, which contains the line number the error was raised at, as an integer
-     *
-     * @return bool Always return true to avoid the default PHP error handler
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function webserviceErrorHandler($errno, $errstr, $errfile, $errline)
-    {
-        $displayErrors = strtolower(ini_get('display_errors')) != 'off';
-        if (!(error_reporting() & $errno) || $displayErrors) {
-            return false;
-        }
-
-        $errortype = [
-            E_ERROR             => 'Error',
-            E_WARNING           => 'Warning',
-            E_PARSE             => 'Parse',
-            E_NOTICE            => 'Notice',
-            E_CORE_ERROR        => 'Core Error',
-            E_CORE_WARNING      => 'Core Warning',
-            E_COMPILE_ERROR     => 'Compile Error',
-            E_COMPILE_WARNING   => 'Compile Warning',
-            E_USER_ERROR        => 'Error',
-            E_USER_WARNING      => 'User warning',
-            E_USER_NOTICE       => 'User notice',
-            E_STRICT            => 'Runtime Notice',
-            E_RECOVERABLE_ERROR => 'Recoverable error',
-        ];
-        $type = (isset($errortype[$errno]) ? $errortype[$errno] : 'Unknown error');
-        Tools::error_log('[PHP '.$type.' #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')');
-
-        switch ($errno) {
-            case E_ERROR:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Error #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 2);
-                break;
-            case E_WARNING:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Warning #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 3);
-                break;
-            case E_PARSE:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Parse #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 4);
-                break;
-            case E_NOTICE:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Notice #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 5);
-                break;
-            case E_CORE_ERROR:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Core #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 6);
-                break;
-            case E_CORE_WARNING:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Core warning #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 7);
-                break;
-            case E_COMPILE_ERROR:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Compile #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 8);
-                break;
-            case E_COMPILE_WARNING:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Compile warning #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 9);
-                break;
-            case E_USER_ERROR:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Error #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 10);
-                break;
-            case E_USER_WARNING:
-                WebserviceRequest::getInstance()->setError(500, '[PHP User warning #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 11);
-                break;
-            case E_USER_NOTICE:
-                WebserviceRequest::getInstance()->setError(500, '[PHP User notice #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 12);
-                break;
-            case E_STRICT:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Strict #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 13);
-                break;
-            case E_RECOVERABLE_ERROR:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Recoverable error #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 14);
-                break;
-            default:
-                WebserviceRequest::getInstance()->setError(500, '[PHP Unknown error #'.$errno.'] '.$errstr.' ('.$errfile.', line '.$errline.')', 15);
-        }
-
-        return true;
     }
 
     /**
@@ -1939,17 +1846,14 @@ class WebserviceRequestCore
 
         // write headers
         $time = round(microtime(true) - $this->_startTime, 3);
-        $this->objOutput
-            ->setHeaderParams('Access-Time', time())
-            ->setHeaderParams('Execution-Time', $time);
+        $this->objOutput->setHeaderParams('Execution-Time', $time);
 
         $return['type'] = strtolower($this->outputFormat);
 
         // write this header only now (avoid hackers happiness...)
         if ($this->_authenticated) {
-            $this->objOutput
-                ->setHeaderParams('PSWS-Version', _PS_VERSION_)
-                ->setHeaderParams('TBWS-Version', _TB_VERSION_);
+            $this->objOutput->setHeaderParams('PSWS-Version', _PS_VERSION_);
+            $this->objOutput->setHeaderParams('TBWS-Version', _TB_VERSION_);
         }
 
         // If Specific Management is asked
@@ -2028,7 +1932,6 @@ class WebserviceRequestCore
         }
 
         $return['headers'] = $this->objOutput->buildHeader();
-        restore_error_handler();
 
         $logger = $this->getLogger();
         $response = $return['content'] ?? null;

@@ -503,6 +503,8 @@ $kernel->loadFile(__DIR__.'/../../classes/Validate.php');
 $kernel->loadFile(__DIR__.'/override/classes/Validate.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceException.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceException.php');
+$kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceFatalErrorResponse.php');
+$kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceFatalErrorResponse.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceKey.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceKey.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceLogger.php');

@@ -60,12 +60,7 @@ class WebserviceOutputBuilderCore
     protected static $_cache_ws_parameters = [];
 
     /* Header properties */
-    protected $headerParams = [
-        'Access-Time'  => 0,
-        'X-Powered-By' => 0,
-        'PSWS-Version' => 0,
-        'Content-Type' => 0,
-    ];
+    protected $headerParams = [];
     // @codingStandardsIgnoreEnd
 
     /**
@@ -87,6 +82,7 @@ class WebserviceOutputBuilderCore
         $this->status = $_SERVER['SERVER_PROTOCOL'].' 200 OK';
         $this->wsUrl = $wsUrl;
         $this->wsParamOverrides = [];
+        $this->headerParams['Access-Time'] = time();
     }
 
     /**
@@ -325,7 +321,10 @@ class WebserviceOutputBuilderCore
                 $strOutput = $this->objectRender->renderErrorsHeader();
                 foreach ($errors as $error) {
                     if (is_array($error)) {
-                        $strOutput .= $this->objectRender->renderErrors($error[1], $error[0]);
+                        $code = $error[0];
+                        $message = $error[1];
+                        $extra = $error[2] ?? [];
+                        $strOutput .= $this->objectRender->renderErrors($message, $code, $extra);
                     } else {
                         $strOutput .= $this->objectRender->renderErrors($error);
                     }

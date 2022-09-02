@@ -862,17 +862,9 @@ abstract class DbCore
      */
     public function displayError($sql = false)
     {
-        global $webserviceCall;
-
         $errno = $this->getNumberError();
-
         if ($errno) {
-            if ($webserviceCall) {
-                $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
-                WebserviceRequest::getInstance()->setError(500, '[SQL Error] ' . $this->getMsgError() . '. From ' . $callPoint['class'] . '::' . $callPoint['function'] . '() Query was : ' . $sql, 97);
-            } else {
-                throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
-            }
+            throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
         }
     }
 
