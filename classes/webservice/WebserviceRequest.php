@@ -2031,7 +2031,8 @@ class WebserviceRequestCore
         restore_error_handler();
 
         $logger = $this->getLogger();
-        $logger->logResponse($return['content'], $this->errors, $time);
+        $response = $return['content'] ?? null;
+        $logger->logResponse($response, $this->errors, $time);
 
         return $return;
     }
