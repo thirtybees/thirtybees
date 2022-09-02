@@ -803,9 +803,11 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function getRestPaid()
     {
-        return $this->total_paid_tax_incl
-               + $this->getSiblingTotal()
-               - $this->getTotalPaid();
+        return Tools::roundPrice(
+            $this->total_paid_tax_incl
+            + $this->getSiblingTotal()
+            - $this->getTotalPaid()
+        );
     }
 
     /**
@@ -813,7 +815,7 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @param int $mod TAX_EXCL, TAX_INCL, DETAIL
      *
-     * @return array|bool|null|object
+     * @return array|float
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -840,9 +842,10 @@ class OrderInvoiceCore extends ObjectModel
 
         switch ($mod) {
             case static::TAX_EXCL:
-                return $row['total_paid_tax_excl'];
+                return (float)$row['total_paid_tax_excl'];
             case static::TAX_INCL:
-                return $row['total_paid_tax_incl'];
+                return (float)$row['total_paid_tax_incl'];
+            case static::DETAIL:
             default:
                 return $row;
         }
