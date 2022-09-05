@@ -1137,39 +1137,32 @@ class LinkCore
             $extensions[] = 'jpg';
         }
 
+        $isoCandidates = array_unique(array_filter([
+            $iso,
+            Context::getContext()->language->iso_code,
+            Language::getIsoById(Configuration::get('PS_LANG_DEFAULT')),
+            'en',
+        ], ['Validate', 'isLangIsoCode']));
+
         // build list of candidate image files
-        $candidates = [];
-        foreach ($extensions as $extension) {
-            $candidates[] = $iso . '-default' . $typeDimension . $highDpiDimension . '.' . $extension;
-            $candidates[] = $iso . '-default' . $typeDimension . '.' . $extension;
-            $candidates[] = $iso . '-default' . $highDpiDimension . '.' . $extension;
-            $candidates[] = $iso . '-default' . '.' . $extension;
+        $fileCandidates = [];
+        foreach ($isoCandidates as $isoCandidate) {
+            foreach ($extensions as $extension) {
+                $fileCandidates[] = $isoCandidate . '-default' . $typeDimension . $highDpiDimension . '.' . $extension;
+                $fileCandidates[] = $isoCandidate . '-default' . $typeDimension . '.' . $extension;
+                $fileCandidates[] = $isoCandidate . '-default' . $highDpiDimension . '.' . $extension;
+                $fileCandidates[] = $isoCandidate . '-default' . '.' . $extension;
+            }
         }
-        $candidates = array_unique($candidates);
-        foreach ($candidates as $candidate) {
+        $fileCandidates = array_unique($fileCandidates);
+
+        foreach ($fileCandidates as $candidate) {
             if (file_exists(_PS_PROD_IMG_DIR_ . $candidate)) {
                 return _THEME_PROD_DIR_ . $candidate;
             }
         }
 
-        // default image file for $iso does not exists, let's try current context language
-        $contextIso = Context::getContext()->language->iso_code;
-        if ($contextIso !== $iso && Validate::isLangIsoCode($contextIso)) {
-            return $this->getProductDefaultImageUri($contextIso, $formattedType, $highDpi, $preferredExtension);
-        }
-
-        // default image file for $iso does not exists, let's try default language
-        $defaultLangIsoCode = Language::getIsoById(Configuration::get('PS_LANG_DEFAULT'));
-        if ($defaultLangIsoCode !== $iso && Validate::isLangIsoCode($defaultLangIsoCode)) {
-            return $this->getProductDefaultImageUri($defaultLangIsoCode, $formattedType, $highDpi, $preferredExtension);
-        }
-
-        // try 'en' iso
-        if ($iso !== 'en') {
-            return $this->getProductDefaultImageUri('en', $formattedType, $highDpi, $preferredExtension);
-        }
-
-        // Default image was not found for requested iso, or any fallback iso as well.
+        // Default image was not found
         return false;
     }
 
