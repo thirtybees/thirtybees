@@ -1166,7 +1166,7 @@ class LinkCore
 
         // try 'en' iso
         if ($iso !== 'en') {
-            return $this->getProductDefaultImageUri($defaultLangIsoCode, $formattedType, $highDpi, $preferredExtension);
+            return $this->getProductDefaultImageUri('en', $formattedType, $highDpi, $preferredExtension);
         }
 
         // Default image was not found for requested iso, or any fallback iso as well.
