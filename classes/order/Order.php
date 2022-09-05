@@ -1329,13 +1329,15 @@ class OrderCore extends ObjectModel
      */
     public function getTotalProductsWithTaxes($products = false)
     {
+        if ($products !== false) {
+            Tools::displayParameterAsDeprecated('products');
+        }
+
         if ($this->total_products_wt != '0.00' && !$products) {
             return $this->total_products_wt;
         }
 
         /* Retro-compatibility (now set directly on the validateOrder() method) */
-        Tools::displayParameterAsDeprecated('products');
-
         if (!$products) {
             $products = $this->getProductsDetail();
         }
