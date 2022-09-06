@@ -388,6 +388,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
@@ -568,6 +570,7 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function getTemplates()
@@ -580,22 +583,21 @@ class AdminStatusesControllerCore extends AdminController
         foreach (Language::getLanguages(false) as $language) {
             $isoCode = $language['iso_code'];
 
-            // If there is no folder for the given iso_code in /mails or in /themes/[theme_name]/mails, we bypass this language
-            if (!@filemtime(_PS_ADMIN_DIR_.'/'.$defaultPath.$isoCode) && !@filemtime(_PS_ADMIN_DIR_.'/'.$themePath.$isoCode)) {
-                continue;
-            }
-
             $themeTemplatesDir = _PS_ADMIN_DIR_.'/'.$themePath.$isoCode;
             $themeTemplates = is_dir($themeTemplatesDir) ? scandir($themeTemplatesDir) : [];
+
+            $defaultTemplatesDir = _PS_ADMIN_DIR_ . '/' . $defaultPath . $isoCode;
+            $defaultTemplates = is_dir($defaultTemplatesDir) ? scandir($defaultTemplatesDir) : [];
+
             // We merge all available emails in one array
-            $templates = array_unique(array_merge(scandir(_PS_ADMIN_DIR_.'/'.$defaultPath.$isoCode), $themeTemplates));
-            foreach ($templates as $key => $template) {
-                if (!strncmp(strrev($template), 'lmth.', 5)) {
-                    $searchResult = array_search($template, $themeTemplates);
+            $templates = array_unique(array_merge($defaultTemplates, $themeTemplates));
+            foreach ($templates as $template) {
+                if (substr($template, -5) === '.html') {
+                    $id = substr($template, 0, -5);
                     $array[$isoCode][] = [
-                        'id'     => substr($template, 0, -5),
-                        'name'   => substr($template, 0, -5),
-                        'folder' => ((!empty($searchResult) ? $themePath : $defaultPath)),
+                        'id'     => $id,
+                        'name'   => $id,
+                        'folder' => in_array($template, $themeTemplates) ? $themePath : $defaultPath,
                     ];
                 }
             }
@@ -609,6 +611,7 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws SmartyException
      * @since 1.0.0
      */
     protected function renderOrderStatusForm()

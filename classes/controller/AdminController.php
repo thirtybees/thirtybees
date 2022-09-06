@@ -2957,7 +2957,7 @@ class AdminControllerCore extends Controller
      * @param string      $key    Field name
      * @param int|null    $idLang Language id (optional)
      *
-     * @return string
+     * @return false|mixed
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -2967,7 +2967,7 @@ class AdminControllerCore extends Controller
         if ($idLang) {
             $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
         } else {
-            $defaultValue = isset($obj->{$key}) ? $obj->{$key} : false;
+            $defaultValue = $obj->{$key} ?? false;
         }
 
         return Tools::getValue($key.($idLang ? '_'.$idLang : ''), $defaultValue);
