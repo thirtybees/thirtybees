@@ -73,7 +73,8 @@ class DbPDOCore extends Db
         return new PDO($dsn, $user, $password, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
             PDO::ATTR_TIMEOUT => $timeout,
-            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+            PDO::ATTR_STRINGIFY_FETCHES => true,
         ]);
     }
 
