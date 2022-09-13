@@ -1982,7 +1982,7 @@ class ProductCore extends ObjectModel
             return [];
         }
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
-            $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
 				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
 				FROM '._DB_PREFIX_.'feature_product pf
@@ -1994,9 +1994,9 @@ class ProductCore extends ObjectModel
 				'.Shop::addSqlAssociation('feature', 'f').'
 				WHERE pf.id_product = '.(int) $idProduct.'
 				ORDER BY f.position ASC,
-				    (CASE WHEN f.sorting=\'\' OR f.sorting=\'value_asc\' THEN fvl.value END) ASC,
-				    (CASE WHEN f.sorting=\'value_desc\' THEN fvl.value END) DESC,
-				    (CASE WHEN f.sorting=\'custom\' THEN fv.position END) ASC
+				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_ASC.' THEN fvl.value END) ASC,
+				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_DESC.' THEN fvl.value END) DESC,
+				    (CASE WHEN f.sorting='.Feature::SORT_CUSTOM.' THEN fv.position END) ASC
 				    '
             );
 
