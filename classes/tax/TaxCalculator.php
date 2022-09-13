@@ -128,14 +128,14 @@ class TaxCalculatorCore
         if ($this->computation_method == static::ONE_AFTER_ANOTHER_METHOD) {
             $taxes = 1;
             foreach ($this->taxes as $tax) {
-                $taxes *= (1 + (abs($tax->rate) / 100));
+                $taxes *= (1 + ($this->getTaxRate($tax) / 100));
             }
 
             $taxes = $taxes - 1;
             $taxes = $taxes * 100;
         } else {
             foreach ($this->taxes as $tax) {
-                $taxes += abs($tax->rate);
+                $taxes += $this->getTaxRate($tax);
             }
         }
 
@@ -155,7 +155,7 @@ class TaxCalculatorCore
             $name .= $tax->name[(int) Context::getContext()->language->id].' - ';
         }
 
-        $name = rtrim($name, ' - ');
+        $name = rtrim($name, ' -');
 
         return $name;
     }
@@ -177,13 +177,13 @@ class TaxCalculatorCore
         foreach ($this->taxes as $tax) {
             if ($this->computation_method == static::ONE_AFTER_ANOTHER_METHOD) {
                 $taxesAmounts[$tax->id] = round(
-                    $priceTaxExcluded * (abs($tax->rate) / 100),
+                    $priceTaxExcluded * ($this->getTaxRate($tax) / 100),
                     _TB_PRICE_DATABASE_PRECISION_
                 );
                 $priceTaxExcluded = $priceTaxExcluded + $taxesAmounts[$tax->id];
             } else {
                 $taxesAmounts[$tax->id] = round(
-                    $priceTaxExcluded * (abs($tax->rate) / 100),
+                    $priceTaxExcluded * ($this->getTaxRate($tax) / 100),
                     _TB_PRICE_DATABASE_PRECISION_
                 );
             }
@@ -211,5 +211,19 @@ class TaxCalculatorCore
         }
 
         return $amount;
+    }
+
+    /**
+     * Returns tax rate
+     *
+     * @param Tax $tax
+     * @return float
+     */
+    protected function getTaxRate(Tax $tax)
+    {
+        if (is_null($tax->rate)) {
+            return 0.0;
+        }
+        return abs($tax->rate);
     }
 }
