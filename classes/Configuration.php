@@ -353,7 +353,7 @@ class ConfigurationCore extends ObjectModel
      * @param string   $key
      * @param int|null $idLang
      *
-     * @return string
+     * @return string | false
      *
      * @since   1.0.0
      * @throws PrestaShopException
@@ -372,7 +372,7 @@ class ConfigurationCore extends ObjectModel
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
-     * @return string Value
+     * @return string | false Value
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
