@@ -30,7 +30,7 @@
  */
 
 /**
- * @property Feature $object
+ * @property Feature | FeatureValue $object
  */
 class AdminFeaturesControllerCore extends AdminController
 {
@@ -39,6 +39,8 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * AdminFeaturesControllerCore constructor.
+     *
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -103,6 +105,9 @@ class AdminFeaturesControllerCore extends AdminController
         parent::__construct();
     }
 
+    /**
+     * @throws PrestaShopException
+     */
     public function initToolbarTitle()
     {
         $bread_extended = $this->breadcrumbs;
@@ -124,7 +129,7 @@ class AdminFeaturesControllerCore extends AdminController
                 break;
 
             case 'editFeatureValue':
-                if (($id_feature_value = Tools::getValue('id_feature_value'))) {
+                if ((Tools::getValue('id_feature_value'))) {
                     if (($id = Tools::getValue('id_feature'))) {
                         if (Validate::isLoadedObject($obj = new Feature((int) $id))) {
                             $bread_extended[] = '<a href="'.$this->context->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
@@ -152,7 +157,8 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::initContent() override
      *
-     * @see AdminController::initContent()
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -177,7 +183,7 @@ class AdminFeaturesControllerCore extends AdminController
                     return;
                 }
 
-                $this->content .= $this->initFormFeatureValue();
+                $this->initFormFeatureValue();
             } elseif (!$this->ajax) {
                 // If a feature value was saved, we need to reset the values to display the list
                 $this->setTypeFeature();
@@ -209,7 +215,7 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::initToolbar() override
      *
-     * @see AdminController::initToolbar()
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -287,7 +293,6 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -392,84 +397,82 @@ class AdminFeaturesControllerCore extends AdminController
     }
 
     /**
-     * @return false|string|void
-     * @throws PrestaShopDatabaseException
+     * @return string
+     *
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
-        $id = (int)Tools::getValue('id_feature');
-
-        if ($id > 0) {
-            $this->setTypeValue();
-            $this->list_id = 'feature_value';
-            $this->lang = true;
-
-            // Action for list
-            $this->addRowAction('edit');
-            $this->addRowAction('delete');
-
-            if (!Validate::isLoadedObject($obj = new Feature($id, $this->context->employee->id_lang))) {
-                $this->errors[] = sprintf(Tools::displayError('Feature with id %s not found.'), $id);
-                return;
-            }
-
-            $this->toolbar_title = $obj->name;
-            $this->fields_list = [
-                'id_feature_value' => [
-                    'title' => $this->l('ID'),
-                    'align' => 'center',
-                    'class' => 'fixed-width-xs',
-                ],
-                'value'            => [
-                    'title' => $this->l('Value'),
-                ],
-                'displayable'            => [
-                    'title' => $this->l('Displayable'),
-                ],
-                'products'      => [
-                    'title'   => $this->l('Products'),
-                    'orderby' => false,
-                    'search'  => false,
-                    'align'   => 'center',
-                    'class'   => 'fixed-width-xs',
-                    'callback'=> 'getProductsLink',
-                ],
-
-            ];
-
-            switch ((int) $this->object->sorting) {
-                case Feature::SORT_CUSTOM:
-                    $this->fields_list['position'] = [
-                        'title'      => $this->l('Position'),
-                        'filter_key' => 'a!position',
-                        'align'      => 'center',
-                        'class'      => 'fixed-width-xs',
-                        'position'   => 'position',
-                    ];
-                    $this->_defaultOrderBy = 'position';
-                    $this->_defaultOrderWay = 'ASC';
-                    break;
-                case Feature::SORT_VALUE_DESC:
-                    $this->_defaultOrderBy = 'value';
-                    $this->_defaultOrderWay = 'DESC';
-                    break;
-                case Feature::SORT_VALUE_ASC:
-                default:
-                    $this->_defaultOrderBy = 'value';
-                    $this->_defaultOrderWay = 'ASC';
-                    break;
-            }
-
-            $this->_where = sprintf('AND `id_feature` = %d', $id);
-            static::$currentIndex = static::$currentIndex.'&id_feature='.$id.'&viewfeature';
-            $this->processFilter();
-
-            return parent::renderList();
-        } else {
-            $this->errors[] = sprintf(Tools::displayError('Invalid Feature ID: %s'), $id);
-            return null;
+        if (!Validate::isLoadedObject($this->object)) {
+            return '';
         }
+
+        /** @var Feature $feature */
+        $feature = $this->object;
+        $featureId = (int)$feature->id;
+
+        $this->setTypeValue();
+        $this->list_id = 'feature_value';
+        $this->lang = true;
+
+        // Action for list
+        $this->addRowAction('edit');
+        $this->addRowAction('delete');
+
+        $this->toolbar_title = $feature->name;
+        $this->fields_list = [
+            'id_feature_value' => [
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+            ],
+            'value'            => [
+                'title' => $this->l('Value'),
+            ],
+            'displayable'            => [
+                'title' => $this->l('Displayable'),
+            ],
+            'products'      => [
+                'title'   => $this->l('Products'),
+                'orderby' => false,
+                'search'  => false,
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+                'callback'=> 'getProductsLink',
+            ],
+
+        ];
+
+        switch ((int)$feature->sorting) {
+            case Feature::SORT_CUSTOM:
+                $this->fields_list['position'] = [
+                    'title'      => $this->l('Position'),
+                    'filter_key' => 'a!position',
+                    'align'      => 'center',
+                    'class'      => 'fixed-width-xs',
+                    'position'   => 'position',
+                ];
+                $this->_defaultOrderBy = 'position';
+                $this->_defaultOrderWay = 'ASC';
+                break;
+            case Feature::SORT_VALUE_DESC:
+                $this->_defaultOrderBy = 'value';
+                $this->_defaultOrderWay = 'DESC';
+                break;
+            case Feature::SORT_VALUE_ASC:
+            default:
+                $this->_defaultOrderBy = 'value';
+                $this->_defaultOrderWay = 'ASC';
+                break;
+        }
+
+        $this->_where = 'AND `id_feature` = ' . $featureId;
+        static::$currentIndex = static::$currentIndex.'&id_feature='.$featureId.'&viewfeature';
+        $this->_filter = '';
+        $this->processFilter();
+
+        return parent::renderList();
     }
 
     /**
@@ -485,7 +488,8 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initFormFeatureValue()
     {
@@ -584,7 +588,10 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
+     * @return false|string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -595,6 +602,9 @@ class AdminFeaturesControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return void
+     */
     public function initProcess()
     {
         // Are we working on feature values?
@@ -628,6 +638,9 @@ class AdminFeaturesControllerCore extends AdminController
         parent::initProcess();
     }
 
+    /**
+     * @throws PrestaShopException
+     */
     public function postProcess()
     {
         if (!Feature::isFeatureActive()) {
@@ -657,7 +670,7 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * Override processAdd to change SaveAndStay button action
      *
-     * @see classes/AdminControllerCore::processAdd()
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -679,7 +692,7 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * Override processUpdate to change SaveAndStay button action
      *
-     * @see classes/AdminControllerCore::processUpdate()
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -695,7 +708,8 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * Call the right method for creating or updating object
      *
-     * @return mixed
+     * @return bool|ObjectModel
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -722,8 +736,6 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * AdminController::getList() override
-     *
-     * @see AdminController::getList()
      *
      * @param int         $idLang
      * @param string|null $orderBy
@@ -834,6 +846,8 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * Handler for changing multiple values checkbox from list
+     *
+     * @throws PrestaShopException
      */
     protected function ajaxProcessSetAllowMultipleValuesFeature()
     {
