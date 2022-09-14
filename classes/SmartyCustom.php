@@ -294,47 +294,16 @@ class SmartyCustomCore extends Smarty
      */
     public function is_in_lazy_cache($template, $cacheId, $compileId)
     {
-        static $isInLazyCache = [];
         $templateMd5 = md5($template);
-
         if (!is_null($compileId) && strlen($compileId) > 32) {
             $compileId = md5($compileId);
         }
+        $key = 'SmartyCustom::lazy_cache_' . md5($templateMd5.$cacheId.$compileId);
 
-        $key = md5($templateMd5.'-'.$cacheId.'-'.$compileId);
-
-        if (isset($isInLazyCache[$key])) {
-            return $isInLazyCache[$key];
-        } else {
-            $sql = 'SELECT UNIX_TIMESTAMP(last_update) AS last_update, filepath FROM `'._DB_PREFIX_.'smarty_lazy_cache`
-							WHERE `template_hash`=\''.pSQL($templateMd5).'\'';
-            $sql .= ' AND cache_id="'.pSQL((string) $cacheId).'"';
-            $sql .= ' AND compile_id="'.pSQL((string) $compileId).'"';
-
-            $result = Db::getInstance()->getRow($sql, false);
-            // If the filepath is not yet set, it means the cache update is in progress in another process.
-            // In this case do not try to clear the cache again and tell to use the existing cache, if any
-            if ($result !== false && $result['filepath'] == '') {
-                // If the cache update is stalled for more than 1min, something should be wrong,
-                // remove the entry from the lazy cache
-                if ($result['last_update'] < time() - 60) {
-                    $this->delete_from_lazy_cache($template, $cacheId, $compileId);
-                }
-
-                $return = true;
-            } else {
-                if ($result === false
-                    || @filemtime($this->getCacheDir().$result['filepath']) < $result['last_update']
-                ) {
-                    $return = false;
-                } else {
-                    $return = $result['filepath'];
-                }
-            }
-            $isInLazyCache[$key] = $return;
+        if (! Cache::isStored($key)) {
+            Cache::store($key, $this->fetchIsInLazyCache($templateMd5, $cacheId, $compileId, $template));
         }
-
-        return $return;
+        return Cache::retrieve($key);
     }
 
     /**
@@ -471,6 +440,52 @@ class SmartyCustomCore extends Smarty
         }
 
         return null;
+    }
+
+    /**
+     * @param string $templateMd5
+     * @param string $cacheId
+     * @param string $compileId
+     * @param string $template
+     * @return bool | string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function fetchIsInLazyCache($templateMd5, $cacheId, $compileId, $template)
+    {
+        $sql = (new DbQuery())
+            ->select('UNIX_TIMESTAMP(last_update) AS last_update')
+            ->select('filepath')
+            ->from('smarty_lazy_cache')
+            ->where('template_hash="' . pSQL((string)$templateMd5) . '"')
+            ->where('cache_id="' . pSQL((string)$cacheId) . '"')
+            ->where('compile_id="' . pSQL((string)$compileId) . '"');
+
+        $result = Db::getInstance()->getRow($sql);
+
+        if ($result === false) {
+            return false;
+        }
+
+        $filepath = trim((string)$result['filepath']);
+        $lastUpdate = (int)$result['last_update'];
+        if ($filepath === '') {
+            // If the cache update is stalled for more than 1min, something should be wrong,
+            // remove the entry from the lazy cache
+            if ($lastUpdate < time() - 60) {
+                $this->delete_from_lazy_cache($template, $cacheId, $compileId);
+            }
+            return true;
+        } else {
+            $fullpath = $this->getCacheDir() . $filepath;
+            if (! file_exists($fullpath)) {
+                return false;
+            }
+            if (filemtime($fullpath) < $lastUpdate) {
+                return false;
+            }
+            return $filepath;
+        }
     }
 }
 
