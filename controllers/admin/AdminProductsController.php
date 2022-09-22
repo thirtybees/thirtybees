@@ -96,6 +96,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * AdminProductsControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -112,8 +113,16 @@ class AdminProductsControllerCore extends AdminController
                 'confirm' => $this->l('Delete selected items?'),
             ],
         ];
-        if (!Tools::getValue('id_product')) {
+        $productId = (int)Tools::getValue('id_product');
+
+        if (! $productId) {
             $this->multishop_context_group = false;
+        }
+
+        if (! $this->allowEditPerStore()) {
+            if ($productId || Tools::isSubmit('addproduct')) {
+                $this->multishop_context = false;
+            }
         }
 
         parent::__construct();
@@ -910,16 +919,19 @@ class AdminProductsControllerCore extends AdminController
     {
         $result = parent::loadObject($opt);
         if ($result && Validate::isLoadedObject($this->object)) {
-            if (Shop::getContext() == Shop::CONTEXT_SHOP && Shop::isFeatureActive() && !$this->object->isAssociatedToShop()) {
-                $defaultProduct = new Product((int) $this->object->id, false, null, (int) $this->object->id_shop_default);
-                $def = ObjectModel::getDefinition($this->object);
-                foreach ($def['fields'] as $field_name => $row) {
-                    if (is_array($defaultProduct->$field_name)) {
-                        foreach ($defaultProduct->$field_name as $key => $value) {
-                            $this->object->{$field_name}[$key] = $value;
+            if (Shop::isFeatureActive()) {
+                if (! $this->object->isAssociatedToShop()) {
+                    $defaultProduct = new Product((int)$this->object->id, false, null, (int)$this->object->getDefaultShopId());
+                    $this->object->id_shop = $defaultProduct->id_shop;
+                    $def = ObjectModel::getDefinition(get_class($this->object));
+                    foreach ($def['fields'] as $field_name => $row) {
+                        if (is_array($defaultProduct->$field_name)) {
+                            foreach ($defaultProduct->$field_name as $key => $value) {
+                                $this->object->{$field_name}[$key] = $value;
+                            }
+                        } else {
+                            $this->object->$field_name = $defaultProduct->$field_name;
                         }
-                    } else {
-                        $this->object->$field_name = $defaultProduct->$field_name;
                     }
                 }
             }
@@ -1802,10 +1814,11 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * @param string $field
-     * @param null   $context
+     * @param null $context
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function checkMultishopBox($field, $context = null)
@@ -1823,6 +1836,10 @@ class AdminProductsControllerCore extends AdminController
 
         if ($checkbox == null) {
             $checkbox = Tools::getValue('multishop_check', []);
+        }
+
+        if (! $this->allowEditPerStore()) {
+            return true;
         }
 
         if ($shopContext == Shop::CONTEXT_SHOP) {
@@ -1924,6 +1941,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return bool|ObjectModel
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processAdd()
@@ -1942,6 +1961,7 @@ class AdminProductsControllerCore extends AdminController
         if ($this->object->add()) {
             Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
             $this->updateAssoShop($this->object->id);
+            $this->updatePerStoreFields($this->object->id);
             $this->addCarriers($this->object);
             $this->updateAccessories($this->object);
             $this->updatePackItems($this->object);
@@ -1950,8 +1970,7 @@ class AdminProductsControllerCore extends AdminController
             if (Configuration::get('PS_FORCE_ASM_NEW_PRODUCT') && Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $this->object->getType() != Product::PTYPE_VIRTUAL) {
                 $this->object->advanced_stock_management = 1;
                 $this->object->save();
-                $idShops = Shop::getContextListShopID();
-                foreach ($idShops as $idShop) {
+                foreach ($this->getSaveShopIDs() as $idShop) {
                     StockAvailable::setProductDependsOnStock($this->object->id, true, (int) $idShop, 0);
                 }
             }
@@ -2169,6 +2188,9 @@ class AdminProductsControllerCore extends AdminController
         static $isActivated = null;
         if (is_null($isActivated)) {
             $isActivated = Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP && $this->id_object;
+            if ($isActivated) {
+                $isActivated = $this->allowEditPerStore();
+            }
         }
 
         if (!$isActivated) {
@@ -2216,10 +2238,15 @@ class AdminProductsControllerCore extends AdminController
                 if (Tools::getValue('selectedCarriers')) {
                     $carriers = array_map('intval', Tools::getValue('selectedCarriers'));
                 }
+
+                if (! $this->allowEditPerStore()) {
+                    Db::getInstance()->delete('product_carrier', "id_product = $productId");
+                }
+
                 Product::associateProductWithCarriers(
                     $productId,
                     $carriers,
-                    array_map('intval', Shop::getContextListShopID())
+                    $this->getSaveShopIDs()
                 );
             }
         }
@@ -2505,7 +2532,9 @@ class AdminProductsControllerCore extends AdminController
                 $object->indexed = 0;
 
                 if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
-                    $object->setFieldsToUpdate((array) Tools::getValue('multishop_check', []));
+                    if ($this->allowEditPerStore()) {
+                        $object->setFieldsToUpdate((array) Tools::getValue('multishop_check', []));
+                    }
                     $this->updateAssoShop($object->id);
                 }
 
@@ -2540,6 +2569,7 @@ class AdminProductsControllerCore extends AdminController
                     }
 
                     Logger::addLog(sprintf($this->l('%s modification', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+                    $this->updatePerStoreFields($object->id);
                     if (in_array($this->context->shop->getContext(), [Shop::CONTEXT_SHOP, Shop::CONTEXT_ALL])) {
                         if ($this->isTabSubmitted('Shipping')) {
                             $this->addCarriers();
@@ -3703,7 +3733,7 @@ class AdminProductsControllerCore extends AdminController
             if (Shop::getContext() != Shop::CONTEXT_SHOP) {
                 $this->context->smarty->assign(
                     [
-                        'display_multishop_checkboxes' => true,
+                        'display_multishop_checkboxes' => $this->allowEditPerStore(),
                         'multishop_check'              => Tools::getValue('multishop_check'),
                     ]
                 );
@@ -3724,7 +3754,7 @@ class AdminProductsControllerCore extends AdminController
         $this->tpl_form_vars['id_lang_default'] = Configuration::get('PS_LANG_DEFAULT');
 
         $this->tpl_form_vars['currentIndex'] = static::$currentIndex;
-        $this->tpl_form_vars['display_multishop_checkboxes'] = (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP && $this->display == 'edit');
+        $this->tpl_form_vars['display_multishop_checkboxes'] = ($this->allowEditPerStore() && Shop::getContext() != Shop::CONTEXT_SHOP && $this->display == 'edit');
         $this->fields_form = [''];
 
         $this->tpl_form_vars['token'] = $this->token;
@@ -4888,12 +4918,45 @@ class AdminProductsControllerCore extends AdminController
             $checkProductAssociationAjax = true;
         }
 
-        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP && count(Shop::getShops(true, null, true)) > 1) {
+        $shops = Shop::getShops(true);
+
+        if (Shop::isFeatureActive() &&
+            Shop::getContext() != Shop::CONTEXT_SHOP &&
+            count($shops) > 1 &&
+            $this->allowEditPerStore()
+        ) {
             $helper = new HelperForm();
             $helper->id = $product->id;
             $helper->table = 'product';
             $helper->identifier = 'id_product';
             $this->context->smarty->assign('product_asso_shops', $helper->renderAssoShop());
+        }
+
+        $productId = (int)$product->id;
+        if (Shop::isFeatureActive() &&
+            Shop::getContext() != Shop::CONTEXT_SHOP &&
+            count($shops) > 1 &&
+            !$this->allowEditPerStore()
+        ) {
+            $activePerStore = [];
+            foreach ($shops as $shop) {
+                $shopId = (int)$shop['id_shop'];
+                $activePerStore[$shopId] = [
+                    'name' => $shop['name'],
+                    'active' => $productId === 0,
+                ];
+            }
+            if ($productId) {
+                $active = Db::getInstance()->getArray((new DbQuery())
+                    ->select('id_shop, active')
+                    ->from('product_shop')
+                    ->where('id_product = ' . $productId)
+                );
+                foreach ($active as $row) {
+                    $activePerStore[$row['id_shop']]['active'] = (bool)$row['active'];
+                }
+            }
+            $this->context->smarty->assign('active_per_store', $activePerStore);
         }
 
         // TinyMCE
@@ -6197,6 +6260,30 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
+     * @param int $productId
+     * @return void
+     */
+    protected function updatePerStoreFields($productId)
+    {
+        $productId = (int)$productId;
+        if ($productId && !$this->allowEditPerStore()) {
+            $active = array_map('intval', array_keys(Tools::getValue('active_per_store', [])));
+            $conn = Db::getInstance();
+            if ($active) {
+                $list = implode(',', $active);
+                $conn->update('product_shop', [
+                    'active' => [
+                        'type' => 'sql',
+                        'value' => "(CASE WHEN id_shop IN ($list) THEN 1 ELSE 0 END)"
+                    ]
+                ], "id_product = $productId");
+            } else {
+                $conn->update('product_shop', ['active' => 0], "id_product = $productId");
+            }
+        }
+    }
+
+    /**
      * Update shop association
      *
      * @param int $idObject
@@ -6208,10 +6295,25 @@ class AdminProductsControllerCore extends AdminController
      */
     protected function updateAssoShop($idObject)
     {
-        if (Tools::isSubmit('submitShopAssociation')) {
+        if (Tools::isSubmit('submitShopAssociation') || !$this->allowEditPerStore()) {
             return parent::updateAssoShop($idObject);
         }
     }
+
+    /**
+     * @param string $table
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getSelectedAssoShop($table)
+    {
+        if ($this->allowEditPerStore()) {
+            return parent::getSelectedAssoShop($table);
+        } else {
+            return $this->getSaveShopIDs();
+        }
+    }
+
 
     /**
      * Get final price
@@ -6371,4 +6473,36 @@ class AdminProductsControllerCore extends AdminController
         }
         return $quantities;
     }
+
+    /**
+     * Returns true, if editation per store is allowed
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected function allowEditPerStore()
+    {
+        if (Shop::isFeatureActive()) {
+            return !Configuration::getGlobalValue('TB_SIMPLIFIED_PRODUCT_EDITATION');
+        }
+        return true;
+    }
+
+    /**
+     * Returns list of shop IDs to be used for saving. It is an intersection of current shop context and
+     * shops associated with products
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getSaveShopIDs()
+    {
+        $shopIds = array_map('intval', Shop::getContextListShopID());
+        if (Tools::isSubmit('submitShopAssociation')) {
+            $associatedShopIds = array_map('intval', $this->getSelectedAssoShop($this->table));
+            $shopIds = array_intersect($shopIds, $associatedShopIds);
+        }
+        return $shopIds;
+    }
+
 }

@@ -187,6 +187,23 @@
 	<hr/>
 
 	{* status informations *}
+	{if isset($active_per_store)}
+	<div class="form-group">
+		<label class="control-label col-lg-2 col-lg-offset-1">
+			{l s='Enabled'}
+		</label>
+		<div class="col-lg-9">
+			{foreach $active_per_store as $shopId => $shopInfo}
+				<div class="checkbox">
+					<label>
+						<input name="active_per_store[{$shopId}]" type="checkbox" value="{$shopInfo.active|intval}" {if $shopInfo.active}checked="checked"{/if}/>
+						{$shopInfo.name|escape:'htmlall'}
+					</label>
+				</div>
+			{/foreach}
+		</div>
+	</div>
+	{else}
 	<div class="form-group">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="active" type="radio" onclick=""}</span></div>
 		<label class="control-label col-lg-2">
@@ -206,6 +223,7 @@
 			</span>
 		</div>
 	</div>
+	{/if}
 
 	{* shop association *}
 	{if isset($product_asso_shops)}

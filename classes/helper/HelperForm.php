@@ -392,18 +392,23 @@ class HelperFormCore extends Helper
             }
         }
 
-        /*$nb_shop = 0;
-        foreach ($tree as &$value)
-        {
-            $value['disable_shops'] = (isset($value[$disable_shared]) && $value[$disable_shared]);
-            $nb_shop += count($value['shops']);
-        }*/
+        return $this->renderShopAssociation($assos, $templateDirectory);
+    }
 
+    /**
+     * @param array $selected
+     * @param string $templateDirectory
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function renderShopAssociation(array $selected, $templateDirectory = null)
+    {
         $tree = new HelperTreeShops('shop-tree', 'Shops');
         if (isset($templateDirectory)) {
             $tree->setTemplateDirectory($templateDirectory);
         }
-        $tree->setSelectedShops($assos);
+        $tree->setSelectedShops($selected);
         $tree->setAttribute('table', $this->table);
 
         return $tree->render();

@@ -5905,6 +5905,8 @@ class ProductCore extends ObjectModel
     }
 
     /**
+     * Associate product with list of carriers
+     *
      * @param int $productId product id
      * @param int[] $carrierIds carrier reference ids
      * @param int[] $shopIds shop id
@@ -8059,12 +8061,14 @@ class ProductCore extends ObjectModel
     }
 
     /**
+     * @param int $idProductAttribute
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      * @see        Product::deleteAttributeCombination()
      *
-     * @param int $idProductAttribute
-     *
-     * @return array
      */
     public function deleteAttributeCombinaison($idProductAttribute)
     {
@@ -8341,6 +8345,30 @@ class ProductCore extends ObjectModel
             default:
                 throw new RuntimeException('Invariant: getPackStockType returned invalid value');
         }
+    }
+
+    /**
+     * Returns default shop ID associated with product.
+     *
+     * @return int
+     * @throws PrestaShopException
+     */
+    public function getDefaultShopId()
+    {
+        $shopId = (int)$this->id_shop_default;
+        if (! $this->isAssociatedToShop($shopId)) {
+            $conn = Db::getInstance();
+            $cond = 'id_product = ' . (int)$this->id;
+            $shopId = (int)$conn->getValue((new DbQuery)
+                ->select("MIN(id_shop)")
+                ->from('product_shop')
+                ->where($cond)
+            );
+            if ($shopId) {
+                $conn->update('product', ['id_shop_default' => $shopId], $cond);
+            }
+        }
+        return $shopId;
     }
 
 }

@@ -92,6 +92,13 @@ class AdminShopGroupControllerCore extends AdminController
                         'list'       => Shop::getShops(),
                         'visibility' => Shop::CONTEXT_ALL,
                     ],
+                    'TB_SIMPLIFIED_PRODUCT_EDITATION' => [
+                        'title'      => $this->l('Simplified product editation'),
+                        'hint'       => $this->l('When enabed, you will always edit product in all stores context, and your product informations will be shared across all stores. When disabled, you will be able to modify product information for each store separately.'),
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                        'visibility' => Shop::CONTEXT_ALL,
+                    ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
