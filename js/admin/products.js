@@ -1155,6 +1155,7 @@ window.product_tabs.Shipping = new function () {
       } else {
         $('#no-selected-carries-alert').hide();
       }
+      return false;
     });
 
     $('#removeCarrier').on('click', function () {
@@ -1169,11 +1170,15 @@ window.product_tabs.Shipping = new function () {
       } else {
         $('#no-selected-carries-alert').hide();
       }
+      return false;
     });
   };
 
   this.onReady = function () {
     self.bindCarriersEvents();
+    if (window.display_multishop_checkboxes) {
+      window.ProductMultishop.checkAllShipping();
+    }
   };
 }();
 
@@ -1879,71 +1884,78 @@ window.ProductMultishop = new function () {
     checked = !checked;
     var $id = $('#' + id);
     switch (type) {
-    case 'tinymce' :
-      $id.attr('disabled', checked);
-      if (typeof self.load_tinymce[id] === 'undefined') {
-        self.load_tinymce[id] = checked;
-      } else if (checked) {
-        tinyMCE.get(id).hide();
-      } else {
-        tinyMCE.get(id).show();
-      }
-      break;
-    case 'radio' :
-      $('input[name=\'' + id + '\']').attr('disabled', checked);
-      break;
-    case 'show_price' :
-      if ($('input[name=\'available_for_order\']').prop('checked')) {
-        checked = true;
-      }
-      $('input[name=\'' + id + '\']').attr('disabled', checked);
-      break;
-    case 'price' :
-      $('#priceTE').attr('disabled', checked);
-      $('#priceTI').attr('disabled', checked);
-      break;
-    case 'unit_price' :
-      $('#unit_price').attr('disabled', checked);
-      $('#unity').attr('disabled', checked);
-      break;
-    case 'attribute_price_impact' :
-      $('#attribute_price_impact').attr('disabled', checked);
-      $('#attribute_price').attr('disabled', checked);
-      $('#attribute_priceTI').attr('disabled', checked);
-      break;
-    case 'category_box' :
-      $('#' + id + ' input[type=checkbox]').attr('disabled', checked);
-      if (!checked) {
-        $('#check-all-' + id).removeAttr('disabled');
-        $('#uncheck-all-' + id).removeAttr('disabled');
-      } else {
-        $('#check-all-' + id).attr('disabled', 'disabled');
-        $('#uncheck-all-' + id).attr('disabled', 'disabled');
-      }
-      break;
-    case 'attribute_weight_impact' :
-      $('#attribute_weight_impact').attr('disabled', checked);
-      $('#attribute_weight').attr('disabled', checked);
-      break;
-    case 'attribute_unit_impact' :
-      $('#attribute_unit_impact').attr('disabled', checked);
-      $('#attribute_unity').attr('disabled', checked);
-      break;
-    case 'seo_friendly_url':
-      $id.attr('disabled', checked);
-      $('#generate-friendly-url').attr('disabled', checked);
-      break;
-    case 'uploadable_files':
-      $('input[name^=label_0_]').attr('disabled', checked);
-      $id.attr('disabled', checked);
-      break;
-    case 'text_fields':
-      $('input[name^=label_1_]').attr('disabled', checked);
-      $id.attr('disabled', checked);
-      break;
-    default :
-      $id.attr('disabled', checked);
-      break;
+      case 'tinymce' :
+        $id.attr('disabled', checked);
+        if (typeof self.load_tinymce[id] === 'undefined') {
+          self.load_tinymce[id] = checked;
+        } else if (checked) {
+          tinyMCE.get(id).hide();
+        } else {
+          tinyMCE.get(id).show();
+        }
+        break;
+      case 'radio' :
+        $('input[name=\'' + id + '\']').attr('disabled', checked);
+        break;
+      case 'show_price' :
+        if ($('input[name=\'available_for_order\']').prop('checked')) {
+          checked = true;
+        }
+        $('input[name=\'' + id + '\']').attr('disabled', checked);
+        break;
+      case 'price' :
+        $('#priceTE').attr('disabled', checked);
+        $('#priceTI').attr('disabled', checked);
+        break;
+      case 'unit_price' :
+        $('#unit_price').attr('disabled', checked);
+        $('#unity').attr('disabled', checked);
+        break;
+      case 'attribute_price_impact' :
+        $('#attribute_price_impact').attr('disabled', checked);
+        $('#attribute_price').attr('disabled', checked);
+        $('#attribute_priceTI').attr('disabled', checked);
+        break;
+      case 'category_box' :
+        $('#' + id + ' input[type=checkbox]').attr('disabled', checked);
+        if (!checked) {
+          $('#check-all-' + id).removeAttr('disabled');
+          $('#uncheck-all-' + id).removeAttr('disabled');
+        } else {
+          $('#check-all-' + id).attr('disabled', 'disabled');
+          $('#uncheck-all-' + id).attr('disabled', 'disabled');
+        }
+        break;
+      case 'attribute_weight_impact' :
+        $('#attribute_weight_impact').attr('disabled', checked);
+        $('#attribute_weight').attr('disabled', checked);
+        break;
+      case 'attribute_unit_impact' :
+        $('#attribute_unit_impact').attr('disabled', checked);
+        $('#attribute_unity').attr('disabled', checked);
+        break;
+      case 'seo_friendly_url':
+        $id.attr('disabled', checked);
+        $('#generate-friendly-url').attr('disabled', checked);
+        break;
+      case 'uploadable_files':
+        $('input[name^=label_0_]').attr('disabled', checked);
+        $id.attr('disabled', checked);
+        break;
+      case 'text_fields':
+        $('input[name^=label_1_]').attr('disabled', checked);
+        $id.attr('disabled', checked);
+        break;
+      case 'selection':
+        var $source = $('#' + $id.data('selectionSource'));
+        var $target = $('#' + $id.data('selectionTarget'));
+        $source.attr('disabled', checked);
+        $target.attr('disabled', checked);
+        $id.find('.btn').attr('disabled', checked);
+        break;
+      default :
+        $id.attr('disabled', checked);
+        break;
     }
   };
 
@@ -1968,6 +1980,11 @@ window.ProductMultishop = new function () {
     window.ProductMultishop.checkField($('input[name=\'multishop_check[unit_price]\']').prop('checked'), 'unit_price', 'unit_price');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[on_sale]\']').prop('checked'), 'on_sale');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[ecotax]\']').prop('checked'), 'ecotax');
+  };
+
+  this.checkAllShipping = function () {
+    window.ProductMultishop.checkField($('input[name=\'multishop_check[additional_shipping_cost]\']').prop('checked'), 'additional_shipping_cost');
+    window.ProductMultishop.checkField($('input[name=\'multishop_check[carrierSelection]\']').prop('checked'), 'carrierSelection', 'selection');
   };
 
   this.checkAllSeo = function () {

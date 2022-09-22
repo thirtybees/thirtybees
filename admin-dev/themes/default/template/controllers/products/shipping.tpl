@@ -30,8 +30,10 @@
 		<div class="alert alert-info">{l s='Warning, if you change the value of fields with an orange bullet %s, the value will be changed for all other shops for this product' sprintf=$bullet_common_field}</div>
 	{/if}
 
+	{include file="controllers/products/multishop/check_fields.tpl" product_tab="Shipping"}
+
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="width">{$bullet_common_field} {l s='Package width'}</label>
+		<label class="control-label col-lg-2 col-lg-offset-1" for="width">{$bullet_common_field} {l s='Package width'}</label>
 		<div class="input-group col-lg-2">
 			<span class="input-group-addon">{$ps_dimension_unit}</span>
 			<input maxlength="14" id="width" name="width" type="text" value="{$product->width}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
@@ -39,7 +41,7 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="height">{$bullet_common_field} {l s='Package height'}</label>
+		<label class="control-label col-lg-2 col-lg-offset-1" for="height">{$bullet_common_field} {l s='Package height'}</label>
 		<div class="input-group col-lg-2">
 			<span class="input-group-addon">{$ps_dimension_unit}</span>
 			<input maxlength="14" id="height" name="height" type="text" value="{$product->height}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
@@ -47,7 +49,7 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="depth">{$bullet_common_field} {l s='Package depth'}</label>
+		<label class="control-label col-lg-2 col-lg-offset-1" for="depth">{$bullet_common_field} {l s='Package depth'}</label>
 		<div class="input-group col-lg-2">
 			<span class="input-group-addon">{$ps_dimension_unit}</span>
 			<input maxlength="14" id="depth" name="depth" type="text" value="{$product->depth}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
@@ -55,7 +57,7 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="weight">{$bullet_common_field} {l s='Package weight'}</label>
+		<label class="control-label col-lg-2 col-lg-offset-1" for="weight">{$bullet_common_field} {l s='Package weight'}</label>
 		<div class="input-group col-lg-2">
 			<span class="input-group-addon">{$ps_weight_unit}</span>
 			<input maxlength="14" id="weight" name="weight" type="text" value="{$product->weight}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
@@ -63,10 +65,11 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="additional_shipping_cost">
+		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="additional_shipping_cost" type="default"}</span></div>
+		<label class="control-label col-lg-2" for="additional_shipping_cost">
 			<span class="label-tooltip" data-toggle="tooltip"
 				title="{l s='If a carrier has a tax, it will be added to the shipping fees.'}">
-				{l s='Additional shipping fees (for a single item)'}
+				{l s='Additional shipping fees'}
 			</span>
 
 		</label>
@@ -77,9 +80,10 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-3" for="availableCarriers">{l s='Carriers'}</label>
+		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="carrierSelection" type="selection"}</span></div>
+		<label class="control-label col-lg-2" for="availableCarriers">{l s='Carriers'}</label>
 		<div class="col-lg-9">
-			<div class="form-control-static row">
+			<div class="form-control-static row" id="carrierSelection" data-selection-source="availableCarriers" data-selection-target="selectedCarriers">
 				<div class="col-xs-6">
 					<p>{l s='Available carriers'}</p>
 					<select id="availableCarriers" name="availableCarriers" multiple="multiple">

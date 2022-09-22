@@ -5901,30 +5901,41 @@ class ProductCore extends ObjectModel
      */
     public function setCarriers($carrierList)
     {
+        static::associateProductWithCarriers($this->id, $carrierList, [$this->id_shop]);
+    }
+
+    /**
+     * @param int $productId product id
+     * @param int[] $carrierIds carrier reference ids
+     * @param int[] $shopIds shop id
+     *
+     * @throws PrestaShopException
+     */
+    public static function associateProductWithCarriers($productId, array $carrierIds, array $shopIds)
+    {
+        $productId = (int)$productId;
+        $conn = Db::getInstance();
+
+        /** @var int[] $carrierIds */
+        $carrierIds = array_unique(array_filter(array_map('intval', $carrierIds)));
+
+        /** @var int[] $shopIds */
+        $shopIds = array_unique(array_filter(array_map('intval', $shopIds)));
+
         $data = [];
-
-        foreach ($carrierList as $carrier) {
-            $data[] = [
-                'id_product'           => (int) $this->id,
-                'id_carrier_reference' => (int) $carrier,
-                'id_shop'              => (int) $this->id_shop,
-            ];
-        }
-        Db::getInstance()->execute(
-            'DELETE FROM `'._DB_PREFIX_.'product_carrier`
-			WHERE id_product = '.(int) $this->id.'
-			AND id_shop = '.(int) $this->id_shop
-        );
-
-        $uniqueArray = [];
-        foreach ($data as $subArray) {
-            if (!in_array($subArray, $uniqueArray)) {
-                $uniqueArray[] = $subArray;
+        foreach ($shopIds as $shopId) {
+            foreach ($carrierIds as $carrierId) {
+                $data[] = [
+                    'id_product' => $productId,
+                    'id_carrier_reference' => $carrierId,
+                    'id_shop' => $shopId,
+                ];
             }
+            $conn->delete('product_carrier', "id_product = $productId AND id_shop = $shopId");
         }
 
-        if (count($uniqueArray)) {
-            Db::getInstance()->insert('product_carrier', $uniqueArray, false, true, Db::INSERT_IGNORE);
+        if ($data) {
+            $conn->insert('product_carrier', $data, false, true, Db::INSERT_IGNORE);
         }
     }
 

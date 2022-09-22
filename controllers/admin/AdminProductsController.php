@@ -2199,20 +2199,29 @@ class AdminProductsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param Product | null $product
+     *
+     * @throws PrestaShopException
+     */
     protected function addCarriers($product = null)
     {
-        if (!isset($product)) {
-            $product = new Product((int) Tools::getValue('id_product'));
-        }
+        if ($this->isProductFieldUpdated('carrierSelection')) {
+            $productId = Validate::isLoadedObject($product)
+                ? (int)$product->id
+                : (int)Tools::getValue('id_product');
 
-        if (Validate::isLoadedObject($product)) {
-            $carriers = [];
-
-            if (Tools::getValue('selectedCarriers')) {
-                $carriers = Tools::getValue('selectedCarriers');
+            if ($productId) {
+                $carriers = [];
+                if (Tools::getValue('selectedCarriers')) {
+                    $carriers = array_map('intval', Tools::getValue('selectedCarriers'));
+                }
+                Product::associateProductWithCarriers(
+                    $productId,
+                    $carriers,
+                    array_map('intval', Shop::getContextListShopID())
+                );
             }
-
-            $product->setCarriers($carriers);
         }
     }
 
@@ -4914,6 +4923,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param $obj
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initFormShipping($obj)
@@ -4927,6 +4938,8 @@ class AdminProductsControllerCore extends AdminController
                 'carrier_list'              => $this->getCarrierList(),
                 'currency'                  => $this->context->currency,
                 'country_display_tax_label' => $this->context->country->display_tax_label,
+                'shops' => Shop::getShops(),
+                'multi_shop'     => Shop::isFeatureActive(),
             ]
         );
         $this->tpl_form_vars['custom_form'] = $data->fetch();
