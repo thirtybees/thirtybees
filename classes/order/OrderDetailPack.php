@@ -37,6 +37,10 @@ class OrderDetailPackCore extends ObjectModel
             'quantity'             => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
         ],
         'keys' => [
+            'order_detail_pack' => [
+                'detail' => ['type' => ObjectModel::KEY, 'columns' => ['id_order_detail']],
+                'product' => ['type' => ObjectModel::KEY, 'columns' => ['id_product', 'id_product_attribute']],
+            ],
         ],
     ];
 
