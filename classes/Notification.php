@@ -508,6 +508,9 @@ class NotificationCore
         }
         if (isset($definition['controller'])) {
             $controller = $definition['controller'];
+            if (! isset($this->permissions[$controller])) {
+                return false;
+            }
             if (! $this->permissions[$controller]) {
                 return false;
             }
