@@ -119,7 +119,7 @@ class AdminProductsControllerCore extends AdminController
             $this->multishop_context_group = false;
         }
 
-        if (! $this->allowEditPerStore()) {
+        if (! $this->allowEditPerStore() && !Tools::isSubmit('statusproduct')) {
             if ($productId || Tools::isSubmit('addproduct')) {
                 $this->multishop_context = false;
             }
