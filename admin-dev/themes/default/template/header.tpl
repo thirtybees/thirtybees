@@ -149,6 +149,7 @@
 							</div>
 						</li>
 					{/foreach}
+						{hook h='displayAdminHeaderNotif'}
 				</ul>
 
 {if count($quick_access) >= 0}
