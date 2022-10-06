@@ -5530,26 +5530,7 @@ class AdminProductsControllerCore extends AdminController
                     );
                 }
 
-                $show_quantities = true;
-                $shop_context = Shop::getContext();
-                $shop_group = new ShopGroup((int) Shop::getContextShopGroupID());
-
-                // if we are in all shops context, it's not possible to manage quantities at this level
-                if (Shop::isFeatureActive() && $shop_context == Shop::CONTEXT_ALL) {
-                    $show_quantities = false;
-                } // if we are in group shop context
-                elseif (Shop::isFeatureActive() && $shop_context == Shop::CONTEXT_GROUP) {
-                    // if quantities are not shared between shops of the group, it's not possible to manage them at group level
-                    if (!$shop_group->share_stock) {
-                        $show_quantities = false;
-                    }
-                } // if we are in shop context
-                elseif (Shop::isFeatureActive()) {
-                    // if quantities are shared between shops of the group, it's not possible to manage them for a given shop
-                    if ($shop_group->share_stock) {
-                        $show_quantities = false;
-                    }
-                }
+                $show_quantities = $this->showQuantities();
 
                 $data->assign('ps_stock_management', Configuration::get('PS_STOCK_MANAGEMENT'));
                 $data->assign('has_attribute', $obj->hasAttributes());
@@ -6503,6 +6484,55 @@ class AdminProductsControllerCore extends AdminController
             $shopIds = array_intersect($shopIds, $associatedShopIds);
         }
         return $shopIds;
+    }
+
+    /**
+     * Helper methods to decide if stock quantities should be displayed or not, depending on store
+     * settings
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function showQuantities(): bool
+    {
+        // always show quantities when multistore is disabled
+        if (! Shop::isFeatureActive()) {
+            return true;
+        }
+
+        $shopContext = (int)Shop::getContext();
+
+        // if we are in all shops context, it may or may not be possible to manage quantities.
+        // We have to check if all stores share the same group id. If they do, we can fallback to
+        // group settings. If shops do not share group, it is not possible to manage quantities
+        if ($shopContext === Shop::CONTEXT_ALL) {
+            $groupId = 0;
+            foreach (Shop::getContextListShopID() as $shopId) {
+                $shopGroupId = (int)Shop::getShop($shopId)['id_shop_group'];
+                if ($groupId && $shopGroupId !== $groupId) {
+                    return false;
+                }
+                $groupId = $shopGroupId;
+            }
+            if (! $groupId) {
+                return false;
+            }
+        } else {
+            $groupId = (int)Shop::getContextShopGroupId();
+        }
+
+        $group = new ShopGroup($groupId);
+        $shareStock = (bool)$group->share_stock;
+
+        // if we are in a single shop context, and quantities are shared between shops of the group
+        // it's not possible to manage quantities for a single shop
+        if ($shopContext === Shop::CONTEXT_SHOP) {
+            return !$shareStock;
+        }
+
+        // use shop group settings
+        return $shareStock;
     }
 
 }
