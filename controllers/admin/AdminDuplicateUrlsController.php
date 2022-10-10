@@ -69,7 +69,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         $languages = Language::getLanguages(true, $this->context->shop->id, true);
         foreach ($languages as $idLang) {
             $urls[(int) $idLang] = [];
-            $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getProductUrls($idLang));
+			$urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getProductDuplicateUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCategoryUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCmsUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCmsCategoryUrls($idLang));
@@ -77,11 +77,12 @@ class AdminDuplicateUrlsControllerCore extends AdminController
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getManufacturerUrls($idLang));
         }
         $duplicates = [];
+		
         foreach ($languages as $idLang) {
             $duplicatesLang = [];
             $uniqueUrls = [];
             $uniques = [];
-            foreach ($urls[(int) $idLang] as $item) {
+            foreach ($urls[(int) $idLang] as $item) {			
                 if (!in_array($item['url'], $uniqueUrls)) {
                     $uniqueUrls[] = $item['url'];
                     $uniques[] = $item;
@@ -100,34 +101,40 @@ class AdminDuplicateUrlsControllerCore extends AdminController
             }
             $duplicates[(int) $idLang] = $duplicatesLang;
         }
-
+		
         return $duplicates;
     }
-
+	
     /**
-     * Get all product URLs for the selected language
+     * Get all product Duplicate URLs for the selected language
      *
      * @param int $idLang
      *
      * @return array
      * @throws PrestaShopException
      */
-    private function getProductUrls($idLang)
+    private function getProductDuplicateUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
         }
-
-        $productUrls = [];
-        foreach (Product::getProducts($idLang, 0, 0, 'id_product', 'DESC') as $product) {
+        $productUrls = [];	
+		
+        $sql = 'SELECT id_product 
+		FROM '._DB_PREFIX_.'product_lang
+		WHERE id_lang='.$idLang.' 
+		AND link_rewrite IN
+		(SELECT link_rewrite FROM '._DB_PREFIX_.'product_lang WHERE id_lang='.$idLang.' GROUP BY link_rewrite HAVING COUNT(*) > 1)';
+		
+		$prods = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);		
+        foreach ($prods as $product) {
             $productInfo = [
                 'id_product' => $product['id_product'],
                 'url'        => $this->context->link->getProductLink($product['id_product'], null, null, null, $idLang),
             ];
             $productUrls[] = $productInfo;
         }
-
-        return $productUrls;
+		return $productUrls;
     }
 
     /**
