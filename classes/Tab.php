@@ -368,21 +368,7 @@ class TabCore extends ObjectModel
      */
     public static function checkTabRights($idTab)
     {
-        static $tabAccesses = null;
-
-        if (Context::getContext()->employee->id_profile == _PS_ADMIN_PROFILE_) {
-            return true;
-        }
-
-        if ($tabAccesses === null) {
-            $tabAccesses = Profile::getProfileAccesses(Context::getContext()->employee->id_profile);
-        }
-
-        if (isset($tabAccesses[(int) $idTab]['view'])) {
-            return ($tabAccesses[(int) $idTab]['view'] === '1');
-        }
-
-        return false;
+        return Context::getContext()->employee->hasAccess($idTab, Profile::PERMISSION_VIEW);
     }
 
     /**

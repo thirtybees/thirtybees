@@ -36,6 +36,11 @@
  */
 class ProfileCore extends ObjectModel
 {
+    const PERMISSION_VIEW = 'view';
+    const PERMISSION_ADD = 'add';
+    const PERMISSION_EDIT = 'edit';
+    const PERMISSION_DELETE = 'delete';
+
     protected static $_cache_accesses = [];
 
     protected static $_cache_permissions = [];
@@ -86,7 +91,7 @@ class ProfileCore extends ObjectModel
      * @param int      $idProfile
      * @param int|null $idLang
      *
-     * @return string Profile
+     * @return string|false Profile
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -99,7 +104,7 @@ class ProfileCore extends ObjectModel
             $idLang = Configuration::get('PS_LANG_DEFAULT');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`name`')
                 ->from('profile', 'p')
@@ -122,14 +127,14 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfileAccess($idProfile, $idTab)
     {
-        // getProfileAccesses is cached so there is no performance leak
+        $idProfile = (int)$idProfile;
         $accesses = Profile::getProfileAccesses($idProfile);
 
-        if (isset($accesses[$idTab])) {
+        if (isset($accesses[$idTab]) && is_array($accesses[$idTab])) {
             return $accesses[$idTab];
         }
 
-        $perm = ($idProfile == _PS_ADMIN_PROFILE_) ? '1' : '0';
+        $perm = static::formatPermissionValue($idProfile === _PS_ADMIN_PROFILE_);
         return [
             'id_profile' => $idProfile,
             'id_tab'     => $idTab,
@@ -146,7 +151,7 @@ class ProfileCore extends ObjectModel
      *
      * @param int $idProfile
      * @param string $group
-     * @param stirng $permission
+     * @param string $permission
      *
      * @return string | false
      *
@@ -159,9 +164,7 @@ class ProfileCore extends ObjectModel
             static::$_cache_permissions[$idProfile] = static::loadPermissions($idProfile);
         }
 
-        return isset(static::$_cache_permissions[$idProfile][$group][$permission])
-            ? static::$_cache_permissions[$idProfile][$group][$permission]
-            : false;
+        return static::$_cache_permissions[$idProfile][$group][$permission] ?? false;
     }
 
     /**
@@ -206,27 +209,27 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfileAccesses($idProfile, $type = 'id_tab')
     {
+        $idProfile = (int)$idProfile;
         if (!in_array($type, ['id_tab', 'class_name'])) {
             return false;
         }
 
-        // @codingStandardsIgnoreStart
         if (!isset(static::$_cache_accesses[$idProfile])) {
             static::$_cache_accesses[$idProfile] = [];
         }
         if (!isset(static::$_cache_accesses[$idProfile][$type])) {
             static::$_cache_accesses[$idProfile][$type] = [];
             // Super admin profile has full auth
-            if ($idProfile == _PS_ADMIN_PROFILE_) {
+            if ($idProfile === _PS_ADMIN_PROFILE_) {
                 foreach (Tab::getTabs(Context::getContext()->language->id) as $tab) {
                     static::$_cache_accesses[$idProfile][$type][$tab[$type]] = [
                         'id_profile' => _PS_ADMIN_PROFILE_,
                         'id_tab'     => $tab['id_tab'],
                         'class_name' => $tab['class_name'],
-                        'view'       => '1',
-                        'add'        => '1',
-                        'edit'       => '1',
-                        'delete'     => '1',
+                        'view'       => static::formatPermissionValue(true),
+                        'add'        => static::formatPermissionValue(true),
+                        'edit'       => static::formatPermissionValue(true),
+                        'delete'     => static::formatPermissionValue(true),
                     ];
                 }
             } else {
@@ -235,17 +238,20 @@ class ProfileCore extends ObjectModel
                         ->select('*')
                         ->from('access', 'a')
                         ->leftJoin('tab', 't', 't.`id_tab` = a.`id_tab`')
-                        ->where('`id_profile` = '.(int) $idProfile)
+                        ->where('`id_profile` = '.$idProfile)
                 );
 
                 foreach ($result as $row) {
+                    $row[static::PERMISSION_VIEW] = static::formatPermissionValue($row['view']);
+                    $row[static::PERMISSION_ADD] = static::formatPermissionValue($row['add']);
+                    $row[static::PERMISSION_EDIT] = static::formatPermissionValue($row['edit']);
+                    $row[static::PERMISSION_DELETE] = static::formatPermissionValue($row['delete']);
                     static::$_cache_accesses[$idProfile][$type][$row[$type]] = $row;
                 }
             }
         }
 
         return static::$_cache_accesses[$idProfile][$type];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -281,7 +287,7 @@ class ProfileCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopData§baseException
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function delete()
@@ -319,5 +325,33 @@ class ProfileCore extends ObjectModel
         if (isset(static::$_cache_accesses[$profileId])) {
             unset(static::$_cache_accesses[$profileId]);
         }
+    }
+
+    /**
+     * Returns true, if $permission is a valid permission type: view, delete, add, edit
+     *
+     * @param string $permission
+     * @return bool
+     */
+    public static function isValidPermission($permission)
+    {
+       return $permission && is_string($permission) && in_array($permission, [
+           Profile::PERMISSION_VIEW,
+           Profile::PERMISSION_DELETE,
+           Profile::PERMISSION_ADD,
+           Profile::PERMISSION_EDIT,
+       ]);
+    }
+
+    /**
+     * Helperm method to format permission value. In the future, this will return boolean value.
+     * For compatibility reasons we have to use string values now
+     *
+     * @param bool $hasPermission
+     * @return string
+     */
+    public static function formatPermissionValue($hasPermission)
+    {
+        return $hasPermission ? '1' : '0';
     }
 }

@@ -776,4 +776,21 @@ class EmployeeCore extends ObjectModel
         return $this->notification;
     }
 
+    /**
+     * Returns true, if this employee has access to $tabId with $permission level
+     *
+     * @param int $tabId
+     * @param string $permission
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function hasAccess($tabId, $permission)
+    {
+        if (! Profile::isValidPermission($permission)) {
+            throw new PrestaShopException("Invalid permission type");
+        }
+        $tabId = (int)$tabId;
+        $tabAccess = Profile::getProfileAccess($this->id_profile, $tabId);
+        return (bool)$tabAccess[$permission];
+    }
 }
