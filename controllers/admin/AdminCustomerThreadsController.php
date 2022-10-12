@@ -406,6 +406,10 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         } else {
                             $cm->message = $message;
                             $cm->add();
+                            if ($ct->status !== 'open') {
+                                $ct->status = 'open';
+                                $ct->update();
+                            }
                         }
                     }
                 }
