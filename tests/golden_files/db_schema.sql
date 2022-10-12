@@ -1388,7 +1388,9 @@ CREATE TABLE `PREFIX_order_detail_pack` (
   `id_product` int(11) unsigned NOT NULL,
   `id_product_attribute` int(11) unsigned NOT NULL DEFAULT '0',
   `quantity` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id_order_detail_pack`)
+  PRIMARY KEY (`id_order_detail_pack`),
+  KEY `detail` (`id_order_detail`),
+  KEY `product` (`id_product`,`id_product_attribute`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_order_detail_tax` (
