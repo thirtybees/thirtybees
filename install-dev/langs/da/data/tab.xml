@@ -41,6 +41,7 @@
   <tab id="Groups" name="Groups"/>
   <tab id="Shopping_Carts" name="Shopping Carts"/>
   <tab id="Customer_Service" name="Customer Service"/>
+  <tab id="CustomerServiceSettings" name="Customer Service"/>
   <tab id="Contacts" name="Contacts"/>
   <tab id="Titles" name="Titles"/>
   <tab id="Outstanding" name="Outstanding"/>

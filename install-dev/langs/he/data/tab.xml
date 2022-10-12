@@ -41,6 +41,7 @@
   <tab id="Groups" name="קבוצות"/>
   <tab id="Shopping_Carts" name="עגלות קניה"/>
   <tab id="Customer_Service" name="שירות לקוחות"/>
+  <tab id="CustomerServiceSettings" name="שירות לקוחות"/>
   <tab id="Contacts" name="ממשקי יצירת קשר"/>
   <tab id="Titles" name="תארים/כותרות"/>
   <tab id="Outstanding" name="יוצאי דופן"/>

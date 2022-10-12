@@ -41,6 +41,7 @@
   <tab id="Groups" name="Групи"/>
   <tab id="Shopping_Carts" name="Кошници"/>
   <tab id="Customer_Service" name="Корисничка поддршка"/>
+  <tab id="CustomerServiceSettings" name="Корисничка поддршка"/>
   <tab id="Contacts" name="Контакти"/>
   <tab id="Titles" name="Наслов"/>
   <tab id="Outstanding" name="Encours"/>

@@ -22,6 +22,7 @@
   <tab id="CSV_Import" name="Импорт CSV"/>
   <tab id="Currencies" name="Валюта"/>
   <tab id="Customer_Service" name="Служба поддержки"/>
+  <tab id="CustomerServiceSettings" name="Служба поддержки"/>
   <tab id="Customers" name="Клиенты"/>
   <tab id="Customers_2" name="Клиенты"/>
   <tab id="Customers_1" name="Клиенты"/>

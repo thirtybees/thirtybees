@@ -37,6 +37,11 @@
 class AdminCustomerThreadsControllerCore extends AdminController
 {
     /**
+     * Settings controller
+     */
+    const SETTINGS_CONTROLLER = 'AdminCustomerServiceSettings';
+
+    /**
      * AdminCustomerThreadsControllerCore constructor.
      *
      * @since 1.0.0
@@ -138,95 +143,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
         ];
 
         $this->shopLinkType = 'shop';
-
-        $this->fields_options = [
-            'contact' => [
-                'title'  => $this->l('Contact options'),
-                'fields' => [
-                    'PS_CUSTOMER_SERVICE_FILE_UPLOAD' => [
-                        'title' => $this->l('Allow file uploading'),
-                        'hint'  => $this->l('Allow customers to upload files using the contact page.'),
-                        'type'  => 'bool',
-                    ],
-                    'PS_CUSTOMER_SERVICE_SIGNATURE'   => [
-                        'title' => $this->l('Default message'),
-                        'hint'  => $this->l('Please fill out the message fields that appear by default when you answer a thread on the customer service page.'),
-                        'type'  => 'textareaLang',
-                        'lang'  => true,
-                    ],
-                ],
-                'submit' => ['title' => $this->l('Save')],
-            ],
-            'general' => [
-                'title'  => $this->l('Customer service options'),
-                'fields' => [
-                    'PS_SAV_IMAP_URL'                 => [
-                        'title' => $this->l('IMAP URL'),
-                        'hint'  => $this->l('URL for your IMAP server (ie.: mail.server.com).'),
-                        'type'  => 'text',
-                    ],
-                    'PS_SAV_IMAP_PORT'                => [
-                        'title'        => $this->l('IMAP port'),
-                        'hint'         => $this->l('Port to use to connect to your IMAP server.'),
-                        'type'         => 'text',
-                        'defaultValue' => 143,
-                    ],
-                    'PS_SAV_IMAP_USER'                => [
-                        'title' => $this->l('IMAP user'),
-                        'hint'  => $this->l('User to use to connect to your IMAP server.'),
-                        'type'  => 'text',
-                    ],
-                    'PS_SAV_IMAP_PWD'                 => [
-                        'title'        => $this->l('IMAP password'),
-                        'hint'         => $this->l('Password to use to connect your IMAP server.'),
-                        'validation'   => 'isAnything',
-                        'type'         => 'password',
-                        'autocomplete' => 'false',
-                    ],
-                    'PS_SAV_IMAP_DELETE_MSG'          => [
-                        'title' => $this->l('Delete messages'),
-                        'hint'  => $this->l('Delete messages after synchronization. If you do not enable this option, the synchronization will take more time.'),
-                        'type'  => 'bool',
-                    ],
-                    'PS_SAV_IMAP_CREATE_THREADS'      => [
-                        'title' => $this->l('Create new threads'),
-                        'hint'  => $this->l('Create new threads for unrecognized emails.'),
-                        'type'  => 'bool',
-                    ],
-                    'PS_SAV_IMAP_OPT_NORSH'           => [
-                        'title' => $this->l('IMAP options').' (/norsh)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Do not use RSH or SSH to establish a preauthenticated IMAP sessions.'),
-                    ],
-                    'PS_SAV_IMAP_OPT_SSL'             => [
-                        'title' => $this->l('IMAP options').' (/ssl)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Use the Secure Socket Layer (TLS/SSL) to encrypt the session.'),
-                    ],
-                    'PS_SAV_IMAP_OPT_VALIDATE-CERT'   => [
-                        'title' => $this->l('IMAP options').' (/validate-cert)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Validate certificates from the TLS/SSL server.'),
-                    ],
-                    'PS_SAV_IMAP_OPT_NOVALIDATE-CERT' => [
-                        'title' => $this->l('IMAP options').' (/novalidate-cert)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Do not validate certificates from the TLS/SSL server. This is only needed if a server uses self-signed certificates.'),
-                    ],
-                    'PS_SAV_IMAP_OPT_TLS'             => [
-                        'title' => $this->l('IMAP options').' (/tls)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Force use of start-TLS to encrypt the session, and reject connection to servers that do not support it.'),
-                    ],
-                    'PS_SAV_IMAP_OPT_NOTLS'           => [
-                        'title' => $this->l('IMAP options').' (/notls)',
-                        'type'  => 'bool',
-                        'hint'  => $this->l('Do not use start-TLS to encrypt the session, even with servers that support it.'),
-                    ],
-                ],
-                'submit' => ['title' => $this->l('Save')],
-            ],
-        ];
 
         parent::__construct();
     }
@@ -513,12 +429,23 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initToolbar()
     {
         parent::initToolbar();
         unset($this->toolbar_btn['new']);
+
+        $settingsTabId = Tab::getIdFromClassName(static::SETTINGS_CONTROLLER);
+        if ($this->context->employee->hasAccess($settingsTabId, Profile::PERMISSION_EDIT)) {
+            $this->page_header_toolbar_btn['settings'] = [
+                'href' => $this->context->link->getAdminLink(static::SETTINGS_CONTROLLER),
+                'icon' => 'process-icon-cogs',
+                'desc' => $this->l('Settings'),
+            ];
+        }
     }
 
     /**
@@ -1089,28 +1016,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * Render options
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function renderOptions()
-    {
-        if (Configuration::get('PS_SAV_IMAP_URL')
-            && Configuration::get('PS_SAV_IMAP_PORT')
-            && Configuration::get('PS_SAV_IMAP_USER')
-            && Configuration::get('PS_SAV_IMAP_PWD')
-        ) {
-            $this->tpl_option_vars['use_sync'] = true;
-        } else {
-            $this->tpl_option_vars['use_sync'] = false;
-        }
-
-        return parent::renderOptions();
-    }
-
-    /**
      * AdminController::getList() override
      *
      * @see AdminController::getList()
@@ -1142,40 +1047,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param $value
-     *
-     * @throws HTMLPurifier_Exception
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    public function updateOptionPsSavImapOpt($value)
-    {
-        if ($this->tabAccess['edit'] != '1') {
-            throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
-        }
-
-        if (!$this->errors && $value) {
-            Configuration::updateValue('PS_SAV_IMAP_OPT', implode('', $value));
-        }
-    }
-
-    /**
-     * Update handler for parameter PS_SAV_IMAP_PWD
-     *
-     * @param string $value new valu
-     *
-     * @throws HTMLPurifier_Exception
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    public function updateOptionPsSavImapPwd($value)
-    {
-        if ($value) {
-            Configuration::updateValue('PS_SAV_IMAP_PWD', $value);
-        }
-    }
-
-    /**
      * @throws PrestaShopException
      *
      * @since 1.0.0
@@ -1190,24 +1061,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $messages = CustomerThread::getMessageCustomerThreads($idThread);
         if (count($messages)) {
             Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer_message` set `read` = 1 WHERE `id_employee` = '.(int) $this->context->employee->id.' AND `id_customer_thread` = '.(int) $idThread);
-        }
-    }
-
-    /**
-     * Call the IMAP synchronization during an AJAX process.
-     *
-     * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     */
-    public function ajaxProcessSyncImap()
-    {
-        if ($this->tabAccess['edit'] != '1') {
-            throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
-        }
-
-        if (Tools::isSubmit('syncImapMail')) {
-            $this->ajaxDie(json_encode($this->syncImap()));
         }
     }
 

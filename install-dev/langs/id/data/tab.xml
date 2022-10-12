@@ -41,6 +41,7 @@
   <tab id="Groups" name="Grup"/>
   <tab id="Shopping_Carts" name="Daftar belanja"/>
   <tab id="Customer_Service" name="Layanan Pelanggan"/>
+  <tab id="CustomerServiceSettings" name="Layanan Pelanggan"/>
   <tab id="Contacts" name="Kontak"/>
   <tab id="Titles" name="Panggilan"/>
   <tab id="Outstanding" name="Outstanding"/>

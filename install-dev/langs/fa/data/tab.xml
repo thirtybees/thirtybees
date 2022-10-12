@@ -41,6 +41,7 @@
   <tab id="Groups" name="گروه‌ها"/>
   <tab id="Shopping_Carts" name="سبدهای خرید"/>
   <tab id="Customer_Service" name="خدمات مشتریان"/>
+  <tab id="CustomerServiceSettings" name="خدمات مشتریان"/>
   <tab id="Contacts" name="تماس‌ها"/>
   <tab id="Titles" name="عنوان‌ها"/>
   <tab id="Outstanding" name="وصول نشده‌ها"/>

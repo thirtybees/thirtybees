@@ -23,6 +23,7 @@
   <tab id="CSV_Import" name="Import"/>
   <tab id="Currencies" name="Devises"/>
   <tab id="Customer_Service" name="SAV"/>
+  <tab id="CustomerServiceSettings" name="SAV"/>
   <tab id="Customers" name="Clients"/>
   <tab id="Customers_2" name="Clients"/>
   <tab id="Customers_1" name="Clients"/>

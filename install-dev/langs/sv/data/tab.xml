@@ -41,6 +41,7 @@
   <tab id="Groups" name="Grupper"/>
   <tab id="Shopping_Carts" name="Kundvagnar"/>
   <tab id="Customer_Service" name="Kundtjänst"/>
+  <tab id="CustomerServiceSettings" name="Kundtjänst"/>
   <tab id="Contacts" name="Kontakter"/>
   <tab id="Titles" name="Titlar"/>
   <tab id="Outstanding" name="Utestående"/>

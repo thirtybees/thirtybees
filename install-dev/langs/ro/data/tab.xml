@@ -41,6 +41,7 @@
   <tab id="Groups" name="Grupuri"/>
   <tab id="Shopping_Carts" name="Coșuri de cumpărături"/>
   <tab id="Customer_Service" name="Asistență pentru clienți"/>
+  <tab id="CustomerServiceSettings" name="Asistență pentru clienți"/>
   <tab id="Contacts" name="Persoane de contact"/>
   <tab id="Titles" name="Moduri de adresare"/>
   <tab id="Outstanding" name="În desfășurare"/>

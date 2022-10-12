@@ -41,6 +41,7 @@
   <tab id="Groups" name="Skupine"/>
   <tab id="Shopping_Carts" name="Košarice"/>
   <tab id="Customer_Service" name="Podpora uporabnikom"/>
+  <tab id="CustomerServiceSettings" name="Podpora uporabnikom"/>
   <tab id="Contacts" name="Kontakti"/>
   <tab id="Titles" name="Nazivi"/>
   <tab id="Outstanding" name="Neplačano"/>

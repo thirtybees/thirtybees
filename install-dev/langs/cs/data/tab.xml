@@ -41,6 +41,7 @@
   <tab id="Groups" name="Skupiny zákazníků"/>
   <tab id="Shopping_Carts" name="Nákupní košíky"/>
   <tab id="Customer_Service" name="Zákaznický servis"/>
+  <tab id="CustomerServiceSettings" name="Zákaznický servis"/>
   <tab id="Contacts" name="Kontakty na zaměstnance"/>
   <tab id="Titles" name="Oslovení skupiny"/>
   <tab id="Outstanding" name="Outstanding"/>

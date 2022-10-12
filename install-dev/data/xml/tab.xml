@@ -207,6 +207,9 @@
     <tab id="Customers_2" id_parent="Preferences" active="1">
       <class_name>AdminCustomerPreferences</class_name>
     </tab>
+    <tab id="CustomerServiceSettings" id_parent="Preferences" active="1">
+      <class_name>AdminCustomerServiceSettings</class_name>
+    </tab>
     <tab id="Themes" id_parent="Preferences" active="1">
       <class_name>AdminThemes</class_name>
     </tab>

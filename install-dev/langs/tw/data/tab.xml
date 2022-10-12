@@ -43,6 +43,7 @@
   <tab id="Groups" name="群組"/>
   <tab id="Shopping_Carts" name="購物車"/>
   <tab id="Customer_Service" name="客戶服務"/>
+  <tab id="CustomerServiceSettings" name="客戶服務"/>
   <tab id="Contacts" name="聯絡人"/>
   <tab id="Titles" name="稱謂"/>
   <tab id="Outstanding" name="特色"/>

@@ -22,6 +22,7 @@
   <tab id="CSV_Import" name="nh&#x1EAD;p CSV"/>
   <tab id="Currencies" name="Ti&#x1EC1;n t&#x1EC7;"/>
   <tab id="Customer_Service" name="D&#x1ECB;ch v&#x1EE5; Kh&#xE1;ch h&#xE0;ng"/>
+  <tab id="CustomerServiceSettings" name="D&#x1ECB;ch v&#x1EE5; Kh&#xE1;ch h&#xE0;ng"/>
   <tab id="Customers" name="Kh&#xE1;ch h&#xE0;ng"/>
   <tab id="Customers_1" name="Kh&#xE1;ch h&#xE0;ng"/>
   <tab id="Customers_2" name="Kh&#xE1;ch h&#xE0;ng"/>

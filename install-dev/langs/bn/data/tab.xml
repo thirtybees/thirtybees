@@ -43,6 +43,7 @@
   <tab id='Groups' name='দল'/>
   <tab id='Shopping_Carts' name='ক্রয় ঝুড়ি'/>
   <tab id='Customer_Service' name='গ্রাহক সেবা'/>
+  <tab id='CustomerServiceSettings' name='গ্রাহক সেবা'/>
   <tab id='Contacts' name='যোগাযোগ'/>
   <tab id='Titles' name='শিরোনাম'/>
   <tab id='Outstanding' name='অসাধারণ'/>

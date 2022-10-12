@@ -41,6 +41,7 @@
   <tab id="Groups" name="Grupės"/>
   <tab id="Shopping_Carts" name="Prekių krepšeliai"/>
   <tab id="Customer_Service" name="Klientų aptarnavimas"/>
+  <tab id="CustomerServiceSettings" name="Klientų aptarnavimas"/>
   <tab id="Contacts" name="Kontaktai"/>
   <tab id="Titles" name="Kreipiniai"/>
   <tab id="Outstanding" name="Neapmokėta"/>

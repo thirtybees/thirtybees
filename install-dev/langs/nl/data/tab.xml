@@ -41,6 +41,7 @@
   <tab id="Groups" name="Groepen"/>
   <tab id="Shopping_Carts" name="Winkelwagens"/>
   <tab id="Customer_Service" name="Klantenservice"/>
+  <tab id="CustomerServiceSettings" name="Klantenservice"/>
   <tab id="Contacts" name="Contactpersonen"/>
   <tab id="Titles" name="Sociale titels"/>
   <tab id="Outstanding" name="Openstaand"/>

@@ -40,6 +40,7 @@
   <tab id="Groups" name="Grupos"/>
   <tab id="Shopping_Carts" name="Carritos de compra"/>
   <tab id="Customer_Service" name="Atención al cliente"/>
+  <tab id="CustomerServiceSettings" name="Atención al cliente"/>
   <tab id="Contacts" name="Datos"/>
   <tab id="Titles" name="Tratamientos"/>
   <tab id="Outstanding" name="Cuentas por pagar"/>

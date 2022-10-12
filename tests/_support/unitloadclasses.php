@@ -574,6 +574,8 @@ $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomersController.php
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomersController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomerThreadsController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomerThreadsController.php');
+$kernel->loadFile(__DIR__.'/../../controllers/admin/AdminCustomerServiceSettingsController.php');
+$kernel->loadFile(__DIR__.'/override/controllers/admin/AdminCustomerServiceSettingsController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminDashboardController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminDashboardController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminDeliverySlipController.php');
