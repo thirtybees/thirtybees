@@ -69,7 +69,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         $languages = Language::getLanguages(true, $this->context->shop->id, true);
         foreach ($languages as $idLang) {
             $urls[(int) $idLang] = [];
-			$urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getProductDuplicateUrls($idLang));
+	    $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getProductDuplicateUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCategoryUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCmsUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCmsCategoryUrls($idLang));
@@ -118,6 +118,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
+	$id_lang=(int)$idlang;
         $productUrls = [];	
 		
         $sql = 'SELECT id_product 
