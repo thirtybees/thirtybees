@@ -728,7 +728,7 @@ class InstallModelInstall extends InstallAbstractModel
             $employee->lastname = Tools::ucfirst($data['adminLastname']);
             $employee->email = $data['adminEmail'];
             $employee->passwd = md5(_COOKIE_KEY_.$data['adminPassword']);
-            $employee->last_passwd_gen = date('Y-m-d h:i:s', strtotime('-360 minutes'));
+            $employee->last_passwd_gen = date('Y-m-d H:i:s', strtotime('-360 minutes'));
             $employee->bo_theme = 'default';
             $employee->bo_css = 'schemes/admin-theme-thirtybees.css';
             $employee->default_tab = 1;

@@ -1246,7 +1246,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             if (!count($this->errors)) {
                 // forces date for templates
                 if (Tools::isSubmit('is_template') && !Tools::getValue('date_delivery_expected')) {
-                    $_POST['date_delivery_expected'] = date('Y-m-d h:i:s');
+                    $_POST['date_delivery_expected'] = date('Y-m-d H:i:s');
                 }
 
                 // specify initial state
