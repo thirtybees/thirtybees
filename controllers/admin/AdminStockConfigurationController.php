@@ -409,7 +409,7 @@ class AdminStockConfigurationControllerCore extends AdminController
         $this->displayInformation($this->l('This interface allows you to configure your supply order status and stock movement labels.').'<br />');
 
         // Checks access
-        if (!($this->tabAccess['add'] === '1')) {
+        if (!($this->hasAddPermission())) {
             unset($this->toolbar_btn['new']);
         }
 

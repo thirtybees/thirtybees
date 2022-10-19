@@ -175,7 +175,7 @@ class AdminAccessControllerCore extends AdminController
             'tabs'                => $tabs,
             'current_profile'     => (int) $currentProfile,
             'admin_profile'       => (int) _PS_ADMIN_PROFILE_,
-            'access_edit'         => $this->tabAccess['edit'],
+            'access_edit'         => $this->hasEditPermission(),
             'perms'               => ['view', 'add', 'edit', 'delete'],
             'modules'             => $modules,
             'admin_controllers'   => $this->getAdminControllerAccess($profiles),
@@ -211,7 +211,7 @@ class AdminAccessControllerCore extends AdminController
         if (_PS_MODE_DEMO_) {
             throw new PrestaShopException(Tools::displayError('This functionality has been disabled.'));
         }
-        if ($this->tabAccess['edit'] != '1') {
+        if (! $this->hasEditPermission()) {
             throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
         }
 
@@ -271,7 +271,7 @@ class AdminAccessControllerCore extends AdminController
         if (_PS_MODE_DEMO_) {
             throw new PrestaShopException(Tools::displayError('This functionality has been disabled.'));
         }
-        if ($this->tabAccess['edit'] != '1') {
+        if (! $this->hasEditPermission()) {
             throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
         }
 

@@ -5010,7 +5010,7 @@ class AdminImportControllerCore extends AdminController
      */
     public function ajaxProcessSaveImportMatchs()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $match = implode('|', Tools::getValue('type_value'));
             try {
                 Db::getInstance()->insert(
@@ -5039,7 +5039,7 @@ class AdminImportControllerCore extends AdminController
      */
     public function ajaxProcessLoadImportMatchs()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             try {
                 $return = Db::getInstance()->executeS(
                     (new DbQuery())
@@ -5069,7 +5069,7 @@ class AdminImportControllerCore extends AdminController
      */
     public function ajaxProcessDeleteImportMatchs()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             try {
                 Db::getInstance()->delete(
                     'import_match',

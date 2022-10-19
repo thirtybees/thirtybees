@@ -15,7 +15,8 @@
         "defuse/php-encryption": "^2.0",
         "pclzip/pclzip": "~2.8.2",
         "psr/log": "^1.1",
-        "jaybizzle/crawler-detect": "^1.2"
+        "jaybizzle/crawler-detect": "^1.2",
+        "symfony/polyfill-php80": "^1.27"
     },
     "config": {
         "platform": {

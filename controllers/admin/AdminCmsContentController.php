@@ -292,7 +292,7 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public function ajaxProcessUpdateCmsPositions()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $idCms = (int) Tools::getValue('id_cms');
             $idCategory = (int) Tools::getValue('id_cms_category');
             $way = (int) Tools::getValue('way');
@@ -329,7 +329,7 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public function ajaxProcessUpdateCmsCategoriesPositions()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $idCmsCategoryToMove = (int) Tools::getValue('id_cms_category_to_move');
             $idCmsCategoryParent = (int) Tools::getValue('id_cms_category_parent');
             $way = (int) Tools::getValue('way');
@@ -365,7 +365,7 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public function ajaxProcessPublishCMS()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             if ($idCms = (int) Tools::getValue('id_cms')) {
                 $boCmsUrl = $this->context->link->getAdminLink('AdminCmsContent', true).'&updatecms&id_cms='.(int) $idCms;
                 if (Tools::getValue('redirect')) {

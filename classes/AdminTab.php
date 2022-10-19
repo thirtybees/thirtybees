@@ -322,18 +322,18 @@ abstract class AdminTabCore
         if ($this->includeSubTab('display', ['submitAdd2', 'add', 'update', 'view'])) {
         } // Include current tab
         elseif ((Tools::getValue('submitAdd'.$this->table) && count($this->_errors)) || isset($_GET['add'.$this->table])) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->tabAccess[Profile::PERMISSION_ADD]) {
                 $this->displayForm();
-                if ($this->tabAccess['view']) {
+                if ($this->tabAccess[Profile::PERMISSION_VIEW]) {
                     echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : static::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
                 }
             } else {
                 echo $this->l('You do not have permission to add here');
             }
         } elseif (isset($_GET['update'.$this->table])) {
-            if ($this->tabAccess['edit'] === '1' || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee'))) {
+            if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee'))) {
                 $this->displayForm();
-                if ($this->tabAccess['view']) {
+                if ($this->tabAccess[Profile::PERMISSION_VIEW]) {
                     echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : static::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
                 }
             } else {
@@ -1332,7 +1332,7 @@ abstract class AdminTabCore
      */
     public function displayRequiredFields()
     {
-        if (!$this->tabAccess['add'] || !$this->tabAccess['delete'] === '1' || !$this->requiredDatabase) {
+        if (!$this->tabAccess[Profile::PERMISSION_ADD] || !$this->tabAccess[Profile::PERMISSION_DELETE] || !$this->requiredDatabase) {
             return;
         }
         $rules = call_user_func_array([$this->className, 'getValidationRules'], [$this->className]);
@@ -1467,7 +1467,7 @@ abstract class AdminTabCore
             $this->_errors[] = Tools::displayError('An error occurred during image deletion (cannot load object).');
         } /* Delete object */
         elseif (isset($_GET['delete'.$this->table])) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->tabAccess[Profile::PERMISSION_DELETE]) {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     /** @var ObjectModel $object */
                     if ($this->deleted) {
@@ -1494,7 +1494,7 @@ abstract class AdminTabCore
             }
         } /* Change object statuts (active, inactive) */
         elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->tabAccess[Profile::PERMISSION_EDIT]) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var ObjectModel $object */
                     if ($object->toggleStatus()) {
@@ -1511,7 +1511,7 @@ abstract class AdminTabCore
         } /* Move an object */
         elseif (isset($_GET['position'])) {
             /** @var ObjectModel $object */
-            if ($this->tabAccess['edit'] !== '1') {
+            if (! $this->tabAccess[Profile::PERMISSION_EDIT]) {
                 $this->_errors[] = Tools::displayError('You do not have permission to edit here.');
             } elseif (!Validate::isLoadedObject($object = $this->loadObject())) {
                 $this->_errors[] = Tools::displayError('An error occurred while updating status for object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
@@ -1522,7 +1522,7 @@ abstract class AdminTabCore
             }
         } /* Delete multiple objects */
         elseif (Tools::getValue('submitDel'.$this->table)) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->tabAccess[Profile::PERMISSION_DELETE]) {
                 if (isset($_POST[$this->table.'Box'])) {
                     $result = true;
                     if ($this->deleted) {
@@ -1559,7 +1559,7 @@ abstract class AdminTabCore
 
                 /* Object update */
                 if (isset($id) && !empty($id)) {
-                    if ($this->tabAccess['edit'] === '1' || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee') && Tools::isSubmit('updateemployee'))) {
+                    if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee') && Tools::isSubmit('updateemployee'))) {
                         /** @var ObjectModel $object */
                         $object = new $this->className($id);
                         if (Validate::isLoadedObject($object)) {
@@ -1626,7 +1626,7 @@ abstract class AdminTabCore
                     }
                 } /* Object creation */
                 else {
-                    if ($this->tabAccess['add'] === '1') {
+                    if ($this->tabAccess[Profile::PERMISSION_ADD]) {
                         /** @var ObjectModel $object */
                         $object = new $this->className();
                         $this->copyFromPost($object, $this->table);
@@ -1748,7 +1748,7 @@ abstract class AdminTabCore
                     }
                 }
             }
-        } elseif (Tools::isSubmit('submitFields') && $this->requiredDatabase && $this->tabAccess['add'] === '1' && $this->tabAccess['delete'] === '1') {
+        } elseif (Tools::isSubmit('submitFields') && $this->requiredDatabase && $this->tabAccess[Profile::PERMISSION_ADD] && $this->tabAccess[Profile::PERMISSION_DELETE]) {
             if (!is_array($fields = Tools::getValue('fieldsBox'))) {
                 $fields = [];
             }
@@ -2137,7 +2137,7 @@ abstract class AdminTabCore
      */
     protected function updateOptions($token)
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->tabAccess[Profile::PERMISSION_EDIT]) {
             $this->beforeUpdateOptions();
 
             $languageIds = Language::getIDs(false);
@@ -2660,20 +2660,13 @@ abstract class AdminTabCore
      * @throws PrestaShopException
      * @deprecated 1.0.0
      */
-
     public function viewAccess($disable = false)
     {
         if ($disable) {
             return true;
         }
 
-        $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, $this->id);
-
-        if ($this->tabAccess['view'] === '1') {
-            return true;
-        }
-
-        return false;
+        return $this->context->employee->hasAccess($this->id, Profile::PERMISSION_VIEW);
     }
 
     /**

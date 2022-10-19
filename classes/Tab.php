@@ -138,6 +138,12 @@ class TabCore extends ObjectModel
             return false;
         }
         $className = strtolower($className);
+        if (str_ends_with($className, "core")) {
+            $className = substr($className, 0, -4);
+        }
+        if (str_ends_with($className, "controller")) {
+            $className = substr($className, 0, -10);
+        }
         if (static::$_getIdFromClassName === null) {
             static::$_getIdFromClassName = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
@@ -150,7 +156,7 @@ class TabCore extends ObjectModel
 
             if (is_array($result)) {
                 foreach ($result as $row) {
-                    static::$_getIdFromClassName[strtolower($row['class_name'])] = $row['id_tab'];
+                    static::$_getIdFromClassName[strtolower($row['class_name'])] = (int)$row['id_tab'];
                 }
             }
         }

@@ -150,7 +150,7 @@ class AdminCustomerServiceSettingsControllerCore extends AdminController
     {
         return (
             parent::viewAccess($disable) &&
-            $this->tabAccess['edit']
+            $this->hasEditPermission()
         );
     }
 

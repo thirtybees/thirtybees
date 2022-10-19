@@ -15,10 +15,12 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 
-$products_accesses = Profile::getProfileAccess(Context::getContext()->employee->id_profile, Tab::getIdFromClassName('AdminProducts'));
-$cms_accesses = Profile::getProfileAccess(Context::getContext()->employee->id_profile, Tab::getIdFromClassName('AdminCmsContent'));
-
-if (!$products_accesses['edit'] && !$cms_accesses['edit']) {
+// check access
+$employee = Context::getContext()->employee;
+if (!$employee->hasAccess(AdminProductsController::class, Profile::PERMISSION_EDIT)) {
+    throw new PrestaShopException(Tools::displayError("Access denied"));
+}
+if (!$employee->hasAccess(AdminCmsContentController::class, Profile::PERMISSION_EDIT)) {
     throw new PrestaShopException(Tools::displayError("Access denied"));
 }
 //------------------------------------------------------------------------------

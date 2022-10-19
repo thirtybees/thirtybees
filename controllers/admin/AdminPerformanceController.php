@@ -891,7 +891,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitAddMemcachedServer')) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->hasAddPermission()) {
                 if (!Tools::getValue('memcachedIp')) {
                     $this->errors[] = Tools::displayError('The Memcached IP is missing.');
                 }
@@ -917,7 +917,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
         if (Tools::getValue('deleteMemcachedServer')) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->hasAddPermission()) {
                 if (CacheMemcache::deleteServer((int) Tools::getValue('deleteMemcachedServer'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
@@ -928,7 +928,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
         if (Tools::isSubmit('submitAddRedisServer')) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->hasAddPermission()) {
                 if (!Tools::getValue('redisIp')) {
                     $this->errors[] = Tools::displayError('The Redis IP is missing.');
                 }
@@ -958,7 +958,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
         if (Tools::isSubmit('deleteRedisServer')) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->hasAddPermission()) {
                 if (CacheRedis::deleteServer((int) Tools::getValue('deleteRedisServer'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
@@ -971,7 +971,7 @@ class AdminPerformanceControllerCore extends AdminController
 
         $redirectAdmin = false;
         if ((bool) Tools::getValue('smarty_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 Configuration::updateValue('PS_SMARTY_FORCE_COMPILE', Tools::getValue('smarty_force_compile', _PS_SMARTY_NO_COMPILE_));
 
                 if (Configuration::get('PS_SMARTY_CACHE') != Tools::getValue('smarty_cache') || Configuration::get('PS_SMARTY_CACHING_TYPE') != Tools::getValue('smarty_caching_type')) {
@@ -988,7 +988,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('TB_PAGE_CACHE_IGNOREPARAMS')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 Configuration::updateValue('TB_PAGE_CACHE_ENABLED', (bool) Tools::getValue('TB_PAGE_CACHE_ENABLED'));
                 Configuration::updateValue('TB_PAGE_CACHE_DEBUG', (bool) Tools::getValue('TB_PAGE_CACHE_DEBUG'));
                 Configuration::updateValue('TB_PAGE_CACHE_IGNOREPARAMS', Tools::getValue('TB_PAGE_CACHE_IGNOREPARAMS'));
@@ -1000,7 +1000,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if ((bool) Tools::getValue('features_detachables_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if (Tools::isSubmit('combination')) {
                     if ((!Tools::getValue('combination') && Combination::isCurrentlyUsed()) === false) {
                         Configuration::updateValue('PS_COMBINATION_FEATURE_ACTIVE', (bool) Tools::getValue('combination'));
@@ -1021,7 +1021,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if ((bool) Tools::getValue('ccc_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $themeCacheDirectory = _PS_ALL_THEMES_DIR_.$this->context->shop->theme_directory.'/cache/';
                 if (((bool) Tools::getValue('PS_CSS_THEME_CACHE') || (bool) Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
                     if (@file_exists($themeCacheDirectory) || !@mkdir($themeCacheDirectory, 0777, true)) {
@@ -1071,7 +1071,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if ((bool) Tools::getValue('media_server_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if (Tools::getValue('_MEDIA_SERVER_1_') != null && !Validate::isFileName(Tools::getValue('_MEDIA_SERVER_1_'))) {
                     $this->errors[] = Tools::displayError('Media server #1 is invalid');
                 }
@@ -1113,7 +1113,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Tools::getValue('ciphering_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $algo = (int)Tools::getValue('PS_CIPHER_ALGORITHM');
                 $prevSettings = file_get_contents(_PS_ROOT_DIR_.'/config/settings.inc.php');
                 $newSettings = $prevSettings;
@@ -1161,7 +1161,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Tools::getValue('cache_up')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $cacheActive = (bool) Tools::getValue('TB_CACHE_ENABLED');
                 if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('TB_CACHE_SYSTEM'))) {
                     Configuration::updateGlobalValue('TB_CACHE_SYSTEM', $cachingSystem);

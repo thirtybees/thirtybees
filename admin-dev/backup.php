@@ -36,14 +36,12 @@ if (!defined('_PS_ADMIN_DIR_')) {
 }
 include(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 
-if (!Context::getContext()->employee->isLoggedBack()) {
+$employee = Context::getContext()->employee;
+if (!$employee->isLoggedBack()) {
     Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminLogin'));
 }
 
-$tabAccess = Profile::getProfileAccess(Context::getContext()->employee->id_profile,
-    Tab::getIdFromClassName('AdminBackup'));
-
-if ($tabAccess['view'] !== '1') {
+if (!$employee->hasAccess(AdminBackupController::class, Profile::PERMISSION_VIEW)) {
     throw new PrestaShopException(Tools::displayError('You do not have permission to view this.'));
 }
 

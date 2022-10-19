@@ -683,7 +683,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processUpdate()
     {
-        if (!($this->tabAccess['delete'] && $this->tabAccess['edit'] && $this->tabAccess['add']) || _PS_MODE_DEMO_) {
+        if (!($this->hasDeletePermission() && $this->hasEditPermission() && $this->hasAddPermission()) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to edit here.');
         } else {
             if (Tools::getIsset('id_theme') && Tools::getIsset('name') && Tools::getIsset('directory')) {
@@ -726,7 +726,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processDelete()
     {
-        if (!$this->tabAccess['delete'] || _PS_MODE_DEMO_) {
+        if (!$this->hasDeletePermission() || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to delete here.');
         } else {
             /** @var Theme $obj */
@@ -1436,7 +1436,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processImportTheme()
     {
-        if (!($this->tabAccess['add'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
+        if (!($this->hasAddPermission() && $this->hasDeletePermission()) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to add here.');
 
             return false;
@@ -1513,7 +1513,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function extractTheme($themeZipFile, $sandbox)
     {
-        if (!($this->tabAccess['add'] && $this->tabAccess['edit'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
+        if (!($this->hasAddPermission() && $this->hasEditPermission() && $this->hasDeletePermission()) || _PS_MODE_DEMO_) {
             $this->errors[] = $this->l('You do not have permission to extract here.');
 
             return false;
@@ -1539,7 +1539,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function installTheme($themeDir, $sandbox = false, $redirect = true)
     {
-        if ($this->tabAccess['add'] && $this->tabAccess['delete'] && !_PS_MODE_DEMO_) {
+        if ($this->hasAddPermission() && $this->hasDeletePermission() && !_PS_MODE_DEMO_) {
             $targetDir = _PS_ALL_THEMES_DIR_.$themeDir;
 
             if ($sandbox) {
@@ -2507,31 +2507,31 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if ((isset($_GET['responsive'.$this->table]) || isset($_GET['responsive'])) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'responsive';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif ((isset($_GET['default_left_column'.$this->table]) || isset($_GET['default_left_column'])) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'defaultleftcolumn';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif ((isset($_GET['default_right_column'.$this->table]) || isset($_GET['default_right_column'])) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'defaultrightcolumn';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (Tools::getIsset('id_theme_meta') && Tools::getIsset('leftmeta')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'leftmeta';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (Tools::getIsset('id_theme_meta') && Tools::getIsset('rightmeta')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'rightmeta';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -2810,7 +2810,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function processUpdateOptions()
     {
-        if (!($this->tabAccess['add'] && $this->tabAccess['edit'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
+        if (!($this->hasAddPermission() && $this->hasEditPermission() && $this->hasDeletePermission()) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to edit here.');
         } else {
             parent::processUpdateOptions();

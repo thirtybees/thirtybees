@@ -1060,7 +1060,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
      */
     public function ajaxProcessMarkAsRead()
     {
-        if ($this->tabAccess['edit'] != '1') {
+        if (! $this->hasEditPermission()) {
             throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
         }
 

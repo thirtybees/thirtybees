@@ -292,16 +292,8 @@ function checkingTab($tab)
  */
 function checkTabRights($id_tab)
 {
-    static $tab_accesses = null;
-
-    if ($tab_accesses === null) {
-        $tab_accesses = Profile::getProfileAccesses(Context::getContext()->employee->id_profile);
-    }
-
-    if (isset($tab_accesses[(int)$id_tab]['view'])) {
-        return ($tab_accesses[(int)$id_tab]['view'] === '1');
-    }
-    return false;
+    Tools::displayAsDeprecated();;
+    return Context::getContext()->employee->hasAccess($id_tab, Profile::PERMISSION_VIEW);
 }
 
 

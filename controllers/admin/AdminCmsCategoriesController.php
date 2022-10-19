@@ -121,7 +121,6 @@ class AdminCmsCategoriesControllerCore extends AdminController
      */
     public function postProcess()
     {
-        $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, $this->id);
         if (Tools::isSubmit('submitAdd'.$this->table)) {
             $this->action = 'save';
             if ($idCmsCategory = (int) Tools::getValue('id_cms_category')) {
@@ -141,7 +140,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             return $object;
         } /* Change object statuts (active, inactive) */
         elseif (Tools::isSubmit('statuscms_category') && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     if ($object->toggleStatus()) {
                         $identifier = ((int) $object->id_parent ? '&id_cms_category='.(int) $object->id_parent : '');
@@ -157,7 +156,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             }
         } /* Delete object */
         elseif (Tools::isSubmit('delete'.$this->table)) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                     if ($this->deleted) {
@@ -177,7 +176,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('position')) {
             $object = new CMSCategory((int) Tools::getValue($this->identifier, Tools::getValue('id_cms_category_to_move', 1)));
-            if ($this->tabAccess['edit'] !== '1') {
+            if (!$this->hasEditPermission()) {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             } elseif (!Validate::isLoadedObject($object)) {
                 $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
@@ -192,7 +191,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             }
         } /* Delete multiple objects */
         elseif (Tools::getValue('submitDel'.$this->table) || Tools::isSubmit('submitBulkdelete'.$this->table)) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 if (Tools::isSubmit($this->table.'Box')) {
                     $cmsCategory = new CMSCategory();
                     $result = true;

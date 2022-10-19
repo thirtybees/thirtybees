@@ -237,7 +237,7 @@ class AdminReturnControllerCore extends AdminController
     public function postProcess()
     {
         if (Tools::isSubmit('deleteorder_return_detail')) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 if (($idOrderDetail = (int) (Tools::getValue('id_order_detail'))) && Validate::isUnsignedId($idOrderDetail)) {
                     if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
                         $orderReturn = new OrderReturn($idOrderReturn);
@@ -264,7 +264,7 @@ class AdminReturnControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to delete this.');
             }
         } elseif (Tools::isSubmit('submitAddorder_return') || Tools::isSubmit('submitAddorder_returnAndStay')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
                     $orderReturn = new OrderReturn($idOrderReturn);
                     $order = new Order($orderReturn->id_order);

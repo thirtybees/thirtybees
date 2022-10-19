@@ -818,7 +818,7 @@ class AdminFeaturesControllerCore extends AdminController
      */
     public function ajaxProcessUpdatePositions()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $isFeatureValue = Tools::isSubmit('viewfeature');
             $way = (int)Tools::getValue('way');
             $id = (int)Tools::getValue('id');

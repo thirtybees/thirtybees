@@ -329,7 +329,7 @@ class ProfileCore extends ObjectModel
      */
     public static function isValidPermission($permission)
     {
-       return $permission && is_string($permission) && in_array($permission, [
+       return in_array((string)$permission, [
            Profile::PERMISSION_VIEW,
            Profile::PERMISSION_DELETE,
            Profile::PERMISSION_ADD,
@@ -338,7 +338,7 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * Helperm method to format permission value. In the future, this will return boolean value.
+     * Helper method to format permission value. In the future, this will return boolean value.
      * For compatibility reasons we have to use string values now
      *
      * @param bool $hasPermission

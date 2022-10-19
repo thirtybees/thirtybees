@@ -406,7 +406,7 @@ class AdminCategoriesControllerCore extends AdminController
     public function initProcess()
     {
         if (Tools::isSubmit('add'.$this->table.'root')) {
-            if ($this->tabAccess['add']) {
+            if ($this->hasAddPermission()) {
                 $this->action = 'add'.$this->table.'root';
                 $obj = $this->loadObject(true);
                 if (Validate::isLoadedObject($obj)) {
@@ -898,7 +898,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function processDelete()
     {
-        if ($this->tabAccess['delete'] === '1') {
+        if ($this->hasDeletePermission()) {
             /** @var Category $category */
             $category = $this->loadObject();
             if ($category->isRootCategoryForAShop()) {
@@ -923,7 +923,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function processPosition()
     {
-        if ($this->tabAccess['edit'] !== '1') {
+        if (!$this->hasEditPermission()) {
             $this->errors[] = Tools::displayError('You do not have permission to edit this.');
         } elseif (!Validate::isLoadedObject($object = new Category((int) Tools::getValue($this->identifier, Tools::getValue('id_category_to_move', 1))))) {
             $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
@@ -999,7 +999,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     protected function processBulkDelete()
     {
-        if ($this->tabAccess['delete'] === '1') {
+        if ($this->hasDeletePermission()) {
             $categories = [];
             foreach (Tools::getValue($this->table.'Box') as $idCategory) {
                 $category = new Category((int) $idCategory);

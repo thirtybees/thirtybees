@@ -158,7 +158,7 @@ class AdminPaymentControllerCore extends AdminController
      */
     public function initProcess()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             if (Tools::isSubmit('submitModulecountry')) {
                 $this->action = 'country';
             } elseif (Tools::isSubmit('submitModulecurrency')) {

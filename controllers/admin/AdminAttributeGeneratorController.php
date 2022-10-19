@@ -132,7 +132,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('generate')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'generate';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to add this.');

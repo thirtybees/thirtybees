@@ -258,7 +258,7 @@ class AdminStatesControllerCore extends AdminController
 
         /* Delete state */
         if (Tools::isSubmit('delete'.$this->table)) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var State $object */
                     if (!$object->isUsed()) {

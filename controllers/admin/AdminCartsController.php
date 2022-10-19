@@ -377,7 +377,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxPreProcess()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $idCustomer = (int) Tools::getValue('id_customer');
             $customer = new Customer((int) $idCustomer);
             $this->context->customer = $customer;
@@ -437,7 +437,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessDeleteProduct()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $errors = [];
             if ((!$idProduct = (int) Tools::getValue('id_product')) || !Validate::isInt($idProduct)) {
                 $errors[] = Tools::displayError('Invalid product');
@@ -602,7 +602,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateCustomizationFields()
     {
         $errors = [];
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $errors = [];
             if (Tools::getValue('only_display') != 1) {
                 if (!$this->context->cart->id || (!$idProduct = (int) Tools::getValue('id_product'))) {
@@ -670,7 +670,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateQty()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $errors = [];
             if (!$this->context->cart->id) {
                 return;
@@ -725,7 +725,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateDeliveryOption()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $deliveryOption = Tools::getValue('delivery_option');
             if ($deliveryOption !== false) {
                 $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => $deliveryOption]);
@@ -749,7 +749,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateOrderMessage()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $idMessage = false;
             if ($oldMessage = Message::getMessageByCartId((int) $this->context->cart->id)) {
                 $idMessage = $oldMessage['id_message'];
@@ -774,7 +774,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateCurrency()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $currency = new Currency((int) Tools::getValue('id_currency'));
             if (Validate::isLoadedObject($currency) && !$currency->deleted && $currency->active) {
                 $this->context->cart->id_currency = (int) $currency->id;
@@ -790,7 +790,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateLang()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $lang = new Language((int) Tools::getValue('id_lang'));
             if (Validate::isLoadedObject($lang) && $lang->active) {
                 $this->context->cart->id_lang = (int) $lang->id;
@@ -805,7 +805,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessDuplicateOrder()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $errors = [];
             if (!$idOrder = Tools::getValue('id_order')) {
                 $errors[] = Tools::displayError('Invalid order');
@@ -828,7 +828,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessDeleteVoucher()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             if ($this->context->cart->removeCartRule((int) Tools::getValue('id_cart_rule'))) {
                 $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
@@ -840,7 +840,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessupdateFreeShipping()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             if (!$idCartRule = CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id)) {
                 $cartRule = new CartRule();
                 $cartRule->code = CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id;
@@ -873,7 +873,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessAddVoucher()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $errors = [];
             if (!($idCartRule = Tools::getValue('id_cart_rule')) || !$cartRule = new CartRule((int) $idCartRule)) {
                 $errors[] = Tools::displayError('Invalid voucher.');
@@ -894,7 +894,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateAddress()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             $this->ajaxDie(json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]));
         }
     }
@@ -904,7 +904,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateAddresses()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             if (($idAddressDelivery = (int) Tools::getValue('id_address_delivery')) &&
                 ($addressDelivery = new Address((int) $idAddressDelivery)) &&
                 $addressDelivery->id_customer == $this->context->cart->id_customer
@@ -987,7 +987,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateProductPrice()
     {
-        if ($this->tabAccess['edit'] === '1') {
+        if ($this->hasEditPermission()) {
             SpecificPrice::deleteByIdCart((int) $this->context->cart->id, (int) Tools::getValue('id_product'), (int) Tools::getValue('id_product_attribute'));
             $specificPrice = new SpecificPrice();
             $specificPrice->id_cart = (int) $this->context->cart->id;

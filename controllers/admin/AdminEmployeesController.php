@@ -412,7 +412,7 @@ class AdminEmployeesControllerCore extends AdminController
             ]
         );
 
-        if ((int) $this->tabAccess['edit'] && !$this->restrict_edition) {
+        if ((int) $this->hasEditPermission() && !$this->restrict_edition) {
             $this->fields_form['input'][] = [
                 'type'     => 'switch',
                 'label'    => $this->l('Active'),

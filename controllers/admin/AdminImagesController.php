@@ -428,7 +428,7 @@ class AdminImagesControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitRegenerate'.$this->table)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&conf=9'.'&token='.$this->token);
                 }
@@ -436,7 +436,7 @@ class AdminImagesControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (Tools::isSubmit('submitOptions'.$this->table)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 if ((int) Tools::getValue('PS_JPEG_QUALITY') < 0
                     || (int) Tools::getValue('PS_JPEG_QUALITY') > 100
                 ) {

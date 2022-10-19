@@ -507,7 +507,7 @@ class AdminCarriersControllerCore extends AdminController
                 /* Object update */
                 if (isset($id) && !empty($id)) {
                     try {
-                        if ($this->tabAccess['edit'] === '1') {
+                        if ($this->hasEditPermission()) {
                             $currentCarrier = new Carrier($id);
                             if (!Validate::isLoadedObject($currentCarrier)) {
                                 throw new PrestaShopException('Cannot load Carrier object');
@@ -552,7 +552,7 @@ class AdminCarriersControllerCore extends AdminController
                     }
                 } /* Object creation */
                 else {
-                    if ($this->tabAccess['add'] === '1') {
+                    if ($this->hasAddPermission()) {
                         // Create new Carrier
                         $carrier = new Carrier();
                         $this->copyFromPost($carrier, $this->table);
@@ -728,7 +728,7 @@ class AdminCarriersControllerCore extends AdminController
      */
     public function displayEditLink($token, $id, $name = null)
     {
-        if ($this->tabAccess['edit'] == 1) {
+        if ($this->hasEditPermission()) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
             if (!array_key_exists('Edit', static::$cache_lang)) {
                 static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
@@ -758,7 +758,7 @@ class AdminCarriersControllerCore extends AdminController
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
-        if ($this->tabAccess['delete'] == 1) {
+        if ($this->hasDeletePermission()) {
             $tpl = $this->createTemplate('helpers/list/list_action_delete.tpl');
 
             if (!array_key_exists('Delete', static::$cache_lang)) {

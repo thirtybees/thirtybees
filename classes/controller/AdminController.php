@@ -442,11 +442,7 @@ class AdminControllerCore extends Controller
             $this->context->mode = Context::MODE_STD;
         }
 
-        //* Check if logged employee has access to AdminImport controller */
-        $importAccess = Profile::getProfileAccess($this->context->employee->id_profile, Tab::getIdFromClassName('AdminImport'));
-        if (is_array($importAccess) && isset($importAccess['view']) && $importAccess['view'] == 1) {
-            $this->can_import = true;
-        }
+        $this->can_import = $this->context->employee->hasAccess(AdminImportController::class, Profile::PERMISSION_VIEW);
 
         $this->context->smarty->assign(
             [
@@ -744,13 +740,13 @@ class AdminControllerCore extends Controller
      */
     public function authorizationLevel()
     {
-        if ($this->tabAccess['delete']) {
+        if ($this->hasDeletePermission()) {
             return AdminController::LEVEL_DELETE;
-        } elseif ($this->tabAccess['add']) {
+        } elseif ($this->hasAddPermission()) {
             return AdminController::LEVEL_ADD;
-        } elseif ($this->tabAccess['edit']) {
+        } elseif ($this->hasEditPermission()) {
             return AdminController::LEVEL_EDIT;
-        } elseif ($this->tabAccess['view']) {
+        } elseif ($this->hasViewPermission()) {
             return AdminController::LEVEL_VIEW;
         } else {
             return 0;
@@ -2112,11 +2108,7 @@ class AdminControllerCore extends Controller
             return true;
         }
 
-        if ($this->tabAccess['view'] === '1') {
-            return true;
-        }
-
-        return false;
+        return $this->hasViewPermission();
     }
 
     /**
@@ -2780,7 +2772,7 @@ class AdminControllerCore extends Controller
 
             $helper->back_url = $this->getBackUrlParameter();
             !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
-            if ($this->tabAccess['view']) {
+            if ($this->hasViewPermission()) {
                 if (Tools::getValue('back')) {
                     $helper->tpl_vars['back'] = Tools::safeOutput(Tools::getValue('back'));
                 } else {
@@ -3251,10 +3243,8 @@ class AdminControllerCore extends Controller
             if ($module->id) {
                 $perm &= Module::getPermissionStatic($module->id, 'configure');
             } else {
-                $idAdminModule = Tab::getIdFromClassName('AdminModules');
-                $access = Profile::getProfileAccess($this->context->employee->id_profile, $idAdminModule);
-                if (!$access['edit']) {
-                    $perm &= false;
+                if (! $this->context->employee->hasAccess(AdminModulesController::class, Profile::PERMISSION_EDIT)) {
+                    $perm = false;
                 }
             }
 
@@ -3702,7 +3692,7 @@ class AdminControllerCore extends Controller
      */
     public function displayRequiredFields()
     {
-        if (!$this->tabAccess['add'] || !$this->tabAccess['delete'] === '1' || !$this->required_database) {
+        if (!$this->hasAddPermission() || !$this->hasDeletePermission() || !$this->required_database) {
             return;
         }
 
@@ -3939,28 +3929,28 @@ class AdminControllerCore extends Controller
 
         /* Delete object image */
         if (isset($_GET['deleteImage'])) {
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 $this->action = 'delete_image';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to delete this.');
             }
         } elseif (isset($_GET['delete'.$this->table])) {
             /* Delete object */
-            if ($this->tabAccess['delete'] === '1') {
+            if ($this->hasDeletePermission()) {
                 $this->action = 'delete';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to delete this.');
             }
         } elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools::getValue($this->identifier)) {
             /* Change object statuts (active, inactive) */
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'status';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (isset($_GET['position'])) {
             /* Move an object */
-            if ($this->tabAccess['edit'] == '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'position';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -3972,7 +3962,7 @@ class AdminControllerCore extends Controller
         ) {
             // case 1: updating existing entry
             if ($this->id_object) {
-                if ($this->tabAccess['edit'] === '1') {
+                if ($this->hasEditPermission()) {
                     $this->action = 'save';
                     if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
                         $this->display = 'edit';
@@ -3984,7 +3974,7 @@ class AdminControllerCore extends Controller
                 }
             } else {
                 // case 2: creating new entry
-                if ($this->tabAccess['add'] === '1') {
+                if ($this->hasAddPermission()) {
                     $this->action = 'save';
                     if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
                         $this->display = 'edit';
@@ -3996,7 +3986,7 @@ class AdminControllerCore extends Controller
                 }
             }
         } elseif (isset($_GET['add'.$this->table])) {
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->hasAddPermission()) {
                 $this->action = 'new';
                 $this->display = 'add';
             } else {
@@ -4004,25 +3994,25 @@ class AdminControllerCore extends Controller
             }
         } elseif (isset($_GET['update'.$this->table]) && isset($_GET[$this->identifier])) {
             $this->display = 'edit';
-            if ($this->tabAccess['edit'] !== '1') {
+            if (! $this->hasEditPermission()) {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (isset($_GET['view'.$this->table])) {
-            if ($this->tabAccess['view'] === '1') {
+            if ($this->hasViewPermission()) {
                 $this->display = 'view';
                 $this->action = 'view';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to view this.');
             }
         } elseif (isset($_GET['details'.$this->table])) {
-            if ($this->tabAccess['view'] === '1') {
+            if ($this->hasViewPermission()) {
                 $this->display = 'details';
                 $this->action = 'details';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to view this.');
             }
         } elseif (isset($_GET['export'.$this->table])) {
-            if ($this->tabAccess['view'] === '1') {
+            if ($this->hasViewPermission()) {
                 $this->action = 'export';
             }
         } elseif (isset($_POST['submitReset'.$this->list_id])) {
@@ -4031,14 +4021,14 @@ class AdminControllerCore extends Controller
         } elseif (Tools::isSubmit('submitOptions'.$this->table) || Tools::isSubmit('submitOptions')) {
             /* Submit options list */
             $this->display = 'options';
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->hasEditPermission()) {
                 $this->action = 'update_options';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (Tools::getValue('action') && method_exists($this, 'process'.ucfirst(Tools::toCamelCase(Tools::getValue('action'))))) {
             $this->action = Tools::getValue('action');
-        } elseif (Tools::isSubmit('submitFields') && $this->required_database && $this->tabAccess['add'] === '1' && $this->tabAccess['delete'] === '1') {
+        } elseif (Tools::isSubmit('submitFields') && $this->required_database && $this->hasAddPermission() && $this->hasDeletePermission()) {
             $this->action = 'update_fields';
         } elseif (is_array($this->bulk_actions)) {
             $submit_bulk_actions = array_merge(
@@ -4056,7 +4046,7 @@ class AdminControllerCore extends Controller
             foreach ($submit_bulk_actions as $bulk_action => $params) {
                 if (Tools::isSubmit('submitBulk'.$bulk_action.$this->table) || Tools::isSubmit('submitBulk'.$bulk_action)) {
                     if ($bulk_action === 'delete') {
-                        if ($this->tabAccess['delete'] === '1') {
+                        if ($this->hasDeletePermission()) {
                             $this->action = 'bulk'.$bulk_action;
                             $this->boxes = Tools::getValue($this->table.'Box');
                             if (empty($this->boxes) && $this->table == 'attribute') {
@@ -4066,7 +4056,7 @@ class AdminControllerCore extends Controller
                             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
                         }
                         break;
-                    } elseif ($this->tabAccess['edit'] === '1') {
+                    } elseif ($this->hasEditPermission()) {
                         $this->action = 'bulk'.$bulk_action;
                         $this->boxes = Tools::getValue($this->table.'Box');
                     } else {
@@ -4075,14 +4065,14 @@ class AdminControllerCore extends Controller
                     break;
                 } elseif (Tools::isSubmit('submitBulk')) {
                     if ($bulk_action === 'delete') {
-                        if ($this->tabAccess['delete'] === '1') {
+                        if ($this->hasDeletePermission()) {
                             $this->action = 'bulk'.$bulk_action;
                             $this->boxes = Tools::getValue($this->table.'Box');
                         } else {
                             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
                         }
                         break;
-                    } elseif ($this->tabAccess['edit'] === '1') {
+                    } elseif ($this->hasEditPermission()) {
                         $this->action = 'bulk'.Tools::getValue('select_submitBulk');
                         $this->boxes = Tools::getValue($this->table.'Box');
                     } else {
@@ -4798,5 +4788,61 @@ class AdminControllerCore extends Controller
             throw new PrestaShopException(Tools::displayError('Parameter $back is invalid'));
         }
         return $back;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasDeletePermission()
+    {
+        return $this->hasPermission(Profile::PERMISSION_DELETE);
+    }
+
+    /**
+     * Returns true, if current employee can create new records
+     *
+     * @return bool
+     */
+    protected function hasAddPermission()
+    {
+        return $this->hasPermission(Profile::PERMISSION_ADD);
+    }
+
+    /**
+     * Returns true, if current employee has view permissions
+     *
+     * @return bool
+     */
+    protected function hasViewPermission()
+    {
+        return $this->hasPermission(Profile::PERMISSION_VIEW);
+    }
+
+    /**
+     * Returns true, if current employee can edit existing records
+     *
+     * @return bool
+     */
+    protected function hasEditPermission()
+    {
+        return $this->hasPermission(Profile::PERMISSION_EDIT);
+    }
+
+    /**
+     * Returns true, if current employee has permission level
+     *
+     * @param string $permission
+     *
+     * @return bool
+     */
+    protected function hasPermission($permission)
+    {
+        if (! Profile::isValidPermission($permission)) {
+            return false;
+        }
+        if (! isset($this->tabAccess[$permission])) {
+            return false;
+        }
+        return (bool)$this->tabAccess[$permission];
     }
 }
