@@ -961,22 +961,22 @@ class AdminStatsControllerCore extends AdminStatsTabController
             // Add flat fees for this order
             $flatFees = Configuration::get('CONF_ORDER_FIXED') + (
                 $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper($order['module']).'_FIXED')
-                    : Configuration::get('CONF_'.strtoupper($order['module']).'_FIXED_FOREIGN')
+                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED')
+                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED_FOREIGN')
                 );
 
             // Add variable fees for this order
             $varFees = $order['total_paid_tax_incl'] * (
                 $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper($order['module']).'_VAR')
-                    : Configuration::get('CONF_'.strtoupper($order['module']).'_VAR_FOREIGN')
+                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR')
+                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR_FOREIGN')
                 ) / 100;
 
             // Add shipping fees for this order
             $shippingFees = $order['total_shipping_tax_excl'] * (
                 $order['id_country'] == Configuration::get('PS_COUNTRY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper($order['carrier_reference']).'_SHIP')
-                    : Configuration::get('CONF_'.strtoupper($order['carrier_reference']).'_SHIP_OVERSEAS')
+                    ? Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP')
+                    : Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP_OVERSEAS')
                 ) / 100;
 
             // Tally up these fees
