@@ -288,7 +288,6 @@ class CoreModelsCore
                 'id_shop'     => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'name'        => ['type' => ObjectModel::TYPE_STRING, 'size' => 128],
             ],
-            'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
         ];
 
         $compareProduct = [
@@ -629,7 +628,6 @@ class CoreModelsCore
                     'session' => ['type' => ObjectModel::KEY, 'columns' => ['session']],
                 ],
             ],
-            'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
         ];
 
         $operatingSystem = [
@@ -1058,7 +1056,6 @@ class CoreModelsCore
                     'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['type']],
                 ],
             ],
-            'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
         ];
 
         $smartyLazyCache = [
@@ -1075,7 +1072,6 @@ class CoreModelsCore
                     'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['template_hash', 'cache_id', 'compile_id']],
                 ],
             ],
-            'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
         ];
 
         $specificPricePriority = [
@@ -1171,7 +1167,6 @@ class CoreModelsCore
                     'id_theme'   => ['type' => ObjectModel::KEY, 'columns' => ['id_theme']],
                 ],
             ],
-            'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
         ];
 
         $themeSpecific = [

@@ -474,19 +474,19 @@ CREATE TABLE `PREFIX_cms_lang` (
 
 CREATE TABLE `PREFIX_cms_role` (
   `id_cms_role` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_cms` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_cms_role`,`id_cms`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_cms_role_lang` (
   `id_cms_role` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `id_shop` int(11) unsigned NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_cms_role`,`id_lang`,`id_shop`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_cms_shop` (
   `id_cms` int(11) unsigned NOT NULL,
@@ -1284,15 +1284,15 @@ CREATE TABLE `PREFIX_module_shop` (
 CREATE TABLE `PREFIX_modules_perfs` (
   `id_modules_perfs` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `session` int(11) unsigned NOT NULL,
-  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `method` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `time_start` double unsigned NOT NULL,
   `time_end` double unsigned NOT NULL,
   `memory_start` int(10) unsigned NOT NULL,
   `memory_end` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id_modules_perfs`),
   KEY `session` (`session`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_operating_system` (
   `id_operating_system` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -2219,19 +2219,19 @@ CREATE TABLE `PREFIX_smarty_cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_smarty_last_flush` (
-  `type` enum('compile','template') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'compile',
+  `type` enum('compile','template') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'compile',
   `last_flush` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_smarty_lazy_cache` (
-  `template_hash` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `cache_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `compile_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `filepath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `template_hash` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `cache_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `compile_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `filepath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `last_update` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`template_hash`,`cache_id`,`compile_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_specific_price` (
   `id_specific_price` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2664,7 +2664,7 @@ CREATE TABLE `PREFIX_theme_meta` (
   UNIQUE KEY `id_theme_2` (`id_theme`,`id_meta`),
   KEY `id_meta` (`id_meta`),
   KEY `id_theme` (`id_theme`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_theme_specific` (
   `id_theme` int(11) unsigned NOT NULL,

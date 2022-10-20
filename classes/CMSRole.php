@@ -55,7 +55,6 @@ class CMSRoleCore extends ObjectModel
                 'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_cms_role', 'id_lang', 'id_shop']],
             ],
         ],
-        'charset' => ['utf8mb4', 'utf8mb4_general_ci'],
     ];
     /** @var string name */
     public $name;
