@@ -483,22 +483,50 @@ if (isset($_POST['submit'])) {
 
     function filenameSort($x, $y)
     {
-        return $x['file'] < $y['file'];
+        global $descending;
+        if ($x['is_dir'] !== $y['is_dir']) {
+            return $y['is_dir'];
+        } else {
+            return ($descending)
+                ? $x['file_lcase'] < $y['file_lcase']
+                : $x['file_lcase'] >= $y['file_lcase'];
+        }
     }
 
     function dateSort($x, $y)
     {
-        return $x['date'] < $y['date'];
+        global $descending;
+        if ($x['is_dir'] !== $y['is_dir']) {
+            return $y['is_dir'];
+        } else {
+            return ($descending)
+                ? $x['date'] < $y['date']
+                : $x['date'] >= $y['date'];
+        }
     }
 
     function sizeSort($x, $y)
     {
-        return $x['size'] - $y['size'];
+        global $descending;
+        if ($x['is_dir'] !== $y['is_dir']) {
+            return $y['is_dir'];
+        } else {
+            return ($descending)
+                ? $x['size'] < $y['size']
+                : $x['size'] >= $y['size'];
+        }
     }
 
     function extensionSort($x, $y)
     {
-        return $x['extension'] < $y['extension'];
+        global $descending;
+        if ($x['is_dir'] !== $y['is_dir']) {
+            return $y['is_dir'];
+        } else {
+            return ($descending)
+                ? $x['extension'] < $y['extension']
+                : $x['extension'] >= $y['extension'];
+        }
     }
 
     switch ($sort_by) {
