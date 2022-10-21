@@ -483,12 +483,12 @@ if (isset($_POST['submit'])) {
 
     function filenameSort($x, $y)
     {
-        return $x['file'] < $y['file'];
+        return strcmp((string)$x['file'], (string)$y['file']);
     }
 
     function dateSort($x, $y)
     {
-        return $x['date'] < $y['date'];
+        return $x['date'] - $y['date'];
     }
 
     function sizeSort($x, $y)
@@ -498,7 +498,7 @@ if (isset($_POST['submit'])) {
 
     function extensionSort($x, $y)
     {
-        return $x['extension'] < $y['extension'];
+        return strcmp((string)$x['extension'], (string)$y['extension']);
     }
 
     switch ($sort_by) {
