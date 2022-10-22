@@ -39,6 +39,7 @@ class AdminPreferencesControllerCore extends AdminController
     /**
      * AdminPreferencesControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -226,6 +227,14 @@ class AdminPreferencesControllerCore extends AdminController
                         'list'       => $activities2,
                         'identifier' => 'value',
                     ],
+                    'TB_EXPORT_FIELD_DELIMITER' => [
+                        'title'        => $this->l('Export field delimiter'),
+                        'desc'         => $this->l('Separator for exporting lists to CSV file'),
+                        'cast'         => 'strval',
+                        'type'         => 'text',
+                        'class'        => 'fixed-width-sm',
+                        'defaultValue' => ','
+                    ],
                 ]
             );
 
@@ -253,6 +262,8 @@ class AdminPreferencesControllerCore extends AdminController
      *
      * @param string $value
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function updateOptionPsMultishopFeatureActive($value)

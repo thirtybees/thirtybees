@@ -927,12 +927,14 @@ class AdminControllerCore extends Controller
             }
         }
 
+        $fieldDelimiter = (Configuration::get('TB_EXPORT_FIELD_DELIMITER') ? Configuration::get('TB_EXPORT_FIELD_DELIMITER') : ',');
         $this->context->smarty->assign(
             [
                 'export_precontent' => "",
                 'export_headers'    => $headers,
                 'export_content'    => $content,
                 'text_delimiter'    => $textDelimiter,
+                'field_delimiter'   => $fieldDelimiter,
             ]
         );
 
