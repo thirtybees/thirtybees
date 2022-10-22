@@ -226,6 +226,14 @@ class AdminPreferencesControllerCore extends AdminController
                         'list'       => $activities2,
                         'identifier' => 'value',
                     ],
+                    'TB_EXPORT_FIELD_DELIMITER' => [
+                        'title'    => $this->l('Export field delimiter'),
+                        'desc'     => $this->l('Separator for exporting lists to CSV file'),
+                        'cast'     => 'strval',
+                        'type'     => 'text',
+                        'class'    => 'fixed-width-sm',
+                        'required' => true,
+                    ],
                 ]
             );
 
@@ -262,5 +270,27 @@ class AdminPreferencesControllerCore extends AdminController
         $tab = Tab::getInstanceFromClassName('AdminShopGroup');
         $tab->active = (bool) Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE');
         $tab->update();
+    }
+
+    /**
+     * Post processing
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     * @throws PrestaShopException
+     */
+    public function postProcess()
+    {
+        if (Tools::isSubmit('submitOptions'.$this->table)) {
+            if (!Tools::getValue('TB_EXPORT_FIELD_DELIMITER')) {
+                $this->errors[] = Tools::displayError('Export field delimiter is required.');
+            } else {
+                $this->confirmations[] = $this->_conf[6];
+            }
+            return parent::postProcess();
+        } else {
+            return parent::postProcess();
+        }
     }
 }
