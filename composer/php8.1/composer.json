@@ -8,7 +8,7 @@
         "jakeasmith/http_build_url": "^1.0",
         "mrclay/minify": "^2.3",
         "greenlion/php-sql-parser": "^4.1",
-        "smarty/smarty": "4.2.0",
+        "smarty/smarty": "4.2.1",
         "pear/archive_tar": "^1.4",
         "mobiledetect/mobiledetectlib": "^2.8",
         "symfony/polyfill-mbstring": "^1.3",
