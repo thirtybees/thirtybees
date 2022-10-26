@@ -313,12 +313,6 @@ class AdminEmployeesControllerCore extends AdminController
                     'required' => true,
                 ],
                 [
-                    'type'         => 'html',
-                    'name'         => 'employee_avatar',
-                    'html_content' => '<div id="employee-thumbnail"><a href="https://www.gravatar.com" target="_blank" style="background-image:url('.$obj->getImage().')"></a></div>
-					<div class="alert alert-info">'.sprintf($this->l('Your avatar in thirty bees 1.0.x is your profile picture on %1$s. To change your avatar, log in on gravatar.com with your email %2$s and follow the on-screen instructions.'), '<a href="https://www.gravatar.com/" class="alert-link" target="_blank">gravatar.com</a>', $obj->email).'</div>',
-                ],
-                [
                     'type'         => 'text',
                     'class'        => 'fixed-width-xxl',
                     'prefix'       => '<i class="icon-envelope-o"></i>',

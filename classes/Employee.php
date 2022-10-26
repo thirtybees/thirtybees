@@ -736,12 +736,13 @@ class EmployeeCore extends ObjectModel
     /**
      * @return string
      *
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since   1.0.0
      */
     public function getImage()
     {
-        return 'https://www.gravatar.com/avatar/'.md5(mb_strtolower(trim($this->email))).'?s=200&d=mm';
+        return Context::getContext()->link->getMediaLink(_PS_IMG_.'admin/employees_xl.png');
     }
 
     /**
