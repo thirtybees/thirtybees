@@ -263,7 +263,7 @@
 						<a href="{$link->getAdminLink('AdminEmployees')|escape:'html':'UTF-8'}&amp;id_employee={$employee->id|intval}&amp;updateemployee" class="employee_name dropdown-toggle" data-toggle="dropdown">
 							<span class="employee_avatar_small">
 								{if isset($employee)}
-								<img class="imgm img-thumbnail" alt="" src="{$employee->getImage()}" width="32" height="32" />
+								<i class="icon icon-user"></i>
 								{/if}
 							</span>
 							<span class="string-long">{$employee->firstname}&nbsp;{$employee->lastname}</span>
@@ -273,7 +273,7 @@
 						<ul id="employee_links" class="dropdown-menu">
 							<li>
 								<span class="employee_avatar">
-									<img class="imgm img-thumbnail" alt="" src="{$employee->getImage()}" width="96" height="96" />
+									<i class="icon icon-user" style="font-size:6em"></i>
 								</span>
 							</li>
 							<li class="text-center text-nowrap">{$employee->firstname} {$employee->lastname}</li>
