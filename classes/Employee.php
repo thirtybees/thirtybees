@@ -734,17 +734,6 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function getImage()
-    {
-        return 'https://www.gravatar.com/avatar/'.md5(mb_strtolower(trim($this->email))).'?s=200&d=mm';
-    }
-
-    /**
      * @param string $type
      *
      * @return int
