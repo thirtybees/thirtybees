@@ -196,7 +196,7 @@
 
     // Make sure, that the chosen select has not a width of 0px
     $(document).ready(function() {
-       $('select.chosen').chosen( { width: '100%' } );
+       $('select.chosen').chosen( { width: '100%', search_contains: true } );
     });
 
 
