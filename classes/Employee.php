@@ -732,7 +732,18 @@ class EmployeeCore extends ObjectModel
 
         return $this->associated_shops[0];
     }
-
+ 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getImage()
+    {
+        return __PS_BASE_URI__.'img/admin/employees_xl.png';
+    }
+ 
     /**
      * @param string $type
      *
