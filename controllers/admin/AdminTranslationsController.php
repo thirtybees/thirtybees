@@ -1571,7 +1571,9 @@ class AdminTranslationsControllerCore extends AdminController
                 if (!file_exists($rootDir.$module.'/translations/'.$lang.'.php') && file_exists($rootDir.$module.'/'.$lang.'.php')) {
                     $langFile = $rootDir.$module.'/'.$lang.'.php';
                 }
-                @include($langFile);
+                if (file_exists($langFile)) {
+                    include($langFile);
+                }
                 $this->getModuleTranslations();
                 // If a theme is selected, then the destination translation file must be in the theme
                 if ($this->theme_selected) {
@@ -1592,7 +1594,9 @@ class AdminTranslationsControllerCore extends AdminController
                 } elseif (file_exists($rootDir.$module.'/'.$lang.'.php')) {
                     $langFile = $rootDir.$module.'/'.$lang.'.php';
                 }
-                @include($langFile);
+                if (file_exists($langFile)) {
+                    include($langFile);
+                }
                 $this->getModuleTranslations();
                 $this->recursiveGetModuleFiles($rootDir.$module.'/', $arrayFiles, $module, $langFile, $isDefault);
             }
