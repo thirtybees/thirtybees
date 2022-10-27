@@ -1299,9 +1299,7 @@ class AdminPerformanceControllerCore extends AdminController
             Media::clearCache();
             Tools::generateIndex();
             PageCache::flush();
-            if (function_exists('opcache_reset')) {
-                opcache_reset();
-            }
+            Tools::clearOpCache();
         }
 
         if (Tools::isSubmit('submitAddconfiguration')) {

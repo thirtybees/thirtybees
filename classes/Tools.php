@@ -1336,6 +1336,18 @@ class ToolsCore
     }
 
     /**
+     * Clears opcache, if enabled
+     *
+     * @return void
+     */
+    public static function clearOpCache()
+    {
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+    }
+
+    /**
      * Delete file
      *
      * @param string $file         File path

@@ -1291,6 +1291,8 @@ class AdminModulesControllerCore extends AdminController
 
         @umask($oldUmask);
 
+        Tools::clearOpCache();
+
         if ($success && $redirect && isset($folder)) {
             Tools::redirectAdmin(static::$currentIndex.'&conf=8&anchor='.ucfirst($folder).'&token='.$this->token);
         }
@@ -1609,6 +1611,7 @@ class AdminModulesControllerCore extends AdminController
                                 $moduleUpgraded[] = $name;
                             }
                         }
+                        Tools::clearOpCache();
                     }
 
                     // Check potential error
