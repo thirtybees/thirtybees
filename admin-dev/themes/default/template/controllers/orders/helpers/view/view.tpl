@@ -581,7 +581,7 @@
             <span class="badge">
 							<a href="?tab=AdminCustomers&amp;id_customer={$customer->id}&amp;viewcustomer&amp;token={getAdminToken tab='AdminCustomers'}">
 								{if Configuration::get('PS_B2B_ENABLE') && $customer->company}{$customer->company} - {/if}
-                {$gender->name|escape:'html':'UTF-8'}
+                {$gender->name|default:''|escape:'html':'UTF-8'}
                 {$customer->firstname}
                 {$customer->lastname}
 							</a>
