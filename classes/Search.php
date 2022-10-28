@@ -343,6 +343,7 @@ class SearchCore
      */
     public static function sanitize($string, $idLang, $indexation = false, $isoCode = false)
     {
+	$string = str_replace(['<br />', '<br/>', '<br>'], ' ', $string);
         $string = trim((string)$string);
         if (empty($string)) {
             return '';
