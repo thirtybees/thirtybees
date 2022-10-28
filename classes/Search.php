@@ -348,7 +348,9 @@ class SearchCore
             return '';
         }
 
-        $string = mb_strtolower(strip_tags($string));
+        $string = mb_strtolower($string);
+        $string = str_replace(['<br />', '<br/>', '<br>'], ' ', $string);
+        $string = strip_tags($string);
         $string = html_entity_decode($string, ENT_NOQUOTES, 'utf-8');
 
         $string = preg_replace('/(['.PREG_CLASS_NUMBERS.']+)['.PREG_CLASS_PUNCTUATION.']+(?=['.PREG_CLASS_NUMBERS.'])/u', '\1', $string);
