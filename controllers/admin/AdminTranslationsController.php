@@ -3262,6 +3262,8 @@ class AdminTranslationsControllerCore extends AdminController
      */
     protected function findAndFillTranslations($files, $themeName, $moduleName, $dir = false)
     {
+        $moduleName = (string)$moduleName;
+        $themeName = (string)$themeName;
         $nameVar = $this->translations_informations[$this->type_selected]['var'];
 
         // added for compatibility
