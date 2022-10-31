@@ -54,6 +54,8 @@ class CategoryControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -85,6 +87,7 @@ class CategoryControllerCore extends FrontController
      *
      * @param string $canonicalUrl
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function canonicalRedirection($canonicalUrl = '')
@@ -93,7 +96,11 @@ class CategoryControllerCore extends FrontController
             return;
         }
 
-        if (!Validate::isLoadedObject($this->category) || !$this->category->inShop() || !$this->category->isAssociatedToShop() || in_array($this->category->id, [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')])) {
+        if (!Validate::isLoadedObject($this->category) ||
+            !$this->category->inShop() ||
+            !$this->category->isAssociatedToShop() ||
+            (int)$this->category->id === (int)Configuration::get('PS_ROOT_CATEGORY')
+        ) {
             $this->redirect_after = '404';
             $this->redirect();
         }
@@ -142,6 +149,7 @@ class CategoryControllerCore extends FrontController
     /**
      * Initializes page content variables
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initContent()
@@ -188,6 +196,8 @@ class CategoryControllerCore extends FrontController
 
     /**
      * Assigns scenes template variables
+     *
+     * @throws PrestaShopException
      */
     protected function assignScenes()
     {
@@ -207,8 +217,8 @@ class CategoryControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                    'thumbSceneImageType' => isset($thumbSceneImageType) ? $thumbSceneImageType : null,
-                    'largeSceneImageType' => isset($largeSceneImageType) ? $largeSceneImageType : null,
+                    'thumbSceneImageType' => $thumbSceneImageType ?? null,
+                    'largeSceneImageType' => $largeSceneImageType ?? null,
                 ]
             );
         }
@@ -219,6 +229,7 @@ class CategoryControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function assignSubcategories()
@@ -239,6 +250,7 @@ class CategoryControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function assignProductList()
