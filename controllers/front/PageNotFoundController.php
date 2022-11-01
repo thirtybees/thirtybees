@@ -36,14 +36,12 @@
  */
 class PageNotFoundControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreSta
     /** @var string $php_self */
     public $php_self = 'pagenotfound';
     /** @var string $page_name */
     public $page_name = 'pagenotfound';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Assign template vars related to page content
@@ -61,22 +59,31 @@ class PageNotFoundControllerCore extends FrontController
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
         $urlPath = parse_url($requestUri, PHP_URL_PATH);
         if ($urlPath && preg_match('/\.(webp|gif|jpe?g|png|ico)$/i', $urlPath)) {
+            $requestUri = urldecode($requestUri);
             $this->context->cookie->disallowWriting();
 
-            // First preg_match() matches friendly URLs, second one plain URLs.
-            $imageType = $sourcePath = $sendPath = null;
-            if (preg_match('@^'.__PS_BASE_URI__
-                .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(webp|png|jpe?g|gif)$@',
-                    $requestUri, $matches)
-                || preg_match('@^'._PS_PROD_IMG_
-                   .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(webp|png|jpe?g|gif)$@',
-                    $requestUri, $matches)) {
+            $imageType = null;
+            $sourcePath = null;
+            $sendPath = null;
+
+            // product image without image types: /127/name.jpg
+            if (preg_match('@^'.__PS_BASE_URI__.'([0-9]+)/.+\.(webp|png|jpe?g|gif)$@', $requestUri, $matches)) {
+                $root = _PS_PROD_IMG_DIR_;
+                $file = $matches[1];
+                $folder = Image::getImgFolderStatic($file);
+                $ext = '.'. $this->normalizeImageExtension($matches[2]);
+                $sendPath = $this->getImageSourcePath($root.$folder.$file.$ext);
+            // product image url with image type: /127-cart/name.jpg
+            } elseif (
+                preg_match('@^'.__PS_BASE_URI__.'([0-9]+)-([_a-zA-Z0-9\s-]+)(/.+)?\.(webp|png|jpe?g|gif)$@', $requestUri, $matches) ||
+                preg_match('@^'._PS_PROD_IMG_.'[0-9/]+/([0-9]+)-([_a-zA-Z0-9\s-]+)(\.)(webp|png|jpe?g|gif)$@', $requestUri, $matches)
+            ) {
                 $imageType = ImageType::getByNameNType($matches[2], 'products');
                 if ($imageType) {
                     $root = _PS_PROD_IMG_DIR_;
                     $folder = Image::getImgFolderStatic($matches[1]);
                     $file = $matches[1];
-                    $ext = '.'.$matches[4];
+                    $ext = '.'. $this->normalizeImageExtension($matches[4]);
 
                     $sourcePath = $root.$folder.$file.$ext;
                     $sendPath = $root.$folder.$file.'-'.$imageType['name'].$ext;
@@ -92,12 +99,8 @@ class PageNotFoundControllerCore extends FrontController
                     'stores'        => _THEME_STORE_DIR_,
                 ] as $type => $path) {
                     $dir = str_replace(_PS_IMG_, '', $path);
-                    if (preg_match('@^'.__PS_BASE_URI__.$dir
-                        .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(webp|png|jpe?g|gif)$@',
-                            $requestUri, $matches)
-                        || preg_match('@^'.$path
-                            .'([0-9]+)\-([_a-zA-Z-]+)(\.)(webp|png|jpe?g|gif)$@',
-                            $requestUri, $matches)
+                    if (preg_match('@^'.__PS_BASE_URI__.$dir.'([0-9]+)-([_a-zA-Z0-9\s-]+)(/.+)?\.(webp|png|jpe?g|gif)$@', $requestUri, $matches) ||
+                        preg_match('@^'.$path .'([0-9]+)-([_a-zA-Z0-9\s-]+)(\.)(webp|png|jpe?g|gif)$@', $requestUri, $matches)
                     ) {
                         $imageType = ImageType::getByNameNType(
                             $matches[2],
@@ -106,7 +109,7 @@ class PageNotFoundControllerCore extends FrontController
                         if ($imageType) {
                             $root = _PS_IMG_DIR_.$dir;
                             $file = $matches[1];
-                            $ext = '.'.$matches[4];
+                            $ext = '.'.$this->normalizeImageExtension($matches[4]);
 
                             $sourcePath = $root.$file.$ext;
                             $sendPath = $root.$file.'-'.$imageType['name'].$ext;
@@ -117,17 +120,10 @@ class PageNotFoundControllerCore extends FrontController
                 }
             }
 
-            if ($imageType && $sourcePath && $sendPath) {
-                if (! file_exists($sendPath)) {
-                    // Source file can be jpg file even if we using webp image
-                    // as output type.
-                    if (! is_readable($sourcePath)) {
-                        $sourcePath = preg_replace(
-                            '#.webp$#', '.jpg', $sourcePath
-                        );
-                    }
-
-                    if (is_readable($sourcePath)) {
+            if ($sendPath) {
+                if (! file_exists($sendPath) && $sourcePath && $imageType) {
+                    $sourcePath = $this->getImageSourcePath($sourcePath);
+                    if ($sourcePath) {
                         ImageManager::resize(
                             $sourcePath,
                             $sendPath,
@@ -138,11 +134,11 @@ class PageNotFoundControllerCore extends FrontController
                 }
 
                 if (file_exists($sendPath)) {
-                    $imageType = pathinfo($sendPath, PATHINFO_EXTENSION);
-                    $imageType = str_replace('jpg', 'jpeg', $imageType);
+                    $type = pathinfo($sendPath, PATHINFO_EXTENSION);
+                    $type = str_replace('jpg', 'jpeg', $type);
                     header('HTTP/1.1 200 Found');
                     header('Status: 200 Found');
-                    header('Content-Type: image/'.$imageType);
+                    header('Content-Type: image/'.$type);
                     readfile($sendPath);
 
                     exit;
@@ -186,5 +182,40 @@ class PageNotFoundControllerCore extends FrontController
     protected function sslRedirection()
     {
         // 404 - no need to redirect
+    }
+
+    /**
+     * Returns valid image source path
+     *
+     * @param string $sourcePath
+     * @return string | null
+     */
+    protected function getImageSourcePath(string $sourcePath)
+    {
+        if (file_exists($sourcePath)) {
+            return $sourcePath;
+        }
+        foreach (['.jpg', '.webp', '.jpeg'] as $ext) {
+            $sourcePath = preg_replace( '/\.(webp|gif|jpe?g|png|ico)$/i', $ext, $sourcePath);
+            if (file_exists($sourcePath)) {
+                return $sourcePath;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * returns image extension
+     *
+     * @param string $ext
+     * @return string
+     */
+    protected function normalizeImageExtension($ext)
+    {
+        $ext = strtolower((string)$ext);
+        if ($ext === 'jpeg') {
+            return 'jpg';
+        }
+        return $ext;
     }
 }
