@@ -47,6 +47,7 @@
 			</div>
 		</div>
 	</td>
+	{hook h='displayOrderDetailLineExtra' mode='view' order=$order orderDetail=$product}
 	{if ($order->getTaxCalculationMethod() != $smarty.const.PS_TAX_EXC)}
 	<td class="unit_price_tax_excl">
 		<span>{displayPrice price=$product.unit_price_tax_excl currency=$currency->id}</span>

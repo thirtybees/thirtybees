@@ -958,6 +958,7 @@
               <tr>
                 <th></th>
                 <th><span class="title_box ">{l s='Product'}</span></th>
+                {hook h='displayOrderHeaderExtra' order=$order}
                 {if ($order->getTaxCalculationMethod() != $smarty.const.PS_TAX_EXC)}
                   <th>
                     <span class="title_box ">{l s='Unit Price'}</span>
