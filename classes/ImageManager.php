@@ -957,7 +957,10 @@ class ImageManagerCore
     public static function themeSupportsWebp()
     {
         $config = Context::getContext()->theme->getConfiguration();
-        return array_key_exists('webp', $config) && $config['webp'];
+        if (array_key_exists('webp', $config)) {
+            return (bool)$config['webp'];
+        }
+        return true;
     }
 
     /**
