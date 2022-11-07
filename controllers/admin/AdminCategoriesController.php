@@ -126,7 +126,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public static function getDescriptionClean($description)
     {
-        return Tools::getDescriptionClean($description);
+        return substr(Tools::getDescriptionClean($description), 0, 100);
     }
 
     /**
