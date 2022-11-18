@@ -81,8 +81,6 @@ class AdminImportControllerCore extends AdminController
     public $required_fields = [];
     /** @var string $separator */
     public $separator;
-    /** @var bool $convert */
-    public $convert;
     /** @var string $multiple_value_separator */
     public $multiple_value_separator;
 
@@ -579,7 +577,6 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        $this->convert = false;
         $this->separator = substr(trim(Tools::getValue('separator', ',')), 0, 1);
         $this->multiple_value_separator = substr(trim(Tools::getValue('multiple_value_separator', ';')), 0, 1);
     }
@@ -1011,18 +1008,6 @@ class AdminImportControllerCore extends AdminController
         $isoLang = trim(Tools::getValue('iso_lang'));
         setlocale(LC_COLLATE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
         setlocale(LC_CTYPE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
-    }
-
-    /**
-     * @param array $array
-     *
-     * @return array|string
-     *
-     * @since 1.0.0
-     */
-    public function utf8EncodeArray($array)
-    {
-        return (is_array($array) ? array_map('utf8_encode', $array) : utf8_encode($array));
     }
 
     /**
@@ -1644,9 +1629,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -2180,9 +2162,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -3129,9 +3108,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -3403,9 +3379,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -3708,9 +3681,6 @@ class AdminImportControllerCore extends AdminController
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
 
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -4261,9 +4231,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -4399,9 +4366,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -4532,9 +4496,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -4629,9 +4590,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
 
             if (count($line) == 1 && $line[0] == null) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
@@ -4830,9 +4788,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
             $info = static::getMaskedRow($line);
 
             $this->supplyOrdersImportOne(
@@ -4973,9 +4928,6 @@ class AdminImportControllerCore extends AdminController
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
             $info = static::getMaskedRow($line);
 
             try {
