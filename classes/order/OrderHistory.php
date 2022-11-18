@@ -462,11 +462,18 @@ class OrderHistoryCore extends ObjectModel
 			WHERE oh.`id_order_history` = '.(int) $this->id.' AND os.`send_email` = 1');
         if (isset($result['template']) && Validate::isEmail($result['email'])) {
             $topic = $result['osname'];
+            $carrierUrl = '';
+            if (Validate::isLoadedObject($carrier = new Carrier((int) $order->id_carrier, $order->id_lang))) {
+                $carrierUrl = $carrier->url;
+            }
+
             $data = [
                 '{lastname}'   => $result['lastname'],
                 '{firstname}'  => $result['firstname'],
                 '{id_order}'   => (int) $this->id_order,
                 '{order_name}' => $order->getUniqReference(),
+                '{followup}' => str_replace('@', $order->getWsShippingNumber(), $carrierUrl),
+                '{shipping_number}' => $order->getWsShippingNumber(),
             ];
 
             if ($result['module_name']) {
