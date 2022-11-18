@@ -56,6 +56,11 @@ class CSVDataSourceCore implements DataSourceInterface
     private $numberOfColumns = 0;
 
     /**
+     * @var bool
+     */
+    private $convert = false;
+
+    /**
      * Creates new CSV data source
      *
      * @param string $filepath
@@ -69,6 +74,9 @@ class CSVDataSourceCore implements DataSourceInterface
         $this->separator = $separator;
 
         if (is_file($filepath) && is_readable($filepath)) {
+            if (!mb_check_encoding(file_get_contents($filepath), 'UTF-8')) {
+                $this->convert = true;
+            }
             $this->handle = fopen($filepath, 'r');
         }
 
@@ -110,7 +118,11 @@ class CSVDataSourceCore implements DataSourceInterface
      */
     public function getRow()
     {
-        return fgetcsv($this->handle, 0, $this->separator);
+        $row = fgetcsv($this->handle, 0, $this->separator);
+        if ($row && $this->convert) {
+            $row = array_map('utf8_encode', $row);
+        }
+        return $row;
     }
 
     /**
