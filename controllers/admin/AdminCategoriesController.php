@@ -547,6 +547,7 @@ class AdminCategoriesControllerCore extends AdminController
         }
 
         $thumbSize = file_exists($thumb) ? filesize($thumb) / 1000 : false;
+        $nameClass = (!$obj->id ? 'copy2friendlyUrl' : '');
 
         $this->fields_form = [
             'tinymce' => true,
@@ -561,7 +562,7 @@ class AdminCategoriesControllerCore extends AdminController
                     'name'     => 'name',
                     'lang'     => true,
                     'required' => true,
-                    'class'    => 'copy2friendlyUrl',
+                    'class'    => $nameClass,
                     'hint'     => $this->l('Invalid characters:').' <>;=#{}',
                 ],
                 [
