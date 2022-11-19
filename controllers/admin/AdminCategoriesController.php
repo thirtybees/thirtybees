@@ -561,7 +561,7 @@ class AdminCategoriesControllerCore extends AdminController
                     'name'     => 'name',
                     'lang'     => true,
                     'required' => true,
-                    'class'    => 'copy2friendlyUrl',
+                    'class'    => Validate::isLoadedObject($obj) ? '' : 'copy2friendlyUrl',
                     'hint'     => $this->l('Invalid characters:').' <>;=#{}',
                 ],
                 [
