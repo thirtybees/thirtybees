@@ -5574,6 +5574,129 @@ FileETag none
         // fallback to english
         return 'en';
     }
+
+    public static function strftimenew(string $format, $timestamp = null, ?string $locale = null): string
+    {
+        if (null === $locale) {
+            $locale = strtolower(Configuration::get('PS_LOCALE_LANGUAGE')).'-'.strtoupper(Configuration::get('PS_LOCALE_COUNTRY'));
+        }
+        if (null === $timestamp) {
+            $timestamp = new \DateTime;
+        } elseif (is_numeric($timestamp)) {
+            $timestamp = date_create('@' . $timestamp);
+            if ($timestamp) {
+                $timestamp->setTimezone(new \DateTimezone(date_default_timezone_get()));
+            }
+        } elseif (is_string($timestamp)) {
+            $timestamp = date_create($timestamp);
+        }
+        if (!($timestamp instanceof \DateTimeInterface)) {
+            throw new \InvalidArgumentException('$timestamp argument is neither a valid UNIX timestamp, a valid date-time string or a DateTime object.');
+        }
+        $locale = substr((string) $locale, 0, 5);
+        $intlFormats = [
+            '%a' => 'EEE',
+            '%A' => 'EEEE',
+            '%b' => 'MMM',
+            '%B' => 'MMMM',
+            '%h' => 'MMM'
+        ];
+        $intlFormatter = function (\DateTimeInterface $timestamp, string $format) use ($intlFormats, $locale) {
+            $timeZone = $timestamp->getTimezone();
+            $dateType = \IntlDateFormatter::FULL;
+            $timeType = \IntlDateFormatter::FULL;
+            $pattern = '';
+            if ($format == '%c') {
+                $dateType = \IntlDateFormatter::LONG;
+                $timeType = \IntlDateFormatter::SHORT;
+            } elseif ($format == '%x') {
+                $dateType = \IntlDateFormatter::SHORT;
+                $timeType = \IntlDateFormatter::NONE;
+            } elseif ($format == '%X') {
+                $dateType = \IntlDateFormatter::NONE;
+                $timeType = \IntlDateFormatter::MEDIUM;
+            } else {
+                $pattern = $intlFormats[$format];
+            }
+            return (new \IntlDateFormatter($locale, $dateType, $timeType, $timeZone, null, $pattern))->format($timestamp);
+        };
+        $translationTable = [
+            '%a' => $intlFormatter,
+            '%A' => $intlFormatter,
+            '%d' => 'd',
+            '%e' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('j'));
+            },
+            '%j' => function ($timestamp) {
+                return sprintf('%03d', $timestamp->format('z')+1);
+            },
+            '%u' => 'N',
+            '%w' => 'w',
+            '%U' => function ($timestamp) {
+                $day = new \DateTime(sprintf('%d-01 Sunday', $timestamp->format('Y')));
+                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+            },
+            '%V' => 'W',
+            '%W' => function ($timestamp) {
+                $day = new \DateTime(sprintf('%d-01 Monday', $timestamp->format('Y')));
+                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+            },
+            '%b' => $intlFormatter,
+            '%B' => $intlFormatter,
+            '%h' => $intlFormatter,
+            '%m' => 'm',
+            '%C' => function ($timestamp) {
+                return floor($timestamp->format('Y') / 100);
+            },
+            '%g' => function ($timestamp) {
+                return substr($timestamp->format('o'), -2);
+            },
+            '%G' => 'o',
+            '%y' => 'y',
+            '%Y' => 'Y',
+            '%H' => 'H',
+            '%k' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('G'));
+            },
+            '%I' => 'h',
+            '%l' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('g'));
+            },
+            '%M' => 'i',
+            '%p' => 'A',
+            '%P' => 'a',
+            '%r' => 'h:i:s A',
+            '%R' => 'H:i',
+            '%S' => 's',
+            '%T' => 'H:i:s',
+            '%X' => $intlFormatter,
+            '%z' => 'O',
+            '%Z' => 'T',
+            '%c' => $intlFormatter,
+            '%D' => 'm/d/Y',
+            '%F' => 'Y-m-d',
+            '%s' => 'U',
+            '%x' => $intlFormatter,
+        ];
+        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function ($match) use ($translationTable, $timestamp) {
+            if ($match[1] == '%n') {
+                return "\n";
+            } elseif ($match[1] == '%t') {
+                return "\t";
+            }
+            if (!isset($translationTable[$match[1]])) {
+                throw new \InvalidArgumentException(sprintf('Format "%s" is unknown in time format', $match[1]));
+            }
+            $replace = $translationTable[$match[1]];
+            if (is_string($replace)) {
+                return $timestamp->format($replace);
+            } else {
+                return $replace($timestamp, $match[1]);
+            }
+        }, $format);
+        $out = str_replace('%%', '%', $out);
+        return $out;
+    }
 }
 
 /**
