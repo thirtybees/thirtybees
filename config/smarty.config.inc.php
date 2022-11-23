@@ -80,6 +80,7 @@ smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 smartyRegisterFunction($smarty, 'function', 'implode', ['Tools', 'smartyImplode']);
 smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', ['Tools', 'convertEmailToIdn']);
 smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
+smartyRegisterFunction($smarty, 'modifier', 'date_format', 'smarty_modifier_date_format');
 
 if (defined('_PS_ADMIN_DIR_')) {
     smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyAdminTranslate'], false);
@@ -354,6 +355,64 @@ function smartyTranslate($params, $smarty)
         return Translate::smartyAdminTranslate($params, $smarty);
     } else {
         return Translate::smartyFrontTranslate($params, $smarty);
+    }
+}
+
+function smarty_modifier_date_format($string, $format = null, $default_date = '', $formatter = 'auto')
+{
+    if ($format === null) {
+        $format = Smarty::$_DATE_FORMAT;
+    }
+    /**
+     * require_once the {@link shared.make_timestamp.php} plugin
+     */
+    static $is_loaded = false;
+    if (!$is_loaded) {
+        if (!is_callable('smarty_make_timestamp')) {
+            include_once SMARTY_PLUGINS_DIR . 'shared.make_timestamp.php';
+        }
+        $is_loaded = true;
+    }
+    if (!empty($string) && $string !== '0000-00-00' && $string !== '0000-00-00 00:00:00') {
+        $timestamp = smarty_make_timestamp($string);
+    } elseif (!empty($default_date)) {
+        $timestamp = smarty_make_timestamp($default_date);
+    } else {
+        return;
+    }
+    if ($formatter === 'strftime' || ($formatter === 'auto' && strpos($format, '%') !== false)) {
+        if (Smarty::$_IS_WINDOWS) {
+            $_win_from = [
+                '%D',
+                '%h',
+                '%n',
+                '%r',
+                '%R',
+                '%t',
+                '%T'
+            ];
+            $_win_to = [
+                '%m/%d/%y',
+                '%b',
+                "\n",
+                '%I:%M:%S %p',
+                '%H:%M',
+                "\t",
+                '%H:%M:%S'
+            ];
+            if (strpos($format, '%e') !== false) {
+                $_win_from[] = '%e';
+                $_win_to[] = sprintf('%\' 2d', date('j', $timestamp));
+            }
+            if (strpos($format, '%l') !== false) {
+                $_win_from[] = '%l';
+                $_win_to[] = sprintf('%\' 2d', date('h', $timestamp));
+            }
+            $format = str_replace($_win_from, $_win_to, $format);
+        }
+        return Tools::strftimenew($format, $timestamp);
+    } else {
+        return date($format, $timestamp);
     }
 }
 
