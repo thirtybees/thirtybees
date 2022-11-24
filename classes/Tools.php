@@ -5371,16 +5371,19 @@ FileETag none
      */
     public static function isDirectoryEmpty($directory, $ignore=[])
     {
-        if (! is_dir($directory)) {
-            return false;
-        }
-        $arrayIgnore = array_merge(['.', '..'], $ignore);
-        foreach (@scandir($directory) as $filename) {
-            if (!in_array($filename, $arrayIgnore)) {
-                return false;
+        if (file_exists($directory) && is_dir($directory) && is_readable($directory)) {
+            $files = scandir($directory);
+            if (is_array($files)) {
+                $arrayIgnore = array_merge(['.', '..'], $ignore);
+                foreach ($files as $filename) {
+                    if (!in_array($filename, $arrayIgnore)) {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
