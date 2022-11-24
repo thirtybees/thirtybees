@@ -51,36 +51,64 @@ $smarty->force_compile = Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SM
 $smarty->compile_check = Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_;
 $smarty->debug_tpl = _PS_ALL_THEMES_DIR_.'debug.tpl';
 
-smartyRegisterFunction($smarty, 'modifier', 'truncate', 'smarty_modifier_truncate');
-smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', ['Tools', 'secureReferrer']);
-smartyRegisterFunction($smarty, 'function', 't', 'smartyTruncate'); // unused
-smartyRegisterFunction($smarty, 'function', 'm', 'smartyMaxWords'); // unused
-smartyRegisterFunction($smarty, 'function', 'p', 'smartyShowObject'); // Debug only
-smartyRegisterFunction($smarty, 'function', 'd', 'smartyDieObject'); // Debug only
-smartyRegisterFunction($smarty, 'function', 'hook', 'smartyHook');
-smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
-smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
-smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']);
-smartyRegisterFunction($smarty, 'function', 'dateFormat', ['Tools', 'dateFormat']);
+// custom blocks
+smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
+
+// custom functions
+smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
 smartyRegisterFunction($smarty, 'function', 'convertPrice', ['Product', 'convertPrice']);
 smartyRegisterFunction($smarty, 'function', 'convertPriceWithCurrency', ['Product', 'convertPriceWithCurrency']);
-smartyRegisterFunction($smarty, 'function', 'displayWtPrice', ['Product', 'displayWtPrice']);
-smartyRegisterFunction($smarty, 'function', 'displayWtPriceWithCurrency', ['Product', 'displayWtPriceWithCurrency']);
+smartyRegisterFunction($smarty, 'function', 'd', 'smartyDieObject'); // Debug only
+smartyRegisterFunction($smarty, 'function', 'dateFormat', ['Tools', 'dateFormat']);
+smartyRegisterFunction($smarty, 'function', 'displayAddressDetail', ['AddressFormat', 'generateAddressSmarty']);
 smartyRegisterFunction($smarty, 'function', 'displayPrice', ['Tools', 'displayPriceSmarty']);
 smartyRegisterFunction($smarty, 'function', 'displayPriceValue', 'displayPriceValue');
-smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', ['Product', 'convertAndFormatPrice']); // used twice
+smartyRegisterFunction($smarty, 'function', 'displayWtPrice', ['Product', 'displayWtPrice']);
+smartyRegisterFunction($smarty, 'function', 'displayWtPriceWithCurrency', ['Product', 'displayWtPriceWithCurrency']);
 smartyRegisterFunction($smarty, 'function', 'getAdminToken', ['Tools', 'getAdminTokenLiteSmarty']);
-smartyRegisterFunction($smarty, 'function', 'displayAddressDetail', ['AddressFormat', 'generateAddressSmarty']);
-smartyRegisterFunction($smarty, 'function', 'getWidthSize', ['Image', 'getWidth']);
 smartyRegisterFunction($smarty, 'function', 'getHeightSize', ['Image', 'getHeight']);
-smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
-smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
+smartyRegisterFunction($smarty, 'function', 'getWidthSize', ['Image', 'getWidth']);
+smartyRegisterFunction($smarty, 'function', 'hook', 'smartyHook');
+smartyRegisterFunction($smarty, 'function', 'implode', ['Tools', 'smartyImplode']);
+smartyRegisterFunction($smarty, 'function', 'm', 'smartyMaxWords'); // unused
+smartyRegisterFunction($smarty, 'function', 'p', 'smartyShowObject'); // Debug only
+smartyRegisterFunction($smarty, 'function', 't', 'smartyTruncate'); // unused
+smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
+
+// custom modifiers
+smartyRegisterFunction($smarty, 'modifier', 'addcslashes', 'addcslashes');
+smartyRegisterFunction($smarty, 'modifier', 'addslashes', 'addslashes');
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
-smartyRegisterFunction($smarty, 'function', 'implode', ['Tools', 'smartyImplode']);
-smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', ['Tools', 'convertEmailToIdn']);
-smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
+smartyRegisterFunction($smarty, 'modifier', 'constant', 'constant');
+smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', ['Product', 'convertAndFormatPrice']); // used twice
 smartyRegisterFunction($smarty, 'modifier', 'date_format', 'smarty_modifier_date_format');
+smartyRegisterFunction($smarty, 'modifier', 'end', 'smartyEndModifier');
+smartyRegisterFunction($smarty, 'modifier', 'explode', 'explode');
+smartyRegisterFunction($smarty, 'modifier', 'floatval', 'floatval');
+smartyRegisterFunction($smarty, 'modifier', 'html_entity_decode', 'html_entity_decode');
+smartyRegisterFunction($smarty, 'modifier', 'htmlentities', 'htmlentities');
+smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
+smartyRegisterFunction($smarty, 'modifier', 'implode', 'implode');
+smartyRegisterFunction($smarty, 'modifier', 'intval', 'intval');
+smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']);
+smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
+smartyRegisterFunction($smarty, 'modifier', 'lcfirst', 'lcfirst');
+smartyRegisterFunction($smarty, 'modifier', 'rand', 'rand');
+smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', ['Tools', 'secureReferrer']);
+smartyRegisterFunction($smarty, 'modifier', 'sprintf', 'sprintf');
+smartyRegisterFunction($smarty, 'modifier', 'str_replace', 'str_replace');
+smartyRegisterFunction($smarty, 'modifier', 'stripslashes', 'stripslashes');
+smartyRegisterFunction($smarty, 'modifier', 'strtolower', 'strtolower');
+smartyRegisterFunction($smarty, 'modifier', 'strtoupper', 'strtoupper');
+smartyRegisterFunction($smarty, 'modifier', 'strval', 'strval');
+smartyRegisterFunction($smarty, 'modifier', 'substr', 'substr');
+smartyRegisterFunction($smarty, 'modifier', 'trim', 'trim');
+smartyRegisterFunction($smarty, 'modifier', 'truncate', 'smarty_modifier_truncate');
+smartyRegisterFunction($smarty, 'modifier', 'ucfirst', 'ucfirst');
+smartyRegisterFunction($smarty, 'modifier', 'urlencode', 'urlencode');
+smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', ['Tools', 'convertEmailToIdn']);
+smartyRegisterFunction($smarty, 'modifier', 'var_export', 'var_export');
 
 if (defined('_PS_ADMIN_DIR_')) {
     smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyAdminTranslate'], false);
@@ -130,6 +158,18 @@ function smartyMaxWords($params, $smarty)
     }
 
     return implode(' ',  Tools::htmlentitiesUTF8($words));
+}
+
+/**
+ * @param array $array
+ * @return false|mixed
+ */
+function smartyEndModifier($array)
+{
+    if (is_array($array)) {
+        return end($array);
+    }
+    return false;
 }
 
 /**
