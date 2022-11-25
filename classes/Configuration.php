@@ -641,7 +641,7 @@ class ConfigurationCore extends ObjectModel
 
         // sanitize values
         foreach ($values as &$value) {
-            if (! is_numeric($value)) {
+            if (!is_null($value) && !is_numeric($value)) {
                 if ($html) {
                     // if html values are allowed, just purify html code
                     $value = Tools::purifyHTML($value);
