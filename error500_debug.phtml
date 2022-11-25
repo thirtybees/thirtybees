@@ -199,9 +199,9 @@
 
         <?php foreach ($errorDescription->getExtraSections() as $id => $section) { ?>
         <div class="panel">
-            <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $helper->displayString($section['label']) ?></h2>
+            <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $helper->displayString($section['label'] ?? 'Unnamed section') ?></h2>
             <div id="extra-section-<?= $id ?>" class="collapsible">
-                <pre><?= $helper->displayString($section['content']) ?></pre>
+                <pre><?= $helper->displayString($section['content'] ?? 'No information') ?></pre>
             </div>
         </div>
         <?php } ?>
@@ -220,38 +220,47 @@
             <div id="stack-trace" class="collapsed stacktrace">
                 <?php foreach ($errorDescription->getStackTrace() as $traceId => $trace) { ?>
                 <div>
-                    <div class="stacktrace-header <?= $trace['suppressed'] ? 'suppressed' : '' ?>">
+                    <div class="stacktrace-header <?= (isset($trace['suppressed']) && $trace['suppressed']) ? 'suppressed' : '' ?>">
                         <span class="line"><?= $traceId+1 ?>.</span>
                         <span class="stacktrace-file">
                             <?php
-                                if ($trace['fileName']) {
+                                if (isset($trace['fileName']) && $trace['fileName']) {
                                     echo $helper->displayString(dirname($trace['fileName'])) . '/';
                                     echo '<b>' . $helper->displayString(basename($trace['fileName'])) . '</b>';
                                 }
-                                if ($trace['line']) {
+                                if (isset($trace['line']) && $trace['line']) {
                                     echo ':' . $helper->displayString($trace['line']);
                                 }
                             ?>
                         </span>
-                        <?php if ($trace['fileContent']) { ?>
+                        <?php if (isset($trace['fileContent']) && $trace['fileContent'])  { ?>
                         <a data-toggle="trace-<?= $traceId ?>" class="closed">source</a>
                         <?php } ?>
                         <?php
-                            if ($trace['description']) {
+                            if (isset($trace['description']) && $trace['description']) {
                                 echo $helper->displayString($trace['description']);
                             } else {
-                                echo $trace['class'] . $trace['type'] . $trace['function'] . '(';
-                                if ($trace['args']) {
-                                    echo '<a data-toggle="trace-args-'. $traceId .'" class="closed">arguments</a>';
+                                if (isset($trace['class']) && $trace['class']) {
+                                    echo $trace['class'];
+                                }
+                                if (isset($trace['type']) && $trace['type']) {
+                                    echo $trace['type'];
+                                }
+                                if (isset($trace['function']) && $trace['function']) {
+                                    echo $trace['function'];
+                                }
+                                echo '(';
+                                if (isset($trace['args']) && $trace['args']) {
+                                    echo '<a data-toggle="trace-args-' . $traceId . '" class="closed">arguments</a>';
                                 }
                                 echo ')';
                             }
                         ?>
                     </div>
                     <div id="trace-<?= $traceId ?>" class="collapsed">
-                        <?= $helper->displayLines($trace['fileContent']) ?>
+                        <?= $helper->displayLines($trace['fileContent'] ?? []) ?>
                     </div>
-                    <?php if ($trace['args']) { ?>
+                    <?php if (isset($trace['args']) && $trace['args']) { ?>
                      <div id="trace-args-<?= $traceId ?>" class="collapsed">
                          <table class="trace-args">
                              <?php foreach ($trace['args'] as $argName => $arg) {  ?>
