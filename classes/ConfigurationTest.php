@@ -126,8 +126,7 @@ class ConfigurationTestCore
     public static function getDefaultTestsOp()
     {
         return [
-            'Gz'              => false,
-            'Tlsv12'          => false,
+            'Gz' => false
         ];
     }
 
@@ -195,18 +194,6 @@ class ConfigurationTestCore
 
             return false;
         }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testMysqlSupport()
-    {
-        Tools::displayAsDeprecated();
 
         return true;
     }
@@ -316,35 +303,6 @@ class ConfigurationTestCore
     public static function testFopen()
     {
         return ini_get('allow_url_fopen');
-    }
-
-    /**
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    public static function testTlsv12()
-    {
-        $guzzle = new GuzzleHttp\Client([
-            'verify'  => Configuration::getSslTrustStore(),
-            'timeout' => 20,
-        ]);
-
-        try {
-            $guzzle->post('https://api.paypal.com/v1/oauth2/token');
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            // As the request doesn't provide authentication credentials,
-            // it obviously never authenticates. But getting an authentication
-            // failure response already proves a working TLS v1.2 connection.
-            $response = $e->getResponse();
-            if ($response && $response->getBody()) {
-                $json = json_decode($e->getResponse()->getBody(), true);
-                return isset($json['error']);
-            }
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-        }
-
-        return false;
     }
 
     /**
@@ -745,7 +703,7 @@ class ConfigurationTestCore
 
     /**
      * @param $dir
-     *
+     * @param null $report
      * @return bool
      *
      * @since   1.0.2 Add $report.
