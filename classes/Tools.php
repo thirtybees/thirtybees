@@ -283,7 +283,7 @@ class ToolsCore
             return false;
         }
 
-        return mb_strtolower($str, 'utf-8');
+        return mb_strtolower((string)$str, 'utf-8');
     }
 
     /**
@@ -2805,9 +2805,9 @@ class ToolsCore
      */
     public static function toCamelCase($str, $catapitaliseFirstChar = false)
     {
-        $str = mb_strtolower($str);
+        $str = mb_strtolower((string)$str);
         if ($catapitaliseFirstChar) {
-            $str = Tools::ucfirst($str);
+            $str = ucfirst($str);
         }
 
         return preg_replace_callback('/_+([a-z])/', function($c) {
@@ -2824,7 +2824,7 @@ class ToolsCore
      */
     public static function ucfirst($str)
     {
-        return ucfirst($str);
+        return ucfirst((string)$str);
     }
 
     /**
@@ -2843,7 +2843,7 @@ class ToolsCore
             return false;
         }
 
-        return mb_strtoupper($str, 'utf-8');
+        return mb_strtoupper((string)$str, 'utf-8');
     }
 
     /**
@@ -2875,7 +2875,7 @@ class ToolsCore
      */
     public static function getBrightness($hex)
     {
-        $hex = mb_strtolower($hex);
+        $hex = mb_strtolower((string)$hex);
 
         // special cases for known colors
         if ($hex == 'transparent') {
