@@ -253,18 +253,6 @@ class ConfigurationTestCore
     }
 
     /**
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testMagicQuotes()
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
      * @return string
      *
      * @since   1.0.0
@@ -418,20 +406,6 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param string $dir
-     *
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testSitemap($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
      * @param string $fileRelative
      *
      * @return bool
@@ -462,20 +436,6 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @deprecated 1.0.8
-     */
-    public static function testRootDir($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return bool
-     *
      * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -483,20 +443,6 @@ class ConfigurationTestCore
     public static function testLogDir($dir, &$report = null)
     {
         return static::testDir($dir, false, $report);
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testAdminDir($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
     }
 
     /**
@@ -539,48 +485,6 @@ class ConfigurationTestCore
     public static function testCacheDir($dir, &$report = null)
     {
         return static::testDir($dir, true, $report);
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testToolsV2Dir($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testCacheV2Dir($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
-     * @param string $dir
-     *
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testDownloadDir($dir, &$report = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
     }
 
     /**
@@ -716,43 +620,6 @@ class ConfigurationTestCore
     {
         return extension_loaded('openssl')
                && function_exists('openssl_encrypt');
-    }
-
-    /**
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     * @deprecated since PHP 7.1
-     */
-    public static function testMcrypt()
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testSessions()
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     *
-     * @deprecated 1.0.8
-     */
-    public static function testDom()
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
     }
 
     /**

@@ -116,13 +116,7 @@ class InstallModelInstall extends InstallAbstractModel
             '_PS_VERSION_'        => '1.6.1.999',
         ];
 
-        // If mcrypt is activated, add Rijndael 128 configuration
-        if (function_exists('mcrypt_encrypt') && PHP_VERSION_ID < 70100) {
-            $settingsConstants['_RIJNDAEL_KEY_'] = Tools::passwdGen(mcrypt_get_key_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
-            $settingsConstants['_RIJNDAEL_IV_'] = base64_encode(mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND));
-        }
-
-        if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
+        if (Encryptor::supportsPhpEncryption()) {
             try {
                 $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
                 $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
@@ -969,27 +963,12 @@ class InstallModelInstall extends InstallAbstractModel
 
     /**
      * Returns best ciphering algorithm available for current environment
-     *
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
-     * @deprecated 1.1.0 Introduced for working around a broken Cloudways
-     *                   distribution, only. Plan for 1.1.0 is to remove all
-     *                   but one encryption algorithms. Also to remove the
-     *                   direct dependency on paragonie/random_compat, which
-     *                   was introduced for the same reason.
      */
     public function getCipherAlgorightm()
     {
-        // use PhpEncryption if openssl is enabled
-        if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
-            return 2;
-        }
-        // use RIJNDAEL if mcrypt is enabled, and we are not on php7
-        if (extension_loaded('mcrypt') && function_exists('mcrypt_encrypt') && PHP_VERSION_ID < 70100) {
-            return 1;
-        }
-        // fallback - use Blowfish php implementation
-        return 0;
+        return Encryptor::supportsPhpEncryption()
+            ? Encryptor::ALGO_PHP_ENCRYPTION
+            : Encryptor::ALGO_BLOWFISH;
     }
 
     /**

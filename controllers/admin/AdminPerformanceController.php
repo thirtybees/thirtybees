@@ -639,24 +639,9 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function initFieldsetCiphering()
     {
-        $phpdocLangs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
-        $phpLang = in_array($this->context->language->iso_code, $phpdocLangs) ? $this->context->language->iso_code : 'en';
-
-        $warningMcrypt = ' '.$this->l('(You must install the [a]Mcrypt extension[/a])');
-        $warningMcrypt = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.mcrypt.php" target="_blank">', $warningMcrypt);
-        $warningMcrypt = str_replace('[/a]', '</a>', $warningMcrypt);
-
-        $warningOpenssl = ' '.$this->l('(You must install the [a]openssl extension[/a])');
-        $warningOpenssl = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.openssl.php" target="_blank">', $warningOpenssl);
-        $warningOpenssl = str_replace('[/a]', '</a>', $warningOpenssl);
-
-        $usePhpEncryptionWith = (extension_loaded('libsodium') || version_compare(phpversion(), '7.2.0', '>=')) ? 'libsodium' : (function_exists('openssl_encrypt') ? 'openssl' : 'libsodium/openssl');
-        $useRijndaelWith = extension_loaded('openssl') ? 'openssl' : (function_exists('mcrypt_encrypt') ? 'mcrypt' : 'mcrypt/openssl');
-
         $this->fields_form[5]['form'] = [
 
             'legend'      => [
@@ -673,21 +658,15 @@ class AdminPerformanceControllerCore extends AdminController
                     'type'   => 'radio',
                     'label'  => $this->l('Algorithm'),
                     'name'   => 'PS_CIPHER_ALGORITHM',
-                    'hint'   => $this->l('The Rijndael is faster than our custom BlowFish class, but requires the "mcrypt" or "openssl" PHP extension. If you change this configuration option, all cookies will be reset.'),
                     'values' => [
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_2',
-                            'value' => 2,
-                            'label' => sprintf($this->l('Use the PHP Encryption library with the %s extension (highest security).'), $usePhpEncryptionWith).(extension_loaded('openssl') ? '' : $warningOpenssl),
-                        ],
-                        [
-                            'id'    => 'PS_CIPHER_ALGORITHM_1',
-                            'value' => 1,
-                            'label' => sprintf($this->l('Use Rijndael with the %s extension.'), $useRijndaelWith).(!extension_loaded('openssl') && !function_exists('mcrypt_encrypt') ? $warningOpenssl : (!extension_loaded('openssl') ? (!function_exists('mcrypt_encrypt') ? $warningMcrypt : '') : '')),
+                            'value' => Encryptor::ALGO_PHP_ENCRYPTION,
+                            'label' => $this->l('Use the PHP Encryption library (fastest and highest security)'),
                         ],
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_0',
-                            'value' => 0,
+                            'value' => Encryptor::ALGO_BLOWFISH,
                             'label' => $this->l('Use the custom BlowFish class.'),
                         ],
                     ],
@@ -698,7 +677,7 @@ class AdminPerformanceControllerCore extends AdminController
             ],
         ];
 
-        $this->fields_value['PS_CIPHER_ALGORITHM'] = Configuration::get('PS_CIPHER_ALGORITHM');
+        $this->fields_value['PS_CIPHER_ALGORITHM'] = Encryptor::getAlgorithm();
     }
 
     /**
@@ -1158,41 +1137,12 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('ciphering_up')) { // && Configuration::get('PS_CIPHER_ALGORITHM') != (int) Tools::getValue('PS_CIPHER_ALGORITHM')) {
+        if (Tools::getValue('ciphering_up')) {
             if ($this->tabAccess['edit'] === '1') {
-                $algo = (int) Tools::getValue('PS_CIPHER_ALGORITHM');
+                $algo = (int)Tools::getValue('PS_CIPHER_ALGORITHM');
                 $prevSettings = file_get_contents(_PS_ROOT_DIR_.'/config/settings.inc.php');
                 $newSettings = $prevSettings;
-                if ($algo === 1) {
-                    if (!function_exists('mcrypt_encrypt') && !function_exists('openssl_encrypt')) {
-                        $this->errors[] = Tools::displayError('The "Mcrypt" and/or "openssl" PHP extension are not activated on this server. One of them is needed to make this encryption type work.');
-                    } else {
-                        if (!strstr($newSettings, '_RIJNDAEL_KEY_')) {
-                            // 256 bits
-                            $keySize = 32;
-                            $key = Tools::passwdGen($keySize);
-                            $newSettings = preg_replace(
-                                '/define\(\'_COOKIE_KEY_\', \'([a-z0-9=\/+-_]+)\'\);/i',
-                                'define(\'_COOKIE_KEY_\', \'\1\');'."\n".'define(\'_RIJNDAEL_KEY_\', \''.$key.'\');',
-                                $newSettings
-                            );
-                        }
-                        if (!strstr($newSettings, '_RIJNDAEL_IV_')) {
-                            // IV size 128 bits
-                            $ivSize = 16;
-                            if (function_exists('openssl_encrypt')) {
-                                $iv = base64_encode(openssl_random_pseudo_bytes($ivSize));
-                            } else {
-                                $iv = base64_encode(mcrypt_create_iv($ivSize, MCRYPT_RAND));
-                            }
-                            $newSettings = preg_replace(
-                                '/define\(\'_COOKIE_IV_\', \'([a-z0-9=\/+-_]+)\'\);/i',
-                                'define(\'_COOKIE_IV_\', \'\1\');'."\n".'define(\'_RIJNDAEL_IV_\', \''.$iv.'\');',
-                                $newSettings
-                            );
-                        }
-                    }
-                } elseif ($algo === 2) {
+                if ($algo === Encryptor::ALGO_PHP_ENCRYPTION) {
                     if (!extension_loaded('openssl')) {
                         $this->errors[] = Tools::displayError('The "openssl" PHP extension is not activated on this server.');
                     } else {
@@ -1235,7 +1185,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('cache_up')) {
+        if (Tools::getValue('cache_up')) {
             if ($this->tabAccess['edit'] === '1') {
                 $cacheActive = (bool) Tools::getValue('TB_CACHE_ENABLED');
                 if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('TB_CACHE_SYSTEM'))) {
@@ -1292,7 +1242,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('empty_smarty_cache')) {
+        if (Tools::getValue('empty_smarty_cache')) {
             $redirectAdmin = true;
             Tools::clearSmartyCache();
             Tools::clearXMLCache();

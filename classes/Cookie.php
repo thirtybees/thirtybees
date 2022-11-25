@@ -544,12 +544,15 @@ class CookieCore
     /**
      * Get the cipher tool instance used by this cookie instance
      *
-     * @return Blowfish|Rijndael|PhpEncryption
+     * @return Encryptor
      *
+     * @throws PrestaShopException
      * @since 1.0.1
      */
     public function getCipherTool()
     {
-        return $this->_standalone ? Encryptor::getStandaloneInstance(__FILE__) : Encryptor::getInstance();
+        return $this->_standalone
+            ? Encryptor::getStandaloneInstance(__FILE__)
+            : Encryptor::getInstance();
     }
 }

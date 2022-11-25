@@ -390,8 +390,6 @@ $kernel->loadFile(__DIR__.'/../../classes/Referrer.php');
 $kernel->loadFile(__DIR__.'/override/classes/Referrer.php');
 $kernel->loadFile(__DIR__.'/../../classes/RequestSql.php');
 $kernel->loadFile(__DIR__.'/override/classes/RequestSql.php');
-$kernel->loadFile(__DIR__.'/../../classes/Rijndael.php');
-$kernel->loadFile(__DIR__.'/override/classes/Rijndael.php');
 $kernel->loadFile(__DIR__.'/../../classes/Risk.php');
 $kernel->loadFile(__DIR__.'/override/classes/Risk.php');
 $kernel->loadFile(__DIR__.'/../../classes/Scene.php');
