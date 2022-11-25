@@ -29,15 +29,16 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-// Checks
-// Check compatibility
+require_once(__DIR__ . '/install_version.php');
 $errors = array();
-if (version_compare(PHP_VERSION, '5.6.0', '<')) {
-    $errors[] = 'Make sure your PHP version is at least 5.6.';
-}
-// Check for SimpleXML
-if (!extension_loaded('simplexml')) {
-	$errors[] = 'SimpleXML is not installed';
+
+// Check PHP version
+if (version_compare(PHP_VERSION, _TB_INSTALL_BUILD_PHP_, '<')) {
+    $url = 'https://thirtybees.com/download-specific/';
+    $error = 'This installation package is build for PHP version <code>' . _TB_INSTALL_BUILD_PHP_ . '</code>. ';
+    $error .= 'You are using version <code>' . PHP_VERSION . '</code><br>';
+    $error .= 'Please download installation package for your version <a href="'.$url.'">here</a>, and try again';
+    $errors[] = $error;
 }
 
 // Check if composer packages are available

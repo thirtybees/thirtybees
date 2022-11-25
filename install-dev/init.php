@@ -31,11 +31,6 @@
 
 ob_start();
 
-// Check PHP version
-if (version_compare(PHP_VERSION, '7.0', '<')) {
-    die('You need at least PHP 7.0 to run thirty bees. Your current PHP version is '.PHP_VERSION);
-}
-
 // we check if theses constants are defined in order to use init.php
 if (!defined('__PS_BASE_URI__')) {
     define('__PS_BASE_URI__', substr($_SERVER['REQUEST_URI'], 0, -1 * (strlen($_SERVER['REQUEST_URI']) - strrpos($_SERVER['REQUEST_URI'], '/')) - strlen(substr(dirname($_SERVER['REQUEST_URI']), strrpos(dirname($_SERVER['REQUEST_URI']), '/') + 1))));
@@ -71,8 +66,6 @@ define('_PS_INSTALL_FIXTURES_PATH_', _TB_INSTALL_PATH_.'fixtures/');
 define('_PS_PRICE_DISPLAY_PRECISION_', 2);
 // For retrocompatibility with PS 1.6.1 (which messed up in this area).
 define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
-
-require_once(_TB_INSTALL_PATH_.'install_version.php');
 
 // thirty bees autoload is used to load some helpfull classes like Tools.
 // Add classes used by installer bellow.

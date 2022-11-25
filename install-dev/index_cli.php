@@ -29,24 +29,16 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-// Checks
-// Check compatibility
-$errors = array();
-if (version_compare(PHP_VERSION, '5.6.0', '<')) {
-    $errors[] = 'Make sure your PHP version is at least 5.6.';
+require_once(__DIR__ . '/install_version.php');
+
+// Check PHP version
+if (version_compare(PHP_VERSION, _TB_INSTALL_BUILD_PHP_, '<')) {
+    die('This installation package is designed for PHP version ' . _TB_INSTALL_BUILD_PHP_ . '. You are running ' . PHP_VERSION);
 }
 
 // Check if composer packages are available
 if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
-    $errors[] = 'The composer packages are not available. Make sure you have copied the <code>vendor</code> folder or have run the <code>composer install --no-dev</code> command.';
-}
-
-if (!empty($errors)) {
-    foreach ($errors as $error) {
-        $error = strip_tags($error);
-        echo "$error\n";
-    }
-    exit;
+    die('The composer packages are not available. Make sure you have copied the \'vendor\' folder or have run the \'composer install --no-dev\' command.');
 }
 
 /* Redefine REQUEST_URI */
