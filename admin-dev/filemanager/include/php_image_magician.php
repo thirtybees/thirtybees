@@ -597,33 +597,28 @@ class imageLib
 
     /**
      * @return void
-     * @throws Exception
      */
     private function sharpen()
     {
-        if (version_compare(PHP_VERSION, '5.1.0') >= 0) {
-            if ($this->aggresiveSharpening) {
-                $sharpenMatrix = [
-                    [-1, -1, -1],
-                    [-1, 16, -1],
-                    [-1, -1, -1]
-                ];
-                $divisor = 8;
-                $offset = 0;
-                imageconvolution($this->imageResized, $sharpenMatrix, $divisor, $offset);
-            } else {
-                $sharpness = $this->findSharp($this->widthOriginal, $this->width);
-                $sharpenMatrix = [
-                    [-1, -2, -1 ],
-                    [-2, $sharpness + 12, -2],
-                    [-1, -2, -1]
-                ];
-                $divisor = $sharpness;
-                $offset = 0;
-                imageconvolution($this->imageResized, $sharpenMatrix, $divisor, $offset);
-            }
+        if ($this->aggresiveSharpening) {
+            $sharpenMatrix = [
+                [-1, -1, -1],
+                [-1, 16, -1],
+                [-1, -1, -1]
+            ];
+            $divisor = 8;
+            $offset = 0;
+            imageconvolution($this->imageResized, $sharpenMatrix, $divisor, $offset);
         } else {
-            throw new Exception('Sharpening required PHP 5.1.0 or greater.');
+            $sharpness = $this->findSharp($this->widthOriginal, $this->width);
+            $sharpenMatrix = [
+                [-1, -2, -1 ],
+                [-2, $sharpness + 12, -2],
+                [-1, -2, -1]
+            ];
+            $divisor = $sharpness;
+            $offset = 0;
+            imageconvolution($this->imageResized, $sharpenMatrix, $divisor, $offset);
         }
     }
 

@@ -326,10 +326,6 @@ class CryptBlowfishCore
         $datal = 0;
         $datar = 0;
 
-        if (PHP_VERSION_ID == '50201' || PHP_VERSION_ID == '50206') {
-            $this->_unpackMode = PS_UNPACK_MODIFIED;
-        }
-
         for ($i = 0; $i < 18; $i++) {
             $data = 0;
             for ($j = 4; $j > 0; $j--) {
