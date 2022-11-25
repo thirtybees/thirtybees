@@ -690,6 +690,7 @@ class ConfigurationCore extends ObjectModel
 
         $result = true;
         foreach ($values as $lang => $rawValue) {
+            $lang = (int)$lang;
             $value = pSQL($rawValue, true);
             if (Configuration::hasKey($key, $lang, $idShopGroup, $idShop)) {
                 // If key exists already, update value.
