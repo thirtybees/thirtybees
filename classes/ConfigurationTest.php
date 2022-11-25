@@ -93,7 +93,6 @@ class ConfigurationTestCore
                 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
                 'getcwd', 'chdir', 'chmod',
             ],
-            'PhpVersion'              => false,
             'Fopen'                   => false,
             'ConfigDir'               => 'config',
             'Files'                   => false,
@@ -178,24 +177,6 @@ class ConfigurationTestCore
         }
 
         return 'ok';
-    }
-
-    /**
-     * @return bool
-     *
-     * @since   1.0.0
-     * @since   1.0.8 Fill error report.
-     * @version 1.0.0 Initial version
-     */
-    public static function testPhpVersion(&$report = null)
-    {
-        if (version_compare(PHP_VERSION, '5.6', '<')) {
-            $report = sprintf('PHP version is %s, should be at least version 5.6.', PHP_VERSION);
-
-            return false;
-        }
-
-        return true;
     }
 
     /**

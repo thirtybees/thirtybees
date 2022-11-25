@@ -12,7 +12,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
      */
     public function testCheck()
     {
-        $this->assertEquals(['PhpVersion' => 'ok'], ConfigurationTest::check(['PhpVersion' => false]));
+        $this->assertEquals(['PdoMysql' => 'ok'], ConfigurationTest::check(['PdoMysql' => false]));
     }
 
     /**
@@ -20,7 +20,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
      */
     public function testRun()
     {
-        $this->assertEquals('ok', ConfigurationTest::run('PhpVersion'));
+        $this->assertEquals('ok', ConfigurationTest::run('PdoMysql'));
     }
 
     /**
@@ -44,7 +44,6 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
             ['ModuleDir', 'modules'],
             ['OpenSSL', false],
             ['PdoMysql', false],
-            ['PhpVersion', false],
             ['System', ['fopen', 'fclose', 'fread', 'fwrite', 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir', 'getcwd', 'chdir', 'chmod']],
             ['ThemeLangDir', 'themes/'._THEME_NAME_.'/lang/'],
             ['ThemePdfLangDir', 'themes/'._THEME_NAME_.'/pdf/lang/'],
