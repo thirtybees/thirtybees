@@ -111,46 +111,46 @@ class CompareProductCore extends ObjectModel
      */
     public static function addCompareProduct($idCompare, $idProduct)
     {
-        // Check if compare row exists
-        $idCompare = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-                ->select('`id_compare`')
-                ->from('compare')
-                ->where('`id_compare` = '.(int) $idCompare)
-        );
+        $idCompare = (int)$idCompare;
 
-        if (!$idCompare) {
-            $idCustomer = false;
-            if (Context::getContext()->customer) {
-                $idCustomer = Context::getContext()->customer->id;
-            }
-            $sql = Db::getInstance()->insert(
-                'compare',
-                [
-                    'id_compare'  => ['type' => 'sql', 'value' => 'NULL'],
-                    'id_customer' => (int) $idCustomer,
-                ],
-                true
+        // Check if compare row exists
+        if ($idCompare) {
+            $idCompare = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_compare`')
+                    ->from('compare')
+                    ->where('`id_compare` = ' . (int)$idCompare)
             );
-            if ($sql) {
-                $idCompare = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                    (new DbQuery())
-                        ->select('MAX(`id_compare`)')
-                        ->from('compare')
-                );
-                Context::getContext()->cookie->id_compare = $idCompare;
-            }
         }
 
-        return Db::getInstance()->insert(
-            'compare_product',
-            [
-                'id_compare' => (int) $idCompare,
-                'id_product' => (int) $idProduct,
-                'date_add'   => ['type' => 'sql', 'value' => 'NOW()'],
-                'date_upd'   => ['type' => 'sql', 'value' => 'NOW()'],
-            ]
-        );
+        // Create new compare record if it does not exists yet
+        if (! $idCompare) {
+            $context = Context::getContext();
+            $customer = $context->customer;
+            $idCustomer  = Validate::isLoadedObject($customer) ? (int)$customer->id : 0;
+            if (! Db::getInstance()->insert('compare', [ 'id_customer' => (int) $idCustomer ])) {
+                return false;
+            }
+            $idCompare = (int)Db::getInstance()->Insert_ID();
+            $context->cookie->id_compare = $idCompare;
+        }
+
+        if ($idCompare && $idProduct) {
+            return Db::getInstance()->insert(
+                'compare_product',
+                [
+                    'id_compare' => (int)$idCompare,
+                    'id_product' => (int)$idProduct,
+                    'date_add' => ['type' => 'sql', 'value' => 'NOW()'],
+                    'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
+                ],
+                false,
+                true,
+                Db::INSERT_IGNORE
+            );
+        }
+
+        return false;
     }
 
     /**
