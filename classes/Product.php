@@ -4409,6 +4409,30 @@ class ProductCore extends ObjectModel
     }
 
     /**
+     * Deletes all feature value of feature with id $featureId
+     *
+     * @param $featureId
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function deleteFeatureValues($featureId)
+    {
+        $productId = (int)$this->id;
+        if ($productId) {
+            $featureId = (int)$featureId;
+
+            $conn = Db::getInstance();
+            $result = $conn->delete('feature_product', "id_product = $productId AND id_feature = $featureId");
+            $result = $conn->delete('feature_product_lang', "id_product = $productId AND id_feature = $featureId") && $result;
+
+            return $result;
+        }
+        return false;
+    }
+
+    /**
      * Delete products tags entries
      *
      * @return array Deletion result
