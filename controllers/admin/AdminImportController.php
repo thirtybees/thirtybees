@@ -2350,7 +2350,7 @@ class AdminImportControllerCore extends AdminController
      * @param      $matchRef
      * @param      $accessories
      * @param bool $validateOnly
-     *
+     * @param bool $forceCat
      * @return void
      *
      * @throws PrestaShopDatabaseException
@@ -2912,6 +2912,7 @@ class AdminImportControllerCore extends AdminController
             $features = get_object_vars($product);
 
             if (!$validateOnly && isset($features['features']) && !empty($features['features'])) {
+                $featureValuesToImport = [];
                 foreach (explode($this->multiple_value_separator, $features['features']) as $singleFeature) {
                     if (empty($singleFeature)) {
                         continue;
@@ -2923,6 +2924,16 @@ class AdminImportControllerCore extends AdminController
                     if (!empty($featureName) && !empty($featureValue)) {
                         $idFeature = (int) Feature::addFeatureImport($featureName, $position);
                         $idFeatureValue = (int) FeatureValue::addFeatureValueImport($idFeature, $featureValue, $idLang);
+                        if (! isset($featureValuesToImport[$idFeature])) {
+                            $featureValuesToImport[$idFeature] = [];
+                        }
+                        $featureValuesToImport[$idFeature][] = $idFeatureValue;
+                    }
+                }
+
+                foreach ($featureValuesToImport as $idFeature => $featureValues) {
+                    $product->deleteFeatureValues($idFeature);
+                    foreach ($featureValues as $idFeatureValue) {
                         Product::addFeatureProductImport($product->id, $idFeature, $idFeatureValue);
                     }
                 }
