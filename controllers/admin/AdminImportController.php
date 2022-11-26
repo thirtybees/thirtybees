@@ -1352,7 +1352,7 @@ class AdminImportControllerCore extends AdminController
                 if ($offset === 0) {
                     // compute total count only once, because it takes time
                     $datasource = $this->openDataSource(0);
-                    $results['totalCount'] = $datasource->getNumberOfRows();
+                    $results['totalCount'] = $datasource->getNumberOfRows() - (int)Tools::getValue('skip');
                     $datasource->close();
                 }
                 if (!isset($moreStepLabels)) {
