@@ -4221,8 +4221,13 @@ class CartCore extends ObjectModel
         }
 
         foreach ($this->getProducts() as $product) {
-            if (!$this->allow_seperated_package && !$product['allow_oosp'] && StockAvailable::dependsOnStock($product['id_product']) &&
-                $product['advanced_stock_management'] && (bool) Context::getContext()->customer->isLogged() && ($delivery = $this->getDeliveryOption()) && !empty($delivery)
+            if (!$this->allow_seperated_package &&
+                !$product['allow_oosp'] &&
+                StockAvailable::dependsOnStock($product['id_product']) &&
+                $product['advanced_stock_management'] &&
+                Context::getContext()->customer->isLogged() &&
+                ($delivery = $this->getDeliveryOption()) &&
+                !empty($delivery)
             ) {
                 $product['stock_quantity'] = StockManager::getStockByCarrier((int) $product['id_product'], (int) $product['id_product_attribute'], $delivery);
             }
