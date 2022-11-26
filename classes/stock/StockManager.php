@@ -984,27 +984,39 @@ class StockManagerCore implements StockManagerInterface
             return false;
         }
 
+        $deliveryAddressId = (int)Context::getContext()->cart->id_address_delivery;
+        $carrierList = array_filter(array_map('intval', explode(',', $deliveryOption[$deliveryAddressId])));
         $results = Warehouse::getWarehousesByProductId($idProduct, $idProductAttribute);
         $stockQuantity = 0;
 
         foreach ($results as $result) {
             if (isset($result['id_warehouse']) && (int) $result['id_warehouse']) {
-                $ws = new Warehouse((int) $result['id_warehouse']);
+                $warehouseId = (int)$result['id_warehouse'];
+                $ws = new Warehouse($warehouseId);
                 $carriers = $ws->getWsCarriers();
 
                 if (is_array($carriers) && !empty($carriers)) {
-                    $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                        'SELECT SUM(s.`usable_quantity`) as quantity
-						FROM '._DB_PREFIX_.'stock s
-						LEFT JOIN '._DB_PREFIX_.'warehouse_carrier wc ON wc.`id_warehouse` = s.`id_warehouse`
-						LEFT JOIN '._DB_PREFIX_.'carrier c ON wc.`id_carrier` = c.`id_reference`
-						WHERE s.`id_product` = '.(int) $idProduct.' AND s.`id_product_attribute` = '.(int) $idProductAttribute.' AND s.`id_warehouse` = '.$result['id_warehouse'].' AND c.`id_carrier` IN ('.rtrim($deliveryOption[(int) Context::getContext()->cart->id_address_delivery], ',').') GROUP BY s.`id_product`'
-                    );
+                    if ($carrierList) {
+                        $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue((new DbQuery())
+                            ->select('SUM(s.`usable_quantity`) as quantity')
+                            ->from('stock', 's')
+                            ->leftJoin('warehouse_carrier', 'wc', '(wc.`id_warehouse` = s.`id_warehouse`)')
+                            ->leftJoin('carrier', 'c', '(wc.`id_carrier` = c.`id_reference`)')
+                            ->where('s.`id_product` = ' . (int)$idProduct)
+                            ->where('s.`id_product_attribute` = ' . (int)$idProductAttribute)
+                            ->where('s.`id_warehouse` = ' . $warehouseId)
+                            ->where('c.`id_carrier` IN (' . implode(',', $carrierList) . ')')
+                            ->groupBy('s.`id_product`')
+                        );
+                    }
                 } else {
-                    $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                        'SELECT SUM(s.`usable_quantity`) as quantity
-						FROM '._DB_PREFIX_.'stock s
-						WHERE s.`id_product` = '.(int) $idProduct.' AND s.`id_product_attribute` = '.(int) $idProductAttribute.' AND s.`id_warehouse` = '.$result['id_warehouse'].' GROUP BY s.`id_product`'
+                    $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue((new DbQuery())
+                        ->select('SUM(s.`usable_quantity`) as quantity')
+                        ->from('stock', 's')
+                        ->where('s.`id_product` = '.(int) $idProduct)
+                        ->where('s.`id_product_attribute` = '.(int) $idProductAttribute)
+                        ->where('s.`id_warehouse` = ' . $warehouseId)
+                        ->groupBy('s.`id_product`')
                     );
                 }
             }
