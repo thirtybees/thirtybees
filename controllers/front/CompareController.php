@@ -36,16 +36,16 @@
  */
 class CompareControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'products-comparison';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -59,22 +59,24 @@ class CompareControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function displayAjax()
     {
         // Add or remove product with Ajax
         if (Tools::getValue('ajax') && Tools::getValue('id_product') && Tools::getValue('action')) {
+            $productId = (int)Tools::getValue('id_product');
             if (Tools::getValue('action') == 'add') {
-                $idCompare = isset($this->context->cookie->id_compare) ? $this->context->cookie->id_compare : false;
+                $idCompare = $this->context->cookie->id_compare ?? false;
                 if (CompareProduct::getNumberProducts($idCompare) < Configuration::get('PS_COMPARATOR_MAX_ITEM')) {
-                    CompareProduct::addCompareProduct($idCompare, (int) Tools::getValue('id_product'));
+                    CompareProduct::addCompareProduct($idCompare, $productId);
                 } else {
                     $this->ajaxDie('0');
                 }
             } elseif (Tools::getValue('action') == 'remove') {
                 if (isset($this->context->cookie->id_compare)) {
-                    CompareProduct::removeCompareProduct((int) $this->context->cookie->id_compare, (int) Tools::getValue('id_product'));
+                    CompareProduct::removeCompareProduct((int) $this->context->cookie->id_compare, $productId);
                 } else {
                     $this->ajaxDie('0');
                 }
@@ -89,9 +91,11 @@ class CompareControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      *
      * @since 1.0.0
      */
@@ -114,7 +118,7 @@ class CompareControllerCore extends FrontController
         }
 
         $ids = null;
-        if (($productList = urldecode(Tools::getValue('compare_product_list'))) && ($postProducts = (isset($productList) ? rtrim($productList, '|') : ''))) {
+        if (($productList = urldecode(Tools::getValue('compare_product_list'))) && ($postProducts = rtrim($productList, '|'))) {
             $ids = array_unique(explode('|', $postProducts));
         } elseif (isset($this->context->cookie->id_compare)) {
             $ids = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
