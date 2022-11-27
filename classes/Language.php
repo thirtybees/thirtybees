@@ -186,7 +186,7 @@ class LanguageCore extends ObjectModel
     /**
      * @param $idLang
      *
-     * @return bool
+     * @return bool | array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

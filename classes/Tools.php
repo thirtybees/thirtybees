@@ -651,8 +651,10 @@ class ToolsCore
     /**
      * Set cookie currency from POST or default currency
      *
+     * @param $cookie
      * @return Currency object
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -670,7 +672,7 @@ class ToolsCore
         if ((int) $cookie->id_currency) {
             $currency = Currency::getCurrencyInstance((int) $cookie->id_currency);
         }
-        if (!Validate::isLoadedObject($currency) || (bool) $currency->deleted || !(bool) $currency->active) {
+        if (!Validate::isLoadedObject($currency) || $currency->deleted || !$currency->active) {
             $currency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
         }
 
@@ -679,9 +681,9 @@ class ToolsCore
             return $currency;
         } else {
             // get currency from context
-            $currency = Shop::getEntityIds('currency', Context::getContext()->shop->id, true, true);
-            if (isset($currency[0]) && $currency[0]['id_currency']) {
-                $cookie->id_currency = $currency[0]['id_currency'];
+            $currencyIds = Shop::getEntityIds('currency', Context::getContext()->shop->id, true, true);
+            if (isset($currencyIds[0]) && $currencyIds[0]['id_currency']) {
+                $cookie->id_currency = $currencyIds[0]['id_currency'];
 
                 return Currency::getCurrencyInstance((int) $cookie->id_currency);
             }
