@@ -39,55 +39,100 @@ abstract class ModuleStatsCore extends Module
     const ENGINE_GRAPH = 'graph';
     const ENGINE_GRID = 'grid';
 
-    // @codingStandardsIgnoreStart
-    /** @var Employee $_employee */
+    /**
+     * @var Employee $_employee
+     */
     protected $_employee;
-    /** @var int[] graph data */
+
+    /**
+     * @var int[] | int[][] graph data
+     */
     protected $_values = [];
-    /** @var string[] graph legends (X axis) */
+
+    /**
+     * @var string[] graph legends (X axis)
+     */
     protected $_legend = [];
-    /**@var string[] graph titles */
-    protected $_titles = ['main' => null, 'x' => null, 'y' => null];
-    /** @var ModuleGraphEngine graph engine */
+
+    /**
+     * @var string[] graph titles
+     */
+    protected $_titles = [
+        'main' => null,
+        'x' => null,
+        'y' => null
+    ];
+
+    /**
+     * @var ModuleGraphEngine graph engine
+     */
     protected $_render;
-    /** @var int total number of values **/
+
+    /**
+     * @var int total number of values *
+     */
     protected $_totalCount = 0;
-    /**@var string graph titles */
+
+    /**
+     * @var string graph titles
+     */
     protected $_title;
-    /**@var int start */
+
+    /**
+     * @var int start
+     */
     protected $_start;
-    /**@var int limit */
+
+    /**
+     * @var int limit
+     */
     protected $_limit;
-    /**@var string column name on which to sort */
+
+    /**
+     * @var string column name on which to sort
+     */
     protected $_sort = null;
-    /**@var string sort direction DESC/ASC */
+
+    /**
+     * @var string sort direction DESC/ASC
+     */
     protected $_direction = null;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var string csv content
+     */
+    protected $_csv = '';
+
+    /**
+     * @var int language context
+     */
+    protected $_id_lang;
 
     /**
      * @param int $idEmployee
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function setEmployee($idEmployee)
     {
-        $this->_employee = new Employee($idEmployee);
+        $this->_employee = new Employee((int)$idEmployee);
     }
 
     /**
-     * @param $id_lang
+     * @param int $id_lang
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function setLang($id_lang)
     {
-        $this->_id_lang = $id_lang;
+        $this->_id_lang = (int)$id_lang;
     }
 
     /**
-     * @param      $layers
+     * @param int $layers
      * @param bool $legend
      *
      * @since 1.0.0
@@ -203,8 +248,9 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @param $datas
+     * @param array $datas
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -215,7 +261,7 @@ abstract class ModuleStatsCore extends Module
         $this->setEmployee($context->employee->id);
         $this->setLang($context->language->id);
 
-        $layers = isset($datas['layers']) ?  $datas['layers'] : 1;
+        $layers = $datas['layers'] ?? 1;
         if (isset($datas['option'])) {
             $this->setOption($datas['option'], $layers);
         }
@@ -275,13 +321,17 @@ abstract class ModuleStatsCore extends Module
         $this->_displayCsv();
     }
 
+    /**
+     * @param array $datas
+     * @return void
+     */
     protected function csvExportGrid($datas)
     {
         $this->_sort = $datas['defaultSortColumn'];
         $this->setLang(Context::getContext()->language->id);
         $this->getData();
 
-        $layers = isset($datas['layers']) ?  $datas['layers'] : 1;
+        $layers = $datas['layers'] ?? 1;
 
         if (isset($datas['option'])) {
             $this->setOption($datas['option'], $layers);
@@ -319,12 +369,14 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @param mixed $render
-     * @param mixed $type
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $layers
+     * @param string $render
+     * @param string|null $type
+     * @param int $width
+     * @param int $height
+     * @param int $layers
      *
+     * @throws PrestaShopException
+     * @throws ReflectionException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -339,6 +391,19 @@ abstract class ModuleStatsCore extends Module
         $this->_render->setTitles($this->_titles);
     }
 
+    /**
+     * @param string $render
+     * @param string|null $type
+     * @param int $width
+     * @param int $height
+     * @param int $start
+     * @param int $limit
+     * @param int $sort
+     * @param string $dir
+     * @return void
+     * @throws PrestaShopException
+     * @throws ReflectionException
+     */
     public function createGrid($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
         $this->_render = static::getRenderingEngine(static::ENGINE_GRID, $type);
@@ -380,8 +445,10 @@ abstract class ModuleStatsCore extends Module
     /**
      * @param array $params
      *
-     * @return array|mixed|string
+     * @return string
      *
+     * @throws PrestaShopException
+     * @throws ReflectionException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -410,11 +477,17 @@ abstract class ModuleStatsCore extends Module
         $urlParams['id_lang'] = $idLang;
         $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $urlParams), '', '&');
 
-        $type = isset($params['type']) ? $params['type'] : null;
+        $type = $params['type'] ?? null;
         $engine = static::getRenderingEngine(static::ENGINE_GRAPH, $type);
         return $engine->hookGraphEngine($params, $drawer);
     }
 
+    /**
+     * @return string
+     *
+     * @throws PrestaShopException
+     * @throws ReflectionException
+     */
     public function engineGrid($params)
     {
         $grider = 'grider.php?&module='.Tools::safeOutput(Tools::getValue('module'));
@@ -438,10 +511,10 @@ abstract class ModuleStatsCore extends Module
 
         $grider .= '&width='.$params['width'];
         $grider .= '&height='.$params['height'];
-        if (isset($params['start']) && Validate::IsUnsignedInt($params['start'])) {
+        if (Validate::IsUnsignedInt($params['start'])) {
             $grider .= '&start='.$params['start'];
         }
-        if (isset($params['limit']) && Validate::IsUnsignedInt($params['limit'])) {
+        if (Validate::IsUnsignedInt($params['limit'])) {
             $grider .= '&limit='.$params['limit'];
         }
         if (isset($params['type']) && Validate::IsName($params['type'])) {
@@ -457,16 +530,16 @@ abstract class ModuleStatsCore extends Module
             $grider .= '&dir='.$params['dir'];
         }
 
-        $type = isset($params['type']) ? $params['type'] : null;
+        $type = $params['type'] ?? null;
         $engine = static::getRenderingEngine(static::ENGINE_GRID, $type);
         return $engine->hookGridEngine($params, $grider);
     }
 
     /**
-     * @param null         $employee
+     * @param Employee|null $employee
      * @param Context|null $context
      *
-     * @return bool|Employee|null
+     * @return Employee|false
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -509,7 +582,7 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @param null $employee
+     * @param Employee | null $employee
      *
      * @return string
      *
@@ -526,22 +599,23 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function getLang()
     {
-        return $this->_id_lang;
+        return (int)$this->_id_lang;
     }
 
     /**
      * Instantiates rendering engine
      *
-     * @param $engineType string - type of engine, either ENGINE_GRAPH or ENGINE_GRID
-     * @param $type string - type parameter for engine
+     * @param string $engineType type of engine, either ENGINE_GRAPH or ENGINE_GRID
+     * @param string $type type parameter for engine
      * @return ModuleGraphEngine or ModuleGridEngine instance
+     *
      * @throws PrestaShopException
      * @throws ReflectionException
      */
@@ -577,7 +651,7 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @param $layers
+     * @param int $layers
      *
      * @return mixed
      *

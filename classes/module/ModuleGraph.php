@@ -36,28 +36,51 @@
  */
 abstract class ModuleGraphCore extends Module
 {
-    // @codingStandardsIgnoreStart
-    /** @var Employee $_employee */
+    /**
+     * @var Employee $_employee
+     */
     protected $_employee;
-    /** @var int[] graph data */
+
+    /**
+     * @var int[] graph data
+     */
     protected $_values = [];
-    /** @var string[] graph legends (X axis) */
+
+    /**
+     * @var string[] graph legends (X axis)
+     */
     protected $_legend = [];
-    /**@var string[] graph titles */
+
+    /**
+     * @var string[] graph titles
+     */
     protected $_titles = ['main' => null, 'x' => null, 'y' => null];
-    /** @var ModuleGraphEngine graph engine */
+
+    /**
+     * @var ModuleGraphEngine graph engine
+     */
     protected $_render;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var string csv content
+     */
+    protected $_csv = '';
+
+    /**
+     * @var int language context
+     */
+    protected $_id_lang;
 
     /**
      * @param int $idEmployee
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function setEmployee($idEmployee)
     {
-        $this->_employee = new Employee($idEmployee);
+        $this->_employee = new Employee((int)$idEmployee);
     }
 
     /**
@@ -68,7 +91,7 @@ abstract class ModuleGraphCore extends Module
      */
     public function setLang($idLang)
     {
-        $this->_id_lang = $idLang;
+        $this->_id_lang = (int)$idLang;
     }
 
     /**
@@ -190,6 +213,7 @@ abstract class ModuleGraphCore extends Module
     /**
      * @param $datas
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -200,7 +224,7 @@ abstract class ModuleGraphCore extends Module
         $this->setEmployee($context->employee->id);
         $this->setLang($context->language->id);
 
-        $layers = isset($datas['layers']) ?  $datas['layers'] : 1;
+        $layers = $datas['layers'] ?? 1;
         if (isset($datas['option'])) {
             $this->setOption($datas['option'], $layers);
         }
@@ -276,11 +300,11 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param mixed $render
-     * @param mixed $type
-     * @param mixed $width
-     * @param mixed $height
-     * @param mixed $layers
+     * @param string $render
+     * @param string|null $type
+     * @param int $width
+     * @param int $height
+     * @param int $layers
      *
      * @throws PrestaShopException
      * @version 1.0.0 Initial version
@@ -329,8 +353,9 @@ abstract class ModuleGraphCore extends Module
      *
      * @return array|mixed|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public function engine($params)
     {
@@ -369,10 +394,10 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param null         $employee
+     * @param Employee|null $employee
      * @param Context|null $context
      *
-     * @return bool|Employee|null
+     * @return Employee | false
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -415,7 +440,7 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param null $employee
+     * @param Employee | null $employee
      *
      * @return string
      *
@@ -432,18 +457,18 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function getLang()
     {
-        return $this->_id_lang;
+        return (int)$this->_id_lang;
     }
 
     /**
-     * @param $layers
+     * @param int $layers
      *
      * @return mixed
      *

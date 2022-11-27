@@ -36,14 +36,35 @@
  */
 class ModuleGraphEngineCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string|null
+     */
     protected $_type;
+
+    /**
+     * @var int
+     */
     protected $_width;
+
+    /**
+     * @var int
+     */
     protected $_height;
+
+    /**
+     * @var array
+     */
     protected $_values;
+
+    /**
+     * @var string[]
+     */
     protected $_legend;
+
+    /**
+     * @var string[]
+     */
     protected $_titles;
-    // @codingStandardsIgnoreEnd
 
     /**
      * ModuleGraphEngineCore constructor.
@@ -52,6 +73,7 @@ class ModuleGraphEngineCore extends Module
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct($type = null)
     {
@@ -61,6 +83,8 @@ class ModuleGraphEngineCore extends Module
     /**
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -76,6 +100,7 @@ class ModuleGraphEngineCore extends Module
     /**
      * @return array
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -102,6 +127,11 @@ class ModuleGraphEngineCore extends Module
         return $arrayEngines;
     }
 
+    /**
+     * @param array $params
+     * @param string $drawer
+     * @return string
+     */
     public static function hookGraphEngine($params, $drawer)
     {
         static $divid = 1;
@@ -157,31 +187,54 @@ class ModuleGraphEngineCore extends Module
 		</script>';
     }
 
+    /**
+     * @param array $values
+     * @return void
+     */
     public function createValues($values)
     {
         $this->_values = $values;
     }
 
+    /**
+     * @param int $width
+     * @param int $height
+     * @return void
+     */
     public function setSize($width, $height)
     {
-        $this->_width = $width;
-        $this->_height = $height;
+        $this->_width = (int)$width;
+        $this->_height = (int)$height;
     }
 
+    /**
+     * @param string[] $legend
+     * @return void
+     */
     public function setLegend($legend)
     {
         $this->_legend = $legend;
     }
 
+    /**
+     * @param string[] $titles
+     * @return void
+     */
     public function setTitles($titles)
     {
         $this->_titles = $titles;
     }
 
+    /**
+     * @return void
+     */
     public function draw()
     {
         $array = [
-            'axisLabels' => ['xAxis' => isset($this->_titles['x']) ? $this->_titles['x'] : null, 'yAxis' => isset($this->_titles['y']) ? $this->_titles['y'] : null],
+            'axisLabels' => [
+                'xAxis' => $this->_titles['x'] ?? null,
+                'yAxis' => $this->_titles['y'] ?? null
+            ],
             'data'       => [],
         ];
 

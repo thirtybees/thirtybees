@@ -36,11 +36,45 @@
  */
 class ModuleGridEngineCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string|null
+     */
     protected $_type;
-    private $_values;
-    private static $_columns;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var array
+     */
+    protected $_values;
+
+    /**
+     * @var int
+     */
+    protected $_width;
+
+    /**
+     * @var int
+     */
+    protected $_height;
+
+    /**
+     * @var int
+     */
+    protected $_start;
+
+    /**
+     * @var int
+     */
+    protected $_limit;
+
+    /**
+     * @var int
+     */
+    protected $_totalCount;
+
+    /**
+     * @var string
+     */
+    protected $_title;
 
     /**
      * ModuleGridEngineCore constructor.
@@ -49,6 +83,7 @@ class ModuleGridEngineCore extends Module
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct($type)
     {
@@ -58,6 +93,8 @@ class ModuleGridEngineCore extends Module
     /**
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -73,6 +110,7 @@ class ModuleGridEngineCore extends Module
     /**
      * @return array
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -99,9 +137,13 @@ class ModuleGridEngineCore extends Module
         return $arrayEngines;
     }
 
+    /**
+     * @param array $params
+     * @param string $grider
+     * @return string
+     */
     public static function hookGridEngine($params, $grider)
     {
-        self::$_columns = $params['columns'];
         if (!isset($params['emptyMsg']))
             $params['emptyMsg'] = 'Empty';
         $customParams = '';
@@ -185,37 +227,66 @@ class ModuleGridEngineCore extends Module
         return $html;
     }
 
+    /**
+     * @param mixed $infos
+     * @return void
+     */
     public function setColumnsInfos(&$infos)
     {
     }
 
+    /**
+     * @param array $values
+     * @return void
+     */
     public function setValues($values)
     {
         $this->_values = $values;
     }
 
+    /**
+     * @param string $title
+     * @return void
+     */
     public function setTitle($title)
     {
         $this->_title = $title;
     }
 
+    /**
+     * @param int $width
+     * @param int $height
+     * @return void
+     */
     public function setSize($width, $height)
     {
         $this->_width = $width;
         $this->_height = $height;
     }
 
+    /**
+     * @param int $totalCount
+     * @return void
+     */
     public function setTotalCount($totalCount)
     {
-        $this->_totalCount = $totalCount;
+        $this->_totalCount = (int)$totalCount;
     }
 
+    /**
+     * @param int $start
+     * @param int $limit
+     * @return void
+     */
     public function setLimit($start, $limit)
     {
         $this->_start = (int)$start;
         $this->_limit = (int)$limit;
     }
 
+    /**
+     * @return void
+     */
     public function render()
     {
         echo json_encode([

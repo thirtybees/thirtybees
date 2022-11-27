@@ -36,25 +36,60 @@
  */
 abstract class ModuleGridCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var Employee
+     */
     protected $_employee;
-    /** @var array of strings graph data */
+
+    /**
+     * @var array of strings graph data
+     */
     protected $_values = [];
-    /** @var int total number of values **/
+
+    /**
+     * @var int total number of values *
+     */
     protected $_totalCount = 0;
-    /**@var string graph titles */
+
+    /**
+     * @var string graph titles
+     */
     protected $_title;
-    /**@var int start */
+
+    /**
+     * @var int start
+     */
     protected $_start;
-    /**@var int limit */
+
+    /**
+     * @var int limit
+     */
     protected $_limit;
-    /**@var string column name on which to sort */
+
+    /**
+     * @var string column name on which to sort
+     */
     protected $_sort = null;
-    /**@var string sort direction DESC/ASC */
+
+    /**
+     * @var string sort direction DESC/ASC
+     */
     protected $_direction = null;
-    /** @var ModuleGridEngine grid engine */
+
+    /**
+     * @var ModuleGridEngine grid engine
+     */
     protected $_render;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var string csv content
+     */
+    protected $_csv = '';
+
+    /**
+     * @var int language context
+     */
+    protected $_id_lang;
 
     /**
      * @return mixed
@@ -67,12 +102,13 @@ abstract class ModuleGridCore extends Module
     /**
      * @param int $idEmployee
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function setEmployee($idEmployee)
     {
-        $this->_employee = new Employee($idEmployee);
+        $this->_employee = new Employee((int)$idEmployee);
     }
 
     /**
@@ -83,18 +119,18 @@ abstract class ModuleGridCore extends Module
      */
     public function setLang($idLang)
     {
-        $this->_id_lang = $idLang;
+        $this->_id_lang = (int)$idLang;
     }
 
     /**
-     * @param $render
-     * @param $type
-     * @param $width
-     * @param $height
-     * @param $start
-     * @param $limit
-     * @param $sort
-     * @param $dir
+     * @param string $render
+     * @param string | null $type
+     * @param int $width
+     * @param int $height
+     * @param int $start
+     * @param int $limit
+     * @param int $sort
+     * @param string $dir
      *
      * @throws PrestaShopException
      * @since 1.0.0
@@ -176,10 +212,10 @@ abstract class ModuleGridCore extends Module
 
         $grider .= '&width='.$params['width'];
         $grider .= '&height='.$params['height'];
-        if (isset($params['start']) && Validate::IsUnsignedInt($params['start'])) {
+        if (Validate::IsUnsignedInt($params['start'])) {
             $grider .= '&start='.$params['start'];
         }
-        if (isset($params['limit']) && Validate::IsUnsignedInt($params['limit'])) {
+        if (Validate::IsUnsignedInt($params['limit'])) {
             $grider .= '&limit='.$params['limit'];
         }
         if (isset($params['type']) && Validate::IsName($params['type'])) {
@@ -201,7 +237,7 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @param $datas
+     * @param array $datas
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -212,7 +248,7 @@ abstract class ModuleGridCore extends Module
         $this->setLang(Context::getContext()->language->id);
         $this->getData();
 
-        $layers = isset($datas['layers']) ?  $datas['layers'] : 1;
+        $layers = $datas['layers'] ?? 1;
 
         if (isset($datas['option'])) {
             $this->setOption($datas['option'], $layers);
@@ -261,13 +297,21 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
     public function getLang()
     {
-        return $this->_id_lang;
+        return (int)$this->_id_lang;
+    }
+
+    /**
+     * @param mixed $option
+     * @param int   $layers
+     */
+    public function setOption($option, $layers = 1)
+    {
     }
 }
