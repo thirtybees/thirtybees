@@ -119,50 +119,53 @@ class TagCore extends ObjectModel
      */
     public static function addTags($idLang, $idProduct, $tagList, $separator = ',')
     {
-        if (!Validate::isUnsignedId($idLang)) {
-            return false;
-        }
+        $idProduct = (int)$idProduct;
+        $idLang = (int)$idLang;
 
         if (!is_array($tagList)) {
             $tagList = explode($separator, $tagList);
         }
 
-        $list = [];
-        if (is_array($tagList)) {
+        if (is_array($tagList) && $tagList) {
+            $list = [];
+            $result = true;
             foreach ($tagList as $tag) {
                 if (!Validate::isGenericName($tag)) {
-                    return false;
-                }
-                $tag = trim(mb_substr($tag, 0, static::$definition['fields']['name']['size']));
-                $tagObj = new Tag(null, $tag, (int) $idLang);
+                    $result = false;
+                } else {
+                    $tag = trim(mb_substr($tag, 0, static::$definition['fields']['name']['size']));
+                    $tagObj = new Tag(null, $tag, $idLang);
 
-                /* Tag does not exist in database */
-                if (!Validate::isLoadedObject($tagObj)) {
-                    $tagObj->name = $tag;
-                    $tagObj->id_lang = (int) $idLang;
-                    $tagObj->add();
-                }
-                if (!in_array($tagObj->id, $list)) {
-                    $list[] = $tagObj->id;
+                    /* Tag does not exist in database */
+                    if (!Validate::isLoadedObject($tagObj)) {
+                        $tagObj->name = $tag;
+                        $tagObj->id_lang = $idLang;
+                        $tagObj->add();
+                    }
+                    $tagId = (int)$tagObj->id;
+                    if (!in_array($tagId, $list)) {
+                        $list[] = $tagId;
+                    }
                 }
             }
-        }
-        $insert = [];
-        foreach ($list as $tag) {
-            $insert[] = [
-                'id_tag'     => (int) $tag,
-                'id_product' => (int) $idProduct,
-                'id_lang'    => (int) $idLang,
-            ];
+
+            if ($list) {
+                $insert = [];
+                foreach ($list as $tag) {
+                    $insert[] = [
+                        'id_tag' => $tag,
+                        'id_product' => $idProduct,
+                        'id_lang' => $idLang,
+                    ];
+                }
+
+                $result = Db::getInstance()->insert('product_tag', $insert, false, true, Db::INSERT_IGNORE) && $result;
+                static::updateTagCount($list);
+            }
+            return $result;
         }
 
-        $result = Db::getInstance()->insert('product_tag', $insert);
-
-        if ($list != []) {
-            static::updateTagCount($list);
-        }
-
-        return $result;
+        return true;
     }
 
     /**

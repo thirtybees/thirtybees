@@ -2387,11 +2387,12 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Update product tags
      *
-     * @param array  $languages Array languages
-     * @param object $product   Product
+     * @param array $languages Array languages
+     * @param object $product Product
      *
      * @return bool Update result
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function updateTags($languages, $product)
