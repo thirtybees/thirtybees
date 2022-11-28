@@ -587,10 +587,10 @@ window.product_tabs.Combinations = new function () {
     getE('attribute_ean13').value = ean;
     getE('attribute_upc').value = upc;
     getE('attribute_wholesale_price').value = displayPriceValue(wholesalePrice);
-    getE('attribute_price').value = displayPriceValue(priceImpact);
-    getE('attribute_priceTEReal').value = displayPriceValue(priceImpact);
-    getE('attribute_weight').value = weightImpact;
-    getE('attribute_unity').value = unitImpact;
+    getE('attribute_price').value = displayPriceValue(Math.abs(priceImpact));
+    getE('attribute_priceTEReal').value = displayPriceValue(Math.abs(priceImpact));
+    getE('attribute_weight').value = Math.abs(weightImpact);
+    getE('attribute_unity').value = Math.abs(unitImpact);
     if ($('#attribute_ecotax').length > 0) {
       getE('attribute_ecotax').value = displayPriceValue(ecoTax);
     }
