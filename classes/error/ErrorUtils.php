@@ -116,7 +116,7 @@ class ErrorUtilsCore
             $args = $trace['args'] ?? [];
             $isTemplate = false;
             $showLines = static::FILE_CONTEXT_LINES;
-            if (SmartyCustom::isCompiledTemplate($fileName)) {
+            if ($smartyTrace && SmartyCustom::isCompiledTemplate($fileName)) {
                 $isTemplate = true;
                 $fileName = array_pop($smartyTrace);
                 $lineNumber = 0;
