@@ -415,11 +415,6 @@ class AdminAttributesGroupsControllerCore extends AdminController
             'name'  => 'current_texture',
         ];
 
-        $this->fields_form['input'][] = [
-            'type' => 'closediv',
-            'name' => '',
-        ];
-
         $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
         ];
