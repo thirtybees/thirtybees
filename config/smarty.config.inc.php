@@ -88,6 +88,7 @@ smartyRegisterFunction($smarty, 'modifier', 'explode', 'explode');
 smartyRegisterFunction($smarty, 'modifier', 'floatval', 'floatval');
 smartyRegisterFunction($smarty, 'modifier', 'html_entity_decode', 'html_entity_decode');
 smartyRegisterFunction($smarty, 'modifier', 'htmlentities', 'htmlentities');
+smartyRegisterFunction($smarty, 'modifier', 'htmlspecialchars', 'htmlspecialchars');
 smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
 smartyRegisterFunction($smarty, 'modifier', 'implode', 'implode');
 smartyRegisterFunction($smarty, 'modifier', 'intval', 'intval');
