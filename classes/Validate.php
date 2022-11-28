@@ -1193,7 +1193,7 @@ class ValidateCore
     public static function isUriPath($path)
     {
         if (is_string($path)) {
-            return (bool) preg_match('/^[\/a-zA-Z0-9_.-]*$/', $path);
+            return (bool) preg_match('/^[\/a-zA-Z0-9_.-~]*$/', $path);
         }
         return false;
     }
