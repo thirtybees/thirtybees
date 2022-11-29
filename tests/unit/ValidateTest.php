@@ -414,6 +414,7 @@ class ValidateTest extends \Codeception\TestCase\Test
             [false, 6],
             [false, "a b"],
             [true, 'a.b.c'],
+            [true, '/~user/shop/'],
         ];
     }
 
@@ -422,7 +423,6 @@ class ValidateTest extends \Codeception\TestCase\Test
      * @param string $input
      *
      * @dataProvider isUriPathProvider
-     * @throws PrestaShopException
      */
     public function testIsUriPathProvider($expected, $input)
     {
