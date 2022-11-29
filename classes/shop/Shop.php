@@ -186,7 +186,7 @@ class ShopCore extends ObjectModel
             return false;
         }
 
-        $this->theme_id = $row['id_theme'];
+        $this->id_theme = (int)$row['id_theme'];
         $this->theme_name = $row['name'];
         $this->theme_directory = $row['directory'];
         $this->physical_uri = $row['physical_uri'];
