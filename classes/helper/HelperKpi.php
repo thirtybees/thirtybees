@@ -36,28 +36,78 @@
  */
 class HelperKpiCore extends Helper
 {
-    // @codingStandardsIgnoreStart
-    /** @var string $base_folder */
+    /**
+     * @var string $base_folder
+     */
     public $base_folder = 'helpers/kpi/';
-    /** @var string $base_tpl */
-    public $base_tpl = 'kpi.tpl';
-    /** @var int $id */
-    public $id;
-    public $icon;
-    public $chart;
-    public $color;
-    public $title;
-    public $subtitle;
-    public $value;
-    public $data;
-    public $source;
-    public $refresh = true;
-    public $href;
-    public $tooltip;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @return mixed
+     * @var string $base_tpl
+     */
+    public $base_tpl = 'kpi.tpl';
+
+    /**
+     * @var int $id
+     */
+    public $id;
+
+    /**
+     * @var string
+     */
+    public $icon;
+
+    /**
+     * @var bool
+     */
+    public $chart;
+
+    /**
+     * @var string
+     */
+    public $color;
+
+    /**
+     * @var string
+     */
+    public $title;
+
+    /**
+     * @var string
+     */
+    public $subtitle;
+
+    /**
+     * @var int|float
+     */
+    public $value;
+
+    /**
+     * @var string
+     */
+    public $data;
+
+    /**
+     * @var string
+     */
+    public $source;
+
+    /**
+     * @var bool
+     */
+    public $refresh = true;
+
+    /**
+     * @var string
+     */
+    public $href;
+
+    /**
+     * @var string
+     */
+    public $tooltip;
+
+    /**
+     * @return false|string
      *
      * @throws Exception
      * @throws SmartyException

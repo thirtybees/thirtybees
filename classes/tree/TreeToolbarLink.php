@@ -47,10 +47,10 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements
     /**
      * TreeToolbarLinkCore constructor.
      *
-     * @param      $label
-     * @param null $link
-     * @param null $action
-     * @param null $iconClass
+     * @param string label
+     * @param string $link
+     * @param string|null  $action
+     * @param string|null  $iconClass
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

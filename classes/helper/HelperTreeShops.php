@@ -40,17 +40,22 @@ class HelperTreeShopsCore extends TreeCore
     const DEFAULT_NODE_FOLDER_TEMPLATE = 'tree_node_folder_checkbox_shops.tpl';
     const DEFAULT_NODE_ITEM_TEMPLATE   = 'tree_node_item_checkbox_shops.tpl';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int|null
+     */
     protected $_lang;
+
+    /**
+     * @var array
+     */
     protected $_selected_shops;
-    // @codingStandardsIgnoreEnd
 
     /**
      * HelperTreeShopsCore constructor.
      *
      * @param int  $id
-     * @param null $title
-     * @param null $lang
+     * @param string|null $title
+     * @param int|null $lang
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -250,6 +255,7 @@ class HelperTreeShopsCore extends TreeCore
      *
      * @return string
      * @throws PrestaShopException
+     * @throws SmartyException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version

@@ -49,7 +49,7 @@ class HelperShopCore extends Helper
      */
     public function getRenderedShopList()
     {
-        if (!Shop::isFeatureActive() || Shop::getTotalShops(false, null) < 2) {
+        if (!Shop::isFeatureActive() || Shop::getTotalShops(false) < 2) {
             return '';
         }
 
@@ -65,8 +65,9 @@ class HelperShopCore extends Helper
             $currentShopName = sprintf(Translate::getAdminTranslation('%s group'), $tree[Shop::getContextShopGroupID()]['name']);
         } else {
             $currentShopValue = 's-'.Shop::getContextShopID();
+            $currentShopName = '';
 
-            foreach ($tree as $groupId => $groupData) {
+            foreach ($tree as $groupData) {
                 foreach ($groupData['shops'] as $shopId => $shopData) {
                     if ($shopId == Shop::getContextShopID()) {
                         $currentShopName = $shopData['name'];

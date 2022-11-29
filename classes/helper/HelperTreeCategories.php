@@ -40,20 +40,60 @@ class HelperTreeCategoriesCore extends TreeCore
     const DEFAULT_NODE_FOLDER_TEMPLATE = 'tree_node_folder_radio.tpl';
     const DEFAULT_NODE_ITEM_TEMPLATE = 'tree_node_item_radio.tpl';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected $_disabled_categories;
+
+    /**
+     * @var string
+     */
     protected $_input_name;
-    /** @var int $_lang */
+
+    /**
+     * @var int $_lang
+     */
     protected $_lang;
+
+    /**
+     * @var int
+     */
     protected $_root_category;
+
+    /**
+     * @var array
+     */
     protected $_selected_categories;
+
+    /**
+     * @var bool
+     */
     protected $_full_tree = false;
+
+    /**
+     * @var Shop
+     */
     protected $_shop;
+
+    /**
+     * @var bool
+     */
     protected $_use_checkbox;
+
+    /**
+     * @var bool
+     */
     protected $_use_search;
+
+    /**
+     * @var bool
+     */
     protected $_use_shop_restriction;
+
+    /**
+     * @var bool
+     */
     protected $_children_only = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * HelperTreeCategoriesCore constructor.
@@ -233,7 +273,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return array
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -259,7 +299,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -354,7 +394,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -559,18 +599,6 @@ class HelperTreeCategoriesCore extends TreeCore
             $this->_getSelectedChildNumbers($data, $this->getSelectedCategories());
         }
 
-        //Default bootstrap style of search is push-right, so we add this button first
-        // FIXME ^md
-//        if ($this->useSearch()) {
-//            $this->addAction(
-//                new TreeToolbarLink(
-//                    $this->getId().'-categories-search',
-//                    'Find a category:'
-//                )
-//            );
-//            $this->setAttribute('use_search', $this->useSearch());
-//        }
-
         $collapseAll = new TreeToolbarLink(
             'Collapse All',
             '#',
@@ -622,6 +650,7 @@ class HelperTreeCategoriesCore extends TreeCore
      *
      * @return string
      * @throws PrestaShopException
+     * @throws SmartyException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -702,7 +731,7 @@ class HelperTreeCategoriesCore extends TreeCore
     {
         $selectedChilds = 0;
 
-        foreach ($categories as $key => &$category) {
+        foreach ($categories as &$category) {
             if (isset($parent) && in_array($category['id_category'], $selected)) {
                 $selectedChilds++;
             }

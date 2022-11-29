@@ -36,31 +36,70 @@
  */
 class HelperFormCore extends Helper
 {
-    // @codingStandardsIgnoreStart
-    /** @var int $id */
+    /**
+     * @var int $id
+     */
     public $id;
-    /** @var bool $first_call */
+
+    /**
+     * @var bool $first_call
+     */
     public $first_call = true;
-    /** @var array of forms fields */
+
+    /**
+     * @var array of forms fields
+     */
     protected $fields_form = [];
-    /** @var array values of form fields */
+
+    /**
+     * @var array values of form fields
+     */
     public $fields_value = [];
-    /** @var string $name_controller */
+
+    /**
+     * @var string $name_controller
+     */
     public $name_controller = '';
-    /** @var string if not null, a title will be added on that list */
+
+    /**
+     * @var string if not null, a title will be added on that list
+     */
     public $title = null;
-    /** @var string Used to override default 'submitAdd' parameter in form action attribute */
+
+    /**
+     * @var string Used to override default 'submitAdd' parameter in form action attribute
+     */
     public $submit_action;
+
+    /**
+     * @var string
+     */
     public $token;
-    /** @var null|array $languages  */
+
+    /**
+     * @var null|array $languages
+     */
     public $languages = null;
+
+    /**
+     * @var int
+     */
     public $default_form_language = null;
+
+    /**
+     * @var bool
+     */
     public $allow_employee_form_lang = null;
-    /** @var bool $show_cancel_button */
+
+    /**
+     * @var bool $show_cancel_button
+     */
     public $show_cancel_button = false;
-    /** @var string $back_url */
+
+    /**
+     * @var string $back_url
+     */
     public $back_url = '#';
-    // @codingStandardsIgnoreEnd
 
     /**
      * HelperFormCore constructor.
@@ -141,7 +180,7 @@ class HelperFormCore extends Helper
                                     throw new PrestaShopException('Id must be filled for categories tree');
                                 }
 
-                                $tree = new HelperTreeCategories($params['tree']['id'], isset($params['tree']['title']) ? $params['tree']['title'] : null);
+                                $tree = new HelperTreeCategories($params['tree']['id'], $params['tree']['title'] ?? null);
 
                                 if (isset($params['name'])) {
                                     $tree->setInputName($params['name']);
@@ -178,12 +217,12 @@ class HelperFormCore extends Helper
 
                         case 'file':
                             $uploader = new HelperUploader();
-                            $uploader->setId(isset($params['id']) ? $params['id'] : null);
+                            $uploader->setId($params['id'] ?? null);
                             $uploader->setName($params['name']);
-                            $uploader->setUrl(isset($params['url']) ? $params['url'] : null);
-                            $uploader->setMultiple(isset($params['multiple']) ? $params['multiple'] : false);
-                            $uploader->setUseAjax(isset($params['ajax']) ? $params['ajax'] : false);
-                            $uploader->setMaxFiles(isset($params['max_files']) ? $params['max_files'] : null);
+                            $uploader->setUrl($params['url'] ?? null);
+                            $uploader->setMultiple($params['multiple'] ?? false);
+                            $uploader->setUseAjax($params['ajax'] ?? false);
+                            $uploader->setMaxFiles($params['max_files'] ?? null);
 
                             if (isset($params['files']) && $params['files']) {
                                 $uploader->setFiles($params['files']);
@@ -192,9 +231,9 @@ class HelperFormCore extends Helper
                                     [
                                         0 => [
                                             'type'       => HelperUploader::TYPE_IMAGE,
-                                            'image'      => isset($params['image']) ? $params['image'] : null,
-                                            'size'       => isset($params['size']) ? $params['size'] : null,
-                                            'delete_url' => isset($params['delete_url']) ? $params['delete_url'] : null,
+                                            'image'      => $params['image'],
+                                            'size'       => $params['size'] ?? null,
+                                            'delete_url' => $params['delete_url'] ?? null,
                                         ],
                                     ]
                                 );
@@ -205,9 +244,9 @@ class HelperFormCore extends Helper
                                     [
                                         0 => [
                                             'type'         => HelperUploader::TYPE_FILE,
-                                            'size'         => isset($params['size']) ? $params['size'] : null,
-                                            'delete_url'   => isset($params['delete_url']) ? $params['delete_url'] : null,
-                                            'download_url' => isset($params['file']) ? $params['file'] : null,
+                                            'size'         => $params['size'] ?? null,
+                                            'delete_url'   => $params['delete_url'] ?? null,
+                                            'download_url' => $params['file'],
                                         ],
                                     ]
                                 );
@@ -218,13 +257,13 @@ class HelperFormCore extends Helper
                                     [
                                         0 => [
                                             'type'  => HelperUploader::TYPE_IMAGE,
-                                            'image' => isset($params['thumb']) ? '<img src="'.$params['thumb'].'" alt="'.(isset($params['title']) ? $params['title'] : '').'" title="'.(isset($params['title']) ? $params['title'] : '').'" />' : null,
+                                            'image' => '<img src="'.$params['thumb'].'" alt="'.($params['title'] ?? '').'" title="'.($params['title'] ?? '').'" />',
                                         ],
                                     ]
                                 );
                             }
 
-                            $uploader->setTitle(isset($params['title']) ? $params['title'] : null);
+                            $uploader->setTitle($params['title'] ?? null);
                             $params['file'] = $uploader->render();
                             break;
 
@@ -272,7 +311,7 @@ class HelperFormCore extends Helper
                             break;
 
                         case 'shop':
-                            $disableShops = isset($params['disable_shared']) ? $params['disable_shared'] : false;
+                            $disableShops = $params['disable_shared'] ?? false;
                             $params['html'] = $this->renderAssoShop($disableShops);
                             if (Shop::getTotalShops(false) == 1) {
                                 if ((isset($this->fields_form[$fieldsetKey]['form']['force']) && !$this->fields_form[$fieldsetKey]['form']['force']) || !isset($this->fields_form[$fieldsetKey]['form']['force'])) {
@@ -305,7 +344,7 @@ class HelperFormCore extends Helper
                 'defaultFormLanguage'   => $this->default_form_language,
                 'allowEmployeeFormLang' => $this->allow_employee_form_lang,
                 'form_id'               => $this->id,
-                'tabs'                  => (isset($tabs)) ? $tabs : null,
+                'tabs'                  => $tabs ?? null,
                 'fields'                => $this->fields_form,
                 'fields_value'          => $this->fields_value,
                 'required_fields'       => $this->getFieldsRequired(),

@@ -36,12 +36,29 @@
  */
 class HelperViewCore extends Helper
 {
+    /**
+     * @var int
+     */
     public $id;
+
+    /**
+     * @var bool
+     */
     public $toolbar = true;
+
+    /**
+     * @var string
+     */
     public $table;
+
+    /**
+     * @var string
+     */
     public $token;
 
-    /** @var string|null If not null, a title will be added on that list */
+    /**
+     * @var string|null If not null, a title will be added on that list
+     */
     public $title = null;
 
     /**

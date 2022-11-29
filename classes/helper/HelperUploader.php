@@ -43,20 +43,65 @@ class HelperUploaderCore extends Uploader
     const TYPE_IMAGE                 = 'image';
     const TYPE_FILE                  = 'file';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var Context
+     */
     private $_context;
+
+    /**
+     * @var string
+     */
     private $_drop_zone;
+
+    /**
+     * @var string
+     */
     private $_id;
+
+    /**
+     * @var array
+     */
     private $_files;
+
+    /**
+     * @var string
+     */
     private $_name;
+
+    /**
+     * @var int
+     */
     private $_max_files;
+
+    /**
+     * @var bool
+     */
     private $_multiple;
+
+    /**
+     * @var string
+     */
     protected $_template;
+
+    /**
+     * @var string
+     */
     private $_template_directory;
+
+    /**
+     * @var string
+     */
     private $_title;
+
+    /**
+     * @var string
+     */
     private $_url;
+
+    /**
+     * @var bool
+     */
     private $_use_ajax;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param Context $value
@@ -371,7 +416,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version

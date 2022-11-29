@@ -143,6 +143,8 @@ class AdminControllerCore extends Controller
     public $admin_webpath;
     /** @var array */
     public $modals = [];
+    /** @var array */
+    public $ajax_params = [];
     /** @var string|array */
     protected $meta_title = [];
     /** @var string|false Object identifier inside the associated table */
@@ -260,7 +262,7 @@ class AdminControllerCore extends Controller
     protected $filter;
     /** @var bool */
     protected $noLink;
-    /** @var bool|null */
+    /** @var bool|string|null */
     protected $specificConfirmDelete = null;
     /** @var bool */
     protected $colorOnBackground;
@@ -2980,8 +2982,7 @@ class AdminControllerCore extends Controller
      *
      * @param Helper $helper
      *
-     * @return void
-     *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2990,52 +2991,161 @@ class AdminControllerCore extends Controller
         if (empty($this->toolbar_title)) {
             $this->initToolbarTitle();
         }
-        // tocheck
-        if ($this->object && $this->object->id) {
-            $helper->id = $this->object->id;
-        }
 
-        // @todo : move that in Helper
+        if ($helper instanceof HelperList) {
+            $this->setHelperListDisplay($helper);
+        } elseif ($helper instanceof HelperView) {
+            $this->setHelperViewDisplay($helper);
+        } elseif ($helper instanceof HelperForm) {
+            $this->setHelperFormDisplay($helper);
+        } elseif ($helper instanceof HelperOptions) {
+            $this->setHelperOptionsDisplay($helper);
+        } elseif ($helper instanceof HelperKpi) {
+            $this->setHelperKpiDisplay($helper);
+        } elseif ($helper instanceof HelperKpiRow) {
+            $this->setHelperKpiRowDisplay($helper);
+        } elseif ($helper instanceof HelperShop) {
+            $this->setHelperShopDisplay($helper);
+        } elseif ($helper instanceof HelperCalendar) {
+            $this->setHelperCalendarDisplay($helper);
+        } else {
+            $this->setHelperCommonDisplay($helper);
+        }
+        $this->helper = $helper;
+    }
+
+    /**
+     * @param Helper $helper
+     * @throws PrestaShopException
+     */
+    public function setHelperCommonDisplay(Helper $helper)
+    {
         $helper->title = is_array($this->toolbar_title) ? implode(' '.Configuration::get('PS_NAVIGATION_PIPE').' ', $this->toolbar_title) : $this->toolbar_title;
         $helper->toolbar_btn = $this->toolbar_btn;
         $helper->show_toolbar = $this->show_toolbar;
         $helper->toolbar_scroll = $this->toolbar_scroll;
         $helper->override_folder = $this->tpl_folder;
+        $helper->currentIndex = static::$currentIndex;
+        $helper->table = $this->table;
+        $helper->identifier = $this->identifier;
+        $helper->token = $this->token;
+        $helper->bootstrap = $this->bootstrap;
+    }
+
+    /**
+     * @param HelperList $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperListDisplay(HelperList $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
         $helper->actions = $this->actions;
         $helper->simple_header = $this->list_simple_header;
         $helper->bulk_actions = $this->bulk_actions;
-        $helper->currentIndex = static::$currentIndex;
-        $helper->className = $this->className;
-        $helper->table = $this->table;
-        $helper->name_controller = Tools::getValue('controller');
         $helper->orderBy = $this->_orderBy;
         $helper->orderWay = $this->_orderWay;
         $helper->listTotal = $this->_listTotal;
-        $helper->shopLink = $this->shopLink;
-        $helper->shopLinkType = $this->shopLinkType;
-        $helper->identifier = $this->identifier;
-        $helper->token = $this->token;
-        $helper->languages = $this->_languages;
         $helper->specificConfirmDelete = $this->specificConfirmDelete;
-        $helper->imageType = $this->imageType;
         $helper->no_link = $this->list_no_link;
         $helper->colorOnBackground = $this->colorOnBackground;
-        $helper->ajax_params = (isset($this->ajax_params) ? $this->ajax_params : null);
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
-        $helper->multiple_fieldsets = $this->multiple_fieldsets;
+        $helper->shopLinkType = $this->shopLinkType;
+        $helper->imageType = $this->imageType;
+        $helper->ajax_params = $this->ajax_params;
         $helper->row_hover = $this->row_hover;
         $helper->position_identifier = $this->position_identifier;
         $helper->position_group_identifier = $this->position_group_identifier;
         $helper->controller_name = $this->controller_name;
-        $helper->list_id = isset($this->list_id) ? $this->list_id : $this->table;
-        $helper->bootstrap = $this->bootstrap;
-
-        // For each action, try to add the corresponding skip elements list
+        $helper->list_id = $this->list_id ?? $this->table;
         $helper->list_skip_actions = $this->list_skip_actions;
-
-        $this->helper = $helper;
     }
+
+    /**
+     * @param HelperForm $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperFormDisplay(HelperForm $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+        if ($this->object && $this->object->id) {
+            $helper->id = $this->object->id;
+        }
+        $helper->name_controller = Tools::getValue('controller');
+        $helper->languages = $this->_languages;
+        $helper->default_form_language = $this->default_form_language;
+        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+    }
+
+    /**
+     * @param HelperView $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperViewDisplay(HelperView $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+        if ($this->object && $this->object->id) {
+            $helper->id = $this->object->id;
+        }
+    }
+
+    /**
+     * @param HelperOptions $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperOptionsDisplay(HelperOptions $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+        if ($this->object && $this->object->id) {
+            $helper->id = $this->object->id;
+        }
+    }
+
+    /**
+     * @param HelperKpi $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperKpiDisplay(HelperKpi $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+        if ($this->object && $this->object->id) {
+            $helper->id = $this->object->id;
+        }
+    }
+
+    /**
+     * @param HelperKpiRow $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperKpiRowDisplay(HelperKpiRow $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+    }
+
+    /**
+     * @param HelperCalendar $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperCalendarDisplay(HelperCalendar $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+    }
+
+    /**
+     * @param HelperShop $helper
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setHelperShopDisplay(HelperShop $helper)
+    {
+        $this->setHelperCommonDisplay($helper);
+    }
+
 
     /**
      * @return array

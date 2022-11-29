@@ -36,42 +36,90 @@
  */
 class HelperCore
 {
-    // @codingStandardsIgnoreStart
-    /** @var string */
+    /**
+     * @var string
+     */
     public $currentIndex;
-    /** @var string $table */
+
+    /**
+     * @var string $table
+     */
     public $table = 'configuration';
-    /** @var string $identifier */
+
+    /**
+     * @var string $identifier
+     */
     public $identifier;
-    /** @var string $token */
+
+    /**
+     * @var string $token
+     */
     public $token;
-    /** @var array $toolbar_btn */
-    public $toolbar_btn;
-    /** @var mixed $ps_help_context */
+
+    /**
+     * @var array $toolbar_btn
+     */
+    public $toolbar_btn = [];
+
+    /**
+     * @var mixed $ps_help_context
+     */
     public $ps_help_context;
-    /** @var string $title */
+
+    /**
+     * @var string $title
+     */
     public $title;
-    /** @var bool $show_toolbar */
+
+    /**
+     * @var bool $show_toolbar
+     */
     public $show_toolbar = true;
-    /** @var Context $context */
+
+    /**
+     * @var Context $context
+     */
     public $context;
-    /** @var bool $toolbar_scroll */
+
+    /**
+     * @var bool $toolbar_scroll
+     */
     public $toolbar_scroll = false;
-    /** @var bool $bootstrap */
+
+    /**
+     * @var bool $bootstrap
+     */
     public $bootstrap = false;
-    /** @var Module $module */
+
+    /**
+     * @var Module $module
+     */
     public $module;
-    /** @var string Helper tpl folder */
+
+    /**
+     * @var string Helper tpl folder
+     */
     public $base_folder;
-    /** @var string Controller tpl folder */
+
+    /**
+     * @var string Controller tpl folder
+     */
     public $override_folder;
-    /** @var string base template name */
+
+    /**
+     * @var string base template name
+     */
     public $base_tpl = 'content.tpl';
-    /** @var array $tpl_vars */
+
+    /**
+     * @var array $tpl_vars
+     */
     public $tpl_vars = [];
-    /** @var Smarty_Internal_Template base template object */
+
+    /**
+     * @var Smarty_Internal_Template base template object
+     */
     protected $tpl;
-    // @codingStandardsIgnoreEnd
 
     /**
      * HelperCore constructor.
@@ -274,7 +322,7 @@ class HelperCore
     {
         Tools::displayAsDeprecated();
 
-        if (!Shop::isFeatureActive() || Shop::getTotalShops(false, null) < 2) {
+        if (!Shop::isFeatureActive() || Shop::getTotalShops(false) < 2) {
             return null;
         }
 

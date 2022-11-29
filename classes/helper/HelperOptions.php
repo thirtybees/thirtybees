@@ -36,9 +36,14 @@
  */
 class HelperOptionsCore extends Helper
 {
-    /** @var bool $required */
+    /**
+     * @var bool $required
+     */
     public $required = false;
-    /** @var int $id */
+
+    /**
+     * @var int $id
+     */
     public $id;
 
     /**
@@ -122,7 +127,7 @@ class HelperOptionsCore extends Helper
                 $field['is_disabled'] = $isDisabled;
                 $field['is_invisible'] = $isInvisible;
 
-                $field['required'] = isset($field['required']) ? $field['required'] : $this->required;
+                $field['required'] = $field['required'] ?? $this->required;
 
                 if ($field['type'] === 'color') {
                     $this->context->controller->addJqueryPlugin('colorpicker');
@@ -145,12 +150,12 @@ class HelperOptionsCore extends Helper
 
                 if ($field['type'] == 'file') {
                     $uploader = new HelperUploader();
-                    $uploader->setId(isset($field['id'])?$field['id']:null);
+                    $uploader->setId($field['id'] ?? null);
                     $uploader->setName($field['name']);
-                    $uploader->setUrl(isset($field['url'])?$field['url']:null);
-                    $uploader->setMultiple(isset($field['multiple'])?$field['multiple']:false);
-                    $uploader->setUseAjax(isset($field['ajax'])?$field['ajax']:false);
-                    $uploader->setMaxFiles(isset($field['max_files'])?$field['max_files']:null);
+                    $uploader->setUrl($field['url'] ?? null);
+                    $uploader->setMultiple($field['multiple'] ?? false);
+                    $uploader->setUseAjax($field['ajax'] ?? false);
+                    $uploader->setMaxFiles($field['max_files'] ?? null);
 
                     if (isset($field['files']) && $field['files']) {
                         $uploader->setFiles($field['files']);
@@ -160,8 +165,8 @@ class HelperOptionsCore extends Helper
                                 0 => [
                                     'type'       => HelperUploader::TYPE_IMAGE,
                                     'image'      => $field['image'],
-                                    'size'       => isset($field['size']) ? $field['size'] : null,
-                                    'delete_url' => isset($field['delete_url']) ? $field['delete_url'] : null,
+                                    'size'       => $field['size'] ?? null,
+                                    'delete_url' => $field['delete_url'] ?? null,
                                 ],
                             ]
                         );
@@ -172,8 +177,8 @@ class HelperOptionsCore extends Helper
                             [
                                 0 => [
                                     'type'         => HelperUploader::TYPE_FILE,
-                                    'size'         => isset($field['size']) ? $field['size'] : null,
-                                    'delete_url'   => isset($field['delete_url']) ? $field['delete_url'] : null,
+                                    'size'         => $field['size'] ?? null,
+                                    'delete_url'   => $field['delete_url'] ?? null,
                                     'download_url' => $field['file'],
                                 ],
                             ]
@@ -191,7 +196,7 @@ class HelperOptionsCore extends Helper
                         );
                     }
 
-                    $uploader->setTitle(isset($field['title'])?$field['title']:null);
+                    $uploader->setTitle($field['title'] ?? null);
                     $field['file'] = $uploader->render();
                 }
 
@@ -215,7 +220,7 @@ class HelperOptionsCore extends Helper
                         } elseif ($field['type'] == 'selectLang') {
                             $value = Configuration::get($key, $language['id_lang']);
                         }
-                        $field['languages'][$language['id_lang']] = isset($value) ? $value : '';
+                        $field['languages'][$language['id_lang']] = $value ?? '';
                         if (!is_array($field['value'])) {
                             $field['value'] = [];
                         }
@@ -251,10 +256,10 @@ class HelperOptionsCore extends Helper
                 'current' => $this->currentIndex,
                 'table' => $this->table,
                 'token' => $this->token,
-                'tabs' => (isset($tabs)) ? $tabs : null,
+                'tabs' => $tabs ?? null,
                 'option_list' => $optionList,
                 'current_id_lang' => $this->context->language->id,
-                'languages' => isset($languages) ? $languages : null,
+                'languages' => $languages ?? null,
                 'currency_left_sign' => $this->context->currency->getSign('left'),
                 'currency_right_sign' => $this->context->currency->getSign('right'),
                 'use_multishop' => $useMultishop,
