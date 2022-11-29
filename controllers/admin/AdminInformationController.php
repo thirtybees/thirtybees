@@ -53,6 +53,7 @@ class AdminInformationControllerCore extends AdminController
     /**
      * AdminInformationControllerCore constructor.
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function __construct()
@@ -62,6 +63,8 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -69,6 +72,10 @@ class AdminInformationControllerCore extends AdminController
         $this->show_toolbar = false;
         if ( ! $this->ajax) {
             $this->display = 'view';
+        }
+
+        if (Tools::getValue('display') === 'phpinfo') {
+            die(phpinfo());
         }
 
         parent::initContent();
@@ -83,6 +90,7 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initPageHeaderToolbar()
@@ -94,6 +102,7 @@ class AdminInformationControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function renderView()
@@ -103,6 +112,7 @@ class AdminInformationControllerCore extends AdminController
         $vars = [
             'version'         => [
                 'php'                => phpversion(),
+                'phpinfoUrl'         => $this->context->link->getAdminLink('AdminInformation', true, [ 'display' => 'phpinfo' ]),
                 'server'             => $_SERVER['SERVER_SOFTWARE'],
                 'memory_limit'       => ini_get('memory_limit'),
                 'max_execution_time' => ini_get('max_execution_time'),
@@ -224,9 +234,8 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @since 1.0.0
-     *
-     * @fixme: remove API call
      */
     public function displayAjaxCheckFiles()
     {

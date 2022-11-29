@@ -103,7 +103,7 @@
 					<strong>{l s='Server software version:'}</strong> {$version.server|escape:'html':'UTF-8'}
 				</p>
 				<p>
-					<strong>{l s='PHP version:'}</strong> {$version.php|escape:'html':'UTF-8'}
+					<strong>{l s='PHP version:'}</strong> <a href="{$version.phpinfoUrl}" target="_blank">{$version.php|escape:'html':'UTF-8'}</a>
 				</p>
 				<p>
 					<strong>{l s='Memory limit:'}</strong> {$version.memory_limit|escape:'html':'UTF-8'}
