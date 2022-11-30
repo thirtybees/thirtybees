@@ -163,9 +163,9 @@ class ConfigurationTestCore
     {
         $report = '';
         if ($arg) {
-            $result = call_user_func_array(['static', 'test'.$ptr], [$arg, &$report]);
+            $result = call_user_func_array([static::class, 'test'.$ptr], [$arg, &$report]);
         } else {
-            $result = call_user_func_array(['static', 'test'.$ptr], [&$report]);
+            $result = call_user_func_array([static::class, 'test'.$ptr], [&$report]);
         }
 
         if ( ! $result) {
@@ -639,7 +639,7 @@ class ConfigurationTestCore
         foreach (static::$testFiles as $file) {
             if (!file_exists(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR).str_replace('/', DIRECTORY_SEPARATOR, $file))) {
                 if ($full) {
-                    array_push($return, $file);
+                    $return[] = $file;
                 } else {
                     return false;
                 }
