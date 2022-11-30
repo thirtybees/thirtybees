@@ -34,13 +34,23 @@
  *
  * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_Database_EntityMetaData
 {
-    // @codingStandardsIgnoreEnd
 
+    /**
+     * @var string
+     */
     protected $tableName;
+
+    /**
+     * @var string[]
+     */
     protected $primaryKeyFieldnames;
+
+    /**
+     * @var string
+     */
+    protected $entityClassName;
 
     /**
      * @param string $name
@@ -69,7 +79,7 @@ class Core_Foundation_Database_EntityMetaData
     }
 
     /**
-     * @param array $primaryKeyFieldnames
+     * @param string[] $primaryKeyFieldnames
      *
      * @return $this
      *
@@ -84,7 +94,7 @@ class Core_Foundation_Database_EntityMetaData
     }
 
     /**
-     * @return mixed
+     * @return string[]
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -110,8 +120,6 @@ class Core_Foundation_Database_EntityMetaData
     }
 
     /**
-     * @return mixed
-     *
      * @return string
      *
      * @since 1.0.0
