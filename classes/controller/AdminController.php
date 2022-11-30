@@ -48,7 +48,6 @@ class AdminControllerCore extends Controller
     // survive redirects.
     const MESSAGE_CACHE_PATH = 'AdminControllerMessages.php';
 
-    // @codingStandardsIgnoreStart
     /** @var string */
     public static $currentIndex;
     /** @var array Cache for translations */
@@ -121,6 +120,8 @@ class AdminControllerCore extends Controller
     public $required_fields = [];
     /** @var string */
     public $tpl_folder;
+    /** @var string  */
+    public $override_folder;
     /** @var array Name and directory where class image are located */
     public $fieldImageSettings = [];
     /** @var string Image type */
@@ -177,6 +178,8 @@ class AdminControllerCore extends Controller
     protected $_listsql = '';
     /** @var array Cache for query results */
     protected $_list = [];
+    /** @var string|null */
+    protected $_list_error;
     /** @var string|array Toolbar title */
     protected $toolbar_title;
     /** @var array List of toolbar buttons */
@@ -298,7 +301,12 @@ class AdminControllerCore extends Controller
     protected $translationsTab = [];
     /** @var bool $isThirtybeesUp */
     public static $isThirtybeesUp = true;
-    // @codingStandardsIgnoreEnd
+    /** @var float */
+    protected $timer_start;
+    /** @var string */
+    protected $bo_css;
+    /** @var array */
+    protected array $_conf = [];
 
     /**
      * AdminControllerCore constructor.
@@ -310,9 +318,9 @@ class AdminControllerCore extends Controller
     public function __construct()
     {
         global $timer_start;
-        $this->timer_start = $timer_start;
-        // Has to be remove for the next Prestashop version
         global $token;
+
+        $this->timer_start = $timer_start;
 
         $messageCachePath = _PS_CACHE_DIR_.'/'.static::MESSAGE_CACHE_PATH
                             .'-'.Tools::getValue('token');
@@ -1044,8 +1052,6 @@ class AdminControllerCore extends Controller
             unset($this->context->cookie->{$this->list_id.'_start'});
         }
 
-        /* Cache */
-        $this->_lang = (int) $idLang;
         $this->_orderBy = $orderBy;
 
         if (preg_match('/[.!]/', $orderBy)) {

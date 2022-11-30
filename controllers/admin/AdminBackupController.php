@@ -289,7 +289,6 @@ class AdminBackupControllerCore extends AdminController
             $start = (int) $_POST['submitFilter'.$this->list_id] - 1 * $limit;
         }
 
-        $this->_lang = (int) $idLang;
         $this->_orderBy = $orderBy;
         $this->_orderWay = strtoupper($orderWay);
         $this->_list = [];
