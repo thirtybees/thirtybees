@@ -88,6 +88,13 @@ class PasswordControllerCore extends FrontController
                     }
                 }
             }
+            if ($this->ajax) {
+                $return = [
+                    'hasError' => !empty($this->errors),
+                    'errors'   => $this->errors,
+                ];
+                $this->ajaxDie(json_encode($return));
+            }
         } elseif ($customer = $this->getCustomer()) {
             if ((strtotime($customer->last_passwd_gen.'+'.(int) Configuration::get('PS_PASSWD_TIME_FRONT').' minutes') - time()) > 0) {
                 Tools::redirect('index.php?controller=authentication&error_regen_pwd');
