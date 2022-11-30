@@ -260,17 +260,18 @@ class HookCore extends ObjectModel
     /**
      * Execute modules for specified hook
      *
-     * @param string $hookName        Hook Name
-     * @param array  $hookArgs        Parameters for the functions
-     * @param int    $idModule        Execute hook for this module only
-     * @param bool   $arrayReturn     If specified, module output will be set by name in an array
-     * @param bool   $checkExceptions Check permission exceptions
-     * @param bool   $usePush         Force change to be refreshed on Dashboard widgets
-     * @param int    $idShop          If specified, hook will be execute the shop with this ID
-     *
-     * @throws PrestaShopException
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param int $idModule Execute hook for this module only
+     * @param bool $arrayReturn If specified, module output will be set by name in an array
+     * @param bool $checkExceptions Check permission exceptions
+     * @param bool $usePush @deprecated since thirty bees 1.5
+     * @param int $idShop If specified, hook will be executed for shop with this ID
      *
      * @return string|array modules output
+     *
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -284,8 +285,11 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
+        if ($usePush !== false) {
+            Tools::displayParameterAsDeprecated('usePush');
+        }
         if ($arrayReturn || !PageCache::isEnabled() || PageCacheKey::get() === false) {
-            return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, false, $idShop);
         }
 
         if (!$moduleList = static::getHookModuleExecList($hookName)) {
@@ -299,7 +303,7 @@ class HookCore extends ObjectModel
             $cachedHooks = PageCache::getCachedHooks();
             foreach ($moduleList as $m) {
                 $idModule = (int) $m['id_module'];
-                $data = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, $usePush, $idShop);
+                $data = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, false, $idShop);
                 $idHook = (int) static::getIdByName($hookName);
                 if (isset($cachedHooks[$idModule][$idHook])) {
                     $return .= $data;
@@ -311,7 +315,7 @@ class HookCore extends ObjectModel
                 }
             }
         } else {
-            $return = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, $usePush, $idShop);
+            $return = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, false, $idShop);
         }
 
         return $return;
@@ -325,12 +329,12 @@ class HookCore extends ObjectModel
      * @param int    $idModule        Execute hook for this module only
      * @param bool   $arrayReturn     If specified, module output will be set by name in an array
      * @param bool   $checkExceptions Check permission exceptions
-     * @param bool   $usePush         Force change to be refreshed on Dashboard widgets
-     * @param int    $idShop          If specified, hook will be execute the shop with this ID
+     * @param bool   $usePush         @deprecated since thirty bees 1.5
+     * @param int    $idShop          If specified, hook will be executed for shop with this ID
      *
      * @throws PrestaShopException
      *
-     * @return string/array modules output
+     * @return string|array modules output
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -345,7 +349,10 @@ class HookCore extends ObjectModel
         $idShop = null
     ) {
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {
-            return;
+            return $arrayReturn ? [] : '';
+        }
+        if ($usePush !== false) {
+            Tools::displayParameterAsDeprecated('usePush');
         }
 
         static $disableNonNativeModules = null;
@@ -450,9 +457,6 @@ class HookCore extends ObjectModel
                 continue;
             }
 
-            if ($usePush && !$moduleInstance->allow_push) {
-                continue;
-            }
             // Check which / if method is callable
             $hookCallable = is_callable([$moduleInstance, 'hook'.$hookName]);
             $hookRetroCallable = is_callable([$moduleInstance, 'hook'.$retroHookName]);
@@ -461,10 +465,6 @@ class HookCore extends ObjectModel
 
                 if (Module::preCall($moduleInstance->name)) {
                     $hookArgs['altern'] = ++$altern;
-
-                    if ($usePush && isset($moduleInstance->push_filename) && file_exists($moduleInstance->push_filename)) {
-                        Tools::waitUntilFileIsModified($moduleInstance->push_filename, $moduleInstance->push_time_limit);
-                    }
 
                     // Call hook method
                     if ($hookCallable) {

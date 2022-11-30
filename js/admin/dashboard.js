@@ -28,7 +28,7 @@
 // no_results_translation
 // read_more
 
-function refreshDashboard(moduleName, usePush, extra) {
+function refreshDashboard(moduleName, ignored, extra) {
   var moduleList = [];
   this.getWidget = function (idModule) {
     $.ajax({

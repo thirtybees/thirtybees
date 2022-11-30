@@ -125,10 +125,6 @@ abstract class ModuleCore
     public $limited_countries = [];
     /** @var array names of the controllers */
     public $controllers = [];
-    /** @var bool If true, allow push */
-    public $allow_push;
-    /** @var int $push_time_limit */
-    public $push_time_limit = 180;
     /**
      * @var bool $bootstrap
      *
@@ -2423,7 +2419,7 @@ abstract class ModuleCore
     /**
      * Unregister module from hook
      *
-     * @param int   $hookId   Hook id (can be a hook name since 1.5.0)
+     * @param int|string $hookId Hook id (can be a hook name since 1.5.0)
      * @param array $shopList List of shop
      *
      * @return bool result
@@ -3158,8 +3154,7 @@ abstract class ModuleCore
             $this->smarty->assign(
                 [
                     'module_dir'          => __PS_BASE_URI__.'modules/'.basename($file, '.php').'/',
-                    'module_template_dir' => ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'.basename($file, '.php').'/',
-                    'allow_push'          => $this->allow_push,
+                    'module_template_dir' => ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'.basename($file, '.php').'/'
                 ]
             );
 
