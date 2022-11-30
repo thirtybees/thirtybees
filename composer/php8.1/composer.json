@@ -6,7 +6,7 @@
         "tecnickcom/tcpdf": "~6.2",
         "ezyang/htmlpurifier": "^4.8",
         "jakeasmith/http_build_url": "^1.0",
-        "mrclay/minify": "^2.3",
+        "mrclay/minify": "^3.0",
         "greenlion/php-sql-parser": "^4.1",
         "smarty/smarty": "4.3.0",
         "pear/archive_tar": "^1.4",
