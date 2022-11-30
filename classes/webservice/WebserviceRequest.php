@@ -468,9 +468,9 @@ class WebserviceRequestCore
             $useReduc = (int) (isset($value['use_reduction']) ? $value['use_reduction'] : true);
             $useEcotax = (int) (isset($value['use_ecotax']) ? $value['use_ecotax'] : Configuration::get('PS_USE_ECOTAX'));
             $specificPriceOutput = null;
-            $idCounty = (int) (isset($value['county']) ? $value['county'] : 0);
+            $zipcode = $value['zipcode'] ?? '';
             $returnValue = Product::priceCalculation(
-                $idShop, $value['object_id'], $idProductAttribute, $idCountry, $idState, $idCounty, $idCurrency, $idGroup, $quantity,
+                $idShop, $value['object_id'], $idProductAttribute, $idCountry, $idState, $zipcode, $idCurrency, $idGroup, $quantity,
                 $useTax, $decimals, $onlyReduc, $useReduc, $useEcotax, $specificPriceOutput, null
             );
             $arrReturn[$name] = ['sqlId' => strtolower($name), 'value' => sprintf('%f', $returnValue)];

@@ -165,16 +165,6 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     */
-    public static function deleteTaxRuleByIdCounty($idCounty)
-    {
-        Tools::displayAsDeprecated();
-
-        return true;
-    }
-
-    /**
      * @param int $idTax
      *
      * @return bool
