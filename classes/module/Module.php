@@ -33,13 +33,11 @@
  * Class ModuleCore
  *
  * @since 1.0.0
- *
- * @property $confirmUninstall
  */
 abstract class ModuleCore
 {
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
-    // @codingStandardsIgnoreStart
+
     /** @var array used by AdminTab to determine which lang file to use (admin.php or module lang file) */
     public static $classInModule = [];
     /** @var bool Define if we will log modules performances for this session */
@@ -153,7 +151,8 @@ abstract class ModuleCore
     protected $current_subtemplate = null;
     /** @var bool $installed */
     public $installed;
-    // @codingStandardsIgnoreEnd
+    /** @var string */
+    public $confirmUninstall = '';
 
     /**
      * Constructor
@@ -965,6 +964,7 @@ abstract class ModuleCore
 
                 // If class exists, we just instantiate it
                 if (class_exists($module, false)) {
+                    /** @var Module $tmpModule */
                     $tmpModule = Adapter_ServiceLocator::get($module);
 
                     $item = [
@@ -985,7 +985,7 @@ abstract class ModuleCore
                         'trusted'                => true,
                         'currencies'             => $tmpModule->currencies ?? null,
                         'currencies_mode'        => $tmpModule->currencies_mode ?? null,
-                        'confirmUninstall'       => isset($tmpModule->confirmUninstall) ? html_entity_decode($tmpModule->confirmUninstall) : null,
+                        'confirmUninstall'       => html_entity_decode((string)$tmpModule->confirmUninstall),
                         'description_full'       => isset($tmpModule->description_full) ? stripslashes($tmpModule->description_full) : null,
                         'additional_description' => isset($tmpModule->additional_description) ? stripslashes($tmpModule->additional_description) : null,
                         'compatibility'          => isset($tmpModule->compatibility) ? (array) $tmpModule->compatibility : null,
@@ -3639,10 +3639,6 @@ abstract class ModuleCore
         if (isset($this->author_uri)) {
             $authorUri = $this->author_uri;
         }
-        $confirmUninstall = '';
-        if (isset($this->confirmUninstall)) {
-            $confirmUninstall = $this->confirmUninstall;
-        }
         $isConfigurable = 0;
         if (isset($this->is_configurable)) {
             $isConfigurable = (int) $this->is_configurable;
@@ -3660,7 +3656,7 @@ abstract class ModuleCore
             'author'            => $this->author,
             'author_uri'        => $authorUri,
             'tab'               => $this->tab,
-            'confirmUninstall'  => $confirmUninstall,
+            'confirmUninstall'  => $this->confirmUninstall,
             'is_configurable'   => $isConfigurable,
             'need_instance'     => $this->need_instance,
             'limited_countries' => $limitedCountries,
