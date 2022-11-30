@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use JSMin\JSMin;
+
 /**
  * Class MediaCore
  *
