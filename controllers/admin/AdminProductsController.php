@@ -91,7 +91,12 @@ class AdminProductsControllerCore extends AdminController
 
     /** @var Product $object */
     public $object;
-    // @codingStandardsIgnoreEnd
+
+    /** @var string */
+    protected $tpl_form;
+
+    /** @var */
+    protected $product_exists_in_shop = false;
 
     /**
      * AdminProductsControllerCore constructor.
@@ -4879,7 +4884,6 @@ class AdminProductsControllerCore extends AdminController
             'unit_price_ratio',
             'on_sale',
             'unity',
-            'minimum_quantity',
             'additional_shipping_cost',
             'available_now',
             'available_later',
