@@ -156,7 +156,7 @@ class SearchControllerCore extends FrontController
             $nbProducts = (int) (Search::searchTag($this->context->language->id, $tag, true));
             $this->pagination($nbProducts);
             $result = Search::searchTag($this->context->language->id, $tag, false, $this->p, $this->n, $this->orderBy, $this->orderWay);
-            Hook::exec('actionSearch', ['expr' => $tag, 'total' => count($result)]);
+            Hook::exec('actionSearch', ['expr' => $tag, 'total' => is_array($result) ? count($result) : 0]);
 
             $this->addColorsToProductList($result);
 
