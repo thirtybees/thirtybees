@@ -386,11 +386,11 @@ class ErrorUtilsCore
      * @param $line integer index of line in the file. This line will be highlighted
      * @param $total integer total number of lines to read. Pass zero to return all lines
      *
-     * @return array|null
+     * @return array
      */
     protected static function readFile($file, $line, $total) {
         if (! file_exists($file)) {
-            return null;
+            return [];
         }
         $lines = (array) file($file);
         if ($total > 0) {
