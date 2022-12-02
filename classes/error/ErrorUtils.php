@@ -389,29 +389,31 @@ class ErrorUtilsCore
      * @return array
      */
     protected static function readFile($file, $line, $total) {
+        $ret = [];
         if (! file_exists($file)) {
-            return [];
+            return $ret;
         }
-        $lines = (array) file($file);
-        if ($total > 0) {
-            $third = (int)($total / 3);
-            $offset = $line - (2 * $third);
-            if ($offset < 0) {
+        $lines = file($file);
+        if ($lines) {
+            if ($total > 0) {
+                $third = (int)($total / 3);
+                $offset = $line - (2 * $third);
+                if ($offset < 0) {
+                    $offset = 0;
+                }
+                $lines = array_slice($lines, $offset, $total);
+            } else {
                 $offset = 0;
             }
-            $lines = array_slice($lines, $offset, $total);
-        } else {
-            $offset = 0;
-        }
 
-        $ret = [];
-        foreach ($lines as $k => $l) {
-            $number = $offset + $k + 1;
-            $ret[] = [
-                'number' => $number,
-                'highlighted' => $number === $line,
-                'line' => $l
-            ];
+            foreach ($lines as $k => $l) {
+                $number = $offset + $k + 1;
+                $ret[] = [
+                    'number' => $number,
+                    'highlighted' => $number === $line,
+                    'line' => $l
+                ];
+            }
         }
         return $ret;
     }
