@@ -61,15 +61,16 @@ class PdfInvoiceControllerCore extends FrontController
      */
     public function postProcess()
     {
-        if (!$this->context->customer->isLogged() && !Tools::getValue('secure_key')) {
-            Tools::redirect('index.php?controller=authentication&back=pdf-invoice');
-        }
-
         if (!(int) Configuration::get('PS_INVOICE')) {
             throw new PrestaShopException(Tools::displayError('Invoices are disabled in this shop.'));
         }
 
         $idOrder = (int) Tools::getValue('id_order');
+        if (!$this->context->customer->isLogged() && !Tools::getValue('secure_key')) {
+            $backLink = $this->context->link->getPageLink('pdf-invoice', null, $this->context->language->id, 'id_order=' . $idOrder);
+            Tools::redirect('index.php?controller=authentication&back='.urlencode($backLink));
+        }
+
         if (Validate::isUnsignedId($idOrder)) {
             $order = new Order((int) $idOrder);
         }
@@ -96,6 +97,7 @@ class PdfInvoiceControllerCore extends FrontController
      *
      * @throws PrestaShopException
      * @throws SmartyException
+     * @throws HTMLPurifier_Exception
      * @since 1.0.0
      */
     public function display()
