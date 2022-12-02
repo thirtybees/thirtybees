@@ -95,7 +95,7 @@ class CookieCore
         }
 
         $this->_domain = $this->getDomain($sharedUrls);
-        $this->_name = 'thirtybees-'.md5($name.$this->_domain);
+        $this->_name = static::getCookieNamePrefix().'-'.md5($name.$this->_domain);
         $this->_allow_writing = true;
         $this->_salt = $this->_standalone ? str_pad('', 8, md5('ps'.__FILE__)) : _COOKIE_IV_;
         $this->_secure = (bool) $secure;
@@ -200,6 +200,21 @@ class CookieCore
             // set detect_language to force going through Tools::setCookieLanguage to figure out browser lang
             $this->_content['detect_language'] = true;
         }
+    }
+
+    /**
+     * Returns cookie name prefix.
+     *
+     * By default, all cookies starts with 'thirtybees-****'. This can be changed by constant
+     * _TB_COOKIE_NAME_PREFIX_
+     *
+     * @return string
+     */
+    protected static function getCookieNamePrefix()
+    {
+        return defined('_TB_COOKIE_NAME_PREFIX_')
+            ? _TB_COOKIE_NAME_PREFIX_
+            : 'thirtybees';
     }
 
     /**
