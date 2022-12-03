@@ -752,6 +752,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         $this->fields_value = [
             'image' => $image ? $image : false,
+            'thumb' => $thumb ? $thumb : false,
             'size'  => $image ? filesize(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType) / 1000 : false,
         ];
 
