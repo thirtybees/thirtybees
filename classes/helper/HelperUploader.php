@@ -203,7 +203,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return string[]
+     * @returne array[]
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
