@@ -76,7 +76,9 @@
 		{foreach from=$associated_suppliers item=supplier name=data}
 		<div class="panel">
 			<div class="panel-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-supplier" href="#supplier-{$supplier->id}">{if isset($supplier->name)}{$supplier->name}{/if}</a>
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-supplier" href="#supplier-{$supplier->id}">
+					{$supplierNames[$supplier->id_supplier]|escape:'htmlall':'UTF-8'}
+				</a>
 			</div>
 			<div id="supplier-{$supplier->id}">
 				<div class="panel-body">

@@ -5667,20 +5667,22 @@ class AdminProductsControllerCore extends AdminController
                 $product_supplier_collection = ProductSupplier::getSupplierCollection($obj->id, false);
 
                 $default_supplier = 0;
+                $supplierNames = [];
 
                 foreach ($suppliers as &$supplier) {
+                    $supplierId = (int)$supplier['id_supplier'];
+                    $supplierNames[$supplierId] = $supplier['name'];
                     $supplier['is_selected'] = false;
                     $supplier['is_default'] = false;
 
                     foreach ($associated_suppliers as $associated_supplier) {
                         /** @var ProductSupplier $associated_supplier */
-                        if ($associated_supplier->id_supplier == $supplier['id_supplier']) {
-                            $associated_supplier->name = $supplier['name'];
+                        if ($associated_supplier->id_supplier == $supplierId) {
                             $supplier['is_selected'] = true;
 
-                            if ($obj->id_supplier == $supplier['id_supplier']) {
+                            if ($obj->id_supplier == $supplierId) {
                                 $supplier['is_default'] = true;
-                                $default_supplier = $supplier['id_supplier'];
+                                $default_supplier = $supplierId;
                             }
                         }
                     }
@@ -5691,6 +5693,7 @@ class AdminProductsControllerCore extends AdminController
                         'attributes'                      => $attributes,
                         'suppliers'                       => $suppliers,
                         'default_supplier'                => $default_supplier,
+                        'supplierNames'                   => $supplierNames,
                         'associated_suppliers'            => $associated_suppliers,
                         'associated_suppliers_collection' => $product_supplier_collection,
                         'product_designation'             => $product_designation,
