@@ -123,7 +123,6 @@ class AdminTrackingControllerCore extends AdminController
         }
 
         $methods = get_class_methods($this);
-        $tplVars['arrayList'] = [];
         foreach ($methods as $methodName) {
             if (preg_match('#getCustomList(.+)#', $methodName, $matches)) {
                 $this->clearListOptions();
