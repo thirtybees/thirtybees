@@ -1422,27 +1422,22 @@ abstract class AdminTabCore
             if ($this->tabAccess['delete'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     /** @var ObjectModel $object */
-                    // check if request at least one object with noZeroObject
-                    if (isset($object->noZeroObject) && count(call_user_func([$this->className, $object->noZeroObject])) <= 1) {
-                        $this->_errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
-                    } else {
-                        if ($this->deleted) {
-                            $object->deleteImage();
-                            $object->deleted = 1;
-                            if (method_exists($object, 'cleanPositions')) {
-                                $object->cleanPositions();
-                            }
-                            if ($object->update()) {
-                                Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$token);
-                            }
-                        } elseif ($object->delete()) {
-                            if (method_exists($object, 'cleanPositions')) {
-                                $object->cleanPositions();
-                            }
+                    if ($this->deleted) {
+                        $object->deleteImage();
+                        $object->deleted = 1;
+                        if (method_exists($object, 'cleanPositions')) {
+                            $object->cleanPositions();
+                        }
+                        if ($object->update()) {
                             Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$token);
                         }
-                        $this->_errors[] = Tools::displayError('An error occurred during deletion.');
+                    } elseif ($object->delete()) {
+                        if (method_exists($object, 'cleanPositions')) {
+                            $object->cleanPositions();
+                        }
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$token);
                     }
+                    $this->_errors[] = Tools::displayError('An error occurred during deletion.');
                 } else {
                     $this->_errors[] = Tools::displayError('An error occurred while deleting object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
@@ -1481,31 +1476,24 @@ abstract class AdminTabCore
         elseif (Tools::getValue('submitDel'.$this->table)) {
             if ($this->tabAccess['delete'] === '1') {
                 if (isset($_POST[$this->table.'Box'])) {
-                    /** @var ObjectModel $object */
-                    $object = new $this->className();
-                    if (isset($object->noZeroObject) &&
-                        // Check if all object will be deleted
-                        (count(call_user_func([$this->className, $object->noZeroObject])) <= 1 || count($_POST[$this->table.'Box']) == count(call_user_func([$this->className, $object->noZeroObject])))
-                    ) {
-                        $this->_errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
+                    $result = true;
+                    if ($this->deleted) {
+                        foreach (Tools::getValue($this->table.'Box') as $id) {
+                            /** @var ObjectModel $toDelete */
+                            $toDelete = new $this->className($id);
+                            $toDelete->deleted = 1;
+                            $result = $result && $toDelete->update();
+                        }
                     } else {
-                        $result = true;
-                        if ($this->deleted) {
-                            foreach (Tools::getValue($this->table.'Box') as $id) {
-                                /** @var ObjectModel $toDelete */
-                                $toDelete = new $this->className($id);
-                                $toDelete->deleted = 1;
-                                $result = $result && $toDelete->update();
-                            }
-                        } else {
-                            $result = $object->deleteSelection(Tools::getValue($this->table.'Box'));
-                        }
-
-                        if ($result) {
-                            Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token);
-                        }
-                        $this->_errors[] = Tools::displayError('An error occurred while deleting selection.');
+                        /** @var ObjectModel $object */
+                        $object = new $this->className();
+                        $result = $object->deleteSelection(Tools::getValue($this->table.'Box'));
                     }
+
+                    if ($result) {
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token);
+                    }
+                    $this->_errors[] = Tools::displayError('An error occurred while deleting selection.');
                     // clean carriers positions
                     Carrier::cleanPositions();
                 } else {

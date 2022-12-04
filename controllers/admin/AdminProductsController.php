@@ -875,35 +875,29 @@ class AdminProductsControllerCore extends AdminController
     public function processDelete()
     {
         if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
-            /** @var Product $object */
-            // check if request at least one object with noZeroObject
-            if (isset($object->noZeroObject) && count($taxes = call_user_func([$this->className, $object->noZeroObject])) <= 1) {
-                $this->errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
-            } else {
-                /*
-                 * @since 1.5.0
-                 * It is NOT possible to delete a product if there is/are currently:
-                 * - a physical stock for this product
-                 * - supply order(s) for this product
-                 */
-                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $object->advanced_stock_management) {
-                    $stockManager = StockManagerFactory::getManager();
-                    $physicalQuantity = $stockManager->getProductPhysicalQuantities($object->id, 0);
-                    $realQuantity = $stockManager->getProductRealQuantities($object->id, 0);
-                    if ($physicalQuantity > 0 || $realQuantity > $physicalQuantity) {
-                        $this->errors[] = Tools::displayError('You cannot delete this product because there is physical stock left.');
-                    }
+            /*
+             * @since 1.5.0
+             * It is NOT possible to delete a product if there is/are currently:
+             * - a physical stock for this product
+             * - supply order(s) for this product
+             */
+            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $object->advanced_stock_management) {
+                $stockManager = StockManagerFactory::getManager();
+                $physicalQuantity = $stockManager->getProductPhysicalQuantities($object->id, 0);
+                $realQuantity = $stockManager->getProductRealQuantities($object->id, 0);
+                if ($physicalQuantity > 0 || $realQuantity > $physicalQuantity) {
+                    $this->errors[] = Tools::displayError('You cannot delete this product because there is physical stock left.');
                 }
+            }
 
-                if (!count($this->errors)) {
-                    if ($object->delete()) {
-                        $idCategory = (int) Tools::getValue('id_category');
-                        $categoryUrl = empty($idCategory) ? '' : '&id_category='.(int) $idCategory;
-                        Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
-                        $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token.$categoryUrl;
-                    } else {
-                        $this->errors[] = Tools::displayError('An error occurred during deletion.');
-                    }
+            if (!count($this->errors)) {
+                if ($object->delete()) {
+                    $idCategory = (int) Tools::getValue('id_category');
+                    $categoryUrl = empty($idCategory) ? '' : '&id_category='.(int) $idCategory;
+                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
+                    $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token.$categoryUrl;
+                } else {
+                    $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 }
             }
         } else {
@@ -6185,60 +6179,51 @@ class AdminProductsControllerCore extends AdminController
     {
         if ($this->tabAccess['delete'] === '1') {
             if (is_array($this->boxes) && !empty($this->boxes)) {
-                $object = new $this->className();
+                $success = 1;
+                $products = Tools::getValue($this->table.'Box');
+                if (is_array($products) && ($count = count($products))) {
+                    // Deleting products can be quite long on a cheap server. Let's say 1.5 seconds by product (I've seen it!).
+                    if (intval(ini_get('max_execution_time')) < round($count * 1.5)) {
+                        ini_set('max_execution_time', round($count * 1.5));
+                    }
 
-                if (isset($object->noZeroObject) &&
-                    // Check if all object will be deleted
-                    (count(call_user_func([$this->className, $object->noZeroObject])) <= 1 || count($_POST[$this->table.'Box']) == count(call_user_func([$this->className, $object->noZeroObject])))
-                ) {
-                    $this->errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
-                } else {
-                    $success = 1;
-                    $products = Tools::getValue($this->table.'Box');
-                    if (is_array($products) && ($count = count($products))) {
-                        // Deleting products can be quite long on a cheap server. Let's say 1.5 seconds by product (I've seen it!).
-                        if (intval(ini_get('max_execution_time')) < round($count * 1.5)) {
-                            ini_set('max_execution_time', round($count * 1.5));
-                        }
+                    if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                        $stockManager = StockManagerFactory::getManager();
+                    }
 
-                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                            $stockManager = StockManagerFactory::getManager();
-                        }
-
-                        foreach ($products as $id_product) {
-                            $product = new Product((int) $id_product);
-                            /*
-                             * @since 1.5.0
-                             * It is NOT possible to delete a product if there are currently:
-                             * - physical stock for this product
-                             * - supply order(s) for this product
-                             */
-                            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $product->advanced_stock_management) {
-                                $physical_quantity = $stockManager->getProductPhysicalQuantities($product->id, 0);
-                                $real_quantity = $stockManager->getProductRealQuantities($product->id, 0);
-                                if ($physical_quantity > 0 || $real_quantity > $physical_quantity) {
-                                    $this->errors[] = sprintf(Tools::displayError('You cannot delete the product #%d because there is physical stock left.'), $product->id);
-                                }
+                    foreach ($products as $id_product) {
+                        $product = new Product((int) $id_product);
+                        /*
+                         * @since 1.5.0
+                         * It is NOT possible to delete a product if there are currently:
+                         * - physical stock for this product
+                         * - supply order(s) for this product
+                         */
+                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $product->advanced_stock_management) {
+                            $physical_quantity = $stockManager->getProductPhysicalQuantities($product->id, 0);
+                            $real_quantity = $stockManager->getProductRealQuantities($product->id, 0);
+                            if ($physical_quantity > 0 || $real_quantity > $physical_quantity) {
+                                $this->errors[] = sprintf(Tools::displayError('You cannot delete the product #%d because there is physical stock left.'), $product->id);
                             }
-                            if (!count($this->errors)) {
-                                if ($product->delete()) {
-                                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $product->id, true, (int) $this->context->employee->id);
-                                } else {
-                                    $success = false;
-                                }
+                        }
+                        if (!count($this->errors)) {
+                            if ($product->delete()) {
+                                Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $product->id, true, (int) $this->context->employee->id);
                             } else {
-                                $success = 0;
+                                $success = false;
                             }
+                        } else {
+                            $success = 0;
                         }
                     }
+                }
 
-                    if ($success) {
-                        $id_category = (int) Tools::getValue('id_category');
-                        $category_url = empty($id_category) ? '' : '&id_category='.(int) $id_category;
-                        $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token.$category_url;
-                    } else {
-                        $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
-                    }
+                if ($success) {
+                    $id_category = (int) Tools::getValue('id_category');
+                    $category_url = empty($id_category) ? '' : '&id_category='.(int) $id_category;
+                    $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token.$category_url;
+                } else {
+                    $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                 }
             } else {
                 $this->errors[] = Tools::displayError('You must select at least one element to delete.');

@@ -1227,10 +1227,8 @@ class AdminControllerCore extends Controller
     {
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             $res = true;
-            // check if request at least one object with noZeroObject
-            if (isset($object->noZeroObject) && count(call_user_func([$this->className, $object->noZeroObject])) <= 1) {
-                $this->errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
-            } elseif (array_key_exists('delete', $this->list_skip_actions) && in_array($object->id, $this->list_skip_actions['delete'])) { //check if some ids are in list_skip_actions and forbid deletion
+            //check if some ids are in list_skip_actions and forbid deletion
+            if (array_key_exists('delete', $this->list_skip_actions) && in_array($object->id, $this->list_skip_actions['delete'])) {
                 $this->errors[] = Tools::displayError('You cannot delete this item.');
             } else {
                 if ($this->deleted) {
@@ -4687,45 +4685,32 @@ class AdminControllerCore extends Controller
     protected function processBulkDelete()
     {
         if (is_array($this->boxes) && !empty($this->boxes)) {
-            $object = new $this->className();
-
-            if (isset($object->noZeroObject)) {
-                $objects_count = count(call_user_func([$this->className, $object->noZeroObject]));
-
-                // Check if all object will be deleted
-                if ($objects_count <= 1 || count($this->boxes) == $objects_count) {
-                    $this->errors[] = Tools::displayError('You need at least one object.').
-                        ' <b>'.$this->table.'</b><br />'.
-                        Tools::displayError('You cannot delete all of the items.');
-                }
-            } else {
-                $result = true;
-                foreach ($this->boxes as $id) {
-                    /** @var $to_delete ObjectModel */
-                    $to_delete = new $this->className($id);
-                    $delete_ok = true;
-                    if ($this->deleted) {
-                        $to_delete->deleted = 1;
-                        if (!$to_delete->update()) {
-                            $result = false;
-                            $delete_ok = false;
-                        }
-                    } elseif (!$to_delete->delete()) {
+            $result = true;
+            foreach ($this->boxes as $id) {
+                /** @var $to_delete ObjectModel */
+                $to_delete = new $this->className($id);
+                $delete_ok = true;
+                if ($this->deleted) {
+                    $to_delete->deleted = 1;
+                    if (!$to_delete->update()) {
                         $result = false;
                         $delete_ok = false;
                     }
-
-                    if ($delete_ok) {
-                        Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $to_delete->id, true, (int) $this->context->employee->id);
-                    } else {
-                        $this->errors[] = sprintf(Tools::displayError('Can\'t delete #%d'), $id);
-                    }
+                } elseif (!$to_delete->delete()) {
+                    $result = false;
+                    $delete_ok = false;
                 }
-                if ($result) {
-                    $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token;
+
+                if ($delete_ok) {
+                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$to_delete->id, true, (int)$this->context->employee->id);
                 } else {
-		    $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
-		}
+                    $this->errors[] = sprintf(Tools::displayError('Can\'t delete #%d'), $id);
+                }
+            }
+            if ($result) {
+                $this->redirect_after = static::$currentIndex . '&conf=2&token=' . $this->token;
+            } else {
+                $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
             }
         } else {
             $this->errors[] = Tools::displayError('You must select at least one element to delete.');

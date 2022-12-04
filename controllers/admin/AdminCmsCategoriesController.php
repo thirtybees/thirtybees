@@ -156,21 +156,16 @@ class AdminCmsCategoriesControllerCore extends AdminController
         elseif (Tools::isSubmit('delete'.$this->table)) {
             if ($this->tabAccess['delete'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
-                    // check if request at least one object with noZeroObject
-                    if (isset($object->noZeroObject) && count($taxes = call_user_func([$this->className, $object->noZeroObject])) <= 1) {
-                        $this->errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
-                    } else {
-                        $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
-                        if ($this->deleted) {
-                            $object->deleted = 1;
-                            if ($object->update()) {
-                                Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
-                            }
-                        } elseif ($object->delete()) {
+                    $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
+                    if ($this->deleted) {
+                        $object->deleted = 1;
+                        if ($object->update()) {
                             Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
                         }
-                        $this->errors[] = Tools::displayError('An error occurred during deletion.');
+                    } elseif ($object->delete()) {
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
                     }
+                    $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 } else {
                     $this->errors[] = Tools::displayError('An error occurred while deleting the object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
