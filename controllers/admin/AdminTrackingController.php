@@ -104,6 +104,7 @@ class AdminTrackingControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initContent()
@@ -162,6 +163,8 @@ class AdminTrackingControllerCore extends AdminController
     /**
      * @return bool|false|string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function getCustomListCategoriesEmpty()
@@ -229,6 +232,8 @@ class AdminTrackingControllerCore extends AdminController
     /**
      * @return bool|string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderList()
@@ -266,15 +271,16 @@ class AdminTrackingControllerCore extends AdminController
     }
 
     /**
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
@@ -285,6 +291,8 @@ class AdminTrackingControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function getCustomListProductsAttributesNoStock()
@@ -335,6 +343,8 @@ class AdminTrackingControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function getCustomListProductsNoStock()
@@ -385,6 +395,8 @@ class AdminTrackingControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function getCustomListProductsDisabled()
@@ -420,14 +432,15 @@ class AdminTrackingControllerCore extends AdminController
 
     /**
      * @param string $token
-     * @param int    $id
+     * @param int $id
      * @param        $value
      * @param        $active
-     * @param null   $idCategory
-     * @param null   $idProduct
+     * @param null $idCategory
+     * @param null $idProduct
      *
      * @return string
      *
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function displayEnableLink($token, $id, $value, $active, $idCategory = null, $idProduct = null)
@@ -441,11 +454,13 @@ class AdminTrackingControllerCore extends AdminController
 
     /**
      * @param string|null $token
-     * @param  int        $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function displayDeleteLink($token, $id, $name = null)
@@ -464,6 +479,8 @@ class AdminTrackingControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function displayEditLink($token, $id, $name = null)
