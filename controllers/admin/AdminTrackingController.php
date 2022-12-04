@@ -112,8 +112,8 @@ class AdminTrackingControllerCore extends AdminController
         $this->initTabModuleList();
         $this->initPageHeaderToolbar();
 
-        if ($idCategory = Tools::getValue('id_category') && Tools::getIsset('viewcategory')) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_category='.(int) $idCategory.'&viewcategory');
+        if (($idCategory = (int)Tools::getValue('id_category')) && Tools::getIsset('viewcategory')) {
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_category='.$idCategory.'&viewcategory');
         }
 
         $this->_helper_list = new HelperList();
