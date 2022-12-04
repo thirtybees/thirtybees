@@ -36,12 +36,30 @@
  */
 class AdminTrackingControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
-    /** @var bool $bootstrap */
-    public $bootstrap = true;
-    /** @var HelperList */
+    /**
+     * @var HelperList
+     */
     protected $_helper_list;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var string
+     */
+    protected $_list_index;
+
+    /**
+     * @var string
+     */
+    protected $_list_token;
+
+    /**
+     * @throws PrestaShopException
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->bootstrap = true;
+    }
+
 
     /**
      * @param string $description
@@ -139,7 +157,6 @@ class AdminTrackingControllerCore extends AdminController
         $this->_filter = '';
         $this->_group = '';
         $this->_where = '';
-        $this->list_title = $this->l('Product disabled');
     }
 
     /**
