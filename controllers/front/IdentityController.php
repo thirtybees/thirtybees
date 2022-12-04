@@ -88,7 +88,7 @@ class IdentityControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered.');
             } elseif (!Tools::getIsset('old_passwd') || !Customer::checkPassword($this->context->customer->id, Tools::getValue('old_passwd'))) {
                 $this->errors[] = Tools::displayError('The password you entered is incorrect.');
-            } elseif (Tools::getValue('passwd') != Tools::getValue('confirmation')) {
+            } elseif (Tools::getValue('passwd') != Tools::getValue('passwd_confirmation', Tools::getValue('confirmation'))) {
                 $this->errors[] = Tools::displayError('The password and confirmation do not match.');
             } else {
                 $prevIdDefaultGroup = $this->customer->id_default_group;
@@ -132,7 +132,8 @@ class IdentityControllerCore extends FrontController
                 }
             }
         } else {
-            $_POST = array_map('stripslashes', $this->customer->getFields());
+            $customer_fields = array_map('stripslashes', $this->customer->getFields());
+            $_POST = array_merge($_POST, $customer_fields);
         }
 
         return $this->customer;
