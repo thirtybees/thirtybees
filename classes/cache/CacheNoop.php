@@ -41,6 +41,7 @@ class CacheNoopCore extends Cache
     protected function _set($key, $value, $ttl = 0)
     {
         // no-op implementation
+        return false;
     }
 
     /**
