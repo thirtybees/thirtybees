@@ -154,6 +154,13 @@
 #
 # ======================================================================== #
 
+/**
+ *
+ */
+
+/**
+ *
+ */
 class imageLib
 {
     /**
@@ -239,12 +246,12 @@ class imageLib
 
     /**
      * @param $fileName
-     * @throws Exception
+     * @throws PrestaShopException
      */
     function __construct($fileName)
     {
         if (!$this->testGDInstalled()) {
-            throw new Exception('The GD Library is not installed.');
+            throw new PrestaShopException('The GD Library is not installed.');
         }
         $this->initialise();
         $this->fileName = $fileName;
@@ -277,7 +284,7 @@ class imageLib
      * @param $sharpen
      * @param $autoRotate
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function resizeImage($newWidth, $newHeight, $option = 0, $sharpen = false, $autoRotate = false)
     {
@@ -292,7 +299,7 @@ class imageLib
         }
         $option = $this->prepOption($option);
         if (!$this->image) {
-            throw new Exception('file '.$this->getFileName().' is missing or invalid');
+            throw new PrestaShopException('file '.$this->getFileName().' is missing or invalid');
         }
         $dimensionsArray = $this->getDimensions($newWidth, $newHeight, $option);
         $optimalWidth = $dimensionsArray['optimalWidth'];
@@ -331,12 +338,12 @@ class imageLib
      * @param $newHeight
      * @param $cropPos
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function cropImage($newWidth, $newHeight, $cropPos = 'm')
     {
         if (!$this->image) {
-            throw new Exception('file '.$this->getFileName().' is missing or invalid');
+            throw new PrestaShopException('file '.$this->getFileName().' is missing or invalid');
         }
         $this->imageResized = $this->image;
         $this->crop($this->width, $this->height, $newWidth, $newHeight, $cropPos);
@@ -640,7 +647,7 @@ class imageLib
     /**
      * @param $option
      * @return array|false|mixed|string|string[]|null
-     * @throws Exception
+     * @throws PrestaShopException
      */
     private function prepOption($option)
     {
@@ -648,7 +655,7 @@ class imageLib
             if (fix_strtolower($option[0]) == 'crop' && count($option) == 2) {
                 return 'crop';
             } else {
-                throw new Exception('Crop resize option array is badly formatted.');
+                throw new PrestaShopException('Crop resize option array is badly formatted.');
             }
         } else {
             if (strpos($option, 'crop') !== false) {
@@ -714,7 +721,6 @@ class imageLib
 
     /**
      * @return void
-     * @throws Exception
      */
     public function greyScaleEnhanced()
     {
@@ -1133,7 +1139,7 @@ class imageLib
      * @param $angle
      * @param $font
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function addTextToCaptionBox($text, $fontColor = '#fff', $fontSize = 12, $angle = 0, $font = null)
     {
@@ -1143,7 +1149,7 @@ class imageLib
             $y1 = $this->captionBoxPositionArray['y1'];
             $y2 = $this->captionBoxPositionArray['y2'];
         } else {
-            throw new Exception('No caption box found.');
+            throw new PrestaShopException('No caption box found.');
         }
         $font = $this->getTextFont($font);
         $textSizeArray = $this->getTextSize($fontSize, $angle, $font, $text);
@@ -1546,7 +1552,7 @@ class imageLib
      * @param $angle
      * @param $font
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function addText($text, $pos = '20x20', $padding = 0, $fontColor = '#fff', $fontSize = 12, $angle = 0, $font = null)
     {
@@ -1568,7 +1574,7 @@ class imageLib
     /**
      * @param $font
      * @return mixed|string
-     * @throws Exception
+     * @throws PrestaShopException
      */
     private function getTextFont($font)
     {
@@ -1577,7 +1583,7 @@ class imageLib
         if ($font == null || !file_exists($font)) {
             $font = $fontPath.'/arimo.ttf';
             if (!file_exists($font)) {
-                throw new Exception('Font not found');
+                throw new PrestaShopException('Font not found');
             }
         }
         return $font;
@@ -1604,7 +1610,7 @@ class imageLib
      * @param $padding
      * @param $opacity
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function addWatermark($watermarkImage, $pos, $padding = 0, $opacity = 0)
     {
@@ -1730,12 +1736,12 @@ class imageLib
     /**
      * @param $file
      * @return false|GdImage|resource
-     * @throws Exception
+     * @throws PrestaShopException
      */
     private function openImage($file)
     {
         if (!file_exists($file) && !$this->checkStringStartsWith('http://', $file) && !$this->checkStringStartsWith('https://', $file)) {
-            throw new Exception('Image not found.');
+            throw new PrestaShopException('Image not found.');
         }
         $extension = mime_content_type($file);
         $extension = fix_strtolower($extension);
@@ -1767,7 +1773,7 @@ class imageLib
 
     /**
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function reset()
     {
@@ -1778,17 +1784,17 @@ class imageLib
      * @param $savePath
      * @param $imageQuality
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function saveImage($savePath, $imageQuality = "100")
     {
         if (! static::isImageResource($this->imageResized)) {
-            throw new Exception('saveImage: This is not a resource.');
+            throw new PrestaShopException('saveImage: This is not a resource.');
         }
         $fileInfoArray = pathInfo($savePath);
         clearstatcache();
         if (!is_writable($fileInfoArray['dirname'])) {
-            throw new Exception('The path is not writable. Please check your permissions.');
+            throw new PrestaShopException('The path is not writable. Please check your permissions.');
         }
         $extension = strrchr($savePath, '.');
         $extension = fix_strtolower($extension);
@@ -1844,12 +1850,12 @@ class imageLib
      * @param $fileType
      * @param $imageQuality
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function displayImage($fileType = 'jpg', $imageQuality = "100")
     {
         if (! static::isImageResource($this->imageResized)) {
-            throw new Exception('saveImage: This is not a resource.');
+            throw new PrestaShopException('saveImage: This is not a resource.');
         }
         switch ($fileType) {
             case 'jpg':
@@ -1967,7 +1973,7 @@ class imageLib
     /**
      * @param $fileName
      * @return void
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function setFile($fileName)
     {

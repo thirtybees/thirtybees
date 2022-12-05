@@ -303,8 +303,6 @@ class CookieCore
      * @param string $key   Access key for the value
      * @param mixed  $value Value corresponding to the key
      *
-     * @throws Exception
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -315,10 +313,10 @@ class CookieCore
             return;
         }
         if (is_array($value)) {
-            throw new Exception("Value can't be array");
+            throw new RuntimeException("Value can't be array");
         }
         if (preg_match('/¤|\|/', $key.$value)) {
-            throw new Exception('Forbidden chars in cookie');
+            throw new RuntimeException('Forbidden chars in cookie');
         }
         if (!$this->_modified && (!isset($this->_content[$key]) || (isset($this->_content[$key]) && $this->_content[$key] != $value))) {
             $this->_modified = true;

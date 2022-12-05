@@ -1803,7 +1803,6 @@ abstract class ModuleCore
      * @param string $classname
      *
      * @return bool
-     * @throws Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1833,7 +1832,7 @@ abstract class ModuleCore
         if ($overridePath) {
             // System override file already exists, we have to merge module override file into it
             if (! is_writable($overridePath)) {
-                throw new Exception(sprintf(Tools::displayError('file (%s) not writable'), $overridePath));
+                throw new PrestaShopException(sprintf(Tools::displayError('file (%s) not writable'), $overridePath));
             }
 
             // Make a reflection of the override class and the module override class
@@ -1849,40 +1848,40 @@ abstract class ModuleCore
                     $methodOverride = $overrideClass->getMethod($method->getName());
                     if (preg_match('/module: (.*)/ism', $overrideFile[$methodOverride->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $overrideFile[$methodOverride->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $overrideFile[$methodOverride->getStartLine() - 3], $version)) {
                         if ($name[1] !== $this->name || $version[1] !== $this->version) {
-                            throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden by the module %3$s version %4$s at %5$s.'), $method->getName(), $classname, $name[1], $version[1], $date[1]));
+                            throw new PrestaShopException(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden by the module %3$s version %4$s at %5$s.'), $method->getName(), $classname, $name[1], $version[1], $date[1]));
                         }
 
                         continue;
                     }
-                    throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden.'), $method->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden.'), $method->getName(), $classname));
                 }
 
                 $moduleFile = preg_replace('/((:?public|private|protected)\s+(static\s+)?function\s+(?:\b'.$method->getName().'\b))/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
                 }
             }
 
             // Check if none of the properties already exists in the override class
             foreach ($moduleClass->getProperties() as $property) {
                 if ($overrideClass->hasProperty($property->getName())) {
-                    throw new Exception(sprintf(Tools::displayError('The property %1$s in the class %2$s is already defined.'), $property->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('The property %1$s in the class %2$s is already defined.'), $property->getName(), $classname));
                 }
 
                 $moduleFile = preg_replace('/((?:public|private|protected)\s)\s*(static\s)?\s*(\$\b'.$property->getName().'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2$3", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
                 }
             }
 
             foreach ($moduleClass->getConstants() as $constant => $value) {
                 if ($overrideClass->hasConstant($constant)) {
-                    throw new Exception(sprintf(Tools::displayError('The constant %1$s in the class %2$s is already defined.'), $constant, $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('The constant %1$s in the class %2$s is already defined.'), $constant, $classname));
                 }
 
                 $moduleFile = preg_replace('/(const\s)\s*(\b'.$constant.'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
                 }
             }
 
@@ -1906,7 +1905,7 @@ abstract class ModuleCore
                 umask($oldumask);
             }
             if (!is_writable($dirName)) {
-                throw new Exception(sprintf(Tools::displayError('directory (%s) not writable'), $dirName));
+                throw new PrestaShopException(sprintf(Tools::displayError('directory (%s) not writable'), $dirName));
             }
 
             // Load module override file
@@ -1917,7 +1916,7 @@ abstract class ModuleCore
             foreach ($moduleClass->getMethods() as $method) {
                 $moduleFile = preg_replace('/((:?public|private|protected)\s+(static\s+)?function\s+(?:\b'.$method->getName().'\b))/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override method %1$s in class %2$s.'), $method->getName(), $classname));
                 }
             }
 
@@ -1925,7 +1924,7 @@ abstract class ModuleCore
             foreach ($moduleClass->getProperties() as $property) {
                 $moduleFile = preg_replace('/((?:public|private|protected)\s)\s*(static\s)?\s*(\$\b'.$property->getName().'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2$3", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override property %1$s in class %2$s.'), $property->getName(), $classname));
                 }
             }
 
@@ -1933,7 +1932,7 @@ abstract class ModuleCore
             foreach ($moduleClass->getConstants() as $constant => $value) {
                 $moduleFile = preg_replace('/(const\s)\s*(\b'.$constant.'\b)/ism', "/*\n    * module: ".$this->name."\n    * date: ".date('Y-m-d H:i:s')."\n    * version: ".$this->version."\n    */\n    $1$2", $moduleFile);
                 if ($moduleFile === null) {
-                    throw new Exception(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
+                    throw new PrestaShopException(sprintf(Tools::displayError('Failed to override constant %1$s in class %2$s.'), $constant, $classname));
                 }
             }
 

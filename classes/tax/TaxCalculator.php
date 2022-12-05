@@ -64,7 +64,6 @@ class TaxCalculatorCore
      * @param array $taxes
      * @param int   $computationMethod (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
      *
-     * @throws Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -73,7 +72,7 @@ class TaxCalculatorCore
         // sanity check
         foreach ($taxes as $tax) {
             if (!($tax instanceof Tax)) {
-                throw new Exception('Invalid Tax Object');
+                throw new RuntimeException('Invalid Tax Object');
             }
         }
 
