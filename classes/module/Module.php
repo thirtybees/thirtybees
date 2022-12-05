@@ -3624,58 +3624,63 @@ abstract class ModuleCore
     }
 
     /**
-     * @since   1.0.0
+     * @throws PrestaShopException
      * @version 1.0.0 Initial version
      * @version 1.0.5 Use DOMDocument instead of a manually crafted string.
+     * @since   1.0.0
      */
     protected function _generateConfigXml()
     {
-        $xml = new DOMDocument('1.0', 'UTF-8');
-        $xml->formatOutput = true;
-        $moduleXML = $xml->createElement('module');
-        $xml->appendChild($moduleXML);
+        try {
+            $xml = new DOMDocument('1.0', 'UTF-8');
+            $xml->formatOutput = true;
+            $moduleXML = $xml->createElement('module');
+            $xml->appendChild($moduleXML);
 
-        $authorUri = '';
-        if (isset($this->author_uri)) {
-            $authorUri = $this->author_uri;
-        }
-        $isConfigurable = 0;
-        if (isset($this->is_configurable)) {
-            $isConfigurable = (int) $this->is_configurable;
-        }
-        $limitedCountries = '';
-        if (count($this->limited_countries) == 1) {
-            $limitedCountries = $this->limited_countries[0];
-        }
-
-        foreach ([
-            'name'              => $this->name,
-            'displayName'       => $this->displayName,
-            'version'           => $this->version,
-            'description'       => $this->description,
-            'author'            => $this->author,
-            'author_uri'        => $authorUri,
-            'tab'               => $this->tab,
-            'confirmUninstall'  => $this->confirmUninstall,
-            'is_configurable'   => $isConfigurable,
-            'need_instance'     => $this->need_instance,
-            'limited_countries' => $limitedCountries,
-        ] as $node => $value) {
-            if (is_string($value) && strlen($value)) {
-                $element = $xml->createElement($node);
-                $element->appendChild($xml->createCDATASection($value));
-            } else {
-                $element = $xml->createElement($node, $value);
+            $authorUri = '';
+            if (isset($this->author_uri)) {
+                $authorUri = $this->author_uri;
             }
-            $moduleXML->appendChild($element);
-        }
+            $isConfigurable = 0;
+            if (isset($this->is_configurable)) {
+                $isConfigurable = (int)$this->is_configurable;
+            }
+            $limitedCountries = '';
+            if (count($this->limited_countries) == 1) {
+                $limitedCountries = $this->limited_countries[0];
+            }
 
-        if (is_writable(_PS_MODULE_DIR_.$this->name.'/')) {
-            $iso = substr(Context::getContext()->language->iso_code, 0, 2);
-            $file = _PS_MODULE_DIR_.$this->name.'/'.($iso == 'en' ? 'config.xml' : 'config_'.$iso.'.xml');
-            Tools::deleteFile($file);
-            @file_put_contents($file, $xml->saveXml());
-            @chmod($file, 0664);
+            foreach ([
+                         'name' => $this->name,
+                         'displayName' => $this->displayName,
+                         'version' => $this->version,
+                         'description' => $this->description,
+                         'author' => $this->author,
+                         'author_uri' => $authorUri,
+                         'tab' => $this->tab,
+                         'confirmUninstall' => $this->confirmUninstall,
+                         'is_configurable' => $isConfigurable,
+                         'need_instance' => $this->need_instance,
+                         'limited_countries' => $limitedCountries,
+                     ] as $node => $value) {
+                if (is_string($value) && strlen($value)) {
+                    $element = $xml->createElement($node);
+                    $element->appendChild($xml->createCDATASection($value));
+                } else {
+                    $element = $xml->createElement($node, $value);
+                }
+                $moduleXML->appendChild($element);
+            }
+
+            if (is_writable(_PS_MODULE_DIR_ . $this->name . '/')) {
+                $iso = substr(Context::getContext()->language->iso_code, 0, 2);
+                $file = _PS_MODULE_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
+                Tools::deleteFile($file);
+                @file_put_contents($file, $xml->saveXml());
+                @chmod($file, 0664);
+            }
+        } catch (DOMException $e) {
+            throw new PrestaShopException("Failed to generate module config.xml file", 0, $e);
         }
     }
 
