@@ -300,21 +300,24 @@ class WorkQueueTaskCore extends ObjectModel
      * @return WorkQueueTaskCallable
      *
      * @throws PrestaShopException
-     * @throws ReflectionException
      */
     protected static function getTaskCallable($task)
     {
         if (! isset(static::$callableMap[$task])) {
             if (class_exists($task)) {
-                $reflection = new ReflectionClass($task);
-                if (! $reflection->isInstantiable()) {
-                    throw new PrestaShopException("Can't instantiate class $task");
+                try {
+                    $reflection = new ReflectionClass($task);
+                    if (!$reflection->isInstantiable()) {
+                        throw new PrestaShopException("Can't instantiate class $task");
+                    }
+                    if (!$reflection->implementsInterface(WorkQueueTaskCallable::class)) {
+                        throw new PrestaShopException("Class $task does not implements WorkQueueTaskCallable interface");
+                    }
+                    $instance = $reflection->newInstance();
+                    static::$callableMap[$task] = $instance;
+                } catch (ReflectionException $e) {
+                    throw new PrestaShopException("Failed to instantiate WorkQueueTaskCallable class " . $task, 0, $e);
                 }
-                if (! $reflection->implementsInterface(WorkQueueTaskCallable::class)) {
-                    throw new PrestaShopException("Class $task does not implements WorkQueueTaskCallable interface");
-                }
-                $instance = $reflection->newInstance();
-                static::$callableMap[$task] = $instance;
             } else {
                 throw new PrestaShopException("Failed to resolve WorkQueueTaskCallable class " . $task);
             }
