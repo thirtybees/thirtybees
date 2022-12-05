@@ -606,20 +606,9 @@ class TreeCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function setToolbar($value)
+    public function setToolbar(ITreeToolbarCore $value)
     {
-        if (!is_object($value)) {
-            throw new PrestaShopException('Toolbar must be a class object');
-        }
-
-        $reflection = new ReflectionClass($value);
-
-        if (!$reflection->implementsInterface('ITreeToolbarCore')) {
-            throw new PrestaShopException('Toolbar class must implements ITreeToolbarCore interface');
-        }
-
         $this->_toolbar = $value;
-
         return $this;
     }
 
