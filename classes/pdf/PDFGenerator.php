@@ -20052,9 +20052,9 @@ class PDFGeneratorCore extends TCPDF
      *
      * @since 5.0.010 (2010-05-17)
      */
-    public function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points = false)
+    public function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points = false, $k=1.0, $pagedim=[])
     {
-        return TCPDF_STATIC::setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points);
+        return TCPDF_STATIC::setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points, $k, $pagedim);
     }
 
     /**
