@@ -614,7 +614,6 @@ class StockManagerCore implements StockManagerInterface
      * @param array $criteria
      *
      * @return array
-     * @throws Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -622,15 +621,15 @@ class StockManagerCore implements StockManagerInterface
     protected function validateProductStockCriteria(array $criteria)
     {
         if (!array_key_exists('product_id', $criteria)) {
-            throw new \Exception('Missing product id');
+            throw new InvalidArgumentException('Missing product id');
         }
 
         if (!array_key_exists('product_attribute_id', $criteria)) {
-            throw new \Exception('Missing product combination id');
+            throw new InvalidArgumentException('Missing product combination id');
         }
 
         if (!array_key_exists('warehouse_id', $criteria)) {
-            throw new \Exception('Missing warehouse id');
+            throw new InvalidArgumentException('Missing warehouse id');
         }
 
         return $criteria;
