@@ -47,6 +47,22 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
+     * @param string|null $date
+     * @return int
+     */
+    protected static function convertsDateToTimestamp($date): int
+    {
+        if ($date) {
+            try {
+                $date = new DateTime($date);
+                return $date->getTimestamp();
+            } catch (Exception $ignored) {
+            }
+        }
+        return 0;
+    }
+
+    /**
      * @see     StockManagerInterface::addProduct()
      *
      * @param int           $idProduct
@@ -376,10 +392,7 @@ class StockManagerCore implements StockManagerInterface
                                     continue;
                                 }
                             }
-
-                            // converts date to timestamp
-                            $date = new DateTime($row['date_add']);
-                            $timestamp = $date->format('U');
+                            $timestamp = static::convertsDateToTimestamp($row['date_add']);
 
                             // history of the mvt
                             $stockHistoryQtyAvailable[$timestamp] = [
