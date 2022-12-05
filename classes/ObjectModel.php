@@ -2130,11 +2130,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Returns object definition
      *
-     * @param string      $class Name of object
+     * @param string $class Name of object
      * @param string|null $field Name of field if we want the definition of one field only
      *
      * @return array
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2149,13 +2150,17 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         if ($field !== null || !Cache::isStored($cacheId)) {
-            $reflection = new ReflectionClass($class);
+            try {
+                $reflection = new ReflectionClass($class);
 
-            if (!$reflection->hasProperty('definition')) {
-                return false;
+                if (!$reflection->hasProperty('definition')) {
+                    throw new PrestaShopException("Class '$class' does not contain object model definition");
+                }
+
+                $definition = $reflection->getStaticPropertyValue('definition');
+            } catch (ReflectionException $e) {
+                throw new PrestaShopException("Failed to resolve object model definition for '$class'", 0, $e);
             }
-
-            $definition = $reflection->getStaticPropertyValue('definition');
 
             $definition['classname'] = $class;
 
@@ -2168,7 +2173,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             if ($field) {
-                return isset($definition['fields'][$field]) ? $definition['fields'][$field] : null;
+                return $definition['fields'][$field] ?? null;
             }
 
             Cache::store($cacheId, $definition);
