@@ -2755,7 +2755,6 @@ class AdminThemesControllerCore extends AdminController
      * @return string
      *
      * @throws Exception
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException

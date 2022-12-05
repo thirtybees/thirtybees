@@ -338,7 +338,6 @@ class ReferrerCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -363,7 +362,6 @@ class ReferrerCore extends ObjectModel
      *
      * @return true
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0

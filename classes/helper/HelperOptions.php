@@ -67,7 +67,6 @@ class HelperOptionsCore extends Helper
      * @return string html
      *
      * @throws Exception
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -305,7 +304,6 @@ class HelperOptionsCore extends Helper
      *
      * @return string
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version

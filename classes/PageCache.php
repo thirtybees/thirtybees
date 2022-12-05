@@ -97,7 +97,6 @@ class PageCacheCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      *
      * @since 1.0.7
      */

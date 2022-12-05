@@ -271,7 +271,6 @@ class HookCore extends ObjectModel
      * @return string|array modules output
      *
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

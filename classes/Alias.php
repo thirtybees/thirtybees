@@ -109,7 +109,6 @@ class AliasCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -135,7 +134,6 @@ class AliasCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function delete()
     {

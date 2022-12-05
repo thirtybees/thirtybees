@@ -8,7 +8,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * Before each test callback
      *
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     protected function _before() {
         $this->reset();
@@ -19,7 +18,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * After each test callback
      *
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     protected function _after()
     {
@@ -167,7 +165,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function testASMSingleProductWithoutWarehouseAssociation()
     {
@@ -200,7 +197,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function testASMSingleProductWithWarehouseAssociation()
     {
@@ -235,7 +231,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function testASMSingleProductWithWarehouseAssociationAndProductRestriction()
     {
@@ -271,7 +266,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function testASMMultipleProductsSingleWarehouse()
     {
@@ -313,7 +307,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function testASMMultipleProductsDifferentWarehouses()
     {
@@ -538,7 +531,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
     /**
      * Helper method to restore settings changed by tests
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     private function reset() {
@@ -596,7 +588,6 @@ class CartPackageListTest extends \Codeception\Test\Unit
      * Enabled/Disabled Advanced Stock Management feature
      *
      * @param bool $value
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     private function setASM($value) {

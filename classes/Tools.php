@@ -4578,8 +4578,8 @@ FileETag none
     }
 
     /**
-     * @param      $html
-     * @param null $uriUnescape
+     * @param string|null $html
+     * @param array|null $uriUnescape
      * @param bool $allowStyle
      *
      * @return string
@@ -4587,9 +4587,7 @@ FileETag none
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @todo    : update htmlpurifier
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public static function purifyHTML($html, $uriUnescape = null, $allowStyle = false)
     {
@@ -4605,85 +4603,89 @@ FileETag none
         }
 
         if ($use_html_purifier) {
-            if ($purifier === null) {
-                $config = HTMLPurifier_Config::createDefault();
+            try {
+                if ($purifier === null) {
+                    $config = HTMLPurifier_Config::createDefault();
 
-                $config->set('Attr.EnableID', true);
-                $config->set('HTML.Trusted', true);
-                $config->set('Cache.SerializerPath', _PS_CACHE_DIR_.'purifier');
-                $config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
-                $config->set('Core.NormalizeNewlines', false);
-                if (is_array($uriUnescape)) {
-                    $config->set('URI.UnescapeCharacters', implode('', $uriUnescape));
-                }
-
-                if (Configuration::get('PS_ALLOW_HTML_IFRAME')) {
-                    $config->set('HTML.SafeIframe', true);
-                    $config->set('HTML.SafeObject', true);
-                    $config->set('URI.SafeIframeRegexp', '/.*/');
-                }
-
-                /** @var HTMLPurifier_HTMLDefinition|HTMLPurifier_HTMLModule $def */
-                // http://developers.whatwg.org/the-video-element.html#the-video-element
-                if ($def = $config->getHTMLDefinition(true)) {
-                    $def->addElement(
-                        'video',
-                        'Block',
-                        'Optional: (source, Flow) | (Flow, source) | Flow',
-                        'Common',
-                        [
-                            'src'      => 'URI',
-                            'type'     => 'Text',
-                            'width'    => 'Length',
-                            'height'   => 'Length',
-                            'poster'   => 'URI',
-                            'preload'  => 'Enum#auto,metadata,none',
-                            'controls' => 'Bool',
-                        ]
-                    );
-                    $def->addElement(
-                        'source',
-                        'Block',
-                        'Flow',
-                        'Common',
-                        [
-                            'src'  => 'URI',
-                            'type' => 'Text',
-                        ]
-                    );
-                    $def->addElement(
-                        'meta',
-                        'Inline',
-                        'Empty',
-                        'Common',
-                        [
-                            'itemprop'  => 'Text',
-                            'itemscope' => 'Bool',
-                            'itemtype'  => 'URI',
-                            'name'      => 'Text',
-                            'content'   => 'Text',
-                        ]
-                    );
-                    $def->addElement(
-                        'link',
-                        'Inline',
-                        'Empty',
-                        'Common',
-                        [
-                            'rel'   => 'Text',
-                            'href'  => 'Text',
-                            'sizes' => 'Text',
-                        ]
-                    );
-                    if ($allowStyle) {
-                        $def->addElement('style', 'Block', 'Flow', 'Common', ['type' => 'Text']);
+                    $config->set('Attr.EnableID', true);
+                    $config->set('HTML.Trusted', true);
+                    $config->set('Cache.SerializerPath', _PS_CACHE_DIR_ . 'purifier');
+                    $config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
+                    $config->set('Core.NormalizeNewlines', false);
+                    if (is_array($uriUnescape)) {
+                        $config->set('URI.UnescapeCharacters', implode('', $uriUnescape));
                     }
-                }
 
-                $purifier = new HTMLPurifier($config);
-            }
-            if (! is_null($html)) {
-                $html = $purifier->purify($html);
+                    if (Configuration::get('PS_ALLOW_HTML_IFRAME')) {
+                        $config->set('HTML.SafeIframe', true);
+                        $config->set('HTML.SafeObject', true);
+                        $config->set('URI.SafeIframeRegexp', '/.*/');
+                    }
+
+                    /** @var HTMLPurifier_HTMLDefinition|HTMLPurifier_HTMLModule $def */
+                    // http://developers.whatwg.org/the-video-element.html#the-video-element
+                    if ($def = $config->getHTMLDefinition(true)) {
+                        $def->addElement(
+                            'video',
+                            'Block',
+                            'Optional: (source, Flow) | (Flow, source) | Flow',
+                            'Common',
+                            [
+                                'src' => 'URI',
+                                'type' => 'Text',
+                                'width' => 'Length',
+                                'height' => 'Length',
+                                'poster' => 'URI',
+                                'preload' => 'Enum#auto,metadata,none',
+                                'controls' => 'Bool',
+                            ]
+                        );
+                        $def->addElement(
+                            'source',
+                            'Block',
+                            'Flow',
+                            'Common',
+                            [
+                                'src' => 'URI',
+                                'type' => 'Text',
+                            ]
+                        );
+                        $def->addElement(
+                            'meta',
+                            'Inline',
+                            'Empty',
+                            'Common',
+                            [
+                                'itemprop' => 'Text',
+                                'itemscope' => 'Bool',
+                                'itemtype' => 'URI',
+                                'name' => 'Text',
+                                'content' => 'Text',
+                            ]
+                        );
+                        $def->addElement(
+                            'link',
+                            'Inline',
+                            'Empty',
+                            'Common',
+                            [
+                                'rel' => 'Text',
+                                'href' => 'Text',
+                                'sizes' => 'Text',
+                            ]
+                        );
+                        if ($allowStyle) {
+                            $def->addElement('style', 'Block', 'Flow', 'Common', ['type' => 'Text']);
+                        }
+                    }
+
+                    $purifier = new HTMLPurifier($config);
+                }
+                if (!is_null($html)) {
+                    $html = $purifier->purify($html);
+                }
+            } catch (Throwable $e) {
+                throw new PrestaShopException("Failed to purify html string", 0, $e);
             }
         }
 

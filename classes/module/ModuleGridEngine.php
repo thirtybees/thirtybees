@@ -93,7 +93,6 @@ class ModuleGridEngineCore extends Module
     /**
      * @return bool
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since 1.0.0
      * @version 1.0.0 Initial version

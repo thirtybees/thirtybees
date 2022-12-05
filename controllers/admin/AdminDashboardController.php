@@ -369,7 +369,6 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      * @since 1.0.0
      */
     public function ajaxProcessSetSimulationMode()
@@ -421,7 +420,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0

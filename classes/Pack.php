@@ -441,7 +441,6 @@ class PackCore extends Product
      * @return bool
      *
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      *
      * @since 1.0.0
      */
@@ -486,7 +485,6 @@ class PackCore extends Product
      * @return bool true if everything was fine
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public static function addItem($idProduct, $idItem, $qty, $idAttributeItem = 0)
     {

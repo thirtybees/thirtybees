@@ -242,7 +242,6 @@ class AdminModulesControllerCore extends AdminController
     /**
      * @return void
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @throws SmartyException
      * @since 1.0.0
@@ -266,7 +265,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @throws SmartyException
      * @since 1.0.0
@@ -1043,7 +1041,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since 1.0.0
      */
@@ -1061,7 +1058,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since 1.0.0
      */
@@ -1077,7 +1073,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since 1.0.0
      */
@@ -1883,7 +1878,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @param string $category
      * @return void
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     public function setCategoryFilter($category)

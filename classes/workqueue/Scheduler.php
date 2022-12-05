@@ -23,7 +23,6 @@ use Configuration;
 use DateTime;
 use Db;
 use Exception;
-use HTMLPurifier_Exception;
 use PrestaShopException;
 use Tools;
 
@@ -110,7 +109,6 @@ class SchedulerCore
     /**
      * @return string
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public function getSyntheticEventSecret()
     {

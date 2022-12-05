@@ -680,7 +680,6 @@ class ThemeCore extends ObjectModel
      *               'documents':    Array with documentation links.
      *               'warnings' :    List of warnings
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @version 1.1.0 Excerpt from AdminThemesController->processInstallTheme().

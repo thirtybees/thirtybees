@@ -160,7 +160,6 @@ class AdminCustomerServiceSettingsControllerCore extends AdminController
      *
      * @param string $value new valu
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     public function updateOptionPsSavImapPwd($value)

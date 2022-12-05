@@ -262,7 +262,6 @@ class AdminPreferencesControllerCore extends AdminController
      *
      * @param string $value
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      * @since 1.0.0
      */

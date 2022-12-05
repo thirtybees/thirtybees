@@ -326,7 +326,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException

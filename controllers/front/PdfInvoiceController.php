@@ -97,7 +97,6 @@ class PdfInvoiceControllerCore extends FrontController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @throws HTMLPurifier_Exception
      * @since 1.0.0
      */
     public function display()

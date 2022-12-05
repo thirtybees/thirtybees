@@ -123,7 +123,6 @@ class AdminGeolocationControllerCore extends AdminController
      *
      * @since 1.0.0
      * @return void
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     public function processUpdateOptions()
@@ -173,7 +172,6 @@ class AdminGeolocationControllerCore extends AdminController
      * Callback to save PS_GEOLOATION_WHITELIST option
      *
      * @param string $whitelist ip addresses separated by new line
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopException
      */
     public function updateOptionPsGeolocationWhitelist($whitelist)

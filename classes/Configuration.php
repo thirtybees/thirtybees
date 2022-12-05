@@ -609,7 +609,6 @@ class ConfigurationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public static function updateGlobalValue($key, $values, $html = false)
     {
@@ -631,7 +630,6 @@ class ConfigurationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
     {
@@ -1127,7 +1125,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @return string
      * @throws PrestaShopException
-     * @throws HTMLPurifier_Exception
      */
     public static function getServerTrackingId()
     {
