@@ -83,72 +83,76 @@ class CacheRedisCore extends CacheCore
      */
     public function connect()
     {
-        $this->is_connected = false;
-        $this->_servers = static::getRedisServers();
-        if (!$this->_servers) {
-            return;
-        } else {
-            if (count($this->_servers) > 1) {
-                // Multiple servers, set up redis array
-                $hosts = [];
-                foreach ($this->_servers as $server) {
-                    $hosts[] = $server['ip'].':'.$server['port'];
-                }
-                $this->redis = new RedisArray($hosts, ['pconnect' => true]);
-                foreach ($this->_servers as $server) {
-                    $instance = $this->redis->_instance($server['ip'].':'.$server['port']);
-                    if (!empty($server['auth'])) {
-                        if (is_object($instance)) {
-                            if ($instance->auth($server['auth'])) {
-                                // We're connected as soon as authentication is successful
-                                $this->is_connected = true;
-                            }
-                        }
-                    } else {
-                        $ping = $this->redis->ping();
-                        // We're connected if a connection without +AUTH receives a +PONG
-                        if ($ping === '+PONG') {
-                            $this->is_connected = true;
-                        } elseif (is_array($ping)) {
-                            $ping = array_values($ping);
-                            if (!empty($ping) && $ping[0] === '+PONG') {
-                                $this->is_connected = true;
-                            }
-                        }
+        try {
+            $this->is_connected = false;
+            $this->_servers = static::getRedisServers();
+            if (!$this->_servers) {
+                return;
+            } else {
+                if (count($this->_servers) > 1) {
+                    // Multiple servers, set up redis array
+                    $hosts = [];
+                    foreach ($this->_servers as $server) {
+                        $hosts[] = $server['ip'] . ':' . $server['port'];
                     }
-                }
-                if (!empty($this->_servers[0]['auth'])) {
-                    if (!($this->redis->auth($this->_servers[0]['auth']))) {
-                        return;
-                    }
-                }
-            } elseif (count($this->_servers) === 1) {
-                $this->redis = new Redis();
-                if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
-                    $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
-                    if (!empty($this->_servers[0]['auth'])) {
-                        if (!($this->redis->auth($this->_servers[0]['auth']))) {
-                            return;
-                        } else {
-                            $this->is_connected = true;
-                        }
-                    } else {
-                        try {
-                            $this->redis->select($this->_servers[0]['db']);
-                            $ping = $this->redis->ping();
-                            if (is_array($ping)) {
-                                $ping = array_values($ping);
-                                if (!empty($ping) && $ping[0] === '+PONG') {
-                                    // We're connected if a connection without +AUTH receives a +PONG
+                    $this->redis = new RedisArray($hosts, ['pconnect' => true]);
+                    foreach ($this->_servers as $server) {
+                        $instance = $this->redis->_instance($server['ip'] . ':' . $server['port']);
+                        if (!empty($server['auth'])) {
+                            if (is_object($instance)) {
+                                if ($instance->auth($server['auth'])) {
+                                    // We're connected as soon as authentication is successful
                                     $this->is_connected = true;
                                 }
                             }
-                        } catch (Exception $e) {
-                            $this->is_connected = false;
+                        } else {
+                            $ping = $this->redis->ping();
+                            // We're connected if a connection without +AUTH receives a +PONG
+                            if ($ping === '+PONG') {
+                                $this->is_connected = true;
+                            } elseif (is_array($ping)) {
+                                $ping = array_values($ping);
+                                if (!empty($ping) && $ping[0] === '+PONG') {
+                                    $this->is_connected = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!empty($this->_servers[0]['auth'])) {
+                        if (!($this->redis->auth($this->_servers[0]['auth']))) {
+                            return;
+                        }
+                    }
+                } elseif (count($this->_servers) === 1) {
+                    $this->redis = new Redis();
+                    if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
+                        $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+                        if (!empty($this->_servers[0]['auth'])) {
+                            if (!($this->redis->auth($this->_servers[0]['auth']))) {
+                                return;
+                            } else {
+                                $this->is_connected = true;
+                            }
+                        } else {
+                            try {
+                                $this->redis->select($this->_servers[0]['db']);
+                                $ping = $this->redis->ping();
+                                if (is_array($ping)) {
+                                    $ping = array_values($ping);
+                                    if (!empty($ping) && $ping[0] === '+PONG') {
+                                        // We're connected if a connection without +AUTH receives a +PONG
+                                        $this->is_connected = true;
+                                    }
+                                }
+                            } catch (Exception $e) {
+                                $this->is_connected = false;
+                            }
                         }
                     }
                 }
             }
+        } catch (RedisException $e) {
+            throw new PrestaShopException("Failed to connect to redis", 0, $e);
         }
     }
 
