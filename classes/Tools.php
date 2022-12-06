@@ -2964,21 +2964,22 @@ class ToolsCore
     }
 
     /**
-     * @param $sql
+     * Parse SQL query
      *
-     * @return bool
+     * @param string $sql
+     *
+     * @return array|false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function parserSQL($sql)
     {
-        if (strlen($sql) > 0) {
-            $parser = new PHPSQLParser($sql);
-
-            return $parser->parsed;
+        $sql = (string)$sql;
+        if ($sql) {
+            $parser = new PHPSQLParser();
+            return $parser->parse($sql);
         }
-
         return false;
     }
 
