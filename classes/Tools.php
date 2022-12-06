@@ -4330,11 +4330,8 @@ FileETag none
      */
     public static function arrayUnique($array)
     {
-        if (version_compare(phpversion(), '5.2.9', '<')) {
-            return array_unique($array);
-        } else {
-            return array_unique($array, SORT_REGULAR);
-        }
+        static::displayAsDeprecated();
+        return array_unique($array, SORT_REGULAR);
     }
 
     /**
