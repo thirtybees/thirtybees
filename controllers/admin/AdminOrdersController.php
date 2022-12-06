@@ -2453,7 +2453,7 @@ class AdminOrdersControllerCore extends AdminController
 
         // Create Order detail information
         $orderDetail = new OrderDetail();
-        $orderDetail->createList($order, $cart, $order->getCurrentOrderState(), $cart->getProducts(), (isset($orderInvoice) ? $orderInvoice->id : 0), $useTaxes, (int) Tools::getValue('add_product_warehouse'));
+        $orderDetail->createList($order, $cart, $order->getCurrentState(), $cart->getProducts(), (isset($orderInvoice) ? $orderInvoice->id : 0), $useTaxes, (int) Tools::getValue('add_product_warehouse'));
 
         // update totals amount of order
         $order->total_products += (float) $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
