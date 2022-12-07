@@ -51,8 +51,6 @@ class InstallLanguage
      */
     protected $data;
 
-    protected $fixtures_data;
-
     /**
      * @var array Cache list of informations in language.xml file
      */

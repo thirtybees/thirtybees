@@ -55,7 +55,6 @@ abstract class InstallControllerHttp
      * @var array List of errors
      */
     public $errors = [];
-    public $controller;
     /**
      * @var InstallSession
      */
@@ -76,7 +75,6 @@ abstract class InstallControllerHttp
      * @var InstallAbstractModel
      */
     public $model;
-    protected $phone;
     /**
      * @var array Magic vars
      */
@@ -356,16 +354,6 @@ abstract class InstallControllerHttp
     public function getLastStep()
     {
         return $this->session->lastStep;
-    }
-
-    /**
-     * Get telephone used for this language
-     *
-     * @return string
-     */
-    public function getPhone()
-    {
-        return '';
     }
 
     /**

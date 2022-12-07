@@ -39,8 +39,6 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
     /** @var InstallSession $session */
     public $session;
 
-    public $cacheTimezones;
-
     /** @var array $listActivities */
     public $listActivities;
 
@@ -173,10 +171,6 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
      */
     public function getTimezones()
     {
-        if (!is_null($this->cacheTimezones)) {
-            return [];
-        }
-
         if (!file_exists(_PS_INSTALL_DATA_PATH_.'xml/timezone.xml')) {
             return [];
         }
