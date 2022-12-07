@@ -29,43 +29,60 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-class InstallControllerConsoleProcess extends InstallControllerConsole
+class InstallControllerConsoleProcess
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
-    public $processSteps = [];
-    public $previousButton = false;
 
-    /** @var InstallModelInstall $modelInstall */
+    /**
+     * @var InstallLanguages
+     */
+    public $language;
+
+    /**
+     * @var Datas $datas
+     */
+    public $datas;
+
+    /**
+     * @var InstallModelInstall $modelInstall
+     */
     public $modelInstall;
 
-    /** @var InstallModelDatabase $modelDatabase */
+    /**
+     * @var InstallModelDatabase $modelDatabase
+     */
     public $modelDatabase;
 
-    public function init()
+    /**
+     * @param Datas $datas
+     *
+     * @throws PrestashopInstallerException
+     */
+    public function __construct(Datas $datas)
     {
-        require_once _PS_INSTALL_MODELS_PATH_.'install.php';
-        require_once _PS_INSTALL_MODELS_PATH_.'database.php';
+
+        $this->datas = $datas;
+
+        // Set current language
+        $this->language = InstallLanguages::getInstance();
+        if (!$this->datas->language) {
+            die('No language defined');
+        }
+        $this->language->setLanguage($this->datas->language);
         $this->modelInstall = new InstallModelInstall();
         $this->modelDatabase = new InstallModelDatabase();
     }
 
     /**
-     * @see InstallAbstractModel::processNextStep()
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
-    public function processNextStep()
-    {
-    }
-
-    /**
-     * @see InstallAbstractModel::validate()
-     */
-    public function validate()
-    {
-        return false;
-    }
-
     public function process()
     {
+        $_SERVER['HTTP_HOST'] = $this->datas->httpHost;
+        @date_default_timezone_set($this->datas->timezone);
+
         $steps = explode(',', $this->datas->step);
         if (in_array('all', $steps)) {
             $steps = ['database', 'fixtures', 'modules', 'theme'];
@@ -127,6 +144,10 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
 
     /**
      * PROCESS : generateSettingsFile
+     *
+     * @return bool
+     *
+     * @throws PrestashopInstallerException
      */
     public function processGenerateSettingsFile()
     {
@@ -142,6 +163,10 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : installDatabase
      * Create database structure
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
      */
     public function processInstallDatabase()
     {
@@ -151,6 +176,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : installDefaultData
      * Create default shop and languages
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processInstallDefaultData()
     {
@@ -221,6 +251,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : populateDatabase
      * Populate database with default data
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processPopulateDatabase()
     {
@@ -234,6 +269,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : configureShop
      * Set default shop configuration
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processConfigureShop()
     {
@@ -259,6 +299,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processInstallFixtures()
     {
@@ -272,6 +317,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : initializeClasses
      * Executes initialization callbacks on all classes that implements the interface
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processInitializeClasses()
     {
@@ -283,6 +333,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : installModules
      * Install all modules in ~/modules/ directory
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processInstallModules()
     {
@@ -294,6 +349,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : installTheme
      * Install theme
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processInstallTheme()
     {
@@ -305,6 +365,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /**
      * PROCESS : sendEmail
      * Send information e-mail
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processSendEmail()
     {
@@ -341,5 +406,40 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         );
 
         return true;
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function printErrors()
+    {
+        $errors = $this->modelInstall->getErrors();
+        if (count($errors)) {
+            if (!is_array($errors)) {
+                $errors = [$errors];
+            }
+            echo 'Errors :' . "\n";
+            foreach ($errors as $errorProcess) {
+                foreach ($errorProcess as $error) {
+                    echo (is_string($error) ? $error : print_r($error, true)) . "\n";
+                }
+            }
+            die;
+        }
+    }
+
+    /**
+     * Get translated string
+     *
+     * @param string $str String to translate
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function l($str)
+    {
+        $args = func_get_args();
+        return call_user_func_array([$this->language, 'l'], $args);
     }
 }

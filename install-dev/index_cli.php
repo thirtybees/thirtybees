@@ -43,12 +43,16 @@ if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
 
 /* Redefine REQUEST_URI */
 $_SERVER['REQUEST_URI'] = '/install/index_cli.php';
-require_once dirname(__FILE__).'/init.php';
+
+// include dependencies
+require_once __DIR__ . '/init.php';
+require_once _PS_INSTALL_MODELS_PATH_.'install.php';
+require_once _PS_INSTALL_MODELS_PATH_.'database.php';
+require_once _PS_INSTALL_CONTROLLERS_PATH_.'console/process.php';
 require_once _TB_INSTALL_PATH_.'classes/datas.php';
+require_once _TB_INSTALL_PATH_.'classes/controllerConsole.php';
 
 try {
-    require_once _TB_INSTALL_PATH_.'classes/controllerConsole.php';
-
     $tests = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
     foreach ($tests as $test => $result) {
         if ($result !== 'ok') {

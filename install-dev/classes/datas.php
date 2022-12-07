@@ -31,6 +31,9 @@
  */
 class Datas
 {
+    /**
+     * @var array
+     */
     protected static $availableArgs = [
         'step'              => [
             'name'     => 'step',
@@ -105,12 +108,6 @@ class Datas
             'default'  => 'tb_',
             'validate' => 'isGenericName',
         ],
-        'databaseEngine'   => [
-            'name'     => 'engine',
-            'validate' => 'isMySQLEngine',
-            'default'  => 'InnoDB',
-            'help'     => 'InnoDB/MyISAM',
-        ],
         'shopName'         => [
             'name'     => 'name',
             'validate' => 'isGenericName',
@@ -157,72 +154,121 @@ class Datas
             'help'    => 'send an email to the administrator after installation',
         ],
     ];
-    private static $instance = null;
-    protected $datas = [];
-
-//    public $showLicense;
-//    public $httpHost;
-//    public $timezone;
-//    public $language;
-//
-//    public $databaseCreate;
-//    public $modelDatabase;
-//    public $newsletter;
-//    public $adminEmail;
-//    public $lang;
-//    public $sendEmail;
-//    public $databaseServer;
-//    public $databaseLogin;
-//    public $databasePassword;
-//    public $databaseName;
-//    public $databasePrefix;
-//    public $databaseEngine;
-//    public $databaseClear;
-//    public $shopName;
-//    public $baseUri;
-//    public $shopCountry;
-//    public $allLanguages;
-//
-//    public $step;
-//
-//    public $xmlLoaderIds;
-//
-//    public $shopActivity;
-//    public $adminFirstname;
-//    public $adminLastname;
-//    public $adminPassword;
-//
-//    public $smtpServer;
-//    public $smtpLogin;
-//    public $smtpPassword;
-//    public $smtpPort;
-//    public $smtpEncryption;
-
 
     /**
-     * @return Datas
+     * @var string
      */
-    public static function getInstance()
-    {
-        if (Datas::$instance === null) {
-            Datas::$instance = new Datas();
-        }
+    public $step;
 
-        return Datas::$instance;
-    }
+    /**
+     * @var string
+     */
+    public $language;
 
-    public function __get($key)
-    {
-        if (isset($this->datas[$key])) {
-            return $this->datas[$key];
-        }
-        return false;
-    }
-    public function __set($key, $value)
-    {
-        $this->datas[$key] = $value;
-    }
+    /**
+     * @var bool
+     */
+    public $allLanguages;
 
+    /**
+     * @var string
+     */
+    public $timezone;
+
+    /**
+     * @var string
+     */
+    public $baseUri;
+
+    /**
+     * @var string
+     */
+    public $httpHost;
+
+    /**
+     * @var string
+     */
+    public $databaseServer;
+
+    /**
+     * @var string
+     */
+    public $databaseLogin;
+
+    /**
+     * @var string
+     */
+    public $databasePassword;
+
+    /**
+     * @var string
+     */
+    public $databaseName;
+
+    /**
+     * @var bool
+     */
+    public $databaseClear;
+
+    /**
+     * @var bool
+     */
+    public $databaseCreate;
+
+    /**
+     * @var string
+     */
+    public $databasePrefix;
+
+    /**
+     * @var string
+     */
+    public $shopName;
+
+    /**
+     * @var  int
+     */
+    public $shopActivity;
+
+    /**
+     * @var string
+     */
+    public $shopCountry;
+
+    /**
+     * @var string
+     */
+    public $adminFirstname;
+
+    /**
+     * @var string
+     */
+    public $adminLastname;
+
+    /**
+     * @var string
+     */
+    public $adminPassword;
+
+    /**
+     * @var string
+     */
+    public $adminEmail;
+
+    /**
+     * @var bool
+     */
+    public $showLicense;
+
+    /**
+     * @var bool
+     */
+    public $sendEmail;
+
+    /**
+     * @param string[] $argv
+     * @return string[]|bool
+     */
     public function getAndCheckArgs($argv)
     {
         if (!$argv) {
@@ -245,12 +291,8 @@ class Datas
         }
 
         $errors = [];
-        foreach (Datas::getArgs() as $key => $row) {
-            if (isset($row['name'])) {
-                $name = $row['name'];
-            } else {
-                $name = $key;
-            }
+        foreach (static::$availableArgs as $key => $row) {
+            $name = $row['name'] ?? $key;
             if (!isset($argsOk[$name])) {
                 if (!isset($row['default'])) {
                     $errors[] = 'Field '.$row['name'].' is empty';

@@ -34,63 +34,23 @@
  *
  * @since 1.0.0
  */
-abstract class InstallControllerConsole
+class InstallControllerConsole
 {
     /**
-     * @var array List of installer steps
-     */
-    protected static $steps = ['process'];
-
-    protected static $instances = [];
-
-    /**
-     * @var string Current step
-     */
-    public $step;
-
-    /**
-     * @var array List of errors
-     */
-    public $errors = [];
-
-    /**
-     * @var InstallSession
-     */
-    public $session;
-
-    /**
-     * @var InstallLanguages
-     */
-    public $language;
-
-    /**
-     * @var InstallAbstractModel
-     */
-    public $model;
-
-    /** @var InstallModelInstall $modelInstall */
-    public $modelInstall;
-
-    /** @var Datas $datas */
-    public $datas;
-
-    /**
-     * Validate current step
-     */
-    abstract public function validate();
-
-    /**
-     * @param $argc
-     * @param $argv
+     * @param int $argc
+     * @param string[] $argv
      *
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      * @throws PrestashopInstallerException
-     *
      * @since 1.0.0
      */
     final public static function execute($argc, $argv)
     {
+        // process command lines parameters
+        $datas = new Datas();
         if (!($argc-1)) {
-            $availableArguments = Datas::getInstance()->getArgs();
+            $availableArguments = $datas->getArgs();
             echo 'Arguments available:'."\n";
             foreach ($availableArguments as $key => $arg) {
                 $name = isset($arg['name']) ? $arg['name'] : $key;
@@ -99,8 +59,8 @@ abstract class InstallControllerConsole
             exit;
         }
 
-        $errors = Datas::getInstance()->getAndCheckArgs($argv);
-        if (Datas::getInstance()->showLicense) {
+        $errors = $datas->getAndCheckArgs($argv);
+        if ($datas->showLicense) {
             echo strip_tags(file_get_contents(_TB_INSTALL_PATH_.'theme/views/license_content.phtml'));
             exit;
         }
@@ -114,94 +74,9 @@ abstract class InstallControllerConsole
             exit;
         }
 
-        if (!file_exists(_PS_INSTALL_CONTROLLERS_PATH_.'console/process.php')) {
-            throw new PrestashopInstallerException("Controller file 'console/process.php' not found");
-        }
-
-        require_once _PS_INSTALL_CONTROLLERS_PATH_.'console/process.php';
-        self::$instances['process'] = new InstallControllerConsoleProcess('process');
-
-        $datas = Datas::getInstance();
-
-        /* redefine HTTP_HOST  */
-        $_SERVER['HTTP_HOST'] = $datas->httpHost;
-
-        @date_default_timezone_set($datas->timezone);
-
-        self::$instances['process']->process();
+        // run installation process
+        $process = new InstallControllerConsoleProcess($datas);
+        $process->process();
     }
 
-    /**
-     * InstallControllerConsole constructor.
-     *
-     * @param string $step
-     *
-     * @since 1.0.0
-     * @throws PrestashopInstallerException
-     */
-    final public function __construct($step)
-    {
-        $this->step = $step;
-        $this->datas = Datas::getInstance();
-
-        // Set current language
-        $this->language = InstallLanguages::getInstance();
-        if (!$this->datas->language) {
-            die('No language defined');
-        }
-        $this->language->setLanguage($this->datas->language);
-
-        $this->init();
-    }
-
-    /**
-     * Initialize model
-     *
-     * @since 1.0.0
-     */
-    public function init()
-    {
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function printErrors()
-    {
-        $errors = $this->modelInstall->getErrors();
-        if (count($errors)) {
-            if (!is_array($errors)) {
-                $errors = [$errors];
-            }
-            echo 'Errors :'."\n";
-            foreach ($errors as $errorProcess) {
-                foreach ($errorProcess as $error) {
-                    echo (is_string($error) ? $error : print_r($error, true))."\n";
-                }
-            }
-            die;
-        }
-    }
-
-    /**
-     * Get translated string
-     *
-     * @param string $str String to translate
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function l($str)
-    {
-        $args = func_get_args();
-        return call_user_func_array([$this->language, 'l'], $args);
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function process()
-    {
-    }
 }
