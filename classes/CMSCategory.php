@@ -867,8 +867,6 @@ class CMSCategoryCore extends ObjectModel
             }
             $idCurrent = $result[0]['id_parent'];
         }
-
-        return false;
     }
 
     /**
