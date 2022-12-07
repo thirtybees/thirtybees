@@ -238,10 +238,6 @@ class InstallXmlLoader
     protected function loadEntity($entity, $iso = null)
     {
         if (!isset($this->cache_xml_entity[$this->path_type][$entity][$iso])) {
-            if (substr($entity, 0, 1) == '.' || substr($entity, 0, 1) == '_') {
-                return;
-            }
-
             $path = $this->data_path.$entity.'.xml';
             if ($iso) {
                 $path = $this->lang_path.$this->getFallBackToDefaultLanguage($iso).'/data/'.$entity.'.xml';
