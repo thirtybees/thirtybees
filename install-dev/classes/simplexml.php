@@ -45,8 +45,8 @@ class InstallSimplexmlElement extends SimpleXMLElement
     #[\ReturnTypeWillChange]
     public function addChild($name, $value = null, $namespace = null)
     {
+        $content = trim((string) $value);
         if ($value instanceof SimplexmlElement) {
-            $content = trim((string) $value);
             if (strlen($content) > 0) {
                 $newElement = parent::addChild($name, str_replace('&', '&amp;', $content), $namespace);
             } else {
@@ -62,7 +62,7 @@ class InstallSimplexmlElement extends SimpleXMLElement
 
             return $newElement;
         } else {
-            return parent::addChild($name, str_replace('&', '&amp;', $value), $namespace);
+            return parent::addChild($name, str_replace('&', '&amp;', $content), $namespace);
         }
     }
 
