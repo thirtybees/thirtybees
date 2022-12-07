@@ -980,7 +980,7 @@ class InstallXmlLoader
         if ($this->entityExists($entity)) {
             $xml = $this->loadEntity($entity);
         } else {
-            $xml = new InstallSimplexmlElement('<entity_'.$entity.' />');
+            $xml = static::createEmptyEntityXmlElement($entity);
         }
         unset($xml->fields);
 
@@ -1218,7 +1218,7 @@ class InstallXmlLoader
                     mkdir($this->lang_path.$this->getFallBackToDefaultLanguage($iso).'/data');
                 }
 
-                $xmlNode = new InstallSimplexmlElement('<entity_'.$entity.' />');
+                $xmlNode = static::createEmptyEntityXmlElement($entity);
                 $this->createXmlEntityNodes($entity, $nodes, $xmlNode);
                 $xmlNode->asXML($this->lang_path.$this->getFallBackToDefaultLanguage($iso).'/data/'.$entity.'.xml');
             }
@@ -1546,6 +1546,21 @@ class InstallXmlLoader
             if (file_exists($fromPath.$tab->class_name.'.gif')) {
                 copy($fromPath.$tab->class_name.'.gif', $backupPath.$tab->class_name.'.gif');
             }
+        }
+    }
+
+    /**
+     * Returns empty InstallSimplexmlElement for given entity
+     *
+     * @param string $entity
+     * @return InstallSimplexmlElement
+     */
+    protected static function createEmptyEntityXmlElement($entity): InstallSimplexmlElement
+    {
+        try {
+            return new InstallSimplexmlElement('<entity_' . $entity . ' />');
+        } catch (Exception $e) {
+            throw new RuntimeException("Failed to create InstallSimplexmlElement", 0, $e);
         }
     }
 }
