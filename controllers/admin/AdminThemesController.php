@@ -31,38 +31,109 @@
 
 /**
  * Class AdminThemesControllerCore
- *
- * @since 1.0.0
  */
 class AdminThemesControllerCore extends AdminController
 {
     const MAX_NAME_LENGTH = 128;
-    // @codingStandardsIgnoreStart
+
+    /**
+     * @var string
+     */
     public $className = 'Theme';
+
+    /**
+     * @var string
+     */
     public $table = 'theme';
+
+    /**
+     * @var bool
+     */
     protected $toolbar_scroll = false;
+
+    /**
+     * @var string
+     */
     private $img_error;
+
+    /**
+     * @var bool
+     */
     public $can_display_themes = false;
+
+    /**
+     * @var array
+     */
     public $to_install = [];
+
+    /**
+     * @var array
+     */
     public $to_enable = [];
+
+    /**
+     * @var array
+     */
     public $to_disable = [];
+
+    /**
+     * @var array
+     */
     public $to_hook = [];
+
+    /**
+     * @var array
+     */
     public $hook_list = [];
+
+    /**
+     * @var array
+     */
     public $module_list = [];
+
+    /**
+     * @var array
+     */
     public $native_modules = []; // Deprecate, always empty.
+
+    /**
+     * @var array
+     */
     public $user_doc = [];
+
+    /**
+     * @var array
+     */
     public $image_list = [];
+
+    /**
+     * @var array
+     */
     public $to_export = [];
+
+    /**
+     * @var array
+     */
     private $modules_errors = [];
+
+    /**
+     * @var array
+     */
     private $doc = [];
+
+    /**
+     * @var array
+     */
     private $installWarnings = [];
+
+    /**
+     * @var string
+     */
     private $theme_name;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminThemesControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -76,11 +147,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws SmartyException
-     * @since 1.0.0
      */
     public function init()
     {
@@ -215,11 +283,10 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws ReflectionException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -489,8 +556,6 @@ class AdminThemesControllerCore extends AdminController
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function downloadAddonsThemes()
     {
@@ -502,7 +567,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool|Theme
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processAdd()
@@ -616,7 +680,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processUpdate()
     {
@@ -660,7 +723,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processDelete()
     {
@@ -709,7 +771,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processExportTheme()
     {
@@ -853,8 +914,6 @@ class AdminThemesControllerCore extends AdminController
      * Check posted data
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function checkPostedDatas()
     {
@@ -878,8 +937,6 @@ class AdminThemesControllerCore extends AdminController
      * Check versions and compatibility
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function checkVersionsAndCompatibility()
     {
@@ -902,8 +959,6 @@ class AdminThemesControllerCore extends AdminController
      * Check names
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function checkNames()
     {
@@ -927,8 +982,6 @@ class AdminThemesControllerCore extends AdminController
      * Check documentation
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function checkDocumentation()
     {
@@ -965,7 +1018,6 @@ class AdminThemesControllerCore extends AdminController
      * @param Theme $themeToExport
      * @param array $metas
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function generateXML($themeToExport, $metas)
@@ -1067,8 +1119,6 @@ class AdminThemesControllerCore extends AdminController
      * Generate archive
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function generateArchive()
     {
@@ -1144,11 +1194,9 @@ class AdminThemesControllerCore extends AdminController
 
     /**
      * @param ZipArchive $obj
-     * @param string     $file
-     * @param string     $serverPath
-     * @param string     $archivePath
-     *
-     * @since 1.0.0
+     * @param string $file
+     * @param string $serverPath
+     * @param string $archivePath
      */
     protected function archiveThisFile($obj, $file, $serverPath, $archivePath)
     {
@@ -1169,12 +1217,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Renamed from renderExportTheme1(). Always render export
      *                of the current theme.
      */
     protected function renderExportTheme()
@@ -1360,7 +1405,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function formatHelperArray($originArr)
     {
@@ -1388,7 +1432,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processImportTheme()
@@ -1463,12 +1506,10 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Extract theme
      *
-     * @param $themeZipFile
-     * @param $sandbox
+     * @param string $themeZipFile
+     * @param string $sandbox
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function extractTheme($themeZipFile, $sandbox)
     {
@@ -1490,14 +1531,11 @@ class AdminThemesControllerCore extends AdminController
      * Install theme
      *
      * @param string $themeDir
-     * @param bool   $sandbox
-     * @param bool   $redirect
-     *
-     * @return bool
+     * @param bool $sandbox
+     * @param bool $redirect
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function installTheme($themeDir, $sandbox = false, $redirect = true)
     {
@@ -1601,7 +1639,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @deprecated 1.0.7 Use Theme::validateConfigFile() instead.
      */
     protected function checkXmlFields($xmlFile)
@@ -1620,11 +1657,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderImportTheme()
     {
@@ -1752,10 +1787,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -1795,7 +1828,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
@@ -1833,7 +1865,7 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function ajaxProcessGetAddonsThemes()
     {
@@ -1841,7 +1873,6 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * @version 1.0.0 Initial version.
      * @deprecated 1.1.0
      */
     public function renderChooseThemeModule()
@@ -1850,7 +1881,7 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * @version 1.0.0 Initial version.
+     * @throws PrestaShopException
      * @deprecated 1.1.0 After rename to processInstallTheme().
      */
     public function processThemeInstall()
@@ -1867,8 +1898,6 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
-     * @version 1.0.0 Initial version as processThemeInstall().
-     * @version 1.1.0 Install always the default configuration and always to
      *                the current shop context (which can be multiple shops).
      *                Also renamed.
      */
@@ -1959,10 +1988,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderView()
     {
@@ -1982,7 +2009,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * This functions make checks about AdminThemes configuration edition only.
      *
-     * @since 1.4
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -2002,7 +2029,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Update PS_LOGO
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsLogo()
     {
@@ -2017,7 +2044,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function updateLogo($fieldName, $logoPrefix)
@@ -2094,7 +2120,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function updateOptionPsLogoMail()
@@ -2107,7 +2132,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function updateOptionPsLogoInvoice()
@@ -2120,7 +2144,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function updateOptionPsStoresIcon()
@@ -2133,7 +2156,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function updateOptionPsFavicon()
@@ -2157,7 +2179,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Process the favicon sizes
      *
-     * @since 1.0.4
+     * @throws DOMException
      * @throws PrestaShopException
      */
     public function updateOptionTbSourceFaviconCode()
@@ -2269,8 +2291,6 @@ class AdminThemesControllerCore extends AdminController
      * @param string $dest
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function uploadIco($name, $dest)
     {
@@ -2294,7 +2314,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      * @throws PrestaShopException
      */
@@ -2321,7 +2340,6 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Update PS_FAVICON_72
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      * @throws PrestaShopException
      */
@@ -2348,7 +2366,6 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Update PS_FAVICON_114
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      * @throws PrestaShopException
      */
@@ -2375,7 +2392,6 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Update PS_FAVICON_144
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      * @throws PrestaShopException
      */
@@ -2402,7 +2418,6 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Update PS_FAVICON_192
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      * @throws PrestaShopException
      */
@@ -2429,7 +2444,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Refresh the favicon template
      *
-     * @since 1.0.4 to enable the favicon template
+     * @throws PrestaShopException
      */
     public function ajaxProcessRefreshFaviconTemplate()
     {
@@ -2466,7 +2481,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function updateOptionThemeForShop()
     {
@@ -2486,8 +2500,6 @@ class AdminThemesControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -2537,11 +2549,9 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Print responsive icon
      *
-     * @param mixed $value
+     * @param bool $value
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function printResponsiveIcon($value)
     {
@@ -2553,7 +2563,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return false|ObjectModel|Theme
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processResponsive()
@@ -2577,7 +2586,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return false|ObjectModel|Theme
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processDefaultLeftColumn()
@@ -2601,7 +2609,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return false|ObjectModel|Theme
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processDefaultRightColumn()
@@ -2627,7 +2634,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessLeftMeta()
     {
@@ -2655,7 +2661,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      * @deprecated 1.1.0 No longer in use, there's ajaxProcessLeftMeta().
      */
     public function processLeftMeta()
@@ -2692,7 +2697,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @sicne 1.0.0
      */
     public function ajaxProcessRightMeta()
     {
@@ -2719,7 +2723,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      * @deprecated 1.1.0 No longer in use, there's ajaxProcessRightMeta().
      */
     public function processRightMeta()
@@ -2754,11 +2757,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderOptions()
     {
@@ -2794,7 +2795,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -2807,7 +2807,6 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function processUpdateOptions()
@@ -2826,16 +2825,16 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Generate a cached thumbnail for object lists (eg. carrier, order statuses...etc)
      *
-     * @param string $image        Real image filename
-     * @param string $cacheImage   Cached filename
-     * @param int    $size         Desired size
-     * @param string $imageType    Image type
-     * @param bool   $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
-     * @param bool   $regenerate   When turned on and the file already exist, the file will be regenerated
+     * @param string $image Real image filename
+     * @param string $cacheImage Cached filename
+     * @param int $size Desired size
+     * @param string $imageType Image type
+     * @param bool $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
+     * @param bool $regenerate When turned on and the file already exist, the file will be regenerated
      *
      * @return string
      *
-     * @since   1.0.4
+     * @throws PrestaShopException
      */
     protected function thumbnail($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
     {

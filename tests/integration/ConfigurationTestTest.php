@@ -59,7 +59,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
     /**
      * @dataProvider checkProvider
      *
-     * @param string     $test
+     * @param string $test
      * @param array|null $args (string|null?)
      */
     public function testTestsShouldBeOk($test, $args)

@@ -28,8 +28,6 @@ use Throwable;
 
 /**
  * Class ErrorHandlerCore
- *
- * @since 1.1.0
  */
 class ErrorHandlerCore
 {
@@ -54,9 +52,9 @@ class ErrorHandlerCore
     protected $fatalErrorHandler;
 
     /**
-     * Constructs and initialize error handling logic
+     * Error handler constructor
      *
-     * @since 1.1.0
+     * Creates and initialize error handling logic
      */
     public function __construct(ErrorResponseInterface $errorResponse)
     {
@@ -88,11 +86,9 @@ class ErrorHandlerCore
      *
      * @param bool $includeSuppressed if true, result will include even
      *             messages that were suppressed using @ operator
-     * @param int  $mask message types to return, defaults to E_ALL.
+     * @param int $mask message types to return, defaults to E_ALL.
      *
      * @return array of collected error messages
-     *
-     * @since 1.1.0
      */
     public function getErrorMessages($includeSuppressed = false, $mask = E_ALL)
     {
@@ -113,8 +109,6 @@ class ErrorHandlerCore
      * this method.
      *
      * @param Throwable $e uncaught exception
-     *
-     * @since 1.1.0
      */
     public function uncaughtExceptionHandler(Throwable $e)
     {
@@ -185,8 +179,6 @@ class ErrorHandlerCore
      * @param int $errline line number the error was raised at
      *
      * @return bool
-     *
-     * @since 1.1.0
      */
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
@@ -230,7 +222,7 @@ class ErrorHandlerCore
     /**
      * Shutdown handler let us detect and react to fatal errors.
      *
-     * @since 1.1.0
+     * @return void
      */
     public function shutdown()
     {
@@ -253,8 +245,6 @@ class ErrorHandlerCore
      *
      * @param LoggerInterface $logger
      * @param bool $replay
-     *
-     * @since 1.1.0
      */
     public function addLogger(LoggerInterface $logger, $replay=false)
     {
@@ -269,7 +259,7 @@ class ErrorHandlerCore
     /**
      * Allows set custom handler for fatal errors. Returns previous handler, if exists
      *
-     * @param $callable
+     * @param callable $callable
      * @return callable | null
      */
     public function setFatalErrorHandler($callable)
@@ -282,9 +272,7 @@ class ErrorHandlerCore
     /**
      * Forward error message to psr compliant logger.
      *
-     * @param $msg
-     *
-     * @since 1.1.0
+     * @param array $msg
      */
     protected function logMessage($msg)
     {
@@ -299,7 +287,7 @@ class ErrorHandlerCore
     /**
      * Converts $msg to string representation
      *
-     * @param $msg array error message
+     * @param array $msg error message
      *
      * @return string
      */
@@ -317,8 +305,6 @@ class ErrorHandlerCore
      * @param int $errno level of the error raised
      *
      * @return string error type
-     *
-     * @since 1.1.0
      */
     public static function getErrorType($errno)
     {
@@ -345,8 +331,6 @@ class ErrorHandlerCore
      *
      * @param int $errno
      * @return boolean
-     *
-     * @since 1.1.0
      */
     public static function isFatalError($errno)
     {
@@ -365,8 +349,6 @@ class ErrorHandlerCore
      * @param int $errno level of the error raised
      *
      * @return string error log level
-     *
-     * @since 1.1.0
      */
     public static function getLogLevel($errno)
     {
@@ -394,8 +376,6 @@ class ErrorHandlerCore
      * Returns true, if display_errors settings is turned on.
      *
      * @return boolean
-     *
-     * @since 1.1.0
      */
     public static function displayErrorEnabled() {
         $value = @ini_get('display_errors');
@@ -418,7 +398,7 @@ class ErrorHandlerCore
 
     /**
      * @param LoggerInterface $logger
-     * @param $msg
+     * @param array $msg
      * @return void
      */
     protected function sendMessageToLogger(LoggerInterface $logger, $msg)

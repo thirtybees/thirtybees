@@ -39,13 +39,39 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
      */
     public $modelDatabase;
 
+    /**
+     * @var string
+     */
     public $databaseServer;
+
+    /**
+     * @var string
+     */
     public $databaseName;
+
+    /**
+     * @var string
+     */
     public $databaseLogin;
+
+    /**
+     * @var string
+     */
     public $databasePassword;
+
+    /**
+     * @var string
+     */
     public $databasePrefix;
+
+    /**
+     * @var bool
+     */
     public $databaseClear;
 
+    /**
+     * @return void
+     */
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'database.php';
@@ -90,6 +116,9 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         return true;
     }
 
+    /**
+     * @return void
+     */
     public function process()
     {
         if (Tools::getValue('checkDb')) {
@@ -101,6 +130,8 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
 
     /**
      * Check if a connection to database is possible with these data
+     *
+     * @return void
      */
     public function processCheckDb()
     {
@@ -121,6 +152,8 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
 
     /**
      * Attempt to create the database
+     *
+     * @return void
      */
     public function processCreateDb()
     {

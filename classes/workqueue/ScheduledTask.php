@@ -30,13 +30,11 @@ use PrestaShopException;
 
 /**
  * Class ScheduledTaskCore
- *
- * @since 1.3.0
  */
 class ScheduledTaskCore extends ObjectModel
 {
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'scheduled_task',
@@ -280,7 +278,7 @@ class ScheduledTaskCore extends ObjectModel
     /**
      * Returns DateTime from which the cron expression will be check
      *
-     * @throws Exception
+     * @return DateTime
      */
     protected function getStartOfCheckInterval()
     {
@@ -454,7 +452,6 @@ class ScheduledTaskCore extends ObjectModel
      *
      * @param int $ts unit timestamp
      * @return DateTime
-     * @throws Exception
      */
     protected static function fromTimestamp($ts)
     {

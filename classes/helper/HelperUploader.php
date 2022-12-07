@@ -31,8 +31,6 @@
 
 /**
  * Class HelperUploaderCore
- *
- * @since 1.0.0
  */
 class HelperUploaderCore extends Uploader
 {
@@ -106,10 +104,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param Context $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setContext($value)
     {
@@ -120,9 +115,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return Context
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContext()
     {
@@ -136,10 +128,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setDropZone($value)
     {
@@ -150,9 +139,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDropZone()
     {
@@ -166,10 +152,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setId($value)
     {
@@ -193,7 +176,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param array[] $value
      *
-     * @return $this
+     * @return static
      */
     public function setFiles($value)
     {
@@ -203,10 +186,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @returne array[]
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return array[]
      */
     public function getFiles()
     {
@@ -220,10 +200,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setMaxFiles($value)
     {
@@ -234,9 +211,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMaxFiles()
     {
@@ -246,10 +220,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setMultiple($value)
     {
@@ -261,10 +232,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setName($value)
     {
@@ -275,9 +243,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getName()
     {
@@ -287,10 +252,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setPostMaxSize($value)
     {
@@ -302,8 +264,6 @@ class HelperUploaderCore extends Uploader
     /**
      * @return int
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.4.0 Not used anymore
      */
     public function getPostMaxSize()
@@ -314,10 +274,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplate($value)
     {
@@ -328,9 +285,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplate()
     {
@@ -344,10 +298,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplateDirectory($value)
     {
@@ -358,9 +309,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateDirectory()
     {
@@ -376,8 +324,7 @@ class HelperUploaderCore extends Uploader
      *
      * @return string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTemplateFile($template)
     {
@@ -403,10 +350,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTitle($value)
     {
@@ -417,9 +361,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTitle()
     {
@@ -429,10 +370,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUrl($value)
     {
@@ -443,9 +381,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getUrl()
     {
@@ -455,10 +390,7 @@ class HelperUploaderCore extends Uploader
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUseAjax($value)
     {
@@ -469,9 +401,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isMultiple()
     {
@@ -481,9 +410,8 @@ class HelperUploaderCore extends Uploader
     /**
      * @return string
      *
+     * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function render()
     {
@@ -531,9 +459,6 @@ class HelperUploaderCore extends Uploader
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useAjax()
     {

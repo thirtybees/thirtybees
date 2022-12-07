@@ -29,8 +29,6 @@ use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class ConsentCore
- *
- * @since 1.3.0
  */
 class ConsentCore extends ObjectModel implements InitializationCallback
 {
@@ -39,7 +37,7 @@ class ConsentCore extends ObjectModel implements InitializationCallback
     const PREFIX_EXTRACTOR = "extractor_";
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'tracking_consent',
@@ -140,9 +138,9 @@ class ConsentCore extends ObjectModel implements InitializationCallback
      *  - entire group is allowed to be send (consents contains 'group_<name>' key
      *  - extractor is specifically allowed (consents contains 'extractor_<name>' key
      *
-     * @param $groupId
-     * @param $extractorId
-     * @param $consents
+     * @param int $groupId
+     * @param int $extractorId
+     * @param array $consents
      * @return bool
      */
     protected static function extractorAllowed($groupId, $extractorId, $consents)

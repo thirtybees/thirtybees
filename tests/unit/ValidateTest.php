@@ -2,8 +2,14 @@
 
 class ValidateTest extends \Codeception\TestCase\Test
 {
+    /**
+     * @var UnitTester
+     */
     public $tester;
 
+    /**
+     * @return array[]
+     */
     public function isIp2LongDataProvider()
     {
         return [
@@ -20,11 +26,17 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isIp2Long($input));
     }
 
+    /**
+     * @return void
+     */
     public function testIsAnything()
     {
         $this->assertTrue(Validate::isAnything());
     }
 
+    /**
+     * @return array
+     */
     public function isEmailDataProvider()
     {
         return [
@@ -88,6 +100,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isEmail($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isModuleUrlDataProvider()
     {
         return [
@@ -109,7 +124,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider  isModuleUrlDataProvider
@@ -119,6 +134,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isModuleUrl($input, $errors));
     }
 
+    /**
+     * @return array
+     */
     public function isMd5DataProvider()
     {
         return [
@@ -139,6 +157,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isMd5($input));
     }
 
+    /**
+     * @return array
+     */
     public function isSha1DataProvider()
     {
         return [
@@ -160,6 +181,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isSha1($input));
     }
 
+    /**
+     * @return array
+     */
     public function isUnsignedFloatDataProvider()
     {
         return array_merge(
@@ -183,6 +207,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isUnsignedFloat($input));
     }
 
+    /**
+     * @return array
+     */
     public function isFloatDataProvider()
     {
         return array_merge(
@@ -198,6 +225,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         );
     }
 
+    /**
+     * @return array[]
+     */
     public function trueFloatDataProvider()
     {
         return [
@@ -208,6 +238,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         ];
     }
 
+    /**
+     * @return array
+     */
     public function isOptFloatDataProvider()
     {
         return array_merge(
@@ -237,6 +270,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isFloat($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isCarrierNameDataProvider()
     {
         return [
@@ -249,7 +285,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isCarrierNameDataProvider
@@ -259,6 +295,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isCarrierName($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isImageSizeDataProvider()
     {
         return [
@@ -269,7 +308,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isImageSizeDataProvider
@@ -279,6 +318,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isImageSize($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isDateProvider()
     {
         return [
@@ -292,7 +334,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isDateProvider
@@ -302,6 +344,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isDate($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isBirthDateProvider()
     {
         return [
@@ -315,7 +360,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isBirthDateProvider
@@ -325,6 +370,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isBirthDate($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isUrlDataProvider()
     {
         return [
@@ -337,8 +385,8 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param $expected
-     * @param $input
+     * @param bool $expected
+     * @param string $input
      *
      * @dataProvider isUrlDataProvider
      */
@@ -347,6 +395,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isUrl($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isAbsoluteUrlDataProvider()
     {
         return [
@@ -359,7 +410,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isAbsoluteUrlDataProvider
@@ -369,6 +420,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isAbsoluteUrl($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isPriceProvider()
     {
         return [
@@ -392,7 +446,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     }
 
     /**
-     * @param bool   $expected
+     * @param bool $expected
      * @param string $input
      *
      * @dataProvider isPriceProvider
@@ -402,6 +456,9 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isPrice($input));
     }
 
+    /**
+     * @return array[]
+     */
     public function isUriPathProvider()
     {
         return [

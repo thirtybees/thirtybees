@@ -31,8 +31,6 @@
 
 /**
  * Class TreeCore
- *
- * @since 1.0.0
  */
 class TreeCore
 {
@@ -42,38 +40,82 @@ class TreeCore
     const DEFAULT_NODE_FOLDER_TEMPLATE = 'tree_node_folder.tpl';
     const DEFAULT_NODE_ITEM_TEMPLATE = 'tree_node_item.tpl';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected $_attributes;
+
+    /**
+     * @var Context
+     */
     private $_context;
+
+    /**
+     * @var array
+     */
     protected $_data;
+
+    /**
+     * @var array
+     */
     protected $_data_search;
+
+    /**
+     * @var string
+     */
     protected $_headerTemplate;
+
+    /**
+     * @var string
+     */
     protected $_id_tree;
+
+    /**
+     * @var int
+     */
     private $_id;
+
+    /**
+     * @var string
+     */
     protected $_node_folder_template;
+
+    /**
+     * @var string
+     */
     protected $_node_item_template;
+
+    /**
+     * @var string
+     */
     protected $_template;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $_template_directory;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $_title = '';
 
+    /**
+     * @var bool
+     */
     private $_no_js;
 
-    /** @var TreeToolbar|ITreeToolbar */
+    /**
+     * @var ITreeToolbarCore
+     */
     private $_toolbar;
-    // @codingStandardsIgnoreEnd
 
     /**
      * TreeCore constructor.
      *
-     * @param int   $id
-     * @param mixed $data
+     * @param string|int $id
+     * @param array $data
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($id, $data = null)
@@ -88,9 +130,8 @@ class TreeCore
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function __toString()
     {
@@ -98,13 +139,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param ITreeToolbarButtonCore[] $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return static
      */
     public function setActions($value)
     {
@@ -118,11 +155,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return ITreeToolbarButtonCore[]
      */
     public function getActions()
     {
@@ -134,13 +167,10 @@ class TreeCore
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setAttribute($name, $value)
     {
@@ -154,12 +184,9 @@ class TreeCore
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return mixed|null
      */
     public function getAttribute($name)
     {
@@ -167,13 +194,10 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setAttributes($value)
     {
@@ -187,12 +211,9 @@ class TreeCore
     }
 
     /**
-     * @param $idTree
+     * @param string $idTree
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setIdTree($idTree)
     {
@@ -202,10 +223,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getIdTree()
     {
@@ -214,9 +232,6 @@ class TreeCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAttributes()
     {
@@ -228,12 +243,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param Context $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setContext($value)
     {
@@ -244,9 +256,6 @@ class TreeCore
 
     /**
      * @return Context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContext()
     {
@@ -258,13 +267,10 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setDataSearch($value)
     {
@@ -279,9 +285,6 @@ class TreeCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDataSearch()
     {
@@ -293,13 +296,10 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setData($value)
     {
@@ -314,10 +314,6 @@ class TreeCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      */
     public function getData()
     {
@@ -329,12 +325,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setHeaderTemplate($value)
     {
@@ -344,10 +337,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getHeaderTemplate()
     {
@@ -359,12 +349,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setId($value)
     {
@@ -374,10 +361,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
      */
     public function getId()
     {
@@ -385,12 +369,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setNodeFolderTemplate($value)
     {
@@ -400,10 +381,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeFolderTemplate()
     {
@@ -415,12 +393,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setNodeItemTemplate($value)
     {
@@ -430,10 +405,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeItemTemplate()
     {
@@ -445,12 +417,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplate($value)
     {
@@ -460,10 +429,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getTemplate()
     {
@@ -475,12 +441,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return Tree
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplateDirectory($value)
     {
@@ -491,9 +454,6 @@ class TreeCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateDirectory()
     {
@@ -507,12 +467,11 @@ class TreeCore
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTemplateFile($template)
     {
@@ -555,12 +514,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setNoJS($value)
     {
@@ -572,10 +528,7 @@ class TreeCore
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTitle($value)
     {
@@ -588,9 +541,6 @@ class TreeCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTitle()
     {
@@ -598,13 +548,9 @@ class TreeCore
     }
 
     /**
-     * @param $value
+     * @param ITreeToolbarCore $value
      *
-     * @return $this
-     * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setToolbar(ITreeToolbarCore $value)
     {
@@ -613,10 +559,7 @@ class TreeCore
     }
 
     /**
-     * @return ITreeToolbar|TreeToolbar
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return ITreeToolbarCore
      */
     public function getToolbar()
     {
@@ -632,13 +575,9 @@ class TreeCore
     }
 
     /**
-     * @param $action
+     * @param ITreeToolbarButtonCore $action
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return static
      */
     public function addAction($action)
     {
@@ -652,11 +591,7 @@ class TreeCore
     }
 
     /**
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return static
      */
     public function removeActions()
     {
@@ -670,13 +605,12 @@ class TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function render($data = null)
     {
@@ -734,14 +668,11 @@ class TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      *
      * @return string
      * @throws PrestaShopException
-     *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function renderNodes($data = null)
     {
@@ -784,10 +715,7 @@ class TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function renderToolbar()
     {
@@ -796,9 +724,6 @@ class TreeCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useInput()
     {
@@ -807,9 +732,6 @@ class TreeCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useToolbar()
     {
@@ -817,7 +739,7 @@ class TreeCore
     }
 
     /**
-     * @param $directory
+     * @param string $directory
      *
      * @return string
      *

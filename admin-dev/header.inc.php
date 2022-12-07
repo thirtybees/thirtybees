@@ -28,6 +28,9 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+
+/** @noinspection PhpUnhandledExceptionInspection */
+
 $con = new AdminController();
 $tab = new Tab((int)Tab::getIdFromClassName(Tools::getValue('controller')));
 $con->id = $tab->id;

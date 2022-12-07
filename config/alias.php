@@ -29,31 +29,58 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * @param mixed $var
+ * @return void
+ */
 function fd($var)
 {
-    return (Tools::fd($var));
+    Tools::fd($var);
 }
 
+/**
+ * @param mixed $var
+ * @return mixed|void
+ */
 function p($var)
 {
     return (Tools::p($var));
 }
 
+/**
+ * @param mixed $var
+ * @return void
+ */
 function d($var)
 {
     Tools::d($var);
 }
 
+/**
+ * @param mixed $var
+ * @return mixed|void
+ */
 function ppp($var)
 {
     return (Tools::p($var));
 }
 
+/**
+ * @param mixed $var
+ * @return void
+ */
 function ddd($var)
 {
     Tools::d($var);
 }
 
+/**
+ * @param mixed $var
+ * @param string|null $message_type
+ * @param string|null $destination
+ * @param string|null $extra_headers
+ * @return bool
+ */
 function epr($var, $message_type = null, $destination = null, $extra_headers = null)
 {
     return Tools::error_log($var, $message_type, $destination, $extra_headers);
@@ -64,18 +91,31 @@ function epr($var, $message_type = null, $destination = null, $extra_headers = n
  *
  * @param string $string SQL data which will be injected into SQL query
  * @param bool $htmlOK Does data contain HTML code ? (optional)
+ *
  * @return string Sanitized data
+ *
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
  */
 function pSQL($string, $htmlOK = false)
 {
     return Db::getInstance()->escape($string, $htmlOK);
 }
 
+/**
+ * @param string $string
+ * @return string
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ */
 function bqSQL($string)
 {
     return str_replace('`', '\`', pSQL($string));
 }
 
+/**
+ * @return void
+ */
 function displayFatalError()
 {
     $error = null;

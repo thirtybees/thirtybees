@@ -21,8 +21,6 @@ namespace Thirtybees\Core\WorkQueue;
 
 /**
  * Class WorkQueueClientCore
- *
- * @since 1.3.0
  */
 class WorkQueueClientCore
 {
@@ -64,6 +62,8 @@ class WorkQueueClientCore
 
     /**
      * Returns work queue executor
+     *
+     * @return null
      */
     public function getExecutor()
     {

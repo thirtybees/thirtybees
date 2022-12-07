@@ -31,8 +31,6 @@
 
 /**
  * Class DbPDOCore
- *
- * @since 1.0.0
  */
 class DbPDOCore extends Db
 {
@@ -52,9 +50,6 @@ class DbPDOCore extends Db
      * @param int $timeout
      *
      * @return PDO
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function _getPDO($host, $user, $password, $dbname, $timeout = 5)
     {
@@ -88,9 +83,6 @@ class DbPDOCore extends Db
      * @param bool $dropAfter If true, drops the created database.
      *
      * @return bool|int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function createDatabase($host, $user, $password, $dbname, $dropAfter = false)
     {
@@ -114,9 +106,6 @@ class DbPDOCore extends Db
      *
      * @see DbCore::connect()
      * @return PDO
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function connect()
     {
@@ -140,9 +129,6 @@ class DbPDOCore extends Db
      * Destroys the database connection link
      *
      * @see DbCore::disconnect()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function disconnect()
     {
@@ -155,10 +141,7 @@ class DbPDOCore extends Db
      * @see DbCore::_query()
      * @param string $sql
      *
-     * @return PDOStatement
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return PDOStatement|false
      */
     protected function _query($sql)
     {
@@ -172,9 +155,6 @@ class DbPDOCore extends Db
      * @param bool $result
      *
      * @return array|false|null
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function nextRow($result = false)
     {
@@ -195,9 +175,6 @@ class DbPDOCore extends Db
      * @see DbCore::getAll()
      * @param bool $result
      * @return array|false|null
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getAll($result = false)
     {
@@ -218,9 +195,6 @@ class DbPDOCore extends Db
      * @see DbCore::_numRows()
      * @param PDOStatement $result
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _numRows($result)
     {
@@ -230,11 +204,9 @@ class DbPDOCore extends Db
     /**
      * Returns ID of the last inserted row.
      *
-     * @see DbCore::Insert_ID()
-     * @return string|int
+     * @return false|string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @see DbCore::Insert_ID()
      */
     public function Insert_ID()
     {
@@ -246,9 +218,6 @@ class DbPDOCore extends Db
      *
      * @see DbCore::Affected_Rows()
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function Affected_Rows()
     {
@@ -261,9 +230,6 @@ class DbPDOCore extends Db
      * @see DbCore::getMsgError()
      * @param bool $query
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMsgError($query = false)
     {
@@ -277,9 +243,6 @@ class DbPDOCore extends Db
      *
      * @see DbCore::getNumberError()
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getNumberError()
     {
@@ -291,11 +254,9 @@ class DbPDOCore extends Db
     /**
      * Returns database server version.
      *
-     * @see     DbCore::getVersion()
+     * @see DbCore::getVersion()
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getVersion()
@@ -309,9 +270,6 @@ class DbPDOCore extends Db
      * @see DbCore::_escape()
      * @param string $str
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function _escape($str)
     {
@@ -328,14 +286,13 @@ class DbPDOCore extends Db
     /**
      * Switches to a different database.
      *
-     * @see DbCore::set_db()
-     *
      * @param string $dbName
      *
      * @return int
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see DbCore::set_db()
      */
     public function set_db($dbName)
     {
@@ -347,14 +304,11 @@ class DbPDOCore extends Db
      *
      * @see Db::hasTableWithSamePrefix()
      * @param string $server Server address
-     * @param string $user   Login for database connection
-     * @param string $pwd    Password for database connection
-     * @param string $db     Database name
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
      * @param string $prefix Tables prefix
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
     {
@@ -373,17 +327,14 @@ class DbPDOCore extends Db
     /**
      * Tries to connect to the database and create a table (checking creation privileges)
      *
-     * @param string      $server
-     * @param string      $user
-     * @param string      $pwd
-     * @param string      $db
-     * @param string      $prefix
+     * @param string $server
+     * @param string $user
+     * @param string $pwd
+     * @param string $db
+     * @param string $prefix
      * @param string|null $engine Table engine
      *
      * @return bool|string True, false or error
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
     {
@@ -416,18 +367,15 @@ class DbPDOCore extends Db
      *
      * @see Db::checkConnection()
      *
-     * @param string      $server Server address
-     * @param string      $user   Login for database connection
-     * @param string      $pwd    Password for database connection
-     * @param string      $db     Database name
-     * @param bool        $newDbLink
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
+     * @param bool $newDbLink
      * @param string|bool $engine
-     * @param int         $timeout
+     * @param int $timeout
      *
      * @return int Error code or 0 if connection was successful
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function tryToConnect($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
@@ -446,9 +394,6 @@ class DbPDOCore extends Db
      * Selects best table engine.
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBestEngine()
     {
@@ -465,9 +410,6 @@ class DbPDOCore extends Db
      * @param string $pwd Password for database connection
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function tryUTF8($server, $user, $pwd)
     {
@@ -489,9 +431,6 @@ class DbPDOCore extends Db
      * @param string $user
      * @param string $pwd
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkAutoIncrement($server, $user, $pwd)
     {
@@ -511,9 +450,6 @@ class DbPDOCore extends Db
      * Set timezone on current connection.
      *
      * @param string $timezone
-     *
-     * @since   1.0.7
-     * @version 1.0.7 Initial version.
      */
     public function setTimeZone($timezone)
     {

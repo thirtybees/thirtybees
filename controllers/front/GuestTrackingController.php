@@ -31,24 +31,22 @@
 
 /**
  * Class GuestTrackingControllerCore
- *
- * @since 1.0.0
  */
 class GuestTrackingControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $ssl */
     public $ssl = true;
     /** @var string $php_self */
     public $php_self = 'guest-tracking';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function init()
     {
@@ -63,7 +61,8 @@ class GuestTrackingControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -130,8 +129,6 @@ class GuestTrackingControllerCore extends FrontController
      * @param PrestaShopCollection $orderCollection
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     protected function assignOrderTracking($orderCollection)
     {
@@ -193,7 +190,7 @@ class GuestTrackingControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initContent()
     {
@@ -218,7 +215,8 @@ class GuestTrackingControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -228,6 +226,12 @@ class GuestTrackingControllerCore extends FrontController
         $this->addCSS(_THEME_CSS_DIR_.'addresses.css');
     }
 
+    /**
+     * @param Address $delivery
+     * @param Address $invoice
+     * @return void
+     * @throws PrestaShopException
+     */
     protected function processAddressFormat(Address $delivery, Address $invoice)
     {
         $invAdrFields = AddressFormat::getOrderedAddressFields($invoice->id_country, false, true);

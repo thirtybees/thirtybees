@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking\Extractor;
 
 /**
  * Class ServerSettingsExtractor
- *
- * @since 1.3.0
  */
 class ServerSettingsExtractor extends ServerSettingsExtractorCore
 {

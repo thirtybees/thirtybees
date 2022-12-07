@@ -31,12 +31,9 @@
 
 /**
  * Class OrderDetailControllerCore
- *
- * @since 1.0.0
  */
 class OrderDetailControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'order-detail';
     /** @var bool $auth */
@@ -45,15 +42,15 @@ class OrderDetailControllerCore extends FrontController
     public $authRedirection = 'history';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize order detail controller
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function init()
     {
@@ -69,7 +66,6 @@ class OrderDetailControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -173,8 +169,8 @@ class OrderDetailControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function displayAjax()
     {
@@ -188,8 +184,6 @@ class OrderDetailControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -283,7 +277,6 @@ class OrderDetailControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {

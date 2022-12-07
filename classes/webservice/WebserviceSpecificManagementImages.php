@@ -31,16 +31,20 @@
 
 /**
  * Class WebserviceSpecificManagementImagesCore
- *
- * @since 1.0.0
  */
 class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManagementInterface
 {
     /** @var WebserviceOutputBuilder */
     protected $objOutput;
+
+    /**
+     * @var string
+     */
     protected $output;
 
-    /** @var WebserviceRequest */
+    /**
+     * @var WebserviceRequest
+     */
     protected $wsObject;
 
     /**
@@ -98,10 +102,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * @param WebserviceOutputBuilderCore $obj
      *
-     * @return WebserviceSpecificManagementInterface
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setObjectOutput(WebserviceOutputBuilderCore $obj)
     {
@@ -112,9 +113,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     /**
      * @return WebserviceOutputBuilder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getObjectOutput()
     {
@@ -124,10 +122,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * @param WebserviceRequestCore $obj
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setWsObject(WebserviceRequestCore $obj)
     {
@@ -138,9 +133,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     /**
      * @return WebserviceRequest
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsObject()
     {
@@ -150,9 +142,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * @return string
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
@@ -203,8 +192,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws WebserviceException
      */
     public function manage()
     {
@@ -216,8 +206,10 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * Management of images URL segment
      *
-     * @return bool
+     * @return bool|void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
      */
     protected function manageImages()
@@ -313,7 +305,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
          *ok images/product/default/[en,+]/[small,+] ("product_default_i18n_resized") (N-5)
          *ok	GET    (bin)
          *
-         * */
+         */
 
         // Pre configuration...
         if (isset($this->wsObject->urlSegment)) {
@@ -387,10 +379,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function manageGeneralImages()
     {
@@ -485,13 +476,14 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     }
 
     /**
-     * @param $directory
-     * @param $normalImageSizes
+     * @param string $directory
+     * @param array $normalImageSizes
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws WebserviceException
      */
     protected function manageDefaultDeclinatedImages($directory, $normalImageSizes)
     {
@@ -538,14 +530,13 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     }
 
     /**
-     * @param $directory
-     * @param $normalImageSizes
+     * @param string $directory
+     * @param array $normalImageSizes
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function manageListDeclinatedImages($directory, $normalImageSizes)
     {
@@ -593,14 +584,13 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     }
 
     /**
-     * @param $directory
-     * @param $normalImageSizes
+     * @param string $directory
+     * @param array $normalImageSizes
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function manageEntityDeclinatedImages($directory, $normalImageSizes)
     {
@@ -708,8 +698,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws WebserviceException
      */
     protected function manageDeclinatedImages($directory)
     {
@@ -731,8 +722,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws WebserviceException
      */
     protected function manageProductImages()
     {
@@ -742,8 +734,8 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getCustomizations()
     {
@@ -768,10 +760,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     /**
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function manageCustomizationImages()
     {
@@ -882,17 +873,16 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * Management of normal images CRUD
      *
-     * @param bool   $filenameExists if the filename exists
-     * @param string $filename       the image path
-     * @param array  $imageSizes     The
+     * @param bool $filenameExists if the filename exists
+     * @param string $filename the image path
+     * @param array $imageSizes
      * @param string $directory
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function manageDeclinatedImagesCRUD($filenameExists, $filename, $imageSizes, $directory)
     {
@@ -962,14 +952,11 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      *    Delete the image on disk
      *
-     * @param string $filePath   the image file path
-     * @param array  $imageTypes The different sizes
+     * @param string $filePath the image file path
+     * @param array $imageTypes The different sizes
      * @param string $parentPath The parent path
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function deleteImageOnDisk($filePath, $imageTypes = null, $parentPath = null)
     {
@@ -1006,17 +993,15 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      *
      * @param string $basePath
      * @param string $newPath
-     * @param int    $destWidth
-     * @param int    $destHeight
-     * @param array  $imageTypes
-     * @param string $parentPath
+     * @param int|null $destWidth
+     * @param int|null $destHeight
+     * @param string[]|null $imageTypes
+     * @param string|null $parentPath
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function writeImageOnDisk($basePath, $newPath, $destWidth = null, $destHeight = null, $imageTypes = null, $parentPath = null)
     {
@@ -1130,13 +1115,15 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      * Write the posted image on disk
      *
      * @param string $receptionPath
-     * @param int    $destWidth
-     * @param int    $destHeight
-     * @param array  $imageTypes
-     * @param string $parentPath
+     * @param int|null $destWidth
+     * @param int|null $destHeight
+     * @param string[]|null $imageTypes
+     * @param string|null $parentPath
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws WebserviceException
      */
     protected function writePostedImageOnDisk($receptionPath, $destWidth = null, $destHeight = null, $imageTypes = null, $parentPath = null)

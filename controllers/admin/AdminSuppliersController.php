@@ -31,20 +31,23 @@
 
 /**
  * Class AdminSuppliersControllerCore
- *
- * @since 1.0.0
  */
 class AdminSuppliersControllerCore extends AdminController
 {
+    /**
+     * @var bool
+     */
     public $bootstrap = true;
 
-    /** @var Supplier $object */
+    /**
+     * @var Supplier $object
+     */
     public $object;
 
     /**
      * AdminSuppliersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -89,7 +92,7 @@ class AdminSuppliersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -101,7 +104,7 @@ class AdminSuppliersControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -121,7 +124,9 @@ class AdminSuppliersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -359,8 +364,8 @@ class AdminSuppliersControllerCore extends AdminController
     /**
      * AdminController::initToolbar() override
      *
+     * @throws PrestaShopException
      * @see AdminController::initToolbar()
-     *
      */
     public function initToolbar()
     {
@@ -380,7 +385,9 @@ class AdminSuppliersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -438,6 +445,11 @@ class AdminSuppliersControllerCore extends AdminController
         return parent::renderView();
     }
 
+    /**
+     * @return false|Supplier
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function processAdd()
     {
         if (Tools::isSubmit('id_supplier')) {
@@ -475,12 +487,19 @@ class AdminSuppliersControllerCore extends AdminController
         }
 
         if (Validate::isLoadedObject($address)) {
-            return parent::processAdd();
+            /** @var Supplier|false $supplier */
+            $supplier = parent::processAdd();
+            return $supplier;
         }
 
         return false;
     }
 
+    /**
+     * @return false|Supplier
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function processUpdate()
     {
         if (Tools::isSubmit('id_supplier') && !($obj = $this->loadObject(true))) {
@@ -525,12 +544,19 @@ class AdminSuppliersControllerCore extends AdminController
         }
 
         if (Validate::isLoadedObject($address)) {
-            return parent::processUpdate();
+            /** @var Supplier|false $supplier */
+            $supplier = parent::processUpdate();
+            return $supplier;
         }
 
         return false;
     }
 
+    /**
+     * @return bool|Supplier
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function postProcessDelete()
     {
         if (!($obj = $this->loadObject(true))) {
@@ -548,7 +574,9 @@ class AdminSuppliersControllerCore extends AdminController
                 $address->save();
             }
 
-            return parent::processDelete();
+            /** @var Supplier|false $supplier */
+            $supplier = parent::processDelete();;
+            return $supplier;
         }
 
         return false;
@@ -559,8 +587,6 @@ class AdminSuppliersControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     protected function afterImageUpload()
     {
@@ -625,11 +651,11 @@ class AdminSuppliersControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::afterAdd()
-     *
      * @param Supplier $object
      *
      * @return bool
+     * @throws PrestaShopException
+     * @see AdminController::afterAdd()
      */
     protected function afterAdd($object)
     {
@@ -644,11 +670,11 @@ class AdminSuppliersControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::afterUpdate()
-     *
      * @param Supplier $object
      *
      * @return bool
+     * @throws PrestaShopException
+     * @see AdminController::afterUpdate()
      */
     protected function afterUpdate($object)
     {

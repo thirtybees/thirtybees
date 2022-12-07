@@ -31,8 +31,6 @@
 
 /**
  * Class AdminRequestSqlControllerCore
- *
- * @since 1.0.0
  */
 class AdminRequestSqlControllerCore extends AdminController
 {
@@ -47,7 +45,7 @@ class AdminRequestSqlControllerCore extends AdminController
     /**
      * AdminRequestSqlControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -97,8 +95,6 @@ class AdminRequestSqlControllerCore extends AdminController
      * Post processing
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -115,11 +111,10 @@ class AdminRequestSqlControllerCore extends AdminController
     /**
      * method call when ajax request is made with the details row action
      *
-     * @see   AdminController::postProcess()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see AdminController::postProcess()
      */
     public function ajaxProcess()
     {
@@ -144,8 +139,6 @@ class AdminRequestSqlControllerCore extends AdminController
      * Child validation
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function _childValidation()
     {
@@ -166,8 +159,6 @@ class AdminRequestSqlControllerCore extends AdminController
      * @param array $e errors
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function displayError($e)
     {
@@ -286,13 +277,11 @@ class AdminRequestSqlControllerCore extends AdminController
      * Display export action link
      *
      * @param string $token
-     * @param int    $id
+     * @param int $id
      *
      * @return string
-     * @throws Exception
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function displayExportLink($token, $id)
     {
@@ -312,8 +301,6 @@ class AdminRequestSqlControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -329,7 +316,9 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -372,7 +361,7 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -395,7 +384,7 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -415,7 +404,9 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -457,7 +448,8 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -506,7 +498,6 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function generateExport()
     {
@@ -560,7 +551,8 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -593,7 +585,9 @@ class AdminRequestSqlControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {

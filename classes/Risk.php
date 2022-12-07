@@ -31,18 +31,32 @@
 
 /**
  * Class RiskCore
- *
- * @since 1.0.0
  */
 class RiskCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $id_risk;
-    public $name;
-    public $color;
-    public $percent;
-    // @codingStandardsIgnoreEnd
 
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $color;
+
+    /**
+     * @var int
+     */
+    public $percent;
+
+    /**
+     * @var array
+     */
     public static $definition = [
         'table'     => 'risk',
         'primary'   => 'id_risk',
@@ -64,8 +78,7 @@ class RiskCore extends ObjectModel
      *
      * @return PrestaShopCollection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getRisks($idLang = null)
     {
@@ -79,10 +92,8 @@ class RiskCore extends ObjectModel
     }
 
     /**
-     * @return mixed
+     * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFields()
@@ -100,9 +111,6 @@ class RiskCore extends ObjectModel
      *
      * @return array Multilingual fields
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function getTranslationsFieldsChild()

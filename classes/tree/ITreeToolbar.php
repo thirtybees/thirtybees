@@ -31,23 +31,82 @@
 
 /**
  * Interface ITreeToolbarCore
- *
- * @since 1.0.0
  */
 interface ITreeToolbarCore
 {
+    /**
+     * @return string
+     */
     public function __toString();
+
+    /**
+     * @param ITreeToolbarButtonCore[] $value
+     * @return static
+     */
     public function setActions($value);
+
+    /**
+     * @return ITreeToolbarButtonCore[]
+     */
     public function getActions();
+
+    /**
+     * @param Context $value
+     * @return static
+     */
     public function setContext($value);
+
+    /**
+     * @return Context
+     */
     public function getContext();
+
+    /**
+     * @param array $value
+     * @return static
+     */
     public function setData($value);
+
+    /**
+     * @return array
+     */
     public function getData();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setTemplate($value);
+
+    /**
+     * @return string
+     */
     public function getTemplate();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setTemplateDirectory($value);
+
+    /**
+     * @return string
+     */
     public function getTemplateDirectory();
+
+    /**
+     * @param ITreeToolbarButtonCore $action
+     * @return static
+     */
     public function addAction($action);
+
+    /**
+     * @return static
+     */
     public function removeActions();
+
+    /**
+     * @return string
+     */
     public function render();
 }

@@ -33,8 +33,6 @@ use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class AdminControllerCore
- *
- * @since 1.0.0
  */
 class AdminControllerCore extends Controller
 {
@@ -192,7 +190,7 @@ class AdminControllerCore extends Controller
     protected $show_toolbar_options = false;
     /** @var int Number of results in list */
     protected $_listTotal = 0;
-    /** @var array WHERE clause determined by filter fields */
+    /** @var string|false WHERE clause determined by filter fields */
     protected $_filter;
     /** @var string */
     protected $_filterHaving;
@@ -311,8 +309,6 @@ class AdminControllerCore extends Controller
     /**
      * AdminControllerCore constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct()
@@ -464,15 +460,12 @@ class AdminControllerCore extends Controller
     /**
      * Non-static method which uses AdminController::translate()
      *
-     * @param string      $string       Term or expression in english
-     * @param string|null $class        Name of the class
-     * @param bool        $addslashes   If set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
-     * @param bool        $htmlentities If set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
+     * @param string $string Term or expression in english
+     * @param string|null $class Name of the class
+     * @param bool $addslashes If set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
+     * @param bool $htmlentities If set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
      *
      * @return string The translation if available, or the english default text.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function l($string, $class = null, $addslashes = false, $htmlentities = true)
     {
@@ -488,9 +481,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function initShopContext()
     {
@@ -562,9 +552,6 @@ class AdminControllerCore extends Controller
     /**
      * @TODO    uses redirectAdmin only if !$this->ajax
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function postProcess()
     {
@@ -627,6 +614,10 @@ class AdminControllerCore extends Controller
         return false;
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function processFilter()
     {
         Hook::exec('action'.$this->controller_name.'ListingFieldsModifier', ['fields' => &$this->fields_list]);
@@ -737,8 +728,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function ensureListIdDefinition()
     {
@@ -770,8 +760,7 @@ class AdminControllerCore extends Controller
     /**
      * Set the filters used for the list display
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     protected function getCookieFilterPrefix()
     {
@@ -783,9 +772,6 @@ class AdminControllerCore extends Controller
      * @param string $filter
      *
      * @return array|false
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function filterToField($key, $filter)
     {
@@ -810,8 +796,8 @@ class AdminControllerCore extends Controller
      *
      * @return ObjectModel|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDeleteImage()
     {
@@ -837,9 +823,6 @@ class AdminControllerCore extends Controller
      * @param bool $opt Return an empty object if load fail
      *
      * @return ObjectModel|bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function loadObject($opt = false)
     {
@@ -878,10 +861,6 @@ class AdminControllerCore extends Controller
      * @return void
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopExceptionCore
      */
     public function processExport($textDelimiter = '"')
     {
@@ -954,17 +933,14 @@ class AdminControllerCore extends Controller
     /**
      * Get the current objects' list form the database
      *
-     * @param int         $idLang   Language used for display
-     * @param string|null $orderBy  ORDER BY clause
+     * @param int $idLang Language used for display
+     * @param string|null $orderBy ORDER BY clause
      * @param string|null $orderWay Order way (ASC, DESC)
-     * @param int         $start    Offset in LIMIT clause
-     * @param int|null    $limit    Row count in LIMIT clause
-     * @param int|bool    $idLangShop
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getList(
         $idLang,
@@ -1199,8 +1175,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function dispatchFieldsListingModifierEvent()
     {
@@ -1263,11 +1238,8 @@ class AdminControllerCore extends Controller
     /**
      * Call the right method for creating or updating object
      *
-     * @return bool
+     * @return ObjectModel|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function processSave()
@@ -1285,9 +1257,6 @@ class AdminControllerCore extends Controller
      *
      * @return ObjectModel|false
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function processUpdate()
     {
@@ -1383,9 +1352,6 @@ class AdminControllerCore extends Controller
      * @param string|bool $className Allow to validate a different class than the current one
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateRules($className = false)
     {
@@ -1393,7 +1359,7 @@ class AdminControllerCore extends Controller
             $className = $this->className;
         }
 
-        /** @var $object ObjectModel */
+        /** @var ObjectModel $object */
         $object = new $className();
 
         if (method_exists($this, 'getValidationRules')) {
@@ -1443,8 +1409,7 @@ class AdminControllerCore extends Controller
     /**
      * Overload this method for custom checking
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function _childValidation()
     {
@@ -1456,9 +1421,6 @@ class AdminControllerCore extends Controller
      * @param ObjectModel $object Object
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function beforeDelete($object)
     {
@@ -1469,10 +1431,8 @@ class AdminControllerCore extends Controller
      * Copy data values from $_POST to object
      *
      * @param ObjectModel &$object Object
-     * @param string      $table   Object table
+     * @param string $table Object table
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function copyFromPost(&$object, $table)
@@ -1525,12 +1485,9 @@ class AdminControllerCore extends Controller
      * Called before deletion
      *
      * @param ObjectModel $object Object
-     * @param int         $oldId
+     * @param int $oldId
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function afterDelete($object, $oldId)
     {
@@ -1541,9 +1498,6 @@ class AdminControllerCore extends Controller
      * @param ObjectModel $object
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function afterUpdate($object)
     {
@@ -1558,9 +1512,6 @@ class AdminControllerCore extends Controller
      * @return bool|void
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     protected function updateAssoShop($idObject)
@@ -1602,8 +1553,8 @@ class AdminControllerCore extends Controller
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getSelectedAssoShop($table)
     {
@@ -1636,8 +1587,8 @@ class AdminControllerCore extends Controller
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function postImage($id)
     {
@@ -1655,17 +1606,17 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @param int         $id
-     * @param string      $name
-     * @param string      $dir
+     * @param int $id
+     * @param string $name
+     * @param string $dir
      * @param string|bool $ext
-     * @param int|null    $width
-     * @param int|null    $height
+     * @param int|null $width
+     * @param int|null $height
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function uploadImage($id, $name, $dir, $ext = false, $width = null, $height = null)
     {
@@ -1721,9 +1672,6 @@ class AdminControllerCore extends Controller
      * Check rights to view the current tab
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function afterImageUpload()
     {
@@ -1735,9 +1683,6 @@ class AdminControllerCore extends Controller
      *
      * @return ObjectModel|false
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function processAdd()
     {
@@ -1790,9 +1735,6 @@ class AdminControllerCore extends Controller
      * @param ObjectModel $object Object
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function beforeAdd($object)
     {
@@ -1803,9 +1745,6 @@ class AdminControllerCore extends Controller
      * @param ObjectModel $object
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function afterAdd($object)
     {
@@ -1817,9 +1756,8 @@ class AdminControllerCore extends Controller
      *
      * @return ObjectModel
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processUpdateFields()
     {
@@ -1827,7 +1765,7 @@ class AdminControllerCore extends Controller
             $fields = [];
         }
 
-        /** @var $object ObjectModel */
+        /** @var ObjectModel $object */
         $object = new $this->className();
 
         if (!$object->addFieldsRequiredDatabase($fields)) {
@@ -1844,9 +1782,6 @@ class AdminControllerCore extends Controller
      *
      * @return ObjectModel|false
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function processStatus()
     {
@@ -1913,9 +1848,6 @@ class AdminControllerCore extends Controller
      * Cancel all filters for this tab
      *
      * @param int|null $listId
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function processResetFilters($listId = null)
     {
@@ -1956,8 +1888,7 @@ class AdminControllerCore extends Controller
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkAccess()
     {
@@ -1986,8 +1917,7 @@ class AdminControllerCore extends Controller
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkToken()
     {
@@ -2025,10 +1955,8 @@ class AdminControllerCore extends Controller
     /**
      * @return void
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function displayAjax()
     {
@@ -2050,11 +1978,8 @@ class AdminControllerCore extends Controller
 
     /**
      * @return void
-     * @throws Exception
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function display()
     {
@@ -2151,8 +2076,6 @@ class AdminControllerCore extends Controller
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
@@ -2182,9 +2105,6 @@ class AdminControllerCore extends Controller
      * @param bool $disable
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function viewAccess($disable = false)
     {
@@ -2202,8 +2122,9 @@ class AdminControllerCore extends Controller
     /**
      * Assign smarty variables for the header
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initHeader()
     {
@@ -2391,9 +2312,6 @@ class AdminControllerCore extends Controller
      * Declare an action to use for each row in the list
      *
      * @param string $action
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addRowAction($action)
     {
@@ -2405,10 +2323,7 @@ class AdminControllerCore extends Controller
      * Add an action to use for each row in the list
      *
      * @param string $action
-     * @param array  $list
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $list
      */
     public function addRowActionSkipList($action, $list)
     {
@@ -2427,11 +2342,8 @@ class AdminControllerCore extends Controller
      *
      * @return void
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initContent()
@@ -2493,8 +2405,6 @@ class AdminControllerCore extends Controller
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getLanguages()
@@ -2527,8 +2437,6 @@ class AdminControllerCore extends Controller
      * uses override to specifically add, modify or remove items
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function initToolbar()
     {
@@ -2577,8 +2485,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function addToolBarModulesListButton()
     {
@@ -2593,8 +2500,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function filterTabModuleList()
     {
@@ -2618,8 +2524,7 @@ class AdminControllerCore extends Controller
     /**
      * Init tab modules list and add button in toolbar
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function initTabModuleList()
     {
@@ -2643,12 +2548,9 @@ class AdminControllerCore extends Controller
 
     /**
      * @param string $file
-     * @param int    $timeout
+     * @param int $timeout
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isFresh($file, $timeout = 604800)
     {
@@ -2661,8 +2563,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function addPageHeaderToolBarModulesListButton()
     {
@@ -2678,8 +2579,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function initPageHeaderToolbar()
     {
@@ -2739,9 +2638,6 @@ class AdminControllerCore extends Controller
      * Set default toolbar_title to admin breadcrumb
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function initToolbarTitle()
     {
@@ -2773,9 +2669,6 @@ class AdminControllerCore extends Controller
      * Add an entry to the meta title.
      *
      * @param string $entry New entry.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addMetaTitle($entry)
     {
@@ -2787,9 +2680,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addFiltersToBreadcrumbs()
     {
@@ -2847,11 +2737,9 @@ class AdminControllerCore extends Controller
      * Function used to render the form for this controller
      *
      * @return string
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderForm()
     {
@@ -2912,8 +2800,8 @@ class AdminControllerCore extends Controller
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getFieldsValue($obj)
     {
@@ -2961,14 +2849,11 @@ class AdminControllerCore extends Controller
      * Case 1 : Return value if present in $_POST / $_GET
      * Case 2 : Return object value
      *
-     * @param ObjectModel $obj    Object
-     * @param string      $key    Field name
-     * @param int|null    $idLang Language id (optional)
+     * @param ObjectModel $obj Object
+     * @param string $key Field name
+     * @param int|null $idLang Language id (optional)
      *
      * @return false|mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFieldValue($obj, $key, $idLang = null)
     {
@@ -2987,8 +2872,6 @@ class AdminControllerCore extends Controller
      * @param Helper $helper
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setHelperDisplay(Helper $helper)
     {
@@ -3153,9 +3036,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateFormVars()
     {
@@ -3167,8 +3047,8 @@ class AdminControllerCore extends Controller
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -3185,9 +3065,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateViewVars()
     {
@@ -3199,9 +3076,8 @@ class AdminControllerCore extends Controller
      *
      * @return string|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -3214,8 +3090,6 @@ class AdminControllerCore extends Controller
      * @return string|false
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderList()
     {
@@ -3283,9 +3157,6 @@ class AdminControllerCore extends Controller
      * Add a warning message to display at the top of the page
      *
      * @param string $msg
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function displayWarning($msg)
     {
@@ -3294,9 +3165,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateListVars()
     {
@@ -3306,9 +3174,9 @@ class AdminControllerCore extends Controller
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderModulesList()
     {
@@ -3361,9 +3229,6 @@ class AdminControllerCore extends Controller
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getModulesList($filterModulesList)
     {
@@ -3408,6 +3273,7 @@ class AdminControllerCore extends Controller
      * @param string $externalFile
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function refresh($fileToRefresh, $externalFile)
     {
@@ -3438,8 +3304,6 @@ class AdminControllerCore extends Controller
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function fillModuleData(&$module, $outputType = 'link', $back = null)
     {
@@ -3482,8 +3346,6 @@ class AdminControllerCore extends Controller
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayModuleOptions($module, $outputType = 'link', $back = null)
     {
@@ -3782,10 +3644,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function renderKpis()
     {
@@ -3796,8 +3655,9 @@ class AdminControllerCore extends Controller
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {
@@ -3832,8 +3692,9 @@ class AdminControllerCore extends Controller
      *
      * @return string|void
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayRequiredFields()
     {
@@ -3853,9 +3714,6 @@ class AdminControllerCore extends Controller
      * Initialize the invalid doom page of death
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function initCursedPage()
     {
@@ -3865,8 +3723,7 @@ class AdminControllerCore extends Controller
     /**
      * Assign smarty variables for the footer
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function initFooter()
     {
@@ -3894,11 +3751,7 @@ class AdminControllerCore extends Controller
 
     /**
      * @return string
-     * @throws Exception
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderModal()
     {
@@ -3921,8 +3774,6 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function setMedia()
@@ -3970,7 +3821,7 @@ class AdminControllerCore extends Controller
     /**
      * Init context and dependencies, handles POST and GET
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -4065,8 +3916,7 @@ class AdminControllerCore extends Controller
     /**
      * Retrieve GET and POST value and translate them to actions
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function initProcess()
     {
@@ -4246,7 +4096,7 @@ class AdminControllerCore extends Controller
      * Set breadcrumbs array for the controller page
      *
      * @param int|null $tabId
-     * @param mixed $tabs
+     * @param array|null $tabs
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -4326,11 +4176,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @throws Exception
-     * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function initModal()
     {
@@ -4364,8 +4210,7 @@ class AdminControllerCore extends Controller
     /**
      * Display object details
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function viewDetails()
     {
@@ -4375,9 +4220,6 @@ class AdminControllerCore extends Controller
      * Shortcut to set up a json success payload
      *
      * @param string $message Success message
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function jsonConfirmation($message)
     {
@@ -4392,9 +4234,6 @@ class AdminControllerCore extends Controller
      * Shortcut to set up a json error payload
      *
      * @param string $message Error message
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function jsonError($message)
     {
@@ -4406,9 +4245,9 @@ class AdminControllerCore extends Controller
     }
 
     /**
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
+     * @throws SmartyException
      */
     public function ajaxProcessGetModuleQuickView()
     {
@@ -4451,8 +4290,6 @@ class AdminControllerCore extends Controller
     /**
      * Update options and preferences
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function processUpdateOptions()
@@ -4602,8 +4439,7 @@ class AdminControllerCore extends Controller
     /**
      * Can be overridden
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function beforeUpdateOptions()
     {
@@ -4614,9 +4450,6 @@ class AdminControllerCore extends Controller
      * @param array $field
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function validateField($value, $field)
     {
@@ -4636,8 +4469,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function redirect()
     {
@@ -4665,9 +4497,6 @@ class AdminControllerCore extends Controller
      * Add a info message to display at the top of the page
      *
      * @param string $msg
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function displayInformation($msg)
     {
@@ -4679,15 +4508,15 @@ class AdminControllerCore extends Controller
      *
      * @return bool true if success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {
         if (is_array($this->boxes) && !empty($this->boxes)) {
             $result = true;
             foreach ($this->boxes as $id) {
-                /** @var $to_delete ObjectModel */
+                /** @var ObjectModel $to_delete */
                 $to_delete = new $this->className($id);
                 $delete_ok = true;
                 if ($this->deleted) {
@@ -4725,8 +4554,6 @@ class AdminControllerCore extends Controller
 
     /**
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     protected function ajaxProcessOpenHelp()
     {
@@ -4762,8 +4589,6 @@ class AdminControllerCore extends Controller
      *
      * @return bool true if success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function processBulkEnableSelection()
@@ -4778,9 +4603,6 @@ class AdminControllerCore extends Controller
      *
      * @return bool true if success
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function processBulkStatusSelection($status)
     {
@@ -4803,8 +4625,6 @@ class AdminControllerCore extends Controller
      *
      * @return bool true if success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function processBulkDisableSelection()
@@ -4815,8 +4635,8 @@ class AdminControllerCore extends Controller
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkAffectZone()
     {
@@ -4840,10 +4660,8 @@ class AdminControllerCore extends Controller
     /**
      * Adds javascript URI to list of javascript files included in page header
      *
-     * @param string $uri           uri to javascript file
-     * @param boolean $checkPath    if true, system will check if the javascript file exits on filesystem
-     *
-     * @since   1.1.1
+     * @param string $uri uri to javascript file
+     * @param boolean $checkPath if true, system will check if the javascript file exits on filesystem
      */
     public function addJavascriptUri($uri, $checkPath)
     {
@@ -4893,7 +4711,6 @@ class AdminControllerCore extends Controller
      *
      * Controllers are responsible for enforcing selected permissions -- permission levels for current employee
      * can be retrieved by calling method getPermLevels
-     *
      *
      * @return array
      */

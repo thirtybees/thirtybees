@@ -31,8 +31,6 @@
 
 /**
  * StockManagerInterface : defines a way to manage stock
- *
- * @since 1.0.0
  */
 interface StockManagerInterface
 {
@@ -40,49 +38,40 @@ interface StockManagerInterface
      * Checks if the StockManager is available
      *
      * @return StockManagerInterface
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isAvailable();
 
     /**
      * For a given product, adds a given quantity
      *
-     * @param int       $idProduct
-     * @param int       $idProductAttribute
+     * @param int $idProduct
+     * @param int $idProductAttribute
      * @param Warehouse $warehouse
-     * @param int       $quantity
-     * @param int       $idStockMovementReason
-     * @param float     $priceTe
-     * @param bool      $isUsable
-     * @param int       $idSupplyOrder optionnal
+     * @param int $quantity
+     * @param int $idStockMovementReason
+     * @param float $priceTe
+     * @param bool $isUsable
+     * @param int $idSupplyOrder optionnal
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addProduct($idProduct, $idProductAttribute, Warehouse $warehouse, $quantity, $idStockMovementReason, $priceTe, $isUsable = true, $idSupplyOrder = null);
 
     /**
      * For a given product, removes a given quantity
      *
-     * @param int           $idProduct
-     * @param int|null      $idProductAttribute
-     * @param Warehouse     $warehouse
-     * @param int           $quantity
-     * @param int           $id_stock_mvt_reason
-     * @param bool          $isUsable
-     * @param int|null      $idOrder
-     * @param int           $ignorePack
+     * @param int $idProduct
+     * @param int|null $idProductAttribute
+     * @param Warehouse $warehouse
+     * @param int $quantity
+     * @param int $idStockMovementReason
+     * @param bool $isUsable
+     * @param int|null $idOrder
+     * @param int $ignorePack
      * @param Employee|null $employee
-     * @param Stock|null    $stock
+     * @param Stock|null $stock
      *
-     * @return array - empty if an error occurred | details of removed products quantities with corresponding prices otherwise
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array|false - empty if an error occurred | details of removed products quantities with corresponding prices otherwise
      */
     public function removeProduct(
         $idProduct,
@@ -101,15 +90,12 @@ interface StockManagerInterface
      * For a given product, returns its physical quantity
      * If the given product has combinations and $id_product_attribute is null, returns the sum for all combinations
      *
-     * @param int       $idProduct
-     * @param int       $idProductAttribute
+     * @param int $idProduct
+     * @param int $idProductAttribute
      * @param array|int $idsWarehouse optional
-     * @param bool      $usable       false default - in this case we retrieve all physical quantities, otherwise we retrieve physical quantities flagged as usable
+     * @param bool $usable false default - in this case we retrieve all physical quantities, otherwise we retrieve physical quantities flagged as usable
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductPhysicalQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false);
 
@@ -119,15 +105,12 @@ interface StockManagerInterface
      * Real quantity : (physical_qty + supply_orders_qty - client_orders_qty)
      * If $usable is defined, real quantity: usable_qty + supply_orders_qty - client_orders_qty
      *
-     * @param int       $idProduct
-     * @param int       $idProductAttribute
+     * @param int $idProduct
+     * @param int $idProductAttribute
      * @param array|int $idsWarehouse optional
-     * @param bool      $usable       false by default
+     * @param bool $usable false by default
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductRealQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false);
 
@@ -137,18 +120,15 @@ interface StockManagerInterface
      * It is also possible to transfer a usable quantity from warehouse 1 in an unusable quantity to warehouse 2
      * It is also possible to transfer a usable quantity from warehouse 1 in an unusable quantity to warehouse 1
      *
-     * @param int  $idProduct
-     * @param int  $idProductAttribute
-     * @param int  $quantity
-     * @param int  $warehouseFrom
-     * @param int  $warehouseTo
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $quantity
+     * @param int $warehouseFrom
+     * @param int $warehouseTo
      * @param bool $usableFrom Optional, true by default
-     * @param bool $usableTo   Optional, true by default
+     * @param bool $usableTo Optional, true by default
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function transferBetweenWarehouses($idProduct, $idProductAttribute, $quantity, $warehouseFrom, $warehouseTo, $usableFrom = true, $usableTo = true);
 
@@ -162,9 +142,6 @@ interface StockManagerInterface
      * @param int $idWarehouse Optional
      *
      * @return int time
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductCoverage($idProduct, $idProductAttribute, $coverage, $idWarehouse = null);
 }

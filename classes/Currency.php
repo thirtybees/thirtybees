@@ -31,8 +31,6 @@
 
 /**
  * Class CurrencyCore
- *
- * @since 1.0.0
  */
 class CurrencyCore extends ObjectModel
 {
@@ -49,6 +47,7 @@ class CurrencyCore extends ObjectModel
      */
     protected static $currencyFormatters = null;
 
+    /** @var int|null Object ID */
     public $id;
     /** @var string Name */
     public $name;
@@ -84,7 +83,7 @@ class CurrencyCore extends ObjectModel
     public $suffix = null;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'currency',
@@ -109,6 +108,9 @@ class CurrencyCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'currencies',
     ];
@@ -120,8 +122,6 @@ class CurrencyCore extends ObjectModel
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
@@ -139,12 +139,10 @@ class CurrencyCore extends ObjectModel
     /**
      * @param int $idShop
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrenciesByIdShop($idShop = 0)
     {
@@ -159,15 +157,13 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param int      $idModule
+     * @param int $idModule
      * @param int|null $idShop
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPaymentCurrenciesSpecial($idModule, $idShop = null)
     {
@@ -185,15 +181,13 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param int      $idModule
+     * @param int $idModule
      * @param int|null $idShop
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPaymentCurrencies($idModule, $idShop = null)
     {
@@ -215,15 +209,13 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param int      $idModule
+     * @param int $idModule
      * @param int|null $idShop
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkPaymentCurrencies($idModule, $idShop = null)
     {
@@ -253,8 +245,6 @@ class CurrencyCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrency($idCurrency)
     {
@@ -272,8 +262,6 @@ class CurrencyCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function refreshCurrencies()
     {
@@ -319,8 +307,6 @@ class CurrencyCore extends ObjectModel
     /**
      * @return bool|Currency
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getDefaultCurrency()
@@ -344,8 +330,6 @@ class CurrencyCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrencies($object = false, $active = true, $groupBy = false)
     {
@@ -373,8 +357,6 @@ class CurrencyCore extends ObjectModel
      *
      * @return Currency
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCurrencyInstance($id)
@@ -391,12 +373,12 @@ class CurrencyCore extends ObjectModel
      * Refresh the currency exchange rate
      * The XML file define exchange rate for each from a default currency ($isoCodeSource).
      *
-     * @param SimpleXMLElement $data            XML content which contains all the exchange rates
-     * @param string           $isoCodeSource   The default currency used in the XML file
-     * @param Currency         $defaultCurrency The default currency object
+     * @param SimpleXMLElement $data XML content which contains all the exchange rates
+     * @param string $isoCodeSource The default currency used in the XML file
+     * @param Currency $defaultCurrency The default currency object
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @deprecated 1.0.0
      */
@@ -456,8 +438,6 @@ class CurrencyCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isMultiCurrencyActivated($idShop = null)
@@ -466,12 +446,10 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param null $idShop
+     * @param int|null $idShop
      *
-     * @return mixed
+     * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function countActiveCurrencies($idShop = null)
@@ -498,10 +476,7 @@ class CurrencyCore extends ObjectModel
      * Overriding check if currency rate is not empty and if currency with the same iso code already exists.
      * If it's true, currency is not added.
      *
-     * @see ObjectModelCore::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -527,8 +502,6 @@ class CurrencyCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function exists($isoCode, $isoCodeNum, $idShop = 0)
@@ -547,13 +520,11 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param     $isoCodeNum
+     * @param string $isoCodeNum
      * @param int $idShop
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByIsoCodeNum($isoCodeNum, $idShop = 0)
@@ -569,8 +540,7 @@ class CurrencyCore extends ObjectModel
      *
      * @return DbQuery
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByQuery($idShop = 0)
     {
@@ -588,13 +558,11 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param     $isoCode
+     * @param string $isoCode
      * @param int $idShop
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByIsoCode($isoCode, $idShop = 0)
@@ -618,9 +586,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteSelection($selection)
     {
@@ -646,8 +613,6 @@ class CurrencyCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -681,8 +646,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($autodate = true, $nullValues = false)
     {
@@ -699,9 +664,6 @@ class CurrencyCore extends ObjectModel
      * @param string $side left or right
      *
      * @return string formated sign
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSign($side = null)
     {
@@ -730,8 +692,6 @@ class CurrencyCore extends ObjectModel
     /**
      * @return int|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getConversationRate()
@@ -743,8 +703,6 @@ class CurrencyCore extends ObjectModel
      * Should the currency be automatically formatted?
      *
      * @return bool
-     *
-     * @since 1.0.2
      */
     public function getMode()
     {
@@ -757,8 +715,6 @@ class CurrencyCore extends ObjectModel
      * NOTE: the keys in this array are the upper cased ISO codes
      *
      * @return array
-     *
-     * @since 1.0.2
      */
     public static function getModes()
     {
@@ -773,7 +729,6 @@ class CurrencyCore extends ObjectModel
      * @return array
      *
      * @throws PrestaShopException
-     * @since 1.3.0
      */
     public static function getJavascriptFormatters()
     {
@@ -790,7 +745,7 @@ class CurrencyCore extends ObjectModel
     /**
      * Returns currency formatter associated with this currency, if exists
      *
-     * @returns callable | null
+     * @return callable|null
      *
      * @throws PrestaShopException
      */

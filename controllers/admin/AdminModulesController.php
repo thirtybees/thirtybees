@@ -31,8 +31,6 @@
 
 /**
  * Class AdminModulesControllerCore
- *
- * @since 1.0.0
  */
 class AdminModulesControllerCore extends AdminController
 {
@@ -86,6 +84,7 @@ class AdminModulesControllerCore extends AdminController
      * Load id employee
      * Load filter configuration
      * Load cache file
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -160,8 +159,6 @@ class AdminModulesControllerCore extends AdminController
      * @param array $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     public function checkCategoriesNames($a, $b)
     {
@@ -182,7 +179,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -195,7 +192,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessRefreshModuleList($forceReloadCache = false)
     {
@@ -210,7 +208,7 @@ class AdminModulesControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayAjaxRefreshModuleList()
     {
@@ -218,6 +216,7 @@ class AdminModulesControllerCore extends AdminController
     }
 
     /**
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function ajaxProcessLogOnAddonsWebservices()
@@ -228,6 +227,7 @@ class AdminModulesControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function ajaxProcessLogOutAddonsWebservices()
@@ -244,7 +244,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function ajaxProcessReloadModulesList()
     {
@@ -267,7 +266,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -537,7 +535,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @param array $modules
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initModulesList(&$modules)
     {
@@ -566,9 +564,7 @@ class AdminModulesControllerCore extends AdminController
     /**
      * Make module stats
      *
-     * @param Module $module
-     *
-     * @since 1.0.0
+     * @param stdClass $module
      */
     public function makeModulesStats($module)
     {
@@ -598,7 +594,6 @@ class AdminModulesControllerCore extends AdminController
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function isModuleFiltered($module)
     {
@@ -714,7 +709,7 @@ class AdminModulesControllerCore extends AdminController
     /**
      * Generate html errors for a module process
      *
-     * @param $moduleErrors
+     * @param array $moduleErrors
      *
      * @return string
      */
@@ -742,9 +737,10 @@ class AdminModulesControllerCore extends AdminController
     /**
      * Render KPIs
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -808,7 +804,6 @@ class AdminModulesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function ajaxProcessGetTabModulesList()
     {
@@ -865,7 +860,6 @@ class AdminModulesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getModulesByInstallation($tabModulesList = null)
     {
@@ -917,7 +911,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessSetFilter()
     {
@@ -928,13 +922,12 @@ class AdminModulesControllerCore extends AdminController
     /**
      * Post Process Filter
      *
-     * @param mixed $moduleType
-     * @param mixed $countryModuleValue
-     * @param mixed $moduleInstall
-     * @param mixed $moduleStatus
+     * @param string $moduleType
+     * @param string $countryModuleValue
+     * @param string $moduleInstall
+     * @param string $moduleStatus
      *
-     * @return void
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function setFilterModules($moduleType, $countryModuleValue, $moduleInstall, $moduleStatus)
     {
@@ -949,7 +942,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessSaveFavoritePreferences()
     {
@@ -989,7 +983,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessSaveTabModulePreferences()
     {
@@ -1015,7 +1010,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcessFilterModules()
     {
@@ -1028,7 +1023,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcessResetFilterModules()
     {
@@ -1042,7 +1037,6 @@ class AdminModulesControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function resetFilterModules()
     {
@@ -1059,7 +1053,6 @@ class AdminModulesControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcessFilterCategory()
     {
@@ -1074,7 +1067,6 @@ class AdminModulesControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcessUnfilterCategory()
     {
@@ -1088,7 +1080,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessReset()
     {
@@ -1133,7 +1126,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessDownload()
     {
@@ -1190,11 +1184,12 @@ class AdminModulesControllerCore extends AdminController
      * Extract archive
      *
      * @param string $file
-     * @param bool  $redirect
+     * @param bool $redirect
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function extractArchive($file, $redirect = true)
     {
@@ -1301,8 +1296,6 @@ class AdminModulesControllerCore extends AdminController
      * @param string $dir
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function recursiveDeleteOnDisk($dir)
     {
@@ -1330,7 +1323,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessEnable()
     {
@@ -1360,9 +1354,7 @@ class AdminModulesControllerCore extends AdminController
      *
      * @param array $remove
      *
-     * @return mixed|string
-     *
-     * @since 1.0.0
+     * @return string
      */
     protected function getCurrentUrl($remove = [])
     {
@@ -1389,7 +1381,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessEnable_Device()
     {
@@ -1415,7 +1408,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessDisable_Device()
     {
@@ -1441,7 +1435,8 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcessDelete()
     {
@@ -1485,7 +1480,9 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function postProcess()
     {
@@ -1528,9 +1525,9 @@ class AdminModulesControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function postProcessCallback()
     {
@@ -1794,7 +1791,9 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initModal()
     {
@@ -1822,7 +1821,9 @@ class AdminModulesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessGetModuleQuickView()
     {

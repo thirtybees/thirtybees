@@ -31,22 +31,19 @@
 
 /**
  * Class NewProductsControllerCore
- *
- * @since 1.0.0
  */
 class NewProductsControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'new-products';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -57,11 +54,12 @@ class NewProductsControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {

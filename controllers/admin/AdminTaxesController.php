@@ -31,15 +31,13 @@
 
 /**
  * Class AdminTaxesControllerCore
- *
- * @since 1.0.0
  */
 class AdminTaxesControllerCore extends AdminController
 {
     /**
      * AdminTaxesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -148,7 +146,7 @@ class AdminTaxesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -166,14 +164,12 @@ class AdminTaxesControllerCore extends AdminController
     /**
      * Display delete action link
      *
-     * @param string|null $token
-     * @param int         $id
+     * @param string $token
+     * @param int $id
      *
      * @return string
-     * @throws Exception
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function displayDeleteLink($token, $id)
     {
@@ -204,15 +200,16 @@ class AdminTaxesControllerCore extends AdminController
      * Fetch the template for action enable
      *
      * @param string $token
-     * @param int    $id
-     * @param int    $value      state enabled or not
-     * @param string $active     status
-     * @param int    $idCategory
-     * @param int    $idProduct
+     * @param int $id
+     * @param int $value state enabled or not
+     * @param string $active status
+     * @param int|null $idCategory
+     * @param int|null $idProduct
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayEnableLink($token, $id, $value, $active, $idCategory = null, $idProduct = null)
     {
@@ -236,7 +233,9 @@ class AdminTaxesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -295,7 +294,8 @@ class AdminTaxesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -339,9 +339,9 @@ class AdminTaxesControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $value
+     * @param int $value
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsUseEcotax($value)
     {

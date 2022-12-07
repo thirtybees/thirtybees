@@ -31,14 +31,11 @@
 
 /**
  * Class AttributeGroupCore
- *
- * @since 1.0.0
  */
 class AttributeGroupCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'attribute_group',
@@ -69,6 +66,9 @@ class AttributeGroupCore extends ObjectModel
     public $group_type;
     /** @var string Public Name */
     public $public_name;
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'product_options',
         'objectNodeName'  => 'product_option',
@@ -82,12 +82,11 @@ class AttributeGroupCore extends ObjectModel
             ],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get all attributes for a given language / group
      *
-     * @param int  $idLang           Language id
+     * @param int $idLang Language id
      * @param bool $idAttributeGroup Attribute group id
      *
      * @return array Attributes
@@ -142,8 +141,6 @@ class AttributeGroupCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -192,8 +189,8 @@ class AttributeGroupCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -214,13 +211,11 @@ class AttributeGroupCore extends ObjectModel
      *
      * return boolean Deletion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param array $selection
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteSelection($selection)
     {
@@ -238,8 +233,6 @@ class AttributeGroupCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -294,8 +287,6 @@ class AttributeGroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanDeadCombinations()
     {
@@ -330,8 +321,6 @@ class AttributeGroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanPositions()
     {
@@ -362,8 +351,6 @@ class AttributeGroupCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -395,12 +382,10 @@ class AttributeGroupCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsProductOptionValues()
     {
@@ -418,15 +403,13 @@ class AttributeGroupCore extends ObjectModel
     /**
      * Move a group attribute
      *
-     * @param bool $way      Up (1) or Down (0)
-     * @param int  $position
+     * @param bool $way Up (1) or Down (0)
+     * @param int $position
      *
      * @return bool Update result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {

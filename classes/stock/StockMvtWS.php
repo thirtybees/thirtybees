@@ -31,14 +31,11 @@
 
 /**
  * Class StockMvtWSCore
- *
- * @since 1.0.0
  */
 class StockMvtWSCore extends ObjectModelCore
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'stock_mvt',
@@ -120,43 +117,43 @@ class StockMvtWSCore extends ObjectModelCore
      */
     public $referer;
     /**
-     * @var int id_product (@see Stock::id_product)
+     * @var int id_product
      */
     public $id_product;
     /**
-     * @var int id_product_attribute (@see Stock::id_product_attribute)
+     * @var int id_product_attribute
      */
     public $id_product_attribute;
     /**
-     * @var int id_warehouse (@see Stock::id_warehouse)
+     * @var int id_warehouse
      */
     public $id_warehouse;
     /**
-     * @var int id_currency (@see Warehouse::id_currency)
+     * @var int id_currency
      */
     public $id_currency;
     /**
-     * @var string management_type (@see Warehouse::management_type)
+     * @var string management_type
      */
     public $management_type;
     /**
-     * @var string : Name of the product (@see Product::getProductName)
+     * @var string : Name of the product
      */
     public $product_name;
     /**
-     * @var string EAN13 of the product (@see Stock::product_ean13)
+     * @var string EAN13 of the product
      */
     public $ean13;
     /**
-     * @var string UPC of the product (@see Stock::product_upc)
+     * @var string UPC of the product
      */
     public $upc;
     /**
-     * @var string Reference of the product (@see Stock::product_reference)
+     * @var string Reference of the product
      */
     public $reference;
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'        => [
@@ -197,7 +194,6 @@ class StockMvtWSCore extends ObjectModelCore
         'upc'                  => ['table' => 's'],
         'reference'            => ['table' => 's'],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param int|null $id
@@ -206,8 +202,6 @@ class StockMvtWSCore extends ObjectModelCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -229,14 +223,12 @@ class StockMvtWSCore extends ObjectModelCore
      * @param string $filter
      * @param string $sort
      * @param string $limit
-     * @param bool   $full
+     * @param bool $full
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWebserviceObjectList($join, $filter, $sort, $limit, $full = false)
     {
@@ -287,8 +279,6 @@ class StockMvtWSCore extends ObjectModelCore
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getWSProductName()

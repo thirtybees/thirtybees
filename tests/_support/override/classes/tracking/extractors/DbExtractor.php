@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking\Extractor;
 
 /**
  * Class DbExtractor
- *
- * @since 1.3.0
  */
 class DbExtractor extends DbExtractorCore
 {

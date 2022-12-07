@@ -31,17 +31,21 @@
 
 /**
  * Class PageCore
- *
- * @since 1.0.0
  */
 class PageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
-    public $id_page_type;
-    public $id_object;
-    // @codingStandardsIgnoreEnd
     /**
-     * @see ObjectModel::$definition
+     * @var int
+     */
+    public $id_page_type;
+
+    /**
+     * @var int
+     */
+    public $id_object;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'page',
@@ -63,8 +67,6 @@ class PageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrentId()
     {
@@ -111,8 +113,6 @@ class PageCore extends ObjectModel
      *
      * @param string $name Page name (E.g. product.php)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return false|int|null|string
      * @throws PrestaShopException
      */
@@ -135,8 +135,6 @@ class PageCore extends ObjectModel
     /**
      * @param int $idPage
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setPageViewed($idPage)

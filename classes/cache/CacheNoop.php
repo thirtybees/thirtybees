@@ -21,8 +21,6 @@
  * Class CacheNoop
  *
  * Dummy cache implementation
- *
- * @since 1.1.1
  */
 class CacheNoopCore extends Cache
 {
@@ -34,9 +32,6 @@ class CacheNoopCore extends Cache
      * @param int $ttl
      *
      * @return bool
-     *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -50,9 +45,6 @@ class CacheNoopCore extends Cache
      * @param string $key
      *
      * @return mixed
-     *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
      */
     protected function _get($key)
     {
@@ -65,9 +57,6 @@ class CacheNoopCore extends Cache
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
      */
     protected function _exists($key)
     {
@@ -80,9 +69,6 @@ class CacheNoopCore extends Cache
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
      */
     protected function _delete($key)
     {
@@ -92,8 +78,7 @@ class CacheNoopCore extends Cache
     /**
      * Write keys index
      *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
+     * @return void
      */
     protected function _writeKeys()
     {
@@ -104,9 +89,6 @@ class CacheNoopCore extends Cache
      * Clean all cached data
      *
      * @return bool
-     *
-     * @since 1.1.1
-     * @version 1.1.1 Initial version
      */
     public function flush()
     {

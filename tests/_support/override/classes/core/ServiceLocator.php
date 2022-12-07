@@ -21,8 +21,6 @@ namespace Thirtybees\Core\DependencyInjection;
 
 /**
  * Class ServiceLocator
- *
- * @since 1.3.0
  */
 class ServiceLocator extends ServiceLocatorCore
 {

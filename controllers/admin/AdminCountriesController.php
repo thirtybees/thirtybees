@@ -31,15 +31,13 @@
 
 /**
  * Class AdminCountriesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCountriesControllerCore extends AdminController
 {
     /**
      * AdminCountriesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -136,14 +134,16 @@ class AdminCountriesControllerCore extends AdminController
      * @param string $prefix
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function displayCallPrefix($prefix)
     {
         return ((int) $prefix ? '+'.$prefix : '-');
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
@@ -160,6 +160,7 @@ class AdminCountriesControllerCore extends AdminController
     /**
      * AdminController::setMedia() override
      *
+     * @throws PrestaShopException
      * @see AdminController::setMedia()
      */
     public function setMedia()
@@ -174,7 +175,9 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -192,7 +195,9 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -412,8 +417,6 @@ class AdminCountriesControllerCore extends AdminController
      * Display valid fields
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function displayValidFields()
     {
@@ -463,7 +466,8 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -503,7 +507,8 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -526,7 +531,8 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -570,7 +576,8 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processStatus()
     {
@@ -589,9 +596,10 @@ class AdminCountriesControllerCore extends AdminController
      *
      * @param bool $way
      *
-     * @return bool|void
+     * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processBulkStatusSelection($way)
     {

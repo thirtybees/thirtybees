@@ -31,14 +31,11 @@
 
 /**
  * Class OrderReturnCore
- *
- * @since
  */
 class OrderReturnCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_return',
@@ -72,7 +69,6 @@ class OrderReturnCore extends ObjectModel
     public $date_add;
     /** @var string Object last modification date */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param int $idOrder
@@ -81,8 +77,6 @@ class OrderReturnCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getReturnedCustomizedProducts($idOrder)
     {
@@ -112,8 +106,6 @@ class OrderReturnCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, $idCustomization = 0)
@@ -122,17 +114,14 @@ class OrderReturnCore extends ObjectModel
     }
 
     /**
-     *
      * Get return details for one product line
      *
      * @param int $idOrderDetail
      *
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductReturnDetail($idOrderDetail)
     {
@@ -147,11 +136,10 @@ class OrderReturnCore extends ObjectModel
     }
 
     /**
-     *
      * Add returned quantity to products list
      *
      * @param array $products
-     * @param int   $idOrder
+     * @param int $idOrder
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -190,8 +178,6 @@ class OrderReturnCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addReturnDetail($orderDetailList, $productQtyList, $customizationIds, $customizationQtyInput)
     {
@@ -225,8 +211,6 @@ class OrderReturnCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkEnoughProduct($orderDetailList, $productQtyList, $customizationIds, $customizationQtyInput)
     {
@@ -275,17 +259,15 @@ class OrderReturnCore extends ObjectModel
     }
 
     /**
-     * @param int          $customerId
-     * @param int|bool     $orderId
-     * @param bool         $noDenied
+     * @param int $customerId
+     * @param int|bool $orderId
+     * @param bool $noDenied
      * @param Context|null $context
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersReturn($customerId, $orderId = false, $noDenied = false, Context $context = null)
     {
@@ -314,15 +296,13 @@ class OrderReturnCore extends ObjectModel
     }
 
     /**
-     * @param int   $orderReturnId
+     * @param int $orderReturnId
      * @param Order $order
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersReturnProducts($orderReturnId, $order)
     {
@@ -348,12 +328,10 @@ class OrderReturnCore extends ObjectModel
     /**
      * @param int $idOrderReturn
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersReturnDetail($idOrderReturn)
     {
@@ -370,8 +348,6 @@ class OrderReturnCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function countProduct()
     {

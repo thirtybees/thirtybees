@@ -31,30 +31,47 @@
 
 /**
  * Class InstallXmlLoader
- *
- * @since 1.0.0
  */
 class InstallXmlLoader
 {
+    /**
+     * @var string
+     */
     public $path_type;
+
     /**
      * @var InstallLanguages
      */
     protected $language;
+
     /**
      * @var array List of languages stored as array(id_lang => iso)
      */
     protected $languages = [];
+
     /**
      * @var array Store in cache all loaded XML files
      */
     protected $cache_xml_entity = [];
+
     /**
      * @var array List of errors
      */
     protected $errors = [];
+
+    /**
+     * @var string
+     */
     protected $data_path;
+
+    /**
+     * @var string
+     */
     protected $lang_path;
+
+    /**
+     * @var string
+     */
     protected $img_path;
 
     /**
@@ -62,14 +79,20 @@ class InstallXmlLoader
      */
     protected $ids = [];
 
+    /**
+     * @var array
+     */
     protected $primaries = [];
 
+    /**
+     * @var array
+     */
     protected $delayed_inserts = [];
 
     /**
      * InstallXmlLoader constructor.
      *
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function __construct()
     {
@@ -78,7 +101,7 @@ class InstallXmlLoader
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function setDefaultPath()
     {
@@ -92,8 +115,6 @@ class InstallXmlLoader
      * Set list of installed languages
      *
      * @param array $languages array(id_lang => iso)
-     *
-     * @since 1.0.0
      */
     public function setLanguages(array $languages)
     {
@@ -102,8 +123,6 @@ class InstallXmlLoader
 
     /**
      * @param string|null $path
-     *
-     * @since 1.0.0
      */
     public function setFixturesPath($path = null)
     {
@@ -121,8 +140,6 @@ class InstallXmlLoader
      * Get list of errors
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getErrors()
     {
@@ -131,8 +148,6 @@ class InstallXmlLoader
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getIds()
     {
@@ -141,8 +156,6 @@ class InstallXmlLoader
 
     /**
      * @param array $ids
-     *
-     * @since 1.0.0
      */
     public function setIds($ids)
     {
@@ -152,10 +165,11 @@ class InstallXmlLoader
     /**
      * Read all XML files from data folder and populate tables
      *
-     * @param bool  $populate If false, just collect entity identifiers.
+     * @param bool $populate If false, just collect entity identifiers.
      *
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 New parameter $populate.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function populateFromXmlFiles($populate = true)
     {
@@ -170,7 +184,7 @@ class InstallXmlLoader
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function getSortedEntities()
     {
@@ -230,10 +244,10 @@ class InstallXmlLoader
      * Load an entity XML file
      *
      * @param string $entity
-     *
+     * @param string|null $iso
      * @return SimpleXMLElement
      *
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     protected function loadEntity($entity, $iso = null)
     {
@@ -256,6 +270,10 @@ class InstallXmlLoader
         return $this->cache_xml_entity[$this->path_type][$entity][$iso];
     }
 
+    /**
+     * @param string $iso
+     * @return string
+     */
     protected function getFallBackToDefaultLanguage($iso)
     {
         return file_exists($this->lang_path.$iso.'/data/') ? $iso : 'en';
@@ -264,11 +282,12 @@ class InstallXmlLoader
     /**
      * Populate an entity
      *
-     * @param string  $entity
-     * @param bool    $populate If false, just collect entity identifiers.
+     * @param string $entity
+     * @param bool $populate If false, just collect entity identifiers.
      *
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 New parameter $populate.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function populateEntity($entity, $populate = true)
     {
@@ -374,11 +393,12 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function isMultilang($entity)
     {
@@ -390,7 +410,8 @@ class InstallXmlLoader
     /**
      * @return array|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getTables()
     {
@@ -410,13 +431,14 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $table
-     * @param bool  $multilang
+     * @param string $table
+     * @param bool $multilang
      * @param array $exclude
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getColumns($table, $multilang = false, array $exclude = [])
     {
@@ -447,11 +469,9 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function checkIfTypeIsText($type)
     {
@@ -470,9 +490,10 @@ class InstallXmlLoader
      * Check fields related to an other entity, and replace their values by the ID created by the other entity
      *
      * @param string $entity
-     * @param array  $data
+     * @param array $data
      *
-     * @since 1.0.0
+     * @return array
+     * @throws PrestashopInstallerException
      */
     protected function rewriteRelationedData($entity, array $data)
     {
@@ -495,8 +516,6 @@ class InstallXmlLoader
      *
      * @param string $entity
      * @param string $identifier
-     *
-     * @since 1.0.0
      */
     public function retrieveId($entity, $identifier)
     {
@@ -510,8 +529,11 @@ class InstallXmlLoader
      * @param string $entity
      * @param string $identifier
      * @param string $classname
-     * @param array  $data
-     * @param array  $dataLang
+     * @param array $data
+     * @param array $dataLang
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function createEntity($entity, $identifier, $classname, array $data, array $dataLang = [])
     {
@@ -573,12 +595,13 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
-     * @param $primary
+     * @param string $entity
+     * @param string $primary
      *
-     * @return mixed
+     * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function generatePrimary($entity, $primary)
     {
@@ -594,9 +617,7 @@ class InstallXmlLoader
      *
      * @param string $entity
      * @param string $identifier
-     * @param int    $id
-     *
-     * @since 1.0.0
+     * @param int $id
      */
     public function storeId($entity, $identifier, $id)
     {
@@ -604,13 +625,14 @@ class InstallXmlLoader
     }
 
     /**
-     * @param        $entity
-     * @param        $identifier
-     * @param        $path
-     * @param array  $data
+     * @param string $entity
+     * @param string $identifier
+     * @param string $path
+     * @param array $data
      * @param string $extension
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImages($entity, $identifier, $path, array $data, $extension = 'jpg')
     {
@@ -668,8 +690,6 @@ class InstallXmlLoader
      * Add an error
      *
      * @param string $error
-     *
-     * @since 1.0.0
      */
     public function setError($error)
     {
@@ -677,7 +697,8 @@ class InstallXmlLoader
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function flushDelayedInserts()
     {
@@ -697,7 +718,9 @@ class InstallXmlLoader
     /**
      * Special case for "tag" entity
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function populateEntityTag()
     {
@@ -731,12 +754,12 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $identifier
+     * @param string $identifier
      * @param array $data
      * @param array $dataLang
      *
-     *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function createEntityConfiguration($identifier, array $data, array $dataLang)
     {
@@ -769,11 +792,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $identifier
+     * @param string $identifier
      * @param array $data
      * @param array $data_lang
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function createEntityStockAvailable($identifier, array $data, array $data_lang)
     {
@@ -781,6 +804,15 @@ class InstallXmlLoader
         $stockAvailable->updateQuantity($data['id_product'], $data['id_product_attribute'], $data['quantity'], $data['id_shop']);
     }
 
+    /**
+     * @param string $identifier
+     * @param array $data
+     * @param array $dataLang
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
+     */
     public function createEntityTab($identifier, array $data, array $dataLang)
     {
         static $position = [];
@@ -828,10 +860,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $identifier
+     * @param string $identifier
      * @param array $data
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImagesScene($identifier, array $data)
     {
@@ -849,10 +882,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $identifier
+     * @param string $identifier
      * @param array $data
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImagesOrderState($identifier, array $data)
     {
@@ -860,10 +894,8 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $identifier
+     * @param string $identifier
      * @param array $data
-     *
-     * @since 1.0.0
      */
     public function copyImagesTab($identifier, array $data)
     {
@@ -880,9 +912,10 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $identifier
+     * @param string $identifier
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImagesImage($identifier)
     {
@@ -918,11 +951,12 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $table
+     * @param string $table
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function hasElements($table)
     {
@@ -930,11 +964,9 @@ class InstallXmlLoader
     }
 
     /**
-     * @param null $path
+     * @param string|null $path
      *
      * @return array|null
-     *
-     * @since 1.0.0
      */
     public function getClasses($path = null)
     {
@@ -969,11 +1001,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $entity
+     * @param string $entity
      * @param array $fields
      * @param array $config
      *
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function generateEntitySchema($entity, array $fields, array $config)
     {
@@ -1010,11 +1042,9 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function entityExists($entity)
     {
@@ -1024,7 +1054,9 @@ class InstallXmlLoader
     /**
      * ONLY FOR DEVELOPMENT PURPOSE
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function generateAllEntityFiles()
     {
@@ -1037,8 +1069,6 @@ class InstallXmlLoader
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getEntitiesList()
     {
@@ -1053,11 +1083,9 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getEntityInfo($entity)
     {
@@ -1125,7 +1153,10 @@ class InstallXmlLoader
     /**
      * ONLY FOR DEVELOPMENT PURPOSE
      *
-     * @since 1.0.0
+     * @param string[] $entities
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function generateEntityFiles($entities)
     {
@@ -1162,8 +1193,6 @@ class InstallXmlLoader
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getDependencies()
     {
@@ -1188,9 +1217,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function generateEntityContent($entity)
     {
@@ -1236,7 +1267,13 @@ class InstallXmlLoader
     /**
      * ONLY FOR DEVELOPMENT PURPOSE
      *
-     * @since 1.0.0
+     * @param string $entity
+     *
+     * @return array[]
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function getEntityContents($entity)
     {
@@ -1351,14 +1388,12 @@ class InstallXmlLoader
     }
 
     /**
-     * @param       $entity
-     * @param       $primary
+     * @param string $entity
+     * @param string $primary
      * @param array $row
-     * @param null  $idFormat
+     * @param string|null $idFormat
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function generateId($entity, $primary, array $row = [], $idFormat = null)
     {
@@ -1397,11 +1432,12 @@ class InstallXmlLoader
     }
 
     /**
-     * @param                  $entity
-     * @param array            $nodes
+     * @param string $entity
+     * @param array $nodes
      * @param SimpleXMLElement $entities
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function createXmlEntityNodes($entity, array $nodes, SimpleXMLElement $entities)
     {
@@ -1420,10 +1456,11 @@ class InstallXmlLoader
     }
 
     /**
-     * @param $entity
-     * @param $path
+     * @param string $entity
+     * @param string $path
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function backupImage($entity, $path)
     {
@@ -1467,7 +1504,8 @@ class InstallXmlLoader
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getEntityContentsTag()
     {
@@ -1500,7 +1538,8 @@ class InstallXmlLoader
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function backupImageImage()
     {
@@ -1531,7 +1570,7 @@ class InstallXmlLoader
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function backupImageTab()
     {

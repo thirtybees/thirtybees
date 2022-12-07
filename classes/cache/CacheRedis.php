@@ -30,35 +30,33 @@
  */
 /**
  * This class require Redis server to be installed
- *
- * @since 1.0.0
  */
 class CacheRedisCore extends CacheCore
 {
     /**
      * @var bool Connection status
-     *
-     * @since 1.0.0
      */
     public $is_connected = false;
     /**
      * @var RedisClient $redis
-     *
-     * @since 1.0.0
      */
     protected $redis;
     /**
      * @var array RedisParams
-     *
-     * @since 1.0.0
      */
     protected $_params = [];
+
+    /**
+     * @var array
+     */
     protected $_servers = [];
 
     /**
      * CacheRedisCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws RedisException
      */
     public function __construct()
     {
@@ -79,7 +77,6 @@ class CacheRedisCore extends CacheCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function connect()
     {
@@ -163,7 +160,6 @@ class CacheRedisCore extends CacheCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public static function getRedisServer()
     {
@@ -184,10 +180,10 @@ class CacheRedisCore extends CacheCore
     /**
      *Add a redis server
      *
-     * @param string $ip   IP address or hostname
-     * @param int    $port Port number
+     * @param string $ip IP address or hostname
+     * @param int $port Port number
      * @param string $auth Authentication key
-     * @param int    $db   Redis database ID
+     * @param int $db Redis database ID
      *
      * @return bool Whether the server was successfully added
      * @throws PrestaShopDatabaseException
@@ -246,6 +242,7 @@ class CacheRedisCore extends CacheCore
      *
      * @return bool Whether the server was successfully deleted
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteServer($idServer)
     {
@@ -258,7 +255,7 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function __destruct()
     {
@@ -269,8 +266,6 @@ class CacheRedisCore extends CacheCore
      * Close connection to redis server
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function close()
     {
@@ -283,11 +278,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::flush()
+     * @see Cache::flush()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function flush()
     {
@@ -299,11 +292,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::_set()
+     * @see Cache::_set()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -315,11 +306,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::_exists()
+     * @see Cache::_exists()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function _exists($key)
     {
@@ -331,11 +320,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::_get()
+     * @see Cache::_get()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function _get($key)
     {
@@ -347,11 +334,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::_delete()
+     * @see Cache::_delete()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function _delete($key)
     {
@@ -363,11 +348,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see   Cache::_writeKeys()
+     * @see Cache::_writeKeys()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function _writeKeys()
     {

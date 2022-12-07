@@ -21,15 +21,12 @@ use \Thirtybees\Core\InitializationCallback;
 
 /**
  * Class AdminCustomerMergeControllerCore
- *
- * @since 1.3.0
  */
 class AdminCustomerMergeControllerCore extends AdminController implements InitializationCallback
 {
     /**
      * AdminMaintenanceControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -167,6 +164,9 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
         ];
     }
 
+    /**
+     * @return void
+     */
     public function initToolbarTitle()
     {
         $this->toolbar_title = [
@@ -242,6 +242,7 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
      * @param string $table
      * @param array $defaults
      * @return string
+     * @throws PrestaShopException
      */
     protected function getOperation($table, $defaults)
     {

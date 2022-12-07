@@ -28,6 +28,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS16()
     {
         $mod = test::double('TestModule')->construct();
@@ -35,6 +39,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(true, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS16OpenMax()
     {
         $mod = test::double('TestModule')->construct();
@@ -42,6 +50,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(true, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS1_6_1_19()
     {
         $mod = test::double('TestModule')->construct();
@@ -49,6 +61,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(false, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS1_6_1_20()
     {
         $mod = test::double('TestModule')->construct();
@@ -56,6 +72,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(true, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS1_6_1_99()
     {
         $mod = test::double('TestModule')->construct();
@@ -63,6 +83,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(true, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS17()
     {
         $mod = test::double('TestModule')->construct();
@@ -70,6 +94,10 @@ class ModuleUnitTest extends \Codeception\Test\Unit
         $this->assertEquals(false, $mod->checkCompliancy());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testCheckCompliancyPS17OpenMax()
     {
         $mod = test::double('TestModule')->construct();

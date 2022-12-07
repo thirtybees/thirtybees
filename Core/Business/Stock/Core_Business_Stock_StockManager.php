@@ -31,8 +31,6 @@
 
 /**
  * Class Core_Business_Stock_StockManager
- *
- * @since 1.0.0ce 1.0.0
  */
 class Core_Business_Stock_StockManager
 {
@@ -40,15 +38,13 @@ class Core_Business_Stock_StockManager
     /**
      * This will update a Pack quantity and will decrease the quantity of containing Products if needed.
      *
-     * @param Product        $product        A product pack object to update its quantity
+     * @param Product $product A product pack object to update its quantity
      * @param StockAvailable $stockAvailable the stock of the product to fix with correct quantity
-     * @param int            $deltaQuantity  The movement of the stock (negative for a decrease)
-     * @param int|null       $idShop         Opional shop ID
+     * @param int $deltaQuantity The movement of the stock (negative for a decrease)
+     * @param int|null $idShop Opional shop ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePackQuantity($product, $stockAvailable, $deltaQuantity, $idShop = null)
     {
@@ -84,15 +80,13 @@ class Core_Business_Stock_StockManager
      * Will update Product available stock int he given declinaison. If product is a Pack, could decrease the sub products.
      * If Product is contained in a Pack, Pack could be decreased or not (only if sub product stocks become not sufficient).
      *
-     * @param Product  $product            The product to update its stockAvailable
-     * @param integer  $idProductAttribute The declinaison to update (null if not)
-     * @param integer  $deltaQuantity      The quantity change (positive or negative)
-     * @param int|null $idShop             Optional
+     * @param Product $product The product to update its stockAvailable
+     * @param integer $idProductAttribute The declinaison to update (null if not)
+     * @param integer $deltaQuantity The quantity change (positive or negative)
+     * @param int|null $idShop Optional
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updateQuantity($product, $idProductAttribute, $deltaQuantity, $idShop = null)
     {

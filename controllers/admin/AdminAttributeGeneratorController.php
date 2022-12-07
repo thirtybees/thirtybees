@@ -33,20 +33,23 @@
 
 /**
  * Class AdminAttributeGeneratorControllerCore
- *
- * @since 1.0.0
  */
 class AdminAttributeGeneratorControllerCore extends AdminController
 {
+    /**
+     * @var array
+     */
     protected $combinations = [];
 
-    /** @var Product */
+    /**
+     * @var Product
+     */
     protected $product;
 
     /**
      * AdminAttributeGeneratorControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -59,11 +62,9 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @param $list
+     * @param array $list
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     protected static function createCombinations($list)
     {
@@ -85,12 +86,13 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @param int   $idProduct
+     * @param int $idProduct
      * @param array $tab
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function setAttributesImpacts($idProduct, array $tab)
     {
@@ -112,7 +114,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -121,7 +123,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initProcess()
     {
@@ -140,9 +142,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     *
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -152,7 +152,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processGenerate()
     {
@@ -223,10 +223,11 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @param int|null   $tabId
+     * @param int|null $tabId
      * @param array|null $tabs
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initBreadcrumbs($tabId = null, $tabs = null)
     {
@@ -236,7 +237,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initContent()
     {
@@ -281,7 +282,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -295,7 +296,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initGroupTable()
     {
@@ -324,7 +325,8 @@ class AdminAttributeGeneratorControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function addAttribute($attributes, $reference)
     {

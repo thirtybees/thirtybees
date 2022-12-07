@@ -32,11 +32,11 @@
 /**
  * Class Core_Business_Email_EmailLister
  */
-// @codingStandardsIgnoreStart
 class Core_Business_Email_EmailLister
 {
-    // @codingStandardsIgnoreEnd
-
+    /**
+     * @var Core_Foundation_FileSystem_FileSystem
+     */
     protected $filesystem;
 
     /**
@@ -57,8 +57,7 @@ class Core_Business_Email_EmailLister
      *
      * @return array|null
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws Core_Foundation_FileSystem_Exception
      */
     public function getAvailableMails($dir)
     {
@@ -95,9 +94,6 @@ class Core_Business_Email_EmailLister
      * @param string $mailName
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0
      */
     public function getCleanedMailName($mailName)
     {

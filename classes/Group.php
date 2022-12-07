@@ -31,30 +31,51 @@
 
 /**
  * Class GroupCore
- *
- * @since 1.0.0
  */
 class GroupCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected static $cache_reduction = [];
-    protected static $group_price_display_method = [];
-    /** @var string Lastname */
-    public $name;
-    /** @var string Reduction */
-    public $reduction;
-    /** @var int Price display method (tax inc/tax exc) */
-    public $price_display_method;
-    /** @var bool Show prices */
-    public $show_prices = 1;
-    /** @var string Object creation date */
-    public $date_add;
-    /** @var string Object last modification date */
-    public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array
+     */
+    protected static $group_price_display_method = [];
+
+    /**
+     * @var string Lastname
+     */
+    public $name;
+
+    /**
+     * @var float Reduction
+     */
+    public $reduction;
+
+    /**
+     * @var int Price display method (tax inc/tax exc)
+     */
+    public $price_display_method;
+
+    /**
+     * @var bool Show prices
+     */
+    public $show_prices = 1;
+
+    /**
+     * @var string Object creation date
+     */
+    public $date_add;
+
+    /**
+     * @var string Object last modification date
+     */
+    public $date_upd;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'group',
@@ -77,6 +98,9 @@ class GroupCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [];
 
     /**
@@ -86,34 +110,30 @@ class GroupCore extends ObjectModel
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
         parent::__construct($id, $idLang, $idShop);
-        // @codingStandardsIgnoreStart
         if ($this->id
             && ! isset(static::$group_price_display_method[$this->id])) {
             static::$group_price_display_method[$this->id] = $this->price_display_method;
         }
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @param int      $idLang
+     * @param int $idLang
      * @param int|bool $idShop: false  --> Return all groups.
      *                          true   --> Return groups associated with
      *                                     current shop (from context).
      *                          number --> Return groups associated with the
      *                                     specific shop with this ID.
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGroups($idLang, $idShop = false)
     {
@@ -136,15 +156,12 @@ class GroupCore extends ObjectModel
     /**
      * @param int|null $idCustomer
      *
-     * @return mixed
+     * @return float
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getReduction($idCustomer = null)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_reduction['customer'][(int) $idCustomer])) {
             $idGroup = $idCustomer ?
                 Customer::getDefaultGroupId((int) $idCustomer) :
@@ -154,7 +171,6 @@ class GroupCore extends ObjectModel
         }
 
         return static::$cache_reduction['customer'][(int) $idCustomer];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -163,8 +179,6 @@ class GroupCore extends ObjectModel
      *
      * @return Group Group object
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCurrent()
@@ -207,15 +221,12 @@ class GroupCore extends ObjectModel
      *
      * @param int $idGroup
      *
-     * @return mixed
+     * @return float
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getReductionByIdGroup($idGroup)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_reduction['group'][$idGroup])) {
             static::$cache_reduction['group'][$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -226,14 +237,11 @@ class GroupCore extends ObjectModel
         }
 
         return static::$cache_reduction['group'][$idGroup];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @return mixed
+     * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getDefaultPriceDisplayMethod()
@@ -246,15 +254,12 @@ class GroupCore extends ObjectModel
     /**
      * @param int $idGroup
      *
-     * @return mixed
+     * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getPriceDisplayMethod($idGroup)
     {
-        // @codingStandardsIgnoreStart
         if ( ! isset(static::$group_price_display_method[$idGroup])) {
             static::$group_price_display_method[$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -265,7 +270,6 @@ class GroupCore extends ObjectModel
         }
 
         return static::$group_price_display_method[$idGroup];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -273,9 +277,6 @@ class GroupCore extends ObjectModel
      *
      * @return bool
      *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -292,12 +293,10 @@ class GroupCore extends ObjectModel
      * This method is allow to know if there are other groups than the default ones
      *
      * @param string $table
-     * @param bool   $hasActiveColumn
+     * @param bool $hasActiveColumn
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
@@ -312,10 +311,8 @@ class GroupCore extends ObjectModel
      *
      * @return bool
      *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function truncateRestrictionsByModule($idModule)
     {
@@ -325,14 +322,12 @@ class GroupCore extends ObjectModel
     /**
      * Adding restrictions modules to the group with id $id_group
      *
-     * @param int   $idGroup
+     * @param int $idGroup
      * @param array $modules
      * @param array $shops
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -363,13 +358,11 @@ class GroupCore extends ObjectModel
      * Add restrictions for a new module.
      * We authorize every groups to the new module
      *
-     * @param int   $idModule
+     * @param int $idModule
      * @param array $shops
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function addRestrictionsForModule($idModule, $shops = [1])
@@ -399,8 +392,6 @@ class GroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function searchByName($query)
     {
@@ -415,14 +406,12 @@ class GroupCore extends ObjectModel
 
     /**
      * @param bool $count
-     * @param int  $start
-     * @param int  $limit
+     * @param int $start
+     * @param int $limit
      * @param bool $shopFiltering
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource|string
+     * @return array|false|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getCustomers($count = false, $start = 0, $limit = 0, $shopFiltering = false)
@@ -458,8 +447,6 @@ class GroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -480,8 +467,6 @@ class GroupCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($autodate = true, $nullValues = false)
@@ -496,8 +481,6 @@ class GroupCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
@@ -548,9 +531,8 @@ class GroupCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function truncateModulesRestrictions($idGroup)
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class ContextCore
- *
- * @since 1.0.0
  */
 class ContextCore
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     const DEVICE_COMPUTER = 1;
     /** @var int */
@@ -65,7 +62,7 @@ class ContextCore
     public $country;
     /** @var Employee */
     public $employee;
-    /** @var AdminController|FrontController */
+    /** @var Controller */
     public $controller;
     /** @var string */
     public $override_controller_name_for_translations;
@@ -95,13 +92,9 @@ class ContextCore
     protected $is_mobile = null;
     /** @var bool|null */
     protected $is_tablet = null;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param Context $testInstance Unit testing purpose only
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setInstanceForTesting($testInstance)
     {
@@ -111,8 +104,7 @@ class ContextCore
     /**
      * Unit testing purpose only
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function deleteTestingInstance()
     {
@@ -124,8 +116,6 @@ class ContextCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getMobileDevice()
@@ -164,9 +154,6 @@ class ContextCore
      * Get a singleton instance of Context object
      *
      * @return Context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getContext()
     {
@@ -181,9 +168,6 @@ class ContextCore
      * Checks if visitor's device is a mobile device
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isMobile()
     {
@@ -199,9 +183,6 @@ class ContextCore
      * Sets Mobile_Detect tool object
      *
      * @return Mobile_Detect
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMobileDetect()
     {
@@ -216,9 +197,6 @@ class ContextCore
      * Checks if visitor's device is a tablet device
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isTablet()
     {
@@ -234,9 +212,6 @@ class ContextCore
      * Returns mobile device type
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDevice()
     {
@@ -259,12 +234,10 @@ class ContextCore
      * Clone current context object
      *
      * @return Context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function cloneContext()
     {
+        /** @var Context $this */
         return clone($this);
     }
 
@@ -276,9 +249,6 @@ class ContextCore
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function checkMobileContext()
     {

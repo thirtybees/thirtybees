@@ -31,15 +31,13 @@
 
 /**
  * Class AdminNotFoundControllerCore
- *
- * @since 1.0.0
  */
 class AdminNotFoundControllerCore extends AdminController
 {
     /**
      * AdminNotFoundControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -54,8 +52,6 @@ class AdminNotFoundControllerCore extends AdminController
      * Always returns true to make it always available
      *
      * @return true
-     *
-     * @since 1.0.0
      */
     public function checkAccess()
     {
@@ -81,7 +77,8 @@ class AdminNotFoundControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {

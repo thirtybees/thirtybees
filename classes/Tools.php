@@ -34,14 +34,11 @@ use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class ToolsCore
- *
- * @since 1.0.0
  */
 class ToolsCore
 {
     /**
      * Bootstring parameter values
-     *
      */
     const PUNYCODE_BASE         = 36;
     const PUNYCODE_TMIN         = 1;
@@ -53,27 +50,54 @@ class ToolsCore
     const PUNYCODE_PREFIX       = 'xn--';
     const PUNYCODE_DELIMITER    = '-';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int|null
+     */
     public static $round_mode = null;
+
+    /**
+     * @var bool[]
+     */
     protected static $file_exists_cache = [];
+
+    /**
+     * @var int
+     */
     protected static $_forceCompile;
+
+    /**
+     * @var int
+     */
     protected static $_caching;
+
+    /**
+     * @var string
+     */
     protected static $_user_plateform;
+
+    /**
+     * @var string
+     */
     protected static $_user_browser;
+
+    /**
+     * @var int|null
+     */
     protected static $_cache_nb_media_servers = null;
+
+    /**
+     * @var bool
+     * @deprecated 1.0.0
+     */
     protected static $is_addons_up = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Random password generator
      *
-     * @param int    $length Desired length (optional)
-     * @param string $flag   Output type (NUMERIC, ALPHANUMERIC, NO_NUMERIC, RANDOM)
+     * @param int $length Desired length (optional)
+     * @param string $flag Output type (NUMERIC, ALPHANUMERIC, NO_NUMERIC, RANDOM)
      *
      * @return bool|string Password
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function passwdGen($length = 8, $flag = 'ALPHANUMERIC')
     {
@@ -119,9 +143,6 @@ class ToolsCore
      * @param int $length Desired length of random bytes
      *
      * @return string Random bytes
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBytes($length)
     {
@@ -139,13 +160,12 @@ class ToolsCore
     /**
      * Redirect user to another page
      *
-     * @param string       $url     Desired URL
-     * @param string       $baseUri Base URI (optional)
-     * @param Link         $link
-     * @param string|array $headers A list of headers to send before redirection
+     * @param string $url Desired URL
+     * @param false|string $baseUri Base URI (optional)
+     * @param Link|null $link
+     * @param string|string[]|null $headers A list of headers to send before redirection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function redirect($url, $baseUri = __PS_BASE_URI__, Link $link = null, $headers = null)
     {
@@ -193,12 +213,9 @@ class ToolsCore
      * @param string $search
      * @param string $replace
      * @param string $subject
-     * @param int    $cur
+     * @param int $cur
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function strReplaceFirst($search, $replace, $subject, $cur = 0)
     {
@@ -214,8 +231,7 @@ class ToolsCore
      *
      * @param string $url Desired URL
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function redirectLink($url)
     {
@@ -240,9 +256,6 @@ class ToolsCore
      * Redirect user to another admin page
      *
      * @param string $url Desired URL
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function redirectAdmin($url)
     {
@@ -256,8 +269,7 @@ class ToolsCore
      *
      * @return String
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopProtocol()
     {
@@ -271,9 +283,6 @@ class ToolsCore
      * @param string $str
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strtolower for UTF-8 or strtolower if guaranteed ASCII
      */
@@ -292,9 +301,6 @@ class ToolsCore
      * @param bool $useSsl true if require ssl
      *
      * @return String (http|https)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProtocol($useSsl = null)
     {
@@ -305,9 +311,6 @@ class ToolsCore
      * Get the server variable REMOTE_ADDR, or the first ip of HTTP_X_FORWARDED_FOR (when using proxy)
      *
      * @return string $remote_addr ip of client
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRemoteAddr()
     {
@@ -341,9 +344,6 @@ class ToolsCore
      * Get the current url prefix protocol (https/http)
      *
      * @return string protocol
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrentUrlProtocolPrefix()
     {
@@ -358,9 +358,6 @@ class ToolsCore
      * Check if the current page use SSL connection on not
      *
      * @return bool uses SSL
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function usingSecureMode()
     {
@@ -391,9 +388,6 @@ class ToolsCore
      * @param string $referrer URL referrer
      *
      * @return string secured referrer
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function secureReferrer($referrer)
     {
@@ -408,9 +402,6 @@ class ToolsCore
      * Get the server variable SERVER_NAME
      *
      * @return string server name
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getServerName()
     {
@@ -424,10 +415,7 @@ class ToolsCore
     /**
      * Get all values from $_POST/$_GET
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     public static function getAllValues()
     {
@@ -438,9 +426,6 @@ class ToolsCore
      * @param string $key
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIsset($key)
     {
@@ -458,8 +443,6 @@ class ToolsCore
      *
      * @return string ISO code
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setCookieLanguage(Cookie $cookie = null)
@@ -517,13 +500,10 @@ class ToolsCore
      * Get a value from $_POST / $_GET
      * if unavailable, take a default value
      *
-     * @param string $key          Value key
-     * @param mixed  $defaultValue (optional)
+     * @param string $key Value key
+     * @param mixed $defaultValue (optional)
      *
      * @return mixed Value
-     *
-     * @since   1.1.0
-     * @version 1.1.0 Initial version
      */
     public static function getValueRaw($key, $defaultValue = false)
     {
@@ -541,8 +521,6 @@ class ToolsCore
      * @param int $precision Precisions
      *
      * @return float parsed price, rounded to $precision
-     *
-     * @since 1.4.0
      */
     public static function getNumberValue($key, $precision=_TB_PRICE_DATABASE_PRECISION_)
     {
@@ -555,13 +533,10 @@ class ToolsCore
      *
      * This method performs basic sanitization of input value
      *
-     * @param string $key          Value key
-     * @param mixed  $defaultValue (optional)
+     * @param string $key Value key
+     * @param mixed $defaultValue (optional)
      *
      * @return mixed Value
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getValue($key, $defaultValue = false)
     {
@@ -577,11 +552,9 @@ class ToolsCore
     /**
      * Set cookie id_lang
      *
-     * @param Context $context
+     * @param Context|null $context
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function switchLanguage(Context $context = null)
@@ -621,12 +594,12 @@ class ToolsCore
     }
 
     /**
-     * @param null $address
+     * @param AddressCore|null $address
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCountry($address = null)
     {
@@ -651,12 +624,10 @@ class ToolsCore
     /**
      * Set cookie currency from POST or default currency
      *
-     * @param $cookie
+     * @param Cookie $cookie
      * @return Currency object
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setCurrency($cookie)
     {
@@ -696,9 +667,6 @@ class ToolsCore
      * Check if submit has been posted
      *
      * @param string $submit submit name
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isSubmit($submit)
     {
@@ -709,13 +677,10 @@ class ToolsCore
     }
 
     /**
-     * @param float    $number
+     * @param float $number
      * @param Currency $currency
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function displayNumber($number, $currency)
     {
@@ -729,13 +694,12 @@ class ToolsCore
     }
 
     /**
-     * @param array  $params
+     * @param array $params
      * @param Smarty $smarty
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function displayPriceSmarty($params, $smarty)
     {
@@ -764,19 +728,14 @@ class ToolsCore
      * Which means: don't forget to transport any changes made here to there.
      *
      * @param float $price Product price
-     * @param object|array $tbCurrency Current (thirty bees) Currency
+     * @param Currency|array|int|null $tbCurrency
      * @param bool $noUtf8
-     * @param Context $context
-     * @param null|bool $auto
+     * @param Context|null $context
+     * @param bool|null $auto
      *
      * @return string Price correctly formatted (sign, decimal separator...)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @since 1.0.2 Not every merchant likes to have currencies formatted automatically.
      *              For them, the auto option is now available.
-     * @since 1.3.0 Automatic formatting extracted to
      * @throws PrestaShopException
      */
     public static function displayPrice($price, $tbCurrency = null, $noUtf8 = false, Context $context = null, $auto = null)
@@ -874,12 +833,9 @@ class ToolsCore
      * returns the rounded value of $value to specified precision, according to your configuration;
      *
      * @param float $value
-     * @param int   $precision
+     * @param int $precision
      *
      * @return float
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function ps_round($value, $precision = 0, $roundMode = null)
     {
@@ -918,12 +874,9 @@ class ToolsCore
      * returns the rounded value up of $value to specified precision
      *
      * @param float $value
-     * @param int   $precision
+     * @param int $precision
      *
      * @return float
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function ceilf($value, $precision = 0)
     {
@@ -945,12 +898,9 @@ class ToolsCore
      * returns the rounded value down of $value to specified precision
      *
      * @param float $value
-     * @param int   $precision
+     * @param int $precision
      *
      * @return float
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function floorf($value, $precision = 0)
     {
@@ -969,14 +919,11 @@ class ToolsCore
     }
 
     /**
-     * @param     $value
-     * @param     $places
+     * @param float $value
+     * @param int $places
      * @param int $mode
      *
      * @return float
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function math_round($value, $places, $mode = PS_ROUND_HALF_UP)
     {
@@ -984,12 +931,11 @@ class ToolsCore
     }
 
     /**
-     * @param $value
-     * @param $mode
+     * @param float $value
+     * @param int $mode
      *
      * @return float
      *
-     * @since      1.0.0
      * @deprecated 1.1.0
      */
     public static function round_helper($value, $mode)
@@ -1022,16 +968,14 @@ class ToolsCore
     /**
      * Convert a price to or from the default currency.
      *
-     * @param float        $price      Price.
-     * @param object|array $currency   Currency (object or describing array)
-     *                                 to convert this price to/from. Defaults
-     *                                 to the currency of the context.
-     * @param bool         $toCurrency Conversion direction.
-     * @param Context      $context    Context. Defaults to the global context.
+     * @param float $price Price.
+     * @param Currency|array|int|null $currency Currency object or describing array to convert this price to/from
+     * @param bool $toCurrency Conversion direction.
+     * @param Context|null $context Context. Defaults to the global context.
      *
      * @return float Price, rounded to _TB_PRICE_DATABASE_PRECISION_.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function convertPrice($price, $currency = null, $toCurrency = true, Context $context = null)
     {
@@ -1079,17 +1023,15 @@ class ToolsCore
     }
 
     /**
-     *
      * Convert amount from a currency to an other currency automatically.
      *
-     * @param float    $amount
-     * @param Currency $currencyFrom if null we used the default currency
-     * @param Currency $currencyTo   if null we used the default currency
-     *
+     * @param float $amount
+     * @param Currency|null $currencyFrom if null we used the default currency
+     * @param Currency|null $currencyTo if null we used the default currency
+     * @param bool $round
      * @return float Converted value, rounded to _TB_PRICE_DATABASE_PRECISION_.
      *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated $round, rounds always now.
+     * @throws PrestaShopException
      */
     public static function convertPriceFull($amount, Currency $currencyFrom = null, Currency $currencyTo = null, $round = true)
     {
@@ -1126,13 +1068,11 @@ class ToolsCore
     /**
      * Display date regarding to language preferences
      *
-     * @param array  $params Date, format...
+     * @param array $params Date, format...
      * @param object $smarty Smarty object for language preferences
      *
      * @return string Date
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function dateFormat($params, $smarty)
@@ -1143,15 +1083,13 @@ class ToolsCore
     /**
      * Display date regarding to language preferences
      *
-     * @param string $date      Date to display format UNIX
-     * @param int    $idLang    Language id DEPRECATED
-     * @param bool   $full      With time or not (optional)
+     * @param string $date Date to display format UNIX
+     * @param int $idLang Language id DEPRECATED
+     * @param bool $full With time or not (optional)
      * @param string $separator DEPRECATED
      *
      * @return string Date
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function displayDate($date, $idLang = null, $full = false, $separator = null)
@@ -1184,8 +1122,9 @@ class ToolsCore
     /**
      * Display a warning message indicating that the parameter is deprecated
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $parameter
+     *
+     * @return void
      */
     public static function displayParameterAsDeprecated($parameter)
     {
@@ -1216,7 +1155,7 @@ class ToolsCore
 
     /**
      * @param string[] $ignoreClassNames
-     * @return array|void
+     * @return array
      */
     public static function getCallPoint($ignoreClassNames = [])
     {
@@ -1247,9 +1186,6 @@ class ToolsCore
      * @param string $string
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function htmlentitiesDecodeUTF8($string)
     {
@@ -1263,8 +1199,7 @@ class ToolsCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function safePostVars()
     {
@@ -1279,11 +1214,9 @@ class ToolsCore
      * Delete directory and subdirectories
      *
      * @param string $dirname Directory name
-     * @param bool   $deleteSelf
+     * @param bool $deleteSelf
      *
      * @return bool
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteDirectory($dirname, $deleteSelf = true)
     {
@@ -1318,8 +1251,7 @@ class ToolsCore
     /**
      * Clear XML cache folder
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function clearXMLCache()
     {
@@ -1352,11 +1284,8 @@ class ToolsCore
     /**
      * Delete file
      *
-     * @param string $file         File path
-     * @param array  $excludeFiles Excluded files
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $file File path
+     * @param array $excludeFiles Excluded files
      */
     public static function deleteFile($file, $excludeFiles = [])
     {
@@ -1376,9 +1305,6 @@ class ToolsCore
      * @param object $object Object to display
      *
      * @param string $type
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function fd($object, $type = 'log')
     {
@@ -1398,10 +1324,8 @@ class ToolsCore
     /**
      * ALIAS OF dieObject() - Display an error with detailed object
      *
-     * @param object $object Object to display
+     * @param mixed $object Object to display
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return mixed
      */
     public static function d($object, $kill = true)
@@ -1413,9 +1337,9 @@ class ToolsCore
      * Display an error with detailed object
      *
      * @param mixed $object
-     * @param bool  $kill
+     * @param bool $kill
      *
-     * @return $object if $kill = false;
+     * @return mixed $object if $kill = false;
      */
     public static function dieObject($object, $kill = true)
     {
@@ -1431,11 +1355,8 @@ class ToolsCore
     }
 
     /**
-     * @param int  $start
-     * @param null $limit
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $start
+     * @param int|null $limit
      */
     public static function debug_backtrace($start = 0, $limit = null)
     {
@@ -1469,9 +1390,6 @@ class ToolsCore
      * ALIAS OF dieObject() - Display an error with detailed object but don't stop the execution
      *
      * @param object $object Object to display
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function p($object)
     {
@@ -1481,17 +1399,14 @@ class ToolsCore
     /**
      * Prints object information into error log
      *
-     * @see     error_log()
+     * @see error_log()
      *
-     * @param mixed       $object
-     * @param int|null    $messageType
+     * @param mixed $object
+     * @param int|null $messageType
      * @param string|null $destination
      * @param string|null $extraHeaders
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function error_log($object, $messageType = null, $destination = null, $extraHeaders = null)
     {
@@ -1516,8 +1431,9 @@ class ToolsCore
     /**
      * Display a warning message indicating that the method is deprecated
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $message
+     *
+     * @return void
      */
     public static function displayAsDeprecated($message = null)
     {
@@ -1541,6 +1457,7 @@ class ToolsCore
     }
 
     /**
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public static function getHomeMetaTags($idLang, $pageName)
@@ -1567,9 +1484,6 @@ class ToolsCore
      * @param string $password
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hash($password)
     {
@@ -1581,8 +1495,6 @@ class ToolsCore
      *
      * @param string $data String to encrypt
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return string
      */
     public static function encryptIV($data)
@@ -1593,7 +1505,8 @@ class ToolsCore
     /**
      * Get token to prevent CSRF
      *
-     * @param string $token token to encrypt
+     * @param string|true $page token to encrypt
+     * @param Context|null $context
      *
      * @return string
      */
@@ -1621,6 +1534,13 @@ class ToolsCore
         return md5(_COOKIE_KEY_.$passwd);
     }
 
+    /**
+     * @param string $tab
+     * @param Context|null $context
+     * @return bool|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public static function getAdminTokenLite($tab, Context $context = null)
     {
         if (!$context) {
@@ -1635,8 +1555,6 @@ class ToolsCore
      *
      * @param string $string string to encript
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool|string
      */
     public static function getAdminToken($string)
@@ -1652,8 +1570,6 @@ class ToolsCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAdminTokenLiteSmarty($params, $smarty)
     {
@@ -1665,12 +1581,10 @@ class ToolsCore
     /**
      * Get a valid image URL to use from BackOffice
      *
-     * @param string $image   Image name
-     * @param bool   $entites Set to true to use htmlentities function on image param
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $image Image name
+     * @param bool $entities
      * @return string
+     * @throws PrestaShopException
      */
     public static function getAdminImageUrl($image = null, $entities = false)
     {
@@ -1680,11 +1594,8 @@ class ToolsCore
     /**
      * Get a valid URL to use from BackOffice
      *
-     * @param string $url     An URL to use in BackOffice
-     * @param bool   $entites Set to true to use htmlentities function on URL param
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $url An URL to use in BackOffice
+     * @param bool $entities
      * @return string
      * @throws PrestaShopException
      */
@@ -1712,8 +1623,6 @@ class ToolsCore
      * @return string host
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHttpHost($http = false, $entities = false, $ignore_port = false)
     {
@@ -1736,9 +1645,6 @@ class ToolsCore
      * @param int $type
      *
      * @return array|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function htmlentitiesUTF8($string, $type = ENT_QUOTES)
     {
@@ -1750,15 +1656,13 @@ class ToolsCore
     }
 
     /**
-     * @param              $idCategory
-     * @param              $end
-     * @param string       $typeCat
+     * @param int $idCategory
+     * @param string $end
+     * @param string $typeCat
      * @param Context|null $context
      *
      * @return string
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFullPath($idCategory, $end, $typeCat = 'products', Context $context = null)
     {
@@ -1790,17 +1694,14 @@ class ToolsCore
     /**
      * Get the user's journey
      *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param int     $idCategory
-     * @param string  $path
-     * @param bool    $linkOnTheItem
-     * @param string  $categoryType
-     * @param Context $context
+     * @param int $idCategory
+     * @param string $path
+     * @param bool $linkOnTheItem
+     * @param string $categoryType
+     * @param Context|null $context
      *
      * @return string
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getPath($idCategory, $path = '', $linkOnTheItem = false, $categoryType = 'products', Context $context = null)
@@ -1872,12 +1773,9 @@ class ToolsCore
      * Sanitize a string
      *
      * @param string $string String to sanitize
-     * @param bool   $html   String contains HTML or not (optional)
+     * @param bool $html String contains HTML or not (optional)
      *
      * @return string Sanitized string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function safeOutput($string, $html = false)
     {
@@ -1891,13 +1789,11 @@ class ToolsCore
     /**
      * Display an error according to an error code
      *
-     * @param string  $string       Error message
-     * @param bool    $htmlentities By default at true for parsing error message with htmlentities
-     * @param Context $context
+     * @param string $string Error message
+     * @param bool $htmlentities By default at true for parsing error message with htmlentities
+     * @param Context|null $context
      *
-     * @return array|mixed|string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function displayError($string = 'Fatal error', $htmlentities = true, Context $context = null)
     {
@@ -1928,13 +1824,11 @@ class ToolsCore
      * Return the friendly url from the provided string
      *
      * @param string $str
-     * @param bool   $utf8Decode (deprecated)
+     * @param bool $utf8Decode (deprecated)
      *
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function link_rewrite($str, $utf8Decode = null)
     {
@@ -1954,8 +1848,6 @@ class ToolsCore
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function str2url($str)
     {
@@ -1978,8 +1870,6 @@ class ToolsCore
      *
      * @param string $str
      * @return string
-     *
-     * @since   1.4.0
      */
     public static function generateLinkRewrite($str, $allowAccentedChars)
     {
@@ -2015,9 +1905,6 @@ class ToolsCore
      * @param string $str
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function replaceAccentedChars($str)
     {
@@ -2193,13 +2080,10 @@ class ToolsCore
 
     /**
      * @param string $str
-     * @param int    $maxLength
+     * @param int $maxLength
      * @param string $suffix
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function truncate($str, $maxLength, $suffix = '...')
     {
@@ -2212,13 +2096,10 @@ class ToolsCore
     }
 
     /**
-     * @param        $str
+     * @param string $str
      * @param string $encoding
      *
      * @return bool|int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2232,14 +2113,11 @@ class ToolsCore
     }
 
     /**
-     * @param       $text
-     * @param int   $length
+     * @param string $text
+     * @param int $length
      * @param array $options
      *
-     * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function truncateString($text, $length = 120, $options = [])
     {
@@ -2359,15 +2237,12 @@ class ToolsCore
     }
 
     /**
-     * @param        $str
-     * @param        $start
-     * @param bool   $length
+     * @param string $str
+     * @param int $start
+     * @param int|false $length
      * @param string $encoding
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2381,15 +2256,12 @@ class ToolsCore
     }
 
     /**
-     * @param        $str
-     * @param        $find
-     * @param int    $offset
+     * @param string $str
+     * @param string $find
+     * @param int $offset
      * @param string $encoding
      *
      * @return bool|int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2399,12 +2271,9 @@ class ToolsCore
     }
 
     /**
-     * @param $directory
+     * @param string $directory
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function normalizeDirectory($directory)
     {
@@ -2412,17 +2281,9 @@ class ToolsCore
     }
 
     /**
-     * Generate date form
+     * Generate years
      *
-     * @param int $year  Year to select
-     * @param int $month Month to select
-     * @param int $day   Day to select
-     *
-     * @return array $tab html data with 3 cells :['days'], ['months'], ['years']
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
+     * @return array
      */
     public static function dateYears()
     {
@@ -2436,9 +2297,6 @@ class ToolsCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function dateDays()
     {
@@ -2452,9 +2310,6 @@ class ToolsCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function dateMonths()
     {
@@ -2467,12 +2322,9 @@ class ToolsCore
     }
 
     /**
-     * @param $date
+     * @param string $date
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function dateFrom($date)
     {
@@ -2485,14 +2337,11 @@ class ToolsCore
     }
 
     /**
-     * @param $hours
-     * @param $minutes
-     * @param $seconds
+     * @param int $hours
+     * @param int $minutes
+     * @param int $seconds
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hourGenerate($hours, $minutes, $seconds)
     {
@@ -2500,12 +2349,9 @@ class ToolsCore
     }
 
     /**
-     * @param $date
+     * @param string $date
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function dateTo($date)
     {
@@ -2522,12 +2368,10 @@ class ToolsCore
      * was enabled. When this functionality was dropped in php 5.4, this method does
      * nothing anymore.
      *
-     * @param $string
+     * @param string $string
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.1.1
      */
     public static function stripslashes($string)
@@ -2538,15 +2382,12 @@ class ToolsCore
     }
 
     /**
-     * @param        $str
-     * @param        $find
-     * @param int    $offset
+     * @param string $str
+     * @param string $find
+     * @param int $offset
      * @param string $encoding
      *
      * @return bool|int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2556,12 +2397,9 @@ class ToolsCore
     }
 
     /**
-     * @param $str
+     * @param string $str
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2575,11 +2413,9 @@ class ToolsCore
     }
 
     /**
-     * @param $array
-     * @param $order_way
+     * @param array $array
+     * @param string $order_way
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function orderbyPrice(&$array, $order_way)
@@ -2607,14 +2443,11 @@ class ToolsCore
     }
 
     /**
-     * @param $from
-     * @param $to
-     * @param $string
+     * @param string $from
+     * @param string $to
+     * @param string $string
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function iconv($from, $to, $string)
     {
@@ -2626,12 +2459,9 @@ class ToolsCore
     }
 
     /**
-     * @param $field
+     * @param string $field
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isEmpty($field)
     {
@@ -2644,9 +2474,6 @@ class ToolsCore
      * @param string $filename File name
      *
      * @return bool Cached result of file_exists($filename)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function file_exists_no_cache($filename)
     {
@@ -2656,12 +2483,12 @@ class ToolsCore
     }
 
     /**
-     * @param string        $url
-     * @param bool          $useIncludePath
+     * @param string $url
+     * @param bool $useIncludePath
      * @param resource|null $streamContext
-     * @param int           $curlTimeout
+     * @param int $curlTimeout
      *
-     * @return bool|mixed|string
+     * @return string|false
      *
      * @deprecated 1.0.0 Use Guzzle for remote URLs and file_get_contents for local files instead
      */
@@ -2718,13 +2545,12 @@ class ToolsCore
     }
 
     /**
-     * @param      $url
-     * @param null $class_name
+     * @param string $url
+     * @param string|null $class_name
      *
-     * @return null|SimpleXMLElement
+     * @return SimpleXMLElement|null
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function simplexml_load_file($url, $class_name = null)
     {
@@ -2748,14 +2574,12 @@ class ToolsCore
     }
 
     /**
-     * @param      $source
-     * @param      $destination
+     * @param string $source
+     * @param string $destination
+     * @param resource|null $streamContext
+     * @return bool
      *
-     * @return bool|int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.8 Use Guzzle, deprecate $streamContext.
+     * @throws PrestaShopException
      */
     public static function copy($source, $destination, $streamContext = null)
     {
@@ -2800,10 +2624,10 @@ class ToolsCore
     /**
      * Translates a string with underscores into camel case (e.g. first_name -> firstName)
      *
-     * @prototype string public static function toCamelCase(string $str[, bool $capitalise_first_char = false])
+     * @param string $str
+     * @param bool $catapitaliseFirstChar
      *
-     * @since     1.0.0
-     * @version   1.0.0 Initial version
+     * @return string
      */
     public static function toCamelCase($str, $catapitaliseFirstChar = false)
     {
@@ -2818,7 +2642,7 @@ class ToolsCore
     }
 
     /**
-     * @param $str
+     * @param string $str
      *
      * @return string
      *
@@ -2830,12 +2654,9 @@ class ToolsCore
     }
 
     /**
-     * @param $str
+     * @param string $str
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
@@ -2854,9 +2675,6 @@ class ToolsCore
      * @param string $string
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function toUnderscoreCase($string)
     {
@@ -2871,9 +2689,6 @@ class ToolsCore
      * @param string $hex
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBrightness($hex)
     {
@@ -2969,9 +2784,6 @@ class ToolsCore
      * @param string $sql
      *
      * @return array|false
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function parserSQL($sql)
     {
@@ -2993,6 +2805,11 @@ class ToolsCore
         return Media::minifyCSS($css_content, $fileuri);
     }
 
+    /**
+     * @param array $matches
+     * @return bool|string
+     * @throws PrestaShopException
+     */
     public static function replaceByAbsoluteURL($matches)
     {
         Tools::displayAsDeprecated();
@@ -3005,7 +2822,7 @@ class ToolsCore
      *
      * @deprecated 1.0.0 use FrontController->addJS()
      *
-     * @param mixed $js_uri
+     * @param string|array $js_uri
      *
      * @return void
      */
@@ -3017,7 +2834,9 @@ class ToolsCore
     }
 
     /**
-     * @deprecated 1.0.0 use FrontController->addCSS()
+     * @param string|array $css_uri
+     * @param string $css_media_type
+     * @return void
      */
     public static function addCSS($css_uri, $css_media_type = 'all')
     {
@@ -3027,7 +2846,8 @@ class ToolsCore
     }
 
     /**
-     * @deprecated 1.0.0 use Media::cccCss()
+     * @param array $css_files
+     * @return array
      * @throws PrestaShopException
      */
     public static function cccCss($css_files)
@@ -3038,8 +2858,10 @@ class ToolsCore
     }
 
     /**
-     * @deprecated 1.0.0 use Media::cccJS()
+     * @param array $js_files
+     * @return array
      * @throws PrestaShopException
+     * @deprecated 1.0.0 use Media::cccJS()
      */
     public static function cccJS($js_files)
     {
@@ -3049,12 +2871,10 @@ class ToolsCore
     }
 
     /**
-     * @param $filename
+     * @param string|null $filename
      *
-     * @return mixed|string
+     * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getMediaServer($filename)
@@ -3081,13 +2901,11 @@ class ToolsCore
     /**
      * getShopDomainSsl returns domain name according to configuration and depending on ssl activation
      *
-     * @param bool $http     if true, return domain name with protocol
+     * @param bool $http if true, return domain name with protocol
      * @param bool $entities if true, convert special chars to HTML entities
      *
      * @return string domain
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getShopDomainSsl($http = false, $entities = false)
@@ -3108,13 +2926,11 @@ class ToolsCore
     /**
      * getShopDomain returns domain name according to configuration and ignoring ssl
      *
-     * @param bool $http     if true, return domain name with protocol
+     * @param bool $http if true, return domain name with protocol
      * @param bool $entities if true, convert special chars to HTML entities
      *
      * @return string domain
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getShopDomain($http = false, $entities = false)
@@ -3133,18 +2949,16 @@ class ToolsCore
     }
 
     /**
-     * @param null   $path
-     * @param null   $rewrite_settings
-     * @param null   $cache_control
+     * @param string|null $path
+     * @param bool|null $rewrite_settings
+     * @param bool|null $cache_control
      * @param string $specific
-     * @param null   $disable_multiviews
-     * @param bool   $medias
-     * @param null   $disable_modsec
+     * @param bool|null $disable_multiviews
+     * @param bool $medias
+     * @param bool|null $disable_modsec
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null)
@@ -3451,8 +3265,6 @@ FileETag none
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function generateIndex()
@@ -3465,10 +3277,6 @@ FileETag none
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.5 Use existing index.php as template, drop license.
      */
     public static function getDefaultIndexContent()
     {
@@ -3487,7 +3295,7 @@ FileETag none
      * jsonDecode convert json string to php array / object
      *
      * @param string $json
-     * @param bool   $assoc (since 1.4.2.4) if true, convert to associativ array
+     * @param bool $assoc (since 1.4.2.4) if true, convert to associativ array
      *
      * @return object|array
      *
@@ -3513,8 +3321,7 @@ FileETag none
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function displayFileAsDeprecated()
     {
@@ -3525,11 +3332,9 @@ FileETag none
     }
 
     /**
-     * @param int          $level
+     * @param int $level
      * @param Context|null $context
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function enableCache($level = 1, Context $context = null)
@@ -3553,9 +3358,6 @@ FileETag none
 
     /**
      * @param Context|null $context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function restoreCacheSettings(Context $context = null)
     {
@@ -3572,12 +3374,9 @@ FileETag none
     }
 
     /**
-     * @param $function
+     * @param string $function
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isCallable($function)
     {
@@ -3587,13 +3386,10 @@ FileETag none
     }
 
     /**
-     * @param $s
-     * @param $delim
+     * @param string $s
+     * @param string $delim
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function pRegexp($s, $delim)
     {
@@ -3606,14 +3402,11 @@ FileETag none
     }
 
     /**
-     * @param $needle
-     * @param $replace
-     * @param $haystack
+     * @param string $needle
+     * @param string $replace
+     * @param string $haystack
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function str_replace_once($needle, $replace, $haystack)
     {
@@ -3637,9 +3430,6 @@ FileETag none
      * @param string $property
      *
      * @return bool
-     *
-     * @since      1.0.0
-     * @version    1.0.0 Initial version
      */
     public static function property_exists($class, $property)
     {
@@ -3659,11 +3449,9 @@ FileETag none
     }
 
     /**
-     * @desc    identify the version of php
-     * @return string
+     * identify the version of php
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function checkPhpVersion()
     {
@@ -3684,11 +3472,9 @@ FileETag none
     }
 
     /**
-     * @desc    try to open a zip file in order to check if it's valid
-     * @return bool success
+     * try to open a zip file in order to check if it's valid
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool success
      */
     public static function ZipTest($fromFile)
     {
@@ -3700,8 +3486,6 @@ FileETag none
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.0.3 Safe Mode was removed from PHP >= 5.4.
      */
     public static function getSafeModeStatus()
@@ -3712,11 +3496,9 @@ FileETag none
     }
 
     /**
-     * @desc    extract a zip file to the given directory
-     * @return bool success
+     * extract a zip file to the given directory
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool success
      */
     public static function ZipExtract($fromFile, $toDir)
     {
@@ -3733,13 +3515,10 @@ FileETag none
     }
 
     /**
-     * @param $path
-     * @param $filemode
+     * @param string $path
+     * @param int $filemode
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function chmodr($path, $filemode)
     {
@@ -3770,14 +3549,12 @@ FileETag none
     /**
      * Get products order field name for queries.
      *
-     * @param string $type  by|way
-     * @param string $value If no index given, use default order from admin -> pref -> products
-     * @param bool|\bool(false)|string $prefix
+     * @param string $type by|way
+     * @param string|null $value If no index given, use default order from admin -> pref -> products
+     * @param bool $prefix
      *
      * @return string Order by sql clause
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getProductsOrder($type, $value = null, $prefix = false)
@@ -3831,9 +3608,6 @@ FileETag none
      * @param string $end
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function url($begin, $end)
     {
@@ -3849,8 +3623,6 @@ FileETag none
      * @return bool success of logging
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.0.7 For logging, use Logger::addLog() directly
      */
     public static function dieOrLog($msg, $die = true)
@@ -3868,9 +3640,6 @@ FileETag none
      * @param string $str String to transform
      *
      * @return string New string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function nl2br($str)
     {
@@ -3883,9 +3652,7 @@ FileETag none
     /**
      * Clear Smarty cache and compile folders
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return void
      */
     public static function clearSmartyCache()
     {
@@ -3897,12 +3664,11 @@ FileETag none
     /**
      * Clear cache for Smarty
      *
-     * @param Smarty $smarty
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param Smarty|null $smarty
+     * @param string|false $tpl
+     * @param string|null $cacheId
+     * @param string|null $compileId
      * @return int
-     * @throws PrestaShopException
      */
     public static function clearCache($smarty = null, $tpl = false, $cacheId = null, $compileId = null)
     {
@@ -3924,12 +3690,9 @@ FileETag none
     /**
      * Clear compile for Smarty
      *
-     * @param Smarty $smarty
+     * @param Smarty|null $smarty
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return int
-     * @throws PrestaShopException
      */
     public static function clearCompile($smarty = null)
     {
@@ -3945,10 +3708,7 @@ FileETag none
     }
 
     /**
-     * @param bool $id_product
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int|false $id_product
      */
     public static function clearColorListCache($id_product = false)
     {
@@ -3963,9 +3723,6 @@ FileETag none
      * getMemoryLimit allow to get the memory limit in octet
      *
      * @return int the memory limit value in octet
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMemoryLimit()
     {
@@ -3982,9 +3739,6 @@ FileETag none
      * getOctet allow to gets the value of a configuration option in octet
      *
      * @return int the value of a configuration option in octet
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOctets($option)
     {
@@ -4004,11 +3758,7 @@ FileETag none
     }
 
     /**
-     *
      * @return bool true if the server use 64bit arch
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isX86_64arch()
     {
@@ -4016,11 +3766,7 @@ FileETag none
     }
 
     /**
-     *
      * @return bool true if php-cli is used
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isPHPCLI()
     {
@@ -4028,11 +3774,8 @@ FileETag none
     }
 
     /**
-     * @param $argc
-     * @param $argv
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $argc
+     * @param string[] $argv
      */
     public static function argvToGET($argc, $argv)
     {
@@ -4055,9 +3798,6 @@ FileETag none
      * @param int $max_size optional max file size
      *
      * @return int max file size in bytes
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMaxUploadSize($max_size = 0)
     {
@@ -4078,9 +3818,6 @@ FileETag none
      * @param string $value value to convert
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function convertBytes($value)
     {
@@ -4109,12 +3846,10 @@ FileETag none
     /**
      * Copy the folder $src into $dst, $dst is created if it do not exist
      *
-     * @param      $src
-     * @param      $dst
+     * @param string $src
+     * @param string $dst
      * @param bool $del if true, delete the file after copy
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
      */
     public static function recurseCopy($src, $dst, $del = false)
@@ -4164,14 +3899,11 @@ FileETag none
     }
 
     /**
-     * @params  string $path Path to scan
-     * @params  string $ext Extention to filter files
-     * @params  string $dir Add this to prefix output for example /path/dir/*
+     * @param string $path Path to scan
+     * @param string $ext Extention to filter files
+     * @param string $dir Add this to prefix output for example /path/dir/*
      *
      * @return array List of file found
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function scandir($path, $ext = 'php', $dir = '', $recursive = false)
     {
@@ -4209,14 +3941,11 @@ FileETag none
     /**
      * Align version sent and use internal function
      *
-     * @param        $v1
-     * @param        $v2
+     * @param string $v1
+     * @param string $v2
      * @param string $operator
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
      */
     public static function version_compare($v1, $v2, $operator = '<')
     {
@@ -4230,11 +3959,8 @@ FileETag none
      * version_compare will work better for its comparison :)
      * (Means: '1.8' to '1.9.3' will change '1.8' to '1.8.0')
      *
-     * @param $v1
-     * @param $v2
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $v1
+     * @param string $v2
      */
     public static function alignVersionNumber(&$v1, &$v2)
     {
@@ -4269,7 +3995,7 @@ FileETag none
     /**
      * apacheModExists return true if the apache module $name is loaded
      *
-     * @TODO    move this method in class Information (when it will exist)
+     * @TODO    move this method in class Information (when /it will exist)
      *
      * Notes: This method requires either apache_get_modules or phpinfo()
      * to be available. With CGI mod, we cannot get php modules
@@ -4277,9 +4003,6 @@ FileETag none
      * @param string $name module name
      *
      * @return bool true if exists
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function apacheModExists($name)
     {
@@ -4302,10 +4025,10 @@ FileETag none
     }
 
     /**
-     * @param      $serialized
+     * @param string $serialized
      * @param bool $object
      *
-     * @return bool|mixed
+     * @return mixed|false
      *
      * @deprecated Switch to using json_{en|de}code(). Serializing isn't safe
      *             for untrusted data and JSON is more compact anyways.
@@ -4324,10 +4047,8 @@ FileETag none
      * Reproduce array_unique working before php version 5.2.9
      *
      * @param array $array
-     *
      * @return array
-     *
-     * @deprecated Use array_unique instead
+     * @deprecated 1.0.0 Use array_unique instead
      */
     public static function arrayUnique($array)
     {
@@ -4341,9 +4062,6 @@ FileETag none
      * @param string $pattern
      *
      * @return string pattern
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanNonUnicodeSupport($pattern)
     {
@@ -4355,7 +4073,7 @@ FileETag none
     }
 
     /**
-     * @param       $request
+     * @param string $request
      * @param array $params
      *
      * @return bool
@@ -4371,13 +4089,10 @@ FileETag none
      * Returns an array containing information about
      * HTTP file upload variable ($_FILES)
      *
-     * @param string $input          File upload field name
-     * @param bool   $return_content If true, returns uploaded file contents
+     * @param string $input File upload field name
+     * @param bool $return_content If true, returns uploaded file contents
      *
      * @return array|null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function fileAttachment($input = 'fileUpload', $return_content = true)
     {
@@ -4400,8 +4115,6 @@ FileETag none
     /**
      * @param string $filename
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
      */
     public static function changeFileMTime($filename)
@@ -4418,11 +4131,8 @@ FileETag none
     }
 
     /**
-     * @param     $file_name
+     * @param string $file_name
      * @param int $timeout
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function waitUntilFileIsModified($file_name, $timeout = 180)
     {
@@ -4451,9 +4161,6 @@ FileETag none
      * @param string $str_search
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function rtrimString($str, $str_search)
     {
@@ -4469,13 +4176,10 @@ FileETag none
      * Format a number into a human readable format
      * e.g. 24962496 => 23.81M
      *
-     * @param     $size
+     * @param int $size
      * @param int $precision
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function formatBytes($size, $precision = 2)
     {
@@ -4489,7 +4193,7 @@ FileETag none
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return bool
      *
@@ -4506,9 +4210,6 @@ FileETag none
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getUserPlatform()
     {
@@ -4532,9 +4233,6 @@ FileETag none
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getUserBrowser()
     {
@@ -4566,9 +4264,6 @@ FileETag none
      * Allows to display the category description without HTML tags and slashes
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDescriptionClean($description)
     {
@@ -4581,9 +4276,6 @@ FileETag none
      * @param bool $allowStyle
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -4694,10 +4386,7 @@ FileETag none
      * Check if a constant was already defined
      *
      * @param string $constant Constant name
-     * @param mixed  $value    Default value to set if not defined
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param mixed $value Default value to set if not defined
      */
     public static function safeDefine($constant, $value)
     {
@@ -4719,16 +4408,13 @@ FileETag none
      *
      * => $rows is [['a' => 8.4], ['a' => 5.2]]
      *
-     * @param $amount        float  The amount to spread across the rows
-     * @param $precision     int Rounding precision
+     * @param float $amount The amount to spread across the rows
+     * @param int $precision Rounding precision
      *                       e.g. if $amount is 1, $precision is 0 and $rows = [['a' => 2], ['a' => 1]]
      *                       then the resulting $rows will be [['a' => 3], ['a' => 1]]
      *                       But if $precision were 1, then the resulting $rows would be [['a' => 2.5], ['a' => 1.5]]
-     * @param &$rows         array   An array, associative or not, containing arrays that have at least $column and $sort_column fields
-     * @param $column        string The column on which to perform adjustments
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array &$rows An array, associative or not, containing arrays that have at least $column and $sort_column fields
+     * @param string $column The column on which to perform adjustments
      */
     public static function spreadAmount($amount, $precision, &$rows, $column)
     {
@@ -4766,11 +4452,8 @@ FileETag none
     /**
      * Replaces elements from passed arrays into the first array recursively
      *
-     * @param array $base         The array in which elements are replaced.
+     * @param array $base The array in which elements are replaced.
      * @param array $replacements The array from which elements will be extracted.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function arrayReplaceRecursive($base, $replacements)
     {
@@ -4810,10 +4493,9 @@ FileETag none
      * Purpose:  implode Array
      * Use: {implode value="" separator=""}
      *
-     * @link http://www.smarty.net/manual/en/language.function.fetch.php {fetch}
-     *       (Smarty online manual)
+     * @link http://www.smarty.net/manual/en/language.function.fetch.php Smarty online manual
      *
-     * @param array                    $params   parameters
+     * @param array $params parameters
      * @param Smarty_Internal_Template $template template object
      * @return string|null if the assign parameter is passed, Smarty assigns the result to a template variable
      */
@@ -4833,11 +4515,6 @@ FileETag none
 
     /**
      * Encode table
-     *
-     * @param array
-     *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      *
      * Copyright (c) 2014 TrueServer B.V.
@@ -4859,6 +4536,8 @@ FileETag none
      * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
      * THE SOFTWARE.
+     *
+     * @var array
      */
     protected static $encodeTable = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
@@ -4868,10 +4547,7 @@ FileETag none
     /**
      * Decode table
      *
-     * @param array
-     *
-     * @since 1.0.4
-     *
+     * @var array
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     protected static $decodeTable = [
@@ -4928,8 +4604,6 @@ FileETag none
      *
      * @return string Punycode representation in ASCII
      *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     public static function utf8ToIdn($input)
@@ -4957,8 +4631,6 @@ FileETag none
      * @param string $input Domain name in Punycode
      *
      * @return string Unicode domain name
-     *
-     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -4992,8 +4664,6 @@ FileETag none
      * @param string $input Part of a domain name
      *
      * @return string Punycode representation of a domain part
-     *
-     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -5061,8 +4731,6 @@ FileETag none
      *
      * @return string Unicode domain part
      *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     protected static function decodePart($input)
@@ -5109,8 +4777,6 @@ FileETag none
      *
      * @return integer
      *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     protected static function calculateThreshold($k, $bias)
@@ -5132,8 +4798,6 @@ FileETag none
      * @param boolean $firstTime
      *
      * @return integer
-     *
-     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -5161,8 +4825,6 @@ FileETag none
      * @param string $input
      *
      * @return array Multi-dimension array with basic, non-basic and aggregated code points
-     *
-     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -5193,8 +4855,6 @@ FileETag none
      * @param string $char
      * @return integer
      *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     protected static function charToCodePoint($char)
@@ -5217,10 +4877,7 @@ FileETag none
      * @param integer $code
      * @return string
      *
-     * @since 1.0.4
-     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
-     *
      */
     protected static function codePointToChar($code)
     {
@@ -5240,11 +4897,9 @@ FileETag none
      *
      * This greatly reduces the size of a cookie
      *
-     * @param mixed $data
+     * @param string $data
      *
      * @return string
-     *
-     * @since 1.0.4
      */
     public static function base64UrlEncode($data)
     {
@@ -5254,11 +4909,9 @@ FileETag none
     /**
      * Base 64 decode for base64UrlEncoded data
      *
-     * @param mixed $data
+     * @param string $data
      *
      * @return string
-     *
-     * @since 1.0.4
      */
     public static function base64UrlDecode($data)
     {
@@ -5271,8 +4924,6 @@ FileETag none
      * @param string $html
      *
      * @return array|false
-     *
-     * @since 1.0.4
      */
     public static function parseFaviconSizeTag($html)
     {
@@ -5323,8 +4974,7 @@ FileETag none
      *
      * @return string
      *
-     * @since   1.0.7
-     * @version 1.0.7 Initial version.
+     * @throws PrestaShopException
      */
     public static function getTimeZone()
     {
@@ -5340,13 +4990,11 @@ FileETag none
     /**
      * Converts date from given format to result format.
      *
-     * @param string $format        Expected format of the date given.
-     * @param string $date          Date to reformat.
-     * @param string $resultFormat  Format of the returned date.
+     * @param string $format Expected format of the date given.
+     * @param string $date Date to reformat.
+     * @param string $resultFormat Format of the returned date.
      *
      * @return string Reformatted date.
-     *
-     * @version 1.0.8 Initial version.
      */
     public static function getDateFromDateFormat($format, $date, $resultFormat = 'Y-m-d H:i:s')
     {
@@ -5368,7 +5016,6 @@ FileETag none
      * @param string $directory path to directory to check
      * @param array $ignore list of files/directories that can exists in the directory for it to be considered empty
      *
-     * @since 1.4.0
      * @return bool
      */
     public static function isDirectoryEmpty($directory, $ignore=[])
@@ -5391,12 +5038,10 @@ FileETag none
     /**
      * Parse input string number value and returns float
      *
-     * @param $input float|string|int The input value
+     * @param float|string|int $input The input value
      * @return float price, rounded to _TB_PRICE_DATABASE_PRECISION_.
      *
      * @see ToolsTest::parsePriceData() for more information
-     *
-     * @since 1.4.0
      */
     public static function parseNumber($input, $precision=_TB_PRICE_DATABASE_PRECISION_)
     {
@@ -5500,7 +5145,7 @@ FileETag none
      * Uses the following format for the reference: {$base_reference}_{$next_available_number}
      * and checks whether generated reference number is used for any product or product attribute.
      *
-     * @param $baseReference
+     * @param string $baseReference
      * @return string
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -5516,7 +5161,7 @@ FileETag none
     /**
      * Returns next available reference counter for a product attribute
      *
-     * @param $baseReference
+     * @param string $baseReference
      * @return int
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -5738,8 +5383,6 @@ FileETag none
  *
  * @return int
  *
- * @since   1.0.0
- * @version 1.0.0 Initial version
  *
  * @todo    : move into class
  */
@@ -5756,13 +5399,11 @@ function cmpPriceAsc($a, $b)
 }
 
 /**
- * @param $a
- * @param $b
+ * @param array $a
+ * @param array $b
  *
  * @return int
  *
- * @since   1.0.0
- * @version 1.0.0 Initial version
  *
  * @todo    : move into class
  */

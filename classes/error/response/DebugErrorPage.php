@@ -23,8 +23,6 @@ use Thirtybees\Core\Error\ErrorDescription;
 
 /**
  * Class DebugErrorPageCore
- *
- * @since 1.4.0
  */
 class DebugErrorPageCore extends AbstractErrorPage
 {
@@ -55,7 +53,7 @@ class DebugErrorPageCore extends AbstractErrorPage
     /**
      * Helper function to render file lines
      *
-     * @param $lines array of file lines
+     * @param array $lines array of file lines
      * @return string output
      */
     public function displayLines($lines)
@@ -80,7 +78,7 @@ class DebugErrorPageCore extends AbstractErrorPage
     /**
      * Helper function to escape input
      *
-     * @param $input
+     * @param string|null $input
      * @return string
      */
     public function displayString($input)

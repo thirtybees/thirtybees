@@ -31,68 +31,68 @@
 
 /**
  * Class PDFGeneratorCore
- *
- * @since 1.0.0
  */
 class PDFGeneratorCore extends TCPDF
 {
     const DEFAULT_FONT = 'helvetica';
 
-    // @codingStandardsIgnoreStart
     /**
      * String alias for total number of pages.
      *
-     * @public static
+     * @var string
      */
     public static $alias_tot_pages = '{:ptp:}';
     /**
      * String alias for page number.
      *
-     * @public static
+     * @var string
      */
     public static $alias_num_page = '{:pnp:}';
     /**
      * String alias for total number of pages in a single group.
      *
-     * @public static
+     * @var string
      */
     public static $alias_group_tot_pages = '{:ptg:}';
     /**
      * String alias for group page number.
      *
-     * @public static
+     * @var string
      */
     public static $alias_group_num_page = '{:png:}';
     /**
      * String alias for right shift compensation used to correctly align page numbers on the right.
      *
-     * @public static
+     * @var string
      */
     public static $alias_right_shift = '{rsc:';
+
     /**
      * Encryption padding string.
      *
-     * @public static
+     * @var string
      */
     public static $enc_padding = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A";
+
     /**
      * ByteRange placemark used during digital signature process.
      *
-     * @since  4.6.028 (2009-08-25)
-     * @public static
+     * @var string
      */
     public static $byterange_string = '/ByteRange[0 ********** ********** **********]';
+
     /**
      * Array page boxes names
      *
-     * @public static
+     * @var array
      */
     public static $pageboxes = ['MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox'];
+
     /**
      * Array of page formats
      * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)
      *
-     * @public static
+     * @var array
      */
     public static $page_formats = [
         // ISO 216 A Series + 2 SIS 014711 extensions
@@ -444,10 +444,11 @@ class PDFGeneratorCore extends TCPDF
         'FR_TELLIERE'           => [963.780, 1247.244], // = (  340 x 440  ) mm  = ( 13.39 x 17.32 ) in
         'FR_POT'                => [878.740, 1133.858], // = (  310 x 400  ) mm  = ( 12.20 x 15.75 ) in
     ];
+
     /**
      * Array of WEB safe colors
      *
-     * @public static
+     * @var array
      */
     public static $webcolor = [
         'aliceblue'            => 'f0f8ff',
@@ -600,19 +601,22 @@ class PDFGeneratorCore extends TCPDF
         'yellow'               => 'ffff00',
         'yellowgreen'          => '9acd32',
     ];
+
     /**
      * Array of valid JavaScript color names
      *
-     * @public static
+     * @var array
      */
     public static $jscolor = ['transparent', 'black', 'white', 'red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'dkGray', 'gray', 'ltGray'];
+
     /**
      * Array of Spot colors (C,M,Y,K,name)
      * Color keys must be in lowercase and without spaces.
      * As long as no open standard for spot colours exists, you have to buy a colour book by one of the colour manufacturers and insert the values and names of spot colours directly.
      * Common industry standard spot colors are: ANPA-COLOR, DIC, FOCOLTONE, GCMI, HKS, PANTONE, TOYO, TRUMATCH.
      *
-     * @public static
+     *
+     * @var array
      */
     public static $spotcolor = [
         // special registration colors
@@ -636,49 +640,50 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Unicode code for Left-to-Right Mark.
      *
-     * @public
+     * @var int
      */
     public static $uni_LRM = 8206;
     /**
      * Unicode code for Right-to-Left Mark.
      *
-     * @public
+     * @var int
      */
     public static $uni_RLM = 8207;
     /**
      * Unicode code for Left-to-Right Embedding.
      *
-     * @public
+     * @var int
      */
     public static $uni_LRE = 8234;
-        /**
+     /**
      * Unicode code for Right-to-Left Embedding.
      *
-     * @public
+     * @var int
      */
     public static $uni_RLE = 8235; // end of web colors
     /**
      * Unicode code for Pop Directional Format.
      *
-     * @public
+     * @var int
      */
     public static $uni_PDF = 8236;
-        /**
+
+     /**
      * Unicode code for Left-to-Right Override.
      *
-     * @public
+     * @var int
      */
     public static $uni_LRO = 8237; // end of spot colors
     /**
      * Unicode code for Right-to-Left Override.
      *
-     * @public
+     * @var int
      */
     public static $uni_RLO = 8238;
     /**
      * Pattern to test RTL (Righ-To-Left) strings using regular expressions.
      *
-     * @public
+     * @var string
      */
     public static $uni_RE_PATTERN_RTL = "/(
 	  \xD6\xBE                                             # R
@@ -696,7 +701,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Pattern to test Arabic strings using regular expressions. Source: http://www.w3.org/International/questions/qa-forms-utf-8
      *
-     * @public
+     * @var string
      */
     public static $uni_RE_PATTERN_ARABIC = "/(
 		  \xD8[\x80-\x83\x8B\x8D\x9B\x9E\x9F\xA1-\xBA]  # AL
@@ -722,7 +727,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Array of Unicode types.
      *
-     * @public
+     * @var array
      */
     public static $uni_type = [
         0       => 'BN',
@@ -18449,7 +18454,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Mirror unicode characters. For information on bidi mirroring, see UAX #9: Bidirectional Algorithm, at http://www.unicode.org/unicode/reports/tr9/
      *
-     * @public
+     * @var array
      */
     public static $uni_mirror = [
         0x0028 => 0x0029,
@@ -18808,7 +18813,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Arabic shape substitutions: char code => (isolated, final, initial, medial).
      *
-     * @public
+     * @var array
      */
     public static $uni_arabicsubst = [
         1569 => [65152],
@@ -18891,7 +18896,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Arabic laa letter: (char code => isolated, final, initial, medial).
      *
-     * @public
+     * @var array
      */
     public static $uni_laa_array = [
         1570 => [65269, 65270, 65269, 65270],
@@ -18904,7 +18909,7 @@ class PDFGeneratorCore extends TCPDF
      * Putting the combining mark and character in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
      * second NSM char code => substitution char
      *
-     * @public
+     * @var array
      */
     public static $uni_diacritics = [
         1612 => 64606, # Shadda + Dammatan
@@ -18916,7 +18921,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Array of character substitutions from UTF-8 Unicode to Latin1.
      *
-     * @public
+     * @var array
      */
     public static $uni_utf8tolatin = [
         8364 => 128, # Euro1
@@ -18947,10 +18952,11 @@ class PDFGeneratorCore extends TCPDF
         8482 => 153, # trademark
         382  => 158   # zcaron2
     ];
-/**
+
+    /**
      * Array of Encoding Maps.
      *
-     * @public static
+     * @var array
      */
     public static $encmap = [
 
@@ -19021,17 +19027,42 @@ class PDFGeneratorCore extends TCPDF
 'symbol'      => [0 => '.notdef', 1 => '.notdef', 2 => '.notdef', 3 => '.notdef', 4 => '.notdef', 5 => '.notdef', 6 => '.notdef', 7 => '.notdef', 8 => '.notdef', 9 => '.notdef', 10 => '.notdef', 11 => '.notdef', 12 => '.notdef', 13 => '.notdef', 14 => '.notdef', 15 => '.notdef', 16 => '.notdef', 17 => '.notdef', 18 => '.notdef', 19 => '.notdef', 20 => '.notdef', 21 => '.notdef', 22 => '.notdef', 23 => '.notdef', 24 => '.notdef', 25 => '.notdef', 26 => '.notdef', 27 => '.notdef', 28 => '.notdef', 29 => '.notdef', 30 => '.notdef', 31 => '.notdef', 32 => 'space', 33 => 'exclam', 34 => 'universal', 35 => 'numbersign', 36 => 'existential', 37 => 'percent', 38 => 'ampersand', 39 => 'suchthat', 40 => 'parenleft', 41 => 'parenright', 42 => 'asteriskmath', 43 => 'plus', 44 => 'comma', 45 => 'minus', 46 => 'period', 47 => 'slash', 48 => 'zero', 49 => 'one', 50 => 'two', 51 => 'three', 52 => 'four', 53 => 'five', 54 => 'six', 55 => 'seven', 56 => 'eight', 57 => 'nine', 58 => 'colon', 59 => 'semicolon', 60 => 'less', 61 => 'equal', 62 => 'greater', 63 => 'question', 64 => 'congruent', 65 => 'Alpha', 66 => 'Beta', 67 => 'Chi', 68 => 'Delta', 69 => 'Epsilon', 70 => 'Phi', 71 => 'Gamma', 72 => 'Eta', 73 => 'Iota', 74 => 'theta1', 75 => 'Kappa', 76 => 'Lambda', 77 => 'Mu', 78 => 'Nu', 79 => 'Omicron', 80 => 'Pi', 81 => 'Theta', 82 => 'Rho', 83 => 'Sigma', 84 => 'Tau', 85 => 'Upsilon', 86 => 'sigma1', 87 => 'Omega', 88 => 'Xi', 89 => 'Psi', 90 => 'Zeta', 91 => 'bracketleft', 92 => 'therefore', 93 => 'bracketright', 94 => 'perpendicular', 95 => 'underscore', 96 => 'radicalex', 97 => 'alpha', 98 => 'beta', 99 => 'chi', 100 => 'delta', 101 => 'epsilon', 102 => 'phi', 103 => 'gamma', 104 => 'eta', 105 => 'iota', 106 => 'phi1', 107 => 'kappa', 108 => 'lambda', 109 => 'mu', 110 => 'nu', 111 => 'omicron', 112 => 'pi', 113 => 'theta', 114 => 'rho', 115 => 'sigma', 116 => 'tau', 117 => 'upsilon', 118 => 'omega1', 119 => 'omega', 120 => 'xi', 121 => 'psi', 122 => 'zeta', 123 => 'braceleft', 124 => 'bar', 125 => 'braceright', 126 => 'similar', 127 => '.notdef', 128 => '.notdef', 129 => '.notdef', 130 => '.notdef', 131 => '.notdef', 132 => '.notdef', 133 => '.notdef', 134 => '.notdef', 135 => '.notdef', 136 => '.notdef', 137 => '.notdef', 138 => '.notdef', 139 => '.notdef', 140 => '.notdef', 141 => '.notdef', 142 => '.notdef', 143 => '.notdef', 144 => '.notdef', 145 => '.notdef', 146 => '.notdef', 147 => '.notdef', 148 => '.notdef', 149 => '.notdef', 150 => '.notdef', 151 => '.notdef', 152 => '.notdef', 153 => '.notdef', 154 => '.notdef', 155 => '.notdef', 156 => '.notdef', 157 => '.notdef', 158 => '.notdef', 159 => '.notdef', 160 => 'Euro', 161 => 'Upsilon1', 162 => 'minute', 163 => 'lessequal', 164 => 'fraction', 165 => 'infinity', 166 => 'florin', 167 => 'club', 168 => 'diamond', 169 => 'heart', 170 => 'spade', 171 => 'arrowboth', 172 => 'arrowleft', 173 => 'arrowup', 174 => 'arrowright', 175 => 'arrowdown', 176 => 'degree', 177 => 'plusminus', 178 => 'second', 179 => 'greaterequal', 180 => 'multiply', 181 => 'proportional', 182 => 'partialdiff', 183 => 'bullet', 184 => 'divide', 185 => 'notequal', 186 => 'equivalence', 187 => 'approxequal', 188 => 'ellipsis', 189 => 'arrowvertex', 190 => 'arrowhorizex', 191 => 'carriagereturn', 192 => 'aleph', 193 => 'Ifraktur', 194 => 'Rfraktur', 195 => 'weierstrass', 196 => 'circlemultiply', 197 => 'circleplus', 198 => 'emptyset', 199 => 'intersection', 200 => 'union', 201 => 'propersuperset', 202 => 'reflexsuperset', 203 => 'notsubset', 204 => 'propersubset', 205 => 'reflexsubset', 206 => 'element', 207 => 'notelement', 208 => 'angle', 209 => 'gradient', 210 => 'registerserif', 211 => 'copyrightserif', 212 => 'trademarkserif', 213 => 'product', 214 => 'radical', 215 => 'dotmath', 216 => 'logicalnot', 217 => 'logicaland', 218 => 'logicalor', 219 => 'arrowdblboth', 220 => 'arrowdblleft', 221 => 'arrowdblup', 222 => 'arrowdblright', 223 => 'arrowdbldown', 224 => 'lozenge', 225 => 'angleleft', 226 => 'registersans', 227 => 'copyrightsans', 228 => 'trademarksans', 229 => 'summation', 230 => 'parenlefttp', 231 => 'parenleftex', 232 => 'parenleftbt', 233 => 'bracketlefttp', 234 => 'bracketleftex', 235 => 'bracketleftbt', 236 => 'bracelefttp', 237 => 'braceleftmid', 238 => 'braceleftbt', 239 => 'braceex', 240 => '.notdef', 241 => 'angleright', 242 => 'integral', 243 => 'integraltp', 244 => 'integralex', 245 => 'integralbt', 246 => 'parenrighttp', 247 => 'parenrightex', 248 => 'parenrightbt', 249 => 'bracketrighttp', 250 => 'bracketrightex', 251 => 'bracketrightbt', 252 => 'bracerighttp', 253 => 'bracerightmid', 254 => 'bracerightbt', 255 => '.notdef', 1226 => 'registered', 1227 => 'copyright', 1228 => 'trademark'],
 
     ];
+
     /**
      * ToUnicode map for Identity-H stream
      *
-     * @public static
+     * @var string
      */
     public static $uni_identity_h = "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n/WMode 0 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n100 beginbfrange\n<0000> <00ff> <0000>\n<0100> <01ff> <0100>\n<0200> <02ff> <0200>\n<0300> <03ff> <0300>\n<0400> <04ff> <0400>\n<0500> <05ff> <0500>\n<0600> <06ff> <0600>\n<0700> <07ff> <0700>\n<0800> <08ff> <0800>\n<0900> <09ff> <0900>\n<0a00> <0aff> <0a00>\n<0b00> <0bff> <0b00>\n<0c00> <0cff> <0c00>\n<0d00> <0dff> <0d00>\n<0e00> <0eff> <0e00>\n<0f00> <0fff> <0f00>\n<1000> <10ff> <1000>\n<1100> <11ff> <1100>\n<1200> <12ff> <1200>\n<1300> <13ff> <1300>\n<1400> <14ff> <1400>\n<1500> <15ff> <1500>\n<1600> <16ff> <1600>\n<1700> <17ff> <1700>\n<1800> <18ff> <1800>\n<1900> <19ff> <1900>\n<1a00> <1aff> <1a00>\n<1b00> <1bff> <1b00>\n<1c00> <1cff> <1c00>\n<1d00> <1dff> <1d00>\n<1e00> <1eff> <1e00>\n<1f00> <1fff> <1f00>\n<2000> <20ff> <2000>\n<2100> <21ff> <2100>\n<2200> <22ff> <2200>\n<2300> <23ff> <2300>\n<2400> <24ff> <2400>\n<2500> <25ff> <2500>\n<2600> <26ff> <2600>\n<2700> <27ff> <2700>\n<2800> <28ff> <2800>\n<2900> <29ff> <2900>\n<2a00> <2aff> <2a00>\n<2b00> <2bff> <2b00>\n<2c00> <2cff> <2c00>\n<2d00> <2dff> <2d00>\n<2e00> <2eff> <2e00>\n<2f00> <2fff> <2f00>\n<3000> <30ff> <3000>\n<3100> <31ff> <3100>\n<3200> <32ff> <3200>\n<3300> <33ff> <3300>\n<3400> <34ff> <3400>\n<3500> <35ff> <3500>\n<3600> <36ff> <3600>\n<3700> <37ff> <3700>\n<3800> <38ff> <3800>\n<3900> <39ff> <3900>\n<3a00> <3aff> <3a00>\n<3b00> <3bff> <3b00>\n<3c00> <3cff> <3c00>\n<3d00> <3dff> <3d00>\n<3e00> <3eff> <3e00>\n<3f00> <3fff> <3f00>\n<4000> <40ff> <4000>\n<4100> <41ff> <4100>\n<4200> <42ff> <4200>\n<4300> <43ff> <4300>\n<4400> <44ff> <4400>\n<4500> <45ff> <4500>\n<4600> <46ff> <4600>\n<4700> <47ff> <4700>\n<4800> <48ff> <4800>\n<4900> <49ff> <4900>\n<4a00> <4aff> <4a00>\n<4b00> <4bff> <4b00>\n<4c00> <4cff> <4c00>\n<4d00> <4dff> <4d00>\n<4e00> <4eff> <4e00>\n<4f00> <4fff> <4f00>\n<5000> <50ff> <5000>\n<5100> <51ff> <5100>\n<5200> <52ff> <5200>\n<5300> <53ff> <5300>\n<5400> <54ff> <5400>\n<5500> <55ff> <5500>\n<5600> <56ff> <5600>\n<5700> <57ff> <5700>\n<5800> <58ff> <5800>\n<5900> <59ff> <5900>\n<5a00> <5aff> <5a00>\n<5b00> <5bff> <5b00>\n<5c00> <5cff> <5c00>\n<5d00> <5dff> <5d00>\n<5e00> <5eff> <5e00>\n<5f00> <5fff> <5f00>\n<6000> <60ff> <6000>\n<6100> <61ff> <6100>\n<6200> <62ff> <6200>\n<6300> <63ff> <6300>\nendbfrange\n100 beginbfrange\n<6400> <64ff> <6400>\n<6500> <65ff> <6500>\n<6600> <66ff> <6600>\n<6700> <67ff> <6700>\n<6800> <68ff> <6800>\n<6900> <69ff> <6900>\n<6a00> <6aff> <6a00>\n<6b00> <6bff> <6b00>\n<6c00> <6cff> <6c00>\n<6d00> <6dff> <6d00>\n<6e00> <6eff> <6e00>\n<6f00> <6fff> <6f00>\n<7000> <70ff> <7000>\n<7100> <71ff> <7100>\n<7200> <72ff> <7200>\n<7300> <73ff> <7300>\n<7400> <74ff> <7400>\n<7500> <75ff> <7500>\n<7600> <76ff> <7600>\n<7700> <77ff> <7700>\n<7800> <78ff> <7800>\n<7900> <79ff> <7900>\n<7a00> <7aff> <7a00>\n<7b00> <7bff> <7b00>\n<7c00> <7cff> <7c00>\n<7d00> <7dff> <7d00>\n<7e00> <7eff> <7e00>\n<7f00> <7fff> <7f00>\n<8000> <80ff> <8000>\n<8100> <81ff> <8100>\n<8200> <82ff> <8200>\n<8300> <83ff> <8300>\n<8400> <84ff> <8400>\n<8500> <85ff> <8500>\n<8600> <86ff> <8600>\n<8700> <87ff> <8700>\n<8800> <88ff> <8800>\n<8900> <89ff> <8900>\n<8a00> <8aff> <8a00>\n<8b00> <8bff> <8b00>\n<8c00> <8cff> <8c00>\n<8d00> <8dff> <8d00>\n<8e00> <8eff> <8e00>\n<8f00> <8fff> <8f00>\n<9000> <90ff> <9000>\n<9100> <91ff> <9100>\n<9200> <92ff> <9200>\n<9300> <93ff> <9300>\n<9400> <94ff> <9400>\n<9500> <95ff> <9500>\n<9600> <96ff> <9600>\n<9700> <97ff> <9700>\n<9800> <98ff> <9800>\n<9900> <99ff> <9900>\n<9a00> <9aff> <9a00>\n<9b00> <9bff> <9b00>\n<9c00> <9cff> <9c00>\n<9d00> <9dff> <9d00>\n<9e00> <9eff> <9e00>\n<9f00> <9fff> <9f00>\n<a000> <a0ff> <a000>\n<a100> <a1ff> <a100>\n<a200> <a2ff> <a200>\n<a300> <a3ff> <a300>\n<a400> <a4ff> <a400>\n<a500> <a5ff> <a500>\n<a600> <a6ff> <a600>\n<a700> <a7ff> <a700>\n<a800> <a8ff> <a800>\n<a900> <a9ff> <a900>\n<aa00> <aaff> <aa00>\n<ab00> <abff> <ab00>\n<ac00> <acff> <ac00>\n<ad00> <adff> <ad00>\n<ae00> <aeff> <ae00>\n<af00> <afff> <af00>\n<b000> <b0ff> <b000>\n<b100> <b1ff> <b100>\n<b200> <b2ff> <b200>\n<b300> <b3ff> <b300>\n<b400> <b4ff> <b400>\n<b500> <b5ff> <b500>\n<b600> <b6ff> <b600>\n<b700> <b7ff> <b700>\n<b800> <b8ff> <b800>\n<b900> <b9ff> <b900>\n<ba00> <baff> <ba00>\n<bb00> <bbff> <bb00>\n<bc00> <bcff> <bc00>\n<bd00> <bdff> <bd00>\n<be00> <beff> <be00>\n<bf00> <bfff> <bf00>\n<c000> <c0ff> <c000>\n<c100> <c1ff> <c100>\n<c200> <c2ff> <c200>\n<c300> <c3ff> <c300>\n<c400> <c4ff> <c400>\n<c500> <c5ff> <c500>\n<c600> <c6ff> <c600>\n<c700> <c7ff> <c700>\nendbfrange\n56 beginbfrange\n<c800> <c8ff> <c800>\n<c900> <c9ff> <c900>\n<ca00> <caff> <ca00>\n<cb00> <cbff> <cb00>\n<cc00> <ccff> <cc00>\n<cd00> <cdff> <cd00>\n<ce00> <ceff> <ce00>\n<cf00> <cfff> <cf00>\n<d000> <d0ff> <d000>\n<d100> <d1ff> <d100>\n<d200> <d2ff> <d200>\n<d300> <d3ff> <d300>\n<d400> <d4ff> <d400>\n<d500> <d5ff> <d500>\n<d600> <d6ff> <d600>\n<d700> <d7ff> <d700>\n<d800> <d8ff> <d800>\n<d900> <d9ff> <d900>\n<da00> <daff> <da00>\n<db00> <dbff> <db00>\n<dc00> <dcff> <dc00>\n<dd00> <ddff> <dd00>\n<de00> <deff> <de00>\n<df00> <dfff> <df00>\n<e000> <e0ff> <e000>\n<e100> <e1ff> <e100>\n<e200> <e2ff> <e200>\n<e300> <e3ff> <e300>\n<e400> <e4ff> <e400>\n<e500> <e5ff> <e500>\n<e600> <e6ff> <e600>\n<e700> <e7ff> <e700>\n<e800> <e8ff> <e800>\n<e900> <e9ff> <e900>\n<ea00> <eaff> <ea00>\n<eb00> <ebff> <eb00>\n<ec00> <ecff> <ec00>\n<ed00> <edff> <ed00>\n<ee00> <eeff> <ee00>\n<ef00> <efff> <ef00>\n<f000> <f0ff> <f000>\n<f100> <f1ff> <f100>\n<f200> <f2ff> <f200>\n<f300> <f3ff> <f300>\n<f400> <f4ff> <f400>\n<f500> <f5ff> <f500>\n<f600> <f6ff> <f600>\n<f700> <f7ff> <f700>\n<f800> <f8ff> <f800>\n<f900> <f9ff> <f900>\n<fa00> <faff> <fa00>\n<fb00> <fbff> <fb00>\n<fc00> <fcff> <fc00>\n<fd00> <fdff> <fd00>\n<fe00> <feff> <fe00>\n<ff00> <ffff> <ff00>\nendbfrange\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend";
+    
+    /**
+     * @var string
+     */
     public $header;
+    
+    /**
+     * @var string
+     */
     public $footer;
+    
+    /**
+     * @var string
+     */
     public $pagination;
+    
+    /**
+     * @var string
+     */
     public $content;
+
+    /**
+     * @var string
+     */
     public $font;
+    
+    /**
+     * @var string[]
+     */
     public $font_by_lang = [
         'ja' => 'cid0jp',
         'bg' => 'freeserif',
@@ -19066,15 +19097,11 @@ class PDFGeneratorCore extends TCPDF
         'th' => 'freeserif',
     ];
 
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @param bool   $useCache    Deprecated and unused as per upstream (tcpdf
+     * @param bool $useCache Deprecated and unused as per upstream (tcpdf
      *                            by tecnick.com), tcpdf doesn't cache.
      * @param string $orientation
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($useCache = false, $orientation = 'P')
     {
@@ -19086,11 +19113,9 @@ class PDFGeneratorCore extends TCPDF
      * ASCII85Decode
      * Decodes data encoded in an ASCII base-85 representation, reproducing the original binary data.
      *
-     * @param $data (string) Data to decode.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string.
      */
     public function decodeFilterASCII85Decode($data)
     {
@@ -19101,11 +19126,9 @@ class PDFGeneratorCore extends TCPDF
      * LZWDecode
      * Decompresses data encoded using the LZW (Lempel-Ziv-Welch) adaptive compression method, reproducing the original text or binary data.
      *
-     * @param $data (string) Data to decode.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string.
      */
     public function decodeFilterLZWDecode($data)
     {
@@ -19116,11 +19139,9 @@ class PDFGeneratorCore extends TCPDF
      * FlateDecode
      * Decompresses data encoded using the zlib/deflate compression method, reproducing the original text or binary data.
      *
-     * @param $data (string) Data to decode.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string..
      */
     public function decodeFilterFlateDecode($data)
     {
@@ -19131,10 +19152,7 @@ class PDFGeneratorCore extends TCPDF
      * RunLengthDecode
      * Decompresses data encoded using a byte-oriented run-length encoding algorithm.
      *
-     * @param $data (string) Data to decode.
-     *
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @param string $data Data to decode.
      */
     public function decodeFilterRunLengthDecode($data)
     {
@@ -19144,9 +19162,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Return the current TCPDF producer.
      *
-     * @return TCPDF producer string
-     * @since  6.0.000 (2013-03-16)
-     * @public static
+     * @return string TCPDF producer string
      */
     public function getTCPDFProducer()
     {
@@ -19166,11 +19182,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Check if the URL exist.
      *
-     * @param $url (string) URL to check.
+     * @param string $url URL to check.
      *
      * @return Boolean true if the URl exist, false otherwise.
-     * @since  5.9.204 (2013-01-28)
-     * @public static
      */
     public function isValidURL($url)
     {
@@ -19182,9 +19196,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Gets the current active configuration setting of magic_quotes_runtime (if the get_magic_quotes_runtime function exist)
      *
-     * @return Returns 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise.
-     * @since  4.6.025 (2009-08-17)
-     * @public static
+     * @return int 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise.
      */
     public function get_mqr()
     {
@@ -19194,13 +19206,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the border mode accounting for multicell position (opens bottom side of multicell crossing pages)
      *
-     * @param $brd      (mixed) Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
-     * @param $position (string) multicell position: 'start', 'middle', 'end'
-     * @param $opencell (boolean) True when the cell is left open at the page bottom, false otherwise.
+     * @param mixed $brd Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+     * @param string $position multicell position: 'start', 'middle', 'end'
+     * @param bool $opencell True when the cell is left open at the page bottom, false otherwise.
      *
-     * @return border mode array
-     * @since  4.4.002 (2008-12-09)
-     * @public static
+     * @return array border mode array
      */
     public function getBorderMode($brd, $position = 'start', $opencell = true)
     {
@@ -19210,11 +19220,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Determine whether a string is empty.
      *
-     * @param $str (string) string to be checked
+     * @param string $str string to be checked
      *
      * @return boolean true if string is empty
-     * @since  4.5.044 (2009-04-16)
-     * @public static
      */
     public function empty_string($str)
     {
@@ -19224,12 +19232,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns a temporary filename for caching object on filesystem.
      *
-     * @param $type    (string) Type of file (name of the subdir on the tcpdf cache folder).
-     * @param $file_id (string) TCPDF file_id.
+     * @param string $type Type of file (name of the subdir on the tcpdf cache folder).
+     * @param string $file_id TCPDF file_id.
      *
      * @return string filename.
-     * @since  4.5.000 (2008-12-31)
-     * @public static
      */
     public function getObjFilename($type = 'tmp', $file_id = '')
     {
@@ -19239,10 +19245,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Add "\" before "\", "(" and ")"
      *
-     * @param $s (string) string to escape.
+     * @param string $s string to escape.
      *
      * @return string escaped string.
-     * @public static
      */
     public function _escape($s)
     {
@@ -19252,11 +19257,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Escape some special characters (&lt; &gt; &amp;) for XML output.
      *
-     * @param $str (string) Input string to convert.
+     * @param string $str Input string to convert.
      *
-     * @return converted string
-     * @since  5.9.121 (2011-09-28)
-     * @public static
+     * @return string converted string
      */
     public function _escapeXML($str)
     {
@@ -19266,11 +19269,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Creates a copy of a class object
      *
-     * @param $object (object) class object to be cloned
+     * @param object $object class object to be cloned
      *
-     * @return cloned object
-     * @since  4.5.029 (2009-03-19)
-     * @public static
+     * @return object cloned object
      */
     public function objclone($object)
     {
@@ -19280,11 +19281,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns a formatted date-time.
      *
-     * @param $time (int) Time in seconds.
+     * @param int $time Time in seconds.
      *
      * @return string escaped date string.
-     * @since  5.9.152 (2012-03-23)
-     * @public static
      */
     public function getFormattedDate($time)
     {
@@ -19294,11 +19293,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Encrypts a string using MD5 and returns it's value as a binary string.
      *
-     * @param $str (string) input string
+     * @param string $str input string
      *
      * @return String MD5 encrypted binary string
-     * @since  2.0.000 (2008-01-02)
-     * @public static
      */
     public function _md5_16($str)
     {
@@ -19309,13 +19306,11 @@ class PDFGeneratorCore extends TCPDF
      * Returns the input text exrypted using AES algorithm and the specified key.
      * This method requires openssl or mcrypt. Text is padded to 16bytes blocks
      *
-     * @param $key  (string) encryption key
-     * @param $text (String) input text to be encrypted
+     * @param string $key encryption key
+     * @param string $text input text to be encrypted
      *
      * @return String encrypted text
      * @author Nicola Asuni
-     * @since  5.0.005 (2010-05-11)
-     * @public static
      */
     public function _AES($key, $text)
     {
@@ -19326,15 +19321,13 @@ class PDFGeneratorCore extends TCPDF
      * Returns the input text encrypted using RC4 algorithm and the specified key.
      * RC4 is the standard encryption algorithm used in PDF format
      *
-     * @param $key            (string) Encryption key.
-     * @param $text           (String) Input text to be encrypted.
-     * @param $last_enc_key   (String) Reference to last RC4 key encrypted.
-     * @param $last_enc_key_c (String) Reference to last RC4 computed key.
+     * @param string $key Encryption key.
+     * @param string $text Input text to be encrypted.
+     * @param string $last_enc_key Reference to last RC4 key encrypted.
+     * @param string $last_enc_key_c Reference to last RC4 computed key.
      *
      * @return String encrypted text
-     * @since  2.0.000 (2008-01-02)
      * @author Klemen Vodopivec, Nicola Asuni
-     * @public static
      */
     public function _RC4($key, $text, &$last_enc_key, &$last_enc_key_c)
     {
@@ -19344,12 +19337,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Return the permission code used on encryption (P value).
      *
-     * @param $permissions (Array) the set of permissions (specify the ones you want to block).
-     * @param $mode        (int) encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
+     * @param array $permissions the set of permissions (specify the ones you want to block).
+     * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
      *
-     * @since  5.0.005 (2010-05-12)
      * @author Nicola Asuni
-     * @public static
      */
     public function getUserPermissionCode($permissions, $mode = 0)
     {
@@ -19359,12 +19350,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert hexadecimal string to string
      *
-     * @param $bs (string) byte-string to convert
+     * @param string $bs byte-string to convert
      *
      * @return String
-     * @since  5.0.005 (2010-05-12)
      * @author Nicola Asuni
-     * @public static
      */
     public function convertHexStringToString($bs)
     {
@@ -19374,12 +19363,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert string to hexadecimal string (byte string)
      *
-     * @param $s (string) string to convert
+     * @param string $s string to convert
      *
-     * @return byte string
-     * @since  5.0.010 (2010-05-17)
+     * @return string
      * @author Nicola Asuni
-     * @public static
      */
     public function convertStringToHexString($s)
     {
@@ -19389,12 +19376,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert encryption P value to a string of bytes, low-order byte first.
      *
-     * @param $protection (string) 32bit encryption permission value (P value)
+     * @param string $protection 32bit encryption permission value (P value)
      *
      * @return String
-     * @since  5.0.005 (2010-05-12)
      * @author Nicola Asuni
-     * @public static
      */
     public function getEncPermissionsString($protection)
     {
@@ -19404,12 +19389,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Encode a name object.
      *
-     * @param $name (string) Name object to encode.
+     * @param string $name Name object to encode.
      *
-     * @return (string) Encoded name object.
+     * @return string Encoded name object.
      * @author Nicola Asuni
-     * @since  5.9.097 (2011-06-23)
-     * @public static
      */
     public function encodeNameObject($name)
     {
@@ -19419,14 +19402,12 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert JavaScript form fields properties array to Annotation Properties array.
      *
-     * @param $prop        (array) javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
-     * @param $spot_colors (array) Reference to spot colors array.
-     * @param $rtl         (boolean) True if in Right-To-Left text direction mode, false otherwise.
+     * @param array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
+     * @param array $spot_colors Reference to spot colors array.
+     * @param bool $rtl True if in Right-To-Left text direction mode, false otherwise.
      *
      * @return array of annotation properties
      * @author Nicola Asuni
-     * @since  4.8.000 (2009-09-06)
-     * @public static
      */
     public function getAnnotOptFromJSProp($prop, &$spot_colors, $rtl = false)
     {
@@ -19437,10 +19418,7 @@ class PDFGeneratorCore extends TCPDF
      * Format the page numbers.
      * This method can be overriden for custom formats.
      *
-     * @param $num (int) page number
-     *
-     * @since  4.2.005 (2008-11-06)
-     * @public static
+     * @param int $num page number
      */
     public function formatPageNumber($num)
     {
@@ -19451,11 +19429,9 @@ class PDFGeneratorCore extends TCPDF
      * Format the page numbers on the Table Of Content.
      * This method can be overriden for custom formats.
      *
-     * @param $num (int) page number
+     * @param int $num page number
      *
-     * @since  4.5.001 (2009-01-04)
-     * @see    addTOC(), addHTMLTOC()
-     * @public static
+     * @see addTOC(), addHTMLTOC()
      */
     public function formatTOCPageNumber($num)
     {
@@ -19465,12 +19441,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Extracts the CSS properties from a CSS string.
      *
-     * @param $cssdata (string) string containing CSS definitions.
+     * @param string $cssdata string containing CSS definitions.
      *
-     * @return An array where the keys are the CSS selectors and the values are the CSS properties.
+     * @return array An array where the keys are the CSS selectors and the values are the CSS properties.
      * @author Nicola Asuni
-     * @since  5.1.000 (2010-05-25)
-     * @public static
      */
     public function extractCSSproperties($cssdata)
     {
@@ -19480,13 +19454,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns true if the CSS selector is valid for the selected HTML tag
      *
-     * @param $dom      (array) array of HTML tags and properties
-     * @param $key      (int) key of the current HTML tag
-     * @param $selector (string) CSS selector string
+     * @param array $dom array of HTML tags and properties
+     * @param int $key key of the current HTML tag
+     * @param string $selector CSS selector string
      *
      * @return true if the selector is valid, false otherwise
-     * @since  5.1.000 (2010-05-25)
-     * @public static
      */
     public function isValidCSSSelectorForTag($dom, $key, $selector)
     {
@@ -19496,13 +19468,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns the styles array that apply for the selected HTML tag.
      *
-     * @param $dom (array) array of HTML tags and properties
-     * @param $key (int) key of the current HTML tag
-     * @param $css (array) array of CSS properties
+     * @param array $dom array of HTML tags and properties
+     * @param int $key key of the current HTML tag
+     * @param array $css array of CSS properties
      *
      * @return array containing CSS properties
-     * @since  5.1.000 (2010-05-25)
-     * @public static
      */
     public function getCSSdataArray($dom, $key, $css)
     {
@@ -19512,11 +19482,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Compact CSS data array into single string.
      *
-     * @param $css (array) array of CSS properties
+     * @param array $css array of CSS properties
      *
      * @return string containing merged CSS properties
-     * @since  5.9.070 (2011-04-19)
-     * @public static
      */
     public function getTagStyleFromCSSarray($css)
     {
@@ -19526,11 +19494,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns the Roman representation of an integer number
      *
-     * @param $number (int) number to convert
+     * @param int $number number to convert
      *
      * @return string roman representation of the specified number
-     * @since  4.4.004 (2008-12-10)
-     * @public static
      */
     public function intToRoman($number)
     {
@@ -19540,13 +19506,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Find position of last occurrence of a substring in a string
      *
-     * @param $haystack (string) The string to search in.
-     * @param $needle   (string) substring to search.
-     * @param $offset   (int) May be specified to begin searching an arbitrary number of characters into the string.
+     * @param string $haystack The string to search in.
+     * @param string $needle substring to search.
+     * @param int $offset May be specified to begin searching an arbitrary number of characters into the string.
      *
-     * @return Returns the position where the needle exists. Returns FALSE if the needle was not found.
-     * @since  4.8.038 (2010-03-13)
-     * @public static
+     * @return int Returns the position where the needle exists. Returns FALSE if the needle was not found.
      */
     public function revstrpos($haystack, $needle, $offset = 0)
     {
@@ -19556,12 +19520,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns an array of hyphenation patterns.
      *
-     * @param $file (string) TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
+     * @param string $file TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
      *
      * @return array of hyphenation patterns
      * @author Nicola Asuni
-     * @since  4.9.012 (2010-04-12)
-     * @public static
      */
     public function getHyphenPatternsFromTEX($file)
     {
@@ -19571,7 +19533,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the Path-Painting Operators.
      *
-     * @param $style   (string) Style of rendering. Possible values are:
+     * @param string $style Style of rendering. Possible values are:
      *                 <ul>
      *                 <li>S or D: Stroke the path.</li>
      *                 <li>s or d: Close and stroke the path.</li>
@@ -19585,11 +19547,9 @@ class PDFGeneratorCore extends TCPDF
      *                 <li>CEO: Clipping mode using the nonzero winding number rule to determine which regions lie inside the clipping path</li>
      *                 <li>n: End the path object without filling or stroking it.</li>
      *                 </ul>
-     * @param $default (string) default style
+     * @param string $default default style
      *
      * @author Nicola Asuni
-     * @since  5.0.000 (2010-04-30)
-     * @public static
      */
     public function getPathPaintOperator($style, $default = 'S')
     {
@@ -19599,13 +19559,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the product of two SVG tranformation matrices
      *
-     * @param $ta (array) first SVG tranformation matrix
-     * @param $tb (array) second SVG tranformation matrix
+     * @param array $ta first SVG tranformation matrix
+     * @param array $tb second SVG tranformation matrix
      *
-     * @return transformation array
+     * @return array transformation array
      * @author Nicola Asuni
-     * @since  5.0.000 (2010-05-02)
-     * @public static
      */
     public function getTransformationMatrixProduct($ta, $tb)
     {
@@ -19615,12 +19573,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the tranformation matrix from SVG transform attribute
      *
-     * @param $attribute (string) transformation
+     * @param string $attribute transformation
      *
      * @return array of transformations
      * @author Nicola Asuni
-     * @since  5.0.000 (2010-05-02)
-     * @public static
      */
     public function getSVGTransformMatrix($attribute)
     {
@@ -19630,14 +19586,12 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns the angle in radiants between two vectors
      *
-     * @param $x1 (int) X coordinate of first vector point
-     * @param $y1 (int) Y coordinate of first vector point
-     * @param $x2 (int) X coordinate of second vector point
-     * @param $y2 (int) Y coordinate of second vector point
+     * @param int $x1 X coordinate of first vector point
+     * @param int $y1 Y coordinate of first vector point
+     * @param int $x2 X coordinate of second vector point
+     * @param int $y2 Y coordinate of second vector point
      *
      * @author Nicola Asuni
-     * @since  5.0.000 (2010-05-04)
-     * @public static
      */
     public function getVectorsAngle($x1, $y1, $x2, $y2)
     {
@@ -19648,16 +19602,14 @@ class PDFGeneratorCore extends TCPDF
      * Split string by a regular expression.
      * This is a wrapper for the preg_split function to avoid the bug: https://bugs.php.net/bug.php?id=45850
      *
-     * @param $pattern   (string) The regular expression pattern to search for without the modifiers, as a string.
-     * @param $modifiers (string) The modifiers part of the pattern,
-     * @param $subject   (string) The input string.
-     * @param $limit     (int) If specified, then only substrings up to limit are returned with the rest of the string being placed in the last substring. A limit of -1, 0 or NULL means "no limit" and, as is standard across PHP, you can use NULL to skip to the flags parameter.
-     * @param $flags     (int) The flags as specified on the preg_split PHP function.
+     * @param string $pattern The regular expression pattern to search for without the modifiers, as a string.
+     * @param string $modifiers The modifiers part of the pattern,
+     * @param string $subject The input string.
+     * @param int $limit If specified, then only substrings up to limit are returned with the rest of the string being placed in the last substring. A limit of -1, 0 or NULL means "no limit" and, as is standard across PHP, you can use NULL to skip to the flags parameter.
+     * @param int $flags The flags as specified on the preg_split PHP function.
      *
-     * @return Returns an array containing substrings of subject split along boundaries matched by pattern.modifier
+     * @return array Returns an containing substrings of subject split along boundaries matched by pattern.modifier
      * @author Nicola Asuni
-     * @since  6.0.023
-     * @public static
      */
     public function pregSplit($pattern, $modifiers, $subject, $limit = null, $flags = null)
     {
@@ -19667,11 +19619,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Wrapper to use fopen only with local files
      *
-     * @param filename (string) Name  of the file to open
-     * @param                   $mode (string)
+     * @param string $filename Name of the file to open
+     * @param string $mode
      *
-     * @return Returns a file pointer resource on success, or FALSE on error.
-     * @public static
+     * @return resource|false Returns a file pointer resource on success, or FALSE on error.
      */
     public function fopenLocal($filename, $mode)
     {
@@ -19682,12 +19633,10 @@ class PDFGeneratorCore extends TCPDF
      * Reads entire file into a string.
      * The file can be also an URL.
      *
-     * @param $file (string) Name of the file or URL to read.
+     * @param string $file Name of the file or URL to read.
      *
-     * @return The function returns the read data or FALSE on failure.
+     * @return false|string The function returns the read data or FALSE on failure.
      * @author Nicola Asuni
-     * @since  6.0.025
-     * @public static
      */
     public function fileGetContents($file)
     {
@@ -19697,13 +19646,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get ULONG from string (Big Endian 32-bit unsigned integer).
      *
-     * @param $str    (string) string from where to extract value
-     * @param $offset (int) point from where to read the data
+     * @param string $str string from where to extract value
+     * @param int $offset point from where to read the data
      *
      * @return int 32 bit value
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getULONG($str, $offset)
     {
@@ -19713,13 +19660,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get USHORT from string (Big Endian 16-bit unsigned integer).
      *
-     * @param $str    (string) string from where to extract value
-     * @param $offset (int) point from where to read the data
+     * @param string $str string from where to extract value
+     * @param int $offset point from where to read the data
      *
      * @return int 16 bit value
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getUSHORT($str, $offset)
     {
@@ -19729,13 +19674,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get SHORT from string (Big Endian 16-bit signed integer).
      *
-     * @param $str    (string) String from where to extract value.
-     * @param $offset (int) Point from where to read the data.
+     * @param string $str String from where to extract value.
+     * @param int $offset Point from where to read the data.
      *
      * @return int 16 bit value
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getSHORT($str, $offset)
     {
@@ -19745,13 +19688,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get FWORD from string (Big Endian 16-bit signed integer).
      *
-     * @param $str    (string) String from where to extract value.
-     * @param $offset (int) Point from where to read the data.
+     * @param string $str String from where to extract value.
+     * @param int $offset Point from where to read the data.
      *
      * @return int 16 bit value
      * @author Nicola Asuni
-     * @since  5.9.123 (2011-09-30)
-     * @public static
      */
     public function _getFWORD($str, $offset)
     {
@@ -19761,13 +19702,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get UFWORD from string (Big Endian 16-bit unsigned integer).
      *
-     * @param $str    (string) string from where to extract value
-     * @param $offset (int) point from where to read the data
+     * @param string $str string from where to extract value
+     * @param int $offset point from where to read the data
      *
      * @return int 16 bit value
      * @author Nicola Asuni
-     * @since  5.9.123 (2011-09-30)
-     * @public static
      */
     public function _getUFWORD($str, $offset)
     {
@@ -19777,13 +19716,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get FIXED from string (32-bit signed fixed-point number (16.16).
      *
-     * @param $str    (string) string from where to extract value
-     * @param $offset (int) point from where to read the data
+     * @param string $str string from where to extract value
+     * @param int $offset point from where to read the data
      *
      * @return int 16 bit value
      * @author Nicola Asuni
-     * @since  5.9.123 (2011-09-30)
-     * @public static
      */
     public function _getFIXED($str, $offset)
     {
@@ -19793,13 +19730,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get BYTE from string (8-bit unsigned integer).
      *
-     * @param $str    (string) String from where to extract value.
-     * @param $offset (int) Point from where to read the data.
+     * @param string $str String from where to extract value.
+     * @param int $offset Point from where to read the data.
      *
      * @return int 8 bit value
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getBYTE($str, $offset)
     {
@@ -19810,13 +19745,11 @@ class PDFGeneratorCore extends TCPDF
      * Binary-safe and URL-safe file read.
      * Reads up to length bytes from the file pointer referenced by handle. Reading stops as soon as one of the following conditions is met: length bytes have been read; EOF (end of file) is reached.
      *
-     * @param $handle (resource)
-     * @param $length (int)
+     * @param resource $handle
+     * @param int $length
      *
-     * @return Returns the read string or FALSE in case of error.
+     * @return false|string Returns the read string or FALSE in case of error.
      * @author Nicola Asuni
-     * @since  4.5.027 (2009-03-16)
-     * @public static
      */
     public function rfread($handle, $length)
     {
@@ -19826,10 +19759,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Read a 4-byte (32 bit) integer from file.
      *
-     * @param $f (string) file name.
+     * @param resource $f file name.
      *
-     * @return 4-byte integer
-     * @public static
+     * @return int 4-byte integer
      */
     public function _freadint($f)
     {
@@ -19839,10 +19771,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the canonical page layout mode.
      *
-     * @param $layout (string) The page layout. Possible values are:<ul><li>SinglePage Display one page at a time</li><li>OneColumn Display the pages in one column</li><li>TwoColumnLeft Display the pages in two columns, with odd-numbered pages on the left</li><li>TwoColumnRight Display the pages in two columns, with odd-numbered pages on the right</li><li>TwoPageLeft (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the left</li><li>TwoPageRight (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the right</li></ul>
+     * @param string $layout The page layout. Possible values are:<ul><li>SinglePage Display one page at a time</li><li>OneColumn Display the pages in one column</li><li>TwoColumnLeft Display the pages in two columns, with odd-numbered pages on the left</li><li>TwoColumnRight Display the pages in two columns, with odd-numbered pages on the right</li><li>TwoPageLeft (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the left</li><li>TwoPageRight (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the right</li></ul>
      *
-     * @return (string) Canonical page layout name.
-     * @public static
+     * @return string Canonical page layout name.
      */
     public function getPageLayoutMode($layout = 'SinglePage')
     {
@@ -19852,10 +19783,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get the canonical page layout mode.
      *
-     * @param $mode (string) A name object specifying how the document should be displayed when opened:<ul><li>UseNone Neither document outline nor thumbnail images visible</li><li>UseOutlines Document outline visible</li><li>UseThumbs Thumbnail images visible</li><li>FullScreen Full-screen mode, with no menu bar, window controls, or any other window visible</li><li>UseOC (PDF 1.5) Optional content group panel visible</li><li>UseAttachments (PDF 1.6) Attachments panel visible</li></ul>
+     * @param string $mode A name object specifying how the document should be displayed when opened:<ul><li>UseNone Neither document outline nor thumbnail images visible</li><li>UseOutlines Document outline visible</li><li>UseThumbs Thumbnail images visible</li><li>FullScreen Full-screen mode, with no menu bar, window controls, or any other window visible</li><li>UseOC (PDF 1.5) Optional content group panel visible</li><li>UseAttachments (PDF 1.6) Attachments panel visible</li></ul>
      *
-     * @return (string) Canonical page mode name.
-     * @public static
+     * @return string Canonical page mode name.
      */
     public function getPageMode($mode = 'UseNone')
     {
@@ -19866,9 +19796,6 @@ class PDFGeneratorCore extends TCPDF
      * set the PDF encoding
      *
      * @param string $encoding
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setEncoding($encoding)
     {
@@ -19876,13 +19803,9 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     *
      * set the PDF header
      *
      * @param string $header HTML
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createHeader($header)
     {
@@ -19890,13 +19813,9 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     *
      * set the PDF footer
      *
      * @param string $footer HTML
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createFooter($footer)
     {
@@ -19904,13 +19823,9 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     *
      * create the PDF content
      *
      * @param string $content HTML
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createContent($content)
     {
@@ -19918,13 +19833,9 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     *
      * create the PDF pagination
      *
      * @param string $pagination HTML
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createPagination($pagination)
     {
@@ -19935,9 +19846,6 @@ class PDFGeneratorCore extends TCPDF
      * Change the font
      *
      * @param string $isoLang
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setFontForLang($isoLang)
     {
@@ -19954,10 +19862,7 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     * @see     TCPDF::Header()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @see TCPDF::Header()
      */
     public function Header()
     {
@@ -19965,10 +19870,7 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     * @see     TCPDF::Footer()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @see TCPDF::Footer()
      */
     public function Footer()
     {
@@ -19981,14 +19883,11 @@ class PDFGeneratorCore extends TCPDF
      * Render HTML template
      *
      * @param string $filename
-     * @param bool   $display true:display to user, false:save, 'I','D','S' as fpdf display
+     * @param bool $display true:display to user, false:save, 'I','D','S' as fpdf display
      *
      * @throws PrestaShopException
      *
      * @return string HTML rendered
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function render($filename, $display = true)
     {
@@ -20018,8 +19917,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Write a PDF page
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function writePage()
     {
@@ -20030,6 +19928,10 @@ class PDFGeneratorCore extends TCPDF
         $this->writeHTML($this->content, true, false, true, false, '');
     }
 
+    /**
+     * @param string $format
+     * @return array|float[]
+     */
     public function getPageSizeFromFormat($format)
     {
         return TCPDF_STATIC::getPageSizeFromFormat($format);
@@ -20038,19 +19940,16 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Set page boundaries.
      *
-     * @param int    $page    page number
-     * @param string $type    valid values are: <ul><li>'MediaBox' : the boundaries of the physical medium on which the page shall be displayed or printed;</li><li>'CropBox' : the visible region of default user space;</li><li>'BleedBox' : the region to which the contents of the page shall be clipped when output in a production environment;</li><li>'TrimBox' : the intended dimensions of the finished page after trimming;</li><li>'ArtBox' : the page's meaningful content (including potential white space).</li></ul>
-     * @param float  $llx     lower-left x coordinate in user units.
-     * @param float  $lly     lower-left y coordinate in user units.
-     * @param float  $urx     upper-right x coordinate in user units.
-     * @param float  $ury     upper-right y coordinate in user units.
-     * @param bool   $points  If true uses user units as unit of measure, otherwise uses PDF points.
-     * @param float  $k       Scale factor (number of points in user unit).
-     * @param array  $pagedim Array of page dimensions.
-     *
+     * @param int $page page number
+     * @param string $type valid values are: <ul><li>'MediaBox' : the boundaries of the physical medium on which the page shall be displayed or printed;</li><li>'CropBox' : the visible region of default user space;</li><li>'BleedBox' : the region to which the contents of the page shall be clipped when output in a production environment;</li><li>'TrimBox' : the intended dimensions of the finished page after trimming;</li><li>'ArtBox' : the page's meaningful content (including potential white space).</li></ul>
+     * @param float $llx lower-left x coordinate in user units.
+     * @param float $lly lower-left y coordinate in user units.
+     * @param float $urx upper-right x coordinate in user units.
+     * @param float $ury upper-right y coordinate in user units.
+     * @param bool $points If true uses user units as unit of measure, otherwise uses PDF points.
+     * @param float $k Scale factor (number of points in user unit).
+     * @param array $pagedim Array of page dimensions.
      * @return array pagedim array of page dimensions.
-     *
-     * @since 5.0.010 (2010-05-17)
      */
     public function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points = false, $k=1.0, $pagedim=[])
     {
@@ -20060,22 +19959,28 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Swap X and Y coordinates of page boxes (change page boxes orientation).
      *
-     * @param int   $page    (int) page number
-     * @param array $pagedim (array) Array of page dimensions.
+     * @param int int $page page number
      *
      * @return array array of page dimensions.
-     * @since 5.0.010 (2010-05-17)
      */
     public function swapPageBoxCoordinates($page)
     {
         return TCPDF_STATIC::swapPageBoxCoordinates($page, $this->pagedim);
     }
 
+    /**
+     * @param array $c
+     * @return string
+     */
     public function getColorStringFromArray($c)
     {
         return TCPDF_COLORS::getColorStringFromArray($c);
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     public function removeSHY($str = '')
     {
         return TCPDF_STATIC::removeSHY($str);
@@ -20085,13 +19990,11 @@ class PDFGeneratorCore extends TCPDF
      * Returns the input text exrypted using AES algorithm and the specified key.
      * This method requires openssl or mcrypt. Text is not padded
      *
-     * @param $key  (string) encryption key
-     * @param $text (String) input text to be encrypted
+     * @param string $key encryption key
+     * @param string $text input text to be encrypted
      *
      * @return String encrypted text
      * @author Nicola Asuni
-     * @since  TODO
-     * @public static
      */
     public function _AESnopad($key, $text)
     {
@@ -20102,9 +20005,6 @@ class PDFGeneratorCore extends TCPDF
      * Sets the current active configuration setting of magic_quotes_runtime (if the set_magic_quotes_runtime function exist)
      *
      * @param bool $mqr `false` for off, TRUE for on.
-     *
-     * @since  4.6.025 (2009-08-17)
-     * @public static
      */
     public function set_mqr($mqr)
     {
@@ -20114,11 +20014,8 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Output input data and compress it if possible.
      *
-     * @param $data   (string) Data to output.
-     * @param $length (int) Data length in bytes.
-     *
-     * @since  5.9.086
-     * @public static
+     * @param string $data Data to output.
+     * @param int $length Data length in bytes.
      */
     public function sendOutputData($data, $length)
     {
@@ -20128,12 +20025,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Replace page number aliases with number.
      *
-     * @param $page    (string) Page content.
-     * @param $replace (array) Array of replacements (array keys are replacement strings, values are alias arrays).
-     * @param $diff    (int) If passed, this will be set to the total char number difference between alias and replacements.
+     * @param string $page Page content.
+     * @param array $replace Array of replacements (array keys are replacement strings, values are alias arrays).
+     * @param int $diff If passed, this will be set to the total char number difference between alias and replacements.
      *
-     * @return replaced page content and updated $diff parameter as array.
-     * @public static
+     * @return array replaced page content and updated $diff parameter as array.
      */
     public function replacePageNumAliases($page, $replace, $diff = 0)
     {
@@ -20143,11 +20039,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns timestamp in seconds from formatted date-time.
      *
-     * @param $date (string) Formatted date-time.
+     * @param string $date Formatted date-time.
      *
      * @return int seconds.
-     * @since  5.9.152 (2012-03-23)
-     * @public static
      */
     public function getTimestamp($date)
     {
@@ -20157,12 +20051,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Return the Spot color array.
      *
-     * @param $name  (string) Name of the spot color.
-     * @param $spotc (array) Reference to an array of spot colors.
+     * @param string $name Name of the spot color.
+     * @param array $spotc Reference to an array of spot colors.
      *
-     * @return (array) Spot color array or false if not defined.
-     * @since  5.9.125 (2011-10-03)
-     * @public static
+     * @return array Spot color array or false if not defined.
      */
     public function getSpotColor($name, &$spotc)
     {
@@ -20172,12 +20064,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns an array (RGB or CMYK) from an html color name, or a six-digit (i.e. #3FE5AA), or three-digit (i.e. #7FF) hexadecimal color, or a javascript color array, or javascript color name.
      *
-     * @param $hcolor (string) HTML color.
-     * @param $spotc  (array) Reference to an array of spot colors.
-     * @param $defcol (array) Color to return in case of error.
+     * @param string $hcolor HTML color.
+     * @param array $spotc Reference to an array of spot colors.
+     * @param array $defcol Color to return in case of error.
      *
      * @return array RGB or CMYK color, or false in case of error.
-     * @public static
      */
     public function convertHTMLColorToDec($hcolor, &$spotc, $defcol = ['R' => 128, 'G' => 128, 'B' => 128])
     {
@@ -20187,11 +20078,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert color to javascript color.
      *
-     * @param $color (string) color name or "#RRGGBB"
-     *
-     * @protected
-     * @since  2.1.002 (2008-02-12)
-     * @public static
+     * @param string $color color name or "#RRGGBB"
      */
     public function _JScolor($color)
     {
@@ -20201,9 +20088,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get a list of available decoding filters.
      *
-     * @return (array) Array of available filter decoders.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return array Array of available filter decoders.
      */
     public function getAvailableFilters()
     {
@@ -20213,12 +20098,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Decode data using the specified filter type.
      *
-     * @param $filter (string) Filter name.
-     * @param $data   (string) Data to decode.
+     * @param string $filter Filter name.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string..
      */
     public function decodeFilter($filter, $data)
     {
@@ -20229,11 +20112,9 @@ class PDFGeneratorCore extends TCPDF
      * Standard
      * Default decoding filter (leaves data unchanged).
      *
-     * @param $data (string) Data to decode.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string..
      */
     public function decodeFilterStandard($data)
     {
@@ -20244,11 +20125,9 @@ class PDFGeneratorCore extends TCPDF
      * ASCIIHexDecode
      * Decodes data encoded in an ASCII hexadecimal representation, reproducing the original binary data.
      *
-     * @param $data (string) Data to decode.
+     * @param string $data Data to decode.
      *
-     * @return Decoded data string.
-     * @since  1.0.000 (2011-05-23)
-     * @public static
+     * @return string Decoded data string..
      */
     public function decodeFilterASCIIHexDecode($data)
     {
@@ -20258,20 +20137,18 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Convert and add the selected TrueType or Type1 font to the fonts folder (that must be writeable).
      *
-     * @param $fontfile (string) Font file (full path).
-     * @param $fonttype (string) Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
-     * @param $enc      (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode and symbolic fonts like Symbol or ZapfDingBats.
-     * @param $flags    (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
-     * @param $outpath  (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
-     * @param $platid   (int) Platform ID for CMAP table to extract (when building a Unicode font for Windows this value should be 3, for Macintosh should be 1).
-     * @param $encid    (int) Encoding ID for CMAP table to extract (when building a Unicode font for Windows this value should be 1, for Macintosh should be 0). When Platform ID is 3, legal values for Encoding ID are: 0=Symbol, 1=Unicode, 2=ShiftJIS, 3=PRC, 4=Big5, 5=Wansung, 6=Johab, 7=Reserved, 8=Reserved, 9=Reserved, 10=UCS-4.
-     * @param $addcbbox (boolean) If true includes the character bounding box information on the php font file.
-     * @param $link     (boolean) If true link to system font instead of copying the font data (not transportable) - Note: do not work with Type1 fonts.
+     * @param string $fontfile Font file (full path).
+     * @param string $fonttype Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
+     * @param string $enc Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode and symbolic fonts like Symbol or ZapfDingBats.
+     * @param int $flags Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
+     * @param string $outpath Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
+     * @param int $platid Platform ID for CMAP table to extract (when building a Unicode font for Windows this value should be 3, for Macintosh should be 1).
+     * @param int $encid Encoding ID for CMAP table to extract (when building a Unicode font for Windows this value should be 1, for Macintosh should be 0). When Platform ID is 3, legal values for Encoding ID are: 0=Symbol, 1=Unicode, 2=ShiftJIS, 3=PRC, 4=Big5, 5=Wansung, 6=Johab, 7=Reserved, 8=Reserved, 9=Reserved, 10=UCS-4.
+     * @param bool $addcbbox If true includes the character bounding box information on the php font file.
+     * @param bool $link If true link to system font instead of copying the font data (not transportable) - Note: do not work with Type1 fonts.
      *
-     * @return (string) TCPDF font name or boolean false in case of error.
+     * @return string TCPDF font name or boolean false in case of error.
      * @author Nicola Asuni
-     * @since  5.9.123 (2010-09-30)
-     * @public static
      */
     public function addTTFfont($fontfile, $fonttype = '', $enc = '', $flags = 32, $outpath = '', $platid = 3, $encid = 1, $addcbbox = false, $link = false)
     {
@@ -20281,13 +20158,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returs the checksum of a TTF table.
      *
-     * @param $table  (string) table to check
-     * @param $length (int) length of table in bytes
+     * @param string $table table to check
+     * @param int $length length of table in bytes
      *
      * @return int checksum
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getTTFtableChecksum($table, $length)
     {
@@ -20297,13 +20172,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Returns a subset of the TrueType font data without the unused glyphs.
      *
-     * @param $font        (string) TrueType font data.
-     * @param $subsetchars (array) Array of used characters (the glyphs to keep).
+     * @param string $font TrueType font data.
+     * @param array $subsetchars Array of used characters (the glyphs to keep).
      *
-     * @return (string) A subset of TrueType font data without the unused glyphs.
+     * @return string A subset of TrueType font data without the unused glyphs.
      * @author Nicola Asuni
-     * @since  5.2.000 (2010-06-02)
-     * @public static
      */
     public function _getTrueTypeFontSubset($font, $subsetchars)
     {
@@ -20313,13 +20186,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Outputs font widths
      *
-     * @param $font      (array) font data
-     * @param $cidoffset (int) offset for CID values
+     * @param array $font font data
+     * @param int $cidoffset offset for CID values
      *
-     * @return PDF command string for font widths
+     * @return string PDF command string for font widths
      * @author Nicola Asuni
-     * @since  4.4.000 (2008-12-07)
-     * @public static
      */
     public function _putfontwidths($font, $cidoffset = 0)
     {
@@ -20329,14 +20200,12 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Update the CIDToGIDMap string with a new value.
      *
-     * @param $map (string) CIDToGIDMap.
-     * @param $cid (int) CID value.
-     * @param $gid (int) GID value.
+     * @param string $map CIDToGIDMap.
+     * @param int $cid CID value.
+     * @param int $gid GID value.
      *
-     * @return (string) CIDToGIDMap.
+     * @return string CIDToGIDMap.
      * @author Nicola Asuni
-     * @since  5.9.123 (2011-09-29)
-     * @public static
      */
     public function updateCIDtoGIDmap($map, $cid, $gid)
     {
@@ -20347,7 +20216,6 @@ class PDFGeneratorCore extends TCPDF
      * Return fonts path
      *
      * @return string
-     * @public static
      */
     public function _getfontpath()
     {
@@ -20357,13 +20225,11 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Return font full path
      *
-     * @param $file    (string) Font file name.
-     * @param $fontdir (string) Font directory (set to false fto search on default directories)
+     * @param string $file Font file name.
+     * @param string $fontdir Font directory (set to false fto search on default directories)
      *
      * @return string Font full path or empty string
      * @author Nicola Asuni
-     * @since  6.0.025
-     * @public static
      */
     public function getFontFullPath($file, $fontdir = false)
     {
@@ -20373,11 +20239,10 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Get a reference font size.
      *
-     * @param $size    (string) String containing font size value.
-     * @param $refsize (float) Reference font size in points.
+     * @param string $size String containing font size value.
+     * @param float $refsize Reference font size in points.
      *
      * @return float value in points
-     * @public static
      */
     public function getFontRefSize($size, $refsize = 12)
     {
@@ -20387,8 +20252,9 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Override of TCPDF::getRandomSeed() - getmypid() is blocked on several hosting
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $seed
+     *
+     * @return string
      */
     protected function getRandomSeed($seed = '')
     {

@@ -31,8 +31,6 @@
 
 /**
  * Class TaxCalculatorCore
- *
- * @since 1.0.0
  */
 class TaxCalculatorCore
 {
@@ -48,7 +46,6 @@ class TaxCalculatorCore
      */
     const ONE_AFTER_ANOTHER_METHOD = 2;
 
-    // @codingStandardsIgnoreStart
     /**
      * @var array $taxes
      */
@@ -58,14 +55,10 @@ class TaxCalculatorCore
      * @var int $computation_method (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
      */
     public $computation_method;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param array $taxes
-     * @param int   $computationMethod (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $computationMethod (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
      */
     public function __construct(array $taxes = [], $computationMethod = self::COMBINE_METHOD)
     {
@@ -86,8 +79,6 @@ class TaxCalculatorCore
      * @param float $priceTaxExcluded price tax excluded
      *
      * @return float Price with taxes, rounded to _TB_PRICE_DATABASE_PRECISION_.
-     *
-     * @since 1.0.0
      */
     public function addTaxes($priceTaxExcluded)
     {
@@ -104,8 +95,6 @@ class TaxCalculatorCore
      *
      * @return float Price without taxes, rounded to
      *               _TB_PRICE_DATABASE_PRECISION_.
-     *
-     * @since 1.0.0
      */
     public function removeTaxes($priceTaxIncluded)
     {
@@ -117,9 +106,6 @@ class TaxCalculatorCore
 
     /**
      * @return float total taxes rate
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTotalRate()
     {
@@ -143,9 +129,6 @@ class TaxCalculatorCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxesName()
     {
@@ -166,8 +149,6 @@ class TaxCalculatorCore
      *
      * @return array Array with one amount per tax, all rounded to
      *               _TB_PRICE_DATABASE_PRECISION_.
-     *
-     * @since 1.0.0
      */
     public function getTaxesAmount($priceTaxExcluded)
     {
@@ -197,8 +178,6 @@ class TaxCalculatorCore
      * @param float $priceTaxExcluded
      *
      * @return float Amount, rounded to _TB_PRICE_DATABASE_PRECISION_.
-     *
-     * @since 1.0.0
      */
     public function getTaxesTotalAmount($priceTaxExcluded)
     {

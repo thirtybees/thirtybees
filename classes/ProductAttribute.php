@@ -31,9 +31,6 @@
 
 /**
  * Class ProductAttributeCore
- *
- * @since   1.0.0
- * @version 1.0.0 Initial version
  */
 class ProductAttributeCore extends ObjectModel
 {
@@ -50,7 +47,7 @@ class ProductAttributeCore extends ObjectModel
     public $position;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'attribute',
@@ -92,14 +89,12 @@ class ProductAttributeCore extends ObjectModel
     /**
      * ProductAttributeCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
-     * @param null $idShop
+     * @param int|null $id
+     * @param int|null $idLang
+     * @param int|null $idShop
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -113,8 +108,6 @@ class ProductAttributeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -179,8 +172,6 @@ class ProductAttributeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -199,8 +190,6 @@ class ProductAttributeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -221,15 +210,13 @@ class ProductAttributeCore extends ObjectModel
     /**
      * Get all attributes for a given language
      *
-     * @param int  $idLang  Language id
+     * @param int $idLang Language id
      * @param bool $notNull Get only not null fields if true
      *
      * @return array Attributes
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAttributes($idLang, $notNull = false)
     {
@@ -252,14 +239,12 @@ class ProductAttributeCore extends ObjectModel
     }
 
     /**
-     * @param int    $idAttributeGroup
+     * @param int $idAttributeGroup
      * @param string $name
-     * @param int    $idLang
+     * @param int $idLang
      *
      * @return array|bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isAttribute($idAttributeGroup, $name, $idLang)
@@ -297,8 +282,6 @@ class ProductAttributeCore extends ObjectModel
      * @return bool Quantity is available or not
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkAttributeQty($idProductAttribute, $qty, Shop $shop = null)
     {
@@ -356,8 +339,6 @@ class ProductAttributeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isColorAttribute()
@@ -376,10 +357,8 @@ class ProductAttributeCore extends ObjectModel
      *
      * @param int $idProductAttribute
      *
-     * @return mixed Minimal Quantity or false
+     * @return false|int Minimal Quantity or false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getAttributeMinimalQty($idProductAttribute)
@@ -402,15 +381,13 @@ class ProductAttributeCore extends ObjectModel
     /**
      * Move an attribute inside its group
      *
-     * @param bool $way Up (1)  or Down (0)
-     * @param int  $position
+     * @param bool $way Up (1) or Down (0)
+     * @param int $position
      *
      * @return bool Update result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {
@@ -464,14 +441,11 @@ class ProductAttributeCore extends ObjectModel
      * Reorder attribute position in group $id_attribute_group.
      * Call it after deleting an attribute from a group.
      *
-     * @param int  $idAttributeGroup
+     * @param int $idAttributeGroup
      * @param bool $useLastAttribute
      *
      * @return bool $return
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function cleanPositions($idAttributeGroup, $useLastAttribute = true)
@@ -497,8 +471,6 @@ class ProductAttributeCore extends ObjectModel
      *
      * @return int $position
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getHigherPosition($idAttributeGroup)

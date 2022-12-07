@@ -31,12 +31,9 @@
 
 /**
  * Class MyAccountControllerCore
- *
- * @since 1.0.0
  */
 class MyAccountControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,14 +42,14 @@ class MyAccountControllerCore extends FrontController
     public $authRedirection = 'my-account';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -63,11 +60,11 @@ class MyAccountControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {

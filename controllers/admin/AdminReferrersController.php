@@ -31,15 +31,13 @@
 
 /**
  * Class AdminReferrersControllerCore
- *
- * @since 1.0.0
  */
 class AdminReferrersControllerCore extends AdminController
 {
     /**
      * AdminReferrersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -147,16 +145,14 @@ class AdminReferrersControllerCore extends AdminController
     /**
      * Display calendar form
      *
-     * @param      $translations
-     * @param      $token
-     * @param null $action
-     * @param null $table
-     * @param null $identifier
-     * @param null $id
+     * @param string[] $translations
+     * @param string $token
+     * @param string|null $action
+     * @param string|null $table
+     * @param string|null $identifier
+     * @param int|null $id
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
     {
@@ -187,7 +183,7 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -200,7 +196,7 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -220,7 +216,9 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -252,8 +250,6 @@ class AdminReferrersControllerCore extends AdminController
      * Enable calendar
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function enableCalendar()
     {
@@ -261,14 +257,12 @@ class AdminReferrersControllerCore extends AdminController
     }
 
     /**
-     * @param null $action
-     * @param null $table
-     * @param null $identifier
-     * @param null $id
+     * @param string|null $action
+     * @param string|null $table
+     * @param string|null $identifier
+     * @param int|null $id
      *
-     * @return mixed
-     *
-     * @since 1.0.0
+     * @return string
      */
     public function displayCalendar($action = null, $table = null, $identifier = null, $id = null)
     {
@@ -292,7 +286,9 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displaySettings()
     {
@@ -323,7 +319,9 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -521,7 +519,8 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -556,7 +555,9 @@ class AdminReferrersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {

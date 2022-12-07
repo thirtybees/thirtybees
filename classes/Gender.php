@@ -29,14 +29,10 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/**
- * @since 1.0.0
- */
 class GenderCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'gender',
@@ -55,9 +51,20 @@ class GenderCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var int
+     */
     public $id_gender;
+
+    /**
+     * @var string
+     */
     public $name;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var int
+     */
     public $type;
 
     /**
@@ -67,8 +74,8 @@ class GenderCore extends ObjectModel
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -78,12 +85,11 @@ class GenderCore extends ObjectModel
     }
 
     /**
-     * @param null $idLang
+     * @param int|null $idLang
      *
      * @return PrestaShopCollection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getGenders($idLang = null)
     {
@@ -98,6 +104,7 @@ class GenderCore extends ObjectModel
 
     /**
      * @return array[]
+     * @throws PrestaShopException
      */
     public static function getIconList(): array
     {
@@ -135,9 +142,6 @@ class GenderCore extends ObjectModel
      * @param bool $useUnknown
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getImage($useUnknown = false)
     {

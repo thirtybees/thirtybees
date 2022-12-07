@@ -31,8 +31,6 @@
 
 /**
  * Class AdminPdfControllerCore
- *
- * @since 1.0.0
  */
 class AdminPdfControllerCore extends AdminController
 {
@@ -40,8 +38,6 @@ class AdminPdfControllerCore extends AdminController
      * Post processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -56,7 +52,8 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -74,8 +71,6 @@ class AdminPdfControllerCore extends AdminController
      * Check cache folder
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function checkCacheFolder()
     {
@@ -89,8 +84,9 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function processGenerateInvoicePdf()
     {
@@ -111,7 +107,8 @@ class AdminPdfControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function generateInvoicePDFByIdOrder($idOrder)
     {
@@ -128,12 +125,11 @@ class AdminPdfControllerCore extends AdminController
     /**
      * Generate PDF
      *
-     * @param $object
-     * @param $template
+     * @param ObjectModel|ObjectModel[]|Iterator $object
+     * @param string $template
      *
-     * @return void
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function generatePDF($object, $template)
     {
@@ -150,7 +146,8 @@ class AdminPdfControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function generateInvoicePDFByIdOrderInvoice($idOrderInvoice)
     {
@@ -168,8 +165,10 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateOrderSlipPDF()
     {
@@ -187,8 +186,9 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function processGenerateDeliverySlipPDF()
     {
@@ -209,11 +209,11 @@ class AdminPdfControllerCore extends AdminController
      *
      * @param int $idOrder
      *
-     * @throws PrestaShopException
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function generateDeliverySlipPDFByIdOrder($idOrder)
     {
@@ -231,11 +231,12 @@ class AdminPdfControllerCore extends AdminController
      *
      * @param int $idOrderInvoice
      *
-     * @throws PrestaShopException
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function generateDeliverySlipPDFByIdOrderInvoice($idOrderInvoice)
     {
@@ -252,8 +253,10 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateInvoicesPDF()
     {
@@ -271,8 +274,10 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateInvoicesPDF2()
     {
@@ -295,8 +300,10 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateOrderSlipsPDF()
     {
@@ -318,8 +325,10 @@ class AdminPdfControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateDeliverySlipsPDF()
     {
@@ -339,7 +348,8 @@ class AdminPdfControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws SmartyException
      */
     public function processGenerateSupplyOrderFormPDF()
     {

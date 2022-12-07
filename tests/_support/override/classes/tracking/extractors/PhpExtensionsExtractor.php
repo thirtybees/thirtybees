@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking\Extractor;
 
 /**
  * Class PhpExtensionsExtractor
- *
- * @since 1.3.0
  */
 class PhpExtensionsExtractor extends PhpExtensionsExtractorCore
 {

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminSlipControllerCore
- *
- * @since 1.0.0
  */
 class AdminSlipControllerCore extends AdminController
 {
     /**
      * AdminSlipControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -107,7 +105,8 @@ class AdminSlipControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -137,7 +136,9 @@ class AdminSlipControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -163,8 +164,6 @@ class AdminSlipControllerCore extends AdminController
      * Initialize toolbar
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -179,7 +178,7 @@ class AdminSlipControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -197,7 +196,9 @@ class AdminSlipControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -244,12 +245,14 @@ class AdminSlipControllerCore extends AdminController
     /**
      * Print PDF icons
      *
-     * @param int   $idOrderSlip
+     * @param int $idOrderSlip
      * @param array $tr
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function printPDFIcons($idOrderSlip, $tr)
     {

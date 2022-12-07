@@ -31,19 +31,15 @@
 
 /**
  * Class PdfOrderReturnControllerCore
- *
- * @since 1.0.0
  */
 class PdfOrderReturnControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'pdf-order-return';
     /** @var bool $display_header */
     protected $display_header = false;
     /** @var bool $display_footer */
     protected $display_footer = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Post processing
@@ -51,7 +47,6 @@ class PdfOrderReturnControllerCore extends FrontController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -81,7 +76,6 @@ class PdfOrderReturnControllerCore extends FrontController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function display()
     {

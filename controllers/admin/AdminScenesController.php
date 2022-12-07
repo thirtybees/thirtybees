@@ -31,20 +31,16 @@
 
 /**
  * Class AdminScenesControllerCore
- *
- * @since 1.0.0
  */
 class AdminScenesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $bootstrap */
     public $bootstrap = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminScenesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -88,7 +84,9 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -109,7 +107,8 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initFieldsForm()
     {
@@ -287,7 +286,7 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -307,7 +306,7 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -332,7 +331,8 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -360,7 +360,8 @@ class AdminScenesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterImageUpload()
     {

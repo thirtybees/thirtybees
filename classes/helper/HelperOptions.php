@@ -31,8 +31,6 @@
 
 /**
  * Use this helper to generate preferences forms, with values stored in the configuration table
- *
- * @since 1.0.0
  */
 class HelperOptionsCore extends Helper
 {
@@ -48,9 +46,6 @@ class HelperOptionsCore extends Helper
 
     /**
      * HelperOptionsCore constructor.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -66,12 +61,9 @@ class HelperOptionsCore extends Helper
      *
      * @return string html
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function generateOptions($optionList)
     {
@@ -271,8 +263,9 @@ class HelperOptionsCore extends Helper
     /**
      * Type = image
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypeImage($key, $field, $value)
     {
@@ -300,13 +293,11 @@ class HelperOptionsCore extends Helper
 
     /**
      * @param string $key
-     * @param array  $field
+     * @param array $field
      *
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getOptionValue($key, $field)
     {

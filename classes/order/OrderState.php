@@ -31,12 +31,9 @@
 
 /**
  * Class OrderStateCore
- *
- * @since 1.0.0
  */
 class OrderStateCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
     /** @var string Template name if there is any e-mail to send */
@@ -69,10 +66,9 @@ class OrderStateCore extends ObjectModel
     public $deleted = 0;
     /** @var bool Active */
     public $active = 1;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'order_state',
@@ -105,6 +101,9 @@ class OrderStateCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'unremovable' => [],
@@ -120,7 +119,11 @@ class OrderStateCore extends ObjectModel
     const FLAG_PAID        = 16; /* 10000 */
 
     /**
-     * @since 1.1.0
+     * @param int $id
+     * @param int $idLang
+     * @param int $idShop
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -136,8 +139,6 @@ class OrderStateCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrderStates($idLang)
     {
@@ -168,8 +169,6 @@ class OrderStateCore extends ObjectModel
      *
      * @return bool availability
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function invoiceAvailable($idOrderState)

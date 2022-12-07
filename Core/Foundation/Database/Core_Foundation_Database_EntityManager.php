@@ -32,24 +32,28 @@
 /**
  * Class Core_Foundation_Database_EntityManager
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_Database_EntityManager
 {
-    // @codingStandardIgnoreEnd
-
+    /**
+     * @var Core_Foundation_Database_DatabaseInterface
+     */
     protected $db;
+
+    /**
+     * @var Core_Business_ConfigurationInterface
+     */
     protected $configuration;
 
+    /**
+     * @var array
+     */
     protected $entityMetaData = [];
 
     /**
      * Core_Foundation_Database_EntityManager constructor.
      *
      * @param Core_Foundation_Database_DatabaseInterface $db
-     * @param Core_Business_ConfigurationInterface       $configuration
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param Core_Business_ConfigurationInterface $configuration
      */
     public function __construct(
         Core_Foundation_Database_DatabaseInterface $db,
@@ -63,9 +67,6 @@ class Core_Foundation_Database_EntityManager
      * Return current database object used
      *
      * @return Core_Foundation_Database_DatabaseInterface
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDatabase()
     {
@@ -80,8 +81,6 @@ class Core_Foundation_Database_EntityManager
      * @return mixed
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since 1.0.0
      */
     public function getRepository($className)
     {
@@ -109,9 +108,6 @@ class Core_Foundation_Database_EntityManager
      *
      * @return mixed
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEntityMetaData($className)
     {
@@ -128,10 +124,7 @@ class Core_Foundation_Database_EntityManager
      *
      * @param Core_Foundation_Database_EntityInterface $entity
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function save(Core_Foundation_Database_EntityInterface $entity)
     {
@@ -145,10 +138,7 @@ class Core_Foundation_Database_EntityManager
      *
      * @param Core_Foundation_Database_EntityInterface $entity
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function delete(Core_Foundation_Database_EntityInterface $entity)
     {

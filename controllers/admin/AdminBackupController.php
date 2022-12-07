@@ -33,8 +33,6 @@
 
 /**
  * Class AdminBackupControllerCore
- *
- * @since 1.0.0
  */
 class AdminBackupControllerCore extends AdminController
 {
@@ -44,7 +42,7 @@ class AdminBackupControllerCore extends AdminController
     /**
      * AdminBackupControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -96,7 +94,8 @@ class AdminBackupControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -109,7 +108,8 @@ class AdminBackupControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -135,9 +135,9 @@ class AdminBackupControllerCore extends AdminController
      *
      * @param bool $opt Return an empty object if load fail
      *
-     * @return object
+     * @return PrestaShopBackup
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function loadObject($opt = false)
     {
@@ -154,7 +154,8 @@ class AdminBackupControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initViewDownload()
     {
@@ -164,7 +165,7 @@ class AdminBackupControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initToolbar()
     {
@@ -187,7 +188,9 @@ class AdminBackupControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -199,7 +202,8 @@ class AdminBackupControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -242,7 +246,6 @@ class AdminBackupControllerCore extends AdminController
      * @param int|null $idLangShop
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function getList(
         $idLang,
@@ -355,9 +358,7 @@ class AdminBackupControllerCore extends AdminController
      * @param int $a
      * @param int $b
      *
-     * @return mixed
-     *
-     * @since 1.0.0
+     * @return int
      */
     public function intSort($a, $b)
     {
@@ -370,8 +371,6 @@ class AdminBackupControllerCore extends AdminController
      * @param string $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     public function strSort($a, $b)
     {

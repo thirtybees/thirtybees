@@ -31,17 +31,18 @@
 
 /**
  * Class AdminStockInstantStateControllerCore
- *
- * @since 1.0.0
  */
 class AdminStockInstantStateControllerCore extends AdminController
 {
+    /**
+     * @var array
+     */
     protected $stock_instant_state_warehouses = [];
 
     /**
      * AdminStockInstantStateControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -113,7 +114,7 @@ class AdminStockInstantStateControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -148,8 +149,6 @@ class AdminStockInstantStateControllerCore extends AdminController
      * Gets the current warehouse used
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected function getCurrentCoverageWarehouse()
     {
@@ -170,7 +169,8 @@ class AdminStockInstantStateControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -253,7 +253,7 @@ class AdminStockInstantStateControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -279,7 +279,7 @@ class AdminStockInstantStateControllerCore extends AdminController
     /**
      * Export CSV
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function renderCSV()
     {
@@ -364,7 +364,8 @@ class AdminStockInstantStateControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -433,16 +434,14 @@ class AdminStockInstantStateControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -559,8 +558,6 @@ class AdminStockInstantStateControllerCore extends AdminController
      * @param array $m
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function valuationCmp($n, $m)
     {
@@ -578,8 +575,6 @@ class AdminStockInstantStateControllerCore extends AdminController
      * @param array $m
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function realQuantityCmp($n, $m)
     {
@@ -595,7 +590,8 @@ class AdminStockInstantStateControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -615,7 +611,7 @@ class AdminStockInstantStateControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {

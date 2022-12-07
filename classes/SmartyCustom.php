@@ -31,8 +31,6 @@
 
 /**
  * Class SmartyCustomCore
- *
- * @since 1.0.0
  */
 class SmartyCustomCore extends Smarty
 {
@@ -43,9 +41,6 @@ class SmartyCustomCore extends Smarty
 
     /**
      * SmartyCustomCore constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -56,14 +51,12 @@ class SmartyCustomCore extends Smarty
     /**
      * Delete compiled template file (lazy delete if resource_name is not specified)
      *
-     * @param  string $resourceName template name
-     * @param  string $compileId    compile id
-     * @param  int    $expTime      expiration time
+     * @param string $resourceName template name
+     * @param string $compileId compile id
+     * @param int $expTime expiration time
      *
      * @return int number of template files deleted
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function clearCompiledTemplate($resourceName = null, $compileId = null, $expTime = null)
@@ -80,13 +73,11 @@ class SmartyCustomCore extends Smarty
     /**
      * Mark all template files to be regenerated
      *
-     * @param  int    $expTime expiration time
-     * @param  string $type    resource type
+     * @param int $expTime expiration time
+     * @param string $type resource type
      *
-     * @return int number of cache files which needs to be updated
+     * @return bool number of cache files which needs to be updated
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function clearAllCache($expTime = null, $type = null)
@@ -99,15 +90,12 @@ class SmartyCustomCore extends Smarty
     /**
      * Delete the current template from the lazy cache or the whole cache if no template name is given
      *
-     * @param  string $template  template name
-     * @param  string $cacheId   cache id
-     * @param  string $compileId compile id
+     * @param string $template template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
      *
-     * @return bool
+     * @return bool|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function delete_from_lazy_cache($template, $cacheId, $compileId)
@@ -138,16 +126,14 @@ class SmartyCustomCore extends Smarty
     /**
      * Mark file to be regenerated for a specific template
      *
-     * @param  string $templateName template name
-     * @param  string $cacheId      cache id
-     * @param  string $compileId    compile id
-     * @param  int    $expTime      expiration time
-     * @param  string $type         resource type
+     * @param string $templateName template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
+     * @param int $expTime expiration time
+     * @param string $type resource type
      *
-     * @return int number of cache files which needs to be updated
+     * @return bool|int number of cache files which needs to be updated
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function clearCache($templateName, $cacheId = null, $compileId = null, $expTime = null, $type = null)
@@ -156,21 +142,18 @@ class SmartyCustomCore extends Smarty
     }
 
     /**
-     * @param null $template
-     * @param null $cacheId
-     * @param null $compileId
-     * @param null $parent
+     * @param string|null $template
+     * @param string|null $cacheId
+     * @param string|null $compileId
+     * @param object|null $parent
      * @param bool $display
      * @param bool $mergeTplVars
      * @param bool $noOutputFilter
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
     {
@@ -182,8 +165,6 @@ class SmartyCustomCore extends Smarty
     /**
      * Check the compile cache needs to be invalidated (multi front + local cache compatible)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function check_compile_cache_invalidation()
@@ -208,15 +189,13 @@ class SmartyCustomCore extends Smarty
 
     /**
      * @param string $template
-     * @param null   $cacheId
-     * @param null   $compileId
-     * @param null   $parent
-     * @param bool   $doClone
+     * @param string $cacheId
+     * @param string $compileId
+     * @param object $parent
+     * @param bool $doClone
      *
      * @return object
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -238,14 +217,12 @@ class SmartyCustomCore extends Smarty
     /**
      * Handle the lazy template cache invalidation
      *
-     * @param  string $template  template name
-     * @param  string $cacheId   cache id
-     * @param  string $compileId compile id
+     * @param string $template template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws SmartyException
      */
     public function check_template_invalidation($template, $cacheId, $compileId)
     {
@@ -281,16 +258,14 @@ class SmartyCustomCore extends Smarty
      * Check if the current template is stored in the lazy cache
      * Entry in the lazy cache = no need to regenerate the template
      *
-     * @param  string $template  template name
-     * @param  string $cacheId   cache id
-     * @param  string $compileId compile id
+     * @param string $template template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function is_in_lazy_cache($template, $cacheId, $compileId)
     {
@@ -309,14 +284,12 @@ class SmartyCustomCore extends Smarty
     /**
      * Insert the current template in the lazy cache
      *
-     * @param  string $template  template name
-     * @param  string $cacheId   cache id
-     * @param  string $compileId compile id
+     * @param string $template template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function insert_in_lazy_cache($template, $cacheId, $compileId)
@@ -340,13 +313,11 @@ class SmartyCustomCore extends Smarty
     /**
      * Store the cache file path
      *
-     * @param  string $filepath  cache file path
-     * @param  string $template  template name
-     * @param  string $cacheId   cache id
-     * @param  string $compileId compile id
+     * @param string $filepath cache file path
+     * @param string $template template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update_filepath($filepath, $template, $cacheId, $compileId)
@@ -369,7 +340,8 @@ class SmartyCustomCore extends Smarty
      * Callback called before template rendering. It is used to track
      * current template stack
      *
-     * @param $template
+     * @param Smarty_Internal_Template $template
+     * @throws SmartyException
      */
     public static function beforeFetch($template)
     {
@@ -378,6 +350,8 @@ class SmartyCustomCore extends Smarty
 
     /**
      * Callback called after template rendering
+     *
+     * @return void
      */
     public static function afterFetch()
     {
@@ -389,6 +363,7 @@ class SmartyCustomCore extends Smarty
      *
      * @param Smarty_Internal_Template $template
      * @return string
+     * @throws SmartyException
      */
     private static function getTemplateSource($template)
     {
@@ -410,7 +385,7 @@ class SmartyCustomCore extends Smarty
     /**
      * Method returns true, if $file is compiled template
      *
-     * @param $file string filepath
+     * @param string $file filepath
      * @return bool
      */
     public static function isCompiledTemplate($file)
@@ -491,8 +466,6 @@ class SmartyCustomCore extends Smarty
 
 /**
  * Class Smarty_Custom_Template
- *
- * @since 1.0.0
  */
 class Smarty_Custom_Template extends Smarty_Internal_Template
 {
@@ -500,20 +473,18 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
     public $smarty = null;
 
     /**
-     * @param null $template
-     * @param null $cacheId
-     * @param null $compileId
-     * @param null $parent
+     * @param string|null $template
+     * @param string|null $cacheId
+     * @param string|null $compileId
+     * @param object|null $parent
      * @param bool $display
      * @param bool $mergeTplVars
      * @param bool $noOutputFilter
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
-     * @throws Exception
-     * @throws Exception
      */
     public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
     {
@@ -535,13 +506,13 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
     /**
      * Helper method to render template
      *
-     * @param $template
-     * @param $cacheId
-     * @param $compileId
-     * @param $parent
-     * @param $display
-     * @param $mergeTplVars
-     * @param $noOutputFilter
+     * @param string $template
+     * @param string|null $cacheId
+     * @param string|null $compileId
+     * @param object|null $parent
+     * @param bool $display
+     * @param bool $mergeTplVars
+     * @param bool $noOutputFilter
      * @return string
      * @throws SmartyException
      * @throws Exception

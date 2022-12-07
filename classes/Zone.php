@@ -31,13 +31,11 @@
 
 /**
  * Class ZoneCore
- *
- * @since 1.0.0
  */
 class ZoneCore extends ObjectModel
 {
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'zone',
@@ -53,10 +51,20 @@ class ZoneCore extends ObjectModel
         ],
 
     ];
-    /** @var string Name */
+
+    /**
+     * @var string Name
+     */
     public $name;
-    /** @var bool Zone status */
+
+    /**
+     * @var bool Zone status
+     */
     public $active = true;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [];
 
     /**
@@ -68,8 +76,6 @@ class ZoneCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getZones($active = false)
     {
@@ -97,8 +103,6 @@ class ZoneCore extends ObjectModel
      *
      * @return int id_zone
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByName($name)
@@ -116,8 +120,6 @@ class ZoneCore extends ObjectModel
      *
      * @return bool Deletion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

@@ -31,29 +31,48 @@
 
 /**
  * Class Core_Business_Payment_PaymentOption
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Business_Payment_PaymentOption
 {
-    // @codingStandardsIgnoreEnd
-
+    /**
+     * @var string
+     */
     protected $callToActionText;
+
+    /**
+     * @var string
+     */
     protected $logo;
+
+    /**
+     * @var string
+     */
     protected $action;
+
+    /**
+     * @var string
+     */
     protected $method;
+
+    /**
+     * @var array
+     */
     protected $inputs;
+
+    /**
+     * @var string
+     */
     protected $form;
+
+    /**
+     * @var string
+     */
     protected $moduleName;
 
     /**
      * Return Call to Action Text
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCallToActionText()
     {
@@ -65,10 +84,7 @@ class Core_Business_Payment_PaymentOption
      *
      * @param string $callToActionText
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setCallToActionText($callToActionText)
     {
@@ -81,9 +97,6 @@ class Core_Business_Payment_PaymentOption
      * Return logo path
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLogo()
     {
@@ -95,10 +108,7 @@ class Core_Business_Payment_PaymentOption
      *
      * @param string $logo
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setLogo($logo)
     {
@@ -111,9 +121,6 @@ class Core_Business_Payment_PaymentOption
      * Return action to perform (POST/GET)
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAction()
     {
@@ -124,12 +131,9 @@ class Core_Business_Payment_PaymentOption
     /**
      * Set action to be performed by this option
      *
-     * @param $action
+     * @param string $action
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setAction($action)
     {
@@ -139,10 +143,7 @@ class Core_Business_Payment_PaymentOption
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getMethod()
     {
@@ -150,12 +151,9 @@ class Core_Business_Payment_PaymentOption
     }
 
     /**
-     * @param $method
+     * @param string $method
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setMethod($method)
     {
@@ -167,10 +165,7 @@ class Core_Business_Payment_PaymentOption
     /**
      * Return inputs contained in this payment option
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     public function getInputs()
     {
@@ -180,12 +175,9 @@ class Core_Business_Payment_PaymentOption
     /**
      * Set inputs for this payment option
      *
-     * @param $inputs
+     * @param array $inputs
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setInputs($inputs)
     {
@@ -197,10 +189,7 @@ class Core_Business_Payment_PaymentOption
     /**
      * Get payment option form
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getForm()
     {
@@ -210,12 +199,9 @@ class Core_Business_Payment_PaymentOption
     /**
      * Set payment option form
      *
-     * @param $form
+     * @param string $form
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setForm($form)
     {
@@ -228,9 +214,6 @@ class Core_Business_Payment_PaymentOption
      * Get related module name to this payment option
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getModuleName()
     {
@@ -242,10 +225,7 @@ class Core_Business_Payment_PaymentOption
      *
      * @param string $moduleName
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setModuleName($moduleName)
     {
@@ -266,9 +246,6 @@ class Core_Business_Payment_PaymentOption
      * @param array $legacyOption
      *
      * @return array|null
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function convertLegacyOption(array $legacyOption)
     {

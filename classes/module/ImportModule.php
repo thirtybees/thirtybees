@@ -32,7 +32,6 @@
 /**
  * Class ImportModuleCore
  *
- * @since 1.0.0
  *
  * @deprecated 1.0.2 Even though this class still exists in thirty bees, it cannot be used in the
  *             same way as on PrestaShop 1.6, because thirty bees does not support the older
@@ -43,36 +42,48 @@
  */
 abstract class ImportModuleCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var mixed
+     */
     protected $_link = null;
 
+    /**
+     * @var mixed
+     */
     public $server;
 
+    /**
+     * @var mixed
+     */
     public $user;
 
+    /**
+     * @var mixed
+     */
     public $passwd;
 
+    /**
+     * @var mixed
+     */
     public $database;
 
-    /** @var string Prefix database */
+    /**
+     * @var string Prefix database
+     */
     public $prefix;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * ImportModule destructor
      */
     public function __destruct()
     {
     }
 
     /**
-     * @return null|PDO
+     * @return PDO
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @since 1.0.2 Return a PDO instead of a MySQL resource, because thirty bees only support MySQL PDO
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function initDatabaseConnection()
     {
@@ -84,8 +95,8 @@ abstract class ImportModuleCore extends Module
      *
      * @return array
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function executeS($query)
     {
@@ -97,10 +108,9 @@ abstract class ImportModuleCore extends Module
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
-     * @since 1.0.2 Just return a bool instead of a mysql resource, because thirty bees only
      *        supports MySQL PDO.
      */
     public function execute($query)
@@ -113,8 +123,8 @@ abstract class ImportModuleCore extends Module
      *
      * @return int|mixed
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getValue($query)
     {
@@ -130,8 +140,8 @@ abstract class ImportModuleCore extends Module
     /**
      * @return array
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getImportModulesOnDisk()
     {
@@ -146,10 +156,7 @@ abstract class ImportModuleCore extends Module
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
      */
     abstract public function getDefaultIdLang();
 }

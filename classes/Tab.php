@@ -31,19 +31,21 @@
 
 /**
  * Class TabCore
- *
- * @since 1.0.0
  */
 class TabCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array|null
+     */
     protected static $_getIdFromClassName = null;
+
     /**
      * Get tabs
      *
      * @return array tabs
      */
     protected static $_cache_tabs = [];
+
     /**
      * Displayed name
      *
@@ -52,19 +54,34 @@ class TabCore extends ObjectModel
      * @var array
      */
     public $name;
-    /** @var string Class and file name */
-    public $class_name;
-    public $module;
-    /** @var int parent ID */
-    public $id_parent;
-    /** @var int position */
-    public $position;
-    /** @var bool active */
-    public $active = true;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var string Class and file name
+     */
+    public $class_name;
+
+    /**
+     * @var string
+     */
+    public $module;
+
+    /**
+     * @var int parent ID
+     */
+    public $id_parent;
+
+    /**
+     * @var int position
+     */
+    public $position;
+
+    /**
+     * @var bool active
+     */
+    public $active = true;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'tab',
@@ -114,8 +131,6 @@ class TabCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdFromClassName($className)
     {
@@ -201,22 +216,18 @@ class TabCore extends ObjectModel
     }
 
     /**
-     * @param int      $idLang
+     * @param int $idLang
      * @param int|null $idParent
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTabs($idLang, $idParent = null)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$_cache_tabs[$idLang])) {
             static::$_cache_tabs[$idLang] = [];
-            // @codingStandardsIgnoreEnd
             // Keep t.*, tl.name instead of only * because if translations are missing, the join on tab_lang will overwrite the id_tab in the results
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
@@ -229,29 +240,23 @@ class TabCore extends ObjectModel
 
             if (is_array($result)) {
                 foreach ($result as $row) {
-                    // @codingStandardsIgnoreStart
                     if (!isset(static::$_cache_tabs[$idLang][$row['id_parent']])) {
                         static::$_cache_tabs[$idLang][$row['id_parent']] = [];
                     }
                     static::$_cache_tabs[$idLang][$row['id_parent']][] = $row;
-                    // @codingStandardsIgnoreEnd
                 }
             }
         }
         if ($idParent === null) {
             $arrayAll = [];
-            // @codingStandardsIgnoreStart
             foreach (static::$_cache_tabs[$idLang] as $arrayParent) {
                 $arrayAll = array_merge($arrayAll, $arrayParent);
             }
-            // @codingStandardsIgnoreEnd
 
             return $arrayAll;
         }
 
-        // @codingStandardsIgnoreStart
         return (isset(static::$_cache_tabs[$idLang][$idParent]) ? static::$_cache_tabs[$idLang][$idParent] : []);
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -261,8 +266,6 @@ class TabCore extends ObjectModel
      *
      * @return bool Status
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function enablingForModule($module)
@@ -284,13 +287,11 @@ class TabCore extends ObjectModel
     /**
      * Get collection from module name
      *
-     * @param string   $module Module name
+     * @param string $module Module name
      * @param int|null $idLang Language ID
      *
      * @return array|PrestaShopCollection Collection of tabs (or empty array)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCollectionFromModule($module, $idLang = null)
@@ -316,8 +317,6 @@ class TabCore extends ObjectModel
      *
      * @return bool Status
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function disablingForModule($module)
@@ -339,15 +338,13 @@ class TabCore extends ObjectModel
     /**
      * Get Instance from tab class name
      *
-     * @param string   $className Name of tab class
-     * @param int|null $idLang    id_lang
+     * @param string $className Name of tab class
+     * @param int|null $idLang id_lang
      *
      * @return Tab Tab object (empty if bad id or class name)
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstanceFromClassName($className, $idLang = null)
     {
@@ -363,8 +360,6 @@ class TabCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkTabRights($idTab)
     {
@@ -372,15 +367,13 @@ class TabCore extends ObjectModel
     }
 
     /**
-     * @param int   $idTab
+     * @param int $idTab
      * @param array $tabs
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function recursiveTab($idTab, $tabs=[])
     {
@@ -407,8 +400,6 @@ class TabCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTab($idLang, $idTab)
     {
@@ -434,12 +425,10 @@ class TabCore extends ObjectModel
      * @param int $idParent
      * @param int $idProfile
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTabByIdProfile($idParent, $idProfile)
     {
@@ -466,8 +455,8 @@ class TabCore extends ObjectModel
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getTabModulesList($idTab)
     {
@@ -514,12 +503,10 @@ class TabCore extends ObjectModel
      * @param bool $autoDate
      * @param bool $nullValues
      *
-     * @return int id_tab
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -538,9 +525,7 @@ class TabCore extends ObjectModel
         if (isset($retro[$className])) {
             $this->id_parent = Tab::getIdFromClassName($retro[$className]);
         }
-        // @codingStandardsIgnoreStart
         static::$_cache_tabs = [];
-        // @codingStandardsIgnoreEnd
 
         // Set good position for new tab
         $this->position = Tab::getNewLastPosition($this->id_parent);
@@ -562,8 +547,6 @@ class TabCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getClassNameById($idTab)
@@ -583,8 +566,6 @@ class TabCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNewLastPosition($idParent)
@@ -599,17 +580,14 @@ class TabCore extends ObjectModel
 
     /** When creating a new tab $id_tab, this add default rights to the table access
      *
-     * @todo    this should not be public static but protected
-     *
-     * @param int     $idTab
-     * @param Context $context
+     * @param int $idTab
+     * @param Context|null $context
      *
      * @return bool true if succeed
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @todo    this should not be public static but protected
      */
     public static function initAccess($idTab, Context $context = null)
     {
@@ -659,8 +637,6 @@ class TabCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function save($nullValues = false, $autodate = true)
@@ -675,8 +651,6 @@ class TabCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -698,8 +672,6 @@ class TabCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function cleanPositions($idParent)
     {
@@ -729,8 +701,6 @@ class TabCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function move($direction)
@@ -763,12 +733,10 @@ class TabCore extends ObjectModel
     }
 
     /**
-     * @param null $idParent
+     * @param int|null $idParent
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNbTabs($idParent = null)
@@ -784,14 +752,12 @@ class TabCore extends ObjectModel
     /**
      * Overrides update to set position to last when changing parent tab
      *
-     * @see     ObjectModel::update
+     * @see ObjectModel::update
      *
      * @param bool $nullValues
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
@@ -801,23 +767,19 @@ class TabCore extends ObjectModel
             $this->position = Tab::getNewLastPosition($this->id_parent);
         }
 
-        // @codingStandardsIgnoreStart
         static::$_cache_tabs = [];
-        // @codingStandardsIgnoreEnd
 
         return parent::update($nullValues);
     }
 
     /**
      * @param string $way
-     * @param int    $position
+     * @param int $position
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {

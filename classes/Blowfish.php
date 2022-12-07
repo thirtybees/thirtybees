@@ -35,18 +35,13 @@ define('PS_UNPACK_MODIFIED', 2);
 
 /**
  * Class BlowfishCore
- *
- * @since 1.0.0
  */
 class BlowfishCore extends CryptBlowfish
 {
     /**
-     * @param $plaintext
+     * @param string $plaintext
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function encrypt($plaintext)
     {
@@ -71,9 +66,6 @@ class BlowfishCore extends CryptBlowfish
      * @param string $plaintext
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function maxi_pad($plaintext)
     {
@@ -87,12 +79,9 @@ class BlowfishCore extends CryptBlowfish
     }
 
     /**
-     * @param $ciphertext
+     * @param string $ciphertext
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function decrypt($ciphertext)
     {

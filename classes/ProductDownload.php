@@ -31,12 +31,9 @@
 
 /**
  * Class ProductDownloadCore
- *
- * @since 1.0.0
  */
 class ProductDownloadCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
 
     /** @deprecated 1.0.2 This cache is no longer used. */
     protected static $_productIds = [];
@@ -59,10 +56,9 @@ class ProductDownloadCore extends ObjectModel
     public $active = 1;
     /** @var bool is_shareable indicates whether the product can be shared */
     public $is_shareable = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'product_download',
@@ -88,10 +84,10 @@ class ProductDownloadCore extends ObjectModel
     /**
      * Build a virtual product
      *
-     * @param int $idProductDownload Existing productDownload id in order to load object (optional)
+     * @param int|null $idProductDownload Existing productDownload id in order to load object (optional)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($idProductDownload = null)
     {
@@ -103,9 +99,6 @@ class ProductDownloadCore extends ObjectModel
      * Check if download repository is writable
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkWritableDir()
     {
@@ -117,14 +110,11 @@ class ProductDownloadCore extends ObjectModel
      * download, that's the way to find out wether there's a download and
      * which one it is.
      *
-     * @param int  $idProduct Product ID.
-     * @param bool $active    Wether only an active download or any download.
+     * @param int $idProduct Product ID.
+     * @param bool $active Wether only an active download or any download.
      *
      * @return int ID of the product download or 0 if there's none.
      *
-     * @since   1.0.2 Removed caching, which ignored $active.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdFromIdProduct($idProduct, $active = true)
@@ -149,8 +139,6 @@ class ProductDownloadCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -164,9 +152,6 @@ class ProductDownloadCore extends ObjectModel
      * @param string $filename Filename physically
      *
      * @return int Product the id for this virtual product
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -187,8 +172,6 @@ class ProductDownloadCore extends ObjectModel
      *
      * @return string Filename the filename for this virtual product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getFilenameFromIdProduct($idProduct)
@@ -209,8 +192,6 @@ class ProductDownloadCore extends ObjectModel
      *
      * @return string Filename the display filename for this virtual product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getFilenameFromFilename($filename)
@@ -227,9 +208,6 @@ class ProductDownloadCore extends ObjectModel
      * Return a sha1 filename
      *
      * @return string Sha1 unique filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNewFilename()
     {
@@ -245,8 +223,6 @@ class ProductDownloadCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
@@ -266,10 +242,7 @@ class ProductDownloadCore extends ObjectModel
      *
      * @return bool True on successful deletion of file and DB entry.
      *
-     * @since   1.0.3 Deprecate $deleteFile in favor of always deleting it. A
      *                file without matching DB entry means just a leaked file.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete($deleteFile = 999)
@@ -289,10 +262,7 @@ class ProductDownloadCore extends ObjectModel
      * @return bool True if file didn't exist or was deleted successfully.
      *              False if the existing file couldn't get deleted.
      *
-     * @since   1.0.3 Deprecate, but still handle $idProductDownload. Code
      *                wanting to also delete the DB entry should use delete().
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteFile($idProductDownload = 999)
@@ -325,9 +295,6 @@ class ProductDownloadCore extends ObjectModel
      * Check if file exists
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkFile()
     {
@@ -342,13 +309,10 @@ class ProductDownloadCore extends ObjectModel
      * Return html link
      *
      * @param bool|string $class CSS selector
-     * @param bool        $admin specific to backend
-     * @param bool|bool   $hash  hash code in table order detail
+     * @param bool $admin specific to backend
+     * @param bool $hash hash code in table order detail
      *
      * @return string Html all the code for print a link to the file
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHtmlLink($class = false, $admin = true, $hash = false)
     {
@@ -365,13 +329,10 @@ class ProductDownloadCore extends ObjectModel
     /**
      * Return html link
      *
-     * @param bool        $admin specific to backend (optional)
-     * @param bool|string $hash  hash code in table order detail (optional)
+     * @param bool $admin specific to backend (optional)
+     * @param bool|string $hash hash code in table order detail (optional)
      *
      * @return string Html all the code for print a link to the file
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTextLink($admin = true, $hash = false)
     {
@@ -386,9 +347,6 @@ class ProductDownloadCore extends ObjectModel
      * Return a deadline
      *
      * @return string Datetime in SQL format
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDeadline()
     {
@@ -404,9 +362,6 @@ class ProductDownloadCore extends ObjectModel
      * Return a hash for control download access
      *
      * @return string Hash ready to insert in database
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHash()
     {

@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking\Extractor;
 
 /**
  * Class PhpVersionExtractor
- *
- * @since 1.3.0
  */
 class PhpVersionExtractor extends PhpVersionExtractorCore
 {

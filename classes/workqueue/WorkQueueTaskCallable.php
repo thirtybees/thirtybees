@@ -19,12 +19,8 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Exception;
-
 /**
  * Class WorkQueueTaskCallable
- *
- * @since 1.3.0
  */
 interface WorkQueueTaskCallable
 {
@@ -32,7 +28,6 @@ interface WorkQueueTaskCallable
      * @param WorkQueueContext $context
      * @param array $parameters
      *
-     * @throws Exception
      * @return mixed
      */
     public function execute(WorkQueueContext $context, array $parameters);

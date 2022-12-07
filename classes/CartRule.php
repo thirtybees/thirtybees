@@ -31,8 +31,6 @@
 
 /**
  * Class CartRuleCore
- *
- * @since 1.0.0
  */
 class CartRuleCore extends ObjectModel
 {
@@ -45,7 +43,6 @@ class CartRuleCore extends ObjectModel
 
     const BO_ORDER_CODE_PREFIX = 'BO_ORDER_';
 
-    // @codingStandardsIgnoreStart
     /**
      * This variable controls that a free gift is offered only once, even when multi-shipping is activated and the same product is delivered in both addresses
      *
@@ -137,10 +134,9 @@ class CartRuleCore extends ObjectModel
     public $date_add;
     /** @var string $date_upd */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'cart_rule',
@@ -202,8 +198,6 @@ class CartRuleCore extends ObjectModel
      * @param int $idCartRuleSource
      * @param int $idCartRuleDestination
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function copyConditions($idCartRuleSource, $idCartRuleDestination)
@@ -301,8 +295,6 @@ class CartRuleCore extends ObjectModel
      *
      * @return int|bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByCode($code)
@@ -320,24 +312,18 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param int       $idLang
-     * @param int       $idCustomer
-     * @param bool      $active
-     * @param bool      $includeGeneric
-     * @param bool      $inStock
+     * @param int $idLang
+     * @param int $idCustomer
+     * @param bool $active
+     * @param bool $includeGeneric
+     * @param bool $inStock
      * @param Cart|null $cart
-     * @param bool      $freeShippingOnly
-     * @param bool      $highlightOnly
+     * @param bool $freeShippingOnly
+     * @param bool $highlightOnly
      *
      * @return array
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
-     * @throws PrestaShopException
-     * @throws PrestaShopException
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function getCustomerCartRules($idLang, $idCustomer, $active = false, $includeGeneric = true, $inStock = false, Cart $cart = null, $freeShippingOnly = false, $highlightOnly = false)
@@ -501,8 +487,6 @@ class CartRuleCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -517,16 +501,14 @@ class CartRuleCore extends ObjectModel
 
     /**
      * @param Context $context
-     * @param bool    $returnProducts
-     * @param bool    $displayError
-     * @param bool    $alreadyInCart
+     * @param bool $returnProducts
+     * @param bool $displayError
+     * @param bool $alreadyInCart
      *
-     * @return array|bool|mixed|string
+     * @return array|bool|string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function checkProductRestrictions(Context $context, $returnProducts = false, $displayError = true, $alreadyInCart = false)
     {
@@ -700,8 +682,6 @@ class CartRuleCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductRuleGroups()
     {
@@ -758,13 +738,10 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $array1
-     * @param $array2
+     * @param array $array1
+     * @param array $array2
      *
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function array_uintersect($array1, $array2)
     {
@@ -782,13 +759,10 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $a
-     * @param $b
+     * @param string $a
+     * @param string $b
      *
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function array_uintersect_compare($a, $b)
     {
@@ -810,8 +784,6 @@ class CartRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cartRuleExists($name)
@@ -833,8 +805,6 @@ class CartRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deleteByIdCustomer($idCustomer)
@@ -853,8 +823,7 @@ class CartRuleCore extends ObjectModel
      * Make sure caches are empty
      * Must be called before calling multiple time getContextualValue()
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function cleanCache()
     {
@@ -862,14 +831,12 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param null $context
+     * @param Context|null $context
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function autoRemoveFromCart($context = null)
     {
@@ -897,10 +864,6 @@ class CartRuleCore extends ObjectModel
     /**
      * @param Context|null $context
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function autoAddToCart(Context $context = null)
@@ -977,13 +940,12 @@ class CartRuleCore extends ObjectModel
      * Check if this cart rule can be applied
      *
      * @param Context $context
-     * @param bool    $alreadyInCart Check if the voucher is already on the cart
-     * @param bool    $displayError  Display error
+     * @param bool $alreadyInCart Check if the voucher is already on the cart
+     * @param bool $displayError Display error
+     * @param bool $checkCarrier
+     * @return array|bool|string
      *
-     * @return bool|mixed|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function checkValidity(Context $context, $alreadyInCart = false, $displayError = true, $checkCarrier = true)
@@ -1206,13 +1168,11 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $type
-     * @param $list
+     * @param string $type
+     * @param int|int[] $list
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
@@ -1269,16 +1229,14 @@ class CartRuleCore extends ObjectModel
 
     /**
      * @param string $name
-     * @param int    $idLang
+     * @param int $idLang
      *
-     * @param bool   $extended
+     * @param bool $extended
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCartsRuleByCode($name, $idLang, $extended = false)
     {
@@ -1293,10 +1251,6 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -1319,8 +1273,6 @@ class CartRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
@@ -1335,10 +1287,6 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::delete()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -1373,8 +1321,6 @@ class CartRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function usedByCustomer($idCustomer)
@@ -1392,17 +1338,15 @@ class CartRuleCore extends ObjectModel
     /**
      * The reduction value is POSITIVE
      *
-     * @param bool    $useTax
-     * @param Context $context
-     * @param null    $filter
-     * @param null    $package
-     * @param bool    $useCache Allow using cache to avoid multiple free gift using multishipping
+     * @param bool $useTax
+     * @param Context|null $context
+     * @param int|null $filter
+     * @param array|null $package
+     * @param bool $useCache Allow using cache to avoid multiple free gift using multishipping
      *
      * @return float|int|string
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContextualValue($useTax, Context $context = null, $filter = null, $package = null, $useCache = true)
     {
@@ -1746,18 +1690,15 @@ class CartRuleCore extends ObjectModel
 
     /**
      * @param string $type
-     * @param bool   $activeOnly
-     * @param bool   $i18n
-     * @param int    $offset
-     * @param int    $limit
+     * @param bool $activeOnly
+     * @param bool $i18n
+     * @param int $offset
+     * @param int $limit
      * @param string $searchCartRuleName
      *
      * @return array|bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function getAssociatedRestrictions($type, $activeOnly, $i18n, $offset = null, $limit = null, $searchCartRuleName = '')
@@ -1829,11 +1770,10 @@ class CartRuleCore extends ObjectModel
      *
      * @param array $package
      *
-     * @return null|string
+     * @return string|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.2
      */
     public function findCheapestProduct($package)
     {
@@ -1863,16 +1803,14 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param int    $offset
-     * @param int    $limit
+     * @param int $offset
+     * @param int $limit
      * @param string $search
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getCartRuleCombinations($offset = null, $limit = null, $search = '')
     {

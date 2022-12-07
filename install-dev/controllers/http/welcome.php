@@ -34,13 +34,26 @@
  */
 class InstallControllerHttpWelcome extends InstallControllerHttp
 {
+    /**
+     * @var bool
+     */
     public $canUpgrade;
+
+    /**
+     * @var string
+     */
     public $tbVersion;
 
+    /**
+     * @return void
+     */
     public function processNextStep()
     {
     }
 
+    /**
+     * @return bool
+     */
     public function validate()
     {
         return true;
@@ -48,6 +61,8 @@ class InstallControllerHttpWelcome extends InstallControllerHttp
 
     /**
      * Change language
+     *
+     * @return void
      */
     public function process()
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class HistoryControllerCore
- *
- * @since 1.0.0
  */
 class HistoryControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,14 +42,14 @@ class HistoryControllerCore extends FrontController
     public $authRedirection = 'history';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -77,7 +74,8 @@ class HistoryControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initContent()
     {

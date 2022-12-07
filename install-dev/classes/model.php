@@ -31,8 +31,6 @@
 
 /**
  * Class InstallAbstractModel
- *
- * @since 1.0.0
  */
 abstract class InstallAbstractModel
 {
@@ -49,7 +47,6 @@ abstract class InstallAbstractModel
     /**
      * InstallAbstractModel constructor.
      *
-     * @since 1.0.0
      * @throws PrestashopInstallerException
      */
     public function __construct()
@@ -58,9 +55,7 @@ abstract class InstallAbstractModel
     }
 
     /**
-     * @param $errors
-     *
-     * @since 1.0.0
+     * @param string[]|string $errors
      */
     public function setError($errors)
     {
@@ -73,8 +68,6 @@ abstract class InstallAbstractModel
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getErrors()
     {

@@ -31,24 +31,21 @@
 
 /**
  * Class ContactControllerCore
- *
- * @since 1.0.0
  */
 class ContactControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'contact';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Start forms process
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -253,7 +250,6 @@ class ContactControllerCore extends FrontController
      *
      * @return int Order ID
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function getOrder()
@@ -273,7 +269,8 @@ class ContactControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -286,9 +283,8 @@ class ContactControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
+     * @throws PrestaShopException
      * @see FrontController::initContent()
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -345,7 +341,6 @@ class ContactControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function assignOrderList()
     {

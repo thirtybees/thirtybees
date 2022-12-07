@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 require_once __DIR__.'/../../config/config.inc.php';
 
 // Disable mails

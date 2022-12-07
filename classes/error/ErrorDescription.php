@@ -21,11 +21,10 @@ namespace Thirtybees\Core\Error;
 
 
 use Encryptor;
+use PrestaShopException;
 
 /**
  * class ErrorDescription
- *
- * @since 1.4.0
  */
 class ErrorDescriptionCore
 {
@@ -102,6 +101,7 @@ class ErrorDescriptionCore
     protected $cause;
 
     /**
+     * ErrorDescription constructor
      */
     public function __construct()
     {
@@ -200,6 +200,9 @@ class ErrorDescriptionCore
         return $this->sourceFileContent;
     }
 
+    /**
+     * @return bool
+     */
     public function hasSourceFileContent(): bool
     {
         return !!$this->sourceFileContent;
@@ -267,9 +270,6 @@ class ErrorDescriptionCore
     /**
      * Return the content of the Exception
      * @return string content of the exception.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getExtendedMessage()
     {
@@ -435,7 +435,7 @@ class ErrorDescriptionCore
 
     /**
      * @return string
-     * @throws \PrestaShopException
+     * @throws PrestaShopException
      */
     public function encrypt()
     {
@@ -443,27 +443,27 @@ class ErrorDescriptionCore
     }
 
     /**
-     * @param $encrypted
+     * @param string $encrypted
      * @return ErrorDescription
-     * @throws \PrestaShopException
+     * @throws PrestaShopException
      */
     public static function decrypt($encrypted)
     {
         $decrypted = Encryptor::getInstance()->decrypt($encrypted);
         if (!$decrypted) {
-            throw new \PrestaShopException("Failed to decrypt content");
+            throw new PrestaShopException("Failed to decrypt content");
         }
         $array = json_decode($decrypted, true);
         if (!is_array($array) || !$array) {
-            throw new \PrestaShopException("Failed to parse content");
+            throw new PrestaShopException("Failed to parse content");
         }
         return static::deserialize($array);
     }
 
     /**
-     * @param $array
+     * @param array $array
      * @return ErrorDescription
-     * @throws \PrestaShopException
+     * @throws PrestaShopException
      */
     public static function deserialize($array)
     {
@@ -495,7 +495,7 @@ class ErrorDescriptionCore
      * @param array $array
      * @param boolean $required
      * @return mixed
-     * @throws \PrestaShopException
+     * @throws PrestaShopException
      */
     protected static function getProperty($name, $array, $required = true, $default = '')
     {
@@ -503,7 +503,7 @@ class ErrorDescriptionCore
             return $array[$name];
         }
         if ($required) {
-            throw new \PrestaShopException("Missing key '$name'");
+            throw new PrestaShopException("Missing key '$name'");
         }
         return $default;
     }

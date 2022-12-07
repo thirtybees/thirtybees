@@ -31,16 +31,11 @@
 
 /**
  * Class HelperImageUploaderCore
- *
- * @since 1.0.0
  */
 class HelperImageUploaderCore extends HelperUploader
 {
     /**
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMaxSize()
     {
@@ -49,9 +44,6 @@ class HelperImageUploaderCore extends HelperUploader
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSavePath()
     {
@@ -59,12 +51,9 @@ class HelperImageUploaderCore extends HelperUploader
     }
 
     /**
-     * @param null $fileName
+     * @param string|null $fileName
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFilePath($fileName = null)
     {
@@ -73,12 +62,9 @@ class HelperImageUploaderCore extends HelperUploader
     }
 
     /**
-     * @param $file
+     * @param array $file
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function validate(&$file)
     {

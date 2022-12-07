@@ -31,12 +31,9 @@
 
 /**
  * Class OrderSlipControllerCore
- *
- * @since 1.0.0
  */
 class OrderSlipControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,14 +42,14 @@ class OrderSlipControllerCore extends FrontController
     public $authRedirection = 'order-slip';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -70,11 +67,11 @@ class OrderSlipControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {

@@ -31,49 +31,81 @@
 
 /**
  * Class ManufacturerCore
- *
- * @since 1.0.0
  */
 class ManufacturerCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * Return name from id
-     *
-     * @param int $id_manufacturer Manufacturer ID
-     *
-     * @return string name
+     * @var string[]
      */
     protected static $cacheName = [];
-    public $id;
-    /** @var int manufacturer ID //FIXME is it really usefull...? */
-    public $id_manufacturer;
-    /** @var string Name */
-    public $name;
-    /** @var string A description */
-    public $description;
-    /** @var string A short description */
-    public $short_description;
-    /** @var int Address */
-    public $id_address;
-    /** @var string Object creation date */
-    public $date_add;
-    /** @var string Object last modification date */
-    public $date_upd;
-    /** @var string Friendly URL */
-    public $link_rewrite;
-    /** @var string Meta title */
-    public $meta_title;
-    /** @var string Meta keywords */
-    public $meta_keywords;
-    /** @var string Meta description */
-    public $meta_description;
-    /** @var bool active */
-    public $active;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int|null Object ID
+     */
+    public $id;
+
+    /**
+     * @var int manufacturer ID
+     */
+    public $id_manufacturer;
+
+    /**
+     * @var string Name
+     */
+    public $name;
+
+    /**
+     * @var string A description
+     */
+    public $description;
+
+    /**
+     * @var string A short description
+     */
+    public $short_description;
+
+    /**
+     * @var int Address
+     */
+    public $id_address;
+
+    /**
+     * @var string Object creation date
+     */
+    public $date_add;
+
+    /**
+     * @var string Object last modification date
+     */
+    public $date_upd;
+
+    /**
+     * @var string Friendly URL
+     */
+    public $link_rewrite;
+
+    /**
+     * @var string Meta title
+     */
+    public $meta_title;
+
+    /**
+     * @var string Meta keywords
+     */
+    public $meta_keywords;
+
+    /**
+     * @var string Meta description
+     */
+    public $meta_description;
+
+    /**
+     * @var bool active
+     */
+    public $active;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'manufacturer',
@@ -98,6 +130,10 @@ class ManufacturerCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields'       => [
             'active'       => [],
@@ -115,11 +151,11 @@ class ManufacturerCore extends ObjectModel
     /**
      * ManufacturerCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
+     * @param int|null $id
+     * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -132,8 +168,7 @@ class ManufacturerCore extends ObjectModel
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLink()
     {
@@ -143,20 +178,17 @@ class ManufacturerCore extends ObjectModel
     /**
      * Return manufacturers
      *
-     * @param bool     $getNbProducts [optional] return products numbers for each
-     * @param int      $idLang
-     * @param bool     $active
+     * @param bool $getNbProducts [optional] return products numbers for each
+     * @param int $idLang
+     * @param bool $active
      * @param bool|int $p
      * @param bool|int $n
-     * @param bool     $allGroup
+     * @param bool $allGroup
      *
-     * @param bool     $groupBy
+     * @param bool $groupBy
      *
      * @return false|array Manufacturers
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.5 Set $groupBy to true by default and deprecate it.
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -244,10 +276,8 @@ class ManufacturerCore extends ObjectModel
     /**
      * @param int $idManufacturer
      *
-     * @return mixed
+     * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNameById($idManufacturer)
@@ -272,8 +302,6 @@ class ManufacturerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdByName($name)
     {
@@ -292,21 +320,19 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param int          $idManufacturer
-     * @param int          $idLang
-     * @param int          $p
-     * @param int          $n
-     * @param string|null  $orderBy
-     * @param string|null  $orderWay
-     * @param bool         $getTotal
-     * @param bool         $active
-     * @param bool         $activeCategory
+     * @param int $idManufacturer
+     * @param int $idLang
+     * @param int $p
+     * @param int $n
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param bool $getTotal
+     * @param bool $active
+     * @param bool $activeCategory
      * @param Context|null $context
      *
      * @return array|bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -446,8 +472,6 @@ class ManufacturerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function manufacturerExists($idManufacturer)
     {
@@ -465,9 +489,6 @@ class ManufacturerCore extends ObjectModel
      * Delete several objects from database
      *
      * return boolean Deletion result
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param array $selection
      *
@@ -496,8 +517,6 @@ class ManufacturerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -523,12 +542,10 @@ class ManufacturerCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductsLite($idLang)
     {
@@ -553,12 +570,10 @@ class ManufacturerCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAddresses($idLang)
     {
@@ -575,12 +590,10 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsAddresses()
     {
@@ -601,8 +614,6 @@ class ManufacturerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setWsAddresses($idAddresses)
     {
@@ -637,10 +648,11 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param bool $nullValues
+     * @param bool|null $nullValues
      *
      * @return bool Indicates whether updating succeeded
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = null)
     {
@@ -654,8 +666,6 @@ class ManufacturerCore extends ObjectModel
     /**
      * @return bool|false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getManufacturerAddress()

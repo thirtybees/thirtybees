@@ -31,12 +31,9 @@
 
 /**
  * Class AddressControllerCore
- *
- * @since 1.0.0
  */
 class AddressControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var bool $guestAllowed */
@@ -49,18 +46,15 @@ class AddressControllerCore extends FrontController
     public $ssl = true;
     /**
      * @var Address Current address
-     *
-     * @since 1.0.0
      */
     protected $_address;
     /** @var int $id_country */
     protected $id_country;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set default medias for this controller
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -76,9 +70,10 @@ class AddressControllerCore extends FrontController
 
     /**
      * Initialize address controller
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see FrontController::init()
-     *
-     * @since 1.0.0
      */
     public function init()
     {
@@ -125,9 +120,8 @@ class AddressControllerCore extends FrontController
     /**
      * Start forms process
      *
+     * @throws PrestaShopException
      * @see FrontController::postProcess()
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -142,12 +136,9 @@ class AddressControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version.
-     * @version 1.0.6 Use VatNumber::assignTemplateVars() and
+     * @throws PrestaShopException
      *                VatNumber::adjustAddressForLayout(), if present.
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -200,7 +191,7 @@ class AddressControllerCore extends FrontController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayAjax()
     {
@@ -216,7 +207,8 @@ class AddressControllerCore extends FrontController
     /**
      * Process changes on an address
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function processSubmitAddress()
     {
@@ -354,7 +346,7 @@ class AddressControllerCore extends FrontController
     /**
      * Assign template vars related to countries display
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function assignCountries()
     {
@@ -386,7 +378,7 @@ class AddressControllerCore extends FrontController
     /**
      * Assign template vars related to address format
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function assignAddressFormat()
     {
@@ -407,7 +399,7 @@ class AddressControllerCore extends FrontController
      * Assign template vars related to vat number
      * For retrocompatibility with vatnumber module version < 2.1.0 (07/2018).
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      * @deprecated 1.0.6 Moved into the vatnumber module,
      *                   VatNumber::assignTemplateVars().
      */

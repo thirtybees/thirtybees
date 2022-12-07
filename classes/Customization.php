@@ -31,12 +31,9 @@
 
 /**
  * Class CustomizationCore
- *
- * @since 1.0.0
  */
 class CustomizationCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int $id_product_attribute */
     public $id_product_attribute;
     /** @var int $id_address_delivery */
@@ -53,10 +50,9 @@ class CustomizationCore extends ObjectModel
     public $quantity_returned;
     /** @var bool $in_cart */
     public $in_cart;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'customization',
@@ -80,6 +76,10 @@ class CustomizationCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields'       => [
             'id_address_delivery' => [
@@ -121,8 +121,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getReturnedCustomizations($idOrder)
     {
@@ -151,8 +149,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrderedCustomizations($idCart)
     {
@@ -176,9 +172,6 @@ class CustomizationCore extends ObjectModel
      * @param array $customizations
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function countCustomizationQuantityByProduct($customizations)
     {
@@ -191,14 +184,12 @@ class CustomizationCore extends ObjectModel
     }
 
     /**
-     * @param int      $idCustomization
-     * @param int      $idLang
+     * @param int $idCustomization
+     * @param int $idLang
      * @param int|null $idShop
      *
      * @return bool|false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLabel($idCustomization, $idLang, $idShop = null)
@@ -229,8 +220,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function retrieveQuantitiesFromIds($idsCustomizations)
     {
@@ -267,8 +256,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function countQuantityByCart($idCart)
     {
@@ -294,8 +281,6 @@ class CustomizationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -307,12 +292,10 @@ class CustomizationCore extends ObjectModel
      * This method is allow to know if a Customization entity is currently used
      *
      * @param string|null $table
-     * @param bool        $hasActiveColumn
+     * @param bool $hasActiveColumn
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
@@ -329,8 +312,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsCustomizedDataTextFields()
     {
@@ -358,8 +339,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsCustomizedDataImages()
     {
@@ -390,8 +369,6 @@ class CustomizationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setWsCustomizedDataTextFields($values)
     {

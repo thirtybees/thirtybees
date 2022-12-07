@@ -31,8 +31,6 @@
 
 /**
  * Class Adapter_PackItemsManager
- *
- * @since 1.0.0
  */
 class Adapter_PackItemsManager
 {
@@ -40,13 +38,11 @@ class Adapter_PackItemsManager
     /**
      * Get the Products contained in the given Pack.
      *
-     * @param Product  $product
+     * @param Product $product
      * @param bool|int $idLang
      *
      * @return array The products contained in this Pack, with special dynamic attributes [pack_quantity, id_pack_product_attribute]
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getPackItems($product, $idLang = false)
@@ -66,14 +62,12 @@ class Adapter_PackItemsManager
     /**
      * Get all Packs that contains the given item in the corresponding declination.
      *
-     * @param Product  $item
-     * @param int      $itemAttributeId
+     * @param Product $item
+     * @param int $itemAttributeId
      * @param int|bool $idLang
      *
      * @return Product[] The packs that contains the given item, with special dynamic attribute [pack_item_quantity]
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getPacksContainingItem($item, $itemAttributeId, $idLang = false)
@@ -94,8 +88,6 @@ class Adapter_PackItemsManager
      * @return boolean
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isPack($product)
     {
@@ -108,13 +100,11 @@ class Adapter_PackItemsManager
      * If $idProductAttribute specified, then will restrict search on the given combination,
      * else this method will match a product if at least one of all its combination is in a pack.
      *
-     * @param Product  $product
+     * @param Product $product
      * @param int|bool $idProductAttribute Optional: combination of the product
      *
      * @return boolean
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isPacked($product, $idProductAttribute = false)

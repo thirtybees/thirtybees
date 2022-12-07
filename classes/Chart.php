@@ -31,35 +31,56 @@
 
 /**
  * Class ChartCore
- *
- * @since 1.0.0
  */
 class ChartCore
 {
-    // @codingStandardsIgnoreStart
-    /** @var int $poolId */
+    /**
+     * @var int $poolId
+     */
     protected static $poolId = 0;
-    /** @var int $width */
+
+    /**
+     * @var int $width
+     */
     protected $width = 600;
-    /** @var int $height */
+
+    /**
+     * @var int $height
+     */
     protected $height = 300;
 
-    /* Time mode */
-    /** @var bool $timeMode */
+    /** @var bool Time Mode*/
     protected $timeMode = false;
+
+    /**
+     * @var string
+     */
     protected $from;
+
+    /**
+     * @var string
+     */
     protected $to;
+
+    /**
+     * @var string
+     */
     protected $format;
+
+    /**
+     * @var string
+     */
     protected $granularity;
-    /** @var array $curves */
+
+    /**
+     * @var array $curves
+     */
     protected $curves = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * ChartCore constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function __construct()
     {
@@ -67,10 +88,7 @@ class ChartCore
     }
 
     /**
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool|void
      */
     public static function init()
     {
@@ -84,9 +102,6 @@ class ChartCore
     /**
      * @param int $width
      * @param int $height
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setSize($width, $height)
     {
@@ -98,9 +113,6 @@ class ChartCore
      * @param string $from
      * @param string $to
      * @param string $granularity
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTimeMode($from, $to, $granularity)
     {
@@ -132,12 +144,9 @@ class ChartCore
     }
 
     /**
-     * @param $i
+     * @param string $i
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return Curve
      */
     public function getCurve($i)
     {
@@ -149,8 +158,7 @@ class ChartCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function display()
     {
@@ -159,9 +167,6 @@ class ChartCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function fetch()
     {
@@ -198,22 +203,28 @@ class ChartCore
 
 /**
  * Class Curve
- *
- * @since 1.0.0
  */
 class Curve
 {
+    /**
+     * @var array
+     */
     protected $values = [];
+
+    /**
+     * @var string|null
+     */
     protected $label;
+
+    /**
+     * @var string|null
+     */
     protected $type;
 
     /**
      * @param bool $time_mode
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getValues($time_mode = false)
     {
@@ -227,10 +238,7 @@ class Curve
     }
 
     /**
-     * @param $values
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $values
      */
     public function setValues($values)
     {
@@ -238,11 +246,8 @@ class Curve
     }
 
     /**
-     * @param $x
-     * @param $y
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $x
+     * @param float $y
      */
     public function setPoint($x, $y)
     {
@@ -250,10 +255,7 @@ class Curve
     }
 
     /**
-     * @param $label
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $label
      */
     public function setLabel($label)
     {
@@ -261,10 +263,7 @@ class Curve
     }
 
     /**
-     * @param $type
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $type
      */
     public function setType($type)
     {
@@ -278,12 +277,9 @@ class Curve
     }
 
     /**
-     * @param $x
+     * @param int $x
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return float
      */
     public function getPoint($x)
     {

@@ -37,8 +37,8 @@ class InstallSimplexmlElement extends SimpleXMLElement
      * @see SimpleXMLElement::addChild()
      *
      * @param string $name
-     * @param null   $value
-     * @param null   $namespace
+     * @param string|SimpleXMLElement|null $value
+     * @param string|null $namespace
      *
      * @return SimpleXMLElement
      */
@@ -69,13 +69,11 @@ class InstallSimplexmlElement extends SimpleXMLElement
     /**
      * Generate nice and sweet XML
      *
-     * @see   SimpleXMLElement::asXML()
+     * @see SimpleXMLElement::asXML()
      *
-     * @since 1.0.0
+     * @param string|null $filename
      *
-     * @param null $filename
-     *
-     * @return bool|mixed|string
+     * @return bool|string
      */
     #[\ReturnTypeWillChange]
     public function asXML($filename = null)

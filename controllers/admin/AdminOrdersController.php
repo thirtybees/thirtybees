@@ -31,22 +31,23 @@
 
 /**
  * Class AdminOrdersControllerCore
- *
- * @since 1.0.0
  */
 class AdminOrdersControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
-    /** @var string $toolbar_title */
+    /**
+     * @var string|array $toolbar_title
+     */
     public $toolbar_title;
-    /** @var array $statuses_array */
+
+    /**
+     * @var array $statuses_array
+     */
     protected $statuses_array = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminOrdersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -211,12 +212,12 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Set Order currency
      *
-     * @param $echo
-     * @param $tr
+     * @param float $echo
+     * @param array $tr
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function setOrderCurrency($echo, $tr)
     {
@@ -230,7 +231,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -260,7 +261,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -323,7 +326,8 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -387,7 +391,6 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function setMedia()
@@ -411,12 +414,14 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Print PDF icons
      *
-     * @param int   $idOrder
+     * @param int $idOrder
      * @param array $tr
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function printPDFIcons($idOrder, $tr)
     {
@@ -448,12 +453,10 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Print new customer
      *
-     * @param int   $idOrder
+     * @param int $idOrder
      * @param array $tr
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function printNewCustomer($idOrder, $tr)
     {
@@ -465,8 +468,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function processBulkUpdateOrderStatus()
     {
@@ -552,7 +556,8 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -573,9 +578,10 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Post processing
      *
+     * @return false|void
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function postProcess()
     {
@@ -1761,9 +1767,10 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Render KPIs
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -1840,7 +1847,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -2054,7 +2063,8 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessSearchProducts()
     {
@@ -2156,7 +2166,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessSendMailValidateOrder()
     {
@@ -2198,7 +2208,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessAddProductOnOrder()
     {
@@ -2616,7 +2628,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @param Order|null $order
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function sendChangedNotification(Order $order = null)
     {
@@ -2632,7 +2644,8 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessLoadProductInformation()
     {
@@ -2701,7 +2714,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessEditProductOnOrder()
     {
@@ -2933,7 +2948,8 @@ class AdminOrdersControllerCore extends AdminController
 
     /**
      * @param OrderDetail $orderDetail
-     * @param int         $addQuantity
+     * @param int $addQuantity
+     * @throws PrestaShopException
      */
     protected function checkStockAvailable($orderDetail, $addQuantity)
     {
@@ -2962,7 +2978,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessDeleteProductLine()
     {
@@ -3048,7 +3066,9 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessChangePaymentMethod()
     {
@@ -3087,13 +3107,13 @@ class AdminOrdersControllerCore extends AdminController
      * Apply discount on invoice
      *
      * @param OrderInvoice $orderInvoice
-     * @param float        $valueTaxIncl
-     * @param float        $valueTaxExcl
+     * @param float $valueTaxIncl
+     * @param float $valueTaxExcl
      *
-     * @return bool Indicates whether the invoice was successfully updated
+     * @return void Indicates whether the invoice was successfully updated
      *
-     * @since 1.0.0
-     * @since 1.0.1 Return update status bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function applyDiscountOnInvoice($orderInvoice, $valueTaxIncl, $valueTaxExcl)
     {
@@ -3108,13 +3128,14 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Edit production validation
      *
-     * @param OrderDetail       $orderDetail
-     * @param Order             $order
+     * @param OrderDetail $orderDetail
+     * @param Order $order
      * @param OrderInvoice|null $orderInvoice
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function doEditProductValidation(OrderDetail $orderDetail, Order $order, OrderInvoice $orderInvoice = null)
     {
@@ -3190,11 +3211,12 @@ class AdminOrdersControllerCore extends AdminController
      * Delete product line validation
      *
      * @param OrderDetail $orderDetail
-     * @param Order       $order
+     * @param Order $order
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function doDeleteProductLineValidation(OrderDetail $orderDetail, Order $order)
     {
@@ -3230,12 +3252,13 @@ class AdminOrdersControllerCore extends AdminController
 
     /**
      * @param OrderDetail $orderDetail
-     * @param int         $qtyCancelProduct
-     * @param bool        $delete
+     * @param int $qtyCancelProduct
+     * @param bool $delete
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function reinjectQuantity($orderDetail, $qtyCancelProduct, $delete = false)
     {
@@ -3333,7 +3356,6 @@ class AdminOrdersControllerCore extends AdminController
      * @return array
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getProducts($order)
     {

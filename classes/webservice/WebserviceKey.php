@@ -33,8 +33,6 @@ use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class WebserviceKeyCore
- *
- * @since   1.0.0
  */
 class WebserviceKeyCore extends ObjectModel implements InitializationCallback
 {
@@ -60,7 +58,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     public $context_employee_id;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'webservice_account',
@@ -93,8 +91,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -135,12 +131,10 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return boolean
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function keyExists($key)
@@ -151,8 +145,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -165,8 +157,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteAssociations()
     {
@@ -174,14 +164,12 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $authKey
+     * @param string $authKey
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPermissionForAccount($authKey)
     {
@@ -204,12 +192,10 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $authKey
+     * @param string $authKey
      *
      * @return boolean
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isKeyActive($authKey)
@@ -227,8 +213,6 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getClassFromKey($authKey)
@@ -240,15 +224,13 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $idAccount
-     * @param $permissionsToSet
+     * @param int $idAccount
+     * @param array|null $permissionsToSet
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setPermissionForAccount($idAccount, $permissionsToSet)
     {

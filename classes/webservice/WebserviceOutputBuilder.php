@@ -31,8 +31,6 @@
 
 /**
  * Class WebserviceOutputBuilderCore
- *
- * @since 1.0.0
  */
 class WebserviceOutputBuilderCore
 {
@@ -42,26 +40,71 @@ class WebserviceOutputBuilderCore
     const VIEW_LIST = 1;
     const VIEW_DETAILS = 2;
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     protected $wsUrl;
+
+    /**
+     * @var string
+     */
     protected $output;
 
-    /** @var WebserviceOutputInterface|WebserviceOutputXML|WebserviceOutputJSON */
+    /**
+     * @var WebserviceOutputInterface
+     */
     public $objectRender;
+
+    /**
+     * @var array
+     */
     protected $wsResource;
+
+    /**
+     * @var int
+     */
     protected $depth = 0;
+
+    /**
+     * @var string
+     */
     protected $schemaToDisplay;
+
+    /**
+     * @var array|string
+     */
     protected $fieldsToDisplay;
+
+    /**
+     * @var array
+     */
     protected $specificFields = [];
+
+    /**
+     * @var array
+     */
     protected $virtualFields = [];
+
+    /**
+     * @var int
+     */
     protected $statusInt;
+
+    /**
+     * @var array
+     */
     protected $wsParamOverrides;
 
+    /**
+     * @var array
+     */
     protected static $_cache_ws_parameters = [];
 
     /* Header properties */
+    /**
+     * @var array
+     */
     protected $headerParams = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * @var string Status header sent at return
@@ -71,10 +114,7 @@ class WebserviceOutputBuilderCore
     /**
      * WebserviceOutputBuilderCore constructor.
      *
-     * @param $wsUrl
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $wsUrl
      */
     public function __construct($wsUrl)
     {
@@ -91,13 +131,10 @@ class WebserviceOutputBuilderCore
      *
      * @param WebserviceOutputInterface $objRender
      *
-     * @throw   WebserviceException if the object render is not an instance of WebserviceOutputInterface
+     * @throws WebserviceException if the object render is not an instance of WebserviceOutputInterface
      *
-     * @return WebserviceOutputBuilder
+     * @return static
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setObjectRender(WebserviceOutputInterface $objRender)
     {
@@ -118,9 +155,6 @@ class WebserviceOutputBuilderCore
      * getter
      *
      * @return WebserviceOutputInterface
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getObjectRender()
     {
@@ -133,10 +167,7 @@ class WebserviceOutputBuilderCore
      *
      * @param array $resources
      *
-     * @return WebserviceOutputBuilder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setWsResources($resources)
     {
@@ -152,9 +183,6 @@ class WebserviceOutputBuilderCore
      * If this method is overrided don't forget to check required specific params (for xml etc...)
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function buildHeader()
     {
@@ -171,11 +199,8 @@ class WebserviceOutputBuilderCore
      * @param string $key The normalized key expected for an http response
      * @param string $value
      *
-     * @return WebserviceOutputBuilder
+     * @return static
      * @throws WebserviceException If the key or the value are corrupted (use Validate::isCleanHtml method)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setHeaderParams($key, $value)
     {
@@ -188,14 +213,13 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param null|string $key if null get all header params otherwise the params specified by the key
+     * @param string|null $key if null get all header params otherwise the params specified by the key
      *
-     * @throw WebserviceException if the key is corrupted (use Validate::isCleanHtml method)
-     * @throw WebserviceException if the asked key does'nt exists.
+     * @throws WebserviceException if the key is corrupted (use Validate::isCleanHtml method)
+     * @throws WebserviceException if the asked key does'nt exists.
      * @return array|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws WebserviceException
      */
     public function getHeaderParams($key = null)
     {
@@ -217,10 +241,7 @@ class WebserviceOutputBuilderCore
     /**
      * Delete all Header parameters previously set.
      *
-     * @return WebserviceOutputBuilder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function resetHeaderParams()
     {
@@ -231,9 +252,6 @@ class WebserviceOutputBuilderCore
 
     /**
      * @return string the normalized status for http request
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStatus()
     {
@@ -242,9 +260,6 @@ class WebserviceOutputBuilderCore
 
     /**
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStatusInt()
     {
@@ -257,9 +272,6 @@ class WebserviceOutputBuilderCore
      * @param int $num the Http status code
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setStatus($num)
     {
@@ -310,9 +322,6 @@ class WebserviceOutputBuilderCore
      * @param array $errors
      *
      * @return string output in the format specified by WebserviceOutputBuilder::objectRender
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getErrors($errors)
     {
@@ -342,12 +351,12 @@ class WebserviceOutputBuilderCore
     /**
      * Build the resource list in the output format specified by WebserviceOutputBuilder::objectRender
      *
-     * @param $keyPermissions
+     * @param array $keyPermissions
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws WebserviceException
+     * @throws PrestaShopException
      */
     public function getResourcesList($keyPermissions)
     {
@@ -395,11 +404,8 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $wsrObject
-     * @param $method
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param object $wsrObject
+     * @param string $method
      */
     public function registerOverrideWSParameters($wsrObject, $method)
     {
@@ -413,19 +419,19 @@ class WebserviceOutputBuilderCore
      *        - tree diagram of entity details (full or minimum),
      *        - schema (synopsis & blank),
      *
-     * @param array        $objects         each object created by entity asked
+     * @param array $objects each object created by entity asked
      *
-     * @see WebserviceOutputBuilder::executeEntityGetAndHead
-     *
-     * @param null|string  $schemaToDisplay if null display the entities list or entity details.
+     * @param string|null $schemaToDisplay if null display the entities list or entity details.
      * @param string|array $fieldsToDisplay the fields allow for the output
-     * @param int          $depth           depth for the tree diagram output.
-     * @param int          $typeOfView      use the 2 constants WebserviceOutputBuilder::VIEW_LIST WebserviceOutputBuilder::VIEW_DETAILS
-     *
+     * @param int $depth depth for the tree diagram output.
+     * @param int $typeOfView use the 2 constants WebserviceOutputBuilder::VIEW_LIST WebserviceOutputBuilder::VIEW_DETAILS
+     * @param bool $override
      * @return string in the output format specified by WebserviceOutputBuilder::objectRender
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws WebserviceException
+     * @throws PrestaShopException
+     * @see WebserviceOutputBuilder::executeEntityGetAndHead
      */
     public function getContent($objects, $schemaToDisplay = null, $fieldsToDisplay = 'minimum', $depth = 0, $typeOfView = self::VIEW_LIST, $override = true)
     {
@@ -489,12 +495,12 @@ class WebserviceOutputBuilderCore
      * Create the tree diagram with no details
      *
      * @param ObjectModel $object create by the entity
-     * @param int         $depth  the depth for the tree diagram
+     * @param int $depth the depth for the tree diagram
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function renderEntityMinimum($object, $depth)
     {
@@ -514,13 +520,14 @@ class WebserviceOutputBuilderCore
     /**
      * Build a schema blank or synopsis
      *
-     * @param ObjectModel $object   create by the entity
-     * @param array       $wsParams webserviceParams from the entity
+     * @param ObjectModel $object create by the entity
+     * @param array $wsParams webserviceParams from the entity
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws WebserviceException
+     * @throws PrestaShopException
      */
     protected function renderSchema($object, $wsParams)
     {
@@ -541,12 +548,13 @@ class WebserviceOutputBuilderCore
      * Build the entity detail.
      *
      * @param ObjectModel $object create by the entity
-     * @param int         $depth  the depth for the tree diagram
+     * @param int $depth the depth for the tree diagram
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws WebserviceException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function renderEntity($object, $depth)
     {
@@ -605,16 +613,13 @@ class WebserviceOutputBuilderCore
     /**
      * Build a field and use recursivity depend on the depth parameter.
      *
-     * @param ObjectModel $object   create by the entity
-     * @param array       $wsParams webserviceParams from the entity
-     * @param string      $fieldName
-     * @param array       $field
-     * @param int         $depth
+     * @param ObjectModel $object create by the entity
+     * @param array $wsParams webserviceParams from the entity
+     * @param string $fieldName
+     * @param array $field
+     * @param int $depth
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function renderField($object, $wsParams, $fieldName, $field, $depth)
     {
@@ -677,17 +682,16 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     *
-     *
-     * @param $object
-     * @param $depth
-     * @param $associations
-     * @param $wsParams
+     * @param ObjectModel $object
+     * @param int $depth
+     * @param array $associations
+     * @param array $wsParams
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws WebserviceException
+     * @throws PrestaShopException
      */
     protected function renderAssociations($object, $depth, $associations, $wsParams)
     {
@@ -772,18 +776,15 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $object
-     * @param $depth
-     * @param $assocName
-     * @param $resourceName
-     * @param $fieldsAssoc
-     * @param $objectAssoc
-     * @param $parentDetails
+     * @param ObjectModel $object
+     * @param int $depth
+     * @param string $assocName
+     * @param string $resourceName
+     * @param array $fieldsAssoc
+     * @param array $objectAssoc
+     * @param array $parentDetails
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function renderFlatAssociation($object, $depth, $assocName, $resourceName, $fieldsAssoc, $objectAssoc, $parentDetails)
     {
@@ -831,12 +832,9 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $depth
+     * @param int $depth
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setIndent($depth)
     {
@@ -850,12 +848,9 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $field
+     * @param array $field
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSynopsisDetails($field)
     {
@@ -878,16 +873,12 @@ class WebserviceOutputBuilderCore
 
     /**
      * @param string|object $object
-     * @param string        $method
-     * @param               $fieldName
-     * @param               $entityName
+     * @param string $method
+     * @param string $fieldName
+     * @param string $entityName
      *
-     * @return WebserviceOutputBuilder
-     * @throws Exception
+     * @return static
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setSpecificField($object, $method, $fieldName, $entityName)
     {
@@ -903,13 +894,10 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $object
-     * @param $method
+     * @param object|string $object
+     * @param string $method
      *
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function validateObjectAndMethod($object, $method)
     {
@@ -923,9 +911,6 @@ class WebserviceOutputBuilderCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSpecificField()
     {
@@ -933,16 +918,13 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $entityName
-     * @param $fieldName
-     * @param $field
-     * @param $entityObject
-     * @param $wsParams
+     * @param string $entityName
+     * @param string $fieldName
+     * @param array $field
+     * @param ObjectModel $entityObject
+     * @param array $wsParams
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     protected function overrideSpecificField($entityName, $fieldName, $field, $entityObject, $wsParams)
     {
@@ -967,15 +949,12 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $object
-     * @param $method
-     * @param $entityName
-     * @param $parameters
+     * @param object|string $object
+     * @param string $method
+     * @param string $entityName
+     * @param string $parameters
      *
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setVirtualField($object, $method, $entityName, $parameters)
     {
@@ -990,9 +969,6 @@ class WebserviceOutputBuilderCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getVirtualFields()
     {
@@ -1000,14 +976,11 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $entityName
-     * @param $entityObject
+     * @param string $entityName
+     * @param ObjectModel $entityObject
      *
      * @return array
      * @throws WebserviceException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addVirtualFields($entityName, $entityObject)
     {
@@ -1037,10 +1010,7 @@ class WebserviceOutputBuilderCore
     }
 
     /**
-     * @param $fields
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array|string $fields
      */
     public function setFieldsToDisplay($fields)
     {

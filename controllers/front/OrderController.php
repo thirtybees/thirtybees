@@ -31,8 +31,6 @@
 
 /**
  * Class OrderControllerCore
- *
- * @since 1.0.0
  */
 class OrderControllerCore extends ParentOrderController
 {
@@ -41,18 +39,20 @@ class OrderControllerCore extends ParentOrderController
     const STEP_DELIVERY = 2;
     const STEP_PAYMENT = 3;
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $step;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize order controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -131,7 +131,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -147,7 +148,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processCarrier()
     {
@@ -169,7 +171,6 @@ class OrderControllerCore extends ParentOrderController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function _assignCarrier()
     {
@@ -191,11 +192,12 @@ class OrderControllerCore extends ParentOrderController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -326,7 +328,7 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _assignAddress()
     {
@@ -344,7 +346,7 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processAddressFormat()
     {
@@ -367,7 +369,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAddress()
     {
@@ -444,7 +447,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function autoStep()
     {
@@ -506,7 +510,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignPayment()
     {
@@ -546,7 +551,8 @@ class OrderControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class StoreCore
- *
- * @since 1.0.0
  */
 class StoreCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int Country id */
     public $id_country;
     /** @var int State id */
@@ -71,10 +68,9 @@ class StoreCore extends ObjectModel
     public $date_upd;
     /** @var bool Store status */
     public $active = true;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'store',
@@ -105,6 +101,9 @@ class StoreCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_country' => ['xlink_resource' => 'countries'],
@@ -116,11 +115,11 @@ class StoreCore extends ObjectModel
     /**
      * StoreCore constructor.
      *
-     * @param null $idStore
-     * @param null $idLang
+     * @param int|null $idStore
+     * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($idStore = null, $idLang = null)
     {
@@ -131,9 +130,6 @@ class StoreCore extends ObjectModel
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsHours()
     {
@@ -154,9 +150,6 @@ class StoreCore extends ObjectModel
      * @param string $hours
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setWsHours($hours)
     {

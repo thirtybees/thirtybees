@@ -105,20 +105,18 @@ define('PREG_CLASS_CJK', '\x{3041}-\x{30ff}\x{31f0}-\x{31ff}\x{3400}-\x{4db5}\x{
 class SearchCore
 {
     /**
-     * @param              $idLang
-     * @param              $expr
-     * @param int          $pageNumber
-     * @param int          $pageSize
-     * @param string       $orderBy
-     * @param string       $orderWay
-     * @param bool         $ajax
-     * @param bool         $use_cookie
+     * @param int $idLang
+     * @param string $expr
+     * @param int $pageNumber
+     * @param int $pageSize
+     * @param string $orderBy
+     * @param string $orderWay
+     * @param bool $ajax
+     * @param bool $use_cookie
      * @param Context|null $context
      *
-     * @return array
+     * @return array|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -331,14 +329,12 @@ class SearchCore
 
     /**
      * @param string $string
-     * @param int    $idLang
-     * @param bool   $indexation
-     * @param bool   $isoCode
+     * @param int $idLang
+     * @param bool $indexation
+     * @param bool $isoCode
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function sanitize($string, $idLang, $indexation = false, $isoCode = false)
@@ -422,13 +418,11 @@ class SearchCore
     }
 
     /**
-     * @param bool     $full
+     * @param bool $full
      * @param int|bool $idProduct
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function indexation($full = false, $idProduct = false)
@@ -610,12 +604,9 @@ class SearchCore
     }
 
     /**
-     * @param $weightArray
+     * @param int[] $weightArray
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function getSQLProductAttributeFields(&$weightArray)
     {
@@ -645,17 +636,15 @@ class SearchCore
     }
 
     /**
-     * @param       $totalLanguages
-     * @param bool  $idProduct
-     * @param int   $limit
+     * @param int $totalLanguages
+     * @param bool $idProduct
+     * @param int $limit
      * @param array $weightArray
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function getProductsToIndex($totalLanguages, $idProduct = false, $limit = 50, $weightArray = [])
     {
@@ -736,7 +725,7 @@ class SearchCore
     }
 
     /**
-     * @param Db  $db
+     * @param Db $db
      * @param int $idProduct
      * @param int $idLang
      *
@@ -744,8 +733,6 @@ class SearchCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTags($db, $idProduct, $idLang)
     {
@@ -764,7 +751,7 @@ class SearchCore
     }
 
     /**
-     * @param Db  $db
+     * @param Db $db
      * @param int $idProduct
      * @param int $idLang
      *
@@ -772,8 +759,6 @@ class SearchCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAttributes($db, $idProduct, $idLang)
     {
@@ -798,7 +783,7 @@ class SearchCore
     }
 
     /**
-     * @param Db  $db
+     * @param Db $db
      * @param int $idProduct
      * @param int $idLang
      *
@@ -806,8 +791,6 @@ class SearchCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeatures($db, $idProduct, $idLang)
     {
@@ -830,16 +813,14 @@ class SearchCore
     }
 
     /**
-     * @param Db     $db
-     * @param int    $idProduct
+     * @param Db $db
+     * @param int $idProduct
      * @param string $sqlAttribute
      *
      * @return array|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function getAttributesFields($db, $idProduct, $sqlAttribute)
     {
@@ -850,15 +831,13 @@ class SearchCore
     }
 
     /**
-     * @param $productArray
-     * @param $weightArray
-     * @param $key
-     * @param $value
-     * @param $idLang
-     * @param $isoCode
+     * @param array $productArray
+     * @param array $weightArray
+     * @param string $key
+     * @param string $value
+     * @param int $idLang
+     * @param string $isoCode
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected static function fillProductArray(&$productArray, $weightArray, $key, $value, $idLang, $isoCode)
@@ -881,8 +860,6 @@ class SearchCore
     /**
      * @param array $queryArray3
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected static function saveIndex(&$queryArray3)
@@ -898,10 +875,8 @@ class SearchCore
     }
 
     /**
-     * @param $products
+     * @param array $products
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected static function setProductsAsIndexed(&$products)
@@ -912,10 +887,8 @@ class SearchCore
     }
 
     /**
-     * @param $products
+     * @param array $products
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function removeProductsSearchIndex($products)
@@ -927,20 +900,18 @@ class SearchCore
     }
 
     /**
-     * @param int          $idLang
-     * @param              $tag
-     * @param bool         $count
-     * @param int          $pageNumber
-     * @param int          $pageSize
-     * @param bool         $orderBy
-     * @param bool         $orderWay
-     * @param bool         $useCookie
+     * @param int $idLang
+     * @param string $tag
+     * @param bool $count
+     * @param int $pageNumber
+     * @param int $pageSize
+     * @param bool $orderBy
+     * @param bool $orderWay
+     * @param bool $useCookie
      * @param Context|null $context
      *
      * @return array|bool|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

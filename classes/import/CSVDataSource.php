@@ -25,8 +25,6 @@ use Tools;
 
 /**
  * class CSVDataSource
- *
- * @since 1.4.0
  */
 class CSVDataSourceCore implements DataSourceInterface
 {
@@ -99,6 +97,8 @@ class CSVDataSourceCore implements DataSourceInterface
 
     /**
      * Rewinds file handle to the beginning
+     *
+     * @return bool
      */
     public function rewind()
     {

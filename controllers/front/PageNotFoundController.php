@@ -31,8 +31,6 @@
 
 /**
  * Class PageNotFoundControllerCore
- *
- * @since 1.0.0
  */
 class PageNotFoundControllerCore extends FrontController
 {
@@ -46,13 +44,12 @@ class PageNotFoundControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
+     * @see FrontController::initContent()
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function initContent()
     {

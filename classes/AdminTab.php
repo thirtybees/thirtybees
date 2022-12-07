@@ -34,8 +34,14 @@
  */
 abstract class AdminTabCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public static $currentIndex;
+
+    /**
+     * @var string[]
+     */
     public static $tabParenting = [
         'AdminCms'                => 'AdminCmsContent',
         'AdminCmsCategories'      => 'AdminCmsContent',
@@ -78,6 +84,9 @@ abstract class AdminTabCore
     public $imageType = 'jpg';
     /** @var array Fields to display in list */
     public $fieldsDisplay = [];
+    /**
+     * @var string|null
+     */
     public $optionTitle = null;
     /** @var string shop */
     public $shopLinkType;
@@ -89,18 +98,26 @@ abstract class AdminTabCore
     public $tabAccess;
     /** @var string specificConfirmDelete */
     public $specificConfirmDelete = null;
+
+    /**
+     * @var Smarty
+     */
     public $smarty;
+    /**
+     * @var array
+     */
     public $_fieldsOptions = [];
     /**
-     * @since 1.5.0
      * @var array
      */
     public $optionsList = [];
     /**
-     * @since 1.5.0
      * @var Context
      */
     public $context;
+    /**
+     * @var bool
+     */
     public $ajax = false;
     /**
      * if true, ajax-tab will not wait 1 sec
@@ -144,21 +161,39 @@ abstract class AdminTabCore
     protected $_conf;
     /** @var object Object corresponding to the tab */
     protected $_object = false;
+    /**
+     * @var string[]
+     */
     protected $identifiersDnd = ['id_product' => 'id_product', 'id_category' => 'id_category_to_move', 'id_cms_category' => 'id_cms_category_to_move', 'id_cms' => 'id_cms', 'id_attribute' => 'id_attribute', 'id_attribute_group' => 'id_attribute_group', 'id_feature' => 'id_feature', 'id_carrier' => 'id_carrier'];
     /** @var bool Redirect or not ater a creation */
     protected $_redirect = true;
     /** @var bool If false, don't add form tags in options forms */
     protected $formOptions = true;
+    /**
+     * @var array
+     */
     protected $_languages = null;
+    /**
+     * @var int
+     */
     protected $_defaultFormLanguage = null;
+    /**
+     * @var array
+     */
     protected $_includeObj = [];
+    /**
+     * @var bool
+     */
     protected $_includeVars = false;
+    /**
+     * @var bool
+     */
     protected $_includeContainer = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminTabCore constructor.
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function __construct()
@@ -197,10 +232,10 @@ abstract class AdminTabCore
     /**
      * Uses translations files to find a translation for a given string (string should be in english).
      *
-     * @param string $string       term or expression in english
+     * @param string $string term or expression in english
      * @param string $class
-     * @param bool   $addslashes   if set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
-     * @param bool   $htmlentities if set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
+     * @param bool $addslashes if set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
+     * @param bool $htmlentities if set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
      *
      * @return string The translation if available, or the english default text.
      *
@@ -237,9 +272,7 @@ abstract class AdminTabCore
     }
 
     /**
-     *
-     *
-     * @param      $table
+     * @param string $table
      * @param bool $idObject
      *
      * @return array|void
@@ -280,6 +313,7 @@ abstract class AdminTabCore
     /**
      * Manage page display (form, list...)
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function display()
@@ -318,9 +352,7 @@ abstract class AdminTabCore
     }
 
     /**
-     *
-     *
-     * @param       $methodname
+     * @param string $methodname
      * @param array $actions
      *
      * @deprecated 1.0.0
@@ -471,14 +503,15 @@ abstract class AdminTabCore
     /**
      * Get the current objects' list form the database
      *
-     * @param int    $idLang    Language used for display
-     * @param string $orderBy   ORDER BY clause
-     * @param string $_orderWay Order way (ASC, DESC)
-     * @param int    $start     Offset in LIMIT clause
-     * @param int    $limit     Row count in LIMIT clause
-     *
-     * @deprecated 1.0.0
+     * @param int $idLang Language used for display
+     * @param string|null $orderBy ORDER BY clause
+     * @param string|null $orderWay
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param bool $idLangShop
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -577,6 +610,7 @@ abstract class AdminTabCore
     /**
      * Display list
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function displayList()
@@ -607,10 +641,16 @@ abstract class AdminTabCore
         $this->displayListFooter();
     }
 
+    /**
+     * @return void
+     */
     public function displayTop()
     {
     }
 
+    /**
+     * @return void
+     */
     protected function displayAddButton()
     {
         echo '<br /><a href="'.static::$currentIndex.'&add'.$this->table.'&token='.$this->token.'"><img src="../img/admin/add.gif" border="0" /> '.$this->l('Add new').'</a><br /><br />';
@@ -671,6 +711,9 @@ abstract class AdminTabCore
     /**
      * Display list header (filtering, pagination and column names)
      *
+     * @param string|null $token
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function displayListHeader($token = null)
@@ -1017,12 +1060,12 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param      $token
-     * @param      $id
-     * @param      $value
-     * @param      $active
-     * @param null $idCategory
-     * @param null $idProduct
+     * @param string $token
+     * @param int $id
+     * @param bool $value
+     * @param string $active
+     * @param int|null $idCategory
+     * @param int|null $idProduct
      *
      * @deprecated 1.0.0
      */
@@ -1039,8 +1082,8 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param null $token
-     * @param      $id
+     * @param string|null $token
+     * @param int $id
      *
      * @deprecated 1.0.0
      */
@@ -1054,8 +1097,8 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param null $token
-     * @param      $id
+     * @param string|null $token
+     * @param int $id
      *
      * @deprecated 1.0.0
      */
@@ -1069,8 +1112,8 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param null $token
-     * @param      $id
+     * @param string|null $token
+     * @param int $id
      *
      * @deprecated 1.0.0
      */
@@ -1086,8 +1129,8 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param null $token
-     * @param      $id
+     * @param string|null $token
+     * @param int $id
      *
      * @deprecated 1.0.0
      */
@@ -1104,6 +1147,7 @@ abstract class AdminTabCore
     /**
      * Close list table and submit button
      *
+     * @param string|null $token
      * @deprecated 1.0.0
      */
     public function displayListFooter($token = null)
@@ -1126,6 +1170,7 @@ abstract class AdminTabCore
     /**
      * Options lists
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function displayOptionsList()
@@ -1281,8 +1326,9 @@ abstract class AdminTabCore
     }
 
     /**
-     * @deprecated 1.0.0
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public function displayRequiredFields()
     {
@@ -1337,8 +1383,10 @@ abstract class AdminTabCore
      *
      * @param int $id Object id used for deleting images
      *
-     * @deprecated 1.0.0
+     * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public function deleteImage($id)
     {
@@ -1722,6 +1770,7 @@ abstract class AdminTabCore
      * @param bool $opt Return an empty object if load fail
      *
      * @return object
+     * @throws PrestaShopException
      */
     protected function loadObject($opt = false)
     {
@@ -1747,6 +1796,7 @@ abstract class AdminTabCore
 
     /**
      * Display errors
+     * @throws PrestaShopException
      */
     public function displayErrors()
     {
@@ -1891,8 +1941,8 @@ abstract class AdminTabCore
     /**
      * Copy datas from $_POST to object
      *
-     * @param object &$object Object
-     * @param string $table   Object table
+     * @param ObjectModel &$object Object model
+     * @param string $table Object table
      *
      * @deprecated 1.0.0
      * @throws PrestaShopException
@@ -1943,7 +1993,7 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
@@ -1986,6 +2036,7 @@ abstract class AdminTabCore
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     protected function postImage($id)
@@ -2003,6 +2054,16 @@ abstract class AdminTabCore
         return !count($this->_errors) ? true : false;
     }
 
+    /**
+     * @param int $id
+     * @param string $name
+     * @param string $dir
+     * @param string $ext
+     * @param int|null $width
+     * @param int|null $height
+     * @return bool
+     * @throws PrestaShopException
+     */
     protected function uploadImage($id, $name, $dir, $ext = false, $width = null, $height = null)
     {
         if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
@@ -2055,7 +2116,7 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
@@ -2184,8 +2245,8 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param $value
-     * @param $field
+     * @param mixed $value
+     * @param array $field
      *
      * @return bool
      *
@@ -2208,10 +2269,10 @@ abstract class AdminTabCore
     }
 
     /**
-     * @param $key
-     * @param $filter
+     * @param string $key
+     * @param string $filter
      *
-     * @return mixed
+     * @return array|false
      *
      * @deprecated 1.0.0
      */
@@ -2247,13 +2308,14 @@ abstract class AdminTabCore
     /**
      * Display image aside object form
      *
-     * @param int    $id           Object id
-     * @param string $image        Local image filepath
-     * @param int    $size         Image width
-     * @param int    $idImage      Image id (for products with several images)
-     * @param string $token        Employee token used in the image deletion link
-     * @param bool   $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
+     * @param int $id Object id
+     * @param string $image Local image filepath
+     * @param int $size Image width
+     * @param int|null $idImage Image id (for products with several images)
+     * @param string|null $token Employee token used in the image deletion link
+     * @param bool $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function displayImage($id, $image, $size, $idImage = null, $token = null, $disableCache = false)
@@ -2277,9 +2339,9 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypeSelect($key, $field, $value)
     {
@@ -2295,9 +2357,9 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param bool $value
      */
     public function displayOptionTypeBool($key, $field, $value)
     {
@@ -2315,9 +2377,9 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypeRadio($key, $field, $value)
     {
@@ -2332,9 +2394,9 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypePassword($key, $field, $value)
     {
@@ -2344,9 +2406,9 @@ abstract class AdminTabCore
     /**
      * Type = textarea
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @deprecated 1.0.0
      */
@@ -2358,9 +2420,9 @@ abstract class AdminTabCore
     /**
      * Type = file
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @deprecated 1.0.0
      */
@@ -2375,9 +2437,9 @@ abstract class AdminTabCore
     /**
      * Type = image
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @deprecated 1.0.0
      */
@@ -2421,9 +2483,9 @@ abstract class AdminTabCore
     /**
      * Type = textLang
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @deprecated 1.0.0
      * @throws PrestaShopException
@@ -2443,12 +2505,12 @@ abstract class AdminTabCore
     /**
      * Display flags in forms for translations
      *
-     * @param array  $languages               All languages available
-     * @param int    $default_language        Default language id
-     * @param string $ids                     Multilingual div ids in form
-     * @param string $id                      Current div id]
-     * @param bool   $return                  define the return way : false for a display, true for a return
-     * @param bool   $use_vars_instead_of_ids use an js vars instead of ids seperate by "¤"
+     * @param array $languages All languages available
+     * @param int $default_language Default language id
+     * @param string $ids Multilingual div ids in form
+     * @param string $id Current div id]
+     * @param bool $return define the return way : false for a display, true for a return
+     * @param bool $use_vars_instead_of_ids use an js vars instead of ids seperate by "¤"
      *
      *                                        @deprecated 1.0.0
      */
@@ -2481,9 +2543,9 @@ abstract class AdminTabCore
     /**
      * Type = TextareaLang
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @throws PrestaShopException
      */
@@ -2503,9 +2565,9 @@ abstract class AdminTabCore
     /**
      * Type = selectLang
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      *
      * @throws PrestaShopException
      */
@@ -2527,9 +2589,9 @@ abstract class AdminTabCore
     /**
      * Type = price
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypePrice($key, $field, $value)
     {
@@ -2541,9 +2603,9 @@ abstract class AdminTabCore
     /**
      * Type = disabled
      *
-     * @param $key
-     * @param $field
-     * @param $value
+     * @param string $key
+     * @param array $field
+     * @param string $value
      */
     public function displayOptionTypeDisabled($key, $field, $value)
     {
@@ -2556,11 +2618,10 @@ abstract class AdminTabCore
      * Case 1 : Return value if present in $_POST / $_GET
      * Case 2 : Return object value
      *
-     * @param object $obj     Object
-     * @param string $key     Field name
-     * @param int    $id_lang Language id (optional)
-     *
-     * @param null   $idShop
+     * @param object $obj Object
+     * @param string $key Field name
+     * @param int $id_lang Language id (optional)
+     * @param int|null $idShop
      *
      * @return string
      */
@@ -2595,6 +2656,8 @@ abstract class AdminTabCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
 
@@ -2626,6 +2689,7 @@ abstract class AdminTabCore
     }
 
     /**
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     protected function warnDomainName()
@@ -2641,6 +2705,7 @@ abstract class AdminTabCore
     }
 
     /**
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     protected function displayAssoShop()

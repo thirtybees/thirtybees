@@ -31,22 +31,20 @@
 
 /**
  * Class BestSalesControllerCore
- *
- * @since 1.0.0
  */
 class BestSalesControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'best-sales';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize content
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -85,7 +83,8 @@ class BestSalesControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {

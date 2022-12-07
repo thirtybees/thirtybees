@@ -31,8 +31,6 @@
 
 /**
  * Class ObjectModelCore
- *
- * @since 1.0.0
  */
 abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterface
 {
@@ -85,7 +83,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     const FOREIGN_KEY = 3;
     const KEY = 4;
 
-    // @codingStandardsIgnoreStart
     /** @var int|null Object ID */
     public $id;
 
@@ -158,10 +155,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     protected $tables = [];
 
-    /** @var array Tables */
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [];
 
-    /** @var string Path to image directory. Used for image deletion. */
+    /** @var string|null Path to image directory. Used for image deletion. */
     protected $image_dir = null;
 
     /** @var String file type of image files. */
@@ -169,7 +168,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
     /**
      * @var array Contains object definition
-     * @since 1.5.0.1
      */
     public static $definition = [];
 
@@ -197,13 +195,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @var bool If true, objects are cached in memory.
      */
     protected static $cache_objects = true;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public static function getRepositoryClassName()
     {
@@ -213,12 +207,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Returns object validation rules (fields validity)
      *
-     * @param  string $class Child class name for static use (optional)
+     * @param string $class Child class name for static use (optional)
      *
      * @return array Validation rules (fields validity)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getValidationRules($class = __CLASS__)
     {
@@ -237,15 +228,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Builds the object
      *
-     * @param int|null $id     If specified, loads and existing object from DB (optional).
+     * @param int|null $id If specified, loads and existing object from DB (optional).
      * @param int|null $idLang Required if object is multilingual (optional).
      * @param int|null $idShop ID shop for objects with multishop tables.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -293,8 +281,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @param string $property Property name
      *
      * @return mixed
-     *
-     * @since 1.0.1
      */
     public function &__get($property)
     {
@@ -314,11 +300,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * that still access properties via their snake_case names
      *
      * @param string $property
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return void
-     *
-     * @since 1.0.1
      */
     public function __set($property, $value)
     {
@@ -337,9 +321,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array All object fields
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFields()
     {
@@ -365,8 +346,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array primary table fields
      * @throws PrestaShopException
-     *
-     * @since   1.3.0
      */
     protected function getFieldsPrimary()
     {
@@ -391,8 +370,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array All object fields
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFieldsShop()
@@ -410,9 +387,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFieldsLang()
     {
@@ -452,8 +426,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function formatFields($type, $idLang = null)
@@ -512,15 +484,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Formats a value
      *
      * @param mixed $value
-     * @param int   $type
-     * @param bool  $withQuotes
-     * @param bool  $purify
-     * @param bool  $allowNull
+     * @param int $type
+     * @param bool $withQuotes
+     * @param bool $purify
+     * @param bool $allowNull
      *
-     * @return mixed
+     * @return int|float|bool|string|array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function formatValue($value, $type, $withQuotes = false, $purify = true, $allowNull = false)
@@ -583,9 +553,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool Insertion result
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function save($nullValues = false, $autoDate = true)
     {
@@ -601,9 +568,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return bool Insertion result
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -699,8 +663,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return ObjectModel|false
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function duplicateObject()
@@ -903,9 +865,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool True if delete was successful
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -955,8 +914,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteSelection($ids)
@@ -975,9 +932,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool Update result
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function toggleStatus()
     {
@@ -1003,9 +957,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getTranslationsFields($fieldsArray)
     {
@@ -1025,9 +976,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * @deprecated 1.0.0
      *
-     * @param array       $fields
+     * @param array $fields
      * @param array $fieldsArray
-     * @param int   $idLanguage
+     * @param int $idLanguage
      *
      * @throws PrestaShopException
      */
@@ -1071,9 +1022,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool|string True, false or error message.
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateFields($die = true, $errorReturn = false)
     {
@@ -1107,9 +1055,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool|string True, false or error message.
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateFieldsLang($die = true, $errorReturn = false)
     {
@@ -1154,17 +1099,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Validate a single field
      *
-     * @param string   $field       Field name
-     * @param mixed    $value       Field value
-     * @param int|null $idLang      Language ID
-     * @param array    $skip        Array of fields to skip.
-     * @param bool     $humanErrors If true, uses more descriptive, translatable error strings.
+     * @param string $field Field name
+     * @param mixed $value Field value
+     * @param int|null $idLang Language ID
+     * @param array $skip Array of fields to skip.
+     * @param bool $humanErrors If true, uses more descriptive, translatable error strings.
      *
      * @return true|string True or error message string.
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateField($field, $value, $idLang = null, $skip = [], $humanErrors = false)
     {
@@ -1266,15 +1208,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Returns field name translation
      *
-     * @param string       $field        Field name
-     * @param string       $class        ObjectModel class name
-     * @param bool         $htmlentities If true, applies htmlentities() to result string
-     * @param Context|null $context      Context object
+     * @param string $field Field name
+     * @param string $class ObjectModel class name
+     * @param bool $htmlentities If true, applies htmlentities() to result string
+     * @param Context|null $context Context object
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function displayFieldName($field, $class = __CLASS__, $htmlentities = true, Context $context = null)
     {
@@ -1299,12 +1238,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     }
 
     /**
-     * @deprecated 1.0.0 Use validateController() instead
-     *
      * @param bool $htmlentities
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0 Use validateController() instead
      */
     public function validateControler($htmlentities = true)
     {
@@ -1320,9 +1259,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function validateController($htmlentities = true)
     {
@@ -1392,9 +1330,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getWebserviceParameters($wsParamsAttributeName = null)
     {
@@ -1499,16 +1436,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return array|null
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $assoc = Shop::getAssoTable($this->def['table']);
-        // @codingStandardsIgnoreStart
         $className = WebserviceRequest::$ws_current_classname;
-        // @codingStandardsIgnoreEnd
         $vars = get_class_vars($className);
         if ($assoc !== false) {
             if ($assoc['type'] !== 'fk_shop') {
@@ -1547,9 +1480,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateFieldsRequiredDatabase($htmlentities = true)
     {
@@ -1584,8 +1514,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return array|null
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFieldsRequiredDatabase($all = false)
@@ -1601,8 +1529,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @param bool $all If true, caches required fields of all object classes.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1628,9 +1554,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function addFieldsRequiredDatabase($fields)
@@ -1656,9 +1579,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Clears cache entries that have this object's ID.
      *
      * @param bool $all If true, clears cache for all objects
-     *
-     *                  @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function clearCache($all = false)
     {
@@ -1676,8 +1596,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isAssociatedToShop($idShop = null)
@@ -1715,8 +1633,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function associateTo($idShops)
@@ -1752,8 +1668,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @return array
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAssociatedShops()
@@ -1776,11 +1690,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @param int $id
      *
-     * @return bool|void
+     * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function duplicateShops($id)
@@ -1809,8 +1721,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasMultishopEntries()
@@ -1826,9 +1736,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Checks if object is multi-shop object.
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isMultishop()
     {
@@ -1841,9 +1748,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @param string $field
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isMultiShopField($field)
     {
@@ -1854,9 +1758,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Checks if the object is both multi-language and multi-shop.
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isLangMultishop()
     {
@@ -1867,14 +1768,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Updates a table and splits the common datas and the shop datas.
      *
      * @param string $className
-     * @param array  $data
+     * @param array $data
      * @param string $where
-     * @param string $specific_where Only executed for common table
+     * @param string $specificWhere Only executed for common table
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateMultishopTable($className, $data, $where = '', $specificWhere = '')
@@ -1918,8 +1817,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1961,15 +1858,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Checks if an object exists in database.
      *
-     * @param int    $idEntity
+     * @param int $idEntity
      * @param string $table
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function existsInDatabase($idEntity, $table)
     {
@@ -1985,13 +1880,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Checks if an object type exists in the database.
      *
-     * @param string|null $table           Name of table linked to entity
-     * @param bool        $hasActiveColumn True if the table has an active column
+     * @param string|null $table Name of table linked to entity
+     * @param bool $hasActiveColumn True if the table has an active column
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
@@ -2014,10 +1907,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Fill an object with given data. Data must be an array with this syntax:
      * array(objProperty => value, objProperty2 => value, etc.)
      *
-     * @param array    $data
+     * @param array $data
      * @param int|null $idLang
-     *
-     * @since 1.0.0
      */
     public function hydrate(array $data, $idLang = null)
     {
@@ -2040,9 +1931,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *   array(id_lang => 2, objProperty => value, objProperty2 => value, etc.),
      * );
      *
-     * @param array    $data
-     *
-     * @since 1.0.4
+     * @param array $data
      */
     public function hydrateMultilang(array $data)
     {
@@ -2071,15 +1960,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Fill (hydrate) a list of objects in order to get a collection of these objects
      *
-     * @param string   $class   Class of objects to hydrate
-     * @param array    $datas   List of data (multi-dimensional array)
+     * @param string $class Class of objects to hydrate
+     * @param array $datas List of data (multi-dimensional array)
      * @param int|null $idLang
      *
      * @return array
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hydrateCollection($class, array $datas, $idLang = null)
     {
@@ -2130,14 +2016,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Returns object definition
      *
-     * @param string $class Name of object
+     * @param string|ObjectModelCore $class Name of object or object model instance
      * @param string|null $field Name of field if we want the definition of one field only
      *
      * @return array
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDefinition($class, $field = null)
     {
@@ -2254,14 +2138,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Return the field value for the specified language if the field is multilang,
      * else the field value.
      *
-     * @param string   $fieldName
+     * @param string $fieldName
      * @param int|null $idLang
      *
      * @return mixed
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFieldByLang($fieldName, $idLang = null)
     {
@@ -2288,9 +2169,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * langfield1 => array(1 => true, 2 => false))
      *
      * @param array $fields
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setFieldsToUpdate(array $fields)
     {
@@ -2300,8 +2178,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Enables object caching
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function enableCache()
     {
@@ -2311,8 +2188,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Disables object caching
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function disableCache()
     {
@@ -2326,10 +2202,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool Indicates whether the database was successfully added
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function createDatabase($className = null)
@@ -2480,8 +2352,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool Indicates whether the database was successfully dropped
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function dropDatabase($className = null)
@@ -2513,12 +2383,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @param string|null $className Class name
      *
-     * @return array|false|\mysqli_result|null|\PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDatabaseColumns($className = null)
     {
@@ -2554,14 +2422,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * The primary column is created automatically as INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT. The other columns
      * require an extra parameter, with the type of the column in the database.
      *
-     * @param string      $name             Column name
-     * @param array       $columnDefinition Column type definition
-     * @param string|null $className        Class name
+     * @param string $name Column name
+     * @param array $columnDefinition Column type definition
+     * @param string|null $className Class name
      *
      * @return bool Indicates whether the column was successfully created
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function createColumn($name, $columnDefinition, $className = null)
@@ -2597,8 +2463,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @todo    : Support multishop and multilang
      */

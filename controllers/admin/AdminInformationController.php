@@ -31,22 +31,16 @@
 
 /**
  * Class AdminInformationControllerCore
- *
- * @since 1.0.0
  */
 class AdminInformationControllerCore extends AdminController
 {
     /**
      * @var array $fileList
-     *
-     * @since 1.0.0
      */
     public $fileList = [];
 
     /**
      * @var string $excludeRegexp
-     *
-     * @since 1.0.0
      */
     protected $excludeRegexp = '^/(install(-dev|-new)?|vendor|themes|tools|cache|docs|download|img|localization|log|mails|translations|upload|modules|override/(.*|index\.php)$)';
 
@@ -54,7 +48,6 @@ class AdminInformationControllerCore extends AdminController
      * AdminInformationControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -65,7 +58,6 @@ class AdminInformationControllerCore extends AdminController
     /**
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -82,7 +74,7 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initToolbarTitle()
     {
@@ -91,7 +83,6 @@ class AdminInformationControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function initPageHeaderToolbar()
     {
@@ -102,8 +93,9 @@ class AdminInformationControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -235,7 +227,6 @@ class AdminInformationControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function displayAjaxCheckFiles()
     {
@@ -320,10 +311,8 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
-     * @param array       $md5List
+     * @param array $md5List
      * @param string|null $basePath
-     *
-     * @since 1.0.0
      */
     public function getListOfUpdatedFiles(array $md5List, $basePath = null)
     {

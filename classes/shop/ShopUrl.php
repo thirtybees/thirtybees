@@ -31,12 +31,9 @@
 
 /**
  * Class ShopUrlCore
- *
- * @since 1.0.0
  */
 class ShopUrlCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int $id_shop */
     public $id_shop;
     /** @var string $domain */
@@ -55,10 +52,9 @@ class ShopUrlCore extends ObjectModel
     protected static $main_domain = [];
     /** @var array $main_domain_ssl */
     protected static $main_domain_ssl = [];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'shop_url',
@@ -81,6 +77,9 @@ class ShopUrlCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_shop' => ['xlink_resource' => 'shops'],
@@ -88,11 +87,8 @@ class ShopUrlCore extends ObjectModel
     ];
 
     /**
-     * @see     ObjectModel::getFields()
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFields()
@@ -117,9 +113,6 @@ class ShopUrlCore extends ObjectModel
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBaseURI()
     {
@@ -130,9 +123,6 @@ class ShopUrlCore extends ObjectModel
      * @param bool $ssl
      *
      * @return string|null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getURL($ssl = false)
     {
@@ -152,8 +142,6 @@ class ShopUrlCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of ShopUrl
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getShopUrls($idShop = false)
@@ -171,8 +159,6 @@ class ShopUrlCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setMain()
     {
@@ -203,8 +189,6 @@ class ShopUrlCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function canAddThisUrl($domain, $domainSsl, $physicalUri, $virtualUri)
@@ -238,12 +222,9 @@ class ShopUrlCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cacheMainDomainForShop($idShop)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
             $row = Db::getInstance()->getRow(
                 (new DbQuery())
@@ -255,56 +236,44 @@ class ShopUrlCore extends ObjectModel
             static::$main_domain[(int)$idShop] = isset($row['domain']) ? $row['domain'] : '';
             static::$main_domain_ssl[(int)$idShop] = isset($row['domain_ssl']) ? $row['domain_ssl'] : '';
         }
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function resetMainDomainCache()
     {
-        // @codingStandardsIgnoreStart
         static::$main_domain = [];
         static::$main_domain_ssl = [];
-        // @codingStandardsIgnoreEnd
-    }
-
-    /**
-     * @param null $idShop
-     *
-     * @return mixed
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function getMainShopDomain($idShop = null)
-    {
-        static::cacheMainDomainForShop($idShop);
-
-        // @codingStandardsIgnoreStart
-        return static::$main_domain[(int) $idShop];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * @param int|null $idShop
      *
-     * @return mixed
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     */
+    public static function getMainShopDomain($idShop = null)
+    {
+        static::cacheMainDomainForShop($idShop);
+
+        return static::$main_domain[(int) $idShop];
+    }
+
+    /**
+     * @param int|null $idShop
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMainShopDomainSSL($idShop = null)
     {
         static::cacheMainDomainForShop($idShop);
 
-        // @codingStandardsIgnoreStart
         return static::$main_domain_ssl[(int) $idShop];
-        // @codingStandardsIgnoreEnd
     }
 }

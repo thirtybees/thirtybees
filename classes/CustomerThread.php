@@ -31,12 +31,9 @@
 
 /**
  * Class CustomerThreadCore
- *
- * @since 1.0.0
  */
 class CustomerThreadCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int $id_contact */
     public $id_contact;
     /** @var int $id_customer */
@@ -55,10 +52,9 @@ class CustomerThreadCore extends ObjectModel
     public $date_add;
     /** @var string $date_upd */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'customer_thread',
@@ -87,6 +83,10 @@ class CustomerThreadCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields'       => [
             'id_lang'     => [
@@ -114,16 +114,14 @@ class CustomerThreadCore extends ObjectModel
     ];
 
     /**
-     * @param int      $idCustomer
+     * @param int $idCustomer
      * @param int|null $read
      * @param int|null $idOrder
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCustomerMessages($idCustomer, $read = null, $idOrder = null)
     {
@@ -145,13 +143,11 @@ class CustomerThreadCore extends ObjectModel
 
     /**
      * @param string $email
-     * @param int    $idOrder
+     * @param int $idOrder
      *
      * @return false|null|string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdCustomerThreadByEmailAndIdOrder($email, $idOrder)
     {
@@ -165,12 +161,10 @@ class CustomerThreadCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getContacts()
     {
@@ -193,8 +187,6 @@ class CustomerThreadCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getTotalCustomerThreads($where = null)
@@ -210,10 +202,8 @@ class CustomerThreadCore extends ObjectModel
     /**
      * @param int $idCustomerThread
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getMessageCustomerThreads($idCustomerThread)
@@ -237,8 +227,6 @@ class CustomerThreadCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNextThread($idCustomerThread)
@@ -258,12 +246,10 @@ class CustomerThreadCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsCustomerMessages()
     {
@@ -280,8 +266,6 @@ class CustomerThreadCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {

@@ -101,6 +101,13 @@ foreach (scandir($localizationPacksRoot) as $entry) {
     }
 }
 
+/**
+ * @param SimpleXMLElement $taxes
+ * @param SimpleXMLElement $tax
+ * @param array $attributesToUpdate
+ * @param array $attributesToRemove
+ * @return SimpleXMLElement|void|null
+ */
 function addTax(SimpleXMLElement $taxes, SimpleXMLElement $tax, array $attributesToUpdate = [], array $attributesToRemove = [])
 {
     $newTax = new SimpleXMLElement('<tax/>');
@@ -149,6 +156,12 @@ function addTax(SimpleXMLElement $taxes, SimpleXMLElement $tax, array $attribute
     return $newTax;
 }
 
+/**
+ * @param SimpleXMLElement $taxRulesGroup
+ * @param SimpleXMLElement $tax
+ * @param string $iso_code_country
+ * @return SimpleXMLElement|null
+ */
 function addTaxRule(SimpleXMLElement $taxRulesGroup, SimpleXMLElement $tax, $iso_code_country)
 {
     $taxRule = $taxRulesGroup->addChild('taxRule');

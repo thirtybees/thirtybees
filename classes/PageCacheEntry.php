@@ -19,8 +19,6 @@
 
 /**
  * Class PageCacheEntry
- *
- * @since 1.1.0
  */
 class PageCacheEntryCore
 {
@@ -31,18 +29,30 @@ class PageCacheEntryCore
     const COOKIE_OBJECT = 'cookie';
     const CONTEXT_OBJECT = 'context';
 
+    /**
+     * @var bool
+     */
     private $isNew = true;
+
+    /**
+     * @var bool
+     */
     private $valid = true;
 
+    /**
+     * @var array
+     */
     private $hooks = [];
+
+    /**
+     * @var string|null
+     */
     private $content = null;
 
     /**
      * Initialize cache entry using serialized data from cache.
      *
-     * @param $serialized json object representing this entry
-     *
-     * @since 1.1.0
+     * @param string $serialized json object representing this entry
      */
     public function setFromCache($serialized)
     {
@@ -64,8 +74,6 @@ class PageCacheEntryCore
      * Serialize this cache entry to json object.
      *
      * @return string json object
-     *
-     * @since 1.1.0
      */
     public function serialize()
     {
@@ -79,8 +87,6 @@ class PageCacheEntryCore
      * Returns true, if this cache entry exists in cache.
      *
      * @return bool
-     *
-     * @since 1.1.0
      */
     public function exists()
     {
@@ -94,8 +100,6 @@ class PageCacheEntryCore
      * some hook parameters that can't be instantiated.
      *
      * @return bool
-     *
-     * @since 1.1.0
      */
     public function isValid()
     {
@@ -105,9 +109,7 @@ class PageCacheEntryCore
     /**
      * Set page html content.
      *
-     * @param $content
-     *
-     * @since 1.1.0
+     * @param string $content
      */
     public function setContent($content)
     {
@@ -120,9 +122,7 @@ class PageCacheEntryCore
      * use getFreshContent method if you want to get current content, with
      * dynamic hook sections replaced with current versions.
      *
-     * @return string page html content
-     *
-     * @since 1.1.0
+     * @return string|null page html content
      */
     public function getContent()
     {
@@ -137,8 +137,6 @@ class PageCacheEntryCore
      * content with hook return value.
      *
      * @return array of dynamic hooks
-     *
-     * @since 1.1.0
      */
     public function getHooks()
     {
@@ -167,14 +165,12 @@ class PageCacheEntryCore
      * will try to describe parameters, and use this description later to
      * instantiate the parameter objects on the fly.
      *
-     * @param $moduleId module id
-     * @param $hookId hook id
-     * @param $hookName hook name
-     * @param $hookParams hook params
+     * @param int $moduleId module id
+     * @param int $hookId hook id
+     * @param string $hookName hook name
+     * @param array $hookParams hook params
      *
      * @return string section id
-     *
-     * @since 1.1.0
      */
     public function setHook($moduleId, $hookId, $hookName, $hookParams)
     {
@@ -209,8 +205,6 @@ class PageCacheEntryCore
      *
      * @return string fresh version of cached page
      * @throws PrestaShopException
-     *
-     * @since 1.1.0
      */
     public function getFreshContent()
     {
@@ -254,12 +248,10 @@ class PageCacheEntryCore
     /**
      * This method will use parameter $description to instantiate hook parameter object
      *
-     * @param $description hook parameter description
+     * @param array $description hook parameter description
      *
      * @return mixed
      * @throws PrestaShopException
-     *
-     * @since 1.1.0
      */
     private function instantiateParam($description)
     {
@@ -302,11 +294,9 @@ class PageCacheEntryCore
      * return null, and the whole cache entry will be invalid (not possible to
      * save it into cache).
      *
-     * @param $param
+     * @param mixed $param
      *
      * @return array | null
-     *
-     * @since 1.1.0
      */
     private function describeParam($param)
     {
@@ -338,11 +328,9 @@ class PageCacheEntryCore
      * recreate them. Some arrays could be serialized as a constant, but
      * generally it's not possible.
      *
-     * @param $param array
+     * @param array $param
      *
      * @return array | null
-     *
-     * @since 1.1.0
      */
     private function describeArray($param)
     {
@@ -406,11 +394,9 @@ class PageCacheEntryCore
      * If hook receive any other kind of object, we don't know how to recreate
      * it from scratch.
      *
-     * @param $param object
+     * @param object $param
      *
      * @return array | null
-     *
-     * @since 1.1.0
      */
     private function describeObject($param)
     {

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStatusesControllerCore
- *
- * @since 1.0.0
  */
 class AdminStatusesControllerCore extends AdminController
 {
     /**
      * AdminStatusesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -65,7 +63,7 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -84,7 +82,7 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -109,7 +107,9 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -160,8 +160,6 @@ class AdminStatusesControllerCore extends AdminController
      * init all variables to render the order status list
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function initOrderStatutsList()
     {
@@ -230,8 +228,6 @@ class AdminStatusesControllerCore extends AdminController
      * init all variables to render the order return list
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function initOrdersReturnsList()
     {
@@ -268,8 +264,6 @@ class AdminStatusesControllerCore extends AdminController
 
     /**
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function checkFilterForOrdersReturnsList()
     {
@@ -291,7 +285,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -390,7 +385,6 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -571,7 +565,6 @@ class AdminStatusesControllerCore extends AdminController
      * @return array
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getTemplates()
     {
@@ -611,8 +604,9 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     protected function renderOrderStatusForm()
     {
@@ -647,7 +641,9 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function renderOrderReturnsForm()
     {
@@ -705,7 +701,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return HelperForm
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function initOrderReturnsForm()
     {
@@ -755,7 +752,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessSendEmailOrderState()
     {
@@ -776,7 +774,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeliveryOrderState()
     {
@@ -797,7 +796,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessInvoiceOrderState()
     {
@@ -818,7 +818,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.1.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessActiveOrderState()
     {
@@ -839,7 +840,8 @@ class AdminStatusesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.1.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessActiveOrderReturnState()
     {
@@ -860,8 +862,6 @@ class AdminStatusesControllerCore extends AdminController
      * @param string $filter
      *
      * @return array|false
-     *
-     * @since 1.0.0
      */
     protected function filterToField($key, $filter)
     {
@@ -876,7 +876,6 @@ class AdminStatusesControllerCore extends AdminController
 
     /**
      * @return bool
-     * @since 1.0.0
      */
     protected function afterImageUpload()
     {

@@ -31,8 +31,6 @@
 
 /**
  * Class PDFCore
- *
- * @since 1.0.0
  */
 class PDFCore
 {
@@ -62,13 +60,10 @@ class PDFCore
     const TEMPLATE_SUPPLY_ORDER_FORM = 'SupplyOrderForm';
 
     /**
-     * @param ObjectModel[] | Iterator | ObjectModel $objects
+     * @param ObjectModel[]|Iterator|ObjectModel $objects
      * @param string $template
      * @param Smarty $smarty
      * @param string $orientation
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($objects, $template, $smarty, $orientation = 'P')
     {
@@ -94,9 +89,6 @@ class PDFCore
      * @return string
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function render($display = true)
     {
@@ -144,9 +136,6 @@ class PDFCore
      *
      * @return HTMLTemplate
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateObject($object)
     {

@@ -31,29 +31,38 @@
 
 /**
  * Class WebserviceExceptionCore
- *
- * @since 1.0.0
  */
 class WebserviceExceptionCore extends Exception
 {
-    // @codingStandardsIgnoreStart
+
+    /**
+     * @var int
+     */
     protected $status;
+
+    /**
+     * @var string
+     */
     protected $wrong_value;
+
+    /**
+     * @var array
+     */
     protected $available_values;
+
+    /**
+     * @var int
+     */
     protected $type;
 
     const SIMPLE = 0;
     const DID_YOU_MEAN = 1;
-    // @codingStandardsIgnoreEnd
 
     /**
      * WebserviceExceptionCore constructor.
      *
      * @param string $message
      * @param int|int[] $code
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($message, $code)
     {
@@ -68,9 +77,6 @@ class WebserviceExceptionCore extends Exception
 
     /**
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getType()
     {
@@ -78,12 +84,9 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @param $type
+     * @param int $type
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setType($type)
     {
@@ -93,12 +96,9 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @param $status
+     * @param int $status
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setStatus($status)
     {
@@ -110,10 +110,7 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
      */
     public function getStatus()
     {
@@ -121,10 +118,7 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getWrongValue()
     {
@@ -132,13 +126,10 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @param $wrongValue
-     * @param $availableValues
+     * @param string $wrongValue
+     * @param array $availableValues
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setDidYouMean($wrongValue, $availableValues)
     {
@@ -150,10 +141,7 @@ class WebserviceExceptionCore extends Exception
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     public function getAvailableValues()
     {

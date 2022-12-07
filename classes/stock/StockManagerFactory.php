@@ -31,15 +31,11 @@
 
 /**
  * Class StockManagerFactoryCore
- *
- * @since 1.0.0
  */
 class StockManagerFactoryCore
 {
-    // @codingStandardsIgnoreStart
-    /** @var $stock_manager : instance of the current StockManager. */
+    /** @var StockManager instance of the current StockManager. */
     protected static $stock_manager;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Returns a StockManager
@@ -48,8 +44,6 @@ class StockManagerFactoryCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getManager()
     {
@@ -70,8 +64,6 @@ class StockManagerFactoryCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function execHookStockManagerFactory()
     {

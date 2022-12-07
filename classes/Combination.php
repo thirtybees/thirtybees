@@ -31,14 +31,11 @@
 
 /**
  * Class CombinationCore
- *
- * @since 1.0.0
  */
 class CombinationCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'product_attribute',
@@ -103,6 +100,10 @@ class CombinationCore extends ObjectModel
     public $default_on;
     /** @var string $available_date */
     public $available_date = '0000-00-00';
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectNodeName'  => 'combination',
         'objectsNodeName' => 'combinations',
@@ -124,15 +125,12 @@ class CombinationCore extends ObjectModel
             ],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * This method is allowed to know if a feature is active
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -150,12 +148,10 @@ class CombinationCore extends ObjectModel
      * This method is allowed to know if a Combination entity is currently used
      *
      * @param string|null $table
-     * @param bool        $hasActiveColumn
+     * @param bool $hasActiveColumn
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
@@ -166,13 +162,11 @@ class CombinationCore extends ObjectModel
     /**
      * For a given product_attribute reference, returns the corresponding id
      *
-     * @param int    $idProduct
+     * @param int $idProduct
      * @param string $reference
      *
      * @return int id
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByReference($idProduct, $reference)
@@ -197,8 +191,6 @@ class CombinationCore extends ObjectModel
      *
      * @return float mixed
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getPrice($idProductAttribute)
@@ -217,8 +209,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -250,8 +240,6 @@ class CombinationCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -269,8 +257,6 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -287,8 +273,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -323,8 +307,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -347,8 +329,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setWsProductOptionValues($values)
     {
@@ -369,8 +349,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setAttributes($idsAttribute)
     {
@@ -400,8 +378,6 @@ class CombinationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsProductOptionValues()
     {
@@ -420,8 +396,6 @@ class CombinationCore extends ObjectModel
      * @return array
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsImages()
     {
@@ -441,8 +415,6 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function setWsImages($values)
@@ -462,8 +434,6 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -496,12 +466,10 @@ class CombinationCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAttributesName($idLang)
     {
@@ -516,12 +484,10 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getColorsAttributes()
     {
@@ -537,7 +503,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

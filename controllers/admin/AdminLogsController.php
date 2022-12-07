@@ -31,20 +31,16 @@
 
 /**
  * Class AdminLogsControllerCore
- *
- * @since 1.0.0
  */
 class AdminLogsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $_defaultOrderWay */
     protected $_defaultOrderWay = 'DESC';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminLogsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -168,7 +164,7 @@ class AdminLogsControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -180,7 +176,7 @@ class AdminLogsControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -194,12 +190,14 @@ class AdminLogsControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $value
+     * @param string $value
      * @param array $tr
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayEmployee($value, $tr)
     {

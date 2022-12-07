@@ -31,12 +31,9 @@
 
 /**
  * Class MessageCore
- *
- * @since 1.0.0
  */
 class MessageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string message content */
     public $message;
     /** @var int Cart ID (if applicable) */
@@ -51,10 +48,9 @@ class MessageCore extends ObjectModel
     public $private;
     /** @var string Object creation date */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'message',
@@ -87,8 +83,6 @@ class MessageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMessageByCartId($idCart)
     {
@@ -103,16 +97,14 @@ class MessageCore extends ObjectModel
     /**
      * Return messages from Order ID
      *
-     * @param int          $idOrder Order ID
-     * @param bool         $private return WITH private messages
+     * @param int $idOrder Order ID
+     * @param bool $private return WITH private messages
      * @param Context|null $context
      *
      * @return array Messages
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMessagesByOrderId($idOrder, $private = false, Context $context = null)
     {
@@ -140,15 +132,13 @@ class MessageCore extends ObjectModel
     /**
      * Return messages from Cart ID
      *
-     * @param int          $idCart
-     * @param bool         $private return WITH private messages
+     * @param int $idCart
+     * @param bool $private return WITH private messages
      * @param Context|null $context
      *
      * @return array Messages
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public static function getMessagesByCartId($idCart, $private = false, Context $context = null)
     {
@@ -176,14 +166,12 @@ class MessageCore extends ObjectModel
     /**
      * Registered a message 'readed'
      *
-     * @param int $idMessage  Message ID
+     * @param int $idMessage Message ID
      * @param int $idEmployee Employee ID
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function markAsReaded($idMessage, $idEmployee)
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class OrderReturnStateCore
- *
- * @since 1.0.0
  */
 class OrderReturnStateCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
 
@@ -45,10 +42,9 @@ class OrderReturnStateCore extends ObjectModel
 
     /** @var bool Active */
     public $active = 1;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'order_return_state',
@@ -62,7 +58,11 @@ class OrderReturnStateCore extends ObjectModel
     ];
 
     /**
-     * @since 1.1.0
+     * @param int $id
+     * @param int $idLang
+     * @param int $idShop
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -78,8 +78,6 @@ class OrderReturnStateCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrderReturnStates($idLang)
     {

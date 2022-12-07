@@ -31,15 +31,13 @@
 
 /**
  * Class AdminQuickAccessesControllerCore
- *
- * @since 1.0.0
  */
 class AdminQuickAccessesControllerCore extends AdminController
 {
     /**
      * AdminQuickAccessesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -141,7 +139,7 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -160,8 +158,6 @@ class AdminQuickAccessesControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -181,9 +177,10 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @param array $item
      *
-     * @return mixed
+     * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getLinkToken($item)
     {
@@ -200,7 +197,8 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetUrl()
     {
@@ -224,7 +222,8 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return bool|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addQuickLink()
     {
@@ -273,7 +272,8 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getQuickAccessesList()
     {
@@ -287,7 +287,7 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -301,7 +301,7 @@ class AdminQuickAccessesControllerCore extends AdminController
      *
      * @return false|ObjectModel|QuickAccess
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processNewWindow()
     {

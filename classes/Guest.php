@@ -31,31 +31,86 @@
 
 /**
  * Class GuestCore
- *
- * @since 1.0.0
  */
 class GuestCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $id_operating_system;
-    public $id_web_browser;
-    public $id_customer;
-    public $javascript;
-    public $screen_resolution_x;
-    public $screen_resolution_y;
-    public $screen_color;
-    public $sun_java;
-    public $adobe_flash;
-    public $adobe_director;
-    public $apple_quicktime;
-    public $real_player;
-    public $windows_media;
-    public $accept_language;
-    public $mobile_theme;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int
+     */
+    public $id_web_browser;
+
+    /**
+     * @var int
+     */
+    public $id_customer;
+
+    /**
+     * @var bool
+     */
+    public $javascript;
+
+    /**
+     * @var int
+     */
+    public $screen_resolution_x;
+
+    /**
+     * @var int
+     */
+    public $screen_resolution_y;
+
+    /**
+     * @var int
+     */
+    public $screen_color;
+
+    /**
+     * @var bool
+     */
+    public $sun_java;
+
+    /**
+     * @var bool
+     */
+    public $adobe_flash;
+
+    /**
+     * @var bool
+     */
+    public $adobe_director;
+
+    /**
+     * @var bool
+     */
+    public $apple_quicktime;
+
+    /**
+     * @var bool
+     */
+    public $real_player;
+
+    /**
+     * @var bool
+     */
+    public $windows_media;
+
+    /**
+     * @var string
+     */
+    public $accept_language;
+
+    /**
+     * @var bool
+     */
+    public $mobile_theme;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'guest',
@@ -86,6 +141,9 @@ class GuestCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var string[][][]
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_customer' => ['xlink_resource' => 'customers'],
@@ -93,10 +151,8 @@ class GuestCore extends ObjectModel
     ];
 
     /**
-     * @param Cookie $cookie
+     * @param CookieCore $cookie
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setNewGuest($cookie)
@@ -114,8 +170,6 @@ class GuestCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFromCustomer($idCustomer)
     {
@@ -142,8 +196,7 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function userAgent()
     {
@@ -156,12 +209,9 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @param $acceptLanguage
+     * @param string $acceptLanguage
      *
-     * @return mixed|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     protected function getLanguage($acceptLanguage)
     {
@@ -185,12 +235,10 @@ class GuestCore extends ObjectModel
     /**
      * @param string $userAgent
      *
-     * @return null
+     * @return int|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getOs($userAgent)
     {
@@ -223,12 +271,10 @@ class GuestCore extends ObjectModel
     /**
      * @param string $userAgent
      *
-     * @return null
+     * @return int|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getBrowser($userAgent)
     {
@@ -267,8 +313,6 @@ class GuestCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function mergeWithCustomer($idGuest, $idCustomer)
     {

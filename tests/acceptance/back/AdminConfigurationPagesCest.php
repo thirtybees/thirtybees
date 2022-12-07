@@ -2,6 +2,9 @@
 
 class AdminConfigurationPagesCest
 {
+    /**
+     * @var array
+     */
     private $adminPages = [
         'AdminDashboard' => [],
         'AdminCatalog' => [
@@ -98,15 +101,30 @@ class AdminConfigurationPagesCest
         ],
     ];
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function _before(AcceptanceTester $I)
     {
         $I->resizeWindow(1920, 1080);
     }
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function _after(AcceptanceTester $I)
     {
     }
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     private function login(AcceptanceTester $I)
     {
         $I->amOnPage('/admin-dev/index.php');
@@ -117,6 +135,12 @@ class AdminConfigurationPagesCest
         $I->click('Log in');
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @param string $child
+     *
+     * @return void
+     */
     private function checkAdminPage(AcceptanceTester $I, $child)
     {
         $childElement = ['css' => "#subtab-{$child} a"];
@@ -129,6 +153,11 @@ class AdminConfigurationPagesCest
         $I->withoutErrors();
     }
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function testAdminPages(AcceptanceTester $I)
     {
         $this->login($I);

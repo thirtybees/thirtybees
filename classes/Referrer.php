@@ -31,12 +31,12 @@
 
 /**
  * Class ReferrerCore
- *
- * @since 1.0.0
  */
 class ReferrerCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     protected static $_join = '(r.http_referer_like IS NULL OR r.http_referer_like = \'\' OR cs.http_referer LIKE r.http_referer_like)
 			AND (r.request_uri_like IS NULL OR r.request_uri_like = \'\' OR cs.request_uri LIKE r.request_uri_like)
 			AND (r.http_referer_like_not IS NULL OR r.http_referer_like_not = \'\' OR cs.http_referer NOT LIKE r.http_referer_like_not)
@@ -45,35 +45,124 @@ class ReferrerCore extends ObjectModel
 			AND (r.request_uri_regexp IS NULL OR r.request_uri_regexp = \'\' OR cs.request_uri REGEXP r.request_uri_regexp)
 			AND (r.http_referer_regexp_not IS NULL OR r.http_referer_regexp_not = \'\' OR cs.http_referer NOT REGEXP r.http_referer_regexp_not)
 			AND (r.request_uri_regexp_not IS NULL OR r.request_uri_regexp_not = \'\' OR cs.request_uri NOT REGEXP r.request_uri_regexp_not)';
-    /** @var int $id_shop */
+
+    /**
+     * @var int $id_shop
+     */
     public $id_shop;
-    /** @var string $name */
+
+    /**
+     * @var string $name
+     */
     public $name;
-    /** @var string $passwd */
+
+    /**
+     * @var string $passwd
+     */
     public $passwd;
+
+    /**
+     * @var string
+     */
     public $http_referer_regexp;
+
+    /**
+     * @var string
+     */
     public $http_referer_like;
+
+    /**
+     * @var string
+     */
     public $request_uri_regexp;
+
+    /**
+     * @var string
+     */
     public $request_uri_like;
+
+    /**
+     * @var string
+     */
     public $http_referer_regexp_not;
+
+    /**
+     * @var string
+     */
     public $http_referer_like_not;
+
+    /**
+     * @var string
+     */
     public $request_uri_regexp_not;
+
+    /**
+     * @var string
+     */
     public $request_uri_like_not;
+
+    /**
+     * @var float
+     */
     public $base_fee;
+
+    /**
+     * @var float
+     */
     public $percent_fee;
+
+    /**
+     * @var float
+     */
     public $click_fee;
+
+    /**
+     * @var string
+     */
     public $date_add;
+
+    /**
+     * @var int
+     */
     public $cache_visitors;
+
+    /**
+     * @var int
+     */
     public $cache_visits;
+
+    /**
+     * @var int
+     */
     public $cache_pages;
+
+    /**
+     * @var int
+     */
     public $cache_registrations;
+
+    /**
+     * @var int
+     */
     public $cache_orders;
+
+    /**
+     * @var float
+     */
     public $cache_sales;
+
+    /**
+     * @var float
+     */
     public $cache_reg_rate;
+
+    /**
+     * @var float
+     */
     public $cache_order_rate;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'referrer',
@@ -109,8 +198,6 @@ class ReferrerCore extends ObjectModel
     /**
      * @param int $idConnectionsSource
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cacheNewSource($idConnectionsSource)
@@ -133,11 +220,9 @@ class ReferrerCore extends ObjectModel
      *
      * @param int $idCustomer
      *
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getReferrers($idCustomer)
     {
@@ -156,14 +241,12 @@ class ReferrerCore extends ObjectModel
     }
 
     /**
-     * @param int  $idReferrer
-     * @param int  $idProduct
-     * @param null $employee
+     * @param int $idReferrer
+     * @param int $idProduct
+     * @param Employee|null $employee
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAjaxProduct($idReferrer, $idProduct, $employee = null)
     {
@@ -204,14 +287,12 @@ class ReferrerCore extends ObjectModel
      * Get some statistics on visitors connection for current referrer
      *
      * @param int $idProduct
-     * @param int $employee
+     * @param Employee $employee
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStatsVisits($idProduct, $employee)
     {
@@ -242,13 +323,11 @@ class ReferrerCore extends ObjectModel
      * Get some statistics on customers registrations for current referrer
      *
      * @param int $idProduct
-     * @param int $employee
+     * @param Employee $employee
      *
      * @return int
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getRegistrations($idProduct, $employee)
     {
@@ -280,13 +359,11 @@ class ReferrerCore extends ObjectModel
      * Get some statistics on orders for current referrer
      *
      * @param int $idProduct
-     * @param int $employee
+     * @param Employee $employee
      *
      * @return array|bool|null|object
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStatsSales($idProduct, $employee)
     {
@@ -340,8 +417,6 @@ class ReferrerCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -358,14 +433,12 @@ class ReferrerCore extends ObjectModel
      * Refresh cache data of referrer statistics in referrer_shop table
      *
      * @param array $referrers
-     * @param int   $employee
+     * @param Employee|null $employee
      *
      * @return true
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function refreshCache($referrers = null, $employee = null)
     {
@@ -411,8 +484,6 @@ class ReferrerCore extends ObjectModel
      *
      * @param array $referrers
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */

@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking;
 
 /**
  * Class TrackingTask
- *
- * @since 1.3.0
  */
 class TrackingTask extends TrackingTaskCore
 {

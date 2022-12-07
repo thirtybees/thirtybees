@@ -31,23 +31,17 @@
 
 /**
  * Class Adapter_Configuration
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_Configuration implements Core_Business_ConfigurationInterface
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * Returns constant defined by given $key if exists or check directly in thirty bees' configuration
      *
      * @param string $key
      *
-     * @return mixed
+     * @return string|false
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function get($key)
     {

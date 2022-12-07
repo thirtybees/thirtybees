@@ -31,12 +31,9 @@
 
 /**
  * Class SupplyOrderDetailCore
- *
- * @since 1.0.0
  */
 class SupplyOrderDetailCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int Supply order
      */
@@ -148,10 +145,9 @@ class SupplyOrderDetailCore extends ObjectModel
      * (i.e. if SupplyOrder::discount_rate is set)
      */
     public $price_with_order_discount_te = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'supply_order_detail',
@@ -190,7 +186,7 @@ class SupplyOrderDetailCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_details',
@@ -206,10 +202,7 @@ class SupplyOrderDetailCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::update()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -219,10 +212,7 @@ class SupplyOrderDetailCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -236,9 +226,7 @@ class SupplyOrderDetailCore extends ObjectModel
      * Applies discount if necessary
      * Calculates tax value, function of tax rate
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
+     * @return void
      */
     protected function calculatePrices()
     {
@@ -278,8 +266,6 @@ class SupplyOrderDetailCore extends ObjectModel
      *
      * @param float|int $discountRate The discount rate in percent (Ex. 5 for 5 percents)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function applyGlobalDiscount($discountRate)
@@ -302,11 +288,12 @@ class SupplyOrderDetailCore extends ObjectModel
         }
     }
 
+
     /**
-     * @see ObjectModel::hydrate()
+     * @param array $data
+     * @param int $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function hydrate(array $data, $idLang = null)
     {

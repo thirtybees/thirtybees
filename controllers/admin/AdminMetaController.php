@@ -31,31 +31,63 @@
 
 /**
  * Class AdminMetaControllerCore
- *
- * @since 1.0.0
  */
 class AdminMetaControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $table = 'meta';
+
+    /**
+     * @var string
+     */
     public $className = 'Meta';
+
+    /**
+     * @var bool
+     */
     public $lang = true;
 
-    /** @var ShopUrl */
+    /**
+     * @var ShopUrl
+     */
     protected $url = false;
+
+    /**
+     * @var bool
+     */
     protected $toolbar_scroll = false;
+
+    /**
+     * @var string
+     */
     protected $ht_file = '';
+
+    /**
+     * @var string
+     */
     protected $rb_file = '';
+
+    /**
+     * @var array
+     */
     protected $rb_data = [];
+
+    /**
+     * @var string
+     */
     protected $sm_file = '';
-    /** @var Meta $object */
+
+    /**
+     * @var Meta $object
+     */
     protected $object;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminMetaControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -296,7 +328,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -312,7 +344,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initProcess()
     {
@@ -324,7 +356,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -336,8 +368,6 @@ class AdminMetaControllerCore extends AdminController
     /**
      * @param string $routeId
      * @param string $title
-     *
-     * @since 1.0.0
      */
     public function addFieldRoute($routeId, $title)
     {
@@ -358,14 +388,17 @@ class AdminMetaControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws ReflectionException
+     * @throws SmartyException
      */
     public function renderForm()
     {
         $files = Meta::getPages(true, ($this->object->page ? $this->object->page : false));
 
         $isIndex = false;
-        if (is_object($this->object) && is_array($this->object->url_rewrite) && count($this->object->url_rewrite)) {
+        if (is_object($this->object) && is_array($this->object->url_rewrite) && $this->object->url_rewrite) {
             foreach ($this->object->url_rewrite as $rewrite) {
                 if ($isIndex != true) {
                     $isIndex = ($this->object->page == 'index' && empty($rewrite)) ? true : false;
@@ -477,7 +510,8 @@ class AdminMetaControllerCore extends AdminController
     /**
      * @return bool|Theme|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -566,7 +600,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function generateRobotsFile()
     {
@@ -658,14 +692,14 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -675,7 +709,8 @@ class AdminMetaControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -693,7 +728,7 @@ class AdminMetaControllerCore extends AdminController
      *
      * @param string $route
      *
-     * @since 1.0.0 Added optional $idLang parameter
+     * @throws PrestaShopException
      */
     public function checkAndUpdateRoute($route)
     {
@@ -735,7 +770,7 @@ class AdminMetaControllerCore extends AdminController
     /**
      * Called when PS_REWRITING_SETTINGS option is saved
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRewritingSettings()
     {
@@ -763,7 +798,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteProductRule()
     {
@@ -771,7 +806,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteCategoryRule()
     {
@@ -779,7 +814,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteLayeredRule()
     {
@@ -787,7 +822,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteSupplierRule()
     {
@@ -795,7 +830,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteManufacturerRule()
     {
@@ -803,7 +838,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteCmsRule()
     {
@@ -811,7 +846,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsRouteCmsCategoryRule()
     {
@@ -824,8 +859,6 @@ class AdminMetaControllerCore extends AdminController
      * @param string $value
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function updateOptionDomain($value)
     {
@@ -846,8 +879,6 @@ class AdminMetaControllerCore extends AdminController
      * @param string $value
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function updateOptionDomainSsl($value)
     {
@@ -868,8 +899,6 @@ class AdminMetaControllerCore extends AdminController
      * @param string $value
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function updateOptionUri($value)
     {
@@ -882,7 +911,7 @@ class AdminMetaControllerCore extends AdminController
     /**
      * Save robots.txt file
      *
-     * @since 1.0.0
+     * @return void
      */
     public function saveRobotsFile()
     {
@@ -892,7 +921,7 @@ class AdminMetaControllerCore extends AdminController
     /**
      * Save .htaccess file
      *
-     * @since 1.0.0
+     * @return void
      */
     public function saveHtaccessFile()
     {
@@ -904,7 +933,9 @@ class AdminMetaControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {
@@ -936,7 +967,7 @@ class AdminMetaControllerCore extends AdminController
     /**
      * Add all custom route fields to the options form
      *
-     * @since 1.0.0
+     * @return void
      */
     public function addAllRouteFields()
     {
@@ -955,8 +986,6 @@ class AdminMetaControllerCore extends AdminController
      * @param string $file
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function checkConfiguration($file)
     {
@@ -970,7 +999,8 @@ class AdminMetaControllerCore extends AdminController
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getRobotsContent()
     {
@@ -1025,8 +1055,6 @@ class AdminMetaControllerCore extends AdminController
      * @param string $rule
      *
      * @return bool
-     *
-     * @since 1.0.2 To prevent duplicate keywords in rules
      */
     protected function checkRedundantRewriteKeywords($rule)
     {

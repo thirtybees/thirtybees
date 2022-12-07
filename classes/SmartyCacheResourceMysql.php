@@ -31,27 +31,23 @@
 
 /**
  * Class Smarty_CacheResource_Mysql
- *
- * @since 1.0.0
  */
 class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
 {
     /**
      * fetch cached content and its modification time from data source
      *
-     * @param string $id        unique cache content identifier
-     * @param string $name      template name
-     * @param string $cacheId   cache id
+     * @param string $id unique cache content identifier
+     * @param string $name template name
+     * @param string $cacheId cache id
      * @param string $compileId compile id
-     * @param string $content   cached content
-     * @param int    $mtime     cache modification timestamp (epoch)
+     * @param string $content cached content
+     * @param int $mtime cache modification timestamp (epoch)
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function fetch($id, $name, $cacheId, $compileId, &$content, &$mtime)
     {
@@ -75,17 +71,13 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
     /**
      * Fetch cached content's modification timestamp from data source
      *
-     * @note    implementing this method is optional. Only implement it if modification times can be accessed faster than loading the complete cached content.
-     *
-     * @param string $id        unique cache content identifier
-     * @param string $name      template name
-     * @param string $cacheId   cache id
+     * @param string $id unique cache content identifier
+     * @param string $name template name
+     * @param string $cacheId cache id
      * @param string $compileId compile id
      *
      * @return int|boolean timestamp (epoch) the template was modified, or false if not found
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function fetchTimestamp($id, $name, $cacheId, $compileId)
@@ -99,17 +91,15 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
     /**
      * Save content to cache
      *
-     * @param string   $id        unique cache content identifier
-     * @param string   $name      template name
-     * @param string   $cacheId   cache id
-     * @param string   $compileId compile id
-     * @param int|null $expTime   seconds till expiration time in seconds or null
-     * @param string   $content   content to cache
+     * @param string $id unique cache content identifier
+     * @param string $name template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
+     * @param int|null $expTime seconds till expiration time in seconds or null
+     * @param string $content content to cache
      *
      * @return bool success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function save($id, $name, $cacheId, $compileId, $expTime, $content)
@@ -131,16 +121,13 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
     /**
      * Delete content from cache
      *
-     * @param string   $name      template name
-     * @param string   $cacheId   cache id
-     * @param string   $compileId compile id
-     * @param int|null $expTime   seconds till expiration or null
+     * @param string $name template name
+     * @param string $cacheId cache id
+     * @param string $compileId compile id
+     * @param int|null $expTime seconds till expiration or null
      *
      * @return int number of deleted caches
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     protected function delete($name, $cacheId, $compileId, $expTime)

@@ -34,8 +34,8 @@ class Unit extends \Codeception\Module
     /**
      * Calls protected/private method of a class
      *
-     * @param $className
-     * @param $methodName
+     * @param string $className
+     * @param string $methodName
      * @param array $parameters
      * @return mixed
      * @throws ReflectionException

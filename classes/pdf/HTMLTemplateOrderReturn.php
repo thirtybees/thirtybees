@@ -31,26 +31,19 @@
 
 /**
  * Class HTMLTemplateOrderReturnCore
- *
- * @since 1.0.0
  */
 class HTMLTemplateOrderReturnCore extends HTMLTemplate
 {
-    // @codingStandardsIgnoreStart
     /** @var OrderReturn $order_return */
     public $order_return;
     /** @var Order $order */
     public $order;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param OrderReturnCore $orderReturn
-     * @param Smarty          $smarty
+     * @param Smarty $smarty
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct(OrderReturnCore $orderReturn, Smarty $smarty)
     {
@@ -71,12 +64,9 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      *
      * @return string HTML content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
@@ -117,8 +107,7 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      *
      * @return string filename
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFilename()
     {
@@ -129,9 +118,6 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -143,11 +129,8 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      *
      * @return string HTML header
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {

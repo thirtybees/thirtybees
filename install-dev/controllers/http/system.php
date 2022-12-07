@@ -34,8 +34,14 @@
  */
 class InstallControllerHttpSystem extends InstallControllerHttp
 {
+    /**
+     * @var array
+     */
     public $tests = [];
 
+    /**
+     * @var array
+     */
     public $testsRender;
 
     /**

@@ -31,18 +31,18 @@
 
 /**
  * Class AdminAddressesControllerCore
- *
- * @since 1.0.0
  */
 class AdminAddressesControllerCore extends AdminController
 {
-    /** @var array countries list */
+    /**
+     * @var array countries list
+     */
     protected $countries_array = [];
 
     /**
      * AdminAddressesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -102,7 +102,7 @@ class AdminAddressesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -117,7 +117,7 @@ class AdminAddressesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -135,7 +135,9 @@ class AdminAddressesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -370,6 +372,7 @@ class AdminAddressesControllerCore extends AdminController
      * Get Address formats used by the country where the address id retrieved from POST/GET is.
      *
      * @return array address formats
+     * @throws PrestaShopException
      */
     protected function processAddressFormat()
     {
@@ -400,9 +403,10 @@ class AdminAddressesControllerCore extends AdminController
     }
 
     /**
-     * @return bool|false|ObjectModel|null
+     * @return ObjectModel|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -499,7 +503,7 @@ class AdminAddressesControllerCore extends AdminController
     /**
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -513,9 +517,7 @@ class AdminAddressesControllerCore extends AdminController
     /**
      * Method called when an ajax request is made
      *
-     * @see AdminController::postProcess()
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcess()
     {
@@ -533,7 +535,7 @@ class AdminAddressesControllerCore extends AdminController
     /**
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -557,6 +559,8 @@ class AdminAddressesControllerCore extends AdminController
      * Delete multiple items
      *
      * @return bool true if succcess
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {

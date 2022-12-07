@@ -31,15 +31,13 @@
 
 /**
  * Class AdminShopGroupControllerCore
- *
- * @since 1.0.0
  */
 class AdminShopGroupControllerCore extends AdminController
 {
     /**
      * AdminShopGroupControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -112,7 +110,7 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function viewAccess($disable = false)
     {
@@ -124,7 +122,9 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -193,7 +193,7 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -218,7 +218,7 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -237,7 +237,9 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -370,16 +372,16 @@ class AdminShopGroupControllerCore extends AdminController
     /**
      * Get list
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
-     *
-     * @since 1.0.0
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -401,7 +403,7 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -428,7 +430,9 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {
@@ -452,7 +456,8 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterAdd($newShopGroup)
     {
@@ -467,7 +472,8 @@ class AdminShopGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterUpdate($newShopGroup)
     {

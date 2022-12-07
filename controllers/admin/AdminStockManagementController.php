@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStockManagementControllerCore
- *
- * @since 1.0.0
  */
 class AdminStockManagementControllerCore extends AdminController
 {
     /**
      * AdminStockManagementControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -98,7 +96,9 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -156,11 +156,12 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -214,7 +215,8 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function previousManagementStock($idProduct, $idProductAttribute)
     {
@@ -306,18 +308,16 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -378,11 +378,11 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * AdminController::postProcess() override
      *
-     * @see AdminController::postProcess()
-     *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see AdminController::postProcess()
      */
     public function postProcess()
     {
@@ -611,9 +611,9 @@ class AdminStockManagementControllerCore extends AdminController
 
     /**
      * @return array
-     * @throws Exception
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getStockAttributes()
     {
@@ -645,11 +645,10 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * AdminController::init() override
      *
-     * @see AdminController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see AdminController::init()
      */
     public function init()
     {
@@ -684,11 +683,12 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * AdminController::initContent() override
      *
-     * @see AdminController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::initContent()
      */
     public function initContent()
     {
@@ -847,11 +847,12 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderForm()
      */
     public function renderForm()
     {
@@ -900,11 +901,14 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * Prepare add stock form
      *
-     * @param $warehouses_remove
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param array[] $warehousesAdd
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function prepareAddStockForm($idProduct, $idProductAttribute, $warehousesAdd)
     {
@@ -1072,9 +1076,10 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * Prepare remove stock form
      *
-     * @param $idStock
+     * @param int $idStock
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function prepareRemoveStockForm($idStock)
     {
@@ -1195,11 +1200,9 @@ class AdminStockManagementControllerCore extends AdminController
     /**
      * Prepare transfer stock form
      *
-     * @param $warehousesAdd
+     * @param array[] $warehousesAdd
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function prepareTransferStockForm($warehousesAdd)
     {
@@ -1339,7 +1342,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -1380,7 +1383,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -1399,11 +1402,11 @@ class AdminStockManagementControllerCore extends AdminController
      * Display addstock action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayAddstockLink($token, $id)
     {
@@ -1425,11 +1428,11 @@ class AdminStockManagementControllerCore extends AdminController
      * Display removestock action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayRemovestockLink($token, $id)
     {
@@ -1451,11 +1454,11 @@ class AdminStockManagementControllerCore extends AdminController
      * Display transferstock action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayTransferstockLink($token, $id)
     {
@@ -1477,11 +1480,11 @@ class AdminStockManagementControllerCore extends AdminController
      * Display removestock action link (fake link because don't have id_stock)
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayPrepareRemovestockLink($token, $id)
     {
@@ -1505,11 +1508,11 @@ class AdminStockManagementControllerCore extends AdminController
      * Display transferstock action link (fake link because don't have id_stock)
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayPrepareTransferstockLink($token, $id)
     {
@@ -1532,7 +1535,7 @@ class AdminStockManagementControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminSearchEnginesControllerCore
- *
- * @since 1.0.0
  */
 class AdminSearchEnginesControllerCore extends AdminController
 {
     /**
      * AdminSearchEnginesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -102,7 +100,7 @@ class AdminSearchEnginesControllerCore extends AdminController
     /**
      * Initialize page header toolbar
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {

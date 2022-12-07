@@ -31,8 +31,6 @@
 
 /**
  * Class CompareControllerCore
- *
- * @since 1.0.0
  */
 class CompareControllerCore extends FrontController
 {
@@ -46,7 +44,6 @@ class CompareControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -60,7 +57,6 @@ class CompareControllerCore extends FrontController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function displayAjax()
     {
@@ -96,8 +92,6 @@ class CompareControllerCore extends FrontController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @see FrontController::initContent()
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {

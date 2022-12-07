@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleCore
- *
- * @since 1.0.0
  */
 abstract class ModuleCore
 {
@@ -157,11 +155,10 @@ abstract class ModuleCore
     /**
      * Constructor
      *
-     * @param string  $name Module unique name
-     * @param Context $context
+     * @param string|null $name Module unique name
+     * @param Context|null $context
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function __construct($name = null, Context $context = null)
@@ -194,7 +191,6 @@ abstract class ModuleCore
         }
 
         // If the module has the name we load the corresponding data from the cache
-        // @codingStandardsIgnoreStart
         if ($this->name != null) {
             // If cache is not generated, we generate it
             if (static::$modules_cache == null && !is_array(static::$modules_cache)) {
@@ -231,83 +227,64 @@ abstract class ModuleCore
             }
             $this->local_path = _PS_MODULE_DIR_.$this->name.'/';
         }
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBatchMode()
     {
-        // @codingStandardsIgnoreStart
         return static::$_batch_mode;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Set the flag to indicate we are doing an import
      *
      * @param bool $value
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function setBatchMode($value)
     {
-        // @codingStandardsIgnoreStart
         static::$_batch_mode = (bool) $value;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function processDeferedFuncCall()
     {
         static::setBatchMode(false);
-        // @codingStandardsIgnoreStart
         foreach (static::$_defered_func_call as $funcCall) {
             call_user_func_array($funcCall[0], $funcCall[1]);
         }
         static::$_defered_func_call = [];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Clear the caches stored in $_defered_clearCache
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function processDeferedClearCache()
     {
         static::setBatchMode(false);
 
-        // @codingStandardsIgnoreStart
         foreach (static::$_defered_clearCache as $clearCacheArray) {
             static::_deferedClearCache($clearCacheArray[0], $clearCacheArray[1], $clearCacheArray[2]);
         }
 
         static::$_defered_clearCache = [];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Clear deferred template cache
      *
-     * @param string   $templatePath Template path
+     * @param string $templatePath Template path
      * @param int|null $cacheId
      * @param int|null $compileId
      *
      * @return int Number of template cleared
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function _deferedClearCache($templatePath, $cacheId, $compileId)
@@ -321,28 +298,21 @@ abstract class ModuleCore
 
     /**
      * @param bool $update
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function updateTranslationsAfterInstall($update = true)
     {
-        // @codingStandardsIgnoreStart
         Module::$update_translations_after_install = (bool) $update;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Init the upgrade module
      *
-     * @param Module $module
+     * @param stdClass $module
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function initUpgradeModule($module)
     {
@@ -352,7 +322,6 @@ abstract class ModuleCore
         }
 
         // Init cache upgrade details
-        // @codingStandardsIgnoreStart
         static::$modules_cache[$module->name]['upgrade'] = [
             'success'             => false, // bool to know if upgrade succeed or not
             'available_upgrade'   => 0, // Number of available module before any upgrade
@@ -363,7 +332,6 @@ abstract class ModuleCore
             'upgraded_from'       => 0, // Version number before upgrading anything
             'upgraded_to'         => 0, // Last upgrade applied
         ];
-        // @codingStandardsIgnoreEnd
 
         // Need Upgrade will check and load upgrade file to the moduleCache upgrade case detail
         $ret = $module->installed && Module::needUpgrade($module);
@@ -381,8 +349,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function upgradeModuleVersion($name, $version)
     {
@@ -399,20 +365,16 @@ abstract class ModuleCore
      * Check if a module need to be upgraded.
      * This method modify the module_cache adding an upgrade list file
      *
-     * @param $module
+     * @param stdClass $module
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function needUpgrade($module)
     {
-        // @codingStandardsIgnoreStart
         static::$modules_cache[$module->name]['upgrade']['upgraded_from'] = $module->database_version;
-        // @codingStandardsIgnoreEnd
         // Check the version of the module with the registered one and look if any upgrade file exist
         if (Tools::version_compare($module->version, $module->database_version, '>')) {
             $oldVersion = $module->database_version;
@@ -434,8 +396,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstanceByName($moduleName)
     {
@@ -459,14 +419,12 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $moduleName
+     * @param string $moduleName
      *
      * @return Module
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function coreLoadModule($moduleName)
     {
@@ -541,16 +499,14 @@ abstract class ModuleCore
      * Load the available list of upgrade of a specified module
      * with an associated version
      *
-     * @param $moduleName
-     * @param $moduleVersion
-     * @param $registeredVersion
+     * @param string $moduleName
+     * @param string $moduleVersion
+     * @param string $registeredVersion
      *
      * @return bool to know directly if any files have been found
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function loadUpgradeVersionList($moduleName, $moduleVersion, $registeredVersion)
     {
@@ -590,19 +546,15 @@ abstract class ModuleCore
 
         // No files upgrade, then upgrade succeed
         if (count($list) == 0) {
-            // @codingStandardsIgnoreStart
             static::$modules_cache[$moduleName]['upgrade']['success'] = true;
-            // @codingStandardsIgnoreEnd
             Module::upgradeModuleVersion($moduleName, $moduleVersion);
         }
 
         usort($list, 'ps_module_version_sort');
 
         // Set the list to module cache
-        // @codingStandardsIgnoreStart
         static::$modules_cache[$moduleName]['upgrade']['upgrade_file_left'] = $list;
         static::$modules_cache[$moduleName]['upgrade']['available_upgrade'] = count($list);
-        // @codingStandardsIgnoreEnd
 
         return (bool) count($list);
     }
@@ -613,16 +565,11 @@ abstract class ModuleCore
      * @param string $moduleName
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getUpgradeStatus($moduleName)
     {
-        // @codingStandardsIgnoreStart
         return (isset(static::$modules_cache[$moduleName]) &&
             static::$modules_cache[$moduleName]['upgrade']['success']);
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -634,8 +581,6 @@ abstract class ModuleCore
      * @return true if succeed
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function enableByName($name)
     {
@@ -664,8 +609,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function disableByName($name)
     {
@@ -692,9 +635,6 @@ abstract class ModuleCore
      * @param mixed $currentClass the
      *
      * @return bool|string if the class belongs to a module, will return the module name. Otherwise, return false.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModuleNameFromClass($currentClass)
     {
@@ -737,8 +677,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstanceById($idModule)
     {
@@ -768,9 +706,6 @@ abstract class ModuleCore
      * @param string $module
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModuleName($module)
     {
@@ -816,9 +751,6 @@ abstract class ModuleCore
      * @param string $string
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function configXmlStringFormat($string)
     {
@@ -828,16 +760,14 @@ abstract class ModuleCore
     /**
      * Return available modules
      *
-     * @param bool     $useConfig in order to use config.xml file in module dir
-     * @param bool     $loggedOnAddons
+     * @param bool $useConfig in order to use config.xml file in module dir
+     * @param bool $loggedOnAddons
      * @param int|bool $idEmployee
      *
      * @return stdClass[] Modules
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModulesOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false)
     {
@@ -1002,12 +932,10 @@ abstract class ModuleCore
                     $modulesNameToCursor[mb_strtolower($item->name)] = $item;
 
                     if (!$xmlExist || $needNewConfigFile) {
-                        // @codingStandardsIgnoreStart
                         static::$_generate_config_xml_mode = true;
                         /** @var Module $tmpModule */
                         $tmpModule->_generateConfigXml();
                         static::$_generate_config_xml_mode = false;
-                        // @codingStandardsIgnoreEnd
                     }
 
                     unset($tmpModule);
@@ -1143,8 +1071,6 @@ abstract class ModuleCore
      * @return array Modules Directory List
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModulesDirOnDisk()
     {
@@ -1166,9 +1092,6 @@ abstract class ModuleCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function useTooMuchMemory()
     {
@@ -1191,9 +1114,7 @@ abstract class ModuleCore
      *
      * @param string $moduleName
      *
-     * @return int
-     * @internal   param string $name The module name (the folder name)
-     * @internal   param string $key The key provided by addons
+     * @return bool
      *
      * @deprecated 1.0.0
      */
@@ -1206,9 +1127,6 @@ abstract class ModuleCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNativeModuleList()
     {
@@ -1224,8 +1142,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNonNativeModuleList()
     {
@@ -1243,8 +1159,6 @@ abstract class ModuleCore
      * should never get installed, enabled of disabled by a theme installation.
      *
      * @return array Module names.
-     *
-     * @version 1.1.0 Initial version.
      */
     public static function getNotThemeRelatedModules()
     {
@@ -1294,8 +1208,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModulesInstalled($position = 0)
     {
@@ -1343,12 +1255,13 @@ abstract class ModuleCore
     /**
      * Execute modules for specified hook
      *
-     * @param string   $hookName Hook Name
-     * @param array    $hookArgs Parameters for the functions
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
      * @param int|null $idModule
      *
      * @return string modules output
      *
+     * @throws PrestaShopException
      * @deprecated 2.0.0
      */
     public static function hookExec($hookName, $hookArgs = [], $idModule = null)
@@ -1393,14 +1306,12 @@ abstract class ModuleCore
     /**
      * Returns the list of the payment module associated to the current customer
      *
-     * @see     PaymentModule::getInstalledPaymentModules() if you don't care about the context
+     * @see PaymentModule::getInstalledPaymentModules() if you don't care about the context
      *
      * @return array module informations
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPaymentModules()
     {
@@ -1472,8 +1383,6 @@ abstract class ModuleCore
      *
      * @return bool|null
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isEnabled($moduleName)
@@ -1508,8 +1417,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAuthorizedModules($groupId)
     {
@@ -1529,8 +1436,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function install()
     {
@@ -1647,11 +1552,9 @@ abstract class ModuleCore
         Hook::exec('actionModuleInstallAfter', ['object' => $this]);
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS') || !TB_INSTALLATION_IN_PROGRESS) {
-            // @codingStandardsIgnoreStart
             if (Module::$update_translations_after_install) {
                 $this->updateModuleTranslations();
             }
-            // @codingStandardsIgnoreEnd
         }
 
         return true;
@@ -1659,9 +1562,6 @@ abstract class ModuleCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkCompliancy()
     {
@@ -1682,9 +1582,6 @@ abstract class ModuleCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.8 Removed caching, which just duplicated the caching in
      *                getModuleIdByName().
      * @throws PrestaShopException
      */
@@ -1700,8 +1597,6 @@ abstract class ModuleCore
      *
      * @return int Module ID
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getModuleIdByName($name)
@@ -1716,7 +1611,6 @@ abstract class ModuleCore
      *
      * @param int $moduleId
      *
-     * @since   1.1.1
      * @return string | null
      * @throws PrestaShopException
      */
@@ -1735,7 +1629,6 @@ abstract class ModuleCore
     /**
      * Returns mapping from modules name -> module IDs
      *
-     * @since 1.1.1
      * @return array
      * @throws PrestaShopException
      */
@@ -1764,10 +1657,7 @@ abstract class ModuleCore
      *
      * @return bool
      *
-     * @throws Exception
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function installOverrides()
     {
@@ -1789,7 +1679,6 @@ abstract class ModuleCore
     /**
      * Get local path for module
      *
-     * @since 1.0.0
      * @return string
      */
     public function getLocalPath()
@@ -1803,8 +1692,7 @@ abstract class ModuleCore
      * @param string $classname
      *
      * @return bool
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addOverride($classname)
     {
@@ -1959,8 +1847,6 @@ abstract class ModuleCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function uninstallOverrides()
@@ -1987,8 +1873,6 @@ abstract class ModuleCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function removeOverride($classname)
@@ -2142,8 +2026,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function installControllers()
     {
@@ -2191,9 +2075,9 @@ abstract class ModuleCore
      *
      * @param bool $forceAll If true, enable module for all shop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function enable($forceAll = false)
     {
@@ -2236,9 +2120,7 @@ abstract class ModuleCore
     /**
      * @return void
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function updateModuleTranslations()
     {
@@ -2250,13 +2132,12 @@ abstract class ModuleCore
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function runUpgradeModule()
     {
-        // @codingStandardsIgnoreStart
         $upgrade = &static::$modules_cache[$this->name]['upgrade'];
-        // @codingStandardsIgnore
         foreach ($upgrade['upgrade_file_left'] as $num => $fileDetail) {
             foreach ($fileDetail['upgrade_function'] as $item) {
                 if (function_exists($item)) {
@@ -2309,8 +2190,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function disable($forceAll = false)
     {
@@ -2324,10 +2203,7 @@ abstract class ModuleCore
     /**
      * Set errors, warning or success message of a module upgrade
      *
-     * @param $upgradeDetail
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $upgradeDetail
      */
     protected function setUpgradeMessage($upgradeDetail)
     {
@@ -2360,8 +2236,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function uninstall()
     {
@@ -2427,12 +2301,12 @@ abstract class ModuleCore
      * Unregister module from hook
      *
      * @param int|string $hookId Hook id (can be a hook name since 1.5.0)
-     * @param array $shopList List of shop
+     * @param int[]|null $shopList List of shop
      *
      * @return bool result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function unregisterHook($hookId, $shopList = null)
     {
@@ -2467,14 +2341,12 @@ abstract class ModuleCore
     /**
      * Reorder modules position
      *
-     * @param bool  $idHook   Hook ID
+     * @param bool $idHook Hook ID
      * @param array $shopList List of shop
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function cleanPositions($idHook, $shopList = null)
     {
@@ -2507,7 +2379,7 @@ abstract class ModuleCore
     /**
      * Unregister exceptions linked to module
      *
-     * @param int   $hookId   Hook id
+     * @param int $hookId Hook id
      * @param array $shopList List of shop
      *
      * @return bool result
@@ -2523,14 +2395,12 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $device
+     * @param int $device
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function enableDevice($device)
     {
@@ -2546,14 +2416,12 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $device
+     * @param int $device
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function disableDevice($device)
     {
@@ -2571,13 +2439,12 @@ abstract class ModuleCore
     /**
      * Display flags in forms for translations
      *
-     *
-     * @param array  $languages           All languages available
-     * @param int    $defaultLanguage     Default language id
-     * @param string $ids                 Multilingual div ids in form
-     * @param string $id                  Current div id]
-     * @param bool   $return              define the return way : false for a display, true for a return
-     * @param bool   $useVarsInsteadOfIds use an js vars instead of ids seperate by "¤"
+     * @param array $languages All languages available
+     * @param int $defaultLanguage Default language id
+     * @param string $ids Multilingual div ids in form
+     * @param string $id Current div id]
+     * @param bool $return define the return way : false for a display, true for a return
+     * @param bool $useVarsInsteadOfIds use an js vars instead of ids seperate by "¤"
      *
      * @deprecated 2.0.0
      *
@@ -2617,13 +2484,10 @@ abstract class ModuleCore
      * Otherwise, translation key will not match for Module library
      * when module is loaded with eval() Module::getModulesOnDisk()
      *
-     * @param string      $string   String to translate
+     * @param string $string String to translate
      * @param bool|string $specific filename to use in translation key
      *
      * @return string Translation
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function l($string, $specific = false)
     {
@@ -2638,7 +2502,7 @@ abstract class ModuleCore
      * Connect module to a hook
      *
      * @param string|string[] $hookName Hook name or an array with hook names
-     * @param array           $shopList List of shop linked to the hook (if null, link hook to all shops)
+     * @param array $shopList List of shop linked to the hook (if null, link hook to all shops)
      *
      * @return bool result
      * @throws PrestaShopException
@@ -2742,13 +2606,13 @@ abstract class ModuleCore
     /**
      * Edit exceptions for module->Hook
      *
-     * @param int   $hookID  Hook id
+     * @param int $idHook
      * @param array $excepts List of shopID and file name
      *
      * @return bool result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function editExceptions($idHook, $excepts)
     {
@@ -2766,8 +2630,8 @@ abstract class ModuleCore
     /**
      * Add exceptions for module->Hook
      *
-     * @param int   $idHook   Hook id
-     * @param array $excepts  List of file name
+     * @param int $idHook Hook id
+     * @param array $excepts List of file name
      * @param array $shopList List of shop
      *
      * @return bool result
@@ -2807,15 +2671,13 @@ abstract class ModuleCore
      * Reposition module
      *
      * @param bool $idHook Hook ID
-     * @param bool $way    Up (0) or Down (1)
-     * @param int  $position
+     * @param bool $way Up (0) or Down (1)
+     * @param int $position
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($idHook, $way, $position = null)
     {
@@ -2871,9 +2733,6 @@ abstract class ModuleCore
      * @param string|array $error
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayError($error)
     {
@@ -2903,12 +2762,8 @@ abstract class ModuleCore
     /**
      * Helper displaying warning message(s)
      *
-     * @param string|array $error
-     *
+     * @param string|string[] $warning
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayWarning($warning)
     {
@@ -2934,12 +2789,9 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayConfirmation($string)
     {
@@ -2957,7 +2809,7 @@ abstract class ModuleCore
     /**
      * Return exceptions for module in hook
      *
-     * @param int  $idHook Hook ID
+     * @param int $idHook Hook ID
      *
      * @param bool $dispatch
      *
@@ -2965,8 +2817,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getExceptions($idHook, $dispatch = false)
     {
@@ -2976,8 +2826,8 @@ abstract class ModuleCore
     /**
      * Return exceptions for module in hook
      *
-     * @param int  $id_module Module ID
-     * @param int  $id_hook   Hook ID
+     * @param int $id_module Module ID
+     * @param int $id_hook Hook ID
      *
      * @param bool $dispatch
      *
@@ -2985,8 +2835,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getExceptionsStatic($id_module, $id_hook, $dispatch = false)
     {
@@ -3044,8 +2892,6 @@ abstract class ModuleCore
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isEnabledForShopContext()
@@ -3056,7 +2902,6 @@ abstract class ModuleCore
     /**
      * This method returns true if module with id $moduleId is enabled for *all* shops specified in $shops array.
      *
-     * @since   1.1.1
      * @param int $moduleId module ID
      * @param int[] $shops list of shops to check
      * @return bool
@@ -3090,7 +2935,6 @@ abstract class ModuleCore
      *
      * @param string $moduleName
      *
-     * @since   1.1.1
      * @return bool
      */
     public static function moduleExistsOnFilesystem($moduleName)
@@ -3111,12 +2955,10 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $hook
+     * @param string $hook
      *
-     * @return bool|false|null|string
+     * @return false|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isRegisteredInHook($hook)
@@ -3136,18 +2978,15 @@ abstract class ModuleCore
     }
 
     /**
-     * @param      $file
-     * @param      $template
-     * @param null $cache_id
-     * @param null $compile_id
+     * @param string $file
+     * @param string $template
+     * @param string|null $cache_id
+     * @param string|null $compile_id
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function display($file, $template, $cache_id = null, $compile_id = null)
     {
@@ -3187,13 +3026,10 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $module_name
-     * @param $template
+     * @param string $module_name
+     * @param string $template
      *
      * @return bool|null|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function _isTemplateOverloadedStatic($module_name, $template)
     {
@@ -3215,14 +3051,13 @@ abstract class ModuleCore
     }
 
     /**
-     * @param string      $template
+     * @param string $template
      * @param string|null $cache_id
      * @param string|null $compile_id
      *
      * @return Smarty_Internal_Template
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     protected function getCurrentSubTemplate($template, $cache_id = null, $compile_id = null)
     {
@@ -3244,9 +3079,6 @@ abstract class ModuleCore
      * @param string $template
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplatePath($template)
     {
@@ -3269,33 +3101,35 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return bool|null|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _isTemplateOverloaded($template)
     {
         return Module::_isTemplateOverloadedStatic($this->name, $template);
     }
 
+    /**
+     * @param string $template
+     * @param string $cache_id
+     * @param string $compile_id
+     * @return void
+     */
     protected function resetCurrentSubTemplate($template, $cache_id, $compile_id)
     {
         $this->current_subtemplate[$template.'_'.$cache_id.'_'.$compile_id] = null;
     }
 
     /**
-     * @param      $template
-     * @param null $cacheId
-     * @param null $compileId
+     * @param string $template
+     * @param string|null $cacheId
+     * @param string|null $compileId
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function isCached($template, $cacheId = null, $compileId = null)
     {
@@ -3319,8 +3153,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isHookableOn($hook_name)
     {
@@ -3337,8 +3169,6 @@ abstract class ModuleCore
      *
      * @return bool if module can be transplanted on hook
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getPermission($variable, $employee = null)
@@ -3349,16 +3179,13 @@ abstract class ModuleCore
     /**
      * Check employee permission for module (static method)
      *
-     * @param int    $idModule
+     * @param int $idModule
      * @param string $variable (action)
      * @param object $employee
      *
      * @return bool if module can be transplanted on hook
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPermissionStatic($idModule, $variable, $employee = null)
     {
@@ -3394,7 +3221,6 @@ abstract class ModuleCore
     /**
      * Get module errors
      *
-     * @since 1.0.0
      * @return array errors
      */
     public function getErrors()
@@ -3405,7 +3231,6 @@ abstract class ModuleCore
     /**
      * Get module messages confirmation
      *
-     * @since 1.0.0
      * @return array conf
      */
     public function getConfirmations()
@@ -3416,7 +3241,6 @@ abstract class ModuleCore
     /**
      * Get uri path for module
      *
-     * @since 1.0.0
      * @return string
      */
     public function getPathUri()
@@ -3433,8 +3257,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPosition($id_hook)
     {
@@ -3465,8 +3287,6 @@ abstract class ModuleCore
      * @param string $msg
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function adminDisplayWarning($msg)
     {
@@ -3483,8 +3303,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPossibleHooksList()
     {
@@ -3517,7 +3335,6 @@ abstract class ModuleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.1.1
      */
     public function getDisplayableHookList($includeBackOfficeHooks=false)
     {
@@ -3527,14 +3344,12 @@ abstract class ModuleCore
     }
 
     /**
-     * @param null $name
+     * @param string|null $name
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getCacheId($name = null)
     {
@@ -3566,12 +3381,9 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _getApplicableTemplateDir($template)
     {
@@ -3582,13 +3394,11 @@ abstract class ModuleCore
      * Clear template cache
      *
      * @param string $template Template name
-     * @param        int       null $cacheId
-     * @param        int       null $compileId
+     * @param string|null $cacheId
+     * @param int|null $compileId
      *
      * @return false|int Number of template cleared
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function _clearCache($template, $cacheId = null, $compileId = null)
@@ -3632,9 +3442,6 @@ abstract class ModuleCore
 
     /**
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @version 1.0.5 Use DOMDocument instead of a manually crafted string.
-     * @since   1.0.0
      */
     protected function _generateConfigXml()
     {
@@ -3697,9 +3504,6 @@ abstract class ModuleCore
      * @param string $msg
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function adminDisplayInformation($msg)
     {
@@ -3782,6 +3586,11 @@ abstract class ModuleCore
     }
 }
 
+/**
+ * @param array $a
+ * @param array $b
+ * @return bool|int
+ */
 function ps_module_version_sort($a, $b)
 {
     return version_compare($a['version'], $b['version']);

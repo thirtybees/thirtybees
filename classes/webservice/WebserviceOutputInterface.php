@@ -31,24 +31,101 @@
 
 /**
  * Interface WebserviceOutputInterface
- *
- * @since 1.0.0
  */
 interface WebserviceOutputInterface
 {
+    /**
+     * @param array $languages
+     */
     public function __construct($languages = []);
+
+    /**
+     * @param string $url
+     * @return static
+     */
     public function setWsUrl($url);
+
+    /**
+     * @return string
+     */
     public function getWsUrl();
+
+    /**
+     * @return string
+     */
     public function getContentType();
+
+    /**
+     * @param string $schema
+     * @return static
+     */
     public function setSchemaToDisplay($schema);
+
+    /**
+     * @return string
+     */
     public function getSchemaToDisplay();
+
+    /**
+     * @param array $field
+     * @return string
+     */
     public function renderField($field);
+
+    /**
+     * @param string $obj
+     * @param array $params
+     * @param array|null $moreAttr
+     * @param bool $hasChild
+     * @return string
+     */
     public function renderNodeHeader($obj, $params, $moreAttr = null, $hasChild = true);
+
+    /**
+     * @param string $obj
+     * @param array $params
+     * @return string
+     */
     public function renderNodeFooter($obj, $params);
+
+    /**
+     * @param ObjectModel $obj
+     * @param array $params
+     * @param string $assocName
+     * @param bool $closedTags
+     * @return string
+     */
     public function renderAssociationHeader($obj, $params, $assocName, $closedTags = false);
+
+    /**
+     * @param ObjectModel $obj
+     * @param array $params
+     * @param string $assocName
+     * @return string
+     */
     public function renderAssociationFooter($obj, $params, $assocName);
+
+    /**
+     * @param string $content
+     * @return string
+     */
     public function overrideContent($content);
+
+    /**
+     * @return string
+     */
     public function renderErrorsHeader();
+
+    /**
+     * @return string
+     */
     public function renderErrorsFooter();
+
+    /**
+     * @param string $message
+     * @param int|null $code
+     * @param array $extra
+     * @return string
+     */
     public function renderErrors($message, $code = null, $extra = []);
 }

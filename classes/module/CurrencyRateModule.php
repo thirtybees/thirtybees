@@ -31,8 +31,6 @@
 
 /**
  * Class CurrencyModuleCore
- *
- * @since 1.0.0
  */
 abstract class CurrencyRateModuleCore extends Module
 {
@@ -43,7 +41,7 @@ abstract class CurrencyRateModuleCore extends Module
      *                             The module will have to accept all currencies
      *                             from that array as a base.
      *
-     * @return false|array Associate array with all supported currency codes as key (uppercase) and the actual
+     * @return false Associate array with all supported currency codes as key (uppercase) and the actual
      *                     amounts as values (floats - be as accurate as you like), e.g.:
      *                     ```php
      *                     [
@@ -53,7 +51,6 @@ abstract class CurrencyRateModuleCore extends Module
      *                     ```
      *                     Returns `false`  if there were problems with retrieving the exchange rates
      *
-     * @since 1.0.0
      * @deprecated 1.0.1 Sorry, it doesn't work as it should :(
      *             Please avoid!
      */
@@ -85,18 +82,15 @@ abstract class CurrencyRateModuleCore extends Module
      *                     Sets a currency as `false` if there were problems with retrieving the exchange rates.
      *                     This will cause thirty bees to not further process the currency. As of 1.0.x thirty bees will not request
      *                     other modules to provide the missing rates. This might change in the future.
-     *
-     * @since 1.0.1 Introduced as a replacement for `hookCurrencyRates`. All action modules should be prefixed with `action`
      */
     abstract public function hookActionRetrieveCurrencyRates($params);
 
     /**
      * @param string $fromCurrency From currency code
-     * @param string $toCurrency   To currency code
+     * @param string $toCurrency To currency code
      *
-     * @return false|float
+     * @return false
      *
-     * @since 1.0.0
      * @deprecated 1.0.1 Sorry, it doesn't work as it should :(
      *             Please avoid!
      */
@@ -108,8 +102,6 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * @return array Supported currencies
      *               An array with uppercase currency codes (ISO 4217)
-     *
-     * @since 1.0.0
      */
     abstract public function getSupportedCurrencies();
 
@@ -117,8 +109,7 @@ abstract class CurrencyRateModuleCore extends Module
      * Install this module and scan currencies
      *
      * @return bool Indicates whether the module was successfully installed
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function install()
     {
@@ -135,11 +126,10 @@ abstract class CurrencyRateModuleCore extends Module
      * Retrieve all currencies that have exchange rate modules available
      *
      * @param bool $registeredOnly Show currencies with registered services only
-     * @param bool $codesOnly      Return codes only
+     * @param bool $codesOnly Return codes only
      *
      * @return array|false Array with currency iso code as key and module instance as value
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function getCurrencyRateInfo($registeredOnly = false, $codesOnly = false)
     {
@@ -191,9 +181,7 @@ abstract class CurrencyRateModuleCore extends Module
      * @param bool|string $baseCurrency
      *
      * @return false|array Result
-     *
-     * @since 1.0.0
-     * @since 1.0.1 Extra module name
+     * @throws PrestaShopException
      */
     public static function scanMissingCurrencyRateModules($baseCurrency = false, $extraModule = null)
     {
@@ -245,7 +233,8 @@ abstract class CurrencyRateModuleCore extends Module
      *
      * @return array Available modules
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getInstalledCurrencyRateModules()
     {
@@ -267,7 +256,8 @@ abstract class CurrencyRateModuleCore extends Module
      *
      * @return array Available modules
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCurrencyRateModules()
     {
@@ -287,13 +277,14 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * Get providing modules
      *
-     * @param string      $to      To currency code
-     * @param null|string $from    From given base currency code
-     * @param bool        $justOne Search for just one module
+     * @param string $to To currency code
+     * @param string|null $from From given base currency code
+     * @param bool $justOne Search for just one module
      *
      * @return array|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function providesExchangeRate($to, $from = null, $justOne = false)
     {
@@ -323,12 +314,13 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * Get providing modules
      *
-     * @param int    $idCurrency To currency code
-     * @param string $selected   Selected module
+     * @param int $idCurrency To currency code
+     * @param string $selected Selected module
      *
      * @return array|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getServices($idCurrency, $selected)
     {
@@ -363,11 +355,12 @@ abstract class CurrencyRateModuleCore extends Module
     }
 
     /**
-     * @param $idCurrency
+     * @param int $idCurrency
      *
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function getModuleForCurrency($idCurrency)
     {
@@ -385,7 +378,8 @@ abstract class CurrencyRateModuleCore extends Module
      * @param int $idCurrency
      * @param int $idModule
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function setModule($idCurrency, $idModule)
     {

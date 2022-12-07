@@ -31,6 +31,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
 {
     /**
      * AdminDuplicateUrlsController constructor.
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -41,6 +42,9 @@ class AdminDuplicateUrlsControllerCore extends AdminController
 
     /**
      * Initialize content
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -62,6 +66,8 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * Format: a_type, a_id, a_view (url to fix), b_type, ..., a_url
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDuplicates()
     {
@@ -137,6 +143,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function getCategoryUrls($idLang)
     {
@@ -165,10 +172,11 @@ class AdminDuplicateUrlsControllerCore extends AdminController
     /**
      * Get all CMS URLs for the selected language
      *
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function getCmsUrls($idLang)
     {
@@ -197,10 +205,11 @@ class AdminDuplicateUrlsControllerCore extends AdminController
     /**
      * Get all CMS category URLs for the selected language
      *
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function getCmsCategoryUrls($idLang)
     {
@@ -229,10 +238,11 @@ class AdminDuplicateUrlsControllerCore extends AdminController
     /**
      * Get all supplier URLs for the selected language
      *
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function getSupplierUrls($idLang)
     {
@@ -265,6 +275,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @return array
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function getManufacturerUrls($idLang)
     {
@@ -290,6 +301,13 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         return $manufacturerUrls;
     }
 
+    /**
+     * @param array $item
+     * @param string $prefix
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processItem($item, $prefix = 'a')
     {
         $link = $this->context->link;

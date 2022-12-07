@@ -31,12 +31,9 @@
 
 /**
  * Class SupplierCore
- *
- * @since 1.0.0
  */
 class SupplierCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * Return name from id
      *
@@ -65,10 +62,9 @@ class SupplierCore extends ObjectModel
     public $meta_description;
     /** @var bool active */
     public $active;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'supplier',
@@ -93,6 +89,9 @@ class SupplierCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'link_rewrite' => ['sqlId' => 'link_rewrite'],
@@ -102,11 +101,11 @@ class SupplierCore extends ObjectModel
     /**
      * SupplierCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
+     * @param int|null $id
+     * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -119,8 +118,7 @@ class SupplierCore extends ObjectModel
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLink()
     {
@@ -131,16 +129,14 @@ class SupplierCore extends ObjectModel
      * Return suppliers
      *
      * @param bool $getNbProducts
-     * @param int  $idLang
+     * @param int $idLang
      * @param bool $active
      * @param bool $p
      * @param bool $n
      * @param bool $allGroups
      *
-     * @return array Suppliers
+     * @return array|false Suppliers
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -216,7 +212,7 @@ class SupplierCore extends ObjectModel
     }
 
     /**
-     * @param null $nullValues
+     * @param bool|null $nullValues
      *
      * @return bool Indicates whether updating succeeded
      * @throws PrestaShopDatabaseException
@@ -248,15 +244,12 @@ class SupplierCore extends ObjectModel
     /**
      * @param int $idSupplier
      *
-     * @return mixed
+     * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNameById($idSupplier)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_name[$idSupplier])) {
             static::$cache_name[$idSupplier] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -267,7 +260,6 @@ class SupplierCore extends ObjectModel
         }
 
         return static::$cache_name[$idSupplier];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -277,8 +269,6 @@ class SupplierCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdByName($name)
     {
@@ -297,22 +287,19 @@ class SupplierCore extends ObjectModel
     }
 
     /**
-     * @param int         $idSupplier
-     * @param int         $idLang
-     * @param int         $p
-     * @param int         $n
+     * @param int $idSupplier
+     * @param int $idLang
+     * @param int $p
+     * @param int $n
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param bool        $getTotal
-     * @param bool        $active
-     * @param bool        $activeCategory
+     * @param bool $getTotal
+     * @param bool $active
+     * @param bool $activeCategory
      *
      * @return array|bool
      *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function getProducts(
@@ -461,8 +448,6 @@ class SupplierCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function supplierExists($idSupplier)
@@ -480,8 +465,6 @@ class SupplierCore extends ObjectModel
     /**
      * Gets product informations
      *
-     * @since   1.5.0
-     *
      * @param int $idSupplier
      * @param int $idProduct
      * @param int $idProductAttribute
@@ -490,8 +473,6 @@ class SupplierCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductInformationsBySupplier($idSupplier, $idProduct, $idProductAttribute = 0)
     {
@@ -514,12 +495,10 @@ class SupplierCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductsLite($idLang)
     {

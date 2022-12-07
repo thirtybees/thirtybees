@@ -29,73 +29,147 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 /**
  * Class EmployeeCore
- *
- * @since 1.0.0
  */
 class EmployeeCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
-    /** @var string Determine employee profile */
+    /**
+     * @var int Determine employee profile
+     */
     public $id_profile;
-    /** @var string employee language */
+
+    /**
+     * @var int employee language
+     */
     public $id_lang;
-    /** @var string Lastname */
+
+    /**
+     * @var string Lastname
+     */
     public $lastname;
-    /** @var string Firstname */
+
+    /**
+     * @var string Firstname
+     */
     public $firstname;
-    /** @var string e-mail */
+
+    /**
+     * @var string e-mail
+     */
     public $email;
-    /** @var string Password */
+
+    /**
+     * @var string Password
+     */
     public $passwd;
-    /** @var datetime Password */
+
+    /**
+     * @var string Password
+     */
     public $last_passwd_gen;
-    /** @var string $stats_date_from */
+
+    /**
+     * @var string $stats_date_from
+     */
     public $stats_date_from;
-    /** @var string $stats_date_to */
+
+    /**
+     * @var string $stats_date_to
+     */
     public $stats_date_to;
-    /** @var string $stats_compare_from */
+
+    /**
+     * @var string $stats_compare_from
+     */
     public $stats_compare_from;
-    /** @var string $stats_compare_to */
+
+    /**
+     * @var string $stats_compare_to
+     */
     public $stats_compare_to;
-    /** @var int $stats_compare_option */
+
+    /**
+     * @var int $stats_compare_option
+     */
     public $stats_compare_option = 1;
-    /** @var string $preselect_date_range */
+
+    /**
+     * @var string $preselect_date_range
+     */
     public $preselect_date_range;
-    /** @var string Display back office background in the specified color */
+
+    /**
+     * @var string Display back office background in the specified color
+     */
     public $bo_color;
+
+    /**
+     * @var int
+     */
     public $default_tab;
-    /** @var string employee's chosen theme */
+
+    /**
+     * @var string employee's chosen theme
+     */
     public $bo_theme;
-    /** @var string employee's chosen css file */
+
+    /**
+     * @var string employee's chosen css file
+     */
     public $bo_css = 'admin-theme.css';
-    /** @var int employee desired screen width */
+
+    /**
+     * @var int employee desired screen width
+     */
     public $bo_width;
 
-    /* Deprecated */
-    /** @var bool, false */
+    /**
+     * @var bool, false
+     */
     public $bo_menu = 1;
+
+    /**
+     * @var bool
+     */
     public $bo_show_screencast = false;
-    /** @var bool Status */
+
+    /**
+     * @var bool Status
+     */
     public $active = 1;
-    /** @var bool Optin status */
+
+    /**
+     * @var bool Optin status
+     */
     public $optin = 1;
 
+    /**
+     * @var string
+     */
     public $remote_addr;
+
+    /**
+     * @var int[]
+     */
     protected $associated_shops = [];
 
+    /**
+     * @var string
+     */
     public $last_connection_date;
-    // @codingStandardsIgnoreEnd
 
 
-    /** @var Notification|null */
+    /**
+     * @var Notification|null
+     */
     protected $notification = null;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'employee',
@@ -136,6 +210,9 @@ class EmployeeCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_lang'            => ['xlink_resource' => 'languages'],
@@ -157,8 +234,6 @@ class EmployeeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -184,8 +259,6 @@ class EmployeeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getEmployees($activeOnly = true)
     {
@@ -205,8 +278,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function employeeExists($email)
@@ -220,15 +291,13 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param int  $idProfile
+     * @param int $idProfile
      * @param bool $activeOnly
      *
-     * @return array|false
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getEmployeesByProfile($idProfile, $activeOnly = false)
     {
@@ -250,8 +319,6 @@ class EmployeeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setLastConnectionDate($idEmployee)
     {
@@ -265,11 +332,8 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::getFields()
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFields()
@@ -299,8 +363,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = true)
@@ -318,9 +380,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool Wether un/registration was successful.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.6 Added return value.
      * @throws PrestaShopException
      */
     protected function saveOptin()
@@ -331,7 +390,7 @@ class EmployeeCore extends ObjectModel
             if ($this->optin && $this->email) {
                 $context = Context::getContext();
 
-                $guzzle = new \GuzzleHttp\Client([
+                $guzzle = new Client([
                     'base_uri'    => Configuration::getApiServer(),
                     'timeout'     => 20,
                     'verify'      => Configuration::getSslTrustStore(),
@@ -384,9 +443,7 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.8 Operate during initial shop installation as well.
+     * @throws PrestaShopException
      */
     protected function updateTextDirection()
     {
@@ -430,8 +487,8 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -460,16 +517,14 @@ class EmployeeCore extends ObjectModel
     /**
      * Return employee instance from its e-mail (optionally check password)
      *
-     * @param string $email             E-mail
+     * @param string $email E-mail
      * @param string $plainTextPassword Password is also checked if specified
-     * @param bool   $activeOnly        Filter employee by active status
+     * @param bool $activeOnly Filter employee by active status
      *
      * @return static|bool Employee instance
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getByEmail($email, $plainTextPassword = null, $activeOnly = true)
     {
@@ -522,8 +577,6 @@ class EmployeeCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isLastAdmin()
@@ -538,9 +591,6 @@ class EmployeeCore extends ObjectModel
      * Check if current employee is super administrator
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isSuperAdmin()
     {
@@ -548,13 +598,11 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param int  $idProfile
+     * @param int $idProfile
      * @param bool $activeOnly
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function countProfile($idProfile, $activeOnly = false)
@@ -574,9 +622,6 @@ class EmployeeCore extends ObjectModel
      * @param string $plainTextPassword
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setWsPasswd($plainTextPassword)
     {
@@ -596,8 +641,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool employee validity
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isLoggedBack()
@@ -619,13 +662,11 @@ class EmployeeCore extends ObjectModel
     /**
      * Check if employee password is the right one
      *
-     * @param int    $idEmployee
+     * @param int $idEmployee
      * @param string $hashedPassword Password
      *
      * @return bool result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function checkPassword($idEmployee, $hashedPassword)
@@ -643,8 +684,7 @@ class EmployeeCore extends ObjectModel
     /**
      * Logout
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function logout()
     {
@@ -660,8 +700,6 @@ class EmployeeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function favoriteModulesList()
     {
@@ -681,9 +719,6 @@ class EmployeeCore extends ObjectModel
      * @param int $idShop
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function hasAuthOnShop($idShop)
     {
@@ -697,8 +732,8 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function hasAuthOnShopGroup($idShopGroup)
     {
@@ -720,8 +755,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getDefaultShopID()
@@ -737,8 +770,6 @@ class EmployeeCore extends ObjectModel
      * @return string
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function getImage()
     {
@@ -750,8 +781,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @deprecated since 1.4.0
      */
@@ -766,7 +795,6 @@ class EmployeeCore extends ObjectModel
      *
      * @return Notification
      * @throws PrestaShopException
-     * @since 1.4.0
      */
     public function getNotification()
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class OrderReturnControllerCore
- *
- * @since 1.0.0
  */
 class OrderReturnControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,16 +42,16 @@ class OrderReturnControllerCore extends FrontController
     public $authRedirection = 'order-follow';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize order return controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -97,11 +94,10 @@ class OrderReturnControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -121,7 +117,8 @@ class OrderReturnControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayAjax()
     {

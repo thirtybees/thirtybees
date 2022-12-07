@@ -31,12 +31,9 @@
 
 /**
  * Class AddressesControllerCore
- *
- * @since 1.0.0
  */
 class AddressesControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,12 +42,11 @@ class AddressesControllerCore extends FrontController
     public $authRedirection = 'addresses';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set default assets for this controller
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -65,9 +61,8 @@ class AddressesControllerCore extends FrontController
      * Initialize addresses controller
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @see   FrontController::init()
-     *
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -81,9 +76,8 @@ class AddressesControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {

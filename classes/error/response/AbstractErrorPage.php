@@ -20,11 +20,10 @@
 namespace Thirtybees\Core\Error\Response;
 
 use Thirtybees\Core\Error\ErrorDescription;
+use Throwable;
 
 /**
  * Class AbstractErrorPageCore
- *
- * @since 1.4.0
  */
 abstract class AbstractErrorPageCore implements ErrorResponseInterface
 {
@@ -70,7 +69,7 @@ abstract class AbstractErrorPageCore implements ErrorResponseInterface
     {
         try{
             return $this->renderError($errorDescription);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             // It's very unlikely that exception will be thrown during error message rendering. If that happen,
             // simply give up
             $this->contentType = 'text/plain';

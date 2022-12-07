@@ -31,26 +31,23 @@
 
 /**
  * Class StatisticsControllerCore
- *
- * @since 1.0.0
  */
 class StatisticsControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $display_header */
     public $display_header = false;
     /** @var bool $display_footer */
     public $display_footer = false;
     /** @var string $param_token */
     protected $param_token;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Post processing
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -73,7 +70,8 @@ class StatisticsControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processNavigationStats()
     {
@@ -101,7 +99,7 @@ class StatisticsControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processPageTime()
     {

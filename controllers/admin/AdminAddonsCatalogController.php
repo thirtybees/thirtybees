@@ -17,6 +17,8 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use \Psr\Http\Message\StreamInterface;
+
 class AdminAddonsCatalogControllerCore extends AdminController
 {
     const ADDONS_URL = '/catalog/catalog.json';
@@ -33,7 +35,6 @@ class AdminAddonsCatalogControllerCore extends AdminController
     }
 
     /**
-     *
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -53,6 +54,7 @@ class AdminAddonsCatalogControllerCore extends AdminController
      * Returns catalog content
      *
      * @return array
+     * @throws PrestaShopException
      */
     protected function getCatalog()
     {
@@ -69,7 +71,8 @@ class AdminAddonsCatalogControllerCore extends AdminController
     /**
      * Downloads catalog json feed
      *
-     * @return string | null
+     * @return StreamInterface|null
+     * @throws PrestaShopException
      */
     protected function downloadCatalog()
     {

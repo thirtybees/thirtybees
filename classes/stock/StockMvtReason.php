@@ -31,12 +31,9 @@
 
 /**
  * Class StockMvtReasonCore
- *
- * @since 1.0.0
  */
 class StockMvtReasonCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int identifier of the movement reason */
     public $id;
 
@@ -54,11 +51,9 @@ class StockMvtReasonCore extends ObjectModel
 
     /** @var bool True if the movement reason has been deleted (staying in database as deleted) */
     public $deleted = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @since 1.5.0
-     * @see   ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'stock_mvt_reason',
@@ -74,7 +69,7 @@ class StockMvtReasonCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'stock_movement_reasons',
@@ -112,13 +107,13 @@ class StockMvtReasonCore extends ObjectModel
     /**
      * Same as StockMvtReason::getStockMvtReasons(), ignoring a specific lists of ids
      *
-     * @param int   $idLang
+     * @param int $idLang
      * @param array $idsIgnore
-     * @param int   $sign optional
+     * @param int|null $sign optional
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getStockMvtReasonsWithFilter($idLang, $idsIgnore, $sign = null)
     {
@@ -147,8 +142,6 @@ class StockMvtReasonCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function exists($idStockMvtReason)

@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleGraphEngineCore
- *
- * @since 1.0.0
  */
 class ModuleGraphEngineCore extends Module
 {
@@ -69,10 +67,8 @@ class ModuleGraphEngineCore extends Module
     /**
      * ModuleGraphEngineCore constructor.
      *
-     * @param null|string $type
+     * @param string|null $type
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct($type = null)
@@ -84,8 +80,6 @@ class ModuleGraphEngineCore extends Module
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function install()
     {
@@ -100,8 +94,6 @@ class ModuleGraphEngineCore extends Module
      * @return array
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGraphEngines()
     {

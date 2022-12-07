@@ -31,15 +31,13 @@
 
 /**
  * Class AdminCartRulesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCartRulesControllerCore extends AdminController
 {
     /**
      * AdminCartRulesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -67,7 +65,9 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessLoadCartRules()
     {
@@ -138,7 +138,8 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -147,7 +148,7 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -165,7 +166,7 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -264,7 +265,7 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -282,7 +283,7 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -297,7 +298,10 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcess()
     {
@@ -335,14 +339,16 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @param       $productRuleGroupId
-     * @param       $productRuleId
-     * @param       $productRuleType
+     * @param int $productRuleGroupId
+     * @param int $productRuleId
+     * @param string $productRuleType
      * @param array $selected
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getProductRuleDisplay($productRuleGroupId, $productRuleId, $productRuleType, $selected = [])
     {
@@ -452,13 +458,14 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @param int  $productRuleGroupId
-     * @param int  $productRuleGroupQuantity
-     * @param null $productRules
+     * @param int $productRuleGroupId
+     * @param int $productRuleGroupQuantity
+     * @param array|null $productRules
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getProductRuleGroupDisplay($productRuleGroupId, $productRuleGroupQuantity = 1, $productRules = null)
     {
@@ -472,7 +479,7 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * Return the form for a single cart rule group either with or without product_rules set up
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessSearchProducts()
     {
@@ -481,11 +488,12 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @param $search
+     * @param string $search
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function searchProducts($search)
     {
@@ -527,7 +535,9 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -672,7 +682,9 @@ class AdminCartRulesControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getProductRuleGroupsDisplay($cartRule)
     {
@@ -714,7 +726,7 @@ class AdminCartRulesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayAjaxSearchCartRuleVouchers()
     {
@@ -729,7 +741,8 @@ class AdminCartRulesControllerCore extends AdminController
     /**
      * @param ObjectModel $currentObject
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterUpdate($currentObject)
     {
@@ -759,8 +772,7 @@ class AdminCartRulesControllerCore extends AdminController
      *
      * @return void
      * @throws PrestaShopDatabaseException
-     *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function afterAdd($currentObject)
     {

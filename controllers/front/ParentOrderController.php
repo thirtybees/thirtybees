@@ -34,23 +34,22 @@
  */
 class ParentOrderControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $ssl */
     public $ssl = true;
     /** @var string $php_self */
     public $php_self = 'order';
     /** @var int $nbProducts */
     public $nbProducts;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize parent order controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -153,6 +152,8 @@ class ParentOrderControllerCore extends FrontController
 
     /**
      * Set id_carrier to 0 (no shipping price)
+     *
+     * @throws PrestaShopException
      */
     protected function setNoCarrier()
     {
@@ -165,7 +166,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -194,8 +196,9 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return bool | int
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     protected function _checkFreeOrder()
     {
@@ -226,7 +229,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _updateMessage($messageContent)
     {
@@ -259,7 +263,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _processCarrier()
     {
@@ -326,8 +331,6 @@ class ParentOrderControllerCore extends FrontController
      * @param array $deliveryOption
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function validateDeliveryOption($deliveryOption)
     {
@@ -349,7 +352,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignSummaryInformations()
     {
@@ -450,7 +454,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignAddress()
     {
@@ -570,7 +575,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignCarrier()
     {
@@ -613,13 +619,13 @@ class ParentOrderControllerCore extends FrontController
     /**
      * Decides what the default carrier is and update the cart with it
      *
-     * @todo       this function must be modified - id_carrier is now delivery_option
-     *
      * @param array $carriers
      *
-     * @deprecated since 1.5.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @todo       this function must be modified - id_carrier is now delivery_option
      *
-     * @return number the id of the default carrier
+     * @deprecated since 1.5.0
      */
     protected function setDefaultCarrierSelection($carriers)
     {
@@ -633,7 +639,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignWrappingAndTOS()
     {
@@ -685,7 +692,8 @@ class ParentOrderControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignPayment()
     {
@@ -723,9 +731,10 @@ class ParentOrderControllerCore extends FrontController
      *
      * @param array $carriers
      *
+     * @return int the id of the default carrier
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated since 1.5.0
-     *
-     * @return number the id of the default carrier
      */
     protected function _setDefaultCarrierSelection($carriers)
     {

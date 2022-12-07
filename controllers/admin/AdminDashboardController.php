@@ -31,15 +31,12 @@
 
 /**
  * Class AdminDashboardControllerCore
- *
- * @since 1.0.0
  */
 class AdminDashboardControllerCore extends AdminController
 {
     /**
      * AdminDashboardControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -59,7 +56,6 @@ class AdminDashboardControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getOptionFields()
     {
@@ -181,7 +177,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function setMedia()
@@ -200,7 +195,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
@@ -223,7 +217,6 @@ class AdminDashboardControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderView()
     {
@@ -272,9 +265,8 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @return null|string
+     * @return string|null
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function getWarningDomainName()
@@ -300,7 +292,7 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -343,7 +335,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function ajaxProcessRefreshDashboard()
@@ -369,7 +360,6 @@ class AdminDashboardControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessSetSimulationMode()
     {
@@ -378,7 +368,6 @@ class AdminDashboardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function ajaxProcessGetBlogRss()
@@ -422,7 +411,6 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessSaveDashConfig()
     {
@@ -488,6 +476,8 @@ class AdminDashboardControllerCore extends AdminController
      * Range range start and end dates (stored in $stats_date_from and $stats_date_to) should be
      * derived from preset $preselect_date_range. We need to recalculate date range at least
      * once a day
+     *
+     * @throws PrestaShopException
      */
     protected function updateDateRange()
     {
@@ -536,8 +526,8 @@ class AdminDashboardControllerCore extends AdminController
     /**
      * Validates input string $strValue that is is valid date
      *
-     * @param $strValue
-     * @param null $defaultValue
+     * @param string $strValue
+     * @param string|null $defaultValue
      * @return false|string|null
      */
     protected function getDate($strValue, $defaultValue=null)

@@ -31,8 +31,6 @@
 
 /**
  * Class EncryptorCore
- *
- * @since 1.0.1
  */
 class EncryptorCore
 {
@@ -89,10 +87,7 @@ class EncryptorCore
     /**
      * Creates encryptor instance
      *
-     * @param Blowfish|PhpEncryption optional cipher tool to use
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param Blowfish|PhpEncryption $cipherTool optional cipher tool to use
      */
     protected function __construct($cipherTool)
     {
@@ -124,8 +119,6 @@ class EncryptorCore
      * @return string plaintext
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function decrypt($content)
     {
@@ -158,6 +151,8 @@ class EncryptorCore
 
     /**
      * Returns ciphering tool according to settings
+     *
+     * @return Blowfish|PhpEncryption|null
      */
     private static function getCipherTool()
     {
@@ -177,6 +172,10 @@ class EncryptorCore
 
     /**
      * Returns blowfish ciphering tool used in standalone environment
+     *
+     * @param string $salt
+     *
+     * @return Blowfish
      */
     private static function getStandaloneCipherTool($salt)
     {
@@ -186,7 +185,7 @@ class EncryptorCore
     /**
      * Check if PhpEncryption can be used
      *
-     * @returns bool
+     * @return bool
      */
     public static function supportsPhpEncryption()
     {

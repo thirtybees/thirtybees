@@ -31,12 +31,9 @@
 
 /**
  * Class PdfInvoiceControllerCore
- *
- * @since 1.0.0
  */
 class PdfInvoiceControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'pdf-invoice';
     /** @var bool $content_only */
@@ -49,7 +46,6 @@ class PdfInvoiceControllerCore extends FrontController
     protected $display_footer = false;
     /** @var string $template */
     protected $template;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Post processing
@@ -57,7 +53,6 @@ class PdfInvoiceControllerCore extends FrontController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -97,7 +92,6 @@ class PdfInvoiceControllerCore extends FrontController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function display()
     {

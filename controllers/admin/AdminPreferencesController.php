@@ -31,8 +31,6 @@
 
 /**
  * Class AdminPreferencesControllerCore
- *
- * @since 1.0.0
  */
 class AdminPreferencesControllerCore extends AdminController
 {
@@ -40,7 +38,6 @@ class AdminPreferencesControllerCore extends AdminController
      * AdminPreferencesControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -263,7 +260,6 @@ class AdminPreferencesControllerCore extends AdminController
      * @param string $value
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function updateOptionPsMultishopFeatureActive($value)
     {

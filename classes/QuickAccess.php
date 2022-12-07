@@ -31,22 +31,18 @@
 
 /**
  * Class QuickAccessCore
- *
- * @since 1.0.0
  */
 class QuickAccessCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string|string[] Name */
     public $name;
     /** @var string Link */
     public $link;
     /** @var bool New windows or not */
     public $new_window;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'quick_access',
@@ -69,8 +65,6 @@ class QuickAccessCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getQuickAccesses($idLang)
     {
@@ -87,16 +81,9 @@ class QuickAccessCore extends ObjectModel
     /**
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function toggleNewWindow()
     {
-        if (!array_key_exists('new_window', $this)) {
-            throw new PrestaShopException('property "new_window" is missing in object '.get_class($this));
-        }
-
         $this->setFieldsToUpdate(['new_window' => true]);
 
         $this->new_window = !(int) $this->new_window;

@@ -31,8 +31,6 @@
 
 /**
  * Class Core_Foundation_Database_EntityMetaData
- *
- * @since 1.0.0
  */
 class Core_Foundation_Database_EntityMetaData
 {
@@ -56,9 +54,6 @@ class Core_Foundation_Database_EntityMetaData
      * @param string $name
      *
      * @return Core_Foundation_Database_EntityMetaData $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTableName($name)
     {
@@ -69,9 +64,6 @@ class Core_Foundation_Database_EntityMetaData
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTableName()
     {
@@ -81,10 +73,7 @@ class Core_Foundation_Database_EntityMetaData
     /**
      * @param string[] $primaryKeyFieldnames
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setPrimaryKeyFieldNames(array $primaryKeyFieldnames)
     {
@@ -95,9 +84,6 @@ class Core_Foundation_Database_EntityMetaData
 
     /**
      * @return string[]
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPrimaryKeyFieldnames()
     {
@@ -107,10 +93,7 @@ class Core_Foundation_Database_EntityMetaData
     /**
      * @param string $entityClassName
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setEntityClassName($entityClassName)
     {
@@ -121,9 +104,6 @@ class Core_Foundation_Database_EntityMetaData
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEntityClassName()
     {

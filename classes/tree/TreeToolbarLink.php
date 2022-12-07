@@ -31,25 +31,21 @@
 
 /**
  * Class TreeToolbarLinkCore
- *
- * @since 1.0.0
  */
 class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarButtonCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     protected $_template = 'tree_toolbar_link.tpl';
-    // @codingStandardsIgnoreEnd
 
     /**
      * TreeToolbarLinkCore constructor.
      *
-     * @param string label
+     * @param string $label
      * @param string $link
-     * @param string|null  $action
-     * @param string|null  $iconClass
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $action
+     * @param string|null $iconClass
      */
     public function __construct($label, $link, $action = null, $iconClass = null)
     {
@@ -61,12 +57,9 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setAction($value)
     {
@@ -74,10 +67,7 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getAction()
     {
@@ -85,12 +75,9 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setIconClass($value)
     {
@@ -98,10 +85,7 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getIconClass()
     {
@@ -109,12 +93,9 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setLink($value)
     {
@@ -122,10 +103,7 @@ class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarB
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getLink()
     {

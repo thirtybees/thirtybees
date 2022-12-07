@@ -31,8 +31,6 @@
 
 /**
  * Class HelperFormCore
- *
- * @since 1.0.0
  */
 class HelperFormCore extends Helper
 {
@@ -77,7 +75,7 @@ class HelperFormCore extends Helper
     public $token;
 
     /**
-     * @var null|array $languages
+     * @var array $languages
      */
     public $languages = null;
 
@@ -103,9 +101,6 @@ class HelperFormCore extends Helper
 
     /**
      * HelperFormCore constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -119,12 +114,9 @@ class HelperFormCore extends Helper
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function generateForm($fieldsForm)
     {
@@ -135,12 +127,9 @@ class HelperFormCore extends Helper
 
     /**
      * @return string
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function generate()
     {
@@ -364,9 +353,6 @@ class HelperFormCore extends Helper
      * Return true if there are required fields
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFieldsRequired()
     {
@@ -387,13 +373,12 @@ class HelperFormCore extends Helper
      * Render an area to determinate shop association
      *
      * @param bool $disableShared
-     * @param null $templateDirectory
+     * @param string|null $templateDirectory
      *
      * @return string
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function renderAssoShop($disableShared = false, $templateDirectory = null)
     {
@@ -440,6 +425,7 @@ class HelperFormCore extends Helper
      *
      * @return string
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderShopAssociation(array $selected, $templateDirectory = null)
     {

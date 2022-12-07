@@ -31,8 +31,6 @@
 
 /**
  * Class HelperTreeShopsCore
- *
- * @since 1.0.0
  */
 class HelperTreeShopsCore extends TreeCore
 {
@@ -53,12 +51,10 @@ class HelperTreeShopsCore extends TreeCore
     /**
      * HelperTreeShopsCore constructor.
      *
-     * @param int  $id
+     * @param string|int $id
      * @param string|null $title
      * @param int|null $lang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($id, $title = null, $lang = null)
@@ -70,10 +66,8 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getData()
@@ -88,10 +82,7 @@ class HelperTreeShopsCore extends TreeCore
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setLang($value)
     {
@@ -102,9 +93,6 @@ class HelperTreeShopsCore extends TreeCore
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLang()
     {
@@ -116,10 +104,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeFolderTemplate()
     {
@@ -131,10 +116,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeItemTemplate()
     {
@@ -148,11 +130,8 @@ class HelperTreeShopsCore extends TreeCore
     /**
      * @param int[] $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setSelectedShops($value)
     {
@@ -167,9 +146,6 @@ class HelperTreeShopsCore extends TreeCore
 
     /**
      * @return int[]
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSelectedShops()
     {
@@ -182,9 +158,6 @@ class HelperTreeShopsCore extends TreeCore
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplate()
     {
@@ -196,15 +169,14 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      * @param bool $useDefaultActions
      * @param bool $useSelectedShop
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function render($data = null, $useDefaultActions = true, $useSelectedShop = true)
     {
@@ -251,14 +223,11 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      *
      * @return string
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderNodes($data = null)
     {

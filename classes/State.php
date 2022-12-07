@@ -31,28 +31,41 @@
 
 /**
  * Class StateCore
- *
- * @since 1.0.0
  */
 class StateCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
-    /** @var int Country id which state belongs */
+    /**
+     * @var int Country id which state belongs
+     */
     public $id_country;
-    /** @var int Zone id which state belongs */
-    public $id_zone;
-    /** @var string 2 letters iso code */
-    public $iso_code;
-    /** @var string Name */
-    public $name;
-    /** @var bool Status for delivery */
-    public $active = true;
-
-    public $tax_behavior;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int Zone id which state belongs
+     */
+    public $id_zone;
+
+    /**
+     * @var string 2 letters iso code
+     */
+    public $iso_code;
+
+    /**
+     * @var string Name
+     */
+    public $name;
+
+    /**
+     * @var bool Status for delivery
+     */
+    public $active = true;
+
+    /**
+     * @var int
+     */
+    public $tax_behavior;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'state',
@@ -74,6 +87,9 @@ class StateCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_zone'    => ['xlink_resource' => 'zones'],
@@ -85,12 +101,10 @@ class StateCore extends ObjectModel
      * @param bool $idLang
      * @param bool $active
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getStates($idLang = false, $active = false)
     {
@@ -110,8 +124,6 @@ class StateCore extends ObjectModel
      *
      * @return string State name
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNameById($idState)
@@ -142,8 +154,6 @@ class StateCore extends ObjectModel
      *
      * @return int State ID
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByName($state)
@@ -170,13 +180,11 @@ class StateCore extends ObjectModel
     /**
      * Get a state id with its iso code
      *
-     * @param string   $isoCode Iso code
+     * @param string $isoCode Iso code
      * @param int|null $idCountry
      *
      * @return int state id
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByIso($isoCode, $idCountry = null)
@@ -197,8 +205,6 @@ class StateCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getStatesByIdCountry($idCountry)
     {
@@ -216,8 +222,6 @@ class StateCore extends ObjectModel
      * @return int
      *
      * @deprecated 1.1.0 counties not supported anymore
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hasCounties($idState)
     {
@@ -230,8 +234,6 @@ class StateCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdZone($idState)
@@ -249,8 +251,6 @@ class StateCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -279,8 +279,6 @@ class StateCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isUsed()
@@ -293,8 +291,6 @@ class StateCore extends ObjectModel
      *
      * @return int count for this state
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function countUsed()
@@ -311,14 +307,12 @@ class StateCore extends ObjectModel
 
     /**
      * @param array $idsStates
-     * @param int   $idZone
+     * @param int $idZone
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function affectZoneToSelection($idsStates, $idZone)
     {

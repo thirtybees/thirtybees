@@ -32,16 +32,23 @@
 /**
  * Simple class to output CSV data
  * Uses CollectionCore
- *
- * @since 1.0.0
  */
 class CSVCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $filename;
+
+    /**
+     * @var array|Iterator
+     */
     public $collection;
+
+    /**
+     * @var string
+     */
     public $delimiter;
-    // @codingStandardsIgnoreEnd
 
     /**
     * Loads objects, filename and optionnaly a delimiter.
@@ -61,8 +68,7 @@ class CSVCore
      * Adds headers
      * Outputs
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function export()
     {
@@ -87,8 +93,7 @@ class CSVCore
      * Wraps data and echoes
      * Uses defined delimiter
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function output($data)
     {
@@ -100,9 +105,6 @@ class CSVCore
      * Escapes data
      * @param string $data
      * @return string $data
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function wrap($data)
     {
@@ -112,11 +114,10 @@ class CSVCore
     }
 
     /**
-    * Adds headers
+     * Add headers
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-    */
+     * @return void
+     */
     public function headers()
     {
         header('Content-type: text/csv');

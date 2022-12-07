@@ -31,14 +31,11 @@
 
 /**
  * Class ShopCore
- *
- * @since 1.0.0
  */
 class ShopCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'shop',
@@ -59,6 +56,10 @@ class ShopCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_shop_group' => ['xlink_resource' => 'shop_groups'],
@@ -118,7 +119,6 @@ class ShopCore extends ObjectModel
      * @var int $context_id_shop_group
      */
     protected static $context_id_shop_group;
-    // @codingStandardsIgnoreEnd
 
     /**
      * There are 3 kinds of shop context : shop, group shop and general
@@ -141,11 +141,8 @@ class ShopCore extends ObjectModel
      * @param int $idLang
      * @param int $idShop
      *
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -160,8 +157,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setUrl()
     {
@@ -212,14 +207,12 @@ class ShopCore extends ObjectModel
         $res = parent::add($autoDate, $nullValues);
         // Set default language routes
         $langs = Language::getLanguages(false, $this->id, true);
-        // @codingStandardsIgnoreStart
         Configuration::updateValue('PS_ROUTE_product_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
         Configuration::updateValue('PS_ROUTE_category_rule', array_map(function() {return '{rewrite}';}, $langs));
         Configuration::updateValue('PS_ROUTE_supplier_rule', array_map(function() {return '{rewrite}';}, $langs));
         Configuration::updateValue('PS_ROUTE_manufacturer_rule', array_map(function() {return '{rewrite}';}, $langs));
         Configuration::updateValue('PS_ROUTE_cms_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
         Configuration::updateValue('PS_ROUTE_cms_category_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
-        // @codingStandardsIgnoreEnd
 
         static::cacheShops(true);
 
@@ -227,8 +220,7 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function associateSuperAdmins()
     {
@@ -246,8 +238,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -295,8 +285,6 @@ class ShopCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function hasDependency($idShop)
@@ -330,8 +318,6 @@ class ShopCore extends ObjectModel
      *
      * @return Shop
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function initialize()
     {
@@ -455,11 +441,9 @@ class ShopCore extends ObjectModel
             }
         }
 
-        // @codingStandardsIgnoreStart
         static::$context_id_shop = $shop->id;
         static::$context_id_shop_group = $shop->id_shop_group;
         static::$context = static::CONTEXT_SHOP;
-        // @codingStandardsIgnoreEnd
 
         return $shop;
     }
@@ -467,8 +451,6 @@ class ShopCore extends ObjectModel
     /**
      * @return Address the current shop address
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAddress()
@@ -493,9 +475,6 @@ class ShopCore extends ObjectModel
      * Get shop theme name
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTheme()
     {
@@ -506,9 +485,6 @@ class ShopCore extends ObjectModel
      * Get shop URI
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBaseURI()
     {
@@ -519,12 +495,9 @@ class ShopCore extends ObjectModel
      * Get shop URL
      *
      * @param bool|string $autoSecureMode if set to true, secure mode will be checked
-     * @param bool|string $addBaseUri     if set to true, shop base uri will be added
+     * @param bool|string $addBaseUri if set to true, shop base uri will be added
      *
      * @return string complete base url of current shop
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBaseURL($autoSecureMode = false, $addBaseUri = true)
     {
@@ -548,8 +521,8 @@ class ShopCore extends ObjectModel
      *
      * @return ShopGroup
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getGroup()
     {
@@ -565,8 +538,6 @@ class ShopCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getCategory()
@@ -581,8 +552,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getUrls()
     {
@@ -600,8 +569,6 @@ class ShopCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isDefaultShop()
@@ -615,8 +582,6 @@ class ShopCore extends ObjectModel
      * @param string $table
      *
      * @return false|array
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAssoTable($table)
     {
@@ -624,9 +589,7 @@ class ShopCore extends ObjectModel
             static::init();
         }
 
-        // @codingStandardsIgnoreStart
         return (isset(static::$asso_tables[$table]) ? static::$asso_tables[$table] : false);
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -635,8 +598,6 @@ class ShopCore extends ObjectModel
      * @param string $table
      *
      * @return bool
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkIdShopDefault($table)
     {
@@ -644,18 +605,13 @@ class ShopCore extends ObjectModel
             static::init();
         }
 
-        // @codingStandardsIgnoreStart
         return in_array($table, static::$id_shop_default_tables);
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Get list of associated tables to shop
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAssoTables()
     {
@@ -663,31 +619,24 @@ class ShopCore extends ObjectModel
             static::init();
         }
 
-        // @codingStandardsIgnoreStart
         return static::$asso_tables;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Add table associated to shop
      *
      * @param string $tableName
-     * @param array  $tableDetails
+     * @param array $tableDetails
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addTableAssociation($tableName, $tableDetails)
     {
-        // @codingStandardsIgnoreStart
         if (!isset(static::$asso_tables[$tableName])) {
             static::$asso_tables[$tableName] = $tableDetails;
         } else {
             return false;
         }
-        // @codingStandardsIgnoreEnd
 
         return true;
     }
@@ -698,9 +647,6 @@ class ShopCore extends ObjectModel
      * @param string $table
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isTableAssociated($table)
     {
@@ -708,9 +654,7 @@ class ShopCore extends ObjectModel
             static::init();
         }
 
-        // @codingStandardsIgnoreStart
         return isset(static::$asso_tables[$table]) && static::$asso_tables[$table]['type'] == 'shop';
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -720,8 +664,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cacheShops($refresh = false)
     {
@@ -783,8 +725,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCompleteListOfShopsID()
     {
@@ -807,15 +747,13 @@ class ShopCore extends ObjectModel
      * Get shops list
      *
      * @param bool $active
-     * @param int  $idShopGroup
+     * @param int $idShopGroup
      * @param bool $getAsListId
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getShops($active = true, $idShopGroup = null, $getAsListId = false)
     {
@@ -842,8 +780,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getUrlsSharedCart()
     {
@@ -869,12 +805,10 @@ class ShopCore extends ObjectModel
      * Get a collection of shops
      *
      * @param bool $active
-     * @param int  $idShopGroup
+     * @param int $idShopGroup
      *
      * @return PrestaShopCollection Collection of Shop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getShopsCollection($active = true, $idShopGroup = null)
@@ -900,8 +834,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getShop($shopId)
     {
@@ -924,8 +856,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdByName($name)
     {
@@ -943,12 +873,12 @@ class ShopCore extends ObjectModel
 
     /**
      * @param bool $active
-     * @param int  $idShopGroup
+     * @param int|null $idShopGroup
      *
      * @return int Total of shops
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getTotalShops($active = true, $idShopGroup = null)
     {
@@ -958,15 +888,13 @@ class ShopCore extends ObjectModel
     /**
      * Retrieve group ID of a shop
      *
-     * @param int  $shopId Shop ID
+     * @param int $shopId Shop ID
      * @param bool $asId
      *
      * @return int|array|false Group ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGroupFromShop($shopId, $asId = true)
     {
@@ -984,12 +912,10 @@ class ShopCore extends ObjectModel
      * If the shop group has the option $type activated, get all shops ID of this group, else get current shop ID
      *
      * @param int $shopId
-     * @param int $type   self::SHARE_CUSTOMER | self::SHARE_ORDER
+     * @param int $type self::SHARE_CUSTOMER | self::SHARE_ORDER
      *
      * @return array
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSharedShops($shopId, $type)
     {
@@ -1014,8 +940,6 @@ class ShopCore extends ObjectModel
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getContextListShopID($share = false)
@@ -1034,7 +958,7 @@ class ShopCore extends ObjectModel
     /**
      * Return the list of shop by id
      *
-     * @param int    $id
+     * @param int $id
      * @param string $identifier
      * @param string $table
      *
@@ -1042,8 +966,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getShopById($id, $identifier, $table)
     {
@@ -1059,15 +981,12 @@ class ShopCore extends ObjectModel
      * Change the current shop context
      *
      * @param int $type Shop::CONTEXT_ALL | Shop::CONTEXT_GROUP | Shop::CONTEXT_SHOP
-     * @param int $id   ID shop if CONTEXT_SHOP or id shop group if CONTEXT_GROUP
+     * @param int $id ID shop if CONTEXT_SHOP or id shop group if CONTEXT_GROUP
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setContext($type, $id = null)
     {
-        // @codingStandardsIgnoreStart
         switch ($type) {
             case static::CONTEXT_ALL :
                 static::$context_id_shop = null;
@@ -1087,7 +1006,6 @@ class ShopCore extends ObjectModel
             default :
                 throw new PrestaShopException('Unknown context for shop');
         }
-        // @codingStandardsIgnoreEnd
 
         static::$context = $type;
     }
@@ -1096,9 +1014,6 @@ class ShopCore extends ObjectModel
      * Get current context of shop
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getContext()
     {
@@ -1111,8 +1026,7 @@ class ShopCore extends ObjectModel
      * @param bool $nullValueWithoutMultishop
      *
      * @return int
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getContextShopID($nullValueWithoutMultishop = false)
     {
@@ -1120,9 +1034,7 @@ class ShopCore extends ObjectModel
             return null;
         }
 
-        // @codingStandardsIgnoreStart
         return static::$context_id_shop;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -1131,8 +1043,7 @@ class ShopCore extends ObjectModel
      * @param bool $nullValueWithoutMultishop
      *
      * @return int
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getContextShopGroupID($nullValueWithoutMultishop = false)
     {
@@ -1140,18 +1051,19 @@ class ShopCore extends ObjectModel
             return null;
         }
 
-        // @codingStandardsIgnoreStart
         return static::$context_id_shop_group;
-        // @codingStandardsIgnoreEnd
     }
 
+    /**
+     * @return ShopGroup|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public static function getContextShopGroup()
     {
         static $contextShopGroup = null;
         if ($contextShopGroup === null) {
-            // @codingStandardsIgnoreStart
             $contextShopGroup = new ShopGroup((int) static::$context_id_shop_group);
-            // @codingStandardsIgnoreEnd
         }
 
         return $contextShopGroup;
@@ -1160,14 +1072,12 @@ class ShopCore extends ObjectModel
     /**
      * Add an sql restriction for shops fields
      *
-     * @param bool   $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param bool $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      * @param string $alias
      *
      * @return string
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addSqlRestriction($share = false, $alias = null)
     {
@@ -1177,15 +1087,13 @@ class ShopCore extends ObjectModel
     /**
      * Returns sql restriction for shops fields
      *
-     * @param bool   $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param bool $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      * @param string $alias
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since   1.1.1
      */
     public static function getSqlRestriction($share = false, $alias = null)
     {
@@ -1219,8 +1127,6 @@ class ShopCore extends ObjectModel
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addSqlAssociation($table, $alias, $innerJoin = true, $on = null, $forceNotDefault = false)
     {
@@ -1252,12 +1158,10 @@ class ShopCore extends ObjectModel
      * Add a restriction on id_shop for multishop lang table
      *
      * @param string $alias
-     * @param null   $idShop
+     * @param int|null $idShop
      *
      * @return string
      *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function addSqlRestrictionOnLang($alias = null, $idShop = null)
@@ -1279,8 +1183,6 @@ class ShopCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTree()
     {
@@ -1292,8 +1194,6 @@ class ShopCore extends ObjectModel
     /**
      * @return bool Return true if multishop feature is active and at last 2 shops have been created
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -1309,14 +1209,12 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @param int  $oldId
+     * @param int $oldId
      * @param bool $tablesImport
      * @param bool $deleted
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function copyShopData($oldId, $tablesImport = false, $deleted = false)
     {
@@ -1423,14 +1321,12 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @param int  $id
+     * @param int $id
      * @param bool $onlyId
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategories($id = 0, $onlyId = true)
     {
@@ -1471,15 +1367,13 @@ class ShopCore extends ObjectModel
 
     /**
      * @param string $entity
-     * @param int    $idShop
-     * @param bool   $active
-     * @param bool   $delete
+     * @param int $idShop
+     * @param bool $active
+     * @param bool $delete
      *
      * @return array|bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getEntityIds($entity, $idShop, $active = false, $delete = false)
     {
@@ -1501,14 +1395,11 @@ class ShopCore extends ObjectModel
     /**
      * Initialize an array with all the multistore associations in the database
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected static function init()
     {
-        // @codingStandardsIgnoreStart
         static::$id_shop_default_tables = ['product', 'category'];
-        // @codingStandardsIgnoreEnd
 
         $assoTables = [
             'carrier'                      => ['type' => 'shop'],

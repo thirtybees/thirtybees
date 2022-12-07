@@ -31,12 +31,9 @@
 
 /**
  * Class SupplyOrderCore
- *
- * @since 1.0.0
  */
 class SupplyOrderCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int Supplier
      */
@@ -126,10 +123,9 @@ class SupplyOrderCore extends ObjectModel
      * @var int Tells if this order is a template
      */
     public $is_template = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'supply_order',
@@ -164,7 +160,7 @@ class SupplyOrderCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'        => [
@@ -192,10 +188,6 @@ class SupplyOrderCore extends ObjectModel
     ];
 
     /**
-     * @see     ObjectModel::update()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
@@ -212,10 +204,6 @@ class SupplyOrderCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -235,8 +223,6 @@ class SupplyOrderCore extends ObjectModel
      * Checks all products in this order and calculate prices
      * Applies the global discount if necessary
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function calculatePrices()
@@ -283,8 +269,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEntries($idLang = null)
     {
@@ -323,8 +307,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of SupplyOrderDetail
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getEntriesCollection()
@@ -340,8 +322,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool Has/Has not
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasEntries()
@@ -359,8 +339,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isEditable()
@@ -378,8 +356,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isDeliveryNoteAvailable()
@@ -397,8 +373,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isInReceiptState()
@@ -414,8 +388,6 @@ class SupplyOrderCore extends ObjectModel
     /**
      * Historizes the order : its id, its state, and the employee responsible for the current action
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function addHistory()
@@ -434,8 +406,6 @@ class SupplyOrderCore extends ObjectModel
     /**
      * Removes all products from the order
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function resetProducts()
@@ -454,8 +424,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function warehouseHasPendingOrders($idWarehouse)
@@ -483,8 +451,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function supplierHasPendingOrders($idSupplier)
@@ -512,8 +478,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return int SupplyOrder Id
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function exists($match)
@@ -539,8 +503,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool|SupplyOrder
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getSupplyOrderByReference($reference)
@@ -563,10 +525,10 @@ class SupplyOrderCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::hydrate()
+     * @param array $data
+     * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function hydrate(array $data, $idLang = null)
     {
@@ -592,8 +554,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return bool|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getReferenceById($idSupplyOrder)
@@ -614,8 +574,6 @@ class SupplyOrderCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAllExpectedQuantity()
@@ -631,8 +589,6 @@ class SupplyOrderCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAllReceivedQuantity()
@@ -648,8 +604,6 @@ class SupplyOrderCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAllPendingQuantity()
@@ -662,12 +616,6 @@ class SupplyOrderCore extends ObjectModel
         );
     }
 
-    /*********************************\
-     *
-     * Webservices Specific Methods
-     *
-     *********************************/
-
     /**
      * Webservice : gets the ids supply_order_detail associated to this order
      *
@@ -675,8 +623,6 @@ class SupplyOrderCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsSupplyOrderDetails()
     {

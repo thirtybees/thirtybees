@@ -31,25 +31,31 @@
 
 /**
  * Class ProductControllerCore
- *
- * @since 1.0.0
  */
 class ProductControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $php_self = 'product';
-    /** @var Product */
+
+    /**
+     * @var Product
+     */
     protected $product;
-    /** @var Category */
+
+    /**
+     * @var Category
+     */
     protected $category;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -87,11 +93,12 @@ class ProductControllerCore extends FrontController
     /**
      * Initialize product controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -187,7 +194,7 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function canonicalRedirection($canonicalUrl = '')
     {
@@ -202,11 +209,11 @@ class ProductControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -350,7 +357,7 @@ class ProductControllerCore extends FrontController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function transformDescriptionWithImg($desc)
     {
@@ -370,7 +377,8 @@ class ProductControllerCore extends FrontController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function pictureUpload()
     {
@@ -420,7 +428,8 @@ class ProductControllerCore extends FrontController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function textRecord()
     {
@@ -453,8 +462,6 @@ class ProductControllerCore extends FrontController
      * From target format
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function formTargetFormat()
     {
@@ -475,7 +482,8 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignCategory()
     {
@@ -516,7 +524,8 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignPriceAndTax()
     {
@@ -607,9 +616,7 @@ class ProductControllerCore extends FrontController
      * @param float $taxRate
      * @param float $ecotaxAmount
      *
-     * @return mixed
-     *
-     * @since 1.0.0
+     * @return array
      */
     protected function formatQuantityDiscounts($specificPrices, $price, $taxRate, $ecotaxAmount)
     {
@@ -685,7 +692,8 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignImages()
     {
@@ -741,7 +749,8 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignAttributesGroups()
     {
@@ -907,7 +916,8 @@ class ProductControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignAttributesCombinations()
     {
@@ -933,8 +943,6 @@ class ProductControllerCore extends FrontController
      * Get Product
      *
      * @return Product
-     *
-     * @since 1.0.0
      */
     public function getProduct()
     {
@@ -945,8 +953,6 @@ class ProductControllerCore extends FrontController
      * Get Category
      *
      * @return Category
-     *
-     * @since 1.0.0
      */
     public function getCategory()
     {

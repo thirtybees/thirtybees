@@ -31,8 +31,6 @@
 
 /**
  * Class FaviconControllerCore
- *
- * @since 1.0.4
  */
 class FaviconControllerCore extends FrontController
 {
@@ -43,8 +41,6 @@ class FaviconControllerCore extends FrontController
      * Initialize content
      *
      * @return void
-     *
-     * @since 1.0.4
      */
     public function init()
     {

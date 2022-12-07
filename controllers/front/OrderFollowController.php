@@ -31,12 +31,9 @@
 
 /**
  * Class OrderFollowControllerCore
- *
- * @since 1.0.0
  */
 class OrderFollowControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,7 +42,6 @@ class OrderFollowControllerCore extends FrontController
     public $authRedirection = 'order-follow';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Start forms process
@@ -113,11 +109,11 @@ class OrderFollowControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -157,7 +153,8 @@ class OrderFollowControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {

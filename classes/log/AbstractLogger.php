@@ -34,15 +34,20 @@
  */
 abstract class AbstractLoggerCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $level;
+
+    /**
+     * @var string[]
+     */
     protected $level_value = [
         0 => 'DEBUG',
         1 => 'INFO',
         2 => 'WARNING',
         3 => 'ERROR',
     ];
-    // @codingStandardsIgnoreEnd
 
     const DEBUG = 0;
     const INFO = 1;
@@ -53,9 +58,6 @@ abstract class AbstractLoggerCore
      * AbstractLoggerCore constructor.
      *
      * @param int $level
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($level = self::INFO)
     {
@@ -70,10 +72,7 @@ abstract class AbstractLoggerCore
      * Check the level and log the message if needed
      *
      * @param string $message
-     * @param int    $level
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $level
      */
     public function log($message, $level = self::DEBUG)
     {
@@ -87,8 +86,6 @@ abstract class AbstractLoggerCore
     *
     * @param string $message
     *
-    * @since 1.0.0
-    * @version 1.0.0 Initial version
     */
     public function logDebug($message)
     {
@@ -100,8 +97,6 @@ abstract class AbstractLoggerCore
     *
     * @param string $message
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
     */
     public function logInfo($message)
     {
@@ -113,8 +108,6 @@ abstract class AbstractLoggerCore
     *
     * @param string $message
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
     */
     public function logWarning($message)
     {
@@ -126,8 +119,6 @@ abstract class AbstractLoggerCore
     *
     * @param string $message
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
     */
     public function logError($message)
     {
@@ -137,11 +128,7 @@ abstract class AbstractLoggerCore
     /**
      * Log the message
      *
-     * @param string message
-     * @param level
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
+     * @param string $message
+     * @param int $level */
     abstract protected function logMessage($message, $level);
 }

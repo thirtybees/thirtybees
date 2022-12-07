@@ -31,8 +31,6 @@
 
 /**
  * Class AdminProductsControllerCore
- *
- * @since 1.0.0
  */
 class AdminProductsControllerCore extends AdminController
 {
@@ -52,18 +50,28 @@ class AdminProductsControllerCore extends AdminController
     const QUANTITY_METHOD_DYNAMIC_PACK = 2;
 
 
-    // @codingStandardsIgnoreStart
     /** @var int Max image size for upload
      * As of 1.5 it is recommended to not set a limit to max image size
      */
     protected $max_file_size = null;
+
+    /**
+     * @var int|null
+     */
     protected $max_image_size = null;
 
+    /**
+     * @var Category
+     */
     protected $_category;
     /**
      * @var string name of the tab to display
      */
     protected $tab_display;
+
+    /**
+     * @var string
+     */
     protected $tab_display_module;
 
     /**
@@ -95,14 +103,13 @@ class AdminProductsControllerCore extends AdminController
     /** @var string */
     protected $tpl_form;
 
-    /** @var */
+    /** @var bool */
     protected $product_exists_in_shop = false;
 
     /**
      * AdminProductsControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -358,11 +365,9 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * @param string $echo
-     * @param array  $tr
+     * @param array $tr
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function getQuantities($echo, $tr)
     {
@@ -376,17 +381,17 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Build a categories tree
      *
-     * @param int   $idObj
+     * @param int $idObj
      * @param array $indexedCategories Array with categories where product is indexed (in order to check checkbox)
-     * @param array $categories        Categories to list
-     * @param       $current
-     * @param null  $idCategory        Current category ID
-     * @param null  $idCategoryDefault
+     * @param array $categories Categories to list
+     * @param array $current
+     * @param int|null $idCategory Current category ID
+     * @param int|null $idCategoryDefault
      * @param array $hasSuite
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function recurseCategoryForInclude($idObj, $indexedCategories, $categories, $current, $idCategory = null, $idCategoryDefault = null, $hasSuite = [])
     {
@@ -442,7 +447,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -464,14 +469,15 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|null    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|null $idLangShop
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = null)
     {
@@ -537,7 +543,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process get category tree
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessGetCategoryTree()
     {
@@ -570,7 +577,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process get countries options
      *
-     * @since 1.0.0
+     * @throws SmartyException
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetCountriesOptions()
     {
@@ -591,10 +599,11 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     *
      * Ajax process get currency options
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessGetCurrenciesOptions()
     {
@@ -617,7 +626,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process get group options
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessGetGroupsOptions()
     {
@@ -640,7 +650,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process delete virtual product
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDeleteVirtualProduct()
     {
@@ -666,7 +676,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process add attachment
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessAddAttachment()
     {
@@ -802,7 +812,6 @@ class AdminProductsControllerCore extends AdminController
      * Process duplicate
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processDuplicate()
     {
@@ -870,13 +879,12 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process delete
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
         if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
             /*
-             * @since 1.5.0
              * It is NOT possible to delete a product if there is/are currently:
              * - a physical stock for this product
              * - supply order(s) for this product
@@ -910,12 +918,13 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param bool $opt
      *
-     * @return false|ObjectModel
+     * @return Product|bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function loadObject($opt = false)
     {
+        /** @var Product|bool $result */
         $result = parent::loadObject($opt);
         if ($result && Validate::isLoadedObject($this->object)) {
             if (Shop::isFeatureActive()) {
@@ -943,7 +952,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process image
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processImage()
     {
@@ -1036,23 +1045,22 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Validate a SpecificPrice
      *
-     * @param     $idShop
-     * @param     $idCurrency
-     * @param     $idCountry
-     * @param     $idGroup
-     * @param     $idCustomer
-     * @param     $price
-     * @param     $fromQuantity
-     * @param     $reduction
-     * @param     $reductionType
-     * @param     $from
-     * @param     $to
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
+     * @param int $idCustomer
+     * @param float $price
+     * @param int $fromQuantity
+     * @param float $reduction
+     * @param string $reductionType
+     * @param string $from
+     * @param string $to
      * @param int $idCombination
      * @param int $idSpecificPrice
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function _validateSpecificPrice($idShop, $idCurrency, $idCountry, $idGroup, $idCustomer, $price, $fromQuantity, $reduction, $reductionType, $from, $to, $idCombination = 0, $idSpecificPrice = 0)
@@ -1079,7 +1087,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process delete SpecificPrice
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteSpecificPrice()
     {
@@ -1115,7 +1123,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process product customization
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processProductCustomization()
     {
@@ -1139,7 +1147,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Overrides parent for custom redirect link
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processPosition()
     {
@@ -1160,7 +1168,6 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Initialize processing
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initProcess()
@@ -1319,8 +1326,6 @@ class AdminProductsControllerCore extends AdminController
      * @param string $tabName
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function isTabSubmitted($tabName)
     {
@@ -1339,8 +1344,6 @@ class AdminProductsControllerCore extends AdminController
      * postProcess handle every checks before saving products information
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -1397,7 +1400,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process delete ProductAttribute
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteProductAttribute()
     {
@@ -1458,7 +1461,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process default ProductAttribute
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDefaultProductAttribute()
     {
@@ -1488,7 +1491,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process edit ProductAttribute
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessEditProductAttribute()
     {
@@ -1509,7 +1512,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax pre process
      *
-     * @since 1.0.0
+     * @return void
      */
     public function ajaxPreProcess()
     {
@@ -1521,6 +1524,7 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * Ajax process update Product image shop association
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateProductImageShopAsso()
     {
@@ -1577,7 +1581,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process update image position
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateImagePosition()
     {
@@ -1622,7 +1626,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process update cover
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateCover()
     {
@@ -1658,7 +1662,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process delete product image
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteProductImage()
     {
@@ -1699,11 +1703,12 @@ class AdminProductsControllerCore extends AdminController
      * Add or update a product image
      *
      * @param Product $product Product object to add image
-     * @param string  $method
+     * @param string $method
      *
      * @return int|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addProductImage($product, $method = 'auto')
     {
@@ -1737,9 +1742,9 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * @param Product|ObjectModel $object
-     * @param string              $table
+     * @param string $table
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function copyFromPost(&$object, $table)
     {
@@ -1789,7 +1794,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Clean meta keywords
      *
-     * @param array $keywords
+     * @param string $keywords
      *
      * @return string
      */
@@ -1813,12 +1818,11 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * @param string $field
-     * @param null $context
+     * @param Context|null $context
      *
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function checkMultishopBox($field, $context = null)
     {
@@ -1855,8 +1859,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Copy a product image
      *
-     * @param int    $idProduct Product Id for product image filename
-     * @param int    $idImage   Image Id for product image filename
+     * @param int $idProduct Product Id for product image filename
+     * @param int $idImage Image Id for product image filename
      * @param string $method
      *
      * @return void|false
@@ -1938,11 +1942,10 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process add
      *
-     * @return bool|ObjectModel
+     * @return Product|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processAdd()
     {
@@ -2025,6 +2028,7 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * Check that a saved product is valid
+     * @throws PrestaShopException
      */
     public function checkProduct()
     {
@@ -2177,9 +2181,10 @@ class AdminProductsControllerCore extends AdminController
      * This method will do something only for multishop with a context all / group
      *
      * @param string $field Name of field
-     * @param int    $idLang
+     * @param int|null $idLang
      *
      * @return bool
+     * @throws PrestaShopException
      */
     protected function isProductFieldUpdated($field, $idLang = null)
     {
@@ -2211,7 +2216,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Checking customs feature
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _removeTaxFromEcotax()
     {
@@ -2221,7 +2226,7 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param Product | null $product
+     * @param Product|null $product
      *
      * @throws PrestaShopException
      */
@@ -2255,8 +2260,6 @@ class AdminProductsControllerCore extends AdminController
      * Update product accessories
      *
      * @param object $product Product
-     *
-     * @since 1.0.0
      */
     public function updateAccessories($product)
     {
@@ -2276,7 +2279,9 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param Product $product
      *
-     * @return bool
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updatePackItems($product)
     {
@@ -2310,12 +2315,12 @@ class AdminProductsControllerCore extends AdminController
      * Update product download
      *
      * @param Product $product
-     * @param int     $edit     Deprecated in favor of autodetection.
+     * @param int $edit Deprecated in favor of autodetection.
      *
      * @return bool
      *
-     * @since 1.0.3 Deprecate $edit in favor of autodetection.
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateDownloadProduct($product, $edit = 999)
     {
@@ -2392,7 +2397,6 @@ class AdminProductsControllerCore extends AdminController
      * @return bool Update result
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function updateTags($languages, $product)
     {
@@ -2422,7 +2426,6 @@ class AdminProductsControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function getPreviewUrl(Product $product)
     {
@@ -2467,7 +2470,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processStatus()
     {
@@ -2502,9 +2505,10 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process update
      *
-     * @return bool|Product
+     * @return Product|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -2661,7 +2665,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Post treatment for suppliers
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSuppliers()
     {
@@ -2816,8 +2820,6 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process features
      *
-     * @since 1.0.0
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function processFeatures()
@@ -2955,12 +2957,11 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Check features
      *
-     * @param $languages
-     * @param $featureId
+     * @param array $languages
+     * @param int $featureId
      *
      * @return int
      *
-     * @since 1.0.0
      * @deprecated 1.3.0
      */
     protected function checkFeatures($languages, $featureId)
@@ -2985,7 +2986,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process product attribute
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processProductAttribute()
     {
@@ -3080,7 +3081,6 @@ class AdminProductsControllerCore extends AdminController
                 } // Add new
                 else {
                     if ($this->tabAccess['add'] === '1') {
-                        /** @var Product $product */
                         if ($product->productAttributeExists(Tools::getValue('attribute_combination_list'))) {
                             $this->errors[] = Tools::displayError('This combination already exists.');
                         } else {
@@ -3140,7 +3140,6 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process price addition
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processSpecificPrice()
@@ -3213,7 +3212,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process specific price priorities
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSpecificPricePriorities()
     {
@@ -3236,7 +3235,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process customization configuration
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processCustomizationConfiguration()
     {
@@ -3272,7 +3271,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAttachments()
     {
@@ -3288,7 +3288,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process image legends
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function processImageLegends()
     {
@@ -3344,7 +3345,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Post treatment for warehouses
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processWarehouses()
     {
@@ -3419,12 +3420,11 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Initialize content
      *
-     * @param null $token
+     * @param string|null $token
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent($token = null)
     {
@@ -3509,9 +3509,10 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Render KPIs
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -3587,6 +3588,13 @@ class AdminProductsControllerCore extends AdminController
         return $helper->generate();
     }
 
+    /**
+     * Function used to render the list to display for this controller
+     *
+     * @return string|false
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderList()
     {
         $this->addRowAction('edit');
@@ -3617,6 +3625,11 @@ class AdminProductsControllerCore extends AdminController
         $this->ajaxDie('['.implode(',', $jsonArray).']');
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
@@ -3678,6 +3691,10 @@ class AdminProductsControllerCore extends AdminController
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initToolbar()
     {
         parent::initToolbar();
@@ -3845,7 +3862,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getCombinationImagesJS()
     {
@@ -3872,9 +3890,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Display draft warning
      *
-     * @param $active
-     *
-     * @since 1.0.0
+     * @param bool $active
      */
     protected function _displayDraftWarning($active)
     {
@@ -3886,6 +3902,12 @@ class AdminProductsControllerCore extends AdminController
         $this->tpl_form_vars['draft_warning'] = $content;
     }
 
+    /**
+     * @param Product $product
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function initPack(Product $product)
     {
         $this->tpl_form_vars['is_pack'] = ($product->id && Pack::isPack($product->id)) || Tools::getValue('type_product') == Product::PTYPE_PACK;
@@ -3919,11 +3941,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormAssociations($obj)
     {
@@ -3998,12 +4017,10 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param $accessoryId
-     * @param $accessories
+     * @param int $accessoryId
+     * @param array[] $accessories
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function haveThisAccessory($accessoryId, $accessories)
     {
@@ -4019,10 +4036,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormPrices($obj)
     {
@@ -4143,15 +4159,16 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param $defaultCurrency
-     * @param $shops
-     * @param $currencies
-     * @param $countries
-     * @param $groups
+     * @param Currency $defaultCurrency
+     * @param array[] $shops
+     * @param array[] $currencies
+     * @param array[] $countries
+     * @param array[] $groups
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _displaySpecificPriceModificationForm($defaultCurrency, $shops, $currencies, $countries, $groups)
     {
@@ -4383,7 +4400,7 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param Product $product
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _applyTaxToEcotax($product)
     {
@@ -4399,7 +4416,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param Product $product
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initFormSeo($product)
     {
@@ -4444,10 +4462,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $product
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormPack($product)
     {
@@ -4485,11 +4502,12 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Get an array of pack items for display from the product object if specified, else from POST/GET values
      *
-     * @param Product $product
+     * @param Product|null $product
      *
      * @return array of pack items
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getPackItems($product = null)
     {
@@ -4542,7 +4560,9 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param Product $product
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initFormVirtualProduct($product)
     {
@@ -4618,7 +4638,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
      */
     public function initFormCustomization($obj)
@@ -4656,15 +4677,15 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param $obj
-     * @param $labels
-     * @param $languages
-     * @param $defaultLanguage
-     * @param $type
+     * @param ObjectModel $obj
+     * @param array $labels
+     * @param array $languages
+     * @param int $defaultLanguage
+     * @param string $type
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     protected function _displayLabelFields(&$obj, &$labels, $languages, $defaultLanguage, $type)
     {
@@ -4683,13 +4704,11 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param $labels
-     * @param $alreadyGenerated
-     * @param $obj
+     * @param array $labels
+     * @param array $alreadyGenerated
+     * @param ObjectModel $obj
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function _getCustomizationFieldIds($labels, $alreadyGenerated, $obj)
     {
@@ -4717,16 +4736,16 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * @param $label
-     * @param $languages
-     * @param $defaultLanguage
-     * @param $type
-     * @param $fieldIds
-     * @param $idCustomizationField
+     * @param array $label
+     * @param array $languages
+     * @param int $defaultLanguage
+     * @param string $type
+     * @param string $fieldIds
+     * @param int $idCustomizationField
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     protected function _displayLabelField(&$label, $languages, $defaultLanguage, $type, $fieldIds, $idCustomizationField)
     {
@@ -4762,6 +4781,13 @@ class AdminProductsControllerCore extends AdminController
             .'</div>';
     }
 
+    /**
+     * @param Product $obj
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function initFormAttachments($obj)
     {
         if (!$this->default_form_language) {
@@ -4820,10 +4846,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $product
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormInformations($product)
     {
@@ -4983,11 +5008,10 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Initialize shipping form
      *
-     * @param $obj
+     * @param Product $obj
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initFormShipping($obj)
     {
@@ -5012,7 +5036,8 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getCarrierList()
     {
@@ -5037,7 +5062,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process add product image
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessAddProductImage()
     {
@@ -5215,10 +5240,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormImages($obj)
     {
@@ -5290,10 +5314,11 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Initialize combinations form
      *
-     * @param $obj
+     * @param Product $obj
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initFormCombinations($obj)
     {
@@ -5303,7 +5328,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $product
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
      */
     public function initFormAttributes($product)
@@ -5389,7 +5415,6 @@ class AdminProductsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderListAttributes($product, $currency)
     {
@@ -5490,10 +5515,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormQuantities($obj)
     {
@@ -5621,10 +5645,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormSuppliers($obj)
     {
@@ -5711,10 +5734,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormWarehouses($obj)
     {
@@ -5771,10 +5793,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $obj
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
      */
     public function initFormFeatures($obj)
     {
@@ -5840,7 +5861,6 @@ class AdminProductsControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessProductQuantity()
     {
@@ -6008,11 +6028,9 @@ class AdminProductsControllerCore extends AdminController
     /**
      * AdminProducts display hook
      *
-     * @param $obj
+     * @param Product $obj
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function initFormModules($obj)
     {
@@ -6025,6 +6043,10 @@ class AdminProductsControllerCore extends AdminController
         $this->tpl_form_vars['custom_form'] = Hook::exec('displayAdminProductsExtra', [], (int) $idModule);
     }
 
+    /**
+     * @param string $key
+     * @return string
+     */
     public function getL($key)
     {
         $trad = [
@@ -6042,7 +6064,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process product name check
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessCheckProductName()
     {
@@ -6072,7 +6094,6 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Ajax process update positions
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function ajaxProcessUpdatePositions()
@@ -6119,7 +6140,6 @@ class AdminProductsControllerCore extends AdminController
      * Ajax process publish product
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessPublishProduct()
     {
@@ -6150,13 +6170,14 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Display preview link
      *
-     * @param null $token
-     * @param      $id
-     * @param null $name
+     * @param string $token
+     * @param intid * @param string|null $name
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayPreviewLink($token, $id, $name = null)
     {
@@ -6175,6 +6196,11 @@ class AdminProductsControllerCore extends AdminController
         return $tpl->fetch();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processBulkDelete()
     {
         if ($this->tabAccess['delete'] === '1') {
@@ -6194,7 +6220,6 @@ class AdminProductsControllerCore extends AdminController
                     foreach ($products as $id_product) {
                         $product = new Product((int) $id_product);
                         /*
-                         * @since 1.5.0
                          * It is NOT possible to delete a product if there are currently:
                          * - physical stock for this product
                          * - supply order(s) for this product
@@ -6236,6 +6261,8 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param int $productId
      * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function updatePerStoreFields($productId)
     {
@@ -6264,8 +6291,6 @@ class AdminProductsControllerCore extends AdminController
      *
      * @return void | bool
      * @throws PrestaShopException
-     * @since 1.0.0
-     *
      */
     protected function updateAssoShop($idObject)
     {
@@ -6292,13 +6317,13 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Get final price
      *
-     * @param $specificPrice
-     * @param $productPrice
-     * @param $taxRate
+     * @param array $specificPrice
+     * @param float $productPrice
+     * @param float $taxRate
      *
      * @return float
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      * @deprecated 1.1.0 Nowhere in use. Remove entirely for 1.2.0.
      */
     protected function _getFinalPrice($specificPrice, $productPrice, $taxRate)
@@ -6320,7 +6345,6 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Display product unavailable warning
      *
-     * @since 1.0.0
      * @deprecated 1.1.0 Nowhere in use. Remove entirely for 1.2.0.
      */
     protected function _displayUnavailableProductWarning()

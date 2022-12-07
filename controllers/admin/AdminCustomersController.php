@@ -31,23 +31,36 @@
 
 /**
  * Class AdminCustomersControllerCore
- *
- * @since 1.0.0
  */
 class AdminCustomersControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected static $meaning_status = [];
+
+    /**
+     * @var string
+     */
     protected $delete_mode;
+
+    /**
+     * @var string
+     */
     protected $_defaultOrderBy = 'date_add';
+    /**
+     * @var string
+     */
     protected $_defaultOrderWay = 'DESC';
+
+    /**
+     * @var bool
+     */
     protected $can_add_customer = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminCustomersControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -213,7 +226,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -229,7 +242,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -255,7 +269,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -274,16 +288,16 @@ class AdminCustomersControllerCore extends AdminController
     /**
      * Get list
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|null    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|null $idLangShop
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = null)
     {
@@ -301,8 +315,6 @@ class AdminCustomersControllerCore extends AdminController
      * Initialize toolbar title
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbarTitle()
     {
@@ -344,7 +356,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -363,8 +375,6 @@ class AdminCustomersControllerCore extends AdminController
      * Init process
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -405,7 +415,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -425,7 +436,9 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -731,6 +744,10 @@ class AdminCustomersControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -741,8 +758,6 @@ class AdminCustomersControllerCore extends AdminController
      * Before add
      *
      * @param Customer $customer
-     *
-     * @since 1.0.0
      */
     public function beforeAdd($customer)
     {
@@ -752,9 +767,10 @@ class AdminCustomersControllerCore extends AdminController
     /**
      * Render kpis
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -828,7 +844,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -1014,7 +1030,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -1026,8 +1042,6 @@ class AdminCustomersControllerCore extends AdminController
      * Set deleted mode
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function _setDeletedMode()
     {
@@ -1047,7 +1061,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return bool|Customer|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -1089,7 +1104,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -1125,7 +1141,7 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -1146,7 +1162,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processGuestToCustomer()
     {
@@ -1172,7 +1189,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processChangeNewsletterVal()
     {
@@ -1189,6 +1207,7 @@ class AdminCustomersControllerCore extends AdminController
 
     /**
      * Toggle newsletter optin flag
+     * @throws PrestaShopException
      */
     public function processChangeOptinVal()
     {
@@ -1206,12 +1225,13 @@ class AdminCustomersControllerCore extends AdminController
     /**
      * Print news icon
      *
-     * @param mixed $value
+     * @param bool $value
      * @param array $customer
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function printNewsIcon($value, $customer)
     {
@@ -1226,12 +1246,13 @@ class AdminCustomersControllerCore extends AdminController
     /**
      * Print opt-in icon
      *
-     * @param mixed $value
+     * @param bool $value
      * @param array $customer
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function printOptinIcon($value, $customer)
     {
@@ -1245,12 +1266,13 @@ class AdminCustomersControllerCore extends AdminController
 
     /**
      * @param string $token
-     * @param int    $id
-     * @param string $name
+     * @param int $id
+     * @param string|null $name
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
@@ -1280,7 +1302,6 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessSearchCustomers()
     {
@@ -1320,7 +1341,6 @@ class AdminCustomersControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessUpdateCustomerNote()
     {
@@ -1346,7 +1366,8 @@ class AdminCustomersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {
@@ -1358,11 +1379,12 @@ class AdminCustomersControllerCore extends AdminController
      * After delete
      *
      * @param ObjectModel $object
-     * @param int         $oldId
+     * @param int $oldId
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterDelete($object, $oldId)
     {

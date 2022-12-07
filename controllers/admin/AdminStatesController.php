@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStatesControllerCore
- *
- * @since 1.0.0
  */
 class AdminStatesControllerCore extends AdminController
 {
     /**
      * AdminStatesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -129,7 +127,7 @@ class AdminStatesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -149,7 +147,9 @@ class AdminStatesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -236,7 +236,8 @@ class AdminStatesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -288,7 +289,6 @@ class AdminStatesControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function displayAjaxStates()
     {

@@ -31,8 +31,6 @@
 
 /**
  * Class ImageTypeCore
- *
- * @since 1.0.0
  */
 class ImageTypeCore extends ObjectModel
 {
@@ -46,7 +44,6 @@ class ImageTypeCore extends ObjectModel
         'stores',
     ];
 
-    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
     /** @var int Width */
@@ -65,10 +62,9 @@ class ImageTypeCore extends ObjectModel
     public $scenes;
     /** @var int Apply to store */
     public $stores;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'image_type',
@@ -91,13 +87,16 @@ class ImageTypeCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [];
 
     /**
      * Return an instance for the named image type. If no such image type
      * exists yet, return an empty instance with just the name set.
      *
-     * @param string $typeName  Name of the image type.
+     * @param string $typeName Name of the image type.
      * @param string $themeName Name of the theme this image type belongs to.
      *                          Defaults to the name of the current theme.
      *
@@ -105,7 +104,6 @@ class ImageTypeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.1.0 Initial version.
      */
     public static function getInstanceByName($typeName, $themeName = null)
     {
@@ -135,13 +133,11 @@ class ImageTypeCore extends ObjectModel
      * Returns image type definitions
      *
      * @param string|null $type Image type
-     * @param bool        $orderBySize
+     * @param bool $orderBySize
      *
      * @return array Image type definitions
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getImagesTypes($type = null, $orderBySize = false)
@@ -184,9 +180,6 @@ class ImageTypeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Introduced caching, return type bool rather than int.
      */
     public static function typeAlreadyExists($typeName)
     {
@@ -230,7 +223,6 @@ class ImageTypeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
      */
     public static function getFormatedName($name)
     {
@@ -263,7 +255,6 @@ class ImageTypeCore extends ObjectModel
      * @param string $themeDirectory theme directory name
      * @param array $imageTypes indexed map of all image types
      * @return string
-     * @since 1.4.0
      */
     protected static function resolveImageTypeName($name, $themeName, $themeDirectory, $imageTypes)
     {
@@ -284,7 +275,6 @@ class ImageTypeCore extends ObjectModel
      * @param string $themeDirectory theme directory name
      * @param array $imageTypes indexed map of all image types
      * @return string
-     * @since 1.4.0
      */
     protected static function resolveImageTypeNameWithoutCache($name, $themeName, $themeDirectory, $imageTypes)
     {
@@ -344,16 +334,15 @@ class ImageTypeCore extends ObjectModel
      *
      * @param string $name
      * @param string $type
-     * @param int    $order Deprecated.
+     * @param int $order Deprecated.
      *
-     * @return bool|mixed
+     * @return bool|array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Reworked entirely, $order deprecated, added fallbacks,
      */
     public static function getByNameNType($name, $type = '', $order = null)
     {
+        /** @var array[] $cache */
         static $cache = null;
 
         if (isset($order)) {

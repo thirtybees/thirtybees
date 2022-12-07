@@ -31,24 +31,21 @@
 
 /**
  * Class StoresControllerCore
- *
- * @since 1.0.0
  */
 class StoresControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'stores';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize stores controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -63,11 +60,12 @@ class StoresControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -97,7 +95,9 @@ class StoresControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function assignStoresSimplified()
     {
@@ -143,7 +143,8 @@ class StoresControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function assignStores()
     {
@@ -168,7 +169,8 @@ class StoresControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -188,7 +190,9 @@ class StoresControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function displayAjax()
     {
@@ -222,9 +226,10 @@ class StoresControllerCore extends FrontController
     /**
      * Get Stores
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getStores()
     {
@@ -281,7 +286,8 @@ class StoresControllerCore extends FrontController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processStoreAddress($store)
     {
@@ -321,12 +327,11 @@ class StoresControllerCore extends FrontController
     /**
      * Render opening hours
      *
-     * @param $store
+     * @param array $store
      *
      * @return bool|string
      *
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderStoreWorkingHours($store)
     {

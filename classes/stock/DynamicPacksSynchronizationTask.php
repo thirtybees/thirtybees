@@ -23,6 +23,7 @@ use Pack;
 use Db;
 use DbQuery;
 use Exception;
+use PrestaShopDatabaseException;
 use PrestaShopException;
 use StockAvailable;
 use Context;
@@ -36,8 +37,6 @@ use Thirtybees\Core\WorkQueue\WorkQueueTaskCallable;
  * Class DynamicPacksSynchronizationTaskCore
  *
  * Work queue task to synchronize dynamic packs quantities
- *
- * @since 1.3.0
  */
 class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, InitializationCallback
 {
@@ -65,12 +64,12 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
      *
      * Synchronizes all dynamic packs
      *
-     *
      * @param WorkQueueContext $context
      * @param array $parameters
      *
-     * @throws Exception
      * @return int
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function execute(WorkQueueContext $context, array $parameters)
     {

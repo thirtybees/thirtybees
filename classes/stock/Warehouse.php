@@ -31,12 +31,9 @@
 
 /**
  * Class WarehouseCore
- *
- * @since 1.0.0
  */
 class WarehouseCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int identifier of the warehouse */
     public $id;
 
@@ -64,7 +61,6 @@ class WarehouseCore extends ObjectModel
      * @var string enum WA|LIFO|FIFO
      */
     public $management_type;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -90,7 +86,7 @@ class WarehouseCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'       => [
@@ -130,8 +126,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getShops()
     {
@@ -154,8 +148,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCarriers($returnReference = false)
     {
@@ -193,8 +185,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setCarriers($idsCarriers)
     {
@@ -222,11 +212,9 @@ class WarehouseCore extends ObjectModel
      * For a given carrier, removes it from the warehouse/carrier association
      * If $id_warehouse is set, it only removes the carrier for this warehouse
      *
-     * @param int $idCarrier   Id of the carrier to remove
+     * @param int $idCarrier Id of the carrier to remove
      * @param int $idWarehouse optional Id of the warehouse to filter
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function removeCarrier($idCarrier, $idWarehouse = null)
@@ -244,8 +232,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isEmpty()
@@ -265,8 +251,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return bool Exists/Does not exist
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function exists($idWarehouse)
@@ -284,17 +268,15 @@ class WarehouseCore extends ObjectModel
      * For a given {product, product attribute} sets its location in the given warehouse
      * First, for the given parameters, it cleans the database before updating
      *
-     * @param int    $idProduct          ID of the product
-     * @param int    $idProductAttribute Use 0 if this product does not have attributes
-     * @param int    $idWarehouse        ID of the warehouse
-     * @param string $location           Describes the location (no lang id required)
+     * @param int $idProduct ID of the product
+     * @param int $idProductAttribute Use 0 if this product does not have attributes
+     * @param int $idWarehouse ID of the warehouse
+     * @param string $location Describes the location (no lang id required)
      *
      * @return bool Success/Failure
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setProductLocation($idProduct, $idProductAttribute, $idWarehouse, $location)
     {
@@ -319,8 +301,7 @@ class WarehouseCore extends ObjectModel
     /**
      * Resets all product locations for this warehouse
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function resetProductsLocations()
     {
@@ -334,14 +315,12 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given {product, product attribute} gets its location in the given warehouse
      *
-     * @param int $idProduct          ID of the product
+     * @param int $idProduct ID of the product
      * @param int $idProductAttribute Use 0 if this product does not have attributes
-     * @param int $idWarehouse        ID of the warehouse
+     * @param int $idWarehouse ID of the warehouse
      *
      * @return string Location of the product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getProductLocation($idProduct, $idProductAttribute, $idWarehouse)
@@ -359,16 +338,14 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given {product, product attribute} gets warehouse list
      *
-     * @param int $idProduct          ID of the product
+     * @param int $idProduct ID of the product
      * @param int $idProductAttribute Optional, uses 0 if this product does not have attributes
-     * @param int $idShop             Optional, ID of the shop. Uses the context shop id (@see Context::shop)
+     * @param int $idShop Optional, ID of the shop. Uses the context shop id
      *
      * @return array Warehouses (ID, reference/name concatenated)
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductWarehouseList($idProduct, $idProductAttribute = 0, $idShop = null)
     {
@@ -411,15 +388,13 @@ class WarehouseCore extends ObjectModel
      * Gets available warehouses
      * It is possible via ignore_shop and id_shop to filter the list with shop id
      *
-     * @param bool $ignoreShop Optional, false by default - Allows to get only the warehouses that are associated to one/some shops (@see $id_shop)
-     * @param int  $idShop     Optional, Context::shop::Id by default - Allows to define a specific shop to filter.
+     * @param bool $ignoreShop Optional, false by default - Allows to get only the warehouses that are associated to one/some shops
+     * @param int $idShop Optional, Context::shop::Id by default - Allows to define a specific shop to filter.
      *
      * @return array Warehouses (ID, reference/name concatenated)
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getWarehouses($ignoreShop = false, $idShop = null)
     {
@@ -448,8 +423,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getWarehousesGroupedByShops()
     {
@@ -472,8 +445,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return int Number of different id_stock
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getNumberOfProducts()
@@ -496,8 +467,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return int Total Quantity
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getQuantitiesOfProducts()
@@ -517,8 +486,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return int Value of the stock
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getStockValue()
@@ -540,8 +507,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getWarehousesByEmployee($idEmployee)
     {
@@ -556,15 +521,13 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given product, returns the warehouses it is stored in
      *
-     * @param int $idProduct          Product Id
+     * @param int $idProduct Product Id
      * @param int $idProductAttribute Optional, Product Attribute Id - 0 by default (no attribues)
      *
      * @return array Warehouses Ids and names
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getWarehousesByProductId($idProduct, $idProductAttribute = 0)
     {
@@ -594,8 +557,6 @@ class WarehouseCore extends ObjectModel
      *
      * @return string Name
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getWarehouseNameById($idWarehouse)
@@ -611,16 +572,14 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given pack, returns the warehouse it can be shipped from
      *
-     * @param int  $idProduct
+     * @param int $idProduct
      *
-     * @param null $idShop
+     * @param int|null $idShop
      *
      * @return array|bool id_warehouse or false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPackWarehouses($idProduct, $idShop = null)
     {
@@ -669,8 +628,6 @@ class WarehouseCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function resetStockAvailable()
@@ -681,19 +638,11 @@ class WarehouseCore extends ObjectModel
         }
     }
 
-    /*********************************\
-     *
-     * Webservices Specific Methods
-     *
-     *********************************/
-
     /**
      * Webservice : gets the value of the warehouse
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getWsStockValue()
@@ -708,8 +657,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsStocks()
     {
@@ -728,8 +675,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsShops()
     {
@@ -751,8 +696,6 @@ class WarehouseCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsCarriers()
     {
@@ -779,7 +722,7 @@ class WarehouseCore extends ObjectModel
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

@@ -154,25 +154,18 @@
 #
 # ======================================================================== #
 
-/**
- *
- */
-
-/**
- *
- */
 class imageLib
 {
     /**
-     * @var
+     * @var string
      */
     private $fileName;
     /**
-     * @var false|GdImage|resource|string
+     * @var false|GdImage|resource
      */
     private $image;
     /**
-     * @var false|GdImage|resource|string
+     * @var false|GdImage|resource
      */
     protected $imageResized;
     /**
@@ -192,7 +185,7 @@ class imageLib
      */
     private $height;
     /**
-     * @var array|false|string|string[]|null
+     * @var string
      */
     private $fileExtension;
     /**
@@ -224,11 +217,11 @@ class imageLib
      */
     private $sharpenArray = ['jpg'];
     /**
-     * @var
+     * @var string
      */
     private $filterOverlayPath;
     /**
-     * @var
+     * @var bool
      */
     private $isInterlace;
     /**
@@ -245,7 +238,7 @@ class imageLib
     private $cropFromTopPercent = 10;
 
     /**
-     * @param $fileName
+     * @param string $fileName
      * @throws PrestaShopException
      */
     function __construct($fileName)
@@ -278,11 +271,11 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
-     * @param $option
-     * @param $sharpen
-     * @param $autoRotate
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param int $option
+     * @param bool $sharpen
+     * @param bool $autoRotate
      * @return void
      * @throws PrestaShopException
      */
@@ -334,9 +327,9 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
-     * @param $cropPos
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $cropPos
      * @return void
      * @throws PrestaShopException
      */
@@ -350,9 +343,9 @@ class imageLib
     }
 
     /**
-     * @param $width
-     * @param $height
-     * @param $im
+     * @param int $width
+     * @param int $height
+     * @param GdImage $im
      * @return void
      */
     private function keepTransparancy($width, $height, $im)
@@ -369,11 +362,11 @@ class imageLib
     }
 
     /**
-     * @param $optimalWidth
-     * @param $optimalHeight
-     * @param $newWidth
-     * @param $newHeight
-     * @param $cropPos
+     * @param int $optimalWidth
+     * @param int $optimalHeight
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $cropPos
      * @return void
      */
     private function crop($optimalWidth, $optimalHeight, $newWidth, $newHeight, $cropPos)
@@ -390,11 +383,11 @@ class imageLib
     }
 
     /**
-     * @param $optimalWidth
-     * @param $optimalHeight
-     * @param $newWidth
-     * @param $newHeight
-     * @param $pos
+     * @param int $optimalWidth
+     * @param int $optimalHeight
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $pos
      * @return array
      */
     private function getCropPlacing($optimalWidth, $optimalHeight, $newWidth, $newHeight, $pos = 'm')
@@ -461,9 +454,9 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
-     * @param $option
+     * @param int $newWidth
+     * @param int $newHeight
+     * @param string $option
      * @return array
      */
     private function getDimensions($newWidth, $newHeight, $option)
@@ -510,8 +503,8 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
+     * @param int $newWidth
+     * @param int $newHeight
      * @return array
      */
     private function getSizeByFixedHeight($newWidth, $newHeight)
@@ -527,8 +520,8 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
+     * @param int $newWidth
+     * @param int $newHeight
      * @return array
      */
     private function getSizeByFixedWidth($newWidth, $newHeight)
@@ -544,8 +537,8 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
+     * @param int $newWidth
+     * @param int $newHeight
      * @return array
      */
     private function getSizeByAuto($newWidth, $newHeight)
@@ -583,8 +576,8 @@ class imageLib
     }
 
     /**
-     * @param $newWidth
-     * @param $newHeight
+     * @param int $newWidth
+     * @param int $newHeight
      * @return array
      */
     private function getOptimalCrop($newWidth, $newHeight)
@@ -630,9 +623,9 @@ class imageLib
     }
 
     /**
-     * @param $orig
-     * @param $final
-     * @return mixed
+     * @param float $orig
+     * @param float $final
+     * @return float
      */
     private function findSharp($orig, $final)
     {
@@ -645,8 +638,8 @@ class imageLib
     }
 
     /**
-     * @param $option
-     * @return array|false|mixed|string|string[]|null
+     * @param array|string $option
+     * @return string
      * @throws PrestaShopException
      */
     private function prepOption($option)
@@ -665,11 +658,12 @@ class imageLib
         if (is_string($option)) {
             return fix_strtolower($option);
         }
+        /** @var string $option */
         return $option;
     }
 
     /**
-     * @param $preset
+     * @param string $preset
      * @return void
      */
     public function borderPreset($preset)
@@ -687,8 +681,8 @@ class imageLib
     }
 
     /**
-     * @param $thickness
-     * @param $rgbArray
+     * @param int $thickness
+     * @param array $rgbArray
      * @return void
      */
     public function addBorder($thickness = 1, $rgbArray = [255, 255, 255])
@@ -828,10 +822,10 @@ class imageLib
     }
 
     /**
-     * @param $im
-     * @param $type
-     * @param $amount
-     * @return mixed
+     * @param GdImage $im
+     * @param string $type
+     * @param int $amount
+     * @return GdImage
      */
     private function gd_apply_overlay($im, $type, $amount)
     {
@@ -854,7 +848,7 @@ class imageLib
     }
 
     /**
-     * @param $rgb
+     * @param array $rgb
      * @return bool
      */
     public function image_colorize($rgb)
@@ -874,12 +868,12 @@ class imageLib
     }
 
     /**
-     * @param $reflectionHeight
-     * @param $startingTransparency
-     * @param $inside
-     * @param $bgColor
-     * @param $stretch
-     * @param $divider
+     * @param int $reflectionHeight
+     * @param int $startingTransparency
+     * @param false $inside
+     * @param string $bgColor
+     * @param bool $stretch
+     * @param int $divider
      * @return void
      */
     public function addReflection($reflectionHeight = 50, $startingTransparency = 30, $inside = false, $bgColor = '#fff', $stretch = false, $divider = 0)
@@ -935,8 +929,8 @@ class imageLib
     }
 
     /**
-     * @param $value
-     * @param $bgColor
+     * @param int $value
+     * @param string $bgColor
      * @return void
      */
     public function rotate($value = 90, $bgColor = 'transparent')
@@ -973,8 +967,8 @@ class imageLib
     }
 
     /**
-     * @param $radius
-     * @param $bgColor
+     * @param int $radius
+     * @param string|array $bgColor
      * @return void
      */
     public function roundCorners($radius = 5, $bgColor = 'transparent')
@@ -1012,9 +1006,9 @@ class imageLib
     }
 
     /**
-     * @param $shadowAngle
-     * @param $blur
-     * @param $bgColor
+     * @param int $shadowAngle
+     * @param int $blur
+     * @param string|array $bgColor
      * @return void
      */
     public function addShadow($shadowAngle = 45, $blur = 15, $bgColor = 'transparent')
@@ -1111,11 +1105,11 @@ class imageLib
     }
 
     /**
-     * @param $side
-     * @param $thickness
-     * @param $padding
-     * @param $bgColor
-     * @param $transaprencyAmount
+     * @param string $side
+     * @param int $thickness
+     * @param int $padding
+     * @param string|array $bgColor
+     * @param int $transaprencyAmount
      * @return void
      */
     public function addCaptionBox($side = 'b', $thickness = 50, $padding = 0, $bgColor = '#000', $transaprencyAmount = 30)
@@ -1133,11 +1127,11 @@ class imageLib
     }
 
     /**
-     * @param $text
-     * @param $fontColor
-     * @param $fontSize
-     * @param $angle
-     * @param $font
+     * @param string $text
+     * @param string $fontColor
+     * @param int $fontSize
+     * @param int $angle
+     * @param string|null $font
      * @return void
      * @throws PrestaShopException
      */
@@ -1164,9 +1158,9 @@ class imageLib
     }
 
     /**
-     * @param $side
-     * @param $thickness
-     * @param $padding
+     * @param string $side
+     * @param int $thickness
+     * @param int $padding
      * @return array
      */
     private function calculateCaptionBoxPosition($side, $thickness, $padding)
@@ -1204,7 +1198,7 @@ class imageLib
     }
 
     /**
-     * @param $debug
+     * @param bool $debug
      * @return array
      */
     public function getExif($debug = false)
@@ -1334,8 +1328,8 @@ class imageLib
     }
 
     /**
-     * @param $ep
-     * @return mixed|string
+     * @param int $ep
+     * @return int|string
      */
     private function resolveExposureProgram($ep)
     {
@@ -1374,8 +1368,8 @@ class imageLib
     }
 
     /**
-     * @param $mm
-     * @return mixed|string
+     * @param int $mm
+     * @return int|string
      */
     private function resolveMeteringMode($mm)
     {
@@ -1411,8 +1405,8 @@ class imageLib
     }
 
     /**
-     * @param $flash
-     * @return mixed|string
+     * @param int $flash
+     * @return int|string
      */
     private function resolveFlash($flash)
     {
@@ -1490,7 +1484,7 @@ class imageLib
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @return void
      */
     public function writeIPTCcaption($value)
@@ -1499,7 +1493,7 @@ class imageLib
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @return void
      */
     public function writeIPTCwriter($value)
@@ -1507,8 +1501,8 @@ class imageLib
     }
 
     /**
-     * @param $dat
-     * @param $value
+     * @param int $dat
+     * @param string $value
      * @return void
      */
     private function writeIPTC($dat, $value)
@@ -1519,9 +1513,9 @@ class imageLib
     }
 
     /**
-     * @param $rec
-     * @param $dat
-     * @param $val
+     * @param int $rec
+     * @param int $dat
+     * @param string $val
      * @return string
      */
     private function iptc_maketag($rec, $dat, $val)
@@ -1544,13 +1538,13 @@ class imageLib
     }
 
     /**
-     * @param $text
-     * @param $pos
-     * @param $padding
-     * @param $fontColor
-     * @param $fontSize
-     * @param $angle
-     * @param $font
+     * @param string $text
+     * @param string $pos
+     * @param int $padding
+     * @param string $fontColor
+     * @param int $fontSize
+     * @param int $angle
+     * @param string|null $font
      * @return void
      * @throws PrestaShopException
      */
@@ -1572,8 +1566,8 @@ class imageLib
     }
 
     /**
-     * @param $font
-     * @return mixed|string
+     * @param string $font
+     * @return string
      * @throws PrestaShopException
      */
     private function getTextFont($font)
@@ -1590,10 +1584,10 @@ class imageLib
     }
 
     /**
-     * @param $fontSize
-     * @param $angle
-     * @param $font
-     * @param $text
+     * @param int $fontSize
+     * @param int $angle
+     * @param string $font
+     * @param string $text
      * @return array
      */
     private function getTextSize($fontSize, $angle, $font, $text)
@@ -1605,10 +1599,10 @@ class imageLib
     }
 
     /**
-     * @param $watermarkImage
-     * @param $pos
-     * @param $padding
-     * @param $opacity
+     * @param string $watermarkImage
+     * @param string $pos
+     * @param int $padding
+     * @param int $opacity
      * @return void
      * @throws PrestaShopException
      */
@@ -1629,11 +1623,11 @@ class imageLib
     }
 
     /**
-     * @param $pos
-     * @param $padding
-     * @param $assetWidth
-     * @param $assetHeight
-     * @param $upperLeft
+     * @param string $pos
+     * @param int $padding
+     * @param int $assetWidth
+     * @param int $assetHeight
+     * @param bool $upperLeft
      * @return array
      */
     private function calculatePosition($pos, $padding, $assetWidth, $assetHeight, $upperLeft = true)
@@ -1694,8 +1688,8 @@ class imageLib
     }
 
     /**
-     * @param $img
-     * @param $opacity
+     * @param GdImage $img
+     * @param int $opacity
      */
     private function filterOpacity($img, $opacity = 75)
     {
@@ -1734,7 +1728,7 @@ class imageLib
     }
 
     /**
-     * @param $file
+     * @param string $file
      * @return false|GdImage|resource
      * @throws PrestaShopException
      */
@@ -1781,12 +1775,12 @@ class imageLib
     }
 
     /**
-     * @param $savePath
-     * @param $imageQuality
+     * @param string $savePath
+     * @param int $imageQuality
      * @return void
      * @throws PrestaShopException
      */
-    public function saveImage($savePath, $imageQuality = "100")
+    public function saveImage($savePath, $imageQuality = 100)
     {
         if (! static::isImageResource($this->imageResized)) {
             throw new PrestaShopException('saveImage: This is not a resource.');
@@ -1847,12 +1841,12 @@ class imageLib
     }
 
     /**
-     * @param $fileType
-     * @param $imageQuality
+     * @param string $fileType
+     * @param int $imageQuality
      * @return void
      * @throws PrestaShopException
      */
-    public function displayImage($fileType = 'jpg', $imageQuality = "100")
+    public function displayImage($fileType = 'jpg', $imageQuality = 100)
     {
         if (! static::isImageResource($this->imageResized)) {
             throw new PrestaShopException('saveImage: This is not a resource.');
@@ -1886,7 +1880,7 @@ class imageLib
     }
 
     /**
-     * @param $bool
+     * @param bool $bool
      * @return void
      */
     public function setTransparency($bool)
@@ -1895,7 +1889,7 @@ class imageLib
     }
 
     /**
-     * @param $value
+     * @param string|array $value
      * @return void
      */
     public function setFillColor($value)
@@ -1905,7 +1899,7 @@ class imageLib
     }
 
     /**
-     * @param $value
+     * @param int $value
      * @return void
      */
     public function setCropFromTop($value)
@@ -1940,7 +1934,7 @@ class imageLib
     }
 
     /**
-     * @param $image
+     * @param GdImage $image
      * @return bool
      */
     public function testIsImage($image)
@@ -1962,7 +1956,7 @@ class imageLib
     }
 
     /**
-     * @param $value
+     * @param bool $value
      * @return void
      */
     public function setForceStretch($value)
@@ -1971,7 +1965,7 @@ class imageLib
     }
 
     /**
-     * @param $fileName
+     * @param string $fileName
      * @return void
      * @throws PrestaShopException
      */
@@ -1981,7 +1975,7 @@ class imageLib
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getFileName()
     {
@@ -2029,7 +2023,7 @@ class imageLib
     }
 
     /**
-     * @param $isEnabled
+     * @param bool $isEnabled
      * @return void
      */
     private function checkInterlaceImage($isEnabled)
@@ -2040,8 +2034,8 @@ class imageLib
     }
 
     /**
-     * @param $value
-     * @return array|int[]
+     * @param string|array $value
+     * @return array
      */
     protected function formatColor($value)
     {
@@ -2070,7 +2064,7 @@ class imageLib
     }
 
     /**
-     * @param $hex
+     * @param string $hex
      * @return array
      */
     function hex2dec($hex)
@@ -2089,7 +2083,7 @@ class imageLib
     }
 
     /**
-     * @param $colorArray
+     * @param array $colorArray
      * @return bool
      */
     private function testColorExists($colorArray)
@@ -2123,9 +2117,9 @@ class imageLib
     }
 
     /**
-     * @param $value
-     * @param $originalMax
-     * @param $invert
+     * @param int $value
+     * @param int $originalMax
+     * @param bool $invert
      * @return float|int
      */
     private function invertTransparency($value, $originalMax, $invert = true)
@@ -2144,8 +2138,8 @@ class imageLib
     }
 
     /**
-     * @param $src
-     * @return mixed
+     * @param GdImage $src
+     * @return GdImage
      */
     private function transparentImage($src)
     {
@@ -2167,8 +2161,8 @@ class imageLib
     }
 
     /**
-     * @param $needle
-     * @param $haystack
+     * @param string $needle
+     * @param string $haystack
      * @return bool
      */
     function checkStringStartsWith($needle, $haystack)
@@ -2177,7 +2171,7 @@ class imageLib
     }
 
     /**
-     * @param $gd_image
+     * @param GdImage $gd_image
      * @return string
      */
     private function GD2BMPstring($gd_image)
@@ -2217,9 +2211,9 @@ class imageLib
     }
 
     /**
-     * @param $img
-     * @param $x
-     * @param $y
+     * @param GdImage $img
+     * @param int $x
+     * @param int $y
      * @return array|false
      */
     private function GetPixelColor($img, $x, $y)
@@ -2231,8 +2225,8 @@ class imageLib
     }
 
     /**
-     * @param $number
-     * @param $minbytes
+     * @param int $number
+     * @param int $minbytes
      * @return string
      */
     private function LittleEndian2String($number, $minbytes = 1)
@@ -2246,7 +2240,7 @@ class imageLib
     }
 
     /**
-     * @param $filename
+     * @param string $filename
      * @return false|GdImage|resource
      */
     private function ImageCreateFromBMP($filename)
@@ -2338,7 +2332,7 @@ class imageLib
     }
 
     /**
-     *
+     * @return void
      */
     public function __destruct()
     {
@@ -2349,7 +2343,7 @@ class imageLib
 
     /**
      * Returns true, if $image is either resource, or GdImage
-     * @param mixed $image
+     * @param resource|GdImage|mixed $image
      * @return bool
      */
     private static function isImageResource($image)

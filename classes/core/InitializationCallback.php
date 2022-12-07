@@ -23,8 +23,6 @@ use \Db;
 
 /**
  * Interface InitializationCallback
- *
- * @since 1.3.0
  */
 interface InitializationCallback
 {

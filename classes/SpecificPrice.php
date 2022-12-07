@@ -31,12 +31,9 @@
 
 /**
  * Class SpecificPriceCore
- *
- * @since 1.0.0
  */
 class SpecificPriceCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var array $_specificPriceCache */
     protected static $_specificPriceCache = [];
     /** @var array $_filterOutCache */
@@ -79,10 +76,9 @@ class SpecificPriceCore extends ObjectModel
     public $from;
     /** @var string $to */
     public $to;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'specific_price',
@@ -122,6 +118,10 @@ class SpecificPriceCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'specific_prices',
         'objectNodeName'  => 'specific_price',
@@ -139,16 +139,14 @@ class SpecificPriceCore extends ObjectModel
     ];
 
     /**
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|bool $idProductAttribute
      * @param int|bool $idCart
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getByProductId($idProduct, $idProductAttribute = false, $idCart = false)
     {
@@ -163,15 +161,14 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int|     $idCart
+     * @param int| $idCart
      * @param int|bool $idProduct
      * @param int|bool $idProductAttribute
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteByIdCart($idCart, $idProduct = false, $idProductAttribute = false)
     {
@@ -185,16 +182,14 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|bool $idProductAttribute
-     * @param int|int  $idCart
+     * @param int $idCart
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdsByProductId($idProduct, $idProductAttribute = false, $idCart = 0)
     {
@@ -209,23 +204,21 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int  $idProduct
-     * @param int  $idShop
-     * @param int  $idCurrency
-     * @param int  $idCountry
-     * @param int  $idGroup
-     * @param int  $quantity
-     * @param null $idProductAttribute
-     * @param int  $idCustomer
-     * @param int  $idCart
-     * @param int  $realQuantity
+     * @param int $idProduct
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
+     * @param int $quantity
+     * @param int|null $idProductAttribute
+     * @param int $idCustomer
+     * @param int $idCart
+     * @param int $realQuantity
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSpecificPrice($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $quantity, $idProductAttribute = null, $idCustomer = 0, $idCart = 0, $realQuantity = 0)
     {
@@ -263,8 +256,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -281,16 +272,14 @@ class SpecificPriceCore extends ObjectModel
     /**
      * Remove or add useless fields value depending on the values in the database (cache friendly)
      *
-     * @param int         $idProduct
-     * @param int         $idProductAttribute
-     * @param int         $idCustomer
-     * @param int         $idCart
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $idCustomer
+     * @param int $idCart
      * @param string|null $beginning
      * @param string|null $ending
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -363,33 +352,27 @@ class SpecificPriceCore extends ObjectModel
      * Remove or add a field value to a query if values are present in the database (cache friendly)
      *
      * @param string $fieldName
-     * @param int    $fieldValue
-     * @param int    $threshold
+     * @param int $fieldValue
+     * @param int $threshold
      *
      * @return string
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected static function filterOutField($fieldName, $fieldValue, $threshold = 1000)
     {
         $queryExtra = 'AND `'.$fieldName.'` = 0 ';
-        // @codingStandardsIgnoreStart
         if ($fieldValue == 0 || array_key_exists($fieldName, static::$_no_specific_values)) {
             return $queryExtra;
         }
-        // @codingStandardsIgnoreEnd
         $keyCache = __FUNCTION__.'-'.$fieldName.'-'.$threshold;
         $specificList = [];
         if (!array_key_exists($keyCache, static::$_filterOutCache)) {
             $queryCount = 'SELECT COUNT(DISTINCT `'.$fieldName.'`) FROM `'._DB_PREFIX_.'specific_price` WHERE `'.$fieldName.'` != 0';
             $specificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($queryCount);
             if ($specificCount == 0) {
-                // @codingStandardsIgnoreStart
                 static::$_no_specific_values[$fieldName] = true;
-                // @codingStandardsIgnoreEnd
 
                 return $queryExtra;
             }
@@ -414,13 +397,10 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param $firstValue
-     * @param $secondValue
+     * @param int $firstValue
+     * @param int $secondValue
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function formatIntInQuery($firstValue, $secondValue)
     {
@@ -436,8 +416,7 @@ class SpecificPriceCore extends ObjectModel
     /**
      * score generation for quantity discount
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function _getScoreQuery($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idCustomer)
     {
@@ -460,8 +439,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getPriority($idProduct)
@@ -470,7 +447,6 @@ class SpecificPriceCore extends ObjectModel
             return explode(';', Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES'));
         }
 
-        // @codingStandardsIgnoreStart
         if (!isset(static::$_cache_priorities[(int) $idProduct])) {
             static::$_cache_priorities[(int) $idProduct] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -483,7 +459,6 @@ class SpecificPriceCore extends ObjectModel
         }
 
         $priority = static::$_cache_priorities[(int) $idProduct];
-        // @codingStandardsIgnoreEnd
 
         if (!$priority) {
             $priority = Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES');
@@ -498,8 +473,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setPriorities($priorities)
@@ -519,8 +492,6 @@ class SpecificPriceCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deletePriorities()
@@ -529,13 +500,11 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int   $idProduct
+     * @param int $idProduct
      * @param array $priorities
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setSpecificPriority($idProduct, $priorities)
@@ -555,21 +524,19 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int  $idProduct
-     * @param int  $idShop
-     * @param int  $idCurrency
-     * @param int  $idCountry
-     * @param int  $idGroup
-     * @param null $idProductAttribute
+     * @param int $idProduct
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
+     * @param int|null $idProductAttribute
      * @param bool $allCombinations
-     * @param int  $idCustomer
+     * @param int $idCustomer
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute = null, $allCombinations = false, $idCustomer = 0)
     {
@@ -611,21 +578,19 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int  $idProduct
-     * @param int  $idShop
-     * @param int  $idCurrency
-     * @param int  $idCountry
-     * @param int  $idGroup
-     * @param int  $quantity
-     * @param null $idProductAttribute
-     * @param int  $idCustomer
+     * @param int $idProduct
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
+     * @param int $quantity
+     * @param int|null $idProductAttribute
+     * @param int $idCustomer
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getQuantityDiscount($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $quantity, $idProductAttribute = null, $idCustomer = 0)
     {
@@ -649,21 +614,19 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int    $idShop
-     * @param int    $idCurrency
-     * @param int    $idCountry
-     * @param int    $idGroup
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
      * @param string $beginning
      * @param string $ending
-     * @param int    $idCustomer
-     * @param bool   $withCombinationId
+     * @param int $idCustomer
+     * @param bool $withCombinationId
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductIdByDate($idShop, $idCurrency, $idCountry, $idGroup, $beginning, $ending, $idCustomer = 0, $withCombinationId = false)
     {
@@ -696,8 +659,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -714,22 +675,20 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int    $idProduct
-     * @param int    $idProductAttribute
-     * @param int    $idShop
-     * @param int    $idGroup
-     * @param int    $idCountry
-     * @param int    $idCurrency
-     * @param int    $idCustomer
-     * @param int    $fromQuantity
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $idShop
+     * @param int $idGroup
+     * @param int $idCountry
+     * @param int $idCurrency
+     * @param int $idCustomer
+     * @param int $fromQuantity
      * @param string $from
      * @param string $to
-     * @param bool   $rule
+     * @param bool $rule
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function exists($idProduct, $idProductAttribute, $idShop, $idGroup, $idCountry, $idCurrency, $idCustomer, $fromQuantity, $from, $to, $rule = false)
@@ -758,8 +717,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -776,25 +735,20 @@ class SpecificPriceCore extends ObjectModel
     /**
      * Flush local cache
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function flushCache()
     {
-        // @codingStandardsIgnoreStart
         static::$_specificPriceCache = [];
         static::$_filterOutCache = [];
         static::$_cache_priorities = [];
         static::$_no_specific_values = [];
         Product::flushPriceCache();
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -816,8 +770,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function duplicate($idProduct = false)
@@ -836,8 +788,6 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)

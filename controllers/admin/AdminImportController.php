@@ -34,8 +34,6 @@ use Thirtybees\Core\Import\DataSourceInterface;
 
 /**
  * Class AdminImportControllerCore
- *
- * @since 1.0.0
  */
 class AdminImportControllerCore extends AdminController
 {
@@ -43,7 +41,7 @@ class AdminImportControllerCore extends AdminController
     const UNFRIENDLY_ERROR = false;
     const MAX_LINE_SIZE = 0;
 
-    /** @var mixed $columnMask */
+    /** @var array $columnMask */
     public static $columnMask;
     /** @var array $defaultValues */
     public static $defaultValues = [];
@@ -95,7 +93,6 @@ class AdminImportControllerCore extends AdminController
      * AdminImportControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -585,8 +582,6 @@ class AdminImportControllerCore extends AdminController
      * @param string $field
      *
      * @return bool
-     *
-     * @since 1.0.2
      */
     protected static function getBoolean($field)
     {
@@ -597,8 +592,6 @@ class AdminImportControllerCore extends AdminController
      * @param string $field
      *
      * @return float
-     *
-     * @since 1.0.0
      */
     protected static function getPrice($field)
     {
@@ -613,7 +606,6 @@ class AdminImportControllerCore extends AdminController
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected static function fillInfo($infos, $key, $entity)
     {
@@ -634,12 +626,10 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $a
-     * @param $b
+     * @param string $a
+     * @param string $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected static function usortFiles($a, $b)
     {
@@ -654,7 +644,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -680,7 +669,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      * @noinspection PhpUnused
      */
     public function ajaxProcessuploadCsv()
@@ -723,8 +711,6 @@ class AdminImportControllerCore extends AdminController
      * @param string $file
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function getPath($file = '')
     {
@@ -734,7 +720,7 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -749,7 +735,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -780,8 +765,6 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -807,8 +790,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -928,13 +912,11 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $currentTable
-     * @param $nbColumn
+     * @param string $currentTable
+     * @param int $nbColumn
      * @param array $previewRows
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function generateContentTable($currentTable, $nbColumn, array $previewRows)
     {
@@ -970,11 +952,9 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $nbC
+     * @param int $nbC
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function getTypeValuesOptions($nbC)
     {
@@ -1000,8 +980,6 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @return void
-     *
-     * @since 1.0.0
      */
     public static function setLocale()
     {
@@ -1013,9 +991,9 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return string
      *
-     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -1151,13 +1129,12 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param int       $defaultLanguageId
-     * @param string    $categoryName
+     * @param int $defaultLanguageId
+     * @param string $categoryName
      * @param int| null $idParentCategory
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      * @noinspection PhpUnused
      */
@@ -1192,12 +1169,11 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $field
+     * @param mixed $field
      *
      * @return array
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected static function createMultiLangField($field)
     {
@@ -1261,16 +1237,15 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param int|bool   $offset
-     * @param int|bool   $limit
+     * @param int|bool $offset
+     * @param int|bool $limit
      * @param array|null $results
-     * @param bool       $validateOnly
-     * @param int        $moreStep
+     * @param bool $validateOnly
+     * @param int $moreStep
      *
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
     {
@@ -1392,7 +1367,6 @@ class AdminImportControllerCore extends AdminController
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function truncateTables($case)
     {
@@ -1595,15 +1569,13 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param int|bool   $offset
-     * @param int|bool   $limit
-     * @param array|bool $crossStepsVariables
-     * @param bool       $validateOnly
+     * @param int|bool $offset
+     * @param int|bool $limit
+     * @param array|false $crossStepsVariables
+     * @param bool $validateOnly
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
     {
@@ -1672,8 +1644,6 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function receiveTab()
     {
@@ -1689,8 +1659,6 @@ class AdminImportControllerCore extends AdminController
      * @param array $row
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public static function getMaskedRow($row)
     {
@@ -1705,18 +1673,17 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param int  $idDefaultLanguage
-     * @param int  $idLang
+     * @param array $info
+     * @param int $idDefaultLanguage
+     * @param int $idLang
      * @param bool $forceIds
      * @param bool $regenerate
-     * @param      $shopIsFeatureActive
-     * @param      $catMoved
+     * @param bool $shopIsFeatureActive
+     * @param array $catMoved
      * @param bool $validateOnly
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function categoryImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, &$catMoved, $validateOnly = false)
     {
@@ -1928,8 +1895,6 @@ class AdminImportControllerCore extends AdminController
      * @param array $info
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected static function setDefaultValues(&$info)
     {
@@ -1955,7 +1920,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected static function copyImg($idEntity, $idImage = null, $url = '', $entity = 'products', $regenerate = true)
     {
@@ -2107,7 +2071,6 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function clearSmartyCache()
@@ -2120,14 +2083,13 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param bool $offset
      * @param bool $limit
-     * @param bool $crossStepsVariables
+     * @param array|false $crossStepsVariables
      * @param bool $validateOnly
      * @param int $moreStep
      *
      * @return int
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
     {
@@ -2203,14 +2165,13 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $offset
-     * @param $limit
-     * @param $crossStepsVariables
+     * @param int $offset
+     * @param int $limit
+     * @param array|false $crossStepsVariables
      *
      * @return int
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function productImportAccessories($offset, $limit, &$crossStepsVariables)
     {
@@ -2273,7 +2234,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return array|false The IDs list, without duplicates and only existing ones.
      *
-     * @since 1.0.1
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function getExistingIdsFromIdsOrRefs($idsOrRefs)
     {
@@ -2316,11 +2278,9 @@ class AdminImportControllerCore extends AdminController
      * Link accessories with product. No need to inflate a full Product (better performances).
      *
      * @param array $accessoriesId Accessories ids
-     * @param int   $productId     The product ID to link accessories on.
+     * @param int $productId The product ID to link accessories on.
      *
      * @return void
-     *
-     * @since 1.0.1
      */
     protected static function changeAccessoriesForProduct($accessoriesId, $productId)
     {
@@ -2340,22 +2300,21 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $idDefaultLanguage
-     * @param      $idLang
-     * @param      $forceIds
-     * @param      $regenerate
-     * @param      $shopIsFeatureActive
-     * @param      $shopIds
-     * @param      $matchRef
-     * @param      $accessories
+     * @param array $info
+     * @param int $idDefaultLanguage
+     * @param int $idLang
+     * @param bool $forceIds
+     * @param bool $regenerate
+     * @param bool $shopIsFeatureActive
+     * @param int[] $shopIds
+     * @param bool $matchRef
+     * @param array $accessories
      * @param bool $validateOnly
      * @param bool $forceCat
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false, $forceCat = false)
     {
@@ -3037,8 +2996,6 @@ class AdminImportControllerCore extends AdminController
      * @param ObjectModel $entity
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected static function setEntityDefaultValues($entity)
     {
@@ -3051,13 +3008,11 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param string   $productName
+     * @param string $productName
      * @param int|null $productId
-     * @param string   $message
+     * @param string $message
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function addProductWarning($productName, $productId = null, $message = '')
     {
@@ -3072,8 +3027,6 @@ class AdminImportControllerCore extends AdminController
      * @param string $field Field to explode.
      *
      * @return array Array with single values as strings.
-     *
-     * @since 1.0.2
      */
     protected function fieldExplode($field)
     {
@@ -3098,8 +3051,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function customerImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -3146,18 +3097,17 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $defaultLanguageId
-     * @param      $idLang
-     * @param      $shopIsFeatureActive
-     * @param      $forceIds
+     * @param array $info
+     * @param int $defaultLanguageId
+     * @param int $idLang
+     * @param bool $shopIsFeatureActive
+     * @param bool $forceIds
      * @param bool $validateOnly
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function customerImportOne($info, $defaultLanguageId, $idLang, $shopIsFeatureActive, $forceIds, $validateOnly = false)
     {
@@ -3371,12 +3321,10 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param int|bool $offset
      * @param int|bool $limit
-     * @param bool     $validateOnly
+     * @param bool $validateOnly
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function addressImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -3414,15 +3362,14 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $forceIds
+     * @param array $info
+     * @param bool $forceIds
      * @param bool $validateOnly
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function addressImportOne($info, $forceIds, $validateOnly = false)
     {
@@ -3652,13 +3599,11 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param bool $offset
      * @param bool $limit
-     * @param bool $crossStepsVariables
+     * @param array|bool $crossStepsVariables
      * @param bool $validateOnly
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function attributeImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
     {
@@ -3726,19 +3671,18 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $defaultLanguage
-     * @param      $groups
-     * @param      $attributes
-     * @param      $regenerate
-     * @param      $shopIsFeatureActive
+     * @param array $info
+     * @param int $defaultLanguage
+     * @param array $groups
+     * @param array $attributes
+     * @param bool $regenerate
+     * @param bool $shopIsFeatureActive
      * @param bool $validateOnly
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly = false)
     {
@@ -4173,11 +4117,9 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $field
+     * @param string $field
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     protected static function split($field)
     {
@@ -4225,8 +4167,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function manufacturerImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -4268,17 +4208,16 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $shopIsFeatureActive
-     * @param      $regenerate
-     * @param      $forceIds
+     * @param array $info
+     * @param bool $shopIsFeatureActive
+     * @param bool $regenerate
+     * @param bool $forceIds
      * @param bool $validateOnly
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function manufacturerImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
@@ -4360,8 +4299,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function supplierImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -4407,15 +4344,14 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $shopIsFeatureActive
-     * @param      $regenerate
-     * @param      $forceIds
+     * @param array $info
+     * @param bool $shopIsFeatureActive
+     * @param bool $regenerate
+     * @param bool $forceIds
      * @param bool $validateOnly
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function supplierImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
@@ -4492,8 +4428,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function aliasImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -4531,13 +4465,12 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $info
-     * @param bool  $forceIds
-     * @param bool  $validateOnly
+     * @param array $info
+     * @param bool $forceIds
+     * @param bool $validateOnly
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function aliasImportOne($info, $forceIds, $validateOnly = false)
     {
@@ -4587,8 +4520,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function storeContactImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -4628,16 +4559,15 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @param array $info
-     * @param bool  $shopIsFeatureActive
-     * @param bool  $regenerate
-     * @param bool  $forceIds
-     * @param bool  $validateOnly
+     * @param bool $shopIsFeatureActive
+     * @param bool $regenerate
+     * @param bool $forceIds
+     * @param bool $validateOnly
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function storeContactImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
@@ -4762,7 +4692,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.1
      * @throws PrestaShopException
      */
     protected static function storeExists($idStore)
@@ -4782,8 +4711,6 @@ class AdminImportControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function supplyOrdersImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -4815,9 +4742,9 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $forceIds
-     * @param      $currentLine
+     * @param array $info
+     * @param bool $forceIds
+     * @param int $currentLine
      * @param bool $validateOnly
      * @throws PrestaShopException
      */
@@ -4908,13 +4835,11 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param bool $offset
      * @param bool $limit
-     * @param bool $crossStepsVariables
+     * @param array|bool $crossStepsVariables
      * @param bool $validateOnly
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function supplyOrdersDetailsImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
     {
@@ -4966,16 +4891,15 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $products
-     * @param      $reset
-     * @param      $forceIds
-     * @param      $currentLine
+     * @param array $info
+     * @param array $products
+     * @param bool $reset
+     * @param bool $forceIds
+     * @param int $currentLine
      * @param bool $validateOnly
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function supplyOrdersDetailsImportOne($info, &$products, &$reset, $forceIds, $currentLine, $validateOnly = false)
     {
@@ -5097,7 +5021,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      * @noinspection PhpUnused
      */
     public function ajaxProcessSaveImportMatchs()
@@ -5127,7 +5050,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      * @noinspection PhpUnused
      */
     public function ajaxProcessLoadImportMatchs()
@@ -5158,7 +5080,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      * @noinspection PhpUnused
      */
     public function ajaxProcessDeleteImportMatchs()
@@ -5181,7 +5102,6 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      * @noinspection PhpUnused
      */
     public function ajaxProcessImport()
@@ -5211,9 +5131,7 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initModal()
     {

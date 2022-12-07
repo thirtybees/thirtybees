@@ -31,8 +31,6 @@
 
 /**
  * Class AdminCustomerThreadsControllerCore
- *
- * @since 1.0.0
  */
 class AdminCustomerThreadsControllerCore extends AdminController
 {
@@ -44,7 +42,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * AdminCustomerThreadsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -152,7 +150,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -216,6 +216,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
     /**
      * Call the IMAP synchronization during the render process.
+     * @throws PrestaShopException
      */
     public function renderProcessSyncImap()
     {
@@ -246,6 +247,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
      * Imap synchronization method.
      *
      * @return array Errors list.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function syncImap()
     {
@@ -435,7 +438,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -453,12 +455,10 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param mixed    $value
+     * @param bool $value
      * @param Customer $customer
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function printOptinIcon($value, $customer)
     {
@@ -468,7 +468,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function postProcess()
     {
@@ -649,13 +651,15 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param      $message
+     * @param string $message
      * @param bool $email
-     * @param null $idEmployee
+     * @param int|null $idEmployee
      *
      * @return string
      *
-     * @since 1.0.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function displayMessage($message, $email = false, $idEmployee = null)
     {
@@ -717,7 +721,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -731,9 +736,10 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * Render KPIs
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -794,7 +800,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -962,12 +968,13 @@ class AdminCustomerThreadsControllerCore extends AdminController
     /**
      * Get timeline
      *
-     * @param $messages
-     * @param $idOrder
+     * @param array $messages
+     * @param int $idOrder
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getTimeline($messages, $idOrder)
     {
@@ -1024,16 +1031,14 @@ class AdminCustomerThreadsControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -1052,8 +1057,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function ajaxProcessMarkAsRead()
     {
@@ -1111,11 +1114,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param $content
+     * @param string $content
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function displayButton($content)
     {

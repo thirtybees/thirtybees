@@ -48,7 +48,6 @@ class PackCore extends Product
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public static function noPackPrice($idProduct)
     {
@@ -187,7 +186,6 @@ class PackCore extends Product
      *
      * @return bool
      * @throws PrestaShopException
-     * @since 1.5.0.1
      */
     public static function isFeatureActive()
     {
@@ -331,9 +329,9 @@ class PackCore extends Product
      * @param int $idProduct
      * @param int $idLang
      * @param bool $full
-     * @param null $limit
+     * @param int|null $limit
      *
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
      * @throws PrestaShopException
      */
     public static function getPacksTable($idProduct, $idLang, $full = false, $limit = null)
@@ -398,7 +396,6 @@ class PackCore extends Product
      *
      * @return bool
      * @throws PrestaShopException
-     * @throws PrestaShopException
      */
     public static function isPacked($idProduct, $idProductAttribute = false)
     {
@@ -441,8 +438,6 @@ class PackCore extends Product
      * @return bool
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public static function deleteItems($idProduct)
     {
@@ -463,8 +458,6 @@ class PackCore extends Product
      *
      * @return bool
      * @throws PrestaShopException
-     * @since 1.5.0
-     *
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
@@ -510,7 +503,6 @@ class PackCore extends Product
      * @return bool
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public static function duplicate($idProductOld, $idProductNew)
     {
@@ -661,7 +653,7 @@ class PackCore extends Product
      *   - STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS
      * returns false for anything else, even STOCK_TYPE_DECREMENT_GLOBAL_SETTINGS
      *
-     * @param $stockType
+     * @param int $stockType
      * @return boolean
      */
     public static function isValidStockType($stockType)

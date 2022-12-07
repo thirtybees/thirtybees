@@ -31,15 +31,13 @@
 
 /**
  * Class AdminLanguagesControllerCore
- *
- * @since 1.0.0
  */
 class AdminLanguagesControllerCore extends AdminController
 {
     /**
      * AdminLanguagesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -120,7 +118,7 @@ class AdminLanguagesControllerCore extends AdminController
     /**
      * Initialize page header toolbar
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -140,7 +138,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -160,7 +159,9 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -318,7 +319,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -336,11 +338,11 @@ class AdminLanguagesControllerCore extends AdminController
     /**
      * Check deletion
      *
-     * @param $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function checkDeletion($object)
     {
@@ -372,7 +374,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool true if no error
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function deleteNoPictureImages($idLanguage)
     {
@@ -403,7 +406,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processStatus()
     {
@@ -420,11 +424,11 @@ class AdminLanguagesControllerCore extends AdminController
     /**
      * Check disable status
      *
-     * @param $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function checkDisableStatus($object)
     {
@@ -449,9 +453,10 @@ class AdminLanguagesControllerCore extends AdminController
     /**
      * Check employee language id
      *
-     * @param $currentIdLang
+     * @param int $currentIdLang
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function checkEmployeeIdLang($currentIdLang)
     {
@@ -464,7 +469,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -499,6 +505,8 @@ class AdminLanguagesControllerCore extends AdminController
      * @param string $language Language iso_code for no_picture image filename
      *
      * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyNoPictureImage($language)
     {
@@ -541,7 +549,7 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -578,8 +586,6 @@ class AdminLanguagesControllerCore extends AdminController
      * Ajax process check language pack
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function ajaxProcessCheckLangPack()
     {
@@ -591,7 +597,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {
@@ -617,7 +624,8 @@ class AdminLanguagesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDisableSelection()
     {
@@ -636,9 +644,9 @@ class AdminLanguagesControllerCore extends AdminController
 
     /**
      * @param Language $object
-     * @param string   $table
+     * @param string $table
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function copyFromPost(&$object, $table)
     {
@@ -654,8 +662,6 @@ class AdminLanguagesControllerCore extends AdminController
      * After image upload
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     protected function afterImageUpload()
     {

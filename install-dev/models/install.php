@@ -35,12 +35,14 @@ use CoreUpdater\ObjectModelSchemaBuilder;
 
 /**
  * Class InstallModelInstall
- *
- * @since 1.0.0
  */
 class InstallModelInstall extends InstallAbstractModel
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
+
+    /**
+     * @var string[]|null
+     */
     private static $cacheLocalizationPackContent = null;
 
     /**
@@ -56,8 +58,6 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * InstallModelInstall constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestashopInstallerException
      */
     public function __construct()
@@ -81,8 +81,6 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestashopInstallerException
      */
     public function generateSettingsFile($databaseServer, $databaseLogin, $databasePassword, $databaseName, $databasePrefix)
@@ -142,12 +140,6 @@ class InstallModelInstall extends InstallAbstractModel
 
     /**
      * @param string|array $errors
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setError($errors)
     {
@@ -169,9 +161,6 @@ class InstallModelInstall extends InstallAbstractModel
      * @param bool $clearDatabase
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function installDatabase($clearDatabase = false)
     {
@@ -238,9 +227,6 @@ class InstallModelInstall extends InstallAbstractModel
      * @param Db $conn
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @version 1.0.0 Initial version, $truncate deprecated.
-     * @version 1.1.0 Removed $truncate.
      */
     public function clearDatabase($conn)
     {
@@ -255,9 +241,6 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * PROCESS : installDefaultData
      * Create default shop and languages
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param string $shopName
      * @param int|bool $isoCountry
@@ -316,8 +299,6 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createShop($shopName)
     {
@@ -366,10 +347,7 @@ class InstallModelInstall extends InstallAbstractModel
      * @param string $version
      * @param string $country
      *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|false
      */
     public function getLocalizationPackContent($version, $country)
     {
@@ -394,10 +372,11 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * Install languages
      *
+     * @param srray|null $languagesList
      * @return array Association between ID and iso array(id_lang => iso, ...)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function installLanguages($languagesList = null)
     {
@@ -482,12 +461,12 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : populateDatabase
      * Populate database with default data
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param null $entity
+     * @param string|string[]|null $entity
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function populateDatabase($entity = null)
     {
@@ -552,10 +531,10 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
-     * @param $iso
+     * @param string $iso
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyLanguageImages($iso)
     {
@@ -601,8 +580,7 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : configureShop
      * Set default shop configuration
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function configureShop(array $data = [])
     {
@@ -761,12 +739,11 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * PROCESS : installModules
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param null $module
+     * @param string|string[]|null $module
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function installModules($module = null)
     {
@@ -803,11 +780,7 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
-     * @return array List of modules to install.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.6 Move the hardcoded list to default_modules.php.
+     * @return string[] List of modules to install.
      */
     public function getModulesList()
     {
@@ -820,13 +793,13 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param null  $entity
+     * @param string|string[]|null $entity
      * @param array $data
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function installFixtures($entity = null, array $data = [])
     {
@@ -923,8 +896,10 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : installTheme
      * Install theme
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function installTheme()
     {
@@ -960,6 +935,8 @@ class InstallModelInstall extends InstallAbstractModel
 
     /**
      * Returns best ciphering algorithm available for current environment
+     *
+     * @return int
      */
     public function getCipherAlgorightm()
     {
@@ -970,6 +947,8 @@ class InstallModelInstall extends InstallAbstractModel
 
     /**
      * Includes core updater classes
+     *
+     * @return void
      */
     protected static function loadCoreUpdater()
     {

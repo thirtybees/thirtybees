@@ -35,8 +35,6 @@ use Thirtybees\Core\Stock\Synchronization\DynamicPacksSynchronizationTask;
 /**
  * Represents quantities available
  * It is either synchronized with Stock or manualy set by the seller
- *
- * @since 1.0.0
  */
 class StockAvailableCore extends ObjectModel
 {
@@ -60,7 +58,7 @@ class StockAvailableCore extends ObjectModel
     protected $original_quantity = null;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'stock_available',
@@ -86,7 +84,7 @@ class StockAvailableCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'        => [
@@ -123,9 +121,6 @@ class StockAvailableCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     *
-     * @since   1.0.0
      */
     public function updateWs()
     {
@@ -138,14 +133,12 @@ class StockAvailableCore extends ObjectModel
     }
 
     /**
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|null $idProductAttribute
      * @param int|null $idShop
      *
      * @return bool|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getStockAvailableIdByProductId($idProduct, $idProductAttribute = null, $idShop = null)
@@ -183,14 +176,12 @@ class StockAvailableCore extends ObjectModel
     /**
      * For a given id_product, synchronizes StockAvailable::quantity with Stock::usable_quantity
      *
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|null $orderIdShop
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function synchronize($idProduct, $orderIdShop = null)
     {
@@ -342,16 +333,14 @@ class StockAvailableCore extends ObjectModel
     /**
      * For a given id_product, sets if stock available depends on stock
      *
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|bool $dependsOnStock true by default
-     * @param int|null $idShop         gets context by default
-     * @param int      $idProductAttribute
+     * @param int|null $idShop gets context by default
+     * @param int $idProductAttribute
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setProductDependsOnStock($idProduct, $dependsOnStock = true, $idShop = null, $idProductAttribute = 0)
     {
@@ -390,16 +379,14 @@ class StockAvailableCore extends ObjectModel
     /**
      * For a given id_product, sets if product is available out of stocks
      *
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param bool|int $outOfStock Optional false by default
-     * @param int      $idShop     Optional gets context by default
-     * @param int      $idProductAttribute
+     * @param int $idShop Optional gets context by default
+     * @param int $idProductAttribute
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setProductOutOfStock($idProduct, $outOfStock = false, $idShop = null, $idProductAttribute = 0)
     {
@@ -434,12 +421,10 @@ class StockAvailableCore extends ObjectModel
      *
      * @param int $idProduct
      * @param int $idProductAttribute Optional
-     * @param int $idShop             Optional : gets context by default
+     * @param int $idShop Optional : gets context by default
      *
      * @return int Quantity
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getQuantityAvailableByProduct($idProduct = null, $idProductAttribute = null, $idShop = null)
@@ -471,10 +456,6 @@ class StockAvailableCore extends ObjectModel
     /**
      * Upgrades total_quantity_available after having saved
      *
-     * @see     ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param bool $autoDate
      * @param bool $nullValues
@@ -499,10 +480,7 @@ class StockAvailableCore extends ObjectModel
     /**
      * Upgrades total_quantity_available after having update
      *
-     * @see     ObjectModel::update()
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param bool $nullValues
      *
@@ -526,11 +504,6 @@ class StockAvailableCore extends ObjectModel
     /**
      * Upgrades total_quantity_available after having saved
      *
-     * @see StockAvailableCore::update()
-     * @see StockAvailableCore::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function postSave()
@@ -572,13 +545,11 @@ class StockAvailableCore extends ObjectModel
      *
      * @param int $idProduct
      * @param int $idProductAttribute Optional
-     * @param int $deltaQuantity      The delta quantity to update
-     * @param int $idShop             Optional
+     * @param int $deltaQuantity The delta quantity to update
+     * @param int $idShop Optional
      *
      * @return bool
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function updateQuantity($idProduct, $idProductAttribute, $deltaQuantity, $idShop = null)
     {
@@ -602,14 +573,12 @@ class StockAvailableCore extends ObjectModel
      *
      * @param int $idProduct
      * @param int $idProductAttribute Optional
-     * @param     $quantity
-     * @param int $idShop             Optional
+     * @param int $quantity
+     * @param int $idShop Optional
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setQuantity($idProduct, $idProductAttribute, $quantity, $idShop = null)
     {
@@ -681,16 +650,14 @@ class StockAvailableCore extends ObjectModel
     /**
      * Removes a given product from the stock available
      *
-     * @param int       $idProduct
-     * @param int|null  $idProductAttribute Optional
-     * @param Shop|null $shop               Shop id or shop object Optional
+     * @param int $idProduct
+     * @param int|null $idProductAttribute Optional
+     * @param Shop|null $shop Shop id or shop object Optional
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function removeProductFromStockAvailable($idProduct, $idProductAttribute = null, $shop = null)
     {
@@ -756,8 +723,6 @@ class StockAvailableCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function resetProductFromStockAvailableByShopGroup(ShopGroup $shopGroup)
     {
@@ -778,12 +743,10 @@ class StockAvailableCore extends ObjectModel
      * For a given product, tells if it depends on the physical (usable) stock
      *
      * @param int $idProduct
-     * @param int $idShop    Optional : gets context if null @see Context::getContext()
+     * @param int $idShop Optional : gets context if null
      *
-     * @return bool : depends on stock @see $depends_on_stock
+     * @return bool : depends on stock
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function dependsOnStock($idProduct, $idShop = null)
@@ -807,12 +770,10 @@ class StockAvailableCore extends ObjectModel
      * For a given product, get its "out of stock" flag
      *
      * @param int $idProduct
-     * @param int $idShop    Optional : gets context if null @see Context::getContext()
+     * @param int $idShop Optional : gets context if null
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function outOfStock($idProduct, $idShop = null)
@@ -835,16 +796,14 @@ class StockAvailableCore extends ObjectModel
     /**
      * Add an sql restriction for shops fields - specific to StockAvailable
      *
-     * @param DbQuery|string|null $sql   Reference to the query object
-     * @param Shop|int|null       $shop  Optional : The shop ID
-     * @param string|null         $alias Optional : The current table alias
+     * @param DbQuery|string|null $sql Reference to the query object
+     * @param Shop|int|null $shop Optional : The shop ID
+     * @param string|null $alias Optional : The current table alias
      *
      * @return string|DbQuery DbQuery object or the sql restriction string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addSqlShopRestriction($sql = null, $shop = null, $alias = null)
     {
@@ -897,12 +856,10 @@ class StockAvailableCore extends ObjectModel
      * Add sql params for shops fields - specific to StockAvailable
      *
      * @param array $params Reference to the params array
-     * @param int   $idShop Optional : The shop ID
+     * @param int $idShop Optional : The shop ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addSqlShopParams(&$params, $idShop = null)
     {
@@ -947,8 +904,6 @@ class StockAvailableCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function copyStockAvailableFromShopToShop($srcShopId, $dstShopId)

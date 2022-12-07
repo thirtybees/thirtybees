@@ -31,15 +31,22 @@
 
 /**
  * Class RequestSqlCore
- *
- * @since 1.0.0
  */
 class RequestSqlCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $name;
+
+    /**
+     * @var string
+     */
     public $sql;
-    /** @var array : List of params to tested */
+
+    /**
+     * @var array : List of params to tested
+     */
     public $tested = [
         'required'     => ['SELECT', 'FROM'],
         'option'       => ['WHERE', 'ORDER', 'LIMIT', 'HAVING', 'GROUP', 'UNION'],
@@ -63,6 +70,9 @@ class RequestSqlCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var string[]
+     */
     public $attributes = [
         'passwd'     => '*******************',
         'secure_key' => '*******************',
@@ -70,10 +80,9 @@ class RequestSqlCore extends ObjectModel
 
     /** @var array : list of errors */
     public $error_sql = [];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'request_sql',
@@ -89,9 +98,6 @@ class RequestSqlCore extends ObjectModel
      * Get list of request SQL
      *
      * @return array|bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRequestSql()
     {
@@ -122,9 +128,6 @@ class RequestSqlCore extends ObjectModel
      * @param int $id
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRequestSqlById($id)
     {
@@ -146,10 +149,7 @@ class RequestSqlCore extends ObjectModel
      *
      * @param string $sql
      *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return false|array
      */
     public function parsingSql($sql)
     {
@@ -159,14 +159,11 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if the parsing of the SQL request is good or not
      *
-     * @param array  $tab
-     * @param bool   $in
+     * @param false|array $tab
+     * @param bool $in
      * @param string $sql
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateParser($tab, $in, $sql)
     {
@@ -189,14 +186,11 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut the request for check each cutting
      *
-     * @param array  $tab
-     * @param bool   $in
+     * @param array $tab
+     * @param bool $in
      * @param string $sql
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateSql($tab, $in, $sql)
     {
@@ -247,9 +241,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $tab
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function testedRequired($tab)
     {
@@ -270,9 +261,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $tab
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function testedUnauthorized($tab)
     {
@@ -293,9 +281,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $from
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedFrom($from)
     {
@@ -342,9 +327,6 @@ class RequestSqlCore extends ObjectModel
      * Get list of all tables
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTables()
     {
@@ -368,7 +350,7 @@ class RequestSqlCore extends ObjectModel
      * @param array $attrs
      * @param array $from
      *
-     * @return array|bool
+     * @return array
      */
     public function cutJoin($attrs, $from)
     {
@@ -390,7 +372,7 @@ class RequestSqlCore extends ObjectModel
      * Cut an attribute with or without the alias
      *
      * @param string $attr
-     * @param array  $from
+     * @param array $from
      *
      * @return array|bool
      */
@@ -424,8 +406,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Get name of table by alias
      *
-     * @param bool   $alias
-     * @param array  $tables
+     * @param bool $alias
+     * @param array $tables
      * @param string $attr
      *
      * @return array|false
@@ -473,9 +455,6 @@ class RequestSqlCore extends ObjectModel
      * @param string $table
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function attributExistInTable($attr, $table)
     {
@@ -501,9 +480,6 @@ class RequestSqlCore extends ObjectModel
      * @param string $table
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAttributesByTable($table)
     {
@@ -519,12 +495,9 @@ class RequestSqlCore extends ObjectModel
      *
      * @param string[] $select
      * @param string[] $from
-     * @param bool     $in
+     * @param bool $in
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedSelect($select, $from, $in = false)
     {
@@ -569,14 +542,11 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "WHERE" sentence
      *
-     * @param array  $where
-     * @param array  $from
+     * @param array $where
+     * @param array $from
      * @param string $sql
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedWhere($where, $from, $sql)
     {
@@ -628,9 +598,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $from
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedHaving($having, $from)
     {
@@ -676,9 +643,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $from
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedOrder($order, $from)
     {
@@ -713,9 +677,6 @@ class RequestSqlCore extends ObjectModel
      * @param array $from
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedGroupBy($group, $from)
     {
@@ -749,9 +710,6 @@ class RequestSqlCore extends ObjectModel
      * @param string[] $limit
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkedLimit($limit)
     {

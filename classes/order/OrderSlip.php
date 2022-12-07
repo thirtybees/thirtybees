@@ -31,14 +31,11 @@
 
 /**
  * Class OrderSlipCore
- *
- * @since 1.0.0
  */
 class OrderSlipCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_slip',
@@ -96,6 +93,10 @@ class OrderSlipCore extends ObjectModel
     public $date_upd;
     /** @var int */
     public $order_slip_type = 0;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectNodeName'  => 'order_slip',
         'objectsNodeName' => 'order_slips',
@@ -116,18 +117,15 @@ class OrderSlipCore extends ObjectModel
             ],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @param int  $customerId
+     * @param int $customerId
      * @param bool $orderId
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersSlip($customerId, $orderId = false)
     {
@@ -142,15 +140,13 @@ class OrderSlipCore extends ObjectModel
     }
 
     /**
-     * @param int   $orderSlipId
+     * @param int $orderSlipId
      * @param Order $order
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersSlipProducts($orderSlipId, $order)
     {
@@ -177,12 +173,10 @@ class OrderSlipCore extends ObjectModel
      * @param bool $idOrderSlip
      * @param bool $idOrderDetail
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrdersSlipDetail($idOrderSlip = false, $idOrderDetail = false)
     {
@@ -200,11 +194,9 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductSlipDetail($idOrderDetail)
     {
@@ -225,8 +217,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSlipsIdByDate($dateFrom, $dateTo)
     {
@@ -253,7 +243,7 @@ class OrderSlipCore extends ObjectModel
      * @param Order $order
      * @param array $productList
      * @param array $qtyList
-     * @param bool  $shippingCost
+     * @param bool $shippingCost
      *
      * @return bool
      * @throws PrestaShopDatabaseException
@@ -291,8 +281,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function create(Order $order, $productList, $shippingCost = false, $amount = 0, $amountChoosen = false, $addTax = true)
     {
@@ -430,8 +418,6 @@ class OrderSlipCore extends ObjectModel
      * @return array|bool|null|object
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductSlipResume($idOrderDetail)
     {
@@ -453,9 +439,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public static function createPartialOrderSlip($order, $amount, $shippingCostAmount, $orderDetailList)
     {
@@ -487,9 +470,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function addPartialSlipDetail($orderDetailList)
     {
@@ -560,9 +540,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function addSlipDetail($orderDetailList, $productQtyList)
     {
@@ -599,8 +576,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProducts()
     {
@@ -627,8 +602,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEcoTaxTaxesBreakdown()
     {
@@ -660,13 +633,10 @@ class OrderSlipCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function getWsOrderSlipDetails()
     {
@@ -689,9 +659,6 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function setWsOrderSlipDetails($values)
     {
@@ -715,14 +682,12 @@ class OrderSlipCore extends ObjectModel
     }
 
     /**
-     * @param $product
+     * @param array $product
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function addProductOrderSlip($product)
     {
@@ -768,7 +733,6 @@ class OrderSlipCore extends ObjectModel
      * @param bool $withoutTax
      *
      * @return float
-     * @since 1.4.0
      */
     protected static function resolveShippingCost($shippingCost, Order $order, $withoutTax)
     {

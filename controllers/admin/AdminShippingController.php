@@ -31,18 +31,13 @@
 
 /**
  * Class AdminShippingControllerCore
- *
- * @since 1.0.0
  */
 class AdminShippingControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
-    // @codingStandardsIgnoreEnd
-
     /**
      * AdminShippingControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -145,7 +140,8 @@ class AdminShippingControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

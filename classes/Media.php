@@ -33,8 +33,6 @@ use JSMin\JSMin;
 
 /**
  * Class MediaCore
- *
- * @since 1.0.0
  */
 class MediaCore
 {
@@ -43,11 +41,12 @@ class MediaCore
     const FAVICON_72 = 3;
     const FAVICON_114 = 4;
     const FAVICON_144 = 5;
-    /** @since 1.0.2 Browsers update so fast, we have added this one for Android Chrome during a PATCH version */
     const FAVICON_192 = 7;
     const FAVICON_STORE_ICON = 6;
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array[]
+     */
     public static $jquery_ui_dependencies = [
         'ui.core'           => ['fileName' => 'jquery.ui.core.min.js', 'dependencies' => [], 'theme' => true],
         'ui.widget'         => ['fileName' => 'jquery.ui.widget.min.js', 'dependencies' => [], 'theme' => false],
@@ -84,40 +83,46 @@ class MediaCore
         'effects.slide'     => ['fileName' => 'jquery.effects.slide.min.js', 'dependencies' => ['effects.core'], 'theme' => false],
         'effects.transfer'  => ['fileName' => 'jquery.effects.transfer.min.js', 'dependencies' => ['effects.core'], 'theme' => false],
     ];
+
     /**
      * @var string pattern used in replaceByAbsoluteURL
      */
     public static $pattern_callback = '#(url\((?![\'"]?(?:data:|//|https?:))(?:\'|")?)([^\)\'"]*)(?=[\'"]?\))#s';
+
     /**
      * @var string pattern used in packJSinHTML
      */
     public static $pattern_js = '/(<\s*script(?:\s+[^>]*(?:javascript|src)[^>]*)?\s*>)(.*)(<\s*\/script\s*[^>]*>)/Uims';
+
     /**
      * @var array list of javascript definitions
      */
     protected static $js_def = [];
+
     /**
      * @var array list of javascript inline scripts
      */
     protected static $inline_script = [];
+
     /**
      * @var array list of javascript external scripts
      */
     protected static $inline_script_src = [];
+
     /**
      * @var string used for preg_replace_callback parameter (avoid global)
      */
     protected static $current_css_file;
+
+    /**
+     * @var string
+     */
     protected static $pattern_keepinline = 'data-keepinline';
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param string $htmlContent
      *
-     * @return bool|mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return false|string
      */
     public static function minifyHTML($htmlContent)
     {
@@ -144,9 +149,6 @@ class MediaCore
      * @param array $pregMatches
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function minifyHTMLpregCallback($pregMatches)
     {
@@ -167,9 +169,6 @@ class MediaCore
     /**
      * @param string $htmlContent
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function packJSinHTML($htmlContent)
     {
@@ -199,9 +198,6 @@ class MediaCore
 
     /**
      * @return int|null|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBackTrackLimit()
     {
@@ -220,9 +216,6 @@ class MediaCore
      * @param array $pregMatches
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function packJSinHTMLpregCallback($pregMatches)
     {
@@ -242,9 +235,6 @@ class MediaCore
      * @param string $jsContent
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function packJS($jsContent)
     {
@@ -266,8 +256,6 @@ class MediaCore
      * @return bool|string
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function replaceByAbsoluteURL($matches)
     {
@@ -290,13 +278,11 @@ class MediaCore
     /**
      * return jquery path.
      *
-     * @param mixed       $version
+     * @param mixed $version
      * @param string|null $folder
-     * @param bool        $minifier
+     * @param bool $minifier
      *
      * @return false|array
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getJqueryPath($version = null, $folder = null, $minifier = true)
     {
@@ -350,9 +336,6 @@ class MediaCore
      * @param mixed $jsUri
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getJSPath($jsUri)
     {
@@ -360,12 +343,12 @@ class MediaCore
     }
 
     /**
-     * @param int      $type
+     * @param int $type
      * @param int|null $idShop
      *
      * @return string
      *
-     * @since 1.0.2 Introduced to effectively fix the favicon bugs
+     * @throws PrestaShopException
      */
     public static function getFaviconPath($type = self::FAVICON, $idShop = null)
     {
@@ -411,13 +394,10 @@ class MediaCore
     }
 
     /**
-     * @param string      $mediaUri
+     * @param string $mediaUri
      * @param string|null $cssMediaType
      *
-     * @return array|bool|mixed|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return false|string|array
      */
     public static function getMediaPath($mediaUri, $cssMediaType = null)
     {
@@ -452,13 +432,11 @@ class MediaCore
     /**
      * return jqueryUI component path.
      *
-     * @param mixed  $component
+     * @param mixed $component
      * @param string $theme
-     * @param bool   $checkDependencies
+     * @param bool $checkDependencies
      *
      * @return array
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getJqueryUIPath($component, $theme, $checkDependencies)
     {
@@ -468,9 +446,7 @@ class MediaCore
         $urlData = parse_url($folder.$file);
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         $uiTmp = [];
-        // @codingStandardsIgnoreStart
         if (isset(Media::$jquery_ui_dependencies[$component]) && Media::$jquery_ui_dependencies[$component]['theme'] && $checkDependencies) {
-            // @codingStandardsIgnoreEnd
             $themeCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.ui.theme.css');
             $compCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$component.'.css');
             if (!empty($themeCss) || $themeCss) {
@@ -480,14 +456,12 @@ class MediaCore
                 $uiPath['css'] = array_merge($uiPath['css'], $compCss);
             }
         }
-        // @codingStandardsIgnoreStart
         if ($checkDependencies && array_key_exists($component, static::$jquery_ui_dependencies)) {
             foreach (static::$jquery_ui_dependencies[$component]['dependencies'] as $dependency) {
                 $uiTmp[] = Media::getJqueryUIPath($dependency, $theme, false);
                 if (static::$jquery_ui_dependencies[$dependency]['theme']) {
                     $depCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$dependency.'.css');
                 }
-                // @codingStandardsIgnoreEnd
 
                 if (isset($depCss) && (!empty($depCss) || $depCss)) {
                     $uiPath['css'] = array_merge($uiPath['css'], $depCss);
@@ -526,18 +500,15 @@ class MediaCore
     /**
      * addCSS return stylesheet path.
      *
-     * @param mixed  $cssUri
+     * @param string $cssUri
      * @param string $cssMediaType
-     * @param bool   $needRtl
+     * @param bool $needRtl
      *
-     * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     public static function getCSSPath($cssUri, $cssMediaType = 'all', $needRtl = true)
     {
-        // RTL Ready: search and load rtl css file if it's not originally rtl
+        // Search and load rtl css file if it's not originally rtl
         if ($needRtl && Context::getContext()->language->is_rtl) {
             $cssUriRtl = preg_replace('/(^[^.].*)(\.css)$/', '$1_rtl.css', $cssUri);
             $rtlMedia = Media::getMediaPath($cssUriRtl, $cssMediaType);
@@ -546,14 +517,13 @@ class MediaCore
             }
         }
 
-        // End RTL
         return Media::getMediaPath($cssUri, $cssMediaType);
     }
 
     /**
      * return jquery plugin path.
      *
-     * @param mixed       $name
+     * @param mixed $name
      * @param string|null $folder
      *
      * @return array|false
@@ -584,12 +554,10 @@ class MediaCore
     /**
      * return jquery plugin css path if exist.
      *
-     * @param mixed       $name
+     * @param mixed $name
      * @param string|null $folder
      *
-     * @return bool|string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool|array
      */
     public static function getJqueryPluginCSSPath($name, $folder = null)
     {
@@ -618,8 +586,6 @@ class MediaCore
      * @return array processed css_files
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cccCss($cssFiles, $cachePath = null)
     {
@@ -736,19 +702,14 @@ class MediaCore
 
     /**
      * @param string $cssContent
-     * @param bool   $fileuri
-     * @param array  $importUrl
+     * @param bool $fileuri
+     * @param array $importUrl
      *
      * @return bool|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function minifyCSS($cssContent, $fileuri = false, &$importUrl = [])
     {
-        // @codingStandardsIgnoreStart
         Media::$current_css_file = $fileuri;
-        // @codingStandardsIgnoreEnd
 
         if (strlen($cssContent) > 0) {
             $limit = Media::getBackTrackLimit();
@@ -782,14 +743,11 @@ class MediaCore
     /**
      * Splits stylesheets that go beyond the IE limit of 4096 selectors
      *
-     * @param array  $compiledCss
+     * @param array $compiledCss
      * @param string $cachePath
-     * @param bool   $refresh
+     * @param bool $refresh
      *
      * @return array processed css_files
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function ieCssSplitter($compiledCss, $cachePath, $refresh = false)
     {
@@ -804,8 +762,6 @@ class MediaCore
      *
      * @return array processed js_files
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cccJS($jsFiles)
@@ -896,8 +852,6 @@ class MediaCore
      *
      * @return void
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function clearCache()
@@ -922,32 +876,22 @@ class MediaCore
      * Get JS definitions
      *
      * @return array JS definitions
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getJsDef()
     {
-        // @codingStandardsIgnoreStart
         ksort(Media::$js_def);
 
         return Media::$js_def;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Get JS inline script
      *
      * @return array inline script
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInlineScript()
     {
-        // @codingStandardsIgnoreStart
         return Media::$inline_script;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -956,37 +900,27 @@ class MediaCore
      * @param mixed $jsDef
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addJsDef($jsDef)
     {
         if (is_array($jsDef)) {
             foreach ($jsDef as $key => $js) {
-                // @codingStandardsIgnoreStart
                 Media::$js_def[$key] = $js;
-                // @codingStandardsIgnoreEnd
             }
         } elseif ($jsDef) {
-            // @codingStandardsIgnoreStart
             Media::$js_def[] = $jsDef;
-            // @codingStandardsIgnoreEnd
         }
     }
 
     /**
      * Add a new javascript definition from a capture at bottom of page
      *
-     * @param mixed  $params
+     * @param mixed $params
      * @param string $content
      * @param Smarty $smarty
-     * @param bool   $repeat
+     * @param bool $repeat
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addJsDefL($params, $content, $smarty = null, &$repeat = false)
     {
@@ -996,9 +930,7 @@ class MediaCore
             }
 
             foreach ($params as $param) {
-                // @codingStandardsIgnoreStart
                 Media::$js_def[$param] = $content;
-                // @codingStandardsIgnoreEnd
             }
         }
     }
@@ -1006,10 +938,7 @@ class MediaCore
     /**
      * @param string $output
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function deferInlineScripts($output)
     {
@@ -1049,23 +978,17 @@ class MediaCore
                                 if ($version != _PS_JQUERY_VERSION_) {
                                     Context::getContext()->controller->addJquery($version, null, $minifier);
                                 }
-                                // @codingStandardsIgnoreStart
                                 array_push(Media::$inline_script_src, $src);
-                                // @codingStandardsIgnoreEnd
                             }
                         }
                     }
-                    // @codingStandardsIgnoreStart
                     if (!in_array($src, Media::$inline_script_src) && !$script->getAttribute(Media::$pattern_keepinline)) {
-                        // @codingStandardsIgnoreEnd
                         Context::getContext()->controller->addJS($src);
                     }
                 }
             }
         }
-        // @codingStandardsIgnoreStart
         $output = preg_replace_callback(Media::$pattern_js, ['Media', 'deferScript'], $output);
-        // @codingStandardsIgnoreEnd
 
         return $output;
     }
@@ -1077,9 +1000,6 @@ class MediaCore
      * @param array $matches
      *
      * @return bool|string Empty string or original script lines
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deferScript($matches)
     {
@@ -1099,9 +1019,7 @@ class MediaCore
         }
 
         /* This is an inline script, add its content to inline scripts stack then remove it from content */
-        // @codingStandardsIgnoreStart
         if (!empty($inline) && preg_match(Media::$pattern_js, $original) !== false && !preg_match('/'.Media::$pattern_keepinline.'/', $original) && Media::$inline_script[] = $inline) {
-            // @codingStandardsIgnoreEnd
             return '';
         }
         /* This is an external script, if it already belongs to js_files then remove it from content */
@@ -1112,9 +1030,7 @@ class MediaCore
                 $results[1] = $protocolLink.ltrim($results[1], '/');
             }
 
-            // @codingStandardsIgnoreStart
             if (in_array($results[1], Context::getContext()->controller->js_files) || in_array($results[1], Media::$inline_script_src)) {
-                // @codingStandardsIgnoreEnd
                 return '';
             }
         }

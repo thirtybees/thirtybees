@@ -31,16 +31,21 @@
 
 /**
  * Class SearchEngineCore
- *
- * @since 1.0.0
  */
 class SearchEngineCore extends ObjectModel
 {
+    /**
+     * @var string
+     */
     public $server;
+
+    /**
+     * @var string
+     */
     public $getvar;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'search_engine',
@@ -58,8 +63,6 @@ class SearchEngineCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getKeywords($url)
     {

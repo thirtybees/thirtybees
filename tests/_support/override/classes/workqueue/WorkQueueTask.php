@@ -21,8 +21,6 @@ namespace Thirtybees\Core\WorkQueue;
 
 /**
  * Class WorkQueueTask
- *
- * @since 1.3.0
  */
 class WorkQueueTask extends WorkQueueTaskCore
 {

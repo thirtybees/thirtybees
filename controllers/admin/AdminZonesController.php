@@ -31,20 +31,16 @@
 
 /**
  * Class AdminZonesControllerCore
- *
- * @since 1.0.0
  */
 class AdminZonesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $asso_type */
     public $asso_type = 'shop';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminZonesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -87,7 +83,7 @@ class AdminZonesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -105,7 +101,8 @@ class AdminZonesControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -118,7 +115,9 @@ class AdminZonesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {

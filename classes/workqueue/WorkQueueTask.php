@@ -19,7 +19,6 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Exception;
 use ObjectModel;
 use ReflectionClass;
 use PrestaShopDatabaseException;
@@ -30,8 +29,6 @@ use Throwable;
 
 /**
  * Class WorkQueueTaskCore
- *
- * @since 1.3.0
  */
 class WorkQueueTaskCore extends ObjectModel
 {
@@ -41,7 +38,7 @@ class WorkQueueTaskCore extends ObjectModel
     const STATUS_SUCCESS = 'success';
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'workqueue_task',
@@ -183,7 +180,7 @@ class WorkQueueTaskCore extends ObjectModel
     /**
      * WorkQueueTaskCore constructor.
      *
-     * @param int | null $id
+     * @param int|null $id
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -208,7 +205,7 @@ class WorkQueueTaskCore extends ObjectModel
      *
      * This method executes task, handles all exceptions and errors
      *
-     * @returns string
+     * @return string
      */
     public function run()
     {
@@ -241,8 +238,7 @@ class WorkQueueTaskCore extends ObjectModel
 
     /**
      * Executes task, does not handle and task persistence
-     *
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function execute()
     {
@@ -253,7 +249,7 @@ class WorkQueueTaskCore extends ObjectModel
     /**
      * Called when unrecoverable error during execution has been encountered
      *
-     * @param $error
+     * @param array $error
      */
     public function fatalErrorHandler($error)
     {

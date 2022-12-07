@@ -31,14 +31,11 @@
 
 /**
  * Class TagCore
- *
- * @since 1.0.0
  */
 class TagCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'tag',
@@ -58,24 +55,25 @@ class TagCore extends ObjectModel
     public $id_lang;
     /** @var string Name */
     public $name;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_lang' => ['xlink_resource' => 'languages'],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * TagCore constructor.
      *
-     * @param int|null    $id
+     * @param int|null $id
      * @param string|null $name
-     * @param int|null    $idLang
+     * @param int|null $idLang
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0
      */
     public function __construct($id = null, $name = null, $idLang = null)
     {
@@ -104,18 +102,16 @@ class TagCore extends ObjectModel
     /**
      * Add several tags in database and link it to a product
      *
-     * @param int          $idLang    Language id
-     * @param int          $idProduct Product id to link tags with
-     * @param string|array $tagList   List of tags, as array or as a string with comas
-     * @param string       $separator Separator to split a given string inot an array.
+     * @param int $idLang Language id
+     * @param int $idProduct Product id to link tags with
+     * @param string|array $tagList List of tags, as array or as a string with comas
+     * @param string $separator Separator to split a given string inot an array.
      *                                Not needed if $tagList is an array already.
      *
      * @return bool Operation success
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0
      */
     public static function addTags($idLang, $idProduct, $tagList, $separator = ',')
     {
@@ -174,8 +170,6 @@ class TagCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -195,8 +189,6 @@ class TagCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -230,8 +222,6 @@ class TagCore extends ObjectModel
     /**
      * @param array|null $tagList
      *
-     * @since   1.0.0
-     * @version 1.0.0
      * @throws PrestaShopException
      */
     public static function updateTagCount($tagList = null)
@@ -275,10 +265,8 @@ class TagCore extends ObjectModel
      * @param int $idLang
      * @param int $nb
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
-     * @since   1.0.0
-     * @version 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -321,8 +309,6 @@ class TagCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0
      */
     public static function getProductTags($idProduct)
     {
@@ -349,8 +335,6 @@ class TagCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -376,15 +360,13 @@ class TagCore extends ObjectModel
     }
 
     /**
-     * @param bool         $associated
+     * @param bool $associated
      * @param Context|null $context
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0
      */
     public function getProducts($associated = true, Context $context = null)
     {

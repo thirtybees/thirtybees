@@ -23,13 +23,11 @@ use ObjectModel;
 
 /**
  * Class ScheduledTaskExecutionCore
- *
- * @since 1.3.0
  */
 class ScheduledTaskExecutionCore extends ObjectModel
 {
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'scheduled_task_execution',

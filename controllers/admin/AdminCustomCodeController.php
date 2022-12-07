@@ -4,15 +4,12 @@
  * Class AdminCustomCodeControllerCore
  *
  * Used to add custom meta, js and css to the front office
- *
- * @since 1.0.0
  */
 class AdminCustomCodeControllerCore extends AdminController
 {
     /**
      * AdminCustomCodeControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()

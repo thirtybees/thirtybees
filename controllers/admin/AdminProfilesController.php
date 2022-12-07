@@ -31,15 +31,13 @@
 
 /**
  * Class AdminProfilesControllerCore
- *
- * @since 1.0.0
  */
 class AdminProfilesControllerCore extends AdminController
 {
     /**
      * AdminProfilesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -103,8 +101,6 @@ class AdminProfilesControllerCore extends AdminController
      * Post processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -128,7 +124,7 @@ class AdminProfilesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {

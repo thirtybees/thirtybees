@@ -23,8 +23,6 @@ use Thirtybees\Core\Error\ErrorDescription;
 
 /**
  * Class JSendErrorResponse
- *
- * @since 1.4.0
  */
 class CliErrorResponseCore extends AbstractErrorPage
 {

@@ -31,8 +31,6 @@
 
 /**
  * Class UrlRewrite
- *
- * @since 1.0.0
  */
 class UrlRewriteCore extends Objectmodel
 {
@@ -51,9 +49,8 @@ class UrlRewriteCore extends Objectmodel
 
     const MAX_CATEGORY_DEPTH = 10;
 
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [];
     /** @var int $entity */
@@ -64,14 +61,13 @@ class UrlRewriteCore extends Objectmodel
     public $rewrite;
     /** @var int $redirect */
     public $redirect;
-    // @codingStandardsIgnoreEnd
 
     /**
      * UrlRewriteCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
-     * @param null $idShop
+     * @param int|null $id
+     * @param int|null $idLang
+     * @param int|null $idShop
      *
      * @deprecated 1.0.1
      */
@@ -81,9 +77,9 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param null     $idLang
+     * @param int|null $idLang
      * @param int|null $idShop
-     * @param array    $entities
+     * @param array $entities
      *
      * @return void
      * @deprecated 1.0.1
@@ -105,7 +101,7 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param int      $entityType
+     * @param int $entityType
      * @param int|null $idEntity
      * @param int|null $idLang
      * @param int|null $idShop
@@ -120,7 +116,7 @@ class UrlRewriteCore extends Objectmodel
 
     /**
      * @param string $route
-     * @param array  $params
+     * @param array $params
      *
      * @return void
      * @deprecated 1.0.1
@@ -133,9 +129,9 @@ class UrlRewriteCore extends Objectmodel
     /**
      * Delete URL rewrites
      *
-     * @param int      $entityType
-     * @param int      $idLang
-     * @param int      $idShop
+     * @param int $entityType
+     * @param int $idLang
+     * @param int $idShop
      * @param int|null $idEntity
      *
      * @return void
@@ -147,8 +143,8 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param int      $entityType
-     * @param int      $idEntity
+     * @param int $entityType
+     * @param int $idEntity
      * @param int|null $idLang
      * @param int|null $idShop
      *
@@ -161,14 +157,13 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param string   $rewrite
-     * @param int      $idLang
-     * @param int      $idShop
+     * @param string $rewrite
+     * @param int $idLang
+     * @param int $idShop
      * @param int|null $redirect
      * @param int|null $entityType
      *
      * @return void
-     * @since 1.0.0
      */
     public static function lookup($rewrite, $idLang, $idShop, $redirect = null, $entityType = null)
     {
@@ -176,14 +171,13 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param int      $idEntity
-     * @param int      $entityType
-     * @param int      $idLang
-     * @param int      $idShop
+     * @param int $idEntity
+     * @param int $entityType
+     * @param int $idLang
+     * @param int $idShop
      * @param int|null $redirect
      *
      * @return void
-     * @since 1.0.0
      */
     public static function reverseLookup($idEntity, $entityType, $idLang, $idShop, $redirect = null)
     {
@@ -215,10 +209,10 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param int      $idLang
-     * @param int      $idShop
-     * @param array    $categories
-     * @param array    $newRoutes
+     * @param int $idLang
+     * @param int $idShop
+     * @param array $categories
+     * @param array $newRoutes
      * @param int|null $idEntity
      *
      * @return void
@@ -230,11 +224,11 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * @param int   $idLang
-     * @param int   $idShop
+     * @param int $idLang
+     * @param int $idShop
      * @param array $categories
      * @param array $newRoutes
-     * @param int|null  $idEntity
+     * @param int|null $idEntity
      *
      * @return void
      * @deprecated 1.0.1
@@ -301,8 +295,8 @@ class UrlRewriteCore extends Objectmodel
     /**
      * Fills the routes array with the current available routes
      *
-     * @param int   $idLang
-     * @param int   $idShop
+     * @param int $idLang
+     * @param int $idShop
      * @param array $routes
      *
      * @return void
@@ -316,7 +310,7 @@ class UrlRewriteCore extends Objectmodel
     /**
      * Check if a keyword is written in a route rule
      *
-     * @param        $rule
+     * @param array $rule
      * @param string $keyword
      *
      * @return void
@@ -327,14 +321,19 @@ class UrlRewriteCore extends Objectmodel
         Tools::displayAsDeprecated('UrlRewrite class has been removed');
     }
 
+    /**
+     * @param int $idLang
+     * @param int $idShop
+     * @return void
+     */
     protected static function generatePageUrlRewrites($idLang, $idShop)
     {
         Tools::displayAsDeprecated('UrlRewrite class has been removed');
     }
 
     /**
-     * @param int      $idLang
-     * @param int      $idShop
+     * @param int $idLang
+     * @param int $idShop
      * @param int|null $idProduct
      *
      * @return void

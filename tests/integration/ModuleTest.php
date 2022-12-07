@@ -3,6 +3,11 @@
 
 class ModuleTest extends \Codeception\Test\Unit
 {
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function _before()
     {
         parent::setUpBeforeClass();
@@ -15,6 +20,9 @@ class ModuleTest extends \Codeception\Test\Unit
         Context::getContext()->employee = $employee;
     }
 
+    /**
+     * @return array
+     */
     public function listModulesOnDisk()
     {
         $modules = array();
@@ -32,6 +40,11 @@ class ModuleTest extends \Codeception\Test\Unit
     /**
      * @dataProvider listModulesOnDisk
      * @group slow
+     *
+     * @param string $moduleName
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function testInstallationAndUninstallation($moduleName)
     {
@@ -46,24 +59,45 @@ class ModuleTest extends \Codeception\Test\Unit
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function testValidModuleNameIsEnabled()
     {
         $this->assertTrue(Module::isEnabled("coreupdater"));
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function testValidModuleNameGetModuleId() {
         $this->assertTrue(!!Module::getModuleIdByName("coreupdater"));
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function testBackwardCompatibilityModuleNameIsEnabled()
     {
         $this->assertTrue(Module::isEnabled("CoreUpdater"));
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function testBackwardCompatibilityModuleNameGetModuleId() {
         $this->assertTrue(!!Module::getModuleIdByName("CoreUpdater"));
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function testMultipleInstantiation() {
         $this->assertTrue(!!Module::getInstanceByName("coreupdater"));
         $this->assertTrue(!!Module::getInstanceByName("CoreUpdater"));

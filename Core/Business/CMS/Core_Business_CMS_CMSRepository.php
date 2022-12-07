@@ -31,14 +31,9 @@
 
 /**
  * Class Core_Business_CMS_CMSRepository
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Business_CMS_CMSRepository extends Core_Foundation_Database_EntityRepository
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * Return all CMSRepositories depending on $id_lang/$id_shop tuple
      *
@@ -46,9 +41,6 @@ class Core_Business_CMS_CMSRepository extends Core_Foundation_Database_EntityRep
      * @param int $idShop
      *
      * @return array|null
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function i10nFindAll($idLang, $idShop)
     {
@@ -73,9 +65,6 @@ class Core_Business_CMS_CMSRepository extends Core_Foundation_Database_EntityRep
      *
      * @return CMS|null
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0
      */
     public function i10nFindOneById($idCms, $idLang, $idShop)
     {
@@ -96,9 +85,6 @@ class Core_Business_CMS_CMSRepository extends Core_Foundation_Database_EntityRep
      * Return CMSRepository lang associative table name
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getLanguageTableNameWithPrefix()
     {

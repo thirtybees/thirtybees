@@ -31,12 +31,9 @@
 
 /**
  * Class SupplyOrderStateCore
- *
- * @since 1.0.0
  */
 class SupplyOrderStateCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var string Name of the state
      */
@@ -71,10 +68,9 @@ class SupplyOrderStateCore extends ObjectModel
      * @var string Color used to display the state in the specified color (Ex. #FFFF00)
      */
     public $color;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'supply_order_state',
@@ -92,7 +88,7 @@ class SupplyOrderStateCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_states',
@@ -104,14 +100,12 @@ class SupplyOrderStateCore extends ObjectModel
      * Gets the list of supply order statuses
      *
      * @param int $idStateReferrer Optional, used to know what state is available after this one
-     * @param int $idLang          Optional Id Language
+     * @param int $idLang Optional Id Language
      *
      * @return array States
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSupplyOrderStates($idStateReferrer = null, $idLang = null)
     {
@@ -161,15 +155,13 @@ class SupplyOrderStateCore extends ObjectModel
     /**
      * Gets the list of supply order statuses
      *
-     * @param array $ids    Optional Do not include these ids in the result
-     * @param int   $idLang Optional
+     * @param array $ids Optional Do not include these ids in the result
+     * @param int $idLang Optional
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getStates($ids = null, $idLang = null)
     {

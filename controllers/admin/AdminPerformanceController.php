@@ -34,8 +34,6 @@ use Defuse\Crypto\Key;
 
 /**
  * Class AdminPerformanceControllerCore
- *
- * @since 1.0.0
  */
 class AdminPerformanceControllerCore extends AdminController
 {
@@ -45,8 +43,6 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * AdminPerformanceControllerCore constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct()
@@ -57,8 +53,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -84,8 +78,7 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -103,8 +96,6 @@ class AdminPerformanceControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderForm()
     {
@@ -129,8 +120,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initFieldsetSmarty()
@@ -239,8 +228,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initFieldsetDebugMode()
@@ -365,8 +352,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initFieldsetFeaturesDetachables()
@@ -454,8 +439,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initFieldsetCCC()
@@ -590,8 +573,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initFieldsetMediaServer()
@@ -637,8 +618,7 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function initFieldsetCiphering()
     {
@@ -681,7 +661,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initFieldsetCaching()
@@ -785,7 +764,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initFieldsetFullPageCache()
@@ -895,8 +873,6 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function postProcess()
@@ -1275,8 +1251,8 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
-     * @param $fileList
-     * @param $idShop
+     * @param string[] $fileList
+     * @param int $idShop
      *
      * @return string
      * @throws PrestaShopDatabaseException
@@ -1434,7 +1410,6 @@ class AdminPerformanceControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function displayAjaxTestMemcachedServer()
     {
@@ -1475,7 +1450,7 @@ class AdminPerformanceControllerCore extends AdminController
      * Perform a short test to see if Redis is enabled
      * and return the result through ajax
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayAjaxTestRedisServer()
     {

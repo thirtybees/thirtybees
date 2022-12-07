@@ -31,12 +31,12 @@
 
 /**
  * Class StockMvtCore
- *
- * @since 1.0.0
  */
 class StockMvtCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int|null Object ID
+     */
     public $id;
 
     /**
@@ -50,25 +50,21 @@ class StockMvtCore extends ObjectModel
     public $id_employee;
 
     /**
-     * @since 1.5.0
      * @var string The first name of the employee responsible of the movement
      */
     public $employee_firstname;
 
     /**
-     * @since 1.5.0
      * @var string The last name of the employee responsible of the movement
      */
     public $employee_lastname;
 
     /**
-     * @since 1.5.0
      * @var int The stock id on wtich the movement is applied
      */
     public $id_stock;
 
     /**
-     * @since 1.5.0
      * @var int the quantity of product with is moved
      */
     public $physical_quantity;
@@ -84,37 +80,31 @@ class StockMvtCore extends ObjectModel
     public $id_order = null;
 
     /**
-     * @since 1.5.0
      * @var int detrmine if the movement is a positive or negative operation
      */
     public $sign;
 
     /**
-     * @since 1.5.0
      * @var int Used when the movement is due to a supplier order
      */
     public $id_supply_order = null;
 
     /**
-     * @since 1.5.0
      * @var float Last value of the weighted-average method
      */
     public $last_wa = null;
 
     /**
-     * @since 1.5.0
      * @var float Current value of the weighted-average method
      */
     public $current_wa = null;
 
     /**
-     * @since 1.5.0
      * @var float The unit price without tax of the product associated to the movement
      */
     public $price_te;
 
     /**
-     * @since 1.5.0
      * @var int Refers to an other id_stock_mvt : used for LIFO/FIFO implementation in StockManager
      */
     public $referer;
@@ -126,15 +116,14 @@ class StockMvtCore extends ObjectModel
     public $date_upd;
 
     /**
-     * @deprecated since 1.5.0
-     * @see        physical_quantity
      * @var int
+     *
+     * @deprecated since 1.5.0
      */
     public $quantity;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'stock_mvt',
@@ -164,6 +153,9 @@ class StockMvtCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'stock_movements',
         'objectNodeName'  => 'stock_movement',
@@ -196,12 +188,12 @@ class StockMvtCore extends ObjectModel
      * @param int $idProduct
      * @param int $idProductAttribute Use 0 if the product does not have attributes
      * @param int $quantity
-     * @param int $idWarehouse        Optional
+     * @param int|null $idWarehouse Optional
      *
      * @return array mvts
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getNegativeStockMvts($idOrder, $idProduct, $idProductAttribute, $quantity, $idWarehouse = null)
     {
@@ -250,8 +242,6 @@ class StockMvtCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getLastPositiveStockMvt($idProduct, $idProductAttribute)
     {

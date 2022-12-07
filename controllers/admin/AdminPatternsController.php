@@ -31,20 +31,16 @@
 
 /**
  * Class AdminPatternsControllerCore
- *
- * @since 1.00.
  */
 class AdminPatternsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $name */
     public $name = 'patterns';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminPatternsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -58,7 +54,6 @@ class AdminPatternsControllerCore extends AdminController
      * @param bool $disable
      *
      * @return true
-     * @since 1.0.0
      */
     public function viewAccess($disable = false)
     {
@@ -70,7 +65,7 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -83,7 +78,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderListModel()
     {
@@ -112,7 +109,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -133,7 +132,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -519,7 +520,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -537,7 +540,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderListSimpleHeader()
     {
@@ -609,7 +614,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderListSmallColumns()
     {
@@ -721,7 +728,8 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderListWithParentClass()
     {
@@ -759,7 +767,9 @@ class AdminPatternsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {

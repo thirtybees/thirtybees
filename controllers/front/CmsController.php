@@ -31,29 +31,43 @@
 
 /**
  * Class CmsControllerCore
- *
- * @since 1.0.0
  */
 class CmsControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
-    /** @var string $php_self */
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'cms';
+
+    /**
+     * @var int
+     */
     public $assignCase;
-    /** @var CMS $cms */
+
+    /**
+     * @var CMS $cms
+     */
     public $cms;
-    /** @var CMSCategory */
+
+    /**
+     * @var CMSCategory
+     */
+
     public $cms_category;
-    /** @var bool $ssl */
+
+    /**
+     * @var bool $ssl
+     */
     public $ssl = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize CMS controller
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function init()
     {
@@ -95,7 +109,7 @@ class CmsControllerCore extends FrontController
      *
      * @param string $canonicalUrl
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function canonicalRedirection($canonicalUrl = '')
     {
@@ -109,6 +123,10 @@ class CmsControllerCore extends FrontController
         }
     }
 
+    /**
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -123,6 +141,8 @@ class CmsControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      * @see FrontController::initContent()
      */
     public function initContent()

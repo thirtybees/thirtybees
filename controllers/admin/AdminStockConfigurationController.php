@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStockConfigurationControllerCore
- *
- * @since 1.0.0
  */
 class AdminStockConfigurationControllerCore extends AdminController
 {
     /**
      * AdminStockConfigurationControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -151,7 +149,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -172,11 +170,12 @@ class AdminStockConfigurationControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderForm()
      */
     public function renderForm()
     {
@@ -396,11 +395,11 @@ class AdminStockConfigurationControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -449,11 +448,11 @@ class AdminStockConfigurationControllerCore extends AdminController
 
     /**
      * Help function for AdminStockConfigurationController::renderList()
-     * @see AdminStockConfigurationController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminStockConfigurationController::renderList()
      */
     public function initSupplyOrderStatusList()
     {
@@ -535,8 +534,6 @@ class AdminStockConfigurationControllerCore extends AdminController
      * @see AdminController::postProcess()
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -567,18 +564,16 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -605,7 +600,8 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -623,7 +619,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -638,7 +634,8 @@ class AdminStockConfigurationControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessEditableSupplyOrderState()
     {
@@ -659,7 +656,8 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeliveryNoteSupplyOrderState()
     {
@@ -680,7 +678,8 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessPendingReceiptSupplyOrderState()
     {
@@ -701,7 +700,8 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessReceiptStateSupplyOrderState()
     {
@@ -722,7 +722,8 @@ class AdminStockConfigurationControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessEnclosedSupplyOrderState()
     {

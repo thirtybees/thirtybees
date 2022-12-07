@@ -31,12 +31,12 @@
 
 /**
  * Class PrestaShopLoggerCore
- *
- * @since 1.0.0
  */
 class PrestaShopLoggerCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected static $is_present = [];
     /** @var int Log id */
     public $id_log;
@@ -58,10 +58,9 @@ class PrestaShopLoggerCore extends ObjectModel
     public $date_upd;
     /** @var string hash code for this log object */
     protected $hash;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'log',
@@ -82,19 +81,17 @@ class PrestaShopLoggerCore extends ObjectModel
      * add a log item to the database and send a mail if configured for this $severity
      *
      * @param string $message the log message
-     * @param int    $severity
-     * @param int    $errorCode
+     * @param int $severity
+     * @param int $errorCode
      * @param string $objectType
-     * @param int    $objectId
-     * @param bool   $allowDuplicate if set to true, can log several time the same information (not recommended)
-     * @param int    $idEmployee
+     * @param int $objectId
+     * @param bool $allowDuplicate if set to true, can log several time the same information (not recommended)
+     * @param int $idEmployee
      *
      * @return bool true if succeed
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addLog($message, $severity = 1, $errorCode = null, $objectType = null, $objectId = null, $allowDuplicate = false, $idEmployee = null)
     {
@@ -139,8 +136,6 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @param PrestaShopLoggerCore $log
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function sendByMail($log)
@@ -161,8 +156,6 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @return true if exists
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function _isPresent()
@@ -189,9 +182,6 @@ class PrestaShopLoggerCore extends ObjectModel
      * Calculates hash key for current log entry
      *
      * @return string hash
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHash()
     {
@@ -211,8 +201,6 @@ class PrestaShopLoggerCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function eraseAllLogs()
@@ -224,7 +212,6 @@ class PrestaShopLoggerCore extends ObjectModel
      * This function is called when empty message is passed to Logger::addLog(). In that case thirtybees will log
      * information about the caller
      *
-     * @since 1.1.0
      * @return string
      */
     protected static function getEmptyMessageText()

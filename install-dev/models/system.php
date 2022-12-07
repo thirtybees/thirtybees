@@ -31,15 +31,11 @@
 
 /**
  * Class InstallModelSystem
- *
- * @since 1.0.0
  */
 class InstallModelSystem extends InstallAbstractModel
 {
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function checkRequiredTests()
     {
@@ -48,8 +44,6 @@ class InstallModelSystem extends InstallAbstractModel
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function checkOptionalTests()
     {
@@ -60,8 +54,6 @@ class InstallModelSystem extends InstallAbstractModel
      * @param array $list
      *
      * @return array
-     *
-     * @since 1.0.0 Removed $type parameter
      */
     public function checkTests($list)
     {

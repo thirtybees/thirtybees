@@ -19,13 +19,11 @@
 
 /**
  * Class OrderDetailPackCore
- *
- * @since 1.4.0
  */
 class OrderDetailPackCore extends ObjectModel
 {
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_detail_pack',

@@ -34,6 +34,9 @@
  */
 class AdminGendersControllerCore extends AdminController
 {
+    /**
+     * @throws PrestaShopException
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -100,6 +103,10 @@ class AdminGendersControllerCore extends AdminController
         parent::__construct();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
@@ -113,6 +120,12 @@ class AdminGendersControllerCore extends AdminController
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @return string|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         $this->fields_form = [
@@ -195,11 +208,22 @@ class AdminGendersControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * @param int $value
+     * @param array $tr
+     * @return string
+     */
     public function displayGenderType($value, $tr)
     {
         return $this->fields_list['type']['list'][$value];
     }
 
+    /**
+     * @param int $id
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function postImage($id)
     {
         if (isset($this->fieldImageSettings['name']) && isset($this->fieldImageSettings['dir'])) {
@@ -219,6 +243,9 @@ class AdminGendersControllerCore extends AdminController
         return !count($this->errors) ? true : false;
     }
 
+    /**
+     * @return bool
+     */
     protected function afterImageUpload()
     {
         parent::afterImageUpload();

@@ -128,14 +128,28 @@ echo '			</tbody>
 	</body>
 </html>';
 
+/**
+ * @param string $s
+ * @return string
+ */
 function just_quotes($s)
 {
     return addcslashes($s, '\\\'');
 }
+
+/**
+ * @param string $s
+ * @return string
+ */
 function my_urlencode($s)
 {
     return str_replace('.', '_dot_', urlencode($s));
 }
+
+/**
+ * @param string $s
+ * @return string
+ */
 function my_urldecode($s)
 {
     return str_replace('_dot_', '.', urldecode($s));

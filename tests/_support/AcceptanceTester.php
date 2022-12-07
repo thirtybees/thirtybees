@@ -22,8 +22,9 @@ class AcceptanceTester extends \Codeception\Actor
 
    /**
     * Define custom actions here
+    *
+    * @return void
     */
-
     public function withoutErrors()
     {
         $result = json_decode($this->executeJS('return JSON.stringify(window.phpMessages || [])', 30), true);

@@ -31,8 +31,6 @@
 
 /**
  * Class CacheMemcachedCore
- *
- * @since 1.0.0
  */
 class CacheMemcachedCore extends Cache
 {
@@ -49,8 +47,7 @@ class CacheMemcachedCore extends Cache
     /**
      * CacheMemcachedCore constructor.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -66,8 +63,7 @@ class CacheMemcachedCore extends Cache
     /**
      * CacheMemcachedCore destructor.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function __destruct()
     {
@@ -77,8 +73,7 @@ class CacheMemcachedCore extends Cache
     /**
      * Connect to memcached server
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function connect()
     {
@@ -101,9 +96,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::_set()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -116,9 +108,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::_get()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _get($key)
     {
@@ -131,9 +120,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::_exists()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _exists($key)
     {
@@ -146,9 +132,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::_delete()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _delete($key)
     {
@@ -161,9 +144,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::_writeKeys()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _writeKeys()
     {
@@ -176,9 +156,6 @@ class CacheMemcachedCore extends Cache
 
     /**
      * @see Cache::flush()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function flush()
     {
@@ -193,13 +170,10 @@ class CacheMemcachedCore extends Cache
      * Store a data in cache
      *
      * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int $ttl
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function set($key, $value, $ttl = 0)
     {
@@ -212,9 +186,6 @@ class CacheMemcachedCore extends Cache
      * @param string $key
      *
      * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function get($key)
     {
@@ -227,9 +198,6 @@ class CacheMemcachedCore extends Cache
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function exists($key)
     {
@@ -243,9 +211,6 @@ class CacheMemcachedCore extends Cache
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete($key)
     {
@@ -270,9 +235,6 @@ class CacheMemcachedCore extends Cache
      * Close connection to memcache server
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function close()
     {
@@ -287,13 +249,13 @@ class CacheMemcachedCore extends Cache
      * Add a memcached server
      *
      * @param string $ip
-     * @param int    $port
-     * @param int    $weight
+     * @param int $port
+     * @param int $weight
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addServer($ip, $port, $weight)
     {
@@ -305,8 +267,8 @@ class CacheMemcachedCore extends Cache
      *
      * @return array
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMemcachedServers()
     {
@@ -320,8 +282,8 @@ class CacheMemcachedCore extends Cache
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteServer($id_server)
     {

@@ -31,22 +31,41 @@
 
 /**
  * Class ConnectionsSourceCore
- *
- * @since 1.0.0
  */
 class ConnectionsSourceCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public static $uri_max_size = 255;
-    public $id_connections;
-    public $http_referer;
-    public $request_uri;
-    public $keywords;
-    public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int
+     */
+    public $id_connections;
+
+    /**
+     * @var string
+     */
+    public $http_referer;
+
+    /**
+     * @var string
+     */
+    public $request_uri;
+
+    /**
+     * @var string
+     */
+    public $keywords;
+
+    /**
+     * @var string
+     */
+    public $date_add;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'connections_source',
@@ -73,8 +92,6 @@ class ConnectionsSourceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function logHttpReferer(Cookie $cookie = null)
     {
@@ -135,8 +152,6 @@ class ConnectionsSourceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -151,12 +166,10 @@ class ConnectionsSourceCore extends ObjectModel
     /**
      * @param int $idOrder
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrderSources($idOrder)
     {

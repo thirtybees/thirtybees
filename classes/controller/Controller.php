@@ -35,12 +35,9 @@ use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class ControllerCore
- *
- * @since 1.0.0
  */
 abstract class ControllerCore
 {
-    // @codingStandardsIgnoreStart
     /** @var array List of CSS files */
     public $css_files = [];
 
@@ -73,13 +70,9 @@ abstract class ControllerCore
      * @var string|null Redirect link. If not empty, the user will be redirected after initializing and processing input.
      */
     protected $redirect_after = null;
-    // @codingStandardsIgnoreEnd
 
     /**
      * ControllerCore constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -120,8 +113,6 @@ abstract class ControllerCore
      * @return Controller
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.4.0
      */
     public static function getController($className, $auth = false, $ssl = false)
@@ -139,8 +130,6 @@ abstract class ControllerCore
      * @param string $property Property name
      *
      * @return mixed
-     *
-     * @since 1.0.1
      */
     public function &__get($property)
     {
@@ -160,11 +149,9 @@ abstract class ControllerCore
      * that still access properties via their snake_case names
      *
      * @param string $property
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return void
-     *
-     * @since 1.0.1
      */
     public function __set($property, $value)
     {
@@ -190,8 +177,8 @@ abstract class ControllerCore
     /**
      * Starts the controller process
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
+     * @throws PrestaShopException
      */
     public function run()
     {
@@ -243,8 +230,6 @@ abstract class ControllerCore
     /**
      * Initialize the page
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function init()
@@ -260,82 +245,53 @@ abstract class ControllerCore
 
     /**
      * Check if the controller is available for the current user/visitor
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function checkAccess();
 
     /**
      * Sets default media list for this controller
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     abstract public function setMedia();
 
     /**
      * Do the page treatment: process input, process AJAX, etc.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function postProcess();
 
     /**
      * Redirects to $this->redirect_after after the process if there is no error
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function redirect();
 
     /**
      * Assigns Smarty variables for the page header
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function initHeader();
 
     /**
      * Check if the current user/visitor has valid view permissions
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function viewAccess();
 
     /**
      * Assigns Smarty variables for the page main content
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function initContent();
 
     /**
      * Assigns Smarty variables for the page footer
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function initFooter();
 
     /**
      * Displays page view
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function display();
 
     /**
      * Assigns Smarty variables when access is forbidden
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function initCursedPage();
 
@@ -344,11 +300,8 @@ abstract class ControllerCore
      *
      * @param array|string $content Template file(s) to be rendered
      *
-     * @throws Exception
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function smartyOutputContent($content)
     {
@@ -406,9 +359,6 @@ abstract class ControllerCore
      * Sets page header display
      *
      * @param bool $display
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayHeader($display = true)
     {
@@ -419,9 +369,6 @@ abstract class ControllerCore
      * Sets page header javascript display
      *
      * @param bool $display
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayHeaderJavaScript($display = true)
     {
@@ -432,9 +379,6 @@ abstract class ControllerCore
      * Sets page header display
      *
      * @param bool $display
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayFooter($display = true)
     {
@@ -445,9 +389,6 @@ abstract class ControllerCore
      * Sets template file for page content output
      *
      * @param string $template
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTemplate($template)
     {
@@ -457,8 +398,7 @@ abstract class ControllerCore
     /**
      * Set $this->redirect_after that will be used by redirect() after the process
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function setRedirectAfter($url)
     {
@@ -468,12 +408,9 @@ abstract class ControllerCore
     /**
      * Removes CSS stylesheet(s) from the queued stylesheet list
      *
-     * @param string|array $cssUri       Path to CSS file or an array like: array(array(uri => media_type), ...)
-     * @param string       $cssMediaType
-     * @param bool         $checkPath
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|array $cssUri Path to CSS file or an array like: array(array(uri => media_type), ...)
+     * @param string $cssMediaType
+     * @param bool $checkPath
      */
     public function removeCSS($cssUri, $cssMediaType = 'all', $checkPath = true)
     {
@@ -505,11 +442,8 @@ abstract class ControllerCore
     /**
      * Removes JS file(s) from the queued JS file list
      *
-     * @param string|array $jsUri     Path to JS file or an array like: array(uri, ...)
-     * @param bool         $checkPath
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|array $jsUri Path to JS file or an array like: array(uri, ...)
+     * @param bool $checkPath
      */
     public function removeJS($jsUri, $checkPath = true)
     {
@@ -539,12 +473,9 @@ abstract class ControllerCore
     /**
      * Adds jQuery library file to queued JS file list
      *
-     * @param string|null $version  jQuery library version
-     * @param string|null $folder   jQuery file folder
-     * @param bool        $minifier If set tot true, a minified version will be included.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $version jQuery library version
+     * @param string|null $folder jQuery file folder
+     * @param bool $minifier If set tot true, a minified version will be included.
      */
     public function addJquery($version = null, $folder = null, $minifier = true)
     {
@@ -554,13 +485,10 @@ abstract class ControllerCore
     /**
      * Adds a new JavaScript file(s) to the page header.
      *
-     * @param string|array $jsUri     Path to JS file or an array like: array(uri, ...)
-     * @param bool         $checkPath
+     * @param string|array $jsUri Path to JS file or an array like: array(uri, ...)
+     * @param bool $checkPath
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addJS($jsUri, $checkPath = true)
     {
@@ -576,10 +504,8 @@ abstract class ControllerCore
     /**
      * Adds javascript URI to list of javascript files included in page header
      *
-     * @param string $uri           uri to javascript file
-     * @param boolean $checkPath    if true, system will check if the javascript file exits on filesystem
-     *
-     * @since   1.1.1
+     * @param string $uri uri to javascript file
+     * @param boolean $checkPath if true, system will check if the javascript file exits on filesystem
      */
     public function addJavascriptUri($uri, $checkPath)
     {
@@ -605,11 +531,8 @@ abstract class ControllerCore
      * Adds jQuery UI component(s) to queued JS file list
      *
      * @param string|array $component
-     * @param string       $theme
-     * @param bool         $checkDependencies
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $theme
+     * @param bool $checkDependencies
      */
     public function addJqueryUI($component, $theme = 'base', $checkDependencies = true)
     {
@@ -627,15 +550,12 @@ abstract class ControllerCore
     /**
      * Adds a new stylesheet(s) to the page header.
      *
-     * @param string|array $cssUri       Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
-     * @param string       $cssMediaType
-     * @param int|null     $offset
-     * @param bool         $checkPath
+     * @param string|array $cssUri Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
+     * @param string $cssMediaType
+     * @param int|null $offset
+     * @param bool $checkPath
      *
      * @return true
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addCSS($cssUri, $cssMediaType = 'all', $offset = null, $checkPath = true)
     {
@@ -674,11 +594,8 @@ abstract class ControllerCore
      * Adds jQuery plugin(s) to queued JS file list
      *
      * @param string|array $name
-     * @param string|null  $folder
-     * @param bool         $css
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string|null $folder
+     * @param bool $css
      */
     public function addJqueryPlugin($name, $folder = null, $css = true)
     {
@@ -702,11 +619,7 @@ abstract class ControllerCore
     /**
      * Checks if the controller has been called from XmlHttpRequest (AJAX)
      *
-     * @since   1.5
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isXmlHttpRequest()
     {
@@ -716,14 +629,14 @@ abstract class ControllerCore
     /**
      * Checks if a template is cached
      *
-     * @param string      $template
+     * @param string $template
      * @param string|null $cacheId Cache item ID
      * @param string|null $compileId
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function isCached($template, $cacheId = null, $compileId = null)
     {
@@ -742,8 +655,6 @@ abstract class ControllerCore
      * @param string|null $method
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     protected function ajaxDie($value = null, $controller = null, $method = null)
     {
@@ -794,7 +705,6 @@ abstract class ControllerCore
      * script will be added to the page. This script will trigger ajax post request
      * to TriggerController front controller
      *
-     * @since   1.3.0
      * @throws PrestaShopException
      */
     protected function addSyntheticSchedulerJs()

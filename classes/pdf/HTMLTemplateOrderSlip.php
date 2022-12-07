@@ -31,27 +31,20 @@
 
 /**
  * Class HTMLTemplateOrderSlipCore
- *
- * @since   1.0.0
  */
 class HTMLTemplateOrderSlipCore extends HTMLTemplate
 {
-    // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
 
     /** @var OrderSlipCore $order_slip */
     public $order_slip;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param OrderSlipCore $orderSlip
      * @param Smarty $smarty
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct(OrderSlipCore $orderSlip, Smarty $smarty)
     {
@@ -78,11 +71,8 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @return string HTML header
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {
@@ -101,12 +91,9 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @return string HTML content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
@@ -211,9 +198,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -224,9 +208,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      * Returns the template filename
      *
      * @return string filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFilename()
     {
@@ -238,12 +219,9 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @return String Tax tab html content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxTabContent()
     {
@@ -279,8 +257,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductTaxesBreakdown()
     {
@@ -338,10 +314,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @return array Shipping tax breakdown elements
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
-     * @throws Exception
      */
     public function getShippingTaxesBreakdown()
     {
@@ -378,8 +351,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getTaxBreakdown()
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class AuthControllerCore
- *
- * @since 1.0.0
  */
 class AuthControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $ssl */
     public $ssl = true;
     /** @var string $php_self */
@@ -47,13 +44,14 @@ class AuthControllerCore extends FrontController
     protected $create_account;
     /** @var int $id_country */
     protected $id_country;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize auth controller
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @throws SmartyException
      * @see FrontController::init()
-     *
-     * @since 1.0.0
      */
     public function init()
     {
@@ -70,9 +68,8 @@ class AuthControllerCore extends FrontController
 
     /**
      * Set default medias for this controller
+     * @throws PrestaShopException
      * @see FrontController::setMedia()
-     *
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -93,9 +90,10 @@ class AuthControllerCore extends FrontController
 
     /**
      * Run ajax process
-     * @see FrontController::displayAjax()
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::displayAjax()
      */
     public function displayAjax()
     {
@@ -104,9 +102,10 @@ class AuthControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see FrontController::initContent()
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -200,7 +199,7 @@ class AuthControllerCore extends FrontController
     /**
      * Assign date var to smarty
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function assignDate()
     {
@@ -228,7 +227,7 @@ class AuthControllerCore extends FrontController
     /**
      * Assign countries var to smarty
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function assignCountries()
     {
@@ -251,8 +250,7 @@ class AuthControllerCore extends FrontController
     /**
      * Assign address var to smarty
      *
-     * @since 1.0.0
-     * @since 1.0.6 Consult module VatNumber.
+     * @throws PrestaShopException
      */
     protected function assignAddressFormat()
     {
@@ -296,9 +294,8 @@ class AuthControllerCore extends FrontController
 
     /**
      * Start forms process
+     * @throws PrestaShopException
      * @see FrontController::postProcess()
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -318,7 +315,7 @@ class AuthControllerCore extends FrontController
     /**
      * Process login
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processSubmitLogin()
     {
@@ -408,12 +405,12 @@ class AuthControllerCore extends FrontController
 
     /**
      * Process the newsletter settings and set the customer infos.
+     * At this point, the email has been validated.
      *
      * @param Customer $customer Reference on the customer Object.
      *
-     * @note At this point, the email has been validated.
-     *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processCustomerNewsletter(&$customer)
     {
@@ -441,7 +438,7 @@ class AuthControllerCore extends FrontController
     /**
      * Process submit on an account
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processSubmitAccount()
     {
@@ -770,7 +767,7 @@ class AuthControllerCore extends FrontController
     /**
      * Process submit on a creation
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processSubmitCreate()
     {
@@ -791,7 +788,7 @@ class AuthControllerCore extends FrontController
      * Update context after customer creation
      * @param Customer $customer Created customer
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function updateContext(Customer $customer)
     {
@@ -818,7 +815,7 @@ class AuthControllerCore extends FrontController
      * @param Customer $customer
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function sendConfirmationMail(Customer $customer)
     {

@@ -31,25 +31,24 @@
 
 /**
  * Class TaxManagerFactoryCore
- *
- * @since   1.0.0
  */
 class TaxManagerFactoryCore
 {
+    /**
+     * @var TaxManagerInterface
+     */
     protected static $cache_tax_manager;
 
     /**
      * Returns a tax manager able to handle this address
      *
      * @param Address $address
-     * @param string  $type
+     * @param int $type TaxRulesGroup id
      *
      * @return TaxManagerInterface
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getManager(Address $address, $type)
     {
@@ -70,14 +69,12 @@ class TaxManagerFactoryCore
      * Check for a tax manager able to handle this type of address in the module list
      *
      * @param Address $address
-     * @param string  $type
+     * @param int $type TaxRulesGroup id
      *
      * @return TaxManagerInterface|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function execHookTaxManagerFactory(Address $address, $type)
     {
@@ -106,10 +103,7 @@ class TaxManagerFactoryCore
     /**
      * Create a unique identifier for the address
      *
-     * @param Address
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param Address $address
      * @return string
      */
     protected static function getCacheKey(Address $address)

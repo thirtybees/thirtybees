@@ -31,15 +31,13 @@
 
 /**
  * Class AdminContactsControllerCore
- *
- * @since 1.0.0
  */
 class AdminContactsControllerCore extends AdminController
 {
     /**
      * AdminContactsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -72,7 +70,9 @@ class AdminContactsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -151,7 +151,7 @@ class AdminContactsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -168,14 +168,14 @@ class AdminContactsControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
+     * @param int $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int $start
+     * @param int|null $limit
      * @param bool $idLangShop
      *
-     * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function getList(
         $idLang,
@@ -199,7 +199,8 @@ class AdminContactsControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.4
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getFieldsValue($obj)
     {

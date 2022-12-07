@@ -31,11 +31,12 @@
 
 /**
  * Class CryptBlowfishCore
- *
- * @since 1.0.0
  */
 class CryptBlowfishCore
 {
+    /**
+     * @var int[]
+     */
     public $_P = [
         0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344,
         0xA4093822, 0x299F31D0, 0x082EFA98, 0xEC4E6C89,
@@ -44,6 +45,9 @@ class CryptBlowfishCore
         0x9216D5D9, 0x8979FB1B,
     ];
 
+    /**
+     * @var int[][]
+     */
     public $_S = [
         [
             0xD1310BA6, 0x98DFB5AC, 0x2FFD72DB, 0xD01ADFB7,
@@ -311,10 +315,20 @@ class CryptBlowfishCore
         ],
     ];
 
+    /**
+     * @var string
+     */
     public $_iv = null;
 
+    /**
+     * @var int
+     */
     protected $_unpackMode = PS_UNPACK_NATIVE;
 
+    /**
+     * @param string $key
+     * @param string $iv
+     */
     public function __construct($key, $iv)
     {
         $_iv = $iv;
@@ -362,6 +376,11 @@ class CryptBlowfishCore
         }
     }
 
+    /**
+     * @param mixed $Xl
+     * @param mixed $Xr
+     * @return void
+     */
     public function _encipher(&$Xl, &$Xr)
     {
         for ($i = 0; $i < 16; $i++) {
@@ -376,6 +395,10 @@ class CryptBlowfishCore
         $Xl = $temp ^ $this->_P[17];
     }
 
+    /**
+     * @param string $plainText
+     * @return string
+     */
     public function encrypt($plainText)
     {
         $cipherText = '';
@@ -390,11 +413,19 @@ class CryptBlowfishCore
         return $cipherText;
     }
 
+    /**
+     * @param string $str
+     * @return array
+     */
     public function myUnpackN2($str)
     {
         return ['1' => $this->myUnpackN($str), '2' => $this->myUnpackN(substr($str, 4))];
     }
 
+    /**
+     * @param string $str
+     * @return int
+     */
     public function myUnpackN($str)
     {
         if (pack('L', 0x6162797A) == pack('V', 0x6162797A)) {
@@ -404,6 +435,10 @@ class CryptBlowfishCore
         }
     }
 
+    /**
+     * @param string $cipherText
+     * @return string
+     */
     public function decrypt($cipherText)
     {
         $plainText = '';
@@ -418,6 +453,11 @@ class CryptBlowfishCore
         return $plainText;
     }
 
+    /**
+     * @param mixed $Xl
+     * @param mixed $Xr
+     * @return void
+     */
     public function _decipher(&$Xl, &$Xr)
     {
         for ($i = 17; $i > 1; $i--) {

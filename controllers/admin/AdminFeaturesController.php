@@ -29,12 +29,16 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/**
- * @property Feature | FeatureValue $object
- */
 class AdminFeaturesControllerCore extends AdminController
 {
+    /**
+     * @var bool
+     */
     public $bootstrap = true;
+
+    /**
+     * @var string
+     */
     protected $position_identifier = 'id_feature';
 
     /**
@@ -263,6 +267,10 @@ class AdminFeaturesControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
@@ -477,6 +485,8 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * Change object type to feature value (use when processing a feature value)
+     *
+     * @return void
      */
     protected function setTypeValue()
     {
@@ -576,6 +586,8 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * Change object type to feature (use when processing a feature)
+     *
+     * @return void
      */
     protected function setTypeFeature()
     {
@@ -736,12 +748,12 @@ class AdminFeaturesControllerCore extends AdminController
     /**
      * AdminController::getList() override
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      */

@@ -31,8 +31,6 @@
 
 /**
  * Class AdminSupplyOrdersControllerCore
- *
- * @since 1.0.0
  */
 class AdminSupplyOrdersControllerCore extends AdminController
 {
@@ -44,7 +42,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminSupplyOrdersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -123,9 +121,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminController::init() override
      *
+     * @throws PrestaShopException
      * @see AdminController::init()
-     *
-     * @since 1.0.0
      */
     public function init()
     {
@@ -172,9 +169,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Assigns default actions in toolbar_btn smarty var, if they are not set.
      * uses override to specifically add, modify or remove items
      *
+     * @throws PrestaShopException
      * @see AdminSupplier::initToolbar()
-     *
-     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -214,9 +210,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
+     * @return string|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see AdminController::renderForm()
-     *
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -408,9 +406,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
+     * @return string|void
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see AdminController::renderList()
-     *
-     * @since 1.0.0
      */
     public function renderList()
     {
@@ -551,8 +550,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Gets the current warehouse used
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected function getCurrentWarehouse()
     {
@@ -572,8 +569,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Gets the current filter used
      *
      * @return int status
-     *
-     * @since 1.0.0
      */
     protected function getFilterStatus()
     {
@@ -588,6 +583,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
     /**
      * Exports CSV
+     * @throws PrestaShopException
      */
     protected function renderCSV()
     {
@@ -680,9 +676,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminController::initContent() override
      *
+     * @return false|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see AdminController::initContent()
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -717,7 +715,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initChangeStateContent()
     {
@@ -822,7 +822,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
@@ -853,7 +852,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Inits the content of 'update_receipt' action
      * Called in initContent()
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initUpdateReceiptContent()
     {
@@ -1028,16 +1029,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -1108,7 +1107,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Init the content of change state action
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initUpdateSupplyOrderContent()
     {
@@ -1169,7 +1170,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * AdminController::postProcess() override
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -1435,7 +1436,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Ths method manage associated products to the order when updating it
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function manageOrderProducts()
     {
@@ -1593,7 +1594,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function loadProducts($threshold)
     {
@@ -1688,7 +1688,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Helper function for AdminSupplyOrdersController::postProcess()
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function postProcessUpdateReceipt()
     {
@@ -1825,7 +1825,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Helper function for AdminSupplyOrdersController::postProcess()
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function postProcessCopyFromTemplate()
     {
@@ -1865,11 +1865,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Display state action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayUpdateReceiptLink($token, $id)
     {
@@ -1891,11 +1891,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Display receipt action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayChangestateLink($token, $id)
     {
@@ -1917,11 +1917,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * Display state action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayCreateSupplyOrderLink($token, $id)
     {
@@ -1949,7 +1949,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -2053,7 +2054,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @TODO  - Update this method to retreive the reference, ean13, upc corresponding to a product attribute
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function ajaxProcessSearchProduct()
@@ -2129,10 +2129,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderView()
     {
@@ -2344,7 +2342,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Callback used to display custom content for a given field
      *
-     * @param int    $idSupplyOrder
+     * @param int $idSupplyOrder
      * @param string $tr
      *
      * @return string
@@ -2401,7 +2399,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initProcess()
@@ -2418,7 +2415,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Overrides AdminController::afterAdd()
      *
-     * @see   AdminController::afterAdd()
+     * @see AdminController::afterAdd()
      *
      * @param ObjectModel $object
      *
@@ -2426,7 +2423,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function afterAdd($object)
     {

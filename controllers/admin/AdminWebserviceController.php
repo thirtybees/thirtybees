@@ -31,22 +31,17 @@
 
 /**
  * Class AdminWebserviceControllerCore
- *
- * @since 1.0.0
  */
 class AdminWebserviceControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var array $fields_form */
     public $fields_form = ['webservice form'];
     /** @var bool $toolbar_scroll */
     protected $toolbar_scroll = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminWebserviceControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -132,7 +127,7 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -153,7 +148,6 @@ class AdminWebserviceControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -268,7 +262,6 @@ class AdminWebserviceControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -284,7 +277,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function checkForWarning()
     {
@@ -329,7 +321,6 @@ class AdminWebserviceControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @sinc 1.0.0
      */
     public function renderOptions()
     {
@@ -357,8 +348,6 @@ class AdminWebserviceControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -374,7 +363,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function postProcess()
@@ -396,7 +384,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function processUpdateOptions()
@@ -412,7 +399,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function afterAdd($object)
     {
@@ -427,7 +413,6 @@ class AdminWebserviceControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function afterUpdate($object)
     {

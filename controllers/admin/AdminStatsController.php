@@ -31,8 +31,6 @@
 
 /**
  * Class AdminStatsControllerCore
- *
- * @since 1.0.0
  */
 class AdminStatsControllerCore extends AdminStatsTabController
 {
@@ -43,7 +41,6 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function displayAjaxGetKpi()
     {
@@ -333,12 +330,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * Get visits
      *
-     * @param bool   $unique
+     * @param bool $unique
      * @param string $dateFrom
      * @param string $dateTo
-     * @param bool   $granularity
+     * @param bool $granularity
      *
      * @return array|int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getVisits($unique, $dateFrom, $dateTo, $granularity = false)
     {
@@ -405,11 +404,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @param string $dateFrom
      * @param string $dateTo
-     * @param bool   $granularity
+     * @param bool $granularity
      *
      * @return array|false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getOrders($dateFrom, $dateTo, $granularity = false)
     {
@@ -467,7 +467,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAbandonedCarts($dateFrom, $dateTo)
     {
@@ -486,7 +487,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getInstalledModules()
     {
@@ -503,7 +505,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getDisabledModules()
     {
@@ -521,7 +524,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getModulesToUpdate()
     {
@@ -546,7 +550,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getPercentProductStock()
     {
@@ -566,7 +571,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getPercentProductOutOfStock()
     {
@@ -586,7 +592,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getProductAverageGrossMargin()
     {
@@ -607,7 +614,6 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @return int
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public static function getDisabledCategories()
     {
@@ -625,7 +631,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getDisabledProducts()
     {
@@ -643,7 +650,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getTotalProducts()
     {
@@ -656,12 +664,13 @@ class AdminStatsControllerCore extends AdminStatsTabController
     }
 
     /**
-     * @param $dateFrom
-     * @param $dateTo
+     * @param string $dateFrom
+     * @param string $dateTo
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function get8020SalesCatalog($dateFrom, $dateTo)
     {
@@ -686,7 +695,6 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @return int
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public static function getEmptyCategories()
     {
@@ -716,7 +724,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return array|bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCustomerMainGender()
     {
@@ -744,7 +753,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return float
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAverageCustomerAge()
     {
@@ -764,7 +774,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getPendingMessages()
     {
@@ -779,7 +790,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return float|int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAverageMessageResponseTime($dateFrom, $dateTo)
     {
@@ -815,7 +827,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return float|int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMessagesPerThread($dateFrom, $dateTo)
     {
@@ -849,7 +862,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return array|bool|null|object
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMainCountry($dateFrom, $dateTo)
     {
@@ -875,9 +889,11 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @param string $dateFrom
      * @param string $dateTo
-     * @param bool   $granularity
+     * @param bool $granularity
      *
      * @return array|false|null|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getTotalSales($dateFrom, $dateTo, $granularity = false)
     {
@@ -930,11 +946,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @param string $dateFrom
      * @param string $dateTo
-     * @param bool   $granularity
+     * @param bool $granularity
      *
      * @return array|int|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getExpenses($dateFrom, $dateTo, $granularity = false)
     {
@@ -998,11 +1015,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @param string $dateFrom
      * @param string $dateTo
-     * @param bool   $granularity
+     * @param bool $granularity
      *
      * @return array|false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getPurchases($dateFrom, $dateTo, $granularity = false)
     {
@@ -1051,7 +1069,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getTotalCategories()
     {
@@ -1071,7 +1090,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getBestCategory($dateFrom, $dateTo)
     {
@@ -1100,6 +1120,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
         );
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function setMedia()
     {
         parent::setMedia();

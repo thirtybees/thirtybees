@@ -31,12 +31,9 @@
 
 /**
  * Class OrderCarrierCore
- *
- * @since 1.0.0
  */
 class OrderCarrierCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_order_carrier;
 
@@ -63,10 +60,9 @@ class OrderCarrierCore extends ObjectModel
 
     /** @var string Object creation date */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_carrier',
@@ -91,6 +87,9 @@ class OrderCarrierCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_order'   => ['xlink_resource' => 'orders'  ],

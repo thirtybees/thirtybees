@@ -31,12 +31,9 @@
 
 /**
  * Class HTMLTemplateSupplyOrderFormCore
- *
- * @since 1.0.0
  */
 class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 {
-    // @codingStandardsIgnoreStart
     /** @var SupplyOrder $supply_order */
     public $supply_order;
     /** @var Warehouse $warehouse */
@@ -49,11 +46,10 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     public $context;
     /** @var Currency $currency */
     protected $currency;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param SupplyOrderCore $supplyOrder
-     * @param Smarty          $smarty
+     * @param Smarty $smarty
      *
      * @throws PrestaShopException
      */
@@ -75,13 +71,10 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * @see     HTMLTemplate::getContent()
+     * @see HTMLTemplate::getContent()
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws SmartyException
-     * @throws Exception
      */
     public function getContent()
     {
@@ -121,8 +114,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @return String Logo path
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getLogo()
@@ -140,9 +131,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getBulkFilename()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -151,9 +139,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getFileName()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFilename()
     {
@@ -163,11 +148,9 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     /**
      * Get order taxes summary
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getTaxOrderSummary()
@@ -207,12 +190,9 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * @see     HTMLTemplate::getHeader()
+     * @see HTMLTemplate::getHeader()
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -244,12 +224,10 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * @see     HTMLTemplate::getFooter()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return false|string
      * @throws PrestaShopException
-     * @throws Exception
+     * @throws SmartyException
+     * @see HTMLTemplate::getFooter()
      */
     public function getFooter()
     {
@@ -276,8 +254,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @param array|PrestaShopCollection $collection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function roundSupplyOrderDetails(&$collection)
@@ -320,8 +296,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @param SupplyOrder $supplyOrder
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function roundSupplyOrder(SupplyOrder &$supplyOrder)

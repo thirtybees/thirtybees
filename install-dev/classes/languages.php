@@ -31,21 +31,26 @@
 
 /**
  * Class InstallLanguages
- *
- * @since 1.0.0
  */
 class InstallLanguages
 {
     const DEFAULT_ISO = 'en';
+
+    /**
+     * @var InstallLanguages
+     */
     protected static $instance;
+
     /**
      * @var array List of available languages
      */
     protected $languages;
+
     /**
      * @var string Current language
      */
     protected $language;
+
     /**
      * @var InstallLanguage Default language (english)
      */
@@ -55,8 +60,6 @@ class InstallLanguages
      * InstallLanguages constructor.
      *
      * @throws PrestashopInstallerException
-     *
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -81,8 +84,8 @@ class InstallLanguages
     /**
      * @return InstallLanguages
      *
-     * @since 1.0.0
      * @throws PrestashopInstallerException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public static function getInstance()
     {
@@ -97,8 +100,6 @@ class InstallLanguages
      * Get current language
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function getLanguageIso()
     {
@@ -109,8 +110,6 @@ class InstallLanguages
      * Get list of languages iso supported by installer
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getLanguages()
     {
@@ -123,8 +122,6 @@ class InstallLanguages
      * @param string $str String to translate
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function l($str)
     {
@@ -148,11 +145,9 @@ class InstallLanguages
     /**
      * Get current language
      *
-     * @param null $iso
+     * @param string|null $iso
      *
      * @return InstallLanguage
-     *
-     * @since 1.0.0
      */
     public function getLanguage($iso = null)
     {
@@ -169,8 +164,6 @@ class InstallLanguages
      * @param string $iso Language iso
      *
      * @throws PrestashopInstallerException
-     *
-     * @since 1.0.0
      */
     public function setLanguage($iso)
     {
@@ -182,8 +175,6 @@ class InstallLanguages
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getIsoList()
     {
@@ -193,12 +184,10 @@ class InstallLanguages
     /**
      * Get an information from language (phone, links, etc.)
      *
-     * @param string $key         Information identifier
-     * @param bool   $withDefault
+     * @param string $key Information identifier
+     * @param bool $withDefault
      *
-     * @return null
-     *
-     * @since 1.0.0
+     * @return string|null
      */
     public function getInformation($key, $withDefault = true)
     {
@@ -214,8 +203,6 @@ class InstallLanguages
      * Get list of countries for current language
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getCountries()
     {
@@ -242,8 +229,6 @@ class InstallLanguages
      * Parse HTTP_ACCEPT_LANGUAGE and get first data matching list of available languages
      *
      * @return bool|array
-     *
-     * @since 1.0.0
      */
     public function detectLanguage()
     {
@@ -272,8 +257,6 @@ class InstallLanguages
      * @param InstallLanguage $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected function psUsortLanguages($a, $b)
     {

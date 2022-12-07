@@ -21,7 +21,7 @@ class PrestaShopCollectionTest extends \Codeception\Test\Unit
 
     /**
      * @return array
-     * @throws ReflectionException
+     * @throws PrestaShopException
      */
     public function getAssociations()
     {

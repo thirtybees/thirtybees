@@ -31,30 +31,123 @@
 
 /**
  * Interface ITreeToolbarButtonCore
- *
- * @since 1.0.0
  */
 interface ITreeToolbarButtonCore
 {
+    /**
+     * @return string
+     */
     public function __toString();
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return static
+     */
     public function setAttribute($name, $value);
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function getAttribute($name);
+
+    /**
+     * @param array $value
+     * @return mixed
+     */
     public function setAttributes($value);
+
+    /**
+     * @return array
+     */
     public function getAttributes();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setClass($value);
+
+    /**
+     * @return string
+     */
     public function getClass();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setContext($value);
+
+    /**
+     * @return string
+     */
     public function getContext();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setId($value);
+
+    /**
+     * @return string
+     */
     public function getId();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setLabel($value);
+
+    /**
+     * @return string
+     */
     public function getLabel();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setName($value);
+
+    /**
+     * @return string
+     */
     public function getName();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setTemplate($value);
+
+    /**
+     * @return string
+     */
     public function getTemplate();
+
+    /**
+     * @param string $value
+     * @return static
+     */
     public function setTemplateDirectory($value);
+
+    /**
+     * @return string
+     */
     public function getTemplateDirectory();
+
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function hasAttribute($name);
+
+    /**
+     * @return string
+     */
     public function render();
 }

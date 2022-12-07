@@ -9,6 +9,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
+    /**
+     * @return void
+     */
     public function testSingleSubject()
     {
         $this->emailSubject([
@@ -20,6 +23,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @return void
+     */
     public function testMultipleSubjects()
     {
         $this->emailSubject([
@@ -36,6 +42,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @return void
+     */
     public function testWhitespace()
     {
         $this->emailSubject([
@@ -60,6 +69,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @return void
+     */
     public function testIgnoreLiteralSubjects()
     {
         $this->emailSubject([
@@ -74,6 +86,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @return void
+     */
     public function testIgnoreExpressionsInSubject()
     {
         $this->emailSubject([
@@ -86,6 +101,9 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @return void
+     */
     public function testExpressionAroundSubject()
     {
         $this->emailSubject([
@@ -100,6 +118,12 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    /**
+     * @param array $expected
+     * @param string $content
+     *
+     * @return void
+     */
     private function emailSubject($expected, $content)
     {
         $actual = [];

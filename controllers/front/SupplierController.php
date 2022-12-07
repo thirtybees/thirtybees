@@ -31,24 +31,21 @@
 
 /**
  * Class SupplierControllerCore
- *
- * @since 1.0.0
  */
 class SupplierControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'supplier';
     /** @var Supplier $supplier */
     protected $supplier;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -59,11 +56,12 @@ class SupplierControllerCore extends FrontController
     /**
      * Initialize supplier controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -87,7 +85,7 @@ class SupplierControllerCore extends FrontController
      *
      * @param string $canonicalURL
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function canonicalRedirection($canonicalURL = '')
     {
@@ -102,11 +100,12 @@ class SupplierControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -126,8 +125,6 @@ class SupplierControllerCore extends FrontController
      * Get instance of current supplier
      *
      * @return Supplier
-     *
-     * @since 1.0.0
      */
     public function getSupplier()
     {
@@ -139,7 +136,9 @@ class SupplierControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function assignOne()
     {
@@ -174,7 +173,9 @@ class SupplierControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function assignAll()
     {

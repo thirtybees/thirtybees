@@ -31,14 +31,11 @@
 
 /**
  * Class CMSRoleCore
- *
- * @since 1.0.0
  */
 class CMSRoleCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'cms_role',
@@ -64,9 +61,6 @@ class CMSRoleCore extends ObjectModel
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRepositoryClassName()
     {

@@ -31,20 +31,31 @@
 
 /**
  * Class GroupReductionCore
- *
- * @since 1.0.0
  */
 class GroupReductionCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var float[]
+     */
     protected static $reduction_cache = [];
-    public $id_group;
-    public $id_category;
-    public $reduction;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int
+     */
+    public $id_group;
+
+    /**
+     * @var int
+     */
+    public $id_category;
+
+    /**
+     * @var float
+     */
+    public $reduction;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'group_reduction',
@@ -66,12 +77,10 @@ class GroupReductionCore extends ObjectModel
      * @param int $idGroup
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGroupReductions($idGroup, $idLang)
     {
@@ -89,10 +98,8 @@ class GroupReductionCore extends ObjectModel
      * @param int $idProduct
      * @param int $idGroup
      *
-     * @return int|mixed
+     * @return float
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getValueForProduct($idProduct, $idGroup)
@@ -101,7 +108,6 @@ class GroupReductionCore extends ObjectModel
             return 0;
         }
 
-        // @codingStandardsIgnoreStart
         if (!isset(static::$reduction_cache[$idProduct.'-'.$idGroup])) {
             static::$reduction_cache[$idProduct.'-'.$idGroup] = Db::getInstance()->getValue(
                 (new DbQuery())
@@ -114,7 +120,6 @@ class GroupReductionCore extends ObjectModel
 
         // Should return string (decimal in database) and not a float
         return static::$reduction_cache[$idProduct.'-'.$idGroup];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -123,8 +128,6 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function doesExist($idGroup, $idCategory)
@@ -162,12 +165,10 @@ class GroupReductionCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGroupsReductionByCategoryId($idCategory)
     {
@@ -201,7 +202,7 @@ class GroupReductionCore extends ObjectModel
     }
 
     /**
-     * @param int      $idProduct
+     * @param int $idProduct
      * @param int|null $idGroup
      * @param int|null $idCategory
      * @param int|null $reduction
@@ -210,8 +211,6 @@ class GroupReductionCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setProductReduction($idProduct, $idGroup = null, $idCategory = null, $reduction = null)
     {
@@ -240,9 +239,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteProductReduction($idProduct)
     {
@@ -252,12 +250,10 @@ class GroupReductionCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGroupsByCategoryId($idCategory)
     {
@@ -277,8 +273,6 @@ class GroupReductionCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function duplicateReduction($idProductOld, $idProduct)
     {
@@ -315,9 +309,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteCategory($idCategory)
     {
@@ -330,8 +323,6 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -342,14 +333,10 @@ class GroupReductionCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    // @codingStandardsIgnoreStart
     protected function _setCache()
     {
-        // @codingStandardsIgnoreEnd
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('cp.`id_product`')
@@ -380,8 +367,6 @@ class GroupReductionCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -393,13 +378,9 @@ class GroupReductionCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
-    // @codingStandardsIgnoreStart
     protected function _updateCache()
     {
-        // @codingStandardsIgnoreEnd
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('cp.`id_product`')
@@ -429,8 +410,6 @@ class GroupReductionCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -458,14 +437,11 @@ class GroupReductionCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
-    // @codingStandardsIgnoreStart
     protected function _clearCache()
     {
-        // @codingStandardsIgnoreEnd
         return Db::getInstance()->delete('product_group_reduction_cache', '`id_group` = '.(int) $this->id_group);
     }
 }

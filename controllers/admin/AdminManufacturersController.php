@@ -31,22 +31,18 @@
 
 /**
  * Class AdminManufacturersControllerCore
- *
- * @since 1.0.0
  */
 class AdminManufacturersControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $bootstrap */
     public $bootstrap = true;
     /** @var array countries list */
     protected $countries_array = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminManufacturersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -120,7 +116,7 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -134,7 +130,7 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processExport($textDelimiter = '"')
     {
@@ -150,11 +146,11 @@ class AdminManufacturersControllerCore extends AdminController
      * Display editaddresses action link
      *
      * @param string $token the token to add to the link
-     * @param int    $id    the identifier to add to the link
+     * @param int $id the identifier to add to the link
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function displayEditaddressesLink($token, $id)
     {
@@ -177,7 +173,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -217,11 +215,10 @@ class AdminManufacturersControllerCore extends AdminController
     /**
      * AdminController::initToolbar() override
      *
-     * @see AdminController::initToolbar()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see AdminController::initToolbar()
      */
     public function initToolbar()
     {
@@ -264,7 +261,7 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -302,7 +299,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderFormAddress()
     {
@@ -505,7 +504,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -671,7 +672,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -739,7 +742,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -752,7 +757,8 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initListManufacturer()
     {
@@ -780,7 +786,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initListManufacturerAddresses()
     {
@@ -843,7 +851,8 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getAddressFieldsList()
     {
@@ -890,11 +899,10 @@ class AdminManufacturersControllerCore extends AdminController
     /**
      * AdminController::init() override
      *
-     * @see AdminController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see AdminController::init()
      */
     public function init()
     {
@@ -918,7 +926,8 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -937,7 +946,7 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return bool Indicates whether save was successful
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -953,7 +962,8 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @return bool Indicates whether post processing was successful
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterImageUpload()
     {
@@ -1025,8 +1035,6 @@ class AdminManufacturersControllerCore extends AdminController
      * @param ObjectModel $object
      *
      * @return true
-     *
-     * @since 1.0.0
      */
     protected function beforeDelete($object)
     {

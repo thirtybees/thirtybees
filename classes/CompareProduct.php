@@ -31,14 +31,11 @@
 
 /**
  * Class CompareProductCore
- *
- * @since 1.0.0
  */
 class CompareProductCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'compare',
@@ -61,7 +58,6 @@ class CompareProductCore extends ObjectModel
     public $date_add;
     /** @var string $date_upd */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get all compare products of the customer
@@ -72,8 +68,6 @@ class CompareProductCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCompareProducts($idCompare)
     {
@@ -104,9 +98,6 @@ class CompareProductCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function addCompareProduct($idCompare, $idProduct)
@@ -161,8 +152,6 @@ class CompareProductCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function removeCompareProduct($idCompare, $idProduct)
@@ -181,8 +170,6 @@ class CompareProductCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNumberProducts($idCompare)
@@ -202,8 +189,6 @@ class CompareProductCore extends ObjectModel
      *
      * @return void
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cleanCompareProducts($period = null)
@@ -226,8 +211,6 @@ class CompareProductCore extends ObjectModel
      *
      * @return int $id_compare
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdCompareByIdCustomer($idCustomer)

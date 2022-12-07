@@ -31,25 +31,41 @@
 
 /**
  * Class ContactCore
- *
- * @since 1.0.0
  */
 class ContactCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $id;
-    /** @var string Name */
-    public $name;
-    /** @var string e-mail */
-    public $email;
-    /** @var string Detailed description */
-    public $description;
-    public $customer_service;
-    public $position;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var string Name
+     */
+    public $name;
+
+    /**
+     * @var string e-mail
+     */
+    public $email;
+
+    /**
+     * @var string Detailed description
+     */
+    public $description;
+
+    /**
+     * @var int
+     */
+    public $customer_service;
+
+    /**
+     * @var int
+     */
+    public $position;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'contact',
@@ -101,8 +117,6 @@ class ContactCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategoriesContacts()
     {

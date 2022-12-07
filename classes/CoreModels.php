@@ -24,8 +24,6 @@
  * but for which no ObjectModel class exists
  *
  * These metadata are required in order to create database structure based on thirtybees php code only
- *
- * @since 1.1.0
  */
 class CoreModelsCore
 {

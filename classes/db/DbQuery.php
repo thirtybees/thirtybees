@@ -31,8 +31,6 @@
 
 /**
  * SQL query builder
- *
- * @since 1.0.0
  */
 class DbQueryCore
 {
@@ -40,9 +38,6 @@ class DbQueryCore
      * List of data to build the query
      *
      * @var array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected $query = [
         'type'   => 'SELECT',
@@ -61,10 +56,7 @@ class DbQueryCore
      *
      * @param string $type SELECT|DELETE
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function type($type)
     {
@@ -82,10 +74,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to concat to other fields
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function select($fields)
     {
@@ -99,13 +88,13 @@ class DbQueryCore
     /**
      * Sets table for FROM clause
      *
-     * @param string      $table Table name
+     * @param string $table Table name
      * @param string|null $alias Table alias
      *
-     * @return $this
+     * @return static
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function from($table, $alias = null)
     {
@@ -129,10 +118,7 @@ class DbQueryCore
      *
      * @param string $join Complete string
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function join($join)
     {
@@ -146,14 +132,14 @@ class DbQueryCore
     /**
      * Adds a LEFT JOIN clause
      *
-     * @param string      $table Table name (without prefix)
+     * @param string $table Table name (without prefix)
      * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
+     * @param string|null $on ON clause
      *
-     * @return $this
+     * @return static
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -168,14 +154,14 @@ class DbQueryCore
      * Adds an INNER JOIN clause
      * E.g. $this->innerJoin('product p ON ...')
      *
-     * @param string      $table Table name (without prefix)
+     * @param string $table Table name (without prefix)
      * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
+     * @param string|null $on ON clause
      *
-     * @return $this
+     * @return static
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -202,7 +188,7 @@ class DbQueryCore
      * @param string $on primary table ON clause
      * @param string|null $shopOnExtra additional conditions to be included within shop ON clause
      *
-     * @return $this
+     * @return static
      *
      * @throws PrestaShopException
      */
@@ -236,14 +222,14 @@ class DbQueryCore
     /**
      * Adds a LEFT OUTER JOIN clause
      *
-     * @param string      $table Table name (without prefix)
+     * @param string $table Table name (without prefix)
      * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
+     * @param string|null $on ON clause
      *
-     * @return $this
+     * @return static
      *
-     *@since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
@@ -257,13 +243,13 @@ class DbQueryCore
     /**
      * Adds a NATURAL JOIN clause
      *
-     * @param string      $table Table name (without prefix)
+     * @param string $table Table name (without prefix)
      * @param string|null $alias Table alias
      *
-     * @return $this
+     * @return static
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function naturalJoin($table, $alias = null)
     {
@@ -277,14 +263,14 @@ class DbQueryCore
     /**
      * Adds a RIGHT JOIN clause
      *
-     * @param string      $table Table name (without prefix)
+     * @param string $table Table name (without prefix)
      * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
+     * @param string|null $on ON clause
      *
-     * @return $this
+     * @return static
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -300,10 +286,7 @@ class DbQueryCore
      *
      * @param string $restriction
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function where($restriction)
     {
@@ -320,12 +303,10 @@ class DbQueryCore
      * @param string $tableAlias
      * @param mixed $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
 
-     * @return $this
+     * @return static
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.1.1
      */
     public function addCurrentShopRestriction($tableAlias, $share = false)
     {
@@ -337,10 +318,7 @@ class DbQueryCore
      *
      * @param string $restriction
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function having($restriction)
     {
@@ -356,10 +334,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to sort. E.g. $this->order('myField, b.mySecondField DESC')
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function orderBy($fields)
     {
@@ -375,10 +350,7 @@ class DbQueryCore
      *
      * @param string $fields List of fields to group. E.g. $this->group('myField1, myField2')
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function groupBy($fields)
     {
@@ -395,10 +367,7 @@ class DbQueryCore
      * @param int $limit
      * @param int $offset
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function limit($limit, $offset = 0)
     {
@@ -420,9 +389,6 @@ class DbQueryCore
      *
      * @return string
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function build()
     {
@@ -491,9 +457,6 @@ class DbQueryCore
      * Converts object to string
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __toString()
     {

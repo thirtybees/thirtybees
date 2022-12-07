@@ -31,15 +31,13 @@
 
 /**
  * Class AdminEmailsControllerCore
- *
- * @since 1.0.0
  */
 class AdminEmailsControllerCore extends AdminController
 {
     /**
      * AdminEmailsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -250,7 +248,7 @@ class AdminEmailsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -271,7 +269,8 @@ class AdminEmailsControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -285,11 +284,11 @@ class AdminEmailsControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $value
+     * @param bool $value
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsMailPasswd($value)
     {
@@ -305,6 +304,8 @@ class AdminEmailsControllerCore extends AdminController
     /**
      * AdminController::initContent() override
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see AdminController::initContent()
      */
     public function initContent()
@@ -341,7 +342,7 @@ class AdminEmailsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -357,7 +358,7 @@ class AdminEmailsControllerCore extends AdminController
     /**
      * Before options update
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {
@@ -421,7 +422,6 @@ class AdminEmailsControllerCore extends AdminController
      * Ajax process send test mail
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessSendMailTest()
     {
@@ -458,14 +458,14 @@ class AdminEmailsControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
+     * @param int $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int $start
+     * @param int|null $limit
      * @param bool $idLangShop
      *
-     * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function getList(
         $idLang,

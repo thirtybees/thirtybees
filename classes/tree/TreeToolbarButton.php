@@ -36,23 +36,33 @@ abstract class TreeToolbarButtonCore
 {
     const DEFAULT_TEMPLATE_DIRECTORY = 'helpers/tree';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected $_attributes;
+
+    /**
+     * @var Context
+     */
     private $_context;
+
+    /**
+     * @var string
+     */
     protected $_template;
+
+    /**
+     * @var string
+     */
     protected $_template_directory;
-    // @codingStandardsIgnoreEnd
 
     /**
      * TreeToolbarButtonCore constructor.
      *
-     * @param      $label
-     * @param null $id
-     * @param null $name
-     * @param null $class
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $label
+     * @param int|null $id
+     * @param string|null $name
+     * @param string|null $class
      */
     public function __construct($label, $id = null, $name = null, $class = null)
     {
@@ -65,8 +75,8 @@ abstract class TreeToolbarButtonCore
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function __toString()
     {
@@ -74,13 +84,10 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setAttribute($name, $value)
     {
@@ -94,12 +101,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return mixed|null
      */
     public function getAttribute($name)
     {
@@ -107,13 +111,10 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setAttributes($value)
     {
@@ -128,9 +129,6 @@ abstract class TreeToolbarButtonCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAttributes()
     {
@@ -142,12 +140,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return TreeToolbarButtonCore
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setClass($value)
     {
@@ -155,10 +150,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getClass()
     {
@@ -166,12 +158,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param Context $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setContext($value)
     {
@@ -182,9 +171,6 @@ abstract class TreeToolbarButtonCore
 
     /**
      * @return Context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContext()
     {
@@ -196,12 +182,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string|int $value
      *
      * @return TreeToolbarButtonCore
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setId($value)
     {
@@ -209,10 +192,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|int|null
      */
     public function getId()
     {
@@ -220,12 +200,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return TreeToolbarButtonCore
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setLabel($value)
     {
@@ -233,10 +210,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getLabel()
     {
@@ -244,12 +218,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return TreeToolbarButtonCore
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setName($value)
     {
@@ -257,10 +228,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string|null
      */
     public function getName()
     {
@@ -268,12 +236,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplate($value)
     {
@@ -283,10 +248,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getTemplate()
     {
@@ -294,12 +256,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplateDirectory($value)
     {
@@ -310,9 +269,6 @@ abstract class TreeToolbarButtonCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateDirectory()
     {
@@ -324,12 +280,11 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTemplateFile($template)
     {
@@ -371,12 +326,9 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function hasAttribute($name)
     {
@@ -385,10 +337,10 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @return mixed
+     * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function render()
     {
@@ -399,7 +351,7 @@ abstract class TreeToolbarButtonCore
     }
 
     /**
-     * @param $directory
+     * @param string $directory
      *
      * @return string
      *

@@ -31,8 +31,6 @@
 
 /**
  * Class ProductSaleCore
- *
- * @since 1.0.0
  */
 class ProductSaleCore
 {
@@ -41,8 +39,6 @@ class ProductSaleCore
      *
      * @return bool True on success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function fillProductSales()
@@ -60,8 +56,6 @@ class ProductSaleCore
      *
      * @return int number of actives products listed in product_sales
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNbSales()
@@ -79,9 +73,9 @@ class ProductSaleCore
     /**
      * Get required informations on best sales products
      *
-     * @param int         $idLang     Language id
-     * @param int         $pageNumber Start from (optional)
-     * @param int         $nbProducts Number of products to return (optional)
+     * @param int $idLang Language id
+     * @param int $pageNumber Start from (optional)
+     * @param int $nbProducts Number of products to return (optional)
      * @param string|null $orderBy
      * @param string|null $orderWay
      *
@@ -89,8 +83,6 @@ class ProductSaleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBestSales($idLang, $pageNumber = 0, $nbProducts = 10, $orderBy = null, $orderWay = null)
     {
@@ -166,11 +158,13 @@ class ProductSaleCore
     /**
      * Get required informations on best sales products
      *
-     * @param int $idLang     Language id
+     * @param int $idLang Language id
      * @param int $pageNumber Start from (optional)
      * @param int $nbProducts Number of products to return (optional)
-     *
-     * @return array keys : id_product, link_rewrite, name, id_image, legend, sales, ean13, upc, link
+     * @param Context|null $context
+     * @return array|false
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getBestSalesLight($idLang, $pageNumber = 0, $nbProducts = 10, Context $context = null)
     {
@@ -238,8 +232,6 @@ class ProductSaleCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function addProductSale($idProduct, $qty = 1)
@@ -261,8 +253,6 @@ class ProductSaleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function removeProductSale($idProduct, $qty = 1)
     {
@@ -288,8 +278,6 @@ class ProductSaleCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNbrSales($idProduct)
     {

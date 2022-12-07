@@ -31,8 +31,6 @@
 
 /**
  * Class HTMLTemplateCore
- *
- * @since 1.0.0
  */
 abstract class HTMLTemplateCore
 {
@@ -55,7 +53,6 @@ abstract class HTMLTemplateCore
      * Returns the template's HTML header
      *
      * @return string HTML header
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -71,11 +68,8 @@ abstract class HTMLTemplateCore
      *
      * @return string HTML footer
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFooter()
     {
@@ -102,8 +96,6 @@ abstract class HTMLTemplateCore
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getShopAddress()
@@ -121,8 +113,6 @@ abstract class HTMLTemplateCore
     /**
      * Returns the invoice logo
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getLogo()
@@ -143,8 +133,6 @@ abstract class HTMLTemplateCore
     /**
      * Assign common header data to smarty variables
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function assignCommonHeaderData()
@@ -206,9 +194,6 @@ abstract class HTMLTemplateCore
      * Returns the template's HTML content
      *
      * @return string HTML content
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function getContent();
 
@@ -216,9 +201,6 @@ abstract class HTMLTemplateCore
      * Returns the template filename
      *
      * @return string filename
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function getFilename();
 
@@ -226,9 +208,6 @@ abstract class HTMLTemplateCore
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function getBulkFilename();
 
@@ -236,12 +215,9 @@ abstract class HTMLTemplateCore
      * If the template is not present in the theme directory, it will return the default template
      * in _PS_PDF_DIR_ directory
      *
-     * @param $templateName
+     * @param string $templateName
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getTemplate($templateName)
     {
@@ -263,9 +239,6 @@ abstract class HTMLTemplateCore
      * @param string $string
      *
      * @return string translated text
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function l($string)
     {
@@ -273,8 +246,6 @@ abstract class HTMLTemplateCore
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setShopId()
@@ -297,8 +268,6 @@ abstract class HTMLTemplateCore
      * @return string HTML pagination block
      *
      * @throws SmartyException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPagination()
     {

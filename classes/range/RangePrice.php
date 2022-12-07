@@ -31,14 +31,11 @@
 
 /**
  * Class RangePriceCore
- *
- * @since 1.0.0
  */
 class RangePriceCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'range_price',
@@ -60,6 +57,10 @@ class RangePriceCore extends ObjectModel
     public $delimiter1;
     /** @var float $delimiter2 */
     public $delimiter2;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'price_ranges',
         'objectNodeName'  => 'price_range',
@@ -67,7 +68,6 @@ class RangePriceCore extends ObjectModel
             'id_carrier' => ['xlink_resource' => 'carriers'],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get all available price ranges
@@ -78,8 +78,6 @@ class RangePriceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRanges($idCarrier)
     {
@@ -93,15 +91,13 @@ class RangePriceCore extends ObjectModel
     }
 
     /**
-     * @param int      $idCarrier
-     * @param float    $delimiter1
-     * @param float    $delimiter2
+     * @param int $idCarrier
+     * @param float $delimiter1
+     * @param float $delimiter2
      * @param int|null $idReference
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function rangeExist($idCarrier, $delimiter1, $delimiter2, $idReference = null)
@@ -119,15 +115,13 @@ class RangePriceCore extends ObjectModel
     }
 
     /**
-     * @param int      $idCarrier
-     * @param int      $delimiter1
-     * @param int      $delimiter2
+     * @param int $idCarrier
+     * @param int $delimiter1
+     * @param int $delimiter2
      * @param int|null $idRang
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isOverlapping($idCarrier, $delimiter1, $delimiter2, $idRang = null)

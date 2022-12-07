@@ -31,24 +31,21 @@
 
 /**
  * Class ManufacturerControllerCore
- *
- * @since 1.0.0
  */
 class ManufacturerControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'manufacturer';
     /** @var Manufacturer */
     protected $manufacturer;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Set media
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -61,7 +58,9 @@ class ManufacturerControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function init()
     {
@@ -84,7 +83,7 @@ class ManufacturerControllerCore extends FrontController
      *
      * @param string $canonicalURL
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function canonicalRedirection($canonicalURL = '')
     {
@@ -101,7 +100,9 @@ class ManufacturerControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -122,7 +123,9 @@ class ManufacturerControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function assignOne()
     {
@@ -149,7 +152,9 @@ class ManufacturerControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function assignAll()
     {
@@ -181,8 +186,6 @@ class ManufacturerControllerCore extends FrontController
      * Get instance of current manufacturer
      *
      * @return Manufacturer
-     *
-     * @since 1.0.0
      */
     public function getManufacturer()
     {

@@ -22,8 +22,6 @@ namespace Thirtybees\Core\Import;
 
 /**
  * Interface DataSourceInterface
- *
- * @since 1.4.0
  */
 interface DataSourceInterface
 {

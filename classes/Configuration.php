@@ -31,8 +31,6 @@
 
 /**
  * Class ConfigurationCore
- *
- * @since 1.0.0
  */
 class ConfigurationCore extends ObjectModel
 {
@@ -271,9 +269,9 @@ class ConfigurationCore extends ObjectModel
     const SSL_TRUST_STORE_TYPE = 'TB_SSL_TRUST_STORE_TYPE';
     const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
-    // @codingStandardsIgnoreStart
+
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'configuration',
@@ -302,32 +300,58 @@ class ConfigurationCore extends ObjectModel
             ],
         ],
     ];
-    /** @var array Configuration cache */
+
+    /**
+     * @var array Configuration cache
+     */
     protected static $_cache = [];
-    /** @var array Vars types */
+
+    /**
+     * @var array Vars types
+     */
     protected static $types = [];
-    /** @var string Key */
+
+    /**
+     * @var string Key
+     */
     public $name;
+
+    /**
+     * @var int
+     */
     public $id_shop_group;
+
+    /**
+     * @var int
+     */
     public $id_shop;
-    /** @var string Value */
+
+    /**
+     * @var string Value
+     */
     public $value;
-    /** @var string Object creation date */
+
+    /**
+     * @var string Object creation date
+     */
     public $date_add;
-    /** @var string Object last modification date */
+
+    /**
+     * @var string Object last modification date
+     */
     public $date_upd;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'value' => [],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * @return bool|null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function configurationIsLoaded()
     {
@@ -340,9 +364,6 @@ class ConfigurationCore extends ObjectModel
      * WARNING: For testing only. Do NOT rely on this method, it may be removed at any time.
      *
      * @todo    Delegate static calls from Configuration to an instance of a class to be created.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function clearConfigurationCacheForTesting()
     {
@@ -350,14 +371,12 @@ class ConfigurationCore extends ObjectModel
     }
 
     /**
-     * @param string   $key
+     * @param string $key
      * @param int|null $idLang
      *
      * @return string | false
      *
-     * @since   1.0.0
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
      */
     public static function getGlobalValue($key, $idLang = null)
     {
@@ -367,15 +386,13 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value (in one language only)
      *
-     * @param string   $key    Key wanted
-     * @param int      $idLang Language ID
+     * @param string $key Key wanted
+     * @param int $idLang Language ID
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
      * @return string | false Value
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function get($key, $idLang = null, $idShopGroup = null, $idShop = null)
@@ -417,8 +434,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function loadConfiguration()
     {
@@ -432,8 +447,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
      */
     public static function loadConfigurationFromDB($connection)
     {
@@ -475,17 +488,14 @@ class ConfigurationCore extends ObjectModel
      * Check if key exists in configuration
      *
      * @param string $key
-     * @param int    $idLang
-     * @param int    $idShopGroup
-     * @param int    $idShop
+     * @param int $idLang
+     * @param int $idShopGroup
+     * @param int $idShop
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hasKey($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -516,13 +526,11 @@ class ConfigurationCore extends ObjectModel
      * Get a single configuration value (in multiple languages)
      *
      * @param string $key Key wanted
-     * @param int    $idShopGroup
-     * @param int    $idShop
+     * @param int $idShopGroup
+     * @param int $idShop
      *
      * @return array Values in multiple languages
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getInt($key, $idShopGroup = null, $idShop = null)
@@ -538,13 +546,11 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value for all shops
      *
-     * @param string $key    Key wanted
-     * @param int    $idLang
+     * @param string $key Key wanted
+     * @param int $idLang
      *
      * @return array Values for all shops
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getMultiShopValues($key, $idLang = null)
@@ -563,15 +569,12 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopException
      *
-     * @param array $keys        Keys wanted
-     * @param int   $idLang      Language ID
-     * @param int   $idShopGroup
-     * @param int   $idShop
+     * @param array $keys Keys wanted
+     * @param int $idLang Language ID
+     * @param int $idShopGroup
+     * @param int $idShop
      *
      * @return array Values
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMultiple($keys, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -601,13 +604,11 @@ class ConfigurationCore extends ObjectModel
      * This method escapes $values with pSQL().
      *
      * @param string $key
-     * @param mixed  $values
-     * @param bool   $html
+     * @param mixed $values
+     * @param bool $html
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateGlobalValue($key, $values, $html = false)
@@ -618,7 +619,6 @@ class ConfigurationCore extends ObjectModel
     /**
      * Update configuration key and value into database (automatically insert if key does not exist)
      *
-     *
      * @param string $key Key
      * @param mixed $values $values is an array if the configuration is multilingual, a single string else.
      * @param bool $html Specify if html is authorized in value
@@ -627,8 +627,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @return bool Update result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
@@ -659,15 +657,13 @@ class ConfigurationCore extends ObjectModel
      * Values are inserted/updated directly using SQL, because using (Configuration) ObjectModel
      * may not insert values correctly (for example, HTML is escaped, when it should not be).
      *
-     * @param string $key    Key
-     * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
-     * @param int    $idShopGroup
-     * @param int    $idShop
+     * @param string $key Key
+     * @param mixed $values $values is an array if the configuration is multilingual, a single string else.
+     * @param int $idShopGroup
+     * @param int $idShop
      *
      * @return bool Update result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateValueRaw($key, $values, $idShopGroup = null, $idShop = null)
@@ -759,9 +755,6 @@ class ConfigurationCore extends ObjectModel
      * @param int $idShop
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function sqlRestriction($idShopGroup, $idShop)
     {
@@ -778,13 +771,11 @@ class ConfigurationCore extends ObjectModel
      * Return ID a configuration key
      *
      * @param string $key
-     * @param int    $idShopGroup
-     * @param int    $idShop
+     * @param int $idShopGroup
+     * @param int $idShop
      *
      * @return int Configuration key ID
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByName($key, $idShopGroup = null, $idShop = null)
@@ -821,8 +812,6 @@ class ConfigurationCore extends ObjectModel
      * @param int $idShop
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function set($key, $values, $idShopGroup = null, $idShop = null)
     {
@@ -857,8 +846,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @return bool Deletion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
@@ -888,8 +875,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @param string $key
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -923,8 +908,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isOverridenByCurrentContext($key)
@@ -956,8 +939,6 @@ class ConfigurationCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function isLangKey($key)
     {
@@ -970,14 +951,12 @@ class ConfigurationCore extends ObjectModel
      * Check if configuration var is defined in given context
      *
      * @param string $key
-     * @param int    $idLang
-     * @param int    $context
+     * @param int $idLang
+     * @param int $context
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
      */
     public static function hasContext($key, $idLang, $context)
@@ -1004,11 +983,8 @@ class ConfigurationCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::getFieldsLang()
      * @return bool|array Multilingual fields
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFieldsLang()
@@ -1032,8 +1008,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
@@ -1057,7 +1031,6 @@ class ConfigurationCore extends ObjectModel
      * @param string $key
      *
      * @throws PrestaShopException
-     * @since   1.0.8
      */
     protected static function validateKey($key)
     {
@@ -1100,7 +1073,6 @@ class ConfigurationCore extends ObjectModel
      *
      * @return string | boolean
      * @throws PrestaShopException
-     * @since 1.4.0
      */
     public static function getSslTrustStore()
     {

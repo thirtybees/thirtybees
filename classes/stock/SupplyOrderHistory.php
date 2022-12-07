@@ -31,12 +31,9 @@
 
 /**
  * Class SupplyOrderHistoryCore
- *
- * @since 1.0.0
  */
 class SupplyOrderHistoryCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int Supply order Id
      */
@@ -66,10 +63,9 @@ class SupplyOrderHistoryCore extends ObjectModel
      * @var string Date
      */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'supply_order_history',
@@ -92,7 +88,7 @@ class SupplyOrderHistoryCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_histories',

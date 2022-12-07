@@ -33,12 +33,9 @@ use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 /**
  * Class ConnectionCore
- *
- * @since 1.0.0
  */
 class ConnectionCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_guest;
     /** @var int */
@@ -53,10 +50,9 @@ class ConnectionCore extends ObjectModel
     public $id_shop_group;
     /** @var string */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'connections',
@@ -81,14 +77,12 @@ class ConnectionCore extends ObjectModel
 
     /**
      * @param Cookie $cookie
-     * @param bool   $full
+     * @param bool $full
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setPageConnection(Cookie $cookie, $full = true)
     {
@@ -132,12 +126,10 @@ class ConnectionCore extends ObjectModel
     }
 
     /**
-     * @param $cookie
+     * @param Cookie $cookie
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setNewConnection($cookie)
@@ -186,8 +178,6 @@ class ConnectionCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cleanConnectionsPages()
@@ -215,13 +205,11 @@ class ConnectionCore extends ObjectModel
     }
 
     /**
-     * @param $idConnections
-     * @param $idPage
-     * @param $timeStart
-     * @param $time
+     * @param int $idConnections
+     * @param int $idPage
+     * @param string $timeStart
+     * @param int $time
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setPageTime($idConnections, $idPage, $timeStart, $time)
@@ -248,11 +236,8 @@ class ConnectionCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::getFields()
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFields()

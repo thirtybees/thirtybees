@@ -31,12 +31,9 @@
 
 /**
  * Class CustomizationFieldCore
- *
- * @since 1.0.0
  */
 class CustomizationFieldCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_product;
     /** @var int Customization type (0 File, 1 Textfield) (See Product class) */
@@ -45,10 +42,9 @@ class CustomizationFieldCore extends ObjectModel
     public $required;
     /** @var string Label for customized field */
     public $name;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'customization_field',
@@ -70,6 +66,10 @@ class CustomizationFieldCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_product' => [

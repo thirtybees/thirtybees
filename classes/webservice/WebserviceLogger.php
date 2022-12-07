@@ -19,8 +19,6 @@
 
 /**
  * Class WebserviceLoggerCore
- *
- * @since 1.4.0
  */
 class WebserviceLoggerCore
 {
@@ -144,6 +142,8 @@ class WebserviceLoggerCore
 
     /**
      * Returns directory for log files
+     *
+     * @return string
      */
     public static function getDirectory()
     {
@@ -156,6 +156,8 @@ class WebserviceLoggerCore
 
     /**
      * Returns log file
+     *
+     * @return string
      */
     protected function getLogFilename()
     {
@@ -183,8 +185,8 @@ class WebserviceLoggerCore
     /**
      * Formats payload (request, response)
      *
-     * @param $prefix
-     * @param $payload
+     * @param string $prefix
+     * @param string $payload
      * @return string
      */
     protected function formatPayload($prefix, $payload)

@@ -31,8 +31,6 @@
 
 /**
  * Class HelperKpiRowCore
- *
- * @since 1.0.0
  */
 class HelperKpiRowCore extends Helper
 {
@@ -55,10 +53,8 @@ class HelperKpiRowCore extends Helper
     /**
      * @return false|string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function generate()
     {

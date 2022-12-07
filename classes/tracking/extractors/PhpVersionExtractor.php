@@ -23,8 +23,6 @@ use Thirtybees\Core\Tracking\DataExtractor;
 
 /**
  * Class PhpVersionExtractorCore
- *
- * @since 1.3.0
  */
 class PhpVersionExtractorCore extends DataExtractor
 {
@@ -51,7 +49,7 @@ class PhpVersionExtractorCore extends DataExtractor
     /**
      * Extracts value
      *
-     * @return mixed
+     * @return string
      */
     public function extractValue()
     {

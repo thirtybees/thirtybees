@@ -31,14 +31,9 @@
 
 /**
  * Class Adapter_Database
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_Database implements Core_Foundation_Database_DatabaseInterface
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * Perform a SELECT sql statement
      *
@@ -47,9 +42,7 @@ class Adapter_Database implements Core_Foundation_Database_DatabaseInterface
      * @return array|false
      *
      * @throws PrestaShopDatabaseException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function select($sql)
     {
@@ -63,8 +56,8 @@ class Adapter_Database implements Core_Foundation_Database_DatabaseInterface
      *
      * @return string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function escape($unsafeData)
     {

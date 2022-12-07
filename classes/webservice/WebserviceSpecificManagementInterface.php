@@ -31,25 +31,42 @@
 
 /**
  * Interface WebserviceSpecificManagementInterface
- *
- * @since 1.0.0
  */
 interface WebserviceSpecificManagementInterface
 {
+    /**
+     * @param WebserviceOutputBuilderCore $obj
+     * @return static
+     */
     public function setObjectOutput(WebserviceOutputBuilderCore $obj);
+
+    /**
+     * @return WebserviceOutputBuilder
+     */
     public function getObjectOutput();
+
+    /**
+     * @param WebserviceRequestCore $obj
+     * @return static
+     */
     public function setWsObject(WebserviceRequestCore $obj);
+
+    /**
+     * @return WebserviceRequestCore
+     */
     public function getWsObject();
 
+    /**
+     * WebserviceRequestCore
+     * 
+     * @return void
+     */
     public function manage();
 
     /**
      * This must be return an array with specific values as WebserviceRequest expects.
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent();
 }

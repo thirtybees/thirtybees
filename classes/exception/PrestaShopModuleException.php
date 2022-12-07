@@ -31,8 +31,6 @@
 
 /**
  * Class PrestaShopModuleExceptionCore
- *
- * @since 1.0.0
  */
 class PrestaShopModuleExceptionCore extends PrestaShopException
 {

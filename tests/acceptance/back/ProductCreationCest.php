@@ -2,6 +2,11 @@
 
 class ProductCreationCest
 {
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function _before(AcceptanceTester $I)
     {
         $I->resizeWindow(1920, 1080);

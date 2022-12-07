@@ -31,23 +31,18 @@
 
 /**
  * Class Core_Foundation_Database_EntityManager_QueryBuilder
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_Database_EntityManager_QueryBuilder
 {
-    // @codingStandardsIgnoreEnd
-
+    /**
+     * @var Core_Foundation_Database_DatabaseInterface
+     */
     protected $db;
 
     /**
      * Core_Foundation_Database_EntityManager_QueryBuilder constructor.
      *
      * @param Core_Foundation_Database_DatabaseInterface $db
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct(Core_Foundation_Database_DatabaseInterface $db)
     {
@@ -58,9 +53,6 @@ class Core_Foundation_Database_EntityManager_QueryBuilder
      * @param string $value
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function quote($value)
     {
@@ -75,13 +67,10 @@ class Core_Foundation_Database_EntityManager_QueryBuilder
 
     /**
      * @param string $andOrOr
-     * @param array  $conditions
+     * @param array $conditions
      *
      * @return string
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function buildWhereConditions($andOrOr, array $conditions)
     {

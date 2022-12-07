@@ -31,25 +31,29 @@
 
 /**
  * Class FileUploaderCore
- *
- * @since 1.0.0
  */
 class FileUploaderCore
 {
+    /**
+     * @var string[]
+     */
     protected $allowedExtensions = [];
 
-    /** @var QqUploadedFileXhr|QqUploadedFileForm|false */
+    /**
+     * @var QqUploadedFileXhr|QqUploadedFileForm|false
+     */
     protected $file;
+
+    /**
+     * @var int
+     */
     protected $sizeLimit;
 
     /**
      * FileUploaderCore constructor.
      *
-     * @param array $allowedExtensions
-     * @param int   $sizeLimit
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string[] $allowedExtensions
+     * @param int $sizeLimit
      */
     public function __construct(array $allowedExtensions = [], $sizeLimit = 10485760)
     {
@@ -68,12 +72,8 @@ class FileUploaderCore
     }
 
     /**
-     * @param $str
-     *
+     * @param string $str
      * @return int|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function toBytes($str)
     {
@@ -96,8 +96,7 @@ class FileUploaderCore
     /**
      * Returns array('success'=>true) or array('error'=>'error message')
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function handleUpload()
     {
@@ -130,15 +129,13 @@ class FileUploaderCore
 
 /**
  * Class QqUploadedFileForm
- *
- * @since 1.0.0
  */
 class QqUploadedFileForm
 {
     /**
      * Save the file to the specified path
      *
-     * @return bool|array TRUE on success
+     * @return array
      * @throws PrestaShopException
      */
     public function save()
@@ -178,14 +175,12 @@ class QqUploadedFileForm
     }
 
     /**
-     * @param int    $idProduct
-     * @param int    $idImage
+     * @param int $idProduct
+     * @param int $idImage
      * @param string $method
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -219,10 +214,7 @@ class QqUploadedFileForm
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getName()
     {
@@ -230,10 +222,7 @@ class QqUploadedFileForm
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
      */
     public function getSize()
     {
@@ -242,8 +231,6 @@ class QqUploadedFileForm
 }
 /**
  * Handle file uploads via XMLHttpRequest
- *
- * @since 1.0.0
  */
 class QqUploadedFileXhr
 {
@@ -273,8 +260,6 @@ class QqUploadedFileXhr
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function save()
@@ -314,14 +299,12 @@ class QqUploadedFileXhr
     }
 
     /**
-     * @param int    $idProduct
-     * @param int    $idImage
+     * @param int $idProduct
+     * @param int $idImage
      * @param string $method
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -360,10 +343,7 @@ class QqUploadedFileXhr
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getName()
     {
@@ -372,9 +352,6 @@ class QqUploadedFileXhr
 
     /**
      * @return bool|int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSize()
     {

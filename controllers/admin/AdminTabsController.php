@@ -31,20 +31,16 @@
 
 /**
  * Class AdminTabsControllerCore
- *
- * @since 1.0.0
  */
 class AdminTabsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $position_identifier */
     protected $position_identifier = 'id_tab';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminTabsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -106,7 +102,7 @@ class AdminTabsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -132,11 +128,12 @@ class AdminTabsControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderForm()
      */
     public function renderForm()
     {
@@ -229,11 +226,11 @@ class AdminTabsControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -251,8 +248,6 @@ class AdminTabsControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -274,7 +269,8 @@ class AdminTabsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -309,7 +305,8 @@ class AdminTabsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -391,7 +388,8 @@ class AdminTabsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdatePositions()
     {
@@ -429,8 +427,6 @@ class AdminTabsControllerCore extends AdminController
      * After image upload
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function afterImageUpload()
     {

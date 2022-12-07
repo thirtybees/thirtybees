@@ -31,8 +31,6 @@
 
 /**
  * Class AdminStatsTabControllerCore
- *
- * @since 1.0.0
  */
 abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCore
 {
@@ -41,7 +39,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -56,7 +54,9 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -96,7 +96,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -109,7 +109,9 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayMenu()
     {
@@ -161,7 +163,6 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getModules()
     {
@@ -185,6 +186,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * @return string
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function displayCalendar()
@@ -206,16 +208,16 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * Display calendar form
      *
-     * @param array       $translations
-     * @param string      $token
+     * @param array $translations
+     * @param string $token
      * @param string|null $action
-     * @param null        $table
-     * @param null        $identifier
-     * @param null        $id
+     * @param string|null $table
+     * @param string|null $identifier
+     * @param int|null $id
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
     {
@@ -262,7 +264,9 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayStats()
     {
@@ -309,12 +313,10 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * Compare module names
      *
-     * @param $a
-     * @param $b
+     * @param array $a
+     * @param array $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     public function checkModulesNames($a, $b)
     {
@@ -326,7 +328,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -351,7 +354,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDateRange()
     {
@@ -402,7 +406,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessSetDashboardDateRange()
     {
@@ -439,7 +443,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function displayEngines()
     {
@@ -476,8 +481,6 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      * Get date
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     protected function getDate()
     {

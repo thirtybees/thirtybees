@@ -31,17 +31,20 @@
 
 /**
  * Class TaxRulesGroupCore
- *
- * @since 1.0.0
  */
 class TaxRulesGroupCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $name;
 
     /** @var bool active state */
     public $active;
 
+    /**
+     * @var bool
+     */
     public $deleted = 0;
 
     /** @var string Object creation date */
@@ -49,10 +52,9 @@ class TaxRulesGroupCore extends ObjectModel
 
     /** @var string Object last modification date */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'tax_rules_group',
@@ -73,6 +75,9 @@ class TaxRulesGroupCore extends ObjectModel
 
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'tax_rule_groups',
         'objectNodeName'  => 'tax_rule_group',
@@ -80,6 +85,9 @@ class TaxRulesGroupCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array
+     */
     protected static $_taxes = [];
 
     /**
@@ -89,13 +97,12 @@ class TaxRulesGroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
         if (!$this->deleted && $this->isUsed()) {
             $currentTaxRulesGroup = new TaxRulesGroup((int) $this->id);
+            /** @var TaxRulesGroup $newTaxRulesGroup */
             if ((!$newTaxRulesGroup = $currentTaxRulesGroup->duplicateObject()) || !$currentTaxRulesGroup->historize($newTaxRulesGroup)) {
                 return false;
             }
@@ -109,10 +116,9 @@ class TaxRulesGroupCore extends ObjectModel
     /**
      * Save the object with the field deleted to true
      *
+     * @param TaxRulesGroup $taxRulesGroup
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function historize(TaxRulesGroup $taxRulesGroup)
@@ -163,8 +169,6 @@ class TaxRulesGroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getIdTaxRuleGroupFromHistorizedId($idTaxRule)
     {
@@ -189,12 +193,10 @@ class TaxRulesGroupCore extends ObjectModel
     /**
      * @param bool $onlyActive
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTaxRulesGroups($onlyActive = true)
     {
@@ -213,8 +215,6 @@ class TaxRulesGroupCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTaxRulesGroupsForOptions()
     {
@@ -235,14 +235,12 @@ class TaxRulesGroupCore extends ObjectModel
     }
 
     /**
-     * @param $idCountry
+     * @param int $idCountry
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAssociatedTaxRatesByIdCountry($idCountry)
     {
@@ -272,8 +270,6 @@ class TaxRulesGroupCore extends ObjectModel
      *
      * @return int id of the tax rules
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByName($name)
@@ -286,14 +282,12 @@ class TaxRulesGroupCore extends ObjectModel
     }
 
     /**
-     * @param int  $idCountry
-     * @param int  $idState
+     * @param int $idCountry
+     * @param int $idState
      * @param bool $idTaxRule
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasUniqueTaxRuleForCountry($idCountry, $idState, $idTaxRule = false)
@@ -311,8 +305,6 @@ class TaxRulesGroupCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isUsed()

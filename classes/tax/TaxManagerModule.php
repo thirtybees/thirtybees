@@ -31,22 +31,19 @@
 
 /**
  * Class TaxManagerModuleCore
- *
- * @since 1.0.0
  */
 abstract class TaxManagerModuleCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $tax_manager_class;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function install()
     {
@@ -54,13 +51,11 @@ abstract class TaxManagerModuleCore extends Module
     }
 
     /**
-     * @param $args
+     * @param array $args
      *
      * @return bool
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function hookTaxManager($args)
     {

@@ -33,8 +33,6 @@ use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class FeatureCore
- *
- * @since 1.0.0
  */
 class FeatureCore extends ObjectModel implements InitializationCallback
 {
@@ -79,7 +77,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'feature',
@@ -106,6 +104,9 @@ class FeatureCore extends ObjectModel implements InitializationCallback
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'product_features',
         'objectNodeName'  => 'product_feature',
@@ -115,15 +116,13 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     /**
      * Get a feature data for a given id_feature and id_lang
      *
-     * @param int $idLang    Language id
+     * @param int $idLang Language id
      * @param int $idFeature Feature id
      *
      * @return array Array with feature's data
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeature($idLang, $idFeature)
     {
@@ -139,15 +138,13 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     /**
      * Get all features for a given language
      *
-     * @param int  $idLang Language id
+     * @param int $idLang Language id
      * @param bool $withShop
      *
      * @return array Multiple arrays with feature's data
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeatures($idLang, $withShop = true)
     {
@@ -168,8 +165,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return int Number of feature
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function nbFeatures($idLang)
@@ -190,8 +185,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return int
      *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function addFeatureImport($name, $position = false)
@@ -232,8 +225,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return int $position
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getHigherPosition()
@@ -253,8 +244,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -274,8 +263,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return bool|int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
@@ -318,14 +305,12 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
     /**
      * @param array $listIdsProduct
-     * @param int   $idLang
+     * @param int $idLang
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeaturesForComparison($listIdsProduct, $idLang)
     {
@@ -361,8 +346,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -379,8 +362,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteSelection($selection)
     {
@@ -398,8 +379,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
@@ -439,9 +418,6 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      *
      * @return bool $return
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function cleanPositions()
@@ -455,16 +431,14 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     /**
      * Move a feature
      *
-     * @param bool     $way       Up (1)  or Down (0)
-     * @param int      $position
+     * @param bool $way Up (1) or Down (0)
+     * @param int $position
      * @param int|null $idFeature
      *
      * @return bool Update result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position, $idFeature = null)
     {

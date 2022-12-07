@@ -35,10 +35,7 @@
 class StockManagerCore implements StockManagerInterface
 {
     /**
-     * @see     StockManagerInterface::isAvailable()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return bool
      */
     public static function isAvailable()
     {
@@ -63,23 +60,18 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see     StockManagerInterface::addProduct()
-     *
-     * @param int           $idProduct
-     * @param int           $idProductAttribute
-     * @param Warehouse     $warehouse
-     * @param int           $quantity
-     * @param int           $idStockMvtReason
-     * @param float         $priceTe
-     * @param bool          $isUsable
-     * @param int|null      $idSupplyOrder
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param Warehouse $warehouse
+     * @param int $quantity
+     * @param int $idStockMvtReason
+     * @param float $priceTe
+     * @param bool $isUsable
+     * @param int|null $idSupplyOrder
      * @param Employee|null $employee
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addProduct(
         $idProduct,
@@ -223,20 +215,18 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see StockManagerInterface::removeProduct()
-     *
-     * @param int           $idProduct
-     * @param int|null      $idProductAttribute
-     * @param Warehouse     $warehouse
-     * @param int           $quantity
-     * @param int           $idStockMvtReason
-     * @param bool          $isUsable
-     * @param int|null      $idOrder
-     * @param int           $ignorePack
+     * @param int $idProduct
+     * @param int|null $idProductAttribute
+     * @param Warehouse $warehouse
+     * @param int $quantity
+     * @param int $idStockMvtReason
+     * @param bool $isUsable
+     * @param int|null $idOrder
+     * @param int $ignorePack
      * @param Employee|null $employee
-     * @param Stock|null    $stock
+     * @param Stock|null $stock
      *
-     * @return array
+     * @return array|false
      * @throws PrestaShopException
      */
     public function removeProduct(
@@ -544,16 +534,15 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @deprecated
-     * @see getPhysicalProductQuantities
-     *
-     * @param int  $idProduct
-     * @param int  $idProductAttribute
-     * @param null $idsWarehouse
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int|null $idsWarehouse
      * @param bool $usable
      *
      * @return int
      * @throws PrestaShopException
+     *
+     * @deprecated
      */
     public function getProductPhysicalQuantities(
         $idProduct,
@@ -580,14 +569,11 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $productStockCriteria
+     * @param array $productStockCriteria
      *
      * @return int
      *
-     * @throws Exception
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @since 1.0.1 Add `usable` to `$productStockCriteria`
      */
     public function getPhysicalProductQuantities($productStockCriteria)
     {
@@ -602,14 +588,11 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $productStockCriteria
+     * @param array $productStockCriteria
      *
      * @return int
      *
-     * @throws Exception
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getUsableProductQuantities($productStockCriteria)
     {
@@ -627,9 +610,6 @@ class StockManagerCore implements StockManagerInterface
      * @param array $criteria
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function validateProductStockCriteria(array $criteria)
     {
@@ -649,12 +629,9 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $idsWarehouse
+     * @param int $idsWarehouse
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function normalizeWarehouseIds($idsWarehouse)
     {
@@ -672,10 +649,7 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see StockManagerInterface::getProductRealQuantities()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getProductRealQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false)
     {
@@ -785,10 +759,7 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see StockManagerInterface::transferBetweenWarehouses()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function transferBetweenWarehouses(
         $idProduct,
@@ -861,13 +832,10 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see     StockManagerInterface::getProductCoverage()
      * Here, $coverage is a number of days
      *
      * @return int number of days left (-1 if infinite)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getProductCoverage($idProduct, $idProductAttribute, $coverage, $idWarehouse = null)
@@ -920,14 +888,10 @@ class StockManagerCore implements StockManagerInterface
      * Formula : (physicalStock * lastCump + quantityToAdd * unitPrice) / (physicalStock + quantityToAdd)
      *
      * @param Stock|PrestaShopCollection $stock
-     * @param int                        $quantity
-     * @param float                      $priceTe
+     * @param int $quantity
+     * @param float $priceTe
      *
      * @return float Weight Average, rounded to _TB_PRICE_DATABASE_PRECISION_.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     protected function calculateWA(Stock $stock, $quantity, $priceTe)
     {
@@ -941,16 +905,14 @@ class StockManagerCore implements StockManagerInterface
     /**
      * For a given product, retrieves the stock collection
      *
-     * @param int   $idProduct
-     * @param int   $idProductAttribute
-     * @param int   $idWarehouse      Optional
-     * @param int   $priceTaxExcluded Optional
-     * @param Stock $stock            Optional
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int|null $idWarehouse Optional
+     * @param float|null $priceTaxExcluded Optional
+     * @param Stock|null $stock Optional
      *
      * @return PrestaShopCollection Collection of Stock
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getStockCollection(
@@ -979,16 +941,14 @@ class StockManagerCore implements StockManagerInterface
     /**
      * For a given product, retrieves the stock in function of the delivery option
      *
-     * @param int   $idProduct
-     * @param int   $idProductAttribute optional
+     * @param int $idProduct
+     * @param int $idProductAttribute optional
      * @param array $deliveryOption
      *
      * @return int quantity
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getStockByCarrier($idProduct = 0, $idProductAttribute = 0, $deliveryOption = null)
     {
@@ -1041,13 +1001,10 @@ class StockManagerCore implements StockManagerInterface
      * Prevent stock operation whenever product, quantity or warehouse are invalid
      *
      * @param Warehouse $warehouse
-     * @param           $productId
-     * @param           $quantity
+     * @param int $productId
+     * @param int $quantity
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function shouldPreventStockOperation(Warehouse $warehouse, $productId, $quantity)
     {
@@ -1055,12 +1012,10 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $stockMovementReasonId
+     * @param int $stockMovementReasonId
      *
-     * @return mixed
+     * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function ensureStockMovementReasonIsValid($stockMovementReasonId)
@@ -1073,13 +1028,11 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $productId
-     * @param $shouldIgnorePack
+     * @param int $productId
+     * @param bool $shouldIgnorePack
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function shouldHandleStockOperationForProductsPack($productId, $shouldIgnorePack)
@@ -1089,12 +1042,11 @@ class StockManagerCore implements StockManagerInterface
 
     /**
      * @param Warehouse $warehouse
-     * @param           $productId
-     * @param           $productAttributeId
-     * @param           $isUsable
+     * @param int $productId
+     * @param int $productAttributeId
+     * @param bool $isUsable
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function hookCoverageOnProductRemoval(
         Warehouse $warehouse,
@@ -1116,17 +1068,14 @@ class StockManagerCore implements StockManagerInterface
 
     /**
      * @param Warehouse $warehouse
-     * @param int       $productId
-     * @param int       $productAttributeId
-     * @param bool      $shouldHandleUsableQuantity
-     * @param Stock     $stock
+     * @param int $productId
+     * @param int $productAttributeId
+     * @param bool $shouldHandleUsableQuantity
+     * @param Stock|null $stock
      *
      * @return int
      *
-     * @throws Exception
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function computeProductQuantityInStock(
         Warehouse $warehouse,
@@ -1158,13 +1107,10 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $quantity
-     * @param $quantityInStock
+     * @param int $quantity
+     * @param int $quantityInStock
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function ensureProductQuantityRequestedForRemovalIsValid($quantity, $quantityInStock)
     {
@@ -1172,15 +1118,13 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param int       $idProduct
-     * @param int       $idProductAttribute
+     * @param int $idProduct
+     * @param int $idProductAttribute
      * @param Warehouse $warehouse
-     * @param Stock     $stock
+     * @param Stock|null $stock
      *
      * @return PrestaShopCollection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getProductStockLinesInWarehouse(
@@ -1196,12 +1140,9 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $employee
+     * @param Employee|null $employee
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getAttributesOfEmployeeRequestingStockMovement($employee)
     {
@@ -1231,17 +1172,15 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param $quantity
-     * @param $idStockMvtReason
-     * @param $isUsable
-     * @param $idOrder
-     * @param $employee
-     * @param $stock
+     * @param int $quantity
+     * @param int $idStockMvtReason
+     * @param bool $isUsable
+     * @param int $idOrder
+     * @param Employee|null $employee
+     * @param Stock $stock
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function removeProductQuantityApplyingCump(
         $quantity,
@@ -1280,11 +1219,9 @@ class StockManagerCore implements StockManagerInterface
             'usable_quantity'   => $usableProductQuantity,
         ];
 
-        /** @var \StockCore $stock */
         $stock->hydrate($stockParams);
         $stock->update();
 
-        /** @var \StockMvtCore $stockMovement */
         $stockMovement = new StockMvt();
         $stockMovement->hydrate($movementParams);
         $stockMovement->save();

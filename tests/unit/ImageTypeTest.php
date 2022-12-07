@@ -8,16 +8,25 @@ class ImageTypeTest extends \Codeception\TestCase\Test
      */
     protected $tester;
 
+    /**
+     * @var string[]
+     */
     static $imageTypes1 = [
         'Niara_cart',
         'Niara_small',
     ];
 
+    /**
+     * @var string[]
+     */
     static $imageTypes2 = [
         'Niara_cart_default',
         'Niara_small_default',
     ];
 
+    /**
+     * @var string[]
+     */
     static $imageTypes3 = [
         'Niara_cart',
         'Niara_small',
@@ -29,6 +38,9 @@ class ImageTypeTest extends \Codeception\TestCase\Test
         'home',
     ];
 
+    /**
+     * @return string[][]
+     */
     public function imageTypeTestDataProvider()
     {
         return [

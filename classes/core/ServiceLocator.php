@@ -19,6 +19,7 @@
 
 namespace Thirtybees\Core\DependencyInjection;
 
+use Controller;
 use Core_Foundation_IoC_Container;
 use Db;
 use Exception;
@@ -28,11 +29,12 @@ use Thirtybees\Core\Error\Response\CliErrorResponse;
 use Thirtybees\Core\Error\Response\DebugErrorPage;
 use Thirtybees\Core\Error\Response\ErrorResponseInterface;
 use Thirtybees\Core\Error\Response\ProductionErrorPage;
+use Thirtybees\Core\WorkQueue\Scheduler;
+use Thirtybees\Core\WorkQueue\WorkQueueClient;
+use Throwable;
 
 /**
  * Class ServiceLocatorCore
- *
- * @since 1.3.0
  */
 class ServiceLocatorCore
 {
@@ -61,8 +63,8 @@ class ServiceLocatorCore
 
     /**
      * ServiceLocatorCore constructor
-     * @param Core_Foundation_IoC_Container $container
-     * @throws Exception
+     * @param Core_Foundation_IoC_Container|null $container
+     * @throws PrestaShopException
      */
     protected function __construct(Core_Foundation_IoC_Container $container = null)
     {
@@ -101,21 +103,21 @@ class ServiceLocatorCore
     /**
      * Instantiates controller class
      *
-     * @param $controllerClass
-     * @return \Controller
+     * @param string $controllerClass
+     * @return Controller
      * @throws PrestaShopException
      */
     public function getController($controllerClass)
     {
         $controller = $this->getByServiceName($controllerClass);
-        if (! ($controller instanceof \Controller)) {
+        if (! ($controller instanceof Controller)) {
             throw new PrestaShopException("Failed to construct controller, class '$controllerClass' does not extend Controller");
         }
         return $controller;
     }
 
     /**
-     * @return \Thirtybees\Core\WorkQueue\Scheduler
+     * @return Scheduler
      * @throws PrestaShopException
      */
     public function getScheduler()
@@ -124,7 +126,7 @@ class ServiceLocatorCore
     }
 
     /**
-     * @return \Thirtybees\Core\WorkQueue\WorkQueueClient
+     * @return WorkQueueClient
      * @throws PrestaShopException
      */
     public function getWorkQueueClient()
@@ -157,7 +159,7 @@ class ServiceLocatorCore
 
     /**
      * @param string $serviceName
-     * @return mixed
+     * @return mixed|object
      * @throws PrestaShopException
      */
     public function getByServiceName($serviceName)
@@ -182,7 +184,7 @@ class ServiceLocatorCore
 
     /**
      * Method to initialize service locator
-     * @param Core_Foundation_IoC_Container $container
+     * @param Core_Foundation_IoC_Container|null $container
      */
     public static function initialize(Core_Foundation_IoC_Container $container = null)
     {
@@ -191,7 +193,7 @@ class ServiceLocatorCore
         }
         try {
             static::$instance = new static($container);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             die("Failed to initialize service locator: ". $e);
         }
     }

@@ -31,13 +31,9 @@
 
 /**
  * Class AverageTaxOfProductsTaxCalculator
- *
- * @since   1.0.0
- * @version 1.0.0 Initial version
  */
 class AverageTaxOfProductsTaxCalculatorCore
 {
-    // @codingStandardsIgnoreStart
     /** @var int $id_order */
     protected $id_order;
     /** @var Core_Business_ConfigurationInterface $configuration */
@@ -46,16 +42,12 @@ class AverageTaxOfProductsTaxCalculatorCore
     protected $db;
     /** @var string $computation_method */
     public $computation_method = 'average_tax_of_products';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AverageTaxOfProductsTaxCalculator constructor.
      *
-     * @param Core_Foundation_Database_DatabaseInterface $db            Making sure we stay connected to the same db instance
-     * @param Core_Business_ConfigurationInterface       $configuration
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param Core_Foundation_Database_DatabaseInterface $db Making sure we stay connected to the same db instance
+     * @param Core_Business_ConfigurationInterface $configuration
      */
     public function __construct(Core_Foundation_Database_DatabaseInterface $db, Core_Business_ConfigurationInterface $configuration)
     {
@@ -66,10 +58,7 @@ class AverageTaxOfProductsTaxCalculatorCore
     /**
      * @param int $idOrder
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setIdOrder($idOrder)
     {
@@ -79,15 +68,14 @@ class AverageTaxOfProductsTaxCalculatorCore
     }
 
     /**
-     * @param float      $priceBeforeTax
+     * @param float $priceBeforeTax
      * @param float|null $priceAfterTax
-     * @param int        $roundPrecision
-     * @param int|null   $roundMode
+     * @param int $roundPrecision
+     * @param int|null $roundMode
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = _TB_PRICE_DATABASE_PRECISION_, $roundMode = null)
@@ -131,10 +119,10 @@ class AverageTaxOfProductsTaxCalculatorCore
     }
 
     /**
-     * @return mixed
+     * @return array|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getProductTaxes()
     {

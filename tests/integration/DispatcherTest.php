@@ -4,6 +4,9 @@
 class DispatcherTest extends \Codeception\Test\Unit
 {
 
+    /**
+     * @return array[]
+     */
     public function getUnfriendlyRoutes()
     {
         return [
@@ -80,6 +83,8 @@ class DispatcherTest extends \Codeception\Test\Unit
 
     /**
      * Data provider for testCreateUrl
+     *
+     * @return array
      */
     public function creteUrlData()
     {

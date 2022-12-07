@@ -8,15 +8,25 @@ class SpecificPriceTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
+    /**
+     * @return void
+     */
     protected function _before()
     {
     }
 
+    /**
+     * @return void
+     */
     protected function _after()
     {
         \AspectMock\Test::clean();
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testScoreQuery()
     {
         // Mock the static function SpecificPrice::getPriority

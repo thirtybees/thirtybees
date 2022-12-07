@@ -19,8 +19,6 @@
 
 /**
  * Class TriggerController
- *
- * @since 1.3.0
  */
 class TriggerController extends TriggerControllerCore
 {

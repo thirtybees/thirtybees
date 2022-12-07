@@ -58,6 +58,9 @@ class InstallControllerHttpLicense extends InstallControllerHttp
         return $this->session->licenseAgreement;
     }
 
+    /**
+     * @return void
+     */
     public function process()
     {
     }

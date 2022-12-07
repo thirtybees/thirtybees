@@ -25,8 +25,6 @@ use Translate;
 
 /**
  * Class DataExtractor
- *
- * @since 1.3.0
  */
 abstract class DataExtractorCore
 {
@@ -69,7 +67,7 @@ abstract class DataExtractorCore
     /**
      * Instantiates extractor
      *
-     * @param $id
+     * @param int $id
      * @return DataExtractor
      * @throws PrestaShopException
      */

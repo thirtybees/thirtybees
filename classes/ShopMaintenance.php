@@ -23,8 +23,6 @@
  * This class implements tasks for maintaining hte shop installation, to be
  * run on a regular schedule. It gets called by an asynchronous Ajax request
  * in DashboardController.
- *
- * @since 1.0.8
  */
 class ShopMaintenanceCore
 {
@@ -35,7 +33,7 @@ class ShopMaintenanceCore
      * This method gets triggered by the 'getNotifications' Ajax request, so
      * every two minutes while somebody has back office open.
      *
-     * @since 1.0.8
+     * @throws PrestaShopException
      */
     public static function run()
     {
@@ -56,7 +54,7 @@ class ShopMaintenanceCore
      * sites like builtwith.com don't recognize thirty bees technology if the
      * theme template inserts a meta tag "generator" for PrestaShop.
      *
-     * @since 1.0.8
+     * @return void
      */
     public static function adjustThemeHeaders()
     {
@@ -82,7 +80,7 @@ class ShopMaintenanceCore
     /**
      * Handle shop optin.
      *
-     * @since 1.0.8
+     * @throws PrestaShopException
      */
     public static function optinShop()
     {
@@ -103,7 +101,7 @@ class ShopMaintenanceCore
     /**
      * Delete lost AdminController messages.
      *
-     * @since 1.0.8
+     * @return void
      */
     public static function cleanAdminControllerMessages()
     {

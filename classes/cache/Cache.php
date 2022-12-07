@@ -31,8 +31,6 @@
 
 /**
  * Class CacheCore
- *
- * @since 1.0.0
  */
 abstract class CacheCore
 {
@@ -88,13 +86,10 @@ abstract class CacheCore
      * Cache a data
      *
      * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int $ttl
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function _set($key, $value, $ttl = 0);
 
@@ -104,9 +99,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function _get($key);
 
@@ -116,9 +108,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function _exists($key);
 
@@ -128,17 +117,11 @@ abstract class CacheCore
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function _delete($key);
 
     /**
      * Write keys index
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract protected function _writeKeys();
 
@@ -146,16 +129,13 @@ abstract class CacheCore
      * Clean all cached data
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function flush();
 
     /**
      * Returns true if server-side caching is
      *
-     * @since: 1.0.7
+     * @throws PrestaShopException
      */
     public static function isEnabled()
     {
@@ -165,8 +145,6 @@ abstract class CacheCore
     /**
      * @return Cache
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getInstance()
@@ -190,10 +168,7 @@ abstract class CacheCore
     /**
      * Unit testing purpose only
      *
-     * @param $testInstance Cache
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param Cache $testInstance
      */
     public static function setInstanceForTesting($testInstance)
     {
@@ -203,8 +178,7 @@ abstract class CacheCore
     /**
      * Unit testing purpose only
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function deleteTestingInstance()
     {
@@ -215,13 +189,10 @@ abstract class CacheCore
      * Store a data in cache
      *
      * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int $ttl
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function set($key, $value, $ttl = 0)
     {
@@ -245,9 +216,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function get($key)
     {
@@ -264,9 +232,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function exists($key)
     {
@@ -284,9 +249,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return array List of deleted keys
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete($key)
     {
@@ -325,12 +287,9 @@ abstract class CacheCore
      * Store a query in cache
      *
      * @param string $query
-     * @param array  $result
+     * @param array $result
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setQuery($query, $result)
     {
@@ -370,10 +329,7 @@ abstract class CacheCore
     /**
      * Autoadjust the table cache size to avoid storing too big elements in the cache
      *
-     * @param $table
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $table
      */
     protected function adjustTableCacheSize($table)
     {
@@ -390,6 +346,10 @@ abstract class CacheCore
         }
     }
 
+    /**
+     * @param string $string
+     * @return array|false
+     */
     protected function getTables($string)
     {
         if (preg_match_all('/(?:from|join|update|into)\s+`?('._DB_PREFIX_.'[0-9a-z_-]+)(?:`?\s{0,},\s{0,}`?('._DB_PREFIX_.'[0-9a-z_-]+)`?)?(?:`|\s+|\Z)(?!\s*,)/Umsi', $string, $res)) {
@@ -409,9 +369,6 @@ abstract class CacheCore
      * Delete a query from cache
      *
      * @param string $query
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteQuery($query)
     {
@@ -442,9 +399,6 @@ abstract class CacheCore
      * @param string $query
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function isBlacklist($query)
     {
@@ -459,10 +413,7 @@ abstract class CacheCore
 
     /**
      * @param string $key
-     * @param mixed  $value
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param mixed $value
      */
     public static function store($key, $value)
     {
@@ -473,9 +424,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function retrieve($key)
     {
@@ -484,9 +432,6 @@ abstract class CacheCore
 
     /**
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function retrieveAll()
     {
@@ -497,9 +442,6 @@ abstract class CacheCore
      * @param string $key
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isStored($key)
     {
@@ -508,9 +450,6 @@ abstract class CacheCore
 
     /**
      * @param string $key
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function clean($key)
     {

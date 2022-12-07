@@ -31,12 +31,9 @@
 
 /**
  * Class OrderConfirmationControllerCore
- *
- * @since 1.0.0
  */
 class OrderConfirmationControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $ssl */
     public $ssl = true;
     /** @var string $php_self */
@@ -51,16 +48,16 @@ class OrderConfirmationControllerCore extends FrontController
     public $reference;
     /** @var string $secure_key */
     public $secure_key;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize order confirmation controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -101,11 +98,11 @@ class OrderConfirmationControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -182,7 +179,7 @@ class OrderConfirmationControllerCore extends FrontController
      *
      * @return string|array|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayOrderConfirmation()
     {
@@ -209,7 +206,7 @@ class OrderConfirmationControllerCore extends FrontController
      *
      * @return string|array|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayPaymentReturn()
     {

@@ -21,8 +21,6 @@ namespace Thirtybees\Core\WorkQueue;
 
 /**
  * Class ScheduledTaskExecution
- *
- * @since 1.3.0
  */
 class ScheduledTaskExecution extends ScheduledTaskExecutionCore
 {

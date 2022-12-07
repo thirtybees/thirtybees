@@ -31,8 +31,6 @@
 
 /**
  * Class UploaderCore
- *
- * @since 1.0.0
  */
 class UploaderCore
 {
@@ -44,7 +42,7 @@ class UploaderCore
     private $checkFileSize = true;
 
     /**
-     * @var null|string[]
+     * @var string[]|null
      */
     private $acceptTypes;
 
@@ -59,7 +57,7 @@ class UploaderCore
     private $maxSize = self::DEFAULT_MAX_SIZE;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     private $name;
 
@@ -72,9 +70,6 @@ class UploaderCore
      * UploaderCore constructor.
      *
      * @param string|null $name
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($name = null)
     {
@@ -84,10 +79,7 @@ class UploaderCore
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setCheckFileSize($value)
     {
@@ -98,9 +90,6 @@ class UploaderCore
 
     /**
      * @return array[]
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFiles()
     {
@@ -111,9 +100,6 @@ class UploaderCore
      * @param string|null $dest
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function process($dest = null)
     {
@@ -141,9 +127,6 @@ class UploaderCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getName()
     {
@@ -151,12 +134,9 @@ class UploaderCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setName($value)
     {
@@ -170,9 +150,6 @@ class UploaderCore
      * @param string|null $dest
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function upload($file, $dest = null)
     {
@@ -205,12 +182,9 @@ class UploaderCore
     }
 
     /**
-     * @param $file
+     * @param array $file
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function validate(&$file)
     {
@@ -252,12 +226,9 @@ class UploaderCore
     }
 
     /**
-     * @param $errorCode
+     * @param int $errorCode
      *
-     * @return array|int|mixed|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int|string
      */
     protected function checkUploadError($errorCode)
     {
@@ -293,9 +264,6 @@ class UploaderCore
 
     /**
      * @return int PHP setting 'post_max_size', converted to bytes.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPostMaxSizeBytes()
     {
@@ -317,12 +285,9 @@ class UploaderCore
     }
 
     /**
-     * @param $var
+     * @param string $var
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _getServerVars($var)
     {
@@ -330,10 +295,7 @@ class UploaderCore
     }
 
     /**
-     * @return null|string[]
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string[]|null
      */
     public function getAcceptTypes()
     {
@@ -343,10 +305,7 @@ class UploaderCore
     /**
      * @param string[] $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setAcceptTypes($value)
     {
@@ -360,9 +319,6 @@ class UploaderCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function checkFileSize()
     {
@@ -371,9 +327,6 @@ class UploaderCore
 
     /**
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMaxSize()
     {
@@ -381,12 +334,9 @@ class UploaderCore
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setMaxSize($value)
     {
@@ -399,9 +349,6 @@ class UploaderCore
      * @param string|null $fileName
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFilePath($fileName = null)
     {
@@ -414,9 +361,6 @@ class UploaderCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSavePath()
     {
@@ -426,10 +370,7 @@ class UploaderCore
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setSavePath($value)
     {
@@ -441,9 +382,6 @@ class UploaderCore
      * @param string $directory
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _normalizeDirectory($directory)
     {
@@ -464,9 +402,6 @@ class UploaderCore
      * @param string $prefix
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getUniqueFileName($prefix = 'PS')
     {
@@ -474,13 +409,10 @@ class UploaderCore
     }
 
     /**
-     * @param      $filePath
+     * @param string $filePath
      * @param bool $clearStatCache
      *
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _getFileSize($filePath, $clearStatCache = false)
     {

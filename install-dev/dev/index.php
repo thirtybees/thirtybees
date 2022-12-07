@@ -35,12 +35,23 @@ include_once(_TB_INSTALL_PATH_.'classes/controllerHttp.php');
 
 class SynchronizeController extends InstallControllerHttp
 {
+    /**
+     * @return void
+     */
     public function validate()
     {
     }
+
+    /**
+     * @return void
+     */
     public function display()
     {
     }
+
+    /**
+     * @return void
+     */
     public function processNextStep()
     {
     }
@@ -50,11 +61,22 @@ class SynchronizeController extends InstallControllerHttp
      */
     protected $loader;
 
+    /**
+     * @param string $template
+     * @param boolean $getOutput
+     * @param string|null $path
+     * @throws PrestashopInstallerException
+     */
     public function displayTemplate($template, $getOutput = false, $path = null)
     {
         parent::displayTemplate($template, false, _TB_INSTALL_PATH_.'dev/');
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
+     */
     public function init()
     {
         $this->type = Tools::getValue('type');
@@ -79,6 +101,10 @@ class SynchronizeController extends InstallControllerHttp
         $this->displayTemplate('index');
     }
 
+    /**
+     * @return void
+     * @throws PrestashopInstallerException
+     */
     public function generateSchemas()
     {
         if ($this->type == 'demo') {
@@ -150,6 +176,12 @@ class SynchronizeController extends InstallControllerHttp
         $this->errors = $this->loader->getErrors();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
+     */
     public function synchronizeEntities()
     {
         $entities = Tools::getValue('entities');

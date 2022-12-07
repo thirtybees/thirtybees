@@ -31,20 +31,23 @@
 
 /**
  * Class AdminStockCoverControllerCore
- *
- * @since 1.0.0
  */
 class AdminStockCoverControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected $stock_cover_warehouses;
+
+    /**
+     * @var int[]
+     */
     protected $stock_cover_periods;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminStockCoverControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -121,7 +124,7 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -146,7 +149,8 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderDetails()
     {
@@ -191,11 +195,11 @@ class AdminStockCoverControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -244,8 +248,6 @@ class AdminStockCoverControllerCore extends AdminController
      * Gets the current coverage period used
      *
      * @return int coverage period
-     *
-     * @since 1.0.0
      */
     protected function getCurrentCoveragePeriod()
     {
@@ -265,8 +267,6 @@ class AdminStockCoverControllerCore extends AdminController
      * Gets the current warning
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected function getCurrentWarning()
     {
@@ -286,8 +286,6 @@ class AdminStockCoverControllerCore extends AdminController
      * Gets the current warehouse used
      *
      * @return int id_warehouse
-     *
-     * @since 1.0.0
      */
     protected function getCurrentCoverageWarehouse()
     {
@@ -308,16 +306,14 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -409,7 +405,8 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @return int $quantity
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getQuantitySold($idProduct, $idProductAttribute, $coverage)
     {
@@ -435,7 +432,8 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -453,7 +451,7 @@ class AdminStockCoverControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {

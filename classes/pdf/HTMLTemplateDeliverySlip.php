@@ -29,27 +29,19 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/**
- * @since 1.0.0
- * @version 1.0.0 Initial version
- */
 class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 {
-    // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
 
     /** @var OrderInvoice $order_invoice */
     public $order_invoice;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param OrderInvoiceCore $orderInvoice
-     * @param Smarty           $smarty
-     * @param bool             $bulkMode
+     * @param Smarty $smarty
+     * @param bool $bulkMode
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
@@ -82,9 +74,8 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @return string HTML header
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getHeader()
     {
@@ -99,12 +90,9 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @return string HTML content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
@@ -170,9 +158,6 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -184,8 +169,6 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @return string filename
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFilename()

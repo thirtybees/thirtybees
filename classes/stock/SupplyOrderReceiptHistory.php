@@ -31,12 +31,9 @@
 
 /**
  * Class SupplyOrderReceiptHistoryCore
- *
- * @since 1.0.0
  */
 class SupplyOrderReceiptHistoryCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int Detail of the supply order (i.e. One particular product)
      */
@@ -71,10 +68,9 @@ class SupplyOrderReceiptHistoryCore extends ObjectModel
      * @var string Date of delivery
      */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'supply_order_receipt_history',
@@ -97,7 +93,7 @@ class SupplyOrderReceiptHistoryCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_receipt_histories',

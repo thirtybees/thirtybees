@@ -31,14 +31,11 @@
 
 /**
  * Class CMSCategoryCore
- *
- * @since 1.0.0
  */
 class CMSCategoryCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'cms_category',
@@ -74,6 +71,10 @@ class CMSCategoryCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array
+     */
     protected static $_links = [];
     /** @var int CMSCategory ID */
     public $id_cms_category;
@@ -85,7 +86,7 @@ class CMSCategoryCore extends ObjectModel
     public $description;
     /** @var int Parent CMSCategory ID */
     public $id_parent;
-    /** @var  int category position */
+    /** @var int category position */
     public $position;
     /** @var int Parents number */
     public $level_depth;
@@ -102,21 +103,18 @@ class CMSCategoryCore extends ObjectModel
 
     /** @var string Object last modification date */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @param null      $idLang
-     * @param int       $current
-     * @param int       $active
-     * @param int       $links
+     * @param int|null $idLang
+     * @param int $current
+     * @param int $active
+     * @param int $links
      * @param Link|null $link
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRecurseCategory($idLang = null, $current = 1, $active = 1, $links = 0, Link $link = null)
     {
@@ -167,14 +165,11 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @param array $categories
      * @param array $current
-     * @param int   $idCmsCategory
-     * @param int   $idSelected
-     * @param bool  $isHtml
+     * @param int $idCmsCategory
+     * @param int $idSelected
+     * @param bool $isHtml
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function recurseCMSCategory($categories, $current, $idCmsCategory = 1, $idSelected = 1, $isHtml = false)
     {
@@ -196,7 +191,7 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Return available categories
      *
-     * @param int  $idLang Language ID
+     * @param int $idLang Language ID
      * @param bool $active return only active categories
      * @param bool $order
      *
@@ -204,8 +199,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategories($idLang, $active = true, $order = true)
     {
@@ -234,12 +227,10 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSimpleCategories($idLang)
     {
@@ -256,15 +247,13 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Return main categories
      *
-     * @param int  $idLang Language ID
+     * @param int $idLang Language ID
      * @param bool $active return only active categories
      *
      * @return array categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHomeCategories($idLang, $active = true)
     {
@@ -272,16 +261,14 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param int  $idParent
-     * @param int  $idLang
+     * @param int $idParent
+     * @param int $idLang
      * @param bool $active
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getChildren($idParent, $idLang, $active = true)
     {
@@ -316,8 +303,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkBeforeMove($idCmsCategory, $idParent)
     {
@@ -352,8 +337,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getLinkRewrite($idCmsCategory, $idLang)
     {
@@ -381,16 +364,14 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Light back office search for categories
      *
-     * @param int    $idLang       Language ID
-     * @param string $query        Searched string
-     * @param bool   $unrestricted allows search without lang and includes first CMSCategory and exact match
+     * @param int $idLang Language ID
+     * @param string $query Searched string
+     * @param bool $unrestricted allows search without lang and includes first CMSCategory and exact match
      *
      * @return array Corresponding categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function searchByName($idLang, $query, $unrestricted = false)
     {
@@ -416,9 +397,9 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Retrieve CMSCategory by name and parent CMSCategory id
      *
-     * @param int    $idLang              Language ID
-     * @param string $cmsCategoryName     Searched CMSCategory name
-     * @param int    $idParentCmsCategory parent CMSCategory ID
+     * @param int $idLang Language ID
+     * @param string $cmsCategoryName Searched CMSCategory name
+     * @param int $idParentCmsCategory parent CMSCategory ID
      *
      * @return array Corresponding CMSCategory
      * @throws PrestaShopDatabaseException
@@ -443,12 +424,10 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getUrlRewriteInformations($idCategory)
     {
@@ -470,8 +449,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -493,8 +470,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLastPosition($idCategoryParent)
@@ -514,8 +489,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function calcLevelDepth()
     {
@@ -530,8 +503,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanPositions($idCategoryParent)
     {
@@ -562,8 +533,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -585,18 +554,16 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Recursive scan of subcategories
      *
-     * @param int       $maxDepth         Maximum depth of the tree (i.e. 2 => 3 levels depth)
-     * @param int       $currentDepth     specify the current depth in the tree (don't use it, only for rucursivity!)
-     * @param int       $idLang           Specify the id of the language used
-     * @param array     $excludedIdsArray specify a list of ids to exclude of results
+     * @param int $maxDepth Maximum depth of the tree (i.e. 2 => 3 levels depth)
+     * @param int $currentDepth specify the current depth in the tree (don't use it, only for rucursivity!)
+     * @param int $idLang Specify the id of the language used
+     * @param array $excludedIdsArray specify a list of ids to exclude of results
      * @param Link|null $link
      *
      * @return array Subcategories lite tree
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function recurseLiteCategTree($maxDepth = 3, $currentDepth = 0, $idLang = null, $excludedIdsArray = null, Link $link = null)
     {
@@ -635,15 +602,13 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Return current CMSCategory childs
      *
-     * @param int  $idLang Language ID
+     * @param int $idLang Language ID
      * @param bool $active return only active categories
      *
      * @return array Categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSubCategories($idLang, $active = true)
     {
@@ -672,9 +637,6 @@ class CMSCategoryCore extends ObjectModel
      * @param string $name CMSCategory name
      *
      * @return string Name without position
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hideCMSCategoryPosition($name)
     {
@@ -684,12 +646,9 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Delete several categories from database
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param array $categories
      *
-     * @return bool|int
+     * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -709,8 +668,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -766,13 +723,11 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Recursively add specified CMSCategory childs to $toDelete array
      *
-     * @param array     &$toDelete     Array reference where categories ID will be saved
+     * @param array &$toDelete Array reference where categories ID will be saved
      * @param array|int $idCmsCategory Parent CMSCategory ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function recursiveDelete(&$toDelete, $idCmsCategory)
     {
@@ -797,8 +752,7 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLink(Link $link = null)
     {
@@ -814,8 +768,6 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getName($idLang = null)
@@ -837,12 +789,10 @@ class CMSCategoryCore extends ObjectModel
      *
      * @param int $idLang Language ID
      *
-     * @return false|array Corresponding categories
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getParentsCategories($idLang = null)
     {
@@ -871,14 +821,12 @@ class CMSCategoryCore extends ObjectModel
 
     /**
      * @param bool $way
-     * @param int  $position
+     * @param int $position
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {

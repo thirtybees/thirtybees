@@ -31,8 +31,6 @@
 
 /**
  * Class PrestaShopAutoload
- *
- * @since 1.0.0
  */
 class PrestaShopAutoload
 {
@@ -78,9 +76,6 @@ class PrestaShopAutoload
 
     /**
      * PrestaShopAutoload constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function __construct()
     {
@@ -96,8 +91,7 @@ class PrestaShopAutoload
     /**
      * Generate classes index
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function generateIndex()
     {
@@ -146,9 +140,6 @@ class PrestaShopAutoload
      * @param string $path Relativ path from root to the directory
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getClassesFromDir($path)
     {
@@ -216,9 +207,6 @@ class PrestaShopAutoload
      * Get instance of autoload (singleton)
      *
      * @return PrestaShopAutoload
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstance()
     {
@@ -235,10 +223,6 @@ class PrestaShopAutoload
      * @param string $className
      *
      * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      */
     public function load($className)
     {
@@ -295,9 +279,6 @@ class PrestaShopAutoload
      * @param string $className
      *
      * @return string | null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getClassPath($className)
     {

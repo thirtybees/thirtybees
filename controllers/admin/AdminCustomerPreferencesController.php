@@ -31,15 +31,13 @@
 
 /**
  * Class AdminCustomerPreferencesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCustomerPreferencesControllerCore extends AdminController
 {
     /**
      * AdminCustomerPreferencesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -136,7 +134,8 @@ class AdminCustomerPreferencesControllerCore extends AdminController
      *
      * @param int $value Value of option
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateOptionPsB2bEnable($value)
     {

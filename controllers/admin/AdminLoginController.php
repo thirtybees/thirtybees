@@ -31,15 +31,13 @@
 
 /**
  * Class AdminLoginControllerCore
- *
- * @since 1.0.0
  */
 class AdminLoginControllerCore extends AdminController
 {
     /**
      * AdminLoginControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -62,7 +60,9 @@ class AdminLoginControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -154,7 +154,7 @@ class AdminLoginControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -203,7 +203,8 @@ class AdminLoginControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -219,7 +220,8 @@ class AdminLoginControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processLogin()
     {
@@ -288,7 +290,8 @@ class AdminLoginControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processForgot()
     {

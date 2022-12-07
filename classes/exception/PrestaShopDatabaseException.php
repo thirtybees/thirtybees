@@ -31,8 +31,6 @@
 
 /**
  * Class PrestaShopDatabaseExceptionCore
- *
- * @since 1.0.0
  */
 class PrestaShopDatabaseExceptionCore extends PrestaShopException
 {
@@ -45,7 +43,7 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
      * PrestaShopDatabaseExceptionCore constructor.
      *
      * @param string $message
-     * @param string | DbQuery | null $sql
+     * @param string|DbQuery|null $sql
      */
     public function __construct($message = '', $sql = null)
     {
@@ -74,10 +72,7 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function __toString()
     {

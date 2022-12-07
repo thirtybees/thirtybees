@@ -31,20 +31,16 @@
 
 /**
  * Class Core_Foundation_FileSystem_FileSystem
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_FileSystem_FileSystem
 {
-    // @codingStandardsIgnoreStartingStandardsIgnoreEnd
-
     /**
      * Replaces directory separators with the system's native one
      * and trims the trailing separator.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $path
+     *
+     * @return string
      */
     public function normalizePath($path)
     {
@@ -59,9 +55,6 @@ class Core_Foundation_FileSystem_FileSystem
      * @param string $b
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function joinTwoPaths($a, $b)
     {
@@ -73,9 +66,6 @@ class Core_Foundation_FileSystem_FileSystem
      *
      * @return string|null
      * @throws Core_Foundation_FileSystem_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function joinPaths()
     {
@@ -109,9 +99,6 @@ class Core_Foundation_FileSystem_FileSystem
      *
      * @return array of SplFileInfo object indexed by file path
      * @throws Core_Foundation_FileSystem_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function listEntriesRecursively($path)
     {
@@ -159,8 +146,9 @@ class Core_Foundation_FileSystem_FileSystem
     /**
      * Filter used by listFilesRecursively.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param SplFileInfo $info
+     *
+     * @return bool
      */
     protected function matchOnlyFiles(SplFileInfo $info)
     {
@@ -172,8 +160,8 @@ class Core_Foundation_FileSystem_FileSystem
      *
      * @return array
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws Core_Foundation_FileSystem_Exception
+     * @throws Core_Foundation_FileSystem_Exception
      */
     public function listFilesRecursively($path)
     {

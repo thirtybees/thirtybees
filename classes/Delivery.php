@@ -31,17 +31,14 @@
 
 /**
  * Class DeliveryCore
- *
- * @since 1.0.0
  */
 class DeliveryCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_delivery;
-    /** @var int * */
+    /** @var int */
     public $id_shop;
-    /** @var int * */
+    /** @var int */
     public $id_shop_group;
     /** @var int */
     public $id_carrier;
@@ -53,10 +50,9 @@ class DeliveryCore extends ObjectModel
     public $id_zone;
     /** @var float */
     public $price;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'delivery',
@@ -79,6 +75,10 @@ class DeliveryCore extends ObjectModel
             ],
         ],
     ];
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'deliveries',
         'fields'          => [
@@ -92,8 +92,6 @@ class DeliveryCore extends ObjectModel
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFields()

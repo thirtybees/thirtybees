@@ -31,20 +31,16 @@
 
 /**
  * Class AdminSpecificPriceRuleControllerCore
- *
- * @since 1.0.0
  */
 class AdminSpecificPriceRuleControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var array $list_reduction_type */
     public $list_reduction_type;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminSpecificPriceRuleControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -153,7 +149,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -171,16 +167,16 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
     /**
      * Get list
      *
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
+     * @param int $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int $start
+     * @param int|null $limit
      * @param bool $idLangShop
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -200,7 +196,9 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -393,7 +391,8 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      *
      * @return false|SpecificPriceRule
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -426,8 +425,6 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      * Post process
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {

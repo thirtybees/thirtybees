@@ -32,6 +32,12 @@ if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', getcwd());
 }
 require_once(_PS_ADMIN_DIR_.'/../images.inc.php');
+
+/**
+ * @param string $id
+ * @param bool $time
+ * @return void
+ */
 function bindDatepicker($id, $time)
 {
     if ($time) {
@@ -56,9 +62,11 @@ function bindDatepicker($id, $time)
 }
 
 /**
- * @deprecated 1.5.3.0 Use Controller::addJqueryUi('ui.datepicker') instead
  * @param int|array $id ID can be a identifier or an array of identifiers
  * @param bool $time
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ * @deprecated 1.5.3.0 Use Controller::addJqueryUi('ui.datepicker') instead
  */
 function includeDatepicker($id, $time = false)
 {
@@ -84,11 +92,9 @@ function includeDatepicker($id, $time = false)
 /**
  * Cast a number to a price.
  *
- * @param $price float|int|string The price to cast.
+ * @param float|int|string $price The price to cast.
  *
  * @return float Casted price, rounded to _TB_PRICE_DATABASE_PRECISION_.
- *
- * @since 1.1.0
  */
 function priceval($price) {
     return Tools::parseNumber($price);
@@ -128,8 +134,12 @@ function displayDate($sql_date, $with_time = false)
  * @param int $id_category Start category
  * @param string $path Current path
  * @param string $highlight String to highlight (in XHTML/CSS)
- * @param string $type Category type (products/cms)
-*/
+ * @param string $category_type
+ * @param bool $home
+ * @return false|string|void
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ */
 function getPath($url_base, $id_category, $path = '', $highlight = '', $category_type = 'catalog', $home = false)
 {
     $context = Context::getContext();
@@ -188,6 +198,10 @@ function getPath($url_base, $id_category, $path = '', $highlight = '', $category
     }
 }
 
+/**
+ * @param string $path
+ * @return array
+ */
 function getDirContent($path)
 {
     $content = [];
@@ -203,6 +217,11 @@ function getDirContent($path)
     return $content;
 }
 
+/**
+ * @param string $path
+ * @param int $rights
+ * @return bool
+ */
 function createDir($path, $rights)
 {
     if (file_exists($path)) {
@@ -233,7 +252,9 @@ function translate($string)
  * Returns a new Tab object
  *
  * @param string $tab class name
- * @return mixed(AdminTab, bool) tab object or false if failed
+ * @return AdminTab|bool tab object or false if failed
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
  */
 function checkingTab($tab)
 {
@@ -264,7 +285,10 @@ function checkingTab($tab)
 }
 
 /**
- * @TODO deprecate for Tab::checkTabRights()
+ * @param int $id_tab
+ * @return bool
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
  */
 function checkTabRights($id_tab)
 {
@@ -305,18 +329,18 @@ function checkTabRights($id_tab)
  * ...And so on.
  * _____________________________________
  * @param simpleXMLElement $xml the XML to convert
- * @param bool $flatten_values    Choose wether to flatten values
+ * @param bool $flatten_values Choose wether to flatten values
  *                                    or to set them under a particular index.
  *                                    defaults to true;
  * @param bool $flatten_attributes Choose wether to flatten attributes
  *                                    or to set them under a particular index.
  *                                    Defaults to true;
- * @param bool $flatten_children    Choose wether to flatten children
+ * @param bool $flatten_children Choose wether to flatten children
  *                                    or to set them under a particular index.
  *                                    Defaults to true;
- * @param string $value_key            index for values, in case $flatten_values was set to false. Defaults to "@value"
- * @param string $attributes_key        index for attributes, in case $flatten_attributes was set to false. Defaults to "@attributes"
- * @param string $children_key        index for children, in case $flatten_children was set to false. Defaults to "@children"
+ * @param string $value_key index for values, in case $flatten_values was set to false. Defaults to "@value"
+ * @param string $attributes_key index for attributes, in case $flatten_attributes was set to false. Defaults to "@attributes"
+ * @param string $children_key index for children, in case $flatten_children was set to false. Defaults to "@children"
  * @return array the resulting array.
  */
 function simpleXMLToArray($xml, $flatten_values = true, $flatten_attributes = true, $flatten_children = true, $value_key = '@value', $attributes_key = '@attributes', $children_key = '@children')
@@ -384,7 +408,12 @@ function simpleXMLToArray($xml, $flatten_values = true, $flatten_attributes = tr
 /**
  * for retrocompatibility with old AdminTab, old index.php
  *
+ * @param string $tab
+ * @param bool $ajax_mode
  * @return void
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ * @throws SmartyException
  */
 function runAdminTab($tab, $ajax_mode = false)
 {

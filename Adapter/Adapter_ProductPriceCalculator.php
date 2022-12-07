@@ -31,34 +31,31 @@
 /**
  * Class Adapter_ProductPriceCalculator
  */
-// @codingStandardIgnoreStart
 class Adapter_ProductPriceCalculator
 {
-    // @codingStandardIgnoreEnd
 
     /**
-     * @param int          $idProduct
-     * @param bool         $usetax
-     * @param null         $idProductAttribute
-     * @param int          $decimals
-     * @param null         $divisor
-     * @param bool         $onlyReduc
-     * @param bool         $usereduc
-     * @param int          $quantity
-     * @param bool         $forceAssociatedTax
-     * @param null         $idCustomer
-     * @param null         $idCart
-     * @param null         $idAddress
-     * @param null         $specificPriceOutput
-     * @param bool         $withEcotax
-     * @param bool         $useGroupReduction
+     * @param int $idProduct
+     * @param bool $usetax
+     * @param int|null $idProductAttribute
+     * @param int $decimals
+     * @param int|null $divisor
+     * @param bool $onlyReduc
+     * @param bool $usereduc
+     * @param int $quantity
+     * @param bool $forceAssociatedTax
+     * @param int|null $idCustomer
+     * @param int|null $idCart
+     * @param int|null $idAddress
+     * @param array|null $specificPriceOutput
+     * @param bool $withEcotax
+     * @param bool $useGroupReduction
      * @param Context|null $context
-     * @param bool         $useCustomerPrice
+     * @param bool $useCustomerPrice
      *
      * @return float
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getProductPrice(
         $idProduct,

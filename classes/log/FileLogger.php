@@ -31,11 +31,12 @@
 
 /**
  * Class FileLoggerCore
- *
- * @since 1.0.0
  */
 class FileLoggerCore extends AbstractLogger
 {
+    /**
+     * @var string
+     */
     protected $filename = '';
 
     /**
@@ -43,8 +44,6 @@ class FileLoggerCore extends AbstractLogger
      *
      * @param string $filename
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
     */
     public function setFilename($filename)
     {
@@ -59,9 +58,6 @@ class FileLoggerCore extends AbstractLogger
      * Log the message
      *
      * @return string
-     *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public function getFilename()
     {
@@ -72,12 +68,9 @@ class FileLoggerCore extends AbstractLogger
      * Write the message in the log file
      *
      * @param string $message
-     * @param int    $level
+     * @param int $level
      *
      * @return bool True on success, false on failure.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function logMessage($message, $level)
     {

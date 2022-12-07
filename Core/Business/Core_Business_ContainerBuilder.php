@@ -31,22 +31,13 @@
 
 /**
  * Class Core_Business_ContainerBuilder
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Business_ContainerBuilder
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * Construct PrestaShop Core Service container
      *
      * @return Core_Foundation_IoC_Container
-     * @throws Core_Foundation_IoC_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function build()
     {

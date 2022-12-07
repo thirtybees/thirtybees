@@ -31,12 +31,9 @@
 
 /**
  * Class AddressCore
- *
- * @since 1.0.0
  */
 class AddressCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int Customer id which address belongs to */
     public $id_customer = null;
     /** @var int Manufacturer id which address belongs to */
@@ -44,7 +41,6 @@ class AddressCore extends ObjectModel
     /** @var int Supplier id which address belongs to */
     public $id_supplier = null;
     /**
-     * @since 1.5.0
      * @var int Warehouse id which address belongs to
      */
     public $id_warehouse = null;
@@ -89,13 +85,21 @@ class AddressCore extends ObjectModel
     /** @var bool True if address is active */
     public $active = 1;
 
+    /**
+     * @var array
+     */
     protected static $_idZones = [];
+    /**
+     * @var array
+     */
     protected static $_idCountries = [];
+    /**
+     * @var bool
+     */
     protected $_includeContainer = false;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'address',
@@ -137,6 +141,9 @@ class AddressCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'addresses',
         'fields'          => [
@@ -152,11 +159,9 @@ class AddressCore extends ObjectModel
     /**
      * Build an address
      *
-     * @param int      $idAddress Existing address id in order to load object (optional)
+     * @param int $idAddress Existing address id in order to load object (optional)
      * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($idAddress = null, $idLang = null)
@@ -170,15 +175,12 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -198,8 +200,8 @@ class AddressCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -219,11 +221,6 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::delete()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @return bool
      * @throws PrestaShopException
      */
@@ -246,9 +243,6 @@ class AddressCore extends ObjectModel
      * Returns fields required for an address in an array hash
      *
      * @return array hash values.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFieldsValidate()
     {
@@ -261,12 +255,6 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::validateController()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.6 Use VatNumber::validateNumber(), if present.
-     *
      * @param bool $htmlEntities
      *
      * @return array
@@ -316,8 +304,6 @@ class AddressCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getZoneById($idAddress)
     {
@@ -358,8 +344,6 @@ class AddressCore extends ObjectModel
      *
      * @return int address active status
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isCountryActiveById($idAddress)
@@ -395,8 +379,6 @@ class AddressCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.4
      */
     public static function isDeleted($idAddress)
     {
@@ -418,8 +400,6 @@ class AddressCore extends ObjectModel
      *
      * @return int Order count for this address
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isUsed()
@@ -441,8 +421,6 @@ class AddressCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCountryAndState($idAddress)
     {
@@ -473,8 +451,6 @@ class AddressCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function addressExists($idAddress)
@@ -496,13 +472,11 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @param int  $idCustomer
+     * @param int $idCustomer
      * @param bool $active
      *
      * @return bool|int|null
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getFirstCustomerAddressId($idCustomer, $active = true)
@@ -532,15 +506,12 @@ class AddressCore extends ObjectModel
      * Initiliaze an address corresponding to the specified id address or if empty to the
      * default shop configuration
      *
-     * @param int  $idAddress
+     * @param int $idAddress
      * @param bool $withGeoLocation
      *
      * @return Address address
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function initialize($idAddress = null, $withGeoLocation = false)
     {
@@ -593,8 +564,6 @@ class AddressCore extends ObjectModel
      *
      * @return int $id_address
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getAddressIdBySupplierId($idSupplier)
@@ -613,13 +582,11 @@ class AddressCore extends ObjectModel
 
     /**
      * @param string $alias
-     * @param int    $idAddress
-     * @param int    $idCustomer
+     * @param int $idAddress
+     * @param int $idCustomer
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function aliasExist($alias, $idAddress, $idCustomer)
@@ -638,9 +605,8 @@ class AddressCore extends ObjectModel
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getFieldsRequiredDB()
     {

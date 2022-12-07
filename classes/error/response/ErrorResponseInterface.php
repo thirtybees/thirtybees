@@ -23,8 +23,6 @@ use Thirtybees\Core\Error\ErrorDescription;
 
 /**
  * Interface ErrorResponseInterface
- *
- * @since 1.4.0
  */
 interface ErrorResponseInterface
 {

@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleGridCore
- *
- * @since 1.0.0
  */
 abstract class ModuleGridCore extends Module
 {
@@ -92,10 +90,7 @@ abstract class ModuleGridCore extends Module
     protected $_id_lang;
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     abstract protected function getData();
 
@@ -103,8 +98,6 @@ abstract class ModuleGridCore extends Module
      * @param int $idEmployee
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setEmployee($idEmployee)
     {
@@ -113,9 +106,6 @@ abstract class ModuleGridCore extends Module
 
     /**
      * @param int $idLang
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setLang($idLang)
     {
@@ -124,7 +114,7 @@ abstract class ModuleGridCore extends Module
 
     /**
      * @param string $render
-     * @param string | null $type
+     * @param string|null $type
      * @param int $width
      * @param int $height
      * @param int $start
@@ -133,8 +123,6 @@ abstract class ModuleGridCore extends Module
      * @param string $dir
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function create($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
@@ -162,8 +150,7 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function render()
     {
@@ -173,11 +160,9 @@ abstract class ModuleGridCore extends Module
     /**
      * @param array $params
      *
-     * @return mixed
+     * @return string
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since 1.0.0
      */
     public function engine($params)
     {
@@ -238,9 +223,6 @@ abstract class ModuleGridCore extends Module
 
     /**
      * @param array $datas
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function csvExport($datas)
     {
@@ -271,8 +253,7 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function _displayCsv()
     {
@@ -288,8 +269,8 @@ abstract class ModuleGridCore extends Module
     /**
      * @return string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDate()
     {
@@ -298,9 +279,6 @@ abstract class ModuleGridCore extends Module
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLang()
     {
@@ -309,7 +287,7 @@ abstract class ModuleGridCore extends Module
 
     /**
      * @param mixed $option
-     * @param int   $layers
+     * @param int $layers
      */
     public function setOption($option, $layers = 1)
     {

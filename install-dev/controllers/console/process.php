@@ -159,7 +159,7 @@ class InstallControllerConsoleProcess
      * Create database structure
      *
      * @return bool
-     *
+
      * @throws PrestaShopException
      */
     public function processInstallDatabase()
@@ -247,9 +247,10 @@ class InstallControllerConsoleProcess
      * Populate database with default data
      *
      * @return bool
-     *
+
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processPopulateDatabase()
     {
@@ -265,9 +266,10 @@ class InstallControllerConsoleProcess
      * Set default shop configuration
      *
      * @return bool
-     *
+
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processConfigureShop()
     {
@@ -294,9 +296,10 @@ class InstallControllerConsoleProcess
      * Install fixtures (E.g. demo products)
      *
      * @return bool
-     *
+
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processInstallFixtures()
     {
@@ -313,6 +316,7 @@ class InstallControllerConsoleProcess
      *
      * @return bool
      *
+     * @throws PrestashopInstallerException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -328,7 +332,7 @@ class InstallControllerConsoleProcess
      * Install all modules in ~/modules/ directory
      *
      * @return bool
-     *
+     * @throws PrestashopInstallerException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -344,7 +348,7 @@ class InstallControllerConsoleProcess
      * Install theme
      *
      * @return bool
-     *
+     * @throws PrestashopInstallerException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -356,7 +360,7 @@ class InstallControllerConsoleProcess
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function printErrors()
     {
@@ -381,8 +385,6 @@ class InstallControllerConsoleProcess
      * @param string $str String to translate
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function l($str)
     {

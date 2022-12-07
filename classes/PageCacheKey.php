@@ -19,37 +19,71 @@
 
 /**
  * Class PageCacheKey - composite key for full page cache
- *
- * @since 1.0.7
  */
 class PageCacheKeyCore
 {
+    /**
+     * @var PageCacheKey|false|null
+     */
     protected static $instance = null;
 
+    /**
+     * @var string
+     */
     public $entityType;
+
+    /**
+     * @var int
+     */
     public $entityId;
+
+    /**
+     * @var string
+     */
     public $url;
+
+    /**
+     * @var int
+     */
     public $idCurrency;
+
+    /**
+     * @var int
+     */
     public $idLanguage;
+
+    /**
+     * @var int
+     */
     public $idCountry;
+
+    /**
+     * @var int
+     */
     public $idShop;
+
+    /**
+     * @var int
+     */
     public $idGroup;
+
+    /**
+     * @var int
+     */
     public $idCustomer;
 
     /**
      * Creates new cache key and set its metadata
      *
      * @param string $entityType -- controller name
-     * @param int    $entityId - specific entity, for example product id
+     * @param int $entityId - specific entity, for example product id
      * @param string $url
-     * @param int    $idCurrency
-     * @param int    $idLanguage
-     * @param int    $idCountry
-     * @param int    $idShop
-     * @param int    $idGroup
-     * @param int    $idCustomer id of logged-in customer, zero otherwise
-     *
-     * @since 1.0.7
+     * @param int $idCurrency
+     * @param int $idLanguage
+     * @param int $idCountry
+     * @param int $idShop
+     * @param int $idGroup
+     * @param int $idCustomer id of logged-in customer, zero otherwise
      */
     protected function __construct($entityType, $entityId, $url, $idCurrency, $idLanguage, $idCountry, $idShop, $idGroup, $idCustomer)
     {
@@ -69,7 +103,6 @@ class PageCacheKeyCore
      * Returns unique hash for this key
      *
      * @return string
-     * @since 1.0.7
      */
     public function getHash()
     {
@@ -88,8 +121,6 @@ class PageCacheKeyCore
      * Returns full page cache key for current request
      *
      * @return PageCacheKey | false
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
      * @throws PrestaShopException
      */
     public static function get()
@@ -105,8 +136,6 @@ class PageCacheKeyCore
      * Returns full page cache key for current request
      *
      * @return PageCacheKey | false
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
      * @throws PrestaShopException
      */
     protected static function resolvePageKey()

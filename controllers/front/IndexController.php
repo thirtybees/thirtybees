@@ -31,22 +31,18 @@
 
 /**
  * Class IndexControllerCore
- *
- * @since 1.0.0
  */
 class IndexControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'index';
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize content
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initContent()
     {

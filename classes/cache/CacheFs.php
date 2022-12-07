@@ -31,8 +31,6 @@
 
 /**
  * Class CacheFsCore
- *
- * @since 1.0.0
  */
 class CacheFsCore extends Cache
 {
@@ -148,6 +146,8 @@ class CacheFsCore extends Cache
 
     /**
      * Delete cache directory
+     *
+     * @return void
      */
     public static function deleteCacheDirectory()
     {
@@ -157,7 +157,7 @@ class CacheFsCore extends Cache
     /**
      * Create cache directory
      *
-     * @param int    $levelDepth
+     * @param int $levelDepth
      * @param string $directory
      */
     public static function createCacheDirectories($levelDepth, $directory = false)

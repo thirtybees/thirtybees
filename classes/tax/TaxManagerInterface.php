@@ -21,40 +21,32 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    thirty bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017-2018 thirty bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    thirty bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017-2018 thirty bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
-* A TaxManager define a way to retrieve tax.
- *
- * @since 1.0.0
-*/
+ * A TaxManager define a way to retrieve tax.
+ */
 interface TaxManagerInterface
 {
     /**
-    * This method determine if the tax manager is available for the specified address.
-    *
-    * @param Address $address
-    *
-    * @return bool
+     * This method determine if the tax manager is available for the specified address.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-    */
+     * @param Address $address
+     *
+     * @return bool
+     */
     public static function isAvailableForThisAddress(Address $address);
 
     /**
-    * Return the tax calculator associated to this address
-    *
-    * @return TaxCalculator
+     * Return the tax calculator associated to this address
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-    */
+     * @return TaxCalculator
+     */
     public function getTaxCalculator();
 }

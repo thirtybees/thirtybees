@@ -31,20 +31,16 @@
 
 /**
  * Class AdminTagsControllerCore
- *
- * @since 1.0.0
  */
 class AdminTagsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $bootstrap */
     public $bootstrap = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminTagsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -89,7 +85,7 @@ class AdminTagsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -109,7 +105,8 @@ class AdminTagsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -132,7 +129,8 @@ class AdminTagsControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -164,7 +162,9 @@ class AdminTagsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {

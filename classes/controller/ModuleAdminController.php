@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleAdminControllerCore
- *
- * @since 1.0.0
  */
 abstract class ModuleAdminControllerCore extends AdminController
 {
@@ -41,9 +39,6 @@ abstract class ModuleAdminControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -71,8 +66,6 @@ abstract class ModuleAdminControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
@@ -91,9 +84,6 @@ abstract class ModuleAdminControllerCore extends AdminController
      * Get path to back office templates for the module
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplatePath()
     {

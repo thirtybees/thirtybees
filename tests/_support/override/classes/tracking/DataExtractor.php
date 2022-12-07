@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking;
 
 /**
  * Class DataExtractor
- *
- * @since 1.3.0
  */
 abstract class DataExtractor extends DataExtractorCore
 {

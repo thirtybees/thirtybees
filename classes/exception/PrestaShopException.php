@@ -31,8 +31,6 @@
 
 /**
  * Class PrestaShopExceptionCore
- *
- * @since 1.0.0
  */
 class PrestaShopExceptionCore extends Exception
 {
@@ -44,12 +42,12 @@ class PrestaShopExceptionCore extends Exception
     /**
      * PrestaShopExceptionCore constructor.
      *
-     * @param string         $message
-     * @param int            $code
+     * @param string $message
+     * @param int $code
      * @param Exception|null $previous
-     * @param array|null     $customTrace
-     * @param string|null    $file
-     * @param int|null       $line
+     * @param array|null $customTrace
+     * @param string|null $file
+     * @param int|null $line
      */
     public function __construct($message = '', $code = 0, Throwable $previous = null, $customTrace = null, $file = null, $line = null)
     {
@@ -73,8 +71,7 @@ class PrestaShopExceptionCore extends Exception
      * This method acts like an error handler.
      * Exception is displayed to user using currently selected error page, and script execution will end
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function displayMessage()
     {

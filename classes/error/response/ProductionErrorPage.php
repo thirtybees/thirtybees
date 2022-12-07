@@ -19,12 +19,12 @@
 
 namespace Thirtybees\Core\Error\Response;
 
+use Configuration;
+use PrestaShopException;
 use Thirtybees\Core\Error\ErrorDescription;
 
 /**
  * Class DebugErrorPageCore
- *
- * @since 1.4.0
  */
 class ProductionErrorPageCore extends AbstractErrorPage
 {
@@ -40,14 +40,14 @@ class ProductionErrorPageCore extends AbstractErrorPage
     /**
      * @param ErrorDescription $errorDescription
      * @return string
-     * @throws \PrestaShopException
+     * @throws PrestaShopException
      */
     protected function renderError(ErrorDescription $errorDescription)
     {
         return static::displayErrorTemplate(
             _PS_ROOT_DIR_.'/error500.phtml',
             [
-                'shopEmail' => \Configuration::get('PS_SHOP_EMAIL'),
+                'shopEmail' => Configuration::get('PS_SHOP_EMAIL'),
                 'encrypted' => $errorDescription->encrypt(),
             ]
         );

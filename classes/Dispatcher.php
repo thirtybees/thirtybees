@@ -33,8 +33,6 @@ use Thirtybees\Core\DependencyInjection\ServiceLocator;
 
 /**
  * Class DispatcherCore
- *
- * @since 1.0.0
  */
 class DispatcherCore
 {
@@ -45,7 +43,6 @@ class DispatcherCore
     const FC_ADMIN = 2;
     const FC_MODULE = 3;
 
-    // @codingStandardsIgnoreStart
     /**
      * @var Dispatcher
      */
@@ -259,6 +256,9 @@ class DispatcherCore
      */
     protected $use_routes = false;
 
+    /**
+     * @var bool
+     */
     protected $multilang_activated = false;
 
     /**
@@ -290,6 +290,10 @@ class DispatcherCore
      * @var string Set default controller, which will be used if http parameter 'controller' is empty
      */
     protected $default_controller;
+
+    /**
+     * @var bool
+     */
     protected $use_default_controller = false;
 
     /**
@@ -301,16 +305,11 @@ class DispatcherCore
      * @var string Front controller to use
      */
     protected $front_controller = self::FC_FRONT;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get current instance of dispatcher (singleton)
      *
      * @return Dispatcher
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function getInstance()
     {
@@ -322,16 +321,13 @@ class DispatcherCore
     }
 
     /**
-     * @param string $routeId    Name of the route (need to be unique, a second route with same name will override the first)
-     * @param string $rule       Url rule
+     * @param string $routeId Name of the route (need to be unique, a second route with same name will override the first)
+     * @param string $rule Url rule
      * @param string $controller Controller to call if request uri match the rule
-     * @param int    $idLang
-     * @param array  $keywords
-     * @param array  $params
-     * @param int    $idShop
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $idLang
+     * @param array $keywords
+     * @param array $params
+     * @param int $idShop
      */
     public function addRoute($routeId, $rule, $controller, $idLang = null, array $keywords = [], array $params = [], $idShop = null)
     {
@@ -410,14 +406,12 @@ class DispatcherCore
      * Get list of all available Module Front controllers
      *
      * @param string $type
-     * @param null   $module
+     * @param string|string[]|null $module
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModuleControllers($type = 'all', $module = null)
     {
@@ -455,8 +449,6 @@ class DispatcherCore
     /**
      * Needs to be instantiated from getInstance() method
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function __construct()
@@ -492,8 +484,6 @@ class DispatcherCore
     /**
      * Set request uri and iso lang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setRequestUri()
@@ -526,8 +516,6 @@ class DispatcherCore
      *
      * @param int|null $idShop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function loadRoutes($idShop = null)
@@ -740,9 +728,9 @@ class DispatcherCore
     /**
      * Find the controller and instantiate it
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function dispatch()
     {
@@ -871,8 +859,6 @@ class DispatcherCore
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getController($idShop = null)
     {
@@ -1018,8 +1004,6 @@ class DispatcherCore
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function useDefaultController()
@@ -1049,9 +1033,6 @@ class DispatcherCore
      * @param mixed $dirs
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getControllers($dirs)
     {
@@ -1073,9 +1054,6 @@ class DispatcherCore
      * @param string $dir Directory to scan (recursively)
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getControllersInDirectory($dir)
     {
@@ -1103,13 +1081,10 @@ class DispatcherCore
      * Check if a route exists
      *
      * @param string $routeId
-     * @param int    $idLang
-     * @param int    $idShop
+     * @param int $idLang
+     * @param int $idShop
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function hasRoute($routeId, $idLang = null, $idShop = null)
     {
@@ -1120,13 +1095,10 @@ class DispatcherCore
      * Returns route by its routeId
      *
      * @param string $routeId
-     * @param int    $idLang
-     * @param int    $idShop
+     * @param int $idLang
+     * @param int $idShop
      *
      * @return array | null
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getRoute($routeId, $idLang = null, $idShop = null)
     {
@@ -1146,14 +1118,12 @@ class DispatcherCore
      * Check if a keyword is written in a route rule
      *
      * @param string $routeId
-     * @param int    $idLang
+     * @param int $idLang
      * @param string $keyword
-     * @param int    $idShop
+     * @param int $idShop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasKeyword($routeId, $idLang, $keyword, $idShop = null)
@@ -1177,14 +1147,10 @@ class DispatcherCore
      * Check if a route rule contain all required keywords of default route definition
      *
      * @param string $routeId
-     * @param string $rule    Rule to verify
-     * @param array  $errors  List of missing keywords
+     * @param string $rule Rule to verify
+     * @param array $errors List of missing keywords
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      */
     public function validateRoute($routeId, $rule, &$errors = [])
     {
@@ -1212,20 +1178,16 @@ class DispatcherCore
     /**
      * Create an url from
      *
-     * @param string $routeId     Name of the route
-     * @param int    $idLang
-     * @param array  $params
-     * @param bool   $forceRoutes
-     * @param string $anchor      Optional anchor to add at the end of this url
-     * @param null   $idShop
+     * @param string $routeId Name of the route
+     * @param int $idLang
+     * @param array $params
+     * @param bool $forceRoutes
+     * @param string $anchor Optional anchor to add at the end of this url
+     * @param int|null $idShop
      *
      * @return string
      *
      * @throws PrestaShopException
-     * @internal param bool $use_routes If false, don't use to create this url
-     *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public function createUrl($routeId, $idLang = null, array $params = [], $forceRoutes = false, $anchor = '', $idShop = null)
     {
@@ -1673,7 +1635,7 @@ class DispatcherCore
 
     /**
      * @param string $rule
-     * @param array  $keywords
+     * @param array $keywords
      *
      * @return string
      */
@@ -1753,7 +1715,6 @@ class DispatcherCore
      *
      * @param string $routeId
      * @return false| array
-     * @since 1.4.0
      */
     public function isModuleControllerRoute($routeId)
     {
@@ -1770,7 +1731,6 @@ class DispatcherCore
      * Returns parameters names required by route with id $routeId
      *
      * @return array
-     * @since 1.4.0
      */
     public function getRouteRequiredParams($routeId)
     {

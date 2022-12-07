@@ -31,8 +31,6 @@
 
 /**
  * Class InstallSqlLoader
- *
- * @since 1.0.0
  */
 class InstallSqlLoader
 {
@@ -56,7 +54,8 @@ class InstallSqlLoader
      *
      * @param Db|null $db
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct(Db $db = null)
     {
@@ -70,8 +69,6 @@ class InstallSqlLoader
      * Set a list of keywords which will be replaced in queries
      *
      * @param array $data
-     *
-     * @since 1.0.0
      */
     public function setMetaData(array $data)
     {
@@ -89,8 +86,6 @@ class InstallSqlLoader
      * @return bool
      * @throws PrestashopInstallerException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function parseFile($filename, $stopWhenFail = true)
     {
@@ -142,8 +137,6 @@ class InstallSqlLoader
      * Get list of errors from last parsing
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getErrors()
     {

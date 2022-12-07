@@ -33,8 +33,6 @@ use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class CarrierCore
- *
- * @since 1.0.0
  */
 class CarrierCore extends ObjectModel implements InitializationCallback
 {
@@ -62,7 +60,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     const SORT_BY_ASC = 0;
     const SORT_BY_DESC = 1;
 
-    // @codingStandardsIgnoreStart
     /** @var array $price_by_weight */
     protected static $price_by_weight = [];
     /** @var array $price_by_weight2 */
@@ -122,10 +119,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     public $prices_with_tax;
     /** @var int $id_tax_rules_group */
     public $id_tax_rules_group;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'carrier',
@@ -179,6 +175,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         ],
     ];
 
+    /**
+     * @var array[]
+     */
     protected $webserviceParameters = [
         'fields' => [
             'deleted'            => [],
@@ -199,8 +198,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @param int|null $id
      * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
@@ -246,12 +243,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * Hydrate function for the Carrier
      *
-     * @param array    $data
+     * @param array $data
      * @param int|null $idLang
      *
      * @return void
      *
-     * @since 1.0.2 Fix the hydrate function of the carrier
      * @throws PrestaShopException
      */
     public function hydrate(array $data, $idLang = null)
@@ -279,11 +275,10 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *   array(id_lang => 2, objProperty => value, objProperty2 => value, etc.),
      * );
      *
-     * @param array    $data
+     * @param array $data
      *
      * @return void
      *
-     * @since 1.0.2 Fix the hydrate function of the carrier
      * @throws PrestaShopException
      */
     public function hydrateMultilang(array $data)
@@ -305,10 +300,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * @param Context|null $context
      *
-     * @return false|null|string
+     * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getIdTaxRulesGroup(Context $context = null)
@@ -317,14 +310,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int          $idCarrier
+     * @param int $idCarrier
      * @param Context|null $context
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdTaxRulesGroupByIdCarrier($idCarrier, Context $context = null)
     {
@@ -370,14 +361,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * Get delivery prices for a given shipping method (price/weight)
      *
      * @param string $rangeTable Table name (price or weight)
-     * @param int    $idCarrier
+     * @param int $idCarrier
      *
      * @return array Delivery prices
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDeliveryPriceByRanges($rangeTable, $idCarrier)
     {
@@ -396,14 +385,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * This tricky method generates a sql clause to check if ranged data are overloaded by multishop
      *
-     * @since   1.5.0
-     *
      * @param string $rangeTable
      * @param string $alias
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function sqlDeliveryRangeShop($rangeTable, $alias = 'd')
     {
@@ -435,8 +421,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdTaxRulesGroupMostUsed()
     {
@@ -453,17 +437,15 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int       $idLang
-     * @param bool      $activeCountries
-     * @param bool      $activeCarriers
+     * @param int $idLang
+     * @param bool $activeCountries
+     * @param bool $activeCarriers
      * @param bool|null $containStates
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDeliveredCountries($idLang, $activeCountries = false, $activeCarriers = false, $containStates = null)
     {
@@ -509,12 +491,10 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * Return the default carrier to use
      *
      * @param array $carriers
-     * @param int   $defaultCarrier the last carrier selected
+     * @param int $defaultCarrier the last carrier selected
      *
-     * @return number the id of the default carrier
+     * @return int the id of the default carrier
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getDefaultCarrierSelection($carriers, $defaultCarrier = 0)
@@ -573,20 +553,16 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * For a given {product, warehouse}, gets the carrier available
      *
-     * @since   1.5.0
-     *
      * @param Product $product The id of the product, or an array with at least the package size and weight
-     * @param int     $idWarehouse
-     * @param int     $idAddressDelivery
-     * @param int     $idShop
-     * @param Cart    $cart
-     * @param array   $error   contains an error message if an error occurs
+     * @param int $idWarehouse
+     * @param int $idAddressDelivery
+     * @param int $idShop
+     * @param Cart $cart
+     * @param array $error contains an error message if an error occurs
      *
      * @return array
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getAvailableCarrierList(Product $product, $idWarehouse, $idAddressDelivery = null, $idShop = null, $cart = null, &$error = [])
@@ -736,10 +712,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @param int $idCarrier
      * @param int $idZone
      *
-     * @return null|int
+     * @return int|null
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function checkCarrierZone($idCarrier, $idZone)
@@ -765,17 +739,14 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     *
-     * @param int       $idZone
-     * @param array     $groups group of the customer
+     * @param int $idZone
+     * @param array $groups group of the customer
      * @param Cart|null $cart
-     * @param array     $error  contains an error message if an error occurs
+     * @param array $error contains an error message if an error occurs
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCarriersForOrder($idZone, $groups = null, $cart = null, &$error = [])
     {
@@ -870,13 +841,13 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * WARNING: by default this method only returns native carrier and excludes carriers added by modules!
      *
-     * @param int  $idLang         Language id
-     * @param bool $active         Returns only active carriers when true
+     * @param int $idLang Language id
+     * @param bool $active Returns only active carriers when true
      *
      * @param bool $delete
      * @param bool $idZone
-     * @param null $idsGroup
-     * @param int  $modulesFilters Possible values:
+     * @param int[]|null $idsGroup
+     * @param int $modulesFilters Possible values:
      *                             PS_CARRIERS_ONLY
      *                             CARRIERS_MODULE
      *                             CARRIERS_MODULE_NEED_RANGE
@@ -887,8 +858,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @todo    Check if the query has been fixed and remove the EXISTS subquery ^MD
      */
@@ -958,8 +927,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getShippingMethod()
@@ -988,8 +955,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @return false|null|string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMaxDeliveryPriceByWeight($idZone)
     {
@@ -1015,11 +980,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idZone
      *
-     * @return null
+     * @return flaot
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMaxDeliveryPriceByPrice($idZone)
     {
@@ -1041,24 +1004,20 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int   $idCarrier
+     * @param int $idCarrier
      * @param float $totalWeight
-     * @param int   $idZone
+     * @param int $idZone
      *
-     * @return mixed
+     * @return float
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkDeliveryPriceByWeight($idCarrier, $totalWeight, $idZone)
     {
         $idCarrier = (int) $idCarrier;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
-        // @codingStandardsIgnoreStart
         if (!isset(static::$price_by_weight2[$cacheKey])) {
-            // @codingStandardsIgnoreEnd
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
@@ -1070,32 +1029,26 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                     ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
                     ->orderBy('w.`delimiter1` ASC')
             );
-            // @codingStandardsIgnoreStart
             static::$price_by_weight2[$cacheKey] = (isset($result['price']));
-            // @codingStandardsIgnoreEnd
         }
 
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
-            // @codingStandardsIgnoreStart
             static::$price_by_weight2[$cacheKey] = round(
                 $priceByWeight,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-            // @codingStandardsIgnoreEnd
         }
 
-        // @codingStandardsIgnoreStart
         return static::$price_by_weight2[$cacheKey];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Check delivery prices for a given order
      *
-     * @param int      $idCarrier
-     * @param float    $orderTotal Order total to pay
-     * @param int      $idZone     Zone id (for customer delivery address)
+     * @param int $idCarrier
+     * @param float $orderTotal Order total to pay
+     * @param int $idZone Zone id (for customer delivery address)
      * @param int|null $idCurrency
      *
      * @return float Delivery price
@@ -1106,9 +1059,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     {
         $idCarrier = (int) $idCarrier;
         $cacheKey = $idCarrier.'_'.$orderTotal.'_'.$idZone.'_'.$idCurrency;
-        // @codingStandardsIgnoreStart
         if (!isset(static::$price_by_price2[$cacheKey])) {
-            // @codingStandardsIgnoreEnd
             if (!empty($idCurrency)) {
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
@@ -1124,37 +1075,29 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                     ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
                     ->orderBy('r.`delimiter1` ASC')
             );
-            // @codingStandardsIgnoreStart
             static::$price_by_price2[$cacheKey] = (isset($result['price']));
-            // @codingStandardsIgnoreEnd
         }
 
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
-            // @codingStandardsIgnoreStart
             static::$price_by_price2[$cacheKey] = round(
                 $priceByPrice,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-            // @codingStandardsIgnoreEnd
         }
 
-        // @codingStandardsIgnoreStart
         return static::$price_by_price2[$cacheKey];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Assign one (ore more) group to all carriers
      *
      * @param int|array $idGroupList group id or list of group ids
-     * @param array     $exception   list of id carriers to ignore
+     * @param array $exception list of id carriers to ignore
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function assignGroupToAllCarriers($idGroupList, $exception = null)
     {
@@ -1198,8 +1141,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -1233,8 +1174,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.4.0
      */
     public function update($nullValues = false)
     {
@@ -1245,11 +1184,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * Gets the highest carrier position
      *
-     * @since   1.5.0
      * @return int $position
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getHigherPosition()
@@ -1269,8 +1205,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -1292,8 +1226,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanPositions()
     {
@@ -1328,8 +1260,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteTaxRulesGroup(array $shops = null)
     {
@@ -1352,8 +1282,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setConfiguration($idOld)
     {
@@ -1370,22 +1298,18 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * Get delivery prices for a given order
      *
      * @param float $totalWeight Total order weight
-     * @param int   $idZone      Zone ID (for customer delivery address)
+     * @param int $idZone Zone ID (for customer delivery address)
      *
      * @return float Delivery price
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDeliveryPriceByWeight($totalWeight, $idZone)
     {
         $idCarrier = (int) $this->id;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
-        // @codingStandardsIgnoreStart
         if (!isset(static::$price_by_weight[$cacheKey])) {
-            // @codingStandardsIgnoreEnd
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
@@ -1398,52 +1322,40 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                     ->orderBy('w.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
-                // @codingStandardsIgnoreStart
                 static::$price_by_weight[$cacheKey] = $this->getMaxDeliveryPriceByWeight($idZone);
-                // @codingStandardsIgnoreEnd
             } else {
-                // @codingStandardsIgnoreStart
                 static::$price_by_weight[$cacheKey] = $result['price'];
-                // @codingStandardsIgnoreEnd
             }
         }
 
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
-            // @codingStandardsIgnoreStart
             static::$price_by_weight[$cacheKey] = round(
                 $priceByWeight,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-            // @codingStandardsIgnoreEnd
         }
 
-        // @codingStandardsIgnoreStart
         return static::$price_by_weight[$cacheKey];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Get delivery prices for a given order
      *
-     * @param float    $orderTotal Order total to pay
-     * @param int      $idZone     Zone id (for customer delivery address)
+     * @param float $orderTotal Order total to pay
+     * @param int $idZone Zone id (for customer delivery address)
      * @param int|null $idCurrency
      *
      * @return float Delivery price
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDeliveryPriceByPrice($orderTotal, $idZone, $idCurrency = null)
     {
         $idCarrier = (int) $this->id;
         $cacheKey = $this->id.'_'.$orderTotal.'_'.$idZone.'_'.$idCurrency;
-        // @codingStandardsIgnoreStart
         if (!isset(static::$price_by_price[$cacheKey])) {
-            // @codingStandardsIgnoreEnd
             if (!empty($idCurrency)) {
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
@@ -1459,29 +1371,21 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                     ->orderBy('r.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
-                // @codingStandardsIgnoreStart
                 static::$price_by_price[$cacheKey] = $this->getMaxDeliveryPriceByPrice($idZone);
-                // @codingStandardsIgnoreEnd
             } else {
-                // @codingStandardsIgnoreStart
                 static::$price_by_price[$cacheKey] = $result['price'];
-                // @codingStandardsIgnoreEnd
             }
         }
 
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
-            // @codingStandardsIgnoreStart
             static::$price_by_price[$cacheKey] = round(
                 $priceByPrice,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-            // @codingStandardsIgnoreEnd
         }
 
-        // @codingStandardsIgnoreStart
         return static::$price_by_price[$cacheKey];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -1491,8 +1395,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getZones()
     {
@@ -1514,8 +1416,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getZone($idZone)
     {
@@ -1530,9 +1430,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
     /**
      * Add zone
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param int $idZone
      *
@@ -1591,13 +1488,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * Delete zone
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param int $idZone
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteZone($idZone)
     {
@@ -1622,8 +1517,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getGroups()
     {
@@ -1642,9 +1535,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @return bool Deletion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteDeliveryPrice($rangeTable)
     {
@@ -1665,12 +1557,10 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * Add new delivery prices
      *
      * @param array $priceList Prices list in multiple arrays (changed to array since 1.5.0)
-     * @param bool  $delete
+     * @param bool $delete
      *
      * @return bool Insertion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function addDeliveryPrice($priceList, $delete = false)
@@ -1733,8 +1623,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @return void
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function copyCarrierData($oldId)
     {
@@ -1849,8 +1737,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @return int Order count for this carrier
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isUsed()
@@ -1868,8 +1754,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getRangeTable()
@@ -1884,14 +1768,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         return false;
     }
 
-    /*
-    *
+    /**
      * @param bool $shippingMethod
      *
      * @return bool|RangePrice|RangeWeight
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getRangeObject($shippingMethod = false)
     {
@@ -1909,12 +1791,10 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param null $currency
+     * @param Currency|null $currency
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getRangeSuffix($currency = null)
@@ -1931,15 +1811,13 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int  $idTaxRulesGroup
+     * @param int $idTaxRulesGroup
      * @param bool $allShops
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTaxRulesGroup($idTaxRulesGroup, $allShops = false)
     {
@@ -1976,8 +1854,6 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @return float
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxesRate(Address $address)
     {
@@ -1989,14 +1865,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     /**
      * Returns the taxes calculator associated to the carrier
      *
-     * @param Address  $address
+     * @param Address $address
      * @param int|null $idOrder
-     * @param bool     $useAverageTaxOfProducts
+     * @param bool $useAverageTaxOfProducts
      *
      * @return AverageTaxOfProductsTaxCalculator|TaxCalculator
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxCalculator(Address $address, $idOrder = null, $useAverageTaxOfProducts = false)
     {
@@ -2013,14 +1887,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * Moves a carrier
      *
      * @param bool $way Up (1) or Down (0)
-     * @param int  $position
+     * @param int $position
      *
      * @return bool Update result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {
@@ -2063,14 +1935,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
     /**
      * @param array $groups
-     * @param bool  $delete
+     * @param bool $delete
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setGroups($groups, $delete = true)
     {
@@ -2094,7 +1964,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

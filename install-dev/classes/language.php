@@ -31,8 +31,6 @@
 
 /**
  * Class InstallLanguage
- *
- * @since 1.0.0
  */
 class InstallLanguage
 {
@@ -65,8 +63,6 @@ class InstallLanguage
      * InstallLanguage constructor.
      *
      * @param string $iso
-     *
-     * @since 1.0.0
      */
     public function __construct($iso)
     {
@@ -78,8 +74,6 @@ class InstallLanguage
      * Get iso for current language
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function getIso()
     {
@@ -92,8 +86,6 @@ class InstallLanguage
      * @param string $key
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function getMetaInformation($key)
     {
@@ -114,9 +106,7 @@ class InstallLanguage
      * @param string $key
      * @param string $type
      *
-     * @return null
-     *
-     * @since 1.0.0
+     * @return string|null
      */
     public function getTranslation($key, $type = 'translations')
     {
@@ -129,8 +119,6 @@ class InstallLanguage
 
     /**
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getCountries()
     {

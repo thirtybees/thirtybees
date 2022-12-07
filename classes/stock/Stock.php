@@ -31,12 +31,9 @@
 
 /**
  * Represents the products kept in warehouses
- *
- * @since 1.0.0
  */
 class StockCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int identifier of the warehouse */
     public $id_warehouse;
     /** @var int identifier of the product */
@@ -55,10 +52,9 @@ class StockCore extends ObjectModel
     public $usable_quantity;
     /** @var int the unit price without tax forthe current product */
     public $price_te;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'stock',
@@ -84,7 +80,7 @@ class StockCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'        => [
@@ -97,11 +93,6 @@ class StockCore extends ObjectModel
     ];
 
     /**
-     * @see     ObjectModel::update()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param bool $nullValues
      *
      * @return bool
@@ -116,11 +107,6 @@ class StockCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::add()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param bool $autoDate
      * @param bool $nullValues
      *
@@ -140,8 +126,8 @@ class StockCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getWsRealQuantity()
     {
@@ -159,8 +145,6 @@ class StockCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteStockByIds($idProduct = null, $idProductAttribute = null)
     {
@@ -180,8 +164,6 @@ class StockCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function productIsPresentInStock($idProduct = 0, $idProductAttribute = 0, $idWarehouse = 0)
     {
@@ -205,8 +187,6 @@ class StockCore extends ObjectModel
      * Gets reference, ean13 and upc of the current product
      * Stores it in stock for stock_mvt integrity and history purposes
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getProductInformations()

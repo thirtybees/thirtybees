@@ -31,8 +31,6 @@
 
 /**
  * Class AdminAdminPreferencesControllerCore
- *
- * @since 1.0.0
  */
 class AdminAdminPreferencesControllerCore extends AdminController
 {
@@ -162,7 +160,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function postProcess()
     {
@@ -190,9 +188,9 @@ class AdminAdminPreferencesControllerCore extends AdminController
     /**
      * Update PS_ATTACHMENT_MAXIMUM_SIZE
      *
-     * @param mixed $value
+     * @param bool $value
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsAttachementMaximumSize($value)
     {

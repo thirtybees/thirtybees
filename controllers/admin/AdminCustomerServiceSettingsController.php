@@ -38,7 +38,6 @@ class AdminCustomerServiceSettingsControllerCore extends AdminController
      * AdminCustomerServiceSettingsControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {

@@ -31,21 +31,16 @@
 
 /**
  * Class AdminPaymentControllerCore
- *
- * @since 1.0.0
  */
 class AdminPaymentControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var array $payment_modules */
     public $payment_modules = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminPaymentControllerCore constructor.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -128,8 +123,7 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function initToolbarTitle()
     {
@@ -137,8 +131,7 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -147,8 +140,8 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function postProcess()
     {
@@ -161,8 +154,7 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function initProcess()
     {
@@ -182,10 +174,10 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function saveRestrictions($type)
     {
@@ -241,8 +233,8 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -252,8 +244,7 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -264,8 +255,9 @@ class AdminPaymentControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -377,10 +369,10 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @return mixed|string
+     * @return string|void
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderModulesList()
     {

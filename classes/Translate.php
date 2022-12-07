@@ -31,8 +31,6 @@
 
 /**
  * Class TranslateCore
- *
- * @since 1.0.0
  */
 class TranslateCore
 {
@@ -41,13 +39,10 @@ class TranslateCore
      *
      * @param string $string
      * @param string $class
-     * @param bool   $addslashes
-     * @param bool   $htmlentities
+     * @param bool $addslashes
+     * @param bool $htmlentities
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAdminTranslation($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true, $sprintf = null)
     {
@@ -108,15 +103,12 @@ class TranslateCore
     /**
      * Get a translation for a module
      *
-     * @param string|Module $module
+     * @param string|Module|ModuleCore $module
      * @param string $string
      * @param string $source
      * @param array $sprintf
      * @param bool $js
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModuleTranslation($module, $string, $source, $sprintf = null, $js = false)
     {
@@ -228,12 +220,9 @@ class TranslateCore
      * Check if string use a specif syntax for sprintf and replace arguments if use it
      *
      * @param string $string
-     * @param array  $args
+     * @param array $args
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkAndReplaceArgs($string, $args)
     {
@@ -251,14 +240,11 @@ class TranslateCore
     /**
      * Return the translation for a string if it exists for the base AdminController or for helpers
      *
-     * @param string      $string     string to translate
-     * @param string|null $key        md5 key if already calculated (optional)
-     * @param array       $langArray  Global array of admin translations
+     * @param string $string string to translate
+     * @param string|null $key md5 key if already calculated (optional)
+     * @param array $langArray Global array of admin translations
      *
      * @return string translation
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGenericAdminTranslation($string, $key, &$langArray)
     {
@@ -285,12 +271,9 @@ class TranslateCore
      * Get a translation for a PDF
      *
      * @param string $string
-     *
-     * @param null   $sprintf
+     * @param array|null $sprintf
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getPdfTranslation($string, $sprintf = null)
     {
@@ -341,13 +324,10 @@ class TranslateCore
     /**
      * Perform operations on translations after everything is escaped and before displaying it
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param string $string
-     * @param array  $params
+     * @param array $params
      *
-     * @return mixed
+     * @return string
      */
     public static function postProcessTranslation($string, $params)
     {
@@ -376,12 +356,9 @@ class TranslateCore
      * Helper function to make calls to postProcessTranslation more readable.
      *
      * @param string $string
-     * @param array  $tags
+     * @param array $tags
      *
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public static function ppTags($string, $tags)
     {
@@ -397,8 +374,6 @@ class TranslateCore
      * @param bool $js
      *
      * @return string
-     *
-     * @since 1.1.1
      */
     public static function getFrontTranslation($input, $source, $sprintf = null, $js = false)
     {

@@ -98,7 +98,7 @@ class DiscountCore extends CartRule
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws PrestaShopException
      */
@@ -153,8 +153,8 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param mixed $method
-     * @param mixed $args
+     * @param string $method
+     * @param array $args
      *
      * @return mixed
      */
@@ -172,7 +172,7 @@ class DiscountCore extends CartRule
     /**
      * @param bool $autodate
      * @param bool $nullValues
-     * @param null $categories
+     * @param mixed $categories
      *
      * @return bool
      * @throws PrestaShopException
@@ -185,8 +185,8 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param bool       $autodate
-     * @param bool       $nullValues
+     * @param bool $autodate
+     * @param bool $nullValues
      * @param array|null $categories
      *
      * @return bool
@@ -202,7 +202,7 @@ class DiscountCore extends CartRule
     /**
      * @param string $code
      *
-     * @return bool|int[]
+     * @return bool|int
      * @throws PrestaShopException
      */
     public static function getIdByName($code)
@@ -211,11 +211,11 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param int       $idLang
-     * @param int       $idCustomer
-     * @param bool      $active
-     * @param bool      $includeGenericOnes
-     * @param bool      $hasStock
+     * @param int $idLang
+     * @param int $idCustomer
+     * @param bool $active
+     * @param bool $includeGenericOnes
+     * @param bool $hasStock
      * @param Cart|null $cart
      *
      * @return array
@@ -241,13 +241,13 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param int           $nb_discounts
-     * @param int           $order_total_products
-     * @param int           $shipping_fees
-     * @param bool          $idCart
-     * @param bool          $useTax
+     * @param int $nb_discounts
+     * @param int $order_total_products
+     * @param int $shipping_fees
+     * @param bool $idCart
+     * @param bool $useTax
      * @param Currency|null $currency
-     * @param Shop|null     $shop
+     * @param Shop|null $shop
      *
      * @return float|int|string
      * @throws PrestaShopDatabaseException
@@ -271,7 +271,7 @@ class DiscountCore extends CartRule
 
     /**
      * @param string $discountName
-     * @param int    $idDiscount
+     * @param int $idDiscount
      *
      * @return bool
      * @throws PrestaShopException
@@ -282,13 +282,13 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param mixed      $order
-     * @param mixed      $productList
-     * @param mixed      $qtyList
-     * @param mixed      $name
+     * @param mixed $order
+     * @param mixed $productList
+     * @param mixed $qtyList
+     * @param mixed $name
      * @param bool|float $shippingCost
-     * @param int        $idCategory
-     * @param int        $subcategory
+     * @param int $idCategory
+     * @param int $subcategory
      *
      * @return bool|Discount
      * @throws PrestaShopException
@@ -346,8 +346,8 @@ class DiscountCore extends CartRule
     }
 
     /**
-     * @param mixed         $value
-     * @param mixed         $type
+     * @param mixed $value
+     * @param mixed $type
      * @param Currency|null $currency
      *
      * @return string

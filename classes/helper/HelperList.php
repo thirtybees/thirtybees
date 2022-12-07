@@ -31,8 +31,6 @@
 
 /**
  * Class HelperListCore
- *
- * @since 1.0.0
  */
 class HelperListCore extends Helper
 {
@@ -235,9 +233,6 @@ class HelperListCore extends Helper
 
     /**
      * HelperListCore constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -250,16 +245,13 @@ class HelperListCore extends Helper
     /**
      * Return an html list given the data to fill it up
      *
-     * @param array $list          entries to display (rows)
+     * @param array $list entries to display (rows)
      * @param array $fieldsDisplay fields (cols)
      *
      * @return string html
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function generateList($list, $fieldsDisplay)
     {
@@ -297,10 +289,7 @@ class HelperListCore extends Helper
      *
      * @return string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayListHeader()
     {
@@ -495,9 +484,6 @@ class HelperListCore extends Helper
      * @param bool $hasValue
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function hasBulkActions($hasValue = false)
     {
@@ -531,11 +517,8 @@ class HelperListCore extends Helper
     /**
      * @return false|string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayListContent()
     {
@@ -743,19 +726,16 @@ class HelperListCore extends Helper
      *
      * @param string $token
      * @param string $id
-     * @param int    $value  state enabled or not
+     * @param bool $value state enabled or not
      * @param string $active status
-     * @param int    $idCategory
-     * @param int    $idProduct
-     *
-     * @param bool   $ajax
+     * @param int|null $idCategory
+     * @param int|null $idProduct
+     * @param bool $ajax
      *
      * @return string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function displayEnableLink($token, $id, $value, $active, $idCategory = null, $idProduct = null, $ajax = false)
     {
@@ -775,8 +755,6 @@ class HelperListCore extends Helper
      * Close list table and submit button
      *
      * @throws SmartyException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function displayListFooter()
     {
@@ -802,11 +780,10 @@ class HelperListCore extends Helper
      * Display duplicate action link
      *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -862,15 +839,11 @@ class HelperListCore extends Helper
      *     fields_display: // attribute $fields_list of the admin controller
      *   }
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -905,11 +878,10 @@ class HelperListCore extends Helper
      * Display view action link
      *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -933,11 +905,10 @@ class HelperListCore extends Helper
      * Display edit action link
      *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -961,15 +932,12 @@ class HelperListCore extends Helper
      * Display delete action link
      *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
@@ -1006,15 +974,12 @@ class HelperListCore extends Helper
      * Display default action link
      *
      * @param string|null $token
-     * @param int         $id
+     * @param int $id
      * @param string|null $name
      *
      * @return string
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function displayDefaultLink($token, $id, $name = null)
     {

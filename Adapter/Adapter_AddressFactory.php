@@ -31,25 +31,18 @@
 
 /**
  * Class Adapter_AddressFactory
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_AddressFactory
 {
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize an address corresponding to the specified id address or if empty to the
      * default shop configuration
      *
-     * @param null $idAddress       Address ID
+     * @param int|null $idAddress Address ID
      * @param bool $withGeoLocation Indicates whether Geo location is used
      *
      * @return Address
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function findOrCreate($idAddress = null, $withGeoLocation = false)
     {
@@ -65,8 +58,7 @@ class Adapter_AddressFactory
      *
      * @return bool Indicates whether the address exists
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addressExists($idAddress)
     {

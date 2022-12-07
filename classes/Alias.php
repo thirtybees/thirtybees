@@ -31,8 +31,6 @@
 
 /**
  * Class AliasCore
- *
- * @since 1.0.0
  */
 class AliasCore extends ObjectModel
 {
@@ -44,7 +42,7 @@ class AliasCore extends ObjectModel
     public $active = true;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'alias',
@@ -59,15 +57,13 @@ class AliasCore extends ObjectModel
     /**
      * AliasCore constructor.
      *
-     * @param null $id
-     * @param null $alias
-     * @param null $search
-     * @param null $idLang
+     * @param int|null $id
+     * @param string|null $alias
+     * @param string|null $search
+     * @param int|null $idLang
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $alias = null, $search = null, $idLang = null)
     {
@@ -110,8 +106,6 @@ class AliasCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -131,8 +125,6 @@ class AliasCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -152,8 +144,6 @@ class AliasCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAliases()
     {
@@ -178,8 +168,6 @@ class AliasCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isFeatureActive()
@@ -195,8 +183,6 @@ class AliasCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function aliasExists($idAlias)
     {

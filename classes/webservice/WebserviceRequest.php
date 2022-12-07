@@ -34,8 +34,6 @@ use Thirtybees\Core\Error\ErrorHandler;
 
 /**
  * Class WebserviceRequestCore
- *
- * @since 1.0.0
  */
 class WebserviceRequestCore
 {
@@ -46,7 +44,9 @@ class WebserviceRequestCore
     const HEADER_IO_FORMAT = 'Io-Format';
     const HEADER_OUTPUT_FORMAT = 'Output-Format';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     protected $_available_languages = null;
     /**
      * Errors triggered at execution
@@ -65,7 +65,7 @@ class WebserviceRequestCore
     /**
      * Set if the management is specific or if it is classic (entity management)
      *
-     * @var WebserviceSpecificManagementImages|WebserviceSpecificManagementSearch|false
+     * @var WebserviceSpecificManagementInterface|false
      */
     protected $objectSpecificManagement = false;
 
@@ -229,6 +229,9 @@ class WebserviceRequestCore
      */
     public static $ws_current_classname;
 
+    /**
+     * @var int[]
+     */
     public static $shopIDs;
 
     /**
@@ -236,13 +239,8 @@ class WebserviceRequestCore
      */
     protected $logger = null;
 
-    // @codingStandardsIgnoreEnd
-
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getOutputEnabled()
     {
@@ -250,12 +248,9 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $bool
+     * @param bool $bool
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setOutputEnabled($bool)
     {
@@ -270,9 +265,6 @@ class WebserviceRequestCore
      * Get WebserviceRequest object instance (Singleton)
      *
      * @return static WebserviceRequest instance
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstance()
     {
@@ -284,12 +276,9 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @return WebserviceOutputJSON|WebserviceOutputXML
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getOutputObject($type)
     {
@@ -319,6 +308,9 @@ class WebserviceRequestCore
         return $objRender;
     }
 
+    /**
+     * @return array
+     */
     public static function getResources()
     {
         $resources = [
@@ -399,14 +391,13 @@ class WebserviceRequestCore
     /**
      * This method is used for calculate the price for products on the output details
      *
-     * @param $field
-     * @param $entityObject
-     * @param $wsParams
+     * @param array $field
+     * @param ObjectModel $entityObject
+     * @param array $wsParams
      *
      * @return array field parameters.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPriceForProduct($field, $entityObject, $wsParams)
     {
@@ -422,13 +413,12 @@ class WebserviceRequestCore
     /**
      * This method is used for calculate the price for products on a virtual fields
      *
-     * @param       $entityObject
+     * @param ObjectModel $entityObject
      * @param array $parameters
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function specificPriceForProduct($entityObject, $parameters)
     {
@@ -441,12 +431,11 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $parameters
+     * @param array $parameters
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function specificPriceCalculation($parameters)
     {
@@ -482,13 +471,12 @@ class WebserviceRequestCore
     /**
      * This method is used for calculate the price for products on a virtual fields
      *
-     * @param       $entityObject
+     * @param ObjectModel $entityObject
      * @param array $parameters
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function specificPriceForCombination($entityObject, $parameters)
     {
@@ -514,15 +502,13 @@ class WebserviceRequestCore
      * @param string $method
      * @param string $url
      * @param array $params GET parameters
-     * @param $badClassName
+     * @param string $badClassName
      * @param string $inputXml
      *
      * @return array Returns an array of results (headers, content, type of resource...)
      *
      * @throws PrestaShopException
      * @throws WebserviceException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function fetch($key, $method, $url, $params, $badClassName, $inputXml = null)
     {
@@ -666,8 +652,6 @@ class WebserviceRequestCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function webserviceChecks()
     {
@@ -683,14 +667,11 @@ class WebserviceRequestCore
     /**
      * Set a webservice error
      *
-     * @param int    $status
+     * @param int $status
      * @param string $label
-     * @param int    $code
+     * @param int $code
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setError($status, $label, $code)
     {
@@ -703,16 +684,13 @@ class WebserviceRequestCore
     /**
      * Set a webservice error and propose a new value near from the available values
      *
-     * @param int    $num
+     * @param int $num
      * @param string $label
-     * @param array  $value
-     * @param array  $availableValues
-     * @param int    $code
+     * @param string $value
+     * @param array $availableValues
+     * @param int $code
      *
      * @return void
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setErrorDidYouMean($num, $label, $value, $availableValues, $code)
     {
@@ -723,12 +701,9 @@ class WebserviceRequestCore
      * Return the nearest value picked in the values list
      *
      * @param string $input
-     * @param array  $words
+     * @param array $words
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getClosest($input, $words)
     {
@@ -753,9 +728,6 @@ class WebserviceRequestCore
      * Check if there is one or more error
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function hasErrors()
     {
@@ -767,8 +739,7 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function authenticate()
     {
@@ -811,8 +782,6 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function isActivated()
@@ -827,12 +796,10 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function shopHasRight($key)
@@ -855,14 +822,12 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function shopExists($params)
     {
@@ -893,14 +858,12 @@ class WebserviceRequestCore
     }
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function groupShopExists($params)
     {
@@ -923,9 +886,6 @@ class WebserviceRequestCore
      * Check HTTP method
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function checkHTTPMethod()
     {
@@ -946,9 +906,6 @@ class WebserviceRequestCore
      * Check resource validity
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function checkResource()
     {
@@ -972,10 +929,7 @@ class WebserviceRequestCore
     }
 
     /**
-     *
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function setObjects()
     {
@@ -1008,6 +962,10 @@ class WebserviceRequestCore
         }
     }
 
+    /**
+     * @param string $str
+     * @return array
+     */
     protected function parseDisplayFields($str)
     {
         $bracketLevel = 0;
@@ -1054,9 +1012,6 @@ class WebserviceRequestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setFieldsToDisplay()
     {
@@ -1107,8 +1062,8 @@ class WebserviceRequestCore
     /**
      * @return array | false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function manageFilters()
     {
@@ -1318,8 +1273,8 @@ class WebserviceRequestCore
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getFilteredObjectList()
     {
@@ -1355,8 +1310,7 @@ class WebserviceRequestCore
     /**
      * @return array|bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFilteredObjectDetails()
     {
@@ -1417,8 +1371,7 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function executeEntityGetAndHead()
     {
@@ -1444,8 +1397,7 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function executeEntityPost()
     {
@@ -1457,8 +1409,7 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function executeEntityPut()
     {
@@ -1468,10 +1419,7 @@ class WebserviceRequestCore
     /**
      * Execute DELETE method on a PrestaShop entity
      *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function executeEntityDelete()
     {
@@ -1531,8 +1479,6 @@ class WebserviceRequestCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function saveEntityFromXml($successReturnCode)
@@ -1722,8 +1668,8 @@ class WebserviceRequestCore
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getSQLRetrieveFilter($sqlId, $filterValue, $tableAlias = 'main.')
     {
@@ -1769,9 +1715,6 @@ class WebserviceRequestCore
 
     /**
      * @return array|bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function filterLanguage()
     {
@@ -1836,8 +1779,7 @@ class WebserviceRequestCore
      *
      * @return array with displaying informations (used in the dispatcher).
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      * @throws WebserviceException
      */
     protected function returnOutput()
@@ -1942,9 +1884,6 @@ class WebserviceRequestCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAllHeaders()
     {

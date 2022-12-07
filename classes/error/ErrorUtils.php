@@ -25,8 +25,6 @@ use Throwable;
 
 /**
  * Class ErrorUtilsCore
- *
- * @since 1.4.0
  */
 class ErrorUtilsCore
 {
@@ -279,7 +277,7 @@ class ErrorUtilsCore
     /**
      * Returns file path relative to thirtybees root
      *
-     * @param $file
+     * @param string|null $file
      * @return string
      */
     public static function getRelativeFile($file)
@@ -296,11 +294,11 @@ class ErrorUtilsCore
      * will be greyed out, and displayed with smaller font, so it does not distract reader
      * when investigating source of error
      *
-     * @param $relativePath string relative path of file
-     * @param $class string current classname
-     * @param $function string currently evaluating function
-     * @param $calledClass string class that's being called
-     * @param $calledFunction string function being called
+     * @param string $relativePath relative path of file
+     * @param string $class current classname
+     * @param string $function currently evaluating function
+     * @param string $calledClass class that's being called
+     * @param string $calledFunction function being called
      *
      * @return bool if this entry should be suppressed
      */
@@ -357,9 +355,9 @@ class ErrorUtilsCore
      *
      * This makes the stacktrace more readable
      *
-     * @param $class string class name
-     * @param $function string called function
-     * @param $args array parameters passed to $class::$function() method
+     * @param string $class class name
+     * @param string $function called function
+     * @param array $args parameters passed to $class::$function() method
      *
      * @return string | null
      */
@@ -382,9 +380,9 @@ class ErrorUtilsCore
      * of arrays, with information about line number in file, if the line is highlighted,
      * and actual line
      *
-     * @param $file string input file
-     * @param $line integer index of line in the file. This line will be highlighted
-     * @param $total integer total number of lines to read. Pass zero to return all lines
+     * @param string $file input file
+     * @param int $line index of line in the file. This line will be highlighted
+     * @param int $total total number of lines to read. Pass zero to return all lines
      *
      * @return array
      */

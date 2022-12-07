@@ -31,29 +31,40 @@
 
 /**
  * Class Core_Foundation_Database_EntityRepository
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Core_Foundation_Database_EntityRepository
 {
-    // @codingStandardsIgnoreStartingStandardsIgnoreEnd
-
+    /**
+     * @var Core_Foundation_Database_EntityManager
+     */
     protected $entityManager;
+
+    /**
+     * @var Core_Foundation_Database_DatabaseInterface
+     */
     protected $db;
+
+    /**
+     * @var string
+     */
     protected $tablesPrefix;
+
+    /**
+     * @var Core_Foundation_Database_EntityMetaData
+     */
     protected $entityMetaData;
+
+    /**
+     * @var Core_Foundation_Database_EntityManager_QueryBuilder
+     */
     protected $queryBuilder;
 
     /**
      * Core_Foundation_Database_EntityRepository constructor.
      *
-     * @param Core_Foundation_Database_EntityManager  $entityManager
-     * @param                                         $tablesPrefix
+     * @param Core_Foundation_Database_EntityManager $entityManager
+     * @param string $tablesPrefix
      * @param Core_Foundation_Database_EntityMetaData $entityMetaData
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct(
         Core_Foundation_Database_EntityManager $entityManager,
@@ -69,13 +80,10 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return array|mixed|null
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __call($method, $arguments)
     {
@@ -111,9 +119,6 @@ class Core_Foundation_Database_EntityRepository
      * @param string $camelCaseFieldName
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function convertToDbFieldName($camelCaseFieldName)
     {
@@ -123,11 +128,8 @@ class Core_Foundation_Database_EntityRepository
     /**
      * Return ID field name
      *
-     * @return mixed
+     * @return string
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getIdFieldName()
     {
@@ -155,10 +157,7 @@ class Core_Foundation_Database_EntityRepository
     /**
      * Returns escaped+prefixed current table name
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     protected function getTableNameWithPrefix()
     {
@@ -168,10 +167,7 @@ class Core_Foundation_Database_EntityRepository
     /**
      * Returns escaped DB table prefix
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     protected function getPrefix()
     {
@@ -182,9 +178,6 @@ class Core_Foundation_Database_EntityRepository
      * Return a new empty Entity depending on current Repository selected
      *
      * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getNewEntity()
     {
@@ -204,9 +197,6 @@ class Core_Foundation_Database_EntityRepository
      *
      * @return mixed|null
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function hydrateOne(array $rows)
     {
@@ -227,9 +217,6 @@ class Core_Foundation_Database_EntityRepository
      * @param array $rows
      *
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function hydrateMany(array $rows)
     {
@@ -246,14 +233,11 @@ class Core_Foundation_Database_EntityRepository
     /**
      * Constructs and performs 'SELECT' in DB
      *
-     * @param $one
+     * @param bool $one
      * @param array $cumulativeConditions
      *
      * @return array|mixed|null
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function doFind($one, array $cumulativeConditions)
     {
@@ -277,9 +261,6 @@ class Core_Foundation_Database_EntityRepository
      *
      * @return array|mixed|null
      * @throws Core_Foundation_Database_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function findOne($id)
     {
@@ -293,9 +274,6 @@ class Core_Foundation_Database_EntityRepository
      * Find all entities in DB
      *
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function findAll()
     {

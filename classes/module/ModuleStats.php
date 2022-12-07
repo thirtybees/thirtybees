@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleGraphCore
- *
- * @since 1.0.0
  */
 abstract class ModuleStatsCore extends Module
 {
@@ -112,8 +110,6 @@ abstract class ModuleStatsCore extends Module
      * @param int $idEmployee
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setEmployee($idEmployee)
     {
@@ -122,9 +118,6 @@ abstract class ModuleStatsCore extends Module
 
     /**
      * @param int $id_lang
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setLang($id_lang)
     {
@@ -134,9 +127,6 @@ abstract class ModuleStatsCore extends Module
     /**
      * @param int $layers
      * @param bool $legend
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function setDateGraph($layers, $legend = false)
     {
@@ -251,8 +241,6 @@ abstract class ModuleStatsCore extends Module
      * @param array $datas
      *
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function csvExportGraph($datas)
     {
@@ -354,8 +342,7 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected function _displayCsv()
     {
@@ -376,9 +363,6 @@ abstract class ModuleStatsCore extends Module
      * @param int $layers
      *
      * @throws PrestaShopException
-     * @throws ReflectionException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createGraph($render, $type, $width, $height, $layers)
     {
@@ -402,7 +386,6 @@ abstract class ModuleStatsCore extends Module
      * @param string $dir
      * @return void
      * @throws PrestaShopException
-     * @throws ReflectionException
      */
     public function createGrid($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
@@ -423,8 +406,7 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function draw()
     {
@@ -433,10 +415,7 @@ abstract class ModuleStatsCore extends Module
 
     /**
      * @param mixed $option
-     * @param int   $layers
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $layers
      */
     public function setOption($option, $layers = 1)
     {
@@ -448,9 +427,6 @@ abstract class ModuleStatsCore extends Module
      * @return string
      *
      * @throws PrestaShopException
-     * @throws ReflectionException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function engineGraph($params)
     {
@@ -486,7 +462,6 @@ abstract class ModuleStatsCore extends Module
      * @return string
      *
      * @throws PrestaShopException
-     * @throws ReflectionException
      */
     public function engineGrid($params)
     {
@@ -541,8 +516,8 @@ abstract class ModuleStatsCore extends Module
      *
      * @return Employee|false
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function getEmployee($employee = null, Context $context = null)
     {
@@ -573,8 +548,8 @@ abstract class ModuleStatsCore extends Module
     /**
      * @return string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDate()
     {
@@ -582,12 +557,12 @@ abstract class ModuleStatsCore extends Module
     }
 
     /**
-     * @param Employee | null $employee
+     * @param Employee|null $employee
      *
      * @return string
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getDateBetween($employee = null)
     {
@@ -600,9 +575,6 @@ abstract class ModuleStatsCore extends Module
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLang()
     {
@@ -617,7 +589,6 @@ abstract class ModuleStatsCore extends Module
      * @return ModuleGraphEngine or ModuleGridEngine instance
      *
      * @throws PrestaShopException
-     * @throws ReflectionException
      */
     protected static function getRenderingEngine($engineType, $type)
     {
@@ -653,10 +624,7 @@ abstract class ModuleStatsCore extends Module
     /**
      * @param int $layers
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     abstract protected function getData($layers);
 }

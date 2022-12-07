@@ -34,28 +34,19 @@
  *
  * @sin
  */
-// @codingstandardsIgnoreStart
 interface Core_Foundation_Database_DatabaseInterface
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * @param string $sqlString
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return array|false
      */
     public function select($sqlString);
 
     /**
-     * @param string $unsafeData
+     * @param mixed $unsafeData
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function escape($unsafeData);
 }

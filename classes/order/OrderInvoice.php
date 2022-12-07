@@ -31,8 +31,6 @@
 
 /**
  * Class OrderInvoiceCore
- *
- * @since 1.0.0
  */
 class OrderInvoiceCore extends ObjectModel
 {
@@ -40,9 +38,8 @@ class OrderInvoiceCore extends ObjectModel
     const TAX_INCL = 1;
     const DETAIL = 2;
 
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_invoice',
@@ -117,17 +114,14 @@ class OrderInvoiceCore extends ObjectModel
     public $note;
     /** @var int */
     public $date_add;
-    /** @var Order * */
+    /** @var Order */
     private $order;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param int $idInvoice
      *
      * @return bool|OrderInvoice
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getInvoiceByNumber($idInvoice)
@@ -164,8 +158,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getByDateInterval($dateFrom, $dateTo)
     {
@@ -190,8 +182,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getByStatus($idOrderState)
     {
@@ -216,8 +206,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getByDeliveryDateInterval($dateFrom, $dateTo)
     {
@@ -239,8 +227,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return Carrier
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCarrier($idOrderInvoice)
@@ -258,8 +244,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCarrierId($idOrderInvoice)
@@ -277,9 +261,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return OrderInvoice
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function retrieveOneById($id)
     {
@@ -297,10 +278,7 @@ class OrderInvoiceCore extends ObjectModel
      * This method should execute once on an upgraded PrestaShop to fix all OrderInvoices in one shot.
      * This method is triggered once during a (non bulk) creation of a PDF from an OrderInvoice that is not fixed yet.
      *
-     * @since   PS 1.6.1.1
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function fixAllShopAddresses()
     {
@@ -323,8 +301,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -341,8 +317,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCurrentFormattedShopAddress($idShop = null)
@@ -365,14 +339,12 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @param array|bool $products
      * @param array|bool $selectedProducts
-     * @param int|bool   $selectedQty
+     * @param int|bool $selectedQty
      *
      * @return array Products with price, quantity (with taxe and without)
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProducts($products = false, $selectedProducts = false, $selectedQty = false)
     {
@@ -448,12 +420,10 @@ class OrderInvoiceCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductsDetail()
     {
@@ -472,8 +442,6 @@ class OrderInvoiceCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function displayTaxBasesInProductTaxesBreakdown()
@@ -487,8 +455,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function useOneAfterAnotherTaxComputationMethod()
@@ -512,8 +478,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductTaxesBreakdown($order = null)
     {
@@ -579,8 +543,7 @@ class OrderInvoiceCore extends ObjectModel
     /**
      * @return Order
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrder()
     {
@@ -600,8 +563,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getShippingTaxesBreakdown(Order $order)
     {
@@ -682,8 +643,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWrappingTaxesBreakdown()
     {
@@ -757,8 +716,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEcoTaxTaxesBreakdown()
     {
@@ -818,8 +775,6 @@ class OrderInvoiceCore extends ObjectModel
      * @return array|float
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSiblingTotal($mod = self::TAX_INCL)
     {
@@ -858,8 +813,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTotalPaid()
     {
@@ -886,8 +839,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSibling()
     {
@@ -926,8 +877,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getGlobalRestPaid()
     {
@@ -961,8 +910,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isPaid()
     {
@@ -980,8 +927,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getOrderPaymentCollection()
     {
@@ -991,12 +936,10 @@ class OrderInvoiceCore extends ObjectModel
     /**
      * Get the formatted number of invoice
      *
-     * @param int      $idLang for invoice_prefix
+     * @param int $idLang for invoice_prefix
      * @param int|null $idShop
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getInvoiceNumberFormatted($idLang, $idShop = null)
@@ -1031,8 +974,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function saveCarrierTaxCalculator(array $taxesAmount)
     {
@@ -1062,8 +1003,6 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function saveWrappingTaxCalculator(array $taxesAmount)
     {
@@ -1084,13 +1023,10 @@ class OrderInvoiceCore extends ObjectModel
     }
 
     /**
-     *
      * This method allow to add image information on a product detail
      *
      * @param array &$product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setProductImageInformations(&$product)
@@ -1124,13 +1060,10 @@ class OrderInvoiceCore extends ObjectModel
     }
 
     /**
-     *
      * This method allow to add stock information on a product detail
      *
      * @param array &$product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setProductCurrentStock(&$product)
@@ -1146,11 +1079,8 @@ class OrderInvoiceCore extends ObjectModel
     }
 
     /**
-     * @param $product
-     * @param $customizedData
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $product
+     * @param array $customizedData
      */
     protected function setProductCustomizedDatas(&$product, $customizedData)
     {

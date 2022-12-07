@@ -31,15 +31,13 @@
 
 /**
  * Class AdminShopUrlControllerCore
- *
- * @since 1.0.0
  */
 class AdminShopUrlControllerCore extends AdminController
 {
     /**
      * AdminShopUrlControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -107,7 +105,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function viewAccess($disable = false)
     {
@@ -119,7 +117,8 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -144,7 +143,9 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -331,7 +332,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -363,7 +364,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -390,7 +391,9 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -460,7 +463,8 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -517,7 +521,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -546,7 +550,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -569,7 +573,7 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -595,12 +599,13 @@ class AdminShopUrlControllerCore extends AdminController
 
     /**
      * @param string $token
-     * @param int    $id
-     * @param string $name
+     * @param int $id
+     * @param string|null $name
      *
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
@@ -642,7 +647,8 @@ class AdminShopUrlControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function afterUpdate($object)
     {

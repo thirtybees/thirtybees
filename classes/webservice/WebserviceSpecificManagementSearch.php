@@ -31,16 +31,22 @@
 
 /**
  * Class WebserviceSpecificManagementSearchCore
- *
- * @since 1.0.0
  */
 class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManagementInterface
 {
-    /** @var WebserviceOutputBuilder */
+    /**
+     * @var WebserviceOutputBuilder
+     */
     protected $objOutput;
+
+    /**
+     * @var string
+     */
     protected $output;
 
-    /** @var WebserviceRequest */
+    /**
+     * @var WebserviceRequest
+     */
     protected $wsObject;
 
     /* ------------------------------------------------
@@ -50,10 +56,7 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     /**
      * @param WebserviceOutputBuilderCore $obj
      *
-     * @return WebserviceSpecificManagementInterface
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setObjectOutput(WebserviceOutputBuilderCore $obj)
     {
@@ -65,10 +68,7 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     /**
      * @param WebserviceRequestCore $obj
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setWsObject(WebserviceRequestCore $obj)
     {
@@ -79,9 +79,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
 
     /**
      * @return WebserviceRequest
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsObject()
     {
@@ -90,9 +87,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
 
     /**
      * @return WebserviceOutputBuilder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getObjectOutput()
     {
@@ -100,12 +94,9 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     }
 
     /**
-     * @param $segments
+     * @param string $segments
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUrlSegment($segments)
     {
@@ -115,10 +106,7 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getUrlSegment()
     {
@@ -126,10 +114,11 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     }
 
     /**
-     * Management of search
+     * WebserviceRequestCore
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws WebserviceException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function manage()
     {
@@ -177,9 +166,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
      * This must be return a string with specific values as WebserviceRequest expects.
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {

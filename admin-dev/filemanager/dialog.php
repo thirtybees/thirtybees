@@ -481,21 +481,41 @@ if (isset($_POST['submit'])) {
         }
     }
 
+    /**
+     * @param array $x
+     * @param array $y
+     * @return int
+     */
     function filenameSort($x, $y)
     {
         return strcmp((string)$x['file'], (string)$y['file']);
     }
 
+    /**
+     * @param array $x
+     * @param array $y
+     * @return int
+     */
     function dateSort($x, $y)
     {
         return $x['date'] - $y['date'];
     }
 
+    /**
+     * @param array $x
+     * @param array $y
+     * @return int
+     */
     function sizeSort($x, $y)
     {
         return $x['size'] - $y['size'];
     }
 
+    /**
+     * @param array $x
+     * @param array $y
+     * @return int
+     */
     function extensionSort($x, $y)
     {
         return strcmp((string)$x['extension'], (string)$y['extension']);

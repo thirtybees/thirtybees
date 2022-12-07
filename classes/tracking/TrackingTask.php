@@ -23,6 +23,7 @@ namespace Thirtybees\Core\Tracking;
 use Configuration;
 use Db;
 use Exception;
+use PrestaShopDatabaseException;
 use PrestaShopException;
 use Thirtybees\Core\InitializationCallback;
 use Thirtybees\Core\WorkQueue\ScheduledTask;
@@ -33,8 +34,6 @@ use Thirtybees\Core\WorkQueue\WorkQueueTaskCallable;
  * Class TrackingTaskCore
  *
  * Work queue task that collects information and sends them to thirty bees api server
- *
- * @since 1.3.0
  */
 class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
 {
@@ -45,12 +44,12 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
      * Collect data using all extractors that store owner gave consent. If any data are available,
      * send them to thirty bees api server
      *
-     *
      * @param WorkQueueContext $context
      * @param array $parameters
      *
-     * @throws Exception
-     * @return mixed
+     * @return string
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function execute(WorkQueueContext $context, array $parameters)
     {

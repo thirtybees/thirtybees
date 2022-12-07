@@ -31,13 +31,14 @@
 
 /**
  * Class MetaCore
- *
- * @since 1.0.0
  */
 class MetaCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $page;
+
     /**
      * @var bool $configurable
      *
@@ -45,14 +46,29 @@ class MetaCore extends ObjectModel
      * False: The meta is only a helper for a theme meta.
      */
     public $configurable = 1;
-    public $title;
-    public $description;
-    public $keywords;
-    public $url_rewrite;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var string
+     */
+    public $title;
+
+    /**
+     * @var string
+     */
+    public $description;
+
+    /**
+     * @var string
+     */
+    public $keywords;
+
+    /**
+     * @var string
+     */
+    public $url_rewrite;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'meta',
@@ -81,15 +97,13 @@ class MetaCore extends ObjectModel
     /**
      * @param bool $excludeFilled
      * @param bool $addPage
-     * @param bool $forTheme      If true, return 'forbidden' pages as well.
+     * @param bool $forTheme If true, return 'forbidden' pages as well.
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws ReflectionException
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 New parameter $forTheme.
      */
     public static function getPages(
         $excludeFilled = false,
@@ -191,8 +205,6 @@ class MetaCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMetas()
     {
@@ -212,8 +224,6 @@ class MetaCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMetasByIdLang($idLang)
     {
@@ -229,15 +239,12 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param int    $newIdLang
-     * @param int    $idLang
+     * @param int $newIdLang
+     * @param int $idLang
      * @param string $urlRewrite
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function getEquivalentUrlRewrite($newIdLang, $idLang, $urlRewrite)
@@ -260,10 +267,7 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param int    $idLang
+     * @param int $idLang
      * @param string $pageName
      * @param string $title
      *
@@ -297,17 +301,14 @@ class MetaCore extends ObjectModel
     /**
      * Get product meta tags
      *
-     *
-     * @param int    $idProduct
-     * @param int    $idLang
+     * @param int $idProduct
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductMetas($idProduct, $idLang, $pageName)
     {
@@ -332,14 +333,12 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param array   $metaTags
-     * @param string  $defaultValue
-     * @param Context $context
+     * @param array $metaTags
+     * @param string $defaultValue
+     * @param Context|null $context
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function completeMetaTags($metaTags, $defaultValue, Context $context = null)
@@ -364,15 +363,13 @@ class MetaCore extends ObjectModel
     /**
      * Get meta tags for a given page
      *
-     * @param int    $idLang
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array Meta tags
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHomeMetas($idLang, $pageName)
     {
@@ -386,14 +383,12 @@ class MetaCore extends ObjectModel
 
     /**
      * @param string $page
-     * @param int    $idLang
+     * @param int $idLang
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMetaByPage($page, $idLang)
     {
@@ -410,16 +405,14 @@ class MetaCore extends ObjectModel
     /**
      * Get category meta tags
      *
-     * @param int    $idCategory
-     * @param int    $idLang
+     * @param int $idCategory
+     * @param int $idLang
      * @param string $pageName
      * @param string $title
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategoryMetas($idCategory, $idLang, $pageName, $title = '')
     {
@@ -466,16 +459,14 @@ class MetaCore extends ObjectModel
     /**
      * Get manufacturer meta tags
      *
-     * @param int    $idManufacturer
-     * @param int    $idLang
+     * @param int $idManufacturer
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getManufacturerMetas($idManufacturer, $idLang, $pageName)
     {
@@ -503,16 +494,14 @@ class MetaCore extends ObjectModel
     /**
      * Get supplier meta tags
      *
-     * @param int    $idSupplier
-     * @param int    $idLang
+     * @param int $idSupplier
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSupplierMetas($idSupplier, $idLang, $pageName)
     {
@@ -540,16 +529,14 @@ class MetaCore extends ObjectModel
     /**
      * Get CMS meta tags
      *
-     * @param int    $idCms
-     * @param int    $idLang
+     * @param int $idCms
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCmsMetas($idCms, $idLang, $pageName)
     {
@@ -572,16 +559,14 @@ class MetaCore extends ObjectModel
     /**
      * Get CMS category meta tags
      *
-     * @param int    $idCmsCategory
-     * @param int    $idLang
+     * @param int $idCmsCategory
+     * @param int $idLang
      * @param string $pageName
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCmsCategoryMetas($idCmsCategory, $idLang, $pageName)
     {
@@ -608,8 +593,6 @@ class MetaCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -625,8 +608,6 @@ class MetaCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteSelection($selection)
@@ -646,8 +627,6 @@ class MetaCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -660,7 +639,7 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

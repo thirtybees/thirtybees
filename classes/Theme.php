@@ -31,8 +31,6 @@
 
 /**
  * Class ThemeCore
- *
- * @since 1.0.0
  */
 class ThemeCore extends ObjectModel
 {
@@ -40,11 +38,10 @@ class ThemeCore extends ObjectModel
     const CACHE_FILE_MUST_HAVE_THEMES_LIST = '/config/xml/must_have_themes_list.xml';
     const UPLOADED_THEME_DIR_NAME = 'uploaded';
 
-    // @codingStandardsIgnoreStart
     /** @var int access rights of created folders (octal) */
     public static $access_rights = 0775;
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'theme',
@@ -71,15 +68,12 @@ class ThemeCore extends ObjectModel
     public $default_right_column;
     /** @var int $product_per_page */
     public $product_per_page;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param bool $excludedIds
      *
      * @return PrestaShopCollection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getAllThemes($excludedIds = false)
@@ -140,8 +134,6 @@ class ThemeCore extends ObjectModel
     /**
      * @return PrestaShopCollection
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getThemes()
@@ -155,11 +147,12 @@ class ThemeCore extends ObjectModel
     /**
      * Find a theme by name.
      *
-     * @param string $directory
+     * @param string $name
      *
      * @return bool|Theme Theme instance on success, false if theme not found.
      *
-     * @version 1.1.0 Initial version.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getByName($name)
     {
@@ -184,8 +177,6 @@ class ThemeCore extends ObjectModel
      *
      * @return bool|Theme
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getByDirectory($directory)
@@ -209,8 +200,6 @@ class ThemeCore extends ObjectModel
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getThemeInfo($idTheme)
@@ -248,8 +237,6 @@ class ThemeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNonInstalledTheme()
     {
@@ -281,8 +268,6 @@ class ThemeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getInstalledThemeDirectories()
     {
@@ -304,8 +289,6 @@ class ThemeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isUsed()
@@ -326,8 +309,8 @@ class ThemeCore extends ObjectModel
      *
      * @return bool Insertion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -342,10 +325,8 @@ class ThemeCore extends ObjectModel
      * update the table PREFIX_theme_meta for the current theme
      *
      * @param array $metas
-     * @param bool  $fullUpdate If true, all the meta of the theme will be deleted prior the insert, otherwise only the current $metas will be deleted
+     * @param bool $fullUpdate If true, all the meta of the theme will be deleted prior the insert, otherwise only the current $metas will be deleted
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -381,8 +362,6 @@ class ThemeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function hasColumns($page)
     {
@@ -402,8 +381,6 @@ class ThemeCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasColumnsSettings($page)
@@ -420,12 +397,10 @@ class ThemeCore extends ObjectModel
     }
 
     /**
-     * @param null $page
+     * @param string|null $page
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasLeftColumn($page = null)
@@ -442,12 +417,10 @@ class ThemeCore extends ObjectModel
     }
 
     /**
-     * @param null $page
+     * @param string|null $page
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function hasRightColumn($page = null)
@@ -468,8 +441,6 @@ class ThemeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getMetas()
     {
@@ -488,9 +459,8 @@ class ThemeCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function removeMetas()
     {
@@ -504,9 +474,6 @@ class ThemeCore extends ObjectModel
     /**
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function toggleResponsive()
     {
@@ -528,9 +495,6 @@ class ThemeCore extends ObjectModel
     /**
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function toggleDefaultLeftColumn()
     {
@@ -548,9 +512,6 @@ class ThemeCore extends ObjectModel
     /**
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function toggleDefaultRightColumn()
     {
@@ -569,8 +530,6 @@ class ThemeCore extends ObjectModel
      * Get the configuration file as an array
      *
      * @return array
-     *
-     * @since 1.0.4
      */
     public function getConfiguration()
     {
@@ -594,7 +553,8 @@ class ThemeCore extends ObjectModel
      *
      * @return Theme|string Error message or Theme instance on success.
      *
-     * @version 1.1.0 Initial version.
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function installFromDir($themeDir)
     {
@@ -682,7 +642,6 @@ class ThemeCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @version 1.1.0 Excerpt from AdminThemesController->processInstallTheme().
      */
     public function installIntoShopContext()
     {
@@ -926,8 +885,6 @@ class ThemeCore extends ObjectModel
      *
      * @return SimpleXMLElement | false
      *
-     * @version 1.0.7 Initial version.
-     * @version 1.1.0 Abandon XMLs in config/xml/themes/ in favor of config.xml
      *                inside the theme directory.
      */
     public function loadConfigFile($validate = false)
@@ -956,7 +913,7 @@ class ThemeCore extends ObjectModel
      *
      * TODO: move this into Core Updater.
      *
-     * @version 1.1.0 Initial version.
+     * @return void
      */
     private function collectConfigFilesForRetrocompatibility()
     {
@@ -984,10 +941,8 @@ class ThemeCore extends ObjectModel
     /**
      * Return full path of theme's configuration file.
      *
-     * @return string|bool Path of the config file or false if none found.
+     * @return string Path of the config file or false if none found.
      *
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Abandon XMLs in config/xml/themes/ in favor of config.xml
      *                inside the theme directory.
      * @deprecated 1.1.0 Use loadConfigFile() or loadDefaultConfig() directly.
      */
@@ -1005,8 +960,6 @@ class ThemeCore extends ObjectModel
      * @param boolean $validate - if true, configuration file will be validated
      *
      * @return SimpleXMLElement | false
-     *
-     * @version 1.0.7 Initial version.
      */
     public static function loadConfigFromFile($filePath, $validate)
     {
@@ -1028,8 +981,6 @@ class ThemeCore extends ObjectModel
      * @param SimpleXMLElement $xml
      *
      * @return boolean
-     *
-     * @since 1.0.7
      */
     public static function validateConfigFile($xml)
     {
@@ -1062,13 +1013,10 @@ class ThemeCore extends ObjectModel
      * Get the default configuration file of a theme as SimpleXMLElement. This
      * works for installed themes and for theme packages before import.
      *
-     *
      * @param string $themePath Directory of the theme. For installed themes
      *                          that's _PS_ALL_THEMES_DIR_.$theme->directory.
      *
      * @return SimpleXMLElement | false
-     *
-     * @version 1.1.0 Initial version.
      */
     public static function loadDefaultConfig($themePath)
     {

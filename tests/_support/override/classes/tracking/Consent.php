@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Tracking;
 
 /**
  * Class Consent
- *
- * @since 1.3.0
  */
 class Consent extends ConsentCore
 {

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStockMvtControllerCore
- *
- * @since 1.0.0
  */
 class AdminStockMvtControllerCore extends AdminController
 {
     /**
      * AdminStockMvtControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -133,7 +131,7 @@ class AdminStockMvtControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -155,8 +153,6 @@ class AdminStockMvtControllerCore extends AdminController
      * Gets the current warehouse for this controller
      *
      * @return int warehouse_id
-     *
-     * @since 1.0.0
      */
     protected function getCurrentWarehouseId()
     {
@@ -175,11 +171,12 @@ class AdminStockMvtControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -258,11 +255,10 @@ class AdminStockMvtControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::initToolbar();
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @see AdminController::initToolbar();
      */
     public function initToolbar()
     {
@@ -284,7 +280,6 @@ class AdminStockMvtControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function renderCSV()
@@ -330,18 +325,16 @@ class AdminStockMvtControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -372,7 +365,8 @@ class AdminStockMvtControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -389,7 +383,7 @@ class AdminStockMvtControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {

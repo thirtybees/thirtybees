@@ -31,8 +31,6 @@
 
 /**
  * Class AdminCurrenciesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCurrenciesControllerCore extends AdminController
 {
@@ -40,8 +38,6 @@ class AdminCurrenciesControllerCore extends AdminController
      * AdminCurrenciesControllerCore constructor.
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -105,10 +101,8 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
-     *
      * @throws PrestaShopException
-     * @throws PrestaShopExceptionCore
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -123,9 +117,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
-     *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -278,7 +269,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processDelete()
@@ -292,11 +282,10 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function checkDeletion($object)
@@ -318,7 +307,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processStatus()
@@ -332,11 +320,10 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $object
+     * @param ObjectModel $object
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function checkDisableStatus($object)
@@ -358,8 +345,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * Update currency exchange rates
      *
-     * @since 1.0.0
-     *
      * @throws PrestaShopException
      */
     public function processExchangeRates()
@@ -370,9 +355,8 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @see   AdminController::initProcess()
+     * @see AdminController::initProcess()
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initProcess()
@@ -396,7 +380,7 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -414,7 +398,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function processBulkDelete()
@@ -434,7 +417,6 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function processBulkDisableSelection()

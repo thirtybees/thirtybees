@@ -31,8 +31,6 @@
 
 /**
  * Class ModuleFrontControllerCore
- *
- * @since 1.0.0
  */
 class ModuleFrontControllerCore extends FrontController
 {
@@ -42,8 +40,7 @@ class ModuleFrontControllerCore extends FrontController
     /**
      * ModuleFrontControllerCore constructor.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -73,9 +70,6 @@ class ModuleFrontControllerCore extends FrontController
      * @param string $template Template filename
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTemplate($template)
     {
@@ -92,9 +86,6 @@ class ModuleFrontControllerCore extends FrontController
      * @param string $template Template filename
      *
      * @return string|false
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplatePath($template)
     {
@@ -110,8 +101,7 @@ class ModuleFrontControllerCore extends FrontController
     }
 
     /**
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initContent()
     {

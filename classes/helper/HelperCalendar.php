@@ -31,8 +31,6 @@
 
 /**
  * Class HelperCalendarCore
- *
- * @since 1.0.0
  */
 class HelperCalendarCore extends Helper
 {
@@ -87,9 +85,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * HelperCalendarCore constructor.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -102,11 +97,8 @@ class HelperCalendarCore extends Helper
     /**
      * @param Traversable[] $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setActions($value)
     {
@@ -121,9 +113,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getActions()
     {
@@ -133,11 +122,8 @@ class HelperCalendarCore extends Helper
     /**
      * @param Traversable[] $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setCompareActions($value)
     {
@@ -152,9 +138,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCompareActions()
     {
@@ -164,10 +147,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setCompareDateFrom($value)
     {
@@ -178,9 +158,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCompareDateFrom()
     {
@@ -190,10 +167,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setCompareDateTo($value)
     {
@@ -204,9 +178,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCompareDateTo()
     {
@@ -216,10 +187,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setCompareOption($value)
     {
@@ -230,9 +198,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getCompareOption()
     {
@@ -242,11 +207,8 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setDateFormat($value)
     {
@@ -261,9 +223,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDateFormat()
     {
@@ -273,10 +232,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setDateFrom($value)
     {
@@ -288,9 +244,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDateFrom()
     {
@@ -300,10 +253,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setDateTo($value)
     {
@@ -314,9 +264,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return false|string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDateTo()
     {
@@ -326,10 +273,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setRTL($value)
     {
@@ -341,10 +285,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $action
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function addAction($action)
     {
@@ -355,10 +296,7 @@ class HelperCalendarCore extends Helper
     /**
      * @param string $action
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function addCompareAction($action)
     {
@@ -369,10 +307,8 @@ class HelperCalendarCore extends Helper
     /**
      * @return string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function generate()
     {
@@ -417,9 +353,6 @@ class HelperCalendarCore extends Helper
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function isRTL()
     {

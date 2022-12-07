@@ -31,8 +31,6 @@
 
 /**
  * Class AttachmentControllerCore
- *
- * @since 1.0.0
  */
 class AttachmentControllerCore extends FrontController
 {
@@ -41,7 +39,8 @@ class AttachmentControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

@@ -31,8 +31,6 @@
 
 /**
  * Class PasswordControllerCore
- *
- * @since 1.0.0
  */
 class PasswordControllerCore extends FrontController
 {
@@ -54,7 +52,6 @@ class PasswordControllerCore extends FrontController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -121,7 +118,6 @@ class PasswordControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initContent()

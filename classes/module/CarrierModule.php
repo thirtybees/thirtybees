@@ -31,29 +31,21 @@
 
 /**
  * Class CarrierModuleCore
- *
- * @since 1.0.0
  */
 abstract class CarrierModuleCore extends Module
 {
     /**
-     * @param array       $params
+     * @param CartCore $params
      * @param float|false $shippingCost
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return float|false
      */
     abstract public function getOrderShippingCost($params, $shippingCost);
 
     /**
-     * @param array $params
+     * @param CartCore $params
      *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return float|false
      */
     abstract public function getOrderShippingCostExternal($params);
 }

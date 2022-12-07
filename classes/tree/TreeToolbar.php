@@ -34,19 +34,36 @@ class TreeToolbarCore implements ITreeToolbarCore
     const DEFAULT_TEMPLATE_DIRECTORY = 'helpers/tree';
     const DEFAULT_TEMPLATE = 'tree_toolbar.tpl';
 
-    // @codingStandardsIgnoreStart
+    /**
+     * @var ITreeToolbarButtonCore[]
+     */
     protected $_actions;
+
+    /**
+     * @var Context
+     */
     protected $_context;
+
+    /**
+     * @var array
+     */
     protected $_data;
+
+    /**
+     * @var string
+     */
     protected $_template;
+
+    /**
+     * @var string
+     */
     protected $_template_directory;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function __toString()
     {
@@ -54,12 +71,9 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $actions
+     * @param ITreeToolbarButtonCore[] $actions
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setActions($actions)
     {
@@ -73,10 +87,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return ITreeToolbarButtonCore[]
      */
     public function getActions()
     {
@@ -88,12 +99,9 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $value
+     * @param Context $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setContext($value)
     {
@@ -104,9 +112,6 @@ class TreeToolbarCore implements ITreeToolbarCore
 
     /**
      * @return Context
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContext()
     {
@@ -118,13 +123,10 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setData($value)
     {
@@ -138,10 +140,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array
      */
     public function getData()
     {
@@ -149,12 +148,9 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplate($value)
     {
@@ -164,10 +160,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getTemplate()
     {
@@ -179,12 +172,9 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setTemplateDirectory($value)
     {
@@ -195,9 +185,6 @@ class TreeToolbarCore implements ITreeToolbarCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTemplateDirectory()
     {
@@ -211,12 +198,11 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTemplateFile($template)
     {
@@ -260,11 +246,8 @@ class TreeToolbarCore implements ITreeToolbarCore
     /**
      * @param ITreeToolbarButtonCore $action
      *
-     * @return TreeToolbar
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addAction($action)
     {
@@ -292,10 +275,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function removeActions()
     {
@@ -305,15 +285,14 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @return mixed
+     * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function render()
     {
         foreach ($this->getActions() as $action) {
-            /** @var ITreeToolbarButton $action */
             $action->setAttribute('data', $this->getData());
         }
 
@@ -324,7 +303,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     }
 
     /**
-     * @param $directory
+     * @param string $directory
      *
      * @return string
      *

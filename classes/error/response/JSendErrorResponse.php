@@ -23,11 +23,12 @@ use Thirtybees\Core\Error\ErrorDescription;
 
 /**
  * Class JSendErrorResponse
- *
- * @since 1.4.0
  */
 class JSendErrorResponseCore extends AbstractErrorPage
 {
+    /**
+     * @var bool
+     */
     protected $sendErrorMessage;
 
     /**
@@ -59,6 +60,10 @@ class JSendErrorResponseCore extends AbstractErrorPage
         ], JSON_PRETTY_PRINT);
     }
 
+    /**
+     * @param ErrorDescription $errorDescription
+     * @return string
+     */
     protected function getResponseMessage(ErrorDescription $errorDescription)
     {
         if ($this->sendErrorMessage) {

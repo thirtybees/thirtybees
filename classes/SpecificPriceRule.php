@@ -31,14 +31,11 @@
 
 /**
  * Class SpecificPriceRuleCore
- *
- * @since 1.0.0
  */
 class SpecificPriceRuleCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'specific_price_rule',
@@ -100,44 +97,36 @@ class SpecificPriceRuleCore extends ObjectModel
             'id_group'    => ['xlink_resource' => 'groups', 'required' => true],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function disableAnyApplication()
     {
-        // @codingStandardsIgnoreStart
         static::$rules_application_enable = false;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function enableAnyApplication()
     {
-        // @codingStandardsIgnoreStart
         static::$rules_application_enable = true;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * @param array|bool $products
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
+     *
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function applyAllRules($products = false)
     {
-        // @codingStandardsIgnoreStart
         if (!static::$rules_application_enable) {
             return;
         }
-        // @codingStandardsIgnoreEnd
 
         $rules = new PrestaShopCollection('SpecificPriceRule');
         foreach ($rules as $rule) {
@@ -149,18 +138,16 @@ class SpecificPriceRuleCore extends ObjectModel
     /**
      * @param bool $products
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function apply($products = false)
     {
-        // @codingStandardsIgnoreStart
         if (!static::$rules_application_enable) {
             return;
         }
-        // @codingStandardsIgnoreEnd
 
         $this->resetApplication($products);
         $products = $this->getAffectedProducts($products);
@@ -174,9 +161,8 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function resetApplication($products = false)
     {
@@ -287,8 +273,6 @@ class SpecificPriceRuleCore extends ObjectModel
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getConditions()
@@ -325,14 +309,12 @@ class SpecificPriceRuleCore extends ObjectModel
     }
 
     /**
-     * @param int  $idRule
-     * @param int  $idProduct
-     * @param null $idProductAttribute
+     * @param int $idRule
+     * @param int $idProduct
+     * @param int|null $idProductAttribute
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function applyRuleToProduct($idRule, $idProduct, $idProductAttribute = null)
@@ -374,8 +356,6 @@ class SpecificPriceRuleCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -388,8 +368,6 @@ class SpecificPriceRuleCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -416,8 +394,6 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addConditions($conditions)
     {

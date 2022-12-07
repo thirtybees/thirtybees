@@ -31,15 +31,11 @@
 
 /**
  * Class ConfigurationTestCore
- *
- * @since 1.0.0
  */
 class ConfigurationTestCore
 {
     /**
      * @var array $testFiles
-     *
-     * @since 1.0.0 Renamed from $test_files
      */
     public static $testFiles = [
         '/cache/smarty/compile',
@@ -68,9 +64,6 @@ class ConfigurationTestCore
      * all path are _PS_ROOT_DIR_ related
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDefaultTests()
     {
@@ -118,9 +111,6 @@ class ConfigurationTestCore
      * key are method name, value are parameters (false for no parameter)
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDefaultTestsOp()
     {
@@ -135,9 +125,6 @@ class ConfigurationTestCore
      * @param array $tests
      *
      * @return array results of tests
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function check($tests)
     {
@@ -151,13 +138,9 @@ class ConfigurationTestCore
 
     /**
      * @param string $ptr
-     * @param int    $arg
+     * @param int $arg
      *
      * @return string 'ok' on success, 'fail' or error message on failure.
-     *
-     * @since   1.0.2 Also report error message.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function run($ptr, $arg = 0)
     {
@@ -181,9 +164,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testPdoMysql()
     {
@@ -191,9 +171,11 @@ class ConfigurationTestCore
     }
 
     /**
+     * @param string|null $report
      * @return bool
      *
-     * @since   1.0.8
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function testMysqlVersion(&$report = null)
     {
@@ -214,8 +196,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public static function testBcmath()
     {
@@ -224,8 +204,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public static function testXml()
     {
@@ -234,8 +212,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public static function testJson()
     {
@@ -244,8 +220,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public static function testZip()
     {
@@ -254,9 +228,6 @@ class ConfigurationTestCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testUpload()
     {
@@ -265,9 +236,6 @@ class ConfigurationTestCore
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testFopen()
     {
@@ -278,10 +246,6 @@ class ConfigurationTestCore
      * @param array $funcs
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testSystem($funcs, &$report = null)
     {
@@ -297,9 +261,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testGd()
     {
@@ -308,9 +269,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.1
-     * @version 1.0.1 Initial version
      */
     public static function testMaxExecutionTime()
     {
@@ -320,9 +278,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testGz()
     {
@@ -337,10 +292,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testConfigDir($dir, &$report = null)
     {
@@ -350,15 +301,12 @@ class ConfigurationTestCore
     /**
      * Test if directory is writable
      *
-     * @param string $dir        Directory path, absolute or relative
-     * @param bool   $recursive
-     * @param null   $fullReport
-     * @param bool   $absolute   Is absolute path to directory
+     * @param string $dir Directory path, absolute or relative
+     * @param bool $recursive
+     * @param string|null $fullReport
+     * @param bool $absolute Is absolute path to directory
      *
      * @return bool
-     *
-     * @since   1.0.0 Added $absolute parameter
-     * @version 1.0.0 Initial version
      */
     public static function testDir($dir, $recursive = false, &$fullReport = null, $absolute = false)
     {
@@ -409,10 +357,6 @@ class ConfigurationTestCore
      * @param string $fileRelative
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testFile($fileRelative, &$report = null)
     {
@@ -435,10 +379,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testLogDir($dir, &$report = null)
     {
@@ -449,10 +389,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testImgDir($dir, &$report = null)
     {
@@ -463,10 +399,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testModuleDir($dir, &$report = null)
     {
@@ -477,10 +409,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testCacheDir($dir, &$report = null)
     {
@@ -491,10 +419,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testMailsDir($dir, &$report = null)
     {
@@ -505,10 +429,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testTranslationsDir($dir, &$report = null)
     {
@@ -519,10 +439,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testThemeLangDir($dir, &$report = null)
     {
@@ -538,10 +454,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testThemePdfLangDir($dir, &$report = null)
     {
@@ -557,10 +469,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testThemeCacheDir($dir, &$report = null)
     {
@@ -576,10 +484,6 @@ class ConfigurationTestCore
      * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testCustomizableProductsDir($dir, &$report = null)
     {
@@ -587,13 +491,9 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param $dir
-     * @param null $report
+     * @param string $dir
+     * @param string|null $report
      * @return bool
-     *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testVirtualProductsDir($dir, &$report = null)
     {
@@ -602,9 +502,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testMbstring()
     {
@@ -613,8 +510,6 @@ class ConfigurationTestCore
 
     /**
      * @return bool
-     *
-     * @since 1.1.0
      */
     public static function testOpenSSL()
     {
@@ -629,9 +524,6 @@ class ConfigurationTestCore
      * @param bool $full
      *
      * @return array|bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testFiles($full = false)
     {

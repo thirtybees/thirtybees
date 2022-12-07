@@ -31,12 +31,9 @@
 
 /**
  * Class AdminEmployeesControllerCore
- *
- * @since 1.0.0
  */
 class AdminEmployeesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var array profiles list */
     protected $profiles_array = [];
 
@@ -48,12 +45,11 @@ class AdminEmployeesControllerCore extends AdminController
 
     /** @var bool $restrict_edition */
     protected $restrict_edition = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminEmployeesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -215,7 +211,7 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -228,7 +224,7 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -259,7 +255,8 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -275,7 +272,9 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -490,7 +489,8 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return bool|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -504,7 +504,8 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function canModifyEmployee()
     {
@@ -535,7 +536,7 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processStatus()
     {
@@ -549,7 +550,8 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -673,11 +675,10 @@ class AdminEmployeesControllerCore extends AdminController
 
 
     /**
-     * @param bool $className
+     * @param string|bool $className
      *
-     * @return bool
-     *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function validateRules($className = false)
     {
@@ -690,13 +691,11 @@ class AdminEmployeesControllerCore extends AdminController
             ));
         }
 
-        return parent::validateRules($className);
+        parent::validateRules($className);
     }
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -714,7 +713,8 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -726,14 +726,14 @@ class AdminEmployeesControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
+     * @param int $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int $start
+     * @param int|null $limit
      * @param bool $idLangShop
      *
-     * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function getList(
         $idLang,
@@ -753,7 +753,7 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * Ajax process get tab by id profile
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetTabByIdProfile()
     {
@@ -778,7 +778,8 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _childValidation()
     {
@@ -803,7 +804,8 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {
@@ -825,7 +827,7 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function afterUpdate($object)
     {
@@ -855,7 +857,6 @@ class AdminEmployeesControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function ajaxProcessFormLanguage()
     {
@@ -871,7 +872,7 @@ class AdminEmployeesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function ajaxProcessToggleMenu()
     {

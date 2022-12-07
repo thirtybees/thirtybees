@@ -31,8 +31,6 @@
 
 /**
  * This class requires the PECL APC extension or PECL APCu extension to be installed
- *
- * @since 1.5.0
  */
 class CacheApcuCore extends CacheCore
 {
@@ -55,9 +53,6 @@ class CacheApcuCore extends CacheCore
      * @param string $key Cache key
      *
      * @return bool Whether the key was deleted
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete($key)
     {
@@ -86,9 +81,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::_set()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -97,9 +89,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::_get()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _get($key)
     {
@@ -108,9 +97,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::_exists()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _exists($key)
     {
@@ -119,9 +105,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::_delete()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _delete($key)
     {
@@ -130,9 +113,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::_writeKeys()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _writeKeys()
     {
@@ -140,9 +120,6 @@ class CacheApcuCore extends CacheCore
 
     /**
      * @see Cache::flush()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function flush()
     {
@@ -152,15 +129,12 @@ class CacheApcuCore extends CacheCore
     /**
      * Store data in the cache
      *
-     * @param string $key   Cache Key
-     * @param mixed  $value Value
-     * @param int    $ttl   Time to live in the cache
+     * @param string $key Cache Key
+     * @param mixed $value Value
+     * @param int $ttl Time to live in the cache
      *                      0 = unlimited
      *
      * @return bool Whether the data was successfully stored.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function set($key, $value, $ttl = 0)
     {
@@ -173,9 +147,6 @@ class CacheApcuCore extends CacheCore
      * @param string $key Cache key
      *
      * @return mixed Data
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function get($key)
     {
@@ -188,9 +159,6 @@ class CacheApcuCore extends CacheCore
      * @param string $key Cache key
      *
      * @return bool Whether the data has been cached
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function exists($key)
     {

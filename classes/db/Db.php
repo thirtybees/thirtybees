@@ -35,8 +35,6 @@ if (file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
 
 /**
  * Class DbCore
- *
- * @since 1.0.0
  */
 abstract class DbCore
 {
@@ -74,20 +72,28 @@ abstract class DbCore
      */
     protected $is_cache_enabled = false;
 
-    /** @var PDO Resource link */
+    /**
+     * @var PDO Resource link
+     */
     protected $link;
 
-    /** @var PDOStatement|bool SQL cached result */
+    /**
+     * @var PDOStatement|false SQL cached result
+     */
     protected $result;
 
-    /** @var array List of DB instances */
+    /**
+     * @var array List of DB instances
+     */
     public static $instance = [];
 
-    /** @var array List of server settings */
+    /**
+     * @var array List of server settings
+     */
     public static $_servers = [];
 
-    /** @var null Flag used to load slave servers only once.
-     * See loadSlaveServers() method.
+    /**
+     * @var bool|null Flag used to load slave servers only once
      */
     public static $_slave_servers_loaded = null;
 
@@ -134,14 +140,14 @@ abstract class DbCore
      * Execute a query and get result resource
      *
      * @param string $sql
-     * @return PDOStatement|bool
+     * @return PDOStatement|false
      */
     abstract protected function _query($sql);
 
     /**
      * Get number of rows in a result
      *
-     * @param mixed $result
+     * @param PDOStatement $result
      * @return int
      */
     abstract protected function _numRows($result);
@@ -226,7 +232,7 @@ abstract class DbCore
      * Sets time zone for database connection.
      *
      * @param string $timezone
-     * @return string
+     * @return void
      */
     abstract public function setTimeZone($timezone);
 
@@ -250,8 +256,8 @@ abstract class DbCore
      * @param bool $master Decides whether the connection to be returned by the master server or the slave server
      * @return Db Singleton instance of Db object
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getInstance($master = true)
     {
@@ -294,11 +300,8 @@ abstract class DbCore
     }
 
     /**
-     * @param $testDb Db
+     * @param Db $testDb
      * Unit testing purpose only
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function setInstanceForTesting($testDb)
     {
@@ -308,8 +311,7 @@ abstract class DbCore
     /**
      * Unit testing purpose only
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function deleteTestingInstance()
     {
@@ -319,8 +321,7 @@ abstract class DbCore
     /**
      * Loads configuration settings for slave servers if needed.
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     protected static function loadSlaveServers()
     {
@@ -340,9 +341,6 @@ abstract class DbCore
      * Returns the best child layer database class.
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getClass()
     {
@@ -352,14 +350,11 @@ abstract class DbCore
     /**
      * Instantiates a database connection
      *
-     * @param string $server   Server address
-     * @param string $user     User login
+     * @param string $server Server address
+     * @param string $user User login
      * @param string $password User password
      * @param string $database Database name
-     * @param bool   $connect  If false, don't connect in constructor (since 1.5.0.1)
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param bool $connect If false, don't connect in constructor (since 1.5.0.1)
      */
     public function __construct($server, $user, $password, $database, $connect = true)
     {
@@ -377,9 +372,6 @@ abstract class DbCore
     /**
      * Disable the use of the cache
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @deprecated 1.0.4 For backwards compatibility only
      */
     public function disableCache()
@@ -389,9 +381,6 @@ abstract class DbCore
 
     /**
      * Enable & flush the cache
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      *
      * @deprecated 1.0.4 For backwards compatibility only
      */
@@ -403,8 +392,7 @@ abstract class DbCore
     /**
      * Closes connection to database
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function __destruct()
     {
@@ -419,19 +407,16 @@ abstract class DbCore
      * @deprecated 1.5.0.1 Use insert() or update() method instead.
      *
      * @param string $table
-     * @param array  $data
-     * @param string $type     (INSERT, INSERT IGNORE, REPLACE, UPDATE).
+     * @param array $data
+     * @param string $type (INSERT, INSERT IGNORE, REPLACE, UPDATE).
      * @param string $where
-     * @param int    $limit
-     * @param bool   $useCache
-     * @param bool   $useNull
+     * @param int $limit
+     * @param bool $useCache
+     * @param bool $useNull
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function autoExecute($table, $data, $type, $where = '', $limit = 0, $useCache = true, $useNull = false)
     {
@@ -457,17 +442,15 @@ abstract class DbCore
     /**
      * Filter SQL query within a blacklist
      *
-     * @param string $table  Table where insert/update data
-     * @param array  $values Data to insert/update
-     * @param string $type   INSERT or UPDATE
-     * @param string $where  WHERE clause, only for UPDATE (optional)
-     * @param int    $limit  LIMIT clause (optional)
+     * @param string $table Table where insert/update data
+     * @param array $values Data to insert/update
+     * @param string $type INSERT or UPDATE
+     * @param string $where WHERE clause, only for UPDATE (optional)
+     * @param int $limit LIMIT clause (optional)
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function autoExecuteWithNullValues($table, $values, $type, $where = '', $limit = 0)
@@ -480,7 +463,8 @@ abstract class DbCore
      *
      * @param string|DbQuery $sql
      *
-     * @return bool|PDOStatement
+     * @return PDOStatement|false
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -508,18 +492,16 @@ abstract class DbCore
     /**
      * Executes an INSERT query
      *
-     * @param string $table      Table name without prefix
-     * @param array  $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
-     * @param bool   $nullValues If we want to use NULL values instead of empty quotes
-     * @param bool   $useCache
-     * @param int    $type       Must be static::INSERT or static::INSERT_IGNORE or static::REPLACE
-     * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
+     * @param string $table Table name without prefix
+     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param bool $nullValues If we want to use NULL values instead of empty quotes
+     * @param bool $useCache
+     * @param int $type Must be static::INSERT or static::INSERT_IGNORE or static::REPLACE
+     * @param bool $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function insert($table, $data, $nullValues = false, $useCache = true, $type = self::INSERT, $addPrefix = true)
@@ -599,13 +581,13 @@ abstract class DbCore
     /**
      * Executes an UPDATE query
      *
-     * @param string         $table      Table name without prefix
-     * @param array          $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
-     * @param string | array $where      WHERE condition
-     * @param int            $limit
-     * @param bool           $nullValues If we want to use NULL values instead of empty quotes
-     * @param bool           $useCache
-     * @param bool           $addPrefix  Add or not _DB_PREFIX_ before table name
+     * @param string $table Table name without prefix
+     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param string|array $where WHERE condition
+     * @param int $limit
+     * @param bool $nullValues If we want to use NULL values instead of empty quotes
+     * @param bool $useCache
+     * @param bool $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
      *
@@ -652,11 +634,11 @@ abstract class DbCore
     /**
      * Executes a DELETE query
      *
-     * @param string       $table     Name of the table to delete
-     * @param string|array $where     WHERE clause on query
-     * @param int          $limit     Number max of rows to delete
-     * @param bool         $useCache  Use cache or not
-     * @param bool         $addPrefix Add or not _DB_PREFIX_ before table name
+     * @param string $table Name of the table to delete
+     * @param string|array $where WHERE clause on query
+     * @param int $limit Number max of rows to delete
+     * @param bool $useCache Use cache or not
+     * @param bool $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
      * @throws PrestaShopDatabaseException
@@ -683,7 +665,7 @@ abstract class DbCore
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache
+     * @param bool $useCache
      *
      * @return bool
      * @throws PrestaShopException
@@ -702,11 +684,11 @@ abstract class DbCore
     /**
      * Executes return the result of $sql as array
      *
-     * @param string|DbQuery $sql      Query to execute
-     * @param bool           $array    Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
-     * @param bool           $useCache Deprecated, the internal query cache is no longer used
+     * @param string|DbQuery $sql Query to execute
+     * @param bool $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
-     * @return array|bool|null|PDOStatement
+     * @return array|bool|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -759,7 +741,6 @@ abstract class DbCore
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.4.0 Method introduced in thirty bees 1.4.0
      */
     public function getArray($sql)
     {
@@ -773,8 +754,8 @@ abstract class DbCore
      * Returns an associative array containing the first row of the query
      * This function automatically adds "LIMIT 1" to the query
      *
-     * @param string|DbQuery $sql      the select query (without "LIMIT 1")
-     * @param bool           $useCache Deprecated, the internal query cache is no longer used
+     * @param string|DbQuery $sql the select query (without "LIMIT 1")
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|false
      * @throws PrestaShopDatabaseException
@@ -810,9 +791,9 @@ abstract class DbCore
      * Returns a value from the first row, first column of a SELECT query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache Deprecated, the internal query cache is no longer used
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
-     * @return mixed
+     * @return mixed|false
      * @throws PrestaShopException
      */
     public function getValue($sql, $useCache = true)
@@ -828,7 +809,6 @@ abstract class DbCore
      * Get number of rows for last result
      *
      * @return int
-     * @throws PrestaShopException
      */
     public function numRows()
     {
@@ -845,7 +825,7 @@ abstract class DbCore
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache Deprecated, the internal query cache is no longer used
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
      * @return bool|PDOStatement
      * @throws PrestaShopDatabaseException
@@ -876,8 +856,8 @@ abstract class DbCore
      * Sanitize data which will be injected into SQL query
      *
      * @param string $string SQL data which will be injected into SQL query
-     * @param bool   $htmlOk Does data contain HTML code ? (optional)
-     * @param bool   $bqSql  Escape backquotes
+     * @param bool $htmlOk Does data contain HTML code ? (optional)
+     * @param bool $bqSql Escape backquotes
      *
      * @return string Sanitized data
      */
@@ -901,13 +881,13 @@ abstract class DbCore
     /**
      * Try a connection to the database
      *
-     * @param string      $server Server address
-     * @param string      $user Login for database connection
-     * @param string      $pwd Password for database connection
-     * @param string      $db Database name
-     * @param bool        $newDbLink
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
+     * @param bool $newDbLink
      * @param string|bool $engine
-     * @param int         $timeout
+     * @param int $timeout
      *
      * @return int Error code or 0 if connection was successful
      */
@@ -981,7 +961,7 @@ abstract class DbCore
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache
+     * @param bool $useCache
      *
      * @return array|bool|PDOStatement
      * @throws PrestaShopDatabaseException
@@ -1036,9 +1016,6 @@ abstract class DbCore
      * Get used link instance
      *
      * @return PDO Resource
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLink()
     {

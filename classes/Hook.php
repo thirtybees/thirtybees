@@ -31,49 +31,56 @@
 
 /**
  * Class HookCore
- *
- * @since 1.0.0
  */
 class HookCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var array List of executed hooks on this page
      */
     public static $executed_hooks = [];
+
+    /**
+     * @var array
+     */
     public static $native_module;
+
     /**
      * @deprecated 1.0.0
      */
     protected static $_hook_modules_cache = null;
+
     /**
      * @deprecated 1.0.0
      */
     protected static $_hook_modules_cache_exec = null;
+
     /**
      * @var string Hook name identifier
      */
     public $name;
+
     /**
      * @var string Hook title (displayed in BO)
      */
     public $title;
+
     /**
      * @var string Hook description
      */
     public $description;
+
     /**
      * @var bool
      */
     public $position = false;
+
     /**
      * @var bool Is this hook usable with live edit ?
      */
     public $live_edit = false;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'hook',
@@ -96,8 +103,6 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHooks($position = false)
     {
@@ -112,8 +117,6 @@ class HookCore extends ObjectModel
     /**
      * Return hook ID from name
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getNameById($hookId)
@@ -137,8 +140,6 @@ class HookCore extends ObjectModel
     /**
      * Return hook live edit bool from ID
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLiveEditById($hookId)
@@ -162,8 +163,6 @@ class HookCore extends ObjectModel
     /**
      * Return Hooks List
      *
-     * @since   1.5.0
-     *
      * @param int $idHook
      * @param int $idModule
      *
@@ -171,8 +170,6 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getModulesFromHook($idHook, $idModule = null)
     {
@@ -193,8 +190,6 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHookModuleList()
     {
@@ -237,13 +232,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
+     * @param int $newOrderStatusId
+     * @param int $idOrder
      *
-     * @param $newOrderStatusId
-     * @param $idOrder
-     *
-     * @return bool|string
+     * @return bool
      * @throws PrestaShopException
+     *@deprecated 1.0.0
      */
     public static function updateOrderStatus($newOrderStatusId, $idOrder)
     {
@@ -271,9 +265,6 @@ class HookCore extends ObjectModel
      * @return string|array modules output
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function exec(
         $hookName,
@@ -323,20 +314,17 @@ class HookCore extends ObjectModel
     /**
      * Execute modules for specified hook
      *
-     * @param string $hookName        Hook Name
-     * @param array  $hookArgs        Parameters for the functions
-     * @param int    $idModule        Execute hook for this module only
-     * @param bool   $arrayReturn     If specified, module output will be set by name in an array
-     * @param bool   $checkExceptions Check permission exceptions
-     * @param bool   $usePush         @deprecated since thirty bees 1.5
-     * @param int    $idShop          If specified, hook will be executed for shop with this ID
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param int $idModule Execute hook for this module only
+     * @param bool $arrayReturn If specified, module output will be set by name in an array
+     * @param bool $checkExceptions Check permission exceptions
+     * @param bool $usePush @deprecated since thirty bees 1.5
+     * @param int $idShop If specified, hook will be executed for shop with this ID
      *
      * @throws PrestaShopException
      *
      * @return string|array modules output
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function execWithoutCache(
         $hookName,
@@ -510,12 +498,10 @@ class HookCore extends ObjectModel
      *
      * @param string $hookName Get list of modules for this hook if given
      *
-     * @return array
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHookModuleExecList($hookName = null)
     {
@@ -638,15 +624,12 @@ class HookCore extends ObjectModel
     /**
      * Return backward compatibility hook name
      *
-     *
      * @param string $hookName Hook name
      *
      * @return string alternate hook name
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRetroHookName($hookName)
     {
@@ -669,13 +652,10 @@ class HookCore extends ObjectModel
     /**
      * Get list of hook alias
      *
-     *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHookAliasList()
     {
@@ -705,8 +685,6 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getIdByName($hookName)
     {
@@ -743,14 +721,12 @@ class HookCore extends ObjectModel
     /**
      * @param Module $module
      * @param string $method
-     * @param array  $params
+     * @param array $params
      *
-     * @return mixed
+     * @return string|array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function coreCallHook($module, $method, $params)
     {
@@ -797,12 +773,9 @@ class HookCore extends ObjectModel
     /**
      * @param string $display
      * @param Module $moduleInstance
-     * @param int    $idHook
+     * @param int $idHook
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function wrapLiveEdit($display, $moduleInstance, $idHook)
     {
@@ -820,12 +793,13 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param int $newOrderStatusId
      * @param int $idOrder
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function postUpdateOrderStatus($newOrderStatusId, $idOrder)
     {
@@ -838,11 +812,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param int $idOrder
      *
      * @return bool|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function orderConfirmation($idOrder)
     {
@@ -867,12 +842,13 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param int $idOrder
      * @param int $idModule
      *
      * @return bool|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function paymentReturn($idOrder, $idModule)
     {
@@ -897,12 +873,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param mixed $pdf
-     * @param int   $idOrder
+     * @param int $idOrder
      *
      * @return bool|string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function PDFInvoice($pdf, $idOrder)
     {
@@ -915,11 +891,11 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param string $module
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function backBeforePayment($module)
     {
@@ -930,12 +906,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
-     * @param int     $idCarrier
+     * @param int $idCarrier
      * @param Carrier $carrier
      *
      * @return bool|string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function updateCarrier($idCarrier, $carrier)
     {
@@ -1003,11 +979,11 @@ class HookCore extends ObjectModel
      *
      * @deprecated 1.0.0
      *
-     * @param Cart     $cart
-     * @param Order    $order
+     * @param Cart $cart
+     * @param Order $order
      * @param Customer $customer
      * @param Currency $currency
-     * @param int      $orderStatus
+     * @param int $orderStatus
      *
      * @throws PrestaShopException
      *
@@ -1029,12 +1005,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
-     * @param Product    $product
+     * @param Product $product
      * @param Order|null $order
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function updateQuantity($product, $order = null)
     {
@@ -1044,12 +1020,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
-     * @param Product  $product
+     * @param Product $product
      * @param Category $category
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function productFooter($product, $category)
     {
@@ -1059,11 +1035,11 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param Product $product
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function productOutOfStock($product)
     {
@@ -1073,11 +1049,11 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param Product $product
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function addProduct($product)
     {
@@ -1087,11 +1063,11 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param Product $product
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function updateProduct($product)
     {
@@ -1101,11 +1077,11 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @deprecated 1.0.0
-     *
      * @param Product $product
      *
      * @return string
+     * @throws PrestaShopException
+     * @deprecated 1.0.0
      */
     public static function deleteProduct($product)
     {
@@ -1115,6 +1091,8 @@ class HookCore extends ObjectModel
     }
 
     /**
+     * @return string|false
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public static function updateProductAttribute($idProductAttribute)
@@ -1130,8 +1108,8 @@ class HookCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {

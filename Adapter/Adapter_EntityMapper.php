@@ -31,28 +31,21 @@
 
 /**
  * Class Adapter_EntityMapper
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_EntityMapper
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * Load ObjectModel
      *
-     * @param int    $id
-     * @param int    $idLang
+     * @param int $id
+     * @param int $idLang
      * @param object $entity
-     * @param mixed  $entityDefs
-     * @param int    $idShop
-     * @param bool   $shouldCacheObjects
+     * @param mixed $entityDefs
+     * @param int $idShop
+     * @param bool $shouldCacheObjects
      *
      * @throws PrestaShopDatabaseException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function load($id, $idLang, $entity, $entityDefs, $idShop, $shouldCacheObjects)
     {

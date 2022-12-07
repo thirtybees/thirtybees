@@ -31,8 +31,6 @@
 
 /**
  * Class AdminSearchControllerCore
- *
- * @since 1.0.0
  */
 class AdminSearchControllerCore extends AdminController
 {
@@ -40,7 +38,6 @@ class AdminSearchControllerCore extends AdminController
      * AdminSearchControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -55,7 +52,6 @@ class AdminSearchControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -171,13 +167,10 @@ class AdminSearchControllerCore extends AdminController
     /**
      * Search a feature in all store
      *
-     * @params string $query String to find in the catalog
-     *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function searchFeatures()
     {
@@ -235,12 +228,9 @@ class AdminSearchControllerCore extends AdminController
     /**
      * Search a specific string in the products and categories
      *
-     * @params string $query String to find in the catalog
-     *
      * @return void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function searchCatalog()
     {
@@ -251,13 +241,10 @@ class AdminSearchControllerCore extends AdminController
     /**
      * Search a specific name in the customers
      *
-     * @params string $query String to find in the catalog
-     *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function searchCustomer()
     {
@@ -269,7 +256,8 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function searchIP()
     {
@@ -286,7 +274,6 @@ class AdminSearchControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function searchModule()
     {
@@ -306,7 +293,6 @@ class AdminSearchControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -318,8 +304,6 @@ class AdminSearchControllerCore extends AdminController
      * Initialize toolbar
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -329,8 +313,6 @@ class AdminSearchControllerCore extends AdminController
      * Initialize toolbar title
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbarTitle()
     {
@@ -345,7 +327,6 @@ class AdminSearchControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderView()
     {
@@ -459,8 +440,6 @@ class AdminSearchControllerCore extends AdminController
      * Extend this to remove buttons
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function initProductList()
     {
@@ -481,7 +460,7 @@ class AdminSearchControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function initCustomerList()
     {
@@ -503,8 +482,6 @@ class AdminSearchControllerCore extends AdminController
      * Initialize order list
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     protected function initOrderList()
     {

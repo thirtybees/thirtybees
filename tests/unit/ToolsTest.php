@@ -10,6 +10,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Preparation
+     *
+     * @return void
      */
     protected function _before()
     {
@@ -19,6 +21,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Cleanup
+     *
+     * @return void
      */
     protected function _after()
     {
@@ -26,6 +30,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Default getValue test
+     *
+     * @return void
      */
     public function testGetValueBaseCase()
     {
@@ -38,6 +44,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Test non existing value
+     *
+     * @return void
      */
     public function testGetValueDefaultValueIsFalse()
     {
@@ -46,6 +54,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * test vetValue with default
+     *
+     * @return void
      */
     public function testGetValueUsesDefaultValue()
     {
@@ -54,6 +64,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Test priority
+     *
+     * @return void
      */
     public function testGetValuePrefersPost()
     {
@@ -69,6 +81,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Test keys
+     *
+     * @return void
      */
     public function testGetValueAcceptsOnlyTruthyStringsAsKeys()
     {
@@ -238,6 +252,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Data provider for testParseNumber test
+     *
+     * @return array
      */
     public function parseNumberData()
     {
@@ -319,6 +335,8 @@ class ToolsTest extends \Codeception\TestCase\Test
 
     /**
      * Data provider for testParseNumber test
+     *
+     * @return array
      */
     public function linkRewriteData()
     {

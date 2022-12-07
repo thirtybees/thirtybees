@@ -31,12 +31,9 @@
 
 /**
  * Class AddressFormatCore
- *
- * @since 1.0.0
  */
 class AddressFormatCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_address_format;
     /** @var int */
@@ -45,10 +42,9 @@ class AddressFormatCore extends ObjectModel
     public $format;
     /** @var array $_errorFormatList */
     protected $_errorFormatList = [];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'address_format',
@@ -60,6 +56,9 @@ class AddressFormatCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var string[]
+     */
     public static $requireFormFieldsList = [
         'firstname',
         'lastname',
@@ -68,6 +67,9 @@ class AddressFormatCore extends ObjectModel
         'Country:name',
     ];
 
+    /**
+     * @var string[]
+     */
     public static $forbiddenPropertyList = [
         'deleted',
         'date_add',
@@ -112,6 +114,9 @@ class AddressFormatCore extends ObjectModel
         'debug_list',
     ];
 
+    /**
+     * @var string[]
+     */
     public static $forbiddenClassList = [
         'Manufacturer',
         'Supplier',
@@ -125,10 +130,8 @@ class AddressFormatCore extends ObjectModel
      *
      * @param string $className is the name class
      * @param string $fieldName is a property name
-     * @param bool   $isIdField to know if we have to allowed a property name started by 'id_'
+     * @param bool $isIdField to know if we have to allowed a property name started by 'id_'
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
      */
     protected function _checkValidateClassField($className, $fieldName, $isIdField)
@@ -168,8 +171,8 @@ class AddressFormatCore extends ObjectModel
      * of an association between a field name and a class (ClassName:fieldName)
      * if the separator is overview
      *
-     * @param string $patternName    is the composition of the class and field name
-     * @param array  $fieldsValidate contains the list of available field for the Address class
+     * @param string $patternName is the composition of the class and field name
+     * @param array $fieldsValidate contains the list of available field for the Address class
      *
      * @deprecated 2.0.0
      */
@@ -212,8 +215,10 @@ class AddressFormatCore extends ObjectModel
         }
     }
 
-    /*
-     * Check if the set fields are valide
+    /**
+     * Check if the set fields are valid
+     *
+     * @return bool
      */
     public function checkFormatFields()
     {
@@ -244,9 +249,6 @@ class AddressFormatCore extends ObjectModel
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getErrorList()
     {
@@ -258,8 +260,9 @@ class AddressFormatCore extends ObjectModel
      *  example : (firstname) => 'Presta' will result (Presta)
      *         : (firstname-lastname) => 'Presta' and 'Shop' result '(Presta-Shop)'
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $formattedValueList
+     * @param string $currentLine
+     * @param string[] $currentKeyList
      */
     protected static function _setOriginalDisplayFormat(&$formattedValueList, $currentLine, $currentKeyList)
     {
@@ -311,9 +314,6 @@ class AddressFormatCore extends ObjectModel
 
     /**
      * @param array $orderedAddressField
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanOrderedAddress(&$orderedAddressField)
     {
@@ -332,15 +332,13 @@ class AddressFormatCore extends ObjectModel
     /**
      * Returns the formatted fields with associated values
      *
-     * @param Address  $address
-     * @param array    $addressFormat
+     * @param Address $address
+     * @param array $addressFormat
      * @param int|null $idLang
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version.
-     * @version 1.0.6 Use VatNumber::adjustAddressForLayout().
+     * @throws PrestaShopException
      */
     public static function getFormattedAddressFieldsValues($address, $addressFormat, $idLang = null)
     {
@@ -409,15 +407,14 @@ class AddressFormatCore extends ObjectModel
      * Generates the full address text
      *
      * @param Address $address
-     * @param array   $patternRules A defined rules array to avoid some pattern
-     * @param string  $newLine      A string containing the newLine format
-     * @param string  $separator    A string containing the separator format
-     * @param array   $style
+     * @param array $patternRules A defined rules array to avoid some pattern
+     * @param string $newLine A string containing the newLine format
+     * @param string $separator A string containing the separator format
+     * @param array $style
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function generateAddress(Address $address, $patternRules = [], $newLine = "\r\n", $separator = ' ', $style = [])
     {
@@ -450,13 +447,12 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param array  $params
+     * @param array $params
      * @param Smarty $smarty
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function generateAddressSmarty($params, $smarty)
     {
@@ -473,9 +469,6 @@ class AddressFormatCore extends ObjectModel
      * Returns selected fields required for an address in an array according to a selection hash
      *
      * @return array String values
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getValidateFields($className)
     {
@@ -506,9 +499,6 @@ class AddressFormatCore extends ObjectModel
      * @param string $className
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getLiableClass($className)
     {
@@ -541,14 +531,13 @@ class AddressFormatCore extends ObjectModel
     /**
      * Returns address format fields in array by country
      *
-     * @param int  $idCountry If null using PS_COUNTRY_DEFAULT
+     * @param int $idCountry If null using PS_COUNTRY_DEFAULT
      * @param bool $splitAll
      * @param bool $cleaned
      *
      * @return array String field address format
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getOrderedAddressFields($idCountry = 0, $splitAll = false, $cleaned = false)
     {
@@ -579,9 +568,7 @@ class AddressFormatCore extends ObjectModel
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.6 Use VatNumber::adjustAddressForLayout().
+     * @throws PrestaShopException
      */
     public static function getFormattedLayoutData($address)
     {
@@ -621,8 +608,7 @@ class AddressFormatCore extends ObjectModel
      *
      * @return String field address format
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAddressCountryFormat($idCountry = 0)
     {
@@ -643,8 +629,7 @@ class AddressFormatCore extends ObjectModel
      *
      * @return String field address format
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFormat($idCountry)
     {
@@ -657,12 +642,10 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param $idCountry
+     * @param int $idCountry
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function _getFormatDB($idCountry)
@@ -686,8 +669,8 @@ class AddressFormatCore extends ObjectModel
     /**
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getFieldsRequired()
     {

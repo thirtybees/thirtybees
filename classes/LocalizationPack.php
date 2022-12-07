@@ -31,30 +31,42 @@
 
 /**
  * Class LocalizationPackCore
- *
- * @since 1.0.0
  */
 class LocalizationPackCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $name;
-    public $version;
-
-    protected $iso_code_lang;
-    protected $iso_currency;
-    protected $_errors = [];
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @param      $file
-     * @param      $selection
+     * @var string
+     */
+    public $version;
+
+    /**
+     * @var string
+     */
+    protected $iso_code_lang;
+
+    /**
+     * @var string
+     */
+    protected $iso_currency;
+
+    /**
+     * @var string[]
+     */
+    protected $_errors = [];
+
+    /**
+     * @param string $file
+     * @param array $selection
      * @param bool $installMode
-     * @param null $isoLocalizationPack
+     * @param string|null $isoLocalizationPack
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function loadLocalisationPack($file, $selection, $installMode = false, $isoLocalizationPack = null)
@@ -131,9 +143,6 @@ class LocalizationPackCore
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _installStates($xml)
     {
@@ -205,9 +214,6 @@ class LocalizationPackCore
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _installTaxes($xml)
     {
@@ -312,13 +318,10 @@ class LocalizationPackCore
 
     /**
      * @param SimpleXMLElement $xml
-     * @param bool             $installMode
+     * @param bool $installMode
      *
      * @return bool
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _installCurrencies($xml, $installMode = false)
     {
@@ -376,8 +379,6 @@ class LocalizationPackCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function installConfiguration($xml)
@@ -410,8 +411,6 @@ class LocalizationPackCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function installModules($xml)
     {
@@ -450,8 +449,6 @@ class LocalizationPackCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function updateDefaultGroupDisplayMethod($xml)
@@ -478,13 +475,10 @@ class LocalizationPackCore
 
     /**
      * @param SimpleXMLElement $xml
-     * @param bool             $installMode
+     * @param bool $installMode
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     protected function _installLanguages($xml, $installMode = false)
@@ -518,8 +512,6 @@ class LocalizationPackCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function _installUnits($xml)
@@ -547,9 +539,6 @@ class LocalizationPackCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getErrors()
     {
@@ -561,8 +550,6 @@ class LocalizationPackCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function _installGroups($xml)

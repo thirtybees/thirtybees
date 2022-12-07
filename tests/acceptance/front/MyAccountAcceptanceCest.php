@@ -3,15 +3,30 @@
 
 class MyAccountAcceptanceCest
 {
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function _before(AcceptanceTester $I)
     {
         $I->resizeWindow(1920, 1080);
     }
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function _after(AcceptanceTester $I)
     {
     }
 
+    /**
+     * @param AcceptanceTester $I
+     *
+     * @return void
+     */
     public function createAccountFormIsVisible(AcceptanceTester $I)
     {
         $I->amOnPage('/index.php');

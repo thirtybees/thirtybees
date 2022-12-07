@@ -31,15 +31,13 @@
 
 /**
  * Class AdminCarrierWizardControllerCore
- *
- * @since 1.0.0
  */
 class AdminCarrierWizardControllerCore extends AdminController
 {
     /**
      * AdminCarrierWizardControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -71,11 +69,8 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $field
-     *
-     * @return mixed
-     *
-     * @since 1.0.0
+     * @param string $field
+     * @return string
      */
     public static function displayFieldName($field)
     {
@@ -83,7 +78,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -96,7 +91,9 @@ class AdminCarrierWizardControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -168,7 +165,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initWizard()
     {
@@ -202,8 +199,6 @@ class AdminCarrierWizardControllerCore extends AdminController
 
     /**
      * @return Currency
-     *
-     * @since 1.0.0
      */
     public function getActualCurrency()
     {
@@ -231,7 +226,9 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderStepOne($carrier)
     {
@@ -291,11 +288,9 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getStepOneFieldsValues($carrier)
     {
@@ -309,13 +304,15 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param       $fieldsForm
-     * @param       $fieldsValue
+     * @param array $fieldsForm
+     * @param array $fieldsValue
      * @param array $tplVars
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderGenericForm($fieldsForm, $fieldsValue, $tplVars = [])
     {
@@ -342,13 +339,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderStepThree($carrier)
     {
@@ -509,13 +506,12 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function getStepThreeFieldsValues($carrier)
     {
@@ -541,12 +537,11 @@ class AdminCarrierWizardControllerCore extends AdminController
 
     /**
      * @param Carrier $carrier
-     * @param array   $tplVars
-     * @param array   $fieldsValue
+     * @param array $tplVars
+     * @param array $fieldsValue
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function getTplRangesVarsAndValues($carrier, &$tplVars, &$fieldsValue)
     {
@@ -600,7 +595,9 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderStepFour($carrier)
     {
@@ -668,11 +665,9 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getStepFourFieldsValues($carrier)
     {
@@ -687,11 +682,12 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderStepFive($carrier)
     {
@@ -731,11 +727,9 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getStepFiveFieldsValues($carrier)
     {
@@ -743,11 +737,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderStepTwo($carrier)
     {
@@ -770,11 +766,9 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getStepTwoFieldsValues($carrier)
     {
@@ -782,10 +776,11 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param null $tabId
-     * @param null $tabs
+     * @param int|null $tabId
+     * @param array|null $tabs
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initBreadcrumbs($tabId = null, $tabs = null)
     {
@@ -801,7 +796,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -814,7 +809,10 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessChangeRanges()
     {
@@ -827,6 +825,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             return;
         }
 
+        /** @var Carrier|false $carrier */
         $carrier = $this->loadObject(true);
         $carrier->shipping_method = $shippingMethod;
 
@@ -849,7 +848,8 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopException
      */
     public function ajaxProcessValidateStep()
     {
@@ -860,7 +860,6 @@ class AdminCarrierWizardControllerCore extends AdminController
      * @param bool $die
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function validateForm($die = true)
     {
@@ -891,7 +890,6 @@ class AdminCarrierWizardControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessUploadLogo()
     {
@@ -921,7 +919,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessFinishStep()
     {
@@ -1034,8 +1032,6 @@ class AdminCarrierWizardControllerCore extends AdminController
     /**
      * @param int $newId
      * @param int $oldId
-     *
-     * @since 1.0.0
      */
     public function duplicateLogo($newId, $oldId)
     {
@@ -1054,12 +1050,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @param      $idCarrier
+     * @param int $idCarrier
      * @param bool $delete
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
@@ -1078,7 +1075,6 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function changeZones($id)
     {
@@ -1106,7 +1102,8 @@ class AdminCarrierWizardControllerCore extends AdminController
      *
      * @return bool|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processRanges($idCarrier)
     {
@@ -1170,7 +1167,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     /**
      * @return array|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function getValidationRules()
     {

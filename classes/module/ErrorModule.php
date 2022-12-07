@@ -31,8 +31,6 @@
 
 /**
  * Class ErrorModuleCore
- *
- * @since 1.0.0
  */
 abstract class ErrorModuleCore extends Module
 {
@@ -43,9 +41,6 @@ abstract class ErrorModuleCore extends Module
      * This might override the default uncaught exception handler in thirty bees
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     abstract public function hookActionRegisterErrorHandlers();
 }

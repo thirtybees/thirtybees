@@ -31,8 +31,6 @@
 
 /**
  * Class MailCore
- *
- * @since 1.0.0
  */
 class MailCore extends ObjectModel
 {
@@ -44,7 +42,6 @@ class MailCore extends ObjectModel
     const MAIL_METHOD_SMTP = 2;
     const MAIL_METHOD_NONE = 3;
 
-    // @codingStandardsIgnoreStart
     /** @var string Recipient */
     public $recipient;
     /** @var string Template */
@@ -55,10 +52,9 @@ class MailCore extends ObjectModel
     public $id_lang;
     /** @var int Timestamp */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'mail',
@@ -80,21 +76,21 @@ class MailCore extends ObjectModel
     /**
      * Send Email
      *
-     * @param int    $idLang         Language ID of the email (to translate the template)
-     * @param string $template       Template: the name of template not be a var but a string !
-     * @param string $subject        Subject of the email
-     * @param array $templateVars    Template variables for the email
-     * @param string $to             To email
-     * @param string $toName         To name
-     * @param string $from           From email
-     * @param string $fromName       To email
-     * @param array  $fileAttachment Array with three parameters (content, mime and name). You can use an array of array to attach multiple files
-     * @param bool   $modeSmtp       SMTP mode (deprecated)
-     * @param string $templatePath   Template path
-     * @param bool   $die            Die after error
-     * @param int    $idShop         Shop ID
-     * @param string $bcc            Bcc recipient (email address)
-     * @param string $replyTo        Email address for setting the Reply-To header
+     * @param int $idLang Language ID of the email (to translate the template)
+     * @param string $template Template: the name of template not be a var but a string !
+     * @param string $subject Subject of the email
+     * @param array $templateVars Template variables for the email
+     * @param string $to To email
+     * @param string $toName To name
+     * @param string $from From email
+     * @param string $fromName To email
+     * @param array $fileAttachment Array with three parameters (content, mime and name). You can use an array of array to attach multiple files
+     * @param bool $modeSmtp SMTP mode (deprecated)
+     * @param string $templatePath Template path
+     * @param bool $die Die after error
+     * @param int $idShop Shop ID
+     * @param string $bcc Bcc recipient (email address)
+     * @param string $replyTo Email address for setting the Reply-To header
      *
      * @return bool|int Whether sending was successful. If not at all, false, otherwise amount of recipients succeeded.
      * @throws PrestaShopException
@@ -489,14 +485,11 @@ class MailCore extends ObjectModel
     /**
      * MIME encode the string
      *
-     * @param string $string  The string to encode
+     * @param string $string The string to encode
      * @param string $charset The character set to use
      * @param string $newline The newline character(s)
      *
-     * @return mixed|string MIME encoded string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string MIME encoded string
      */
     public static function mimeEncode($string, $charset = 'UTF-8', $newline = "\r\n")
     {
@@ -545,9 +538,6 @@ class MailCore extends ObjectModel
      * @param string $data Data
      *
      * @return bool Whether the string uses a multibyte character set
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isMultibyte($data)
     {
@@ -565,9 +555,6 @@ class MailCore extends ObjectModel
      * @param string $idstring
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function generateId($idstring = null)
     {
@@ -588,8 +575,6 @@ class MailCore extends ObjectModel
      *
      * @return string
      *
-     * @since   1.0.8
-     * @version 1.0.8 Initial version
      * @throws PrestaShopException
      */
     protected static function formatSubject($subject)
@@ -620,8 +605,6 @@ class MailCore extends ObjectModel
      *
      * @return bool Whether removal succeeded
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -633,8 +616,6 @@ class MailCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function eraseAllLogs()
@@ -645,22 +626,20 @@ class MailCore extends ObjectModel
     /**
      * Send a test email
      *
-     * @param bool        $smtpChecked    Is SMTP checked?
-     * @param string      $smtpServer     SMTP Server hostname
-     * @param string      $content        Content of the email
-     * @param string      $subject        Subject of the email
-     * @param bool        $type           Deprecated
-     * @param string      $to             To email address
-     * @param string      $from           From email address
-     * @param string      $smtpLogin      SMTP login name
-     * @param string      $smtpPassword   SMTP password
-     * @param int         $smtpPort       SMTP Port
+     * @param bool $smtpChecked Is SMTP checked?
+     * @param string $smtpServer SMTP Server hostname
+     * @param string $content Content of the email
+     * @param string $subject Subject of the email
+     * @param bool $type Deprecated
+     * @param string $to To email address
+     * @param string $from From email address
+     * @param string $smtpLogin SMTP login name
+     * @param string $smtpPassword SMTP password
+     * @param int $smtpPort SMTP Port
      * @param bool|string $smtpEncryption Encryption type. "off" or false disable encryption.
      *
      * @return bool|string True if succeeded, otherwise the error message
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function sendMailTest($smtpChecked, $smtpServer, $content, $subject, $type, $to, $from, $smtpLogin, $smtpPassword, $smtpPort = 25, $smtpEncryption = 'off')
@@ -703,13 +682,11 @@ class MailCore extends ObjectModel
      * we have to return a sentence with accents.
      *
      * @param string $string raw sentence (write directly in file)
-     *
-     * @param null $idLang
+     * @param int|null $idLang
      * @param Context|null $context
-     * @return mixed
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
+     *
      * @throws PrestaShopException
      */
     public static function l($string, $idLang = null, Context $context = null)
@@ -756,7 +733,6 @@ class MailCore extends ObjectModel
      * @return string | null
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.1.0
      */
     protected static function getTemplatePath($template, $suffix, $iso, Shop $shop, $baseTemplatePath)
     {
@@ -823,7 +799,6 @@ class MailCore extends ObjectModel
      * @param Shop $shop
      *
      * @return string | null
-     * @since 1.1.0
      */
     private static function getModuleName($baseTemplatePath, Shop $shop)
     {
@@ -847,8 +822,6 @@ class MailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
      */
     private static function logError($message, $die)
     {

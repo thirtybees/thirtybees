@@ -5,7 +5,7 @@ if ($_SESSION["verify"] != "RESPONSIVEfilemanager") {
 }
 
 /**
- * @param $dir
+ * @param string $dir
  * @return bool
  */
 function deleteDir($dir)
@@ -28,8 +28,8 @@ function deleteDir($dir)
 }
 
 /**
- * @param $old_path
- * @param $name
+ * @param string $old_path
+ * @param string $name
  * @return bool|void
  */
 function duplicate_file($old_path, $name)
@@ -45,9 +45,9 @@ function duplicate_file($old_path, $name)
 }
 
 /**
- * @param $old_path
- * @param $name
- * @param $transliteration
+ * @param string $old_path
+ * @param string $name
+ * @param bool $transliteration
  * @return bool|void
  */
 function rename_file($old_path, $name, $transliteration)
@@ -64,9 +64,9 @@ function rename_file($old_path, $name, $transliteration)
 }
 
 /**
- * @param $old_path
- * @param $name
- * @param $transliteration
+ * @param string $old_path
+ * @param string $name
+ * @param bool $transliteration
  * @return bool|void
  */
 function rename_folder($old_path, $name, $transliteration)
@@ -82,12 +82,12 @@ function rename_folder($old_path, $name, $transliteration)
 }
 
 /**
- * @param $imgfile
- * @param $imgthumb
- * @param $newwidth
- * @param $newheight
+ * @param string $imgfile
+ * @param string $imgthumb
+ * @param int $newwidth
+ * @param string $newheight
  * @return bool
- * @throws Exception
+ * @throws PrestaShopException
  */
 function create_img_gd($imgfile, $imgthumb, $newwidth, $newheight="")
 {
@@ -102,12 +102,12 @@ function create_img_gd($imgfile, $imgthumb, $newwidth, $newheight="")
 }
 
 /**
- * @param $imgfile
- * @param $imgthumb
- * @param $newwidth
- * @param $newheight
+ * @param string $imgfile
+ * @param string $imgthumb
+ * @param int $newwidth
+ * @param string $newheight
  * @return bool
- * @throws Exception
+ * @throws PrestaShopException
  */
 function create_img($imgfile, $imgthumb, $newwidth, $newheight="")
 {
@@ -123,7 +123,7 @@ function create_img($imgfile, $imgthumb, $newwidth, $newheight="")
 }
 
 /**
- * @param $size
+ * @param int $size
  * @return string
  */
 function makeSize($size)
@@ -138,8 +138,8 @@ function makeSize($size)
 }
 
 /**
- * @param $path
- * @return false|int
+ * @param string $path
+ * @return int
  */
 function foldersize($path)
 {
@@ -164,8 +164,8 @@ function foldersize($path)
 }
 
 /**
- * @param $path
- * @param $path_thumbs
+ * @param string $path
+ * @param string $path_thumbs
  * @return void
  */
 function create_folder($path=false, $path_thumbs=false)
@@ -181,8 +181,8 @@ function create_folder($path=false, $path_thumbs=false)
 }
 
 /**
- * @param $path
- * @param $ext
+ * @param string $path
+ * @param string[] $ext
  * @return void
  */
 function check_files_extensions_on_path($path, $ext)
@@ -205,10 +205,10 @@ function check_files_extensions_on_path($path, $ext)
 }
 
 /**
- * @param $phar
- * @param $files
- * @param $basepath
- * @param $ext
+ * @param Traversable $phar
+ * @param array $files
+ * @param string $basepath
+ * @param string[] $ext
  * @return void
  */
 function check_files_extensions_on_phar($phar, &$files, $basepath, $ext)
@@ -226,8 +226,8 @@ function check_files_extensions_on_phar($phar, &$files, $basepath, $ext)
 }
 
 /**
- * @param $str
- * @param $transliteration
+ * @param string $str
+ * @param bool $transliteration
  * @return string
  */
 function fix_filename($str, $transliteration)
@@ -256,8 +256,8 @@ function fix_filename($str, $transliteration)
 }
 
 /**
- * @param $str
- * @return array|string|string[]
+ * @param string $str
+ * @return string
  */
 function fix_dirname($str)
 {
@@ -265,8 +265,8 @@ function fix_dirname($str)
 }
 
 /**
- * @param $str
- * @return array|false|string|string[]|null
+ * @param string $str
+ * @return string
  */
 function fix_strtoupper($str)
 {
@@ -279,8 +279,8 @@ function fix_strtoupper($str)
 
 
 /**
- * @param $str
- * @return array|false|string|string[]|null
+ * @param string $str
+ * @return string
  */
 function fix_strtolower($str)
 {
@@ -292,8 +292,8 @@ function fix_strtolower($str)
 }
 
 /**
- * @param $path
- * @param $transliteration
+ * @param string $path
+ * @param bool $transliteration
  * @return string
  */
 function fix_path($path, $transliteration)
@@ -329,8 +329,8 @@ function base_url()
 }
 
 /**
- * @param $current_path
- * @param $fld
+ * @param string $current_path
+ * @param string $fld
  * @return bool
  */
 function config_loading($current_path, $fld)
@@ -349,16 +349,16 @@ function config_loading($current_path, $fld)
 
 
 /**
- * @param $img
- * @param $max_breedte
- * @param $max_hoogte
+ * @param string $img
+ * @param int $max_breedte
+ * @param int $max_hoogte
  * @return bool
  */
 function image_check_memory_usage($img, $max_breedte, $max_hoogte)
 {
     if (file_exists($img)) {
         $K64 = 65536;    // number of bytes in 64K
-    $memory_usage = memory_get_usage();
+        $memory_usage = memory_get_usage();
         $memory_limit = abs(intval(str_replace('M', '', ini_get('memory_limit'))*1024*1024));
         $image_properties = getimagesize($img);
         $image_width = $image_properties[0];
@@ -384,8 +384,8 @@ function image_check_memory_usage($img, $max_breedte, $max_hoogte)
 }
 
 /**
- * @param $haystack
- * @param $needle
+ * @param string $haystack
+ * @param string $needle
  * @return bool
  */
 function endsWith($haystack, $needle)
@@ -394,27 +394,43 @@ function endsWith($haystack, $needle)
 }
 
 /**
- * @param $targetPath
- * @param $targetFile
- * @param $name
- * @param $current_path
- * @param $relative_image_creation
- * @param $relative_path_from_current_pos
- * @param $relative_image_creation_name_to_prepend
- * @param $relative_image_creation_name_to_append
- * @param $relative_image_creation_width
- * @param $relative_image_creation_height
- * @param $fixed_image_creation
- * @param $fixed_path_from_filemanager
- * @param $fixed_image_creation_name_to_prepend
- * @param $fixed_image_creation_to_append
- * @param $fixed_image_creation_width
- * @param $fixed_image_creation_height
+ * @param string $targetPath
+ * @param string $targetFile
+ * @param string $name
+ * @param string $current_path
+ * @param bool $relative_image_creation
+ * @param array $relative_path_from_current_pos
+ * @param array $relative_image_creation_name_to_prepend
+ * @param array $relative_image_creation_name_to_append
+ * @param array $relative_image_creation_width
+ * @param array $relative_image_creation_height
+ * @param bool $fixed_image_creation
+ * @param array $fixed_path_from_filemanager
+ * @param array $fixed_image_creation_name_to_prepend
+ * @param array $fixed_image_creation_to_append
+ * @param array $fixed_image_creation_width
+ * @param array $fixed_image_creation_height
  * @return bool
- * @throws Exception
+ * @throws PrestaShopException
  */
-function new_thumbnails_creation($targetPath, $targetFile, $name, $current_path, $relative_image_creation, $relative_path_from_current_pos, $relative_image_creation_name_to_prepend, $relative_image_creation_name_to_append, $relative_image_creation_width, $relative_image_creation_height, $fixed_image_creation, $fixed_path_from_filemanager, $fixed_image_creation_name_to_prepend, $fixed_image_creation_to_append, $fixed_image_creation_width, $fixed_image_creation_height)
-{
+function new_thumbnails_creation(
+    $targetPath,
+    $targetFile,
+    $name,
+    $current_path,
+    $relative_image_creation,
+    $relative_path_from_current_pos,
+    $relative_image_creation_name_to_prepend,
+    $relative_image_creation_name_to_append,
+    $relative_image_creation_width,
+    $relative_image_creation_height,
+    $fixed_image_creation,
+    $fixed_path_from_filemanager,
+    $fixed_image_creation_name_to_prepend,
+    $fixed_image_creation_to_append,
+    $fixed_image_creation_width,
+    $fixed_image_creation_height
+) {
     //create relative thumbs
     $all_ok=true;
     if ($relative_image_creation) {
@@ -456,7 +472,7 @@ function new_thumbnails_creation($targetPath, $targetFile, $name, $current_path,
 
 /**
  * Get a remote file, using whichever mechanism is enabled
- * @param $url
+ * @param string $url
  * @return bool|string
  */
 function get_file_by_url($url)

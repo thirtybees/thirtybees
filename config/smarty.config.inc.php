@@ -340,6 +340,7 @@ function smartyCleanHtml($data)
  * @param array $params
  * @param Smarty $smarty
  * @return float
+ * @throws PrestaShopException
  */
 function toolsConvertPrice($params, $smarty)
 {
@@ -356,12 +357,11 @@ function toolsConvertPrice($params, $smarty)
  * Which means: don't forget to transport any changes made here to there.
  *
  * @param float|string $params['price'] Raw price in context currency.
- * @param float|string $smarty          Unused.
+ * @param float|string $smarty Unused.
  *
  * @return string Price prettified, without currency sign.
  *
  * @throws PrestaShopException
- * @since 1.1.0
  */
 function displayPriceValue($params, $smarty)
 {
@@ -472,7 +472,14 @@ function smarty_modifier_date_format($string, $format = null, $defaultDate = '',
  */
 class SmartyLazyRegister
 {
+    /**
+     * @var array
+     */
     protected $registry = [];
+
+    /**
+     * @var SmartyLazyRegister
+     */
     protected static $instance;
 
     /**

@@ -4,6 +4,9 @@
 class ConfigurationCoreTest extends \Codeception\Test\Unit
 {
 
+    /**
+     * @return array[]
+     */
     public function updateEscapingData()
     {
         return [
@@ -28,6 +31,13 @@ class ConfigurationCoreTest extends \Codeception\Test\Unit
      * during Configuration::updateValue method
      *
      * @dataProvider updateEscapingData
+     *
+     * @param bool $allowHtml
+     * @param string $input
+     * @param string $expected
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function testUpdateValueCachedData($allowHtml, $input, $expected)
     {
@@ -50,6 +60,13 @@ class ConfigurationCoreTest extends \Codeception\Test\Unit
      * expected value
      *
      * @dataProvider updateEscapingData
+     *
+     * @param bool $allowHtml
+     * @param string $input
+     * @param string $expected
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function testUpdateValueStoredData($allowHtml, $input, $expected)
     {

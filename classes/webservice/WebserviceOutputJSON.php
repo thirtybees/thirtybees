@@ -31,40 +31,48 @@
 
 /**
  * Class WebserviceOutputJSON
- *
- * @since 1.0.0
  */
 class WebserviceOutputJSONCore implements WebserviceOutputInterface
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $docUrl = '';
+
+    /**
+     * @var array
+     */
     public $languages = [];
+
+    /**
+     * @var string
+     */
     protected $wsUrl;
+
+    /**
+     * @var string
+     */
     protected $schemaToDisplay;
 
     /**
-     * Current entity
+     * @var array Current entity
      */
     protected $currentEntity;
 
     /**
-     * Current association
+     * @var array Current association
      */
     protected $currentAssociatedEntity;
 
     /**
-     * Json content
+     * @var array Json content
      */
     protected $content = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * WebserviceOutputJSON constructor.
      *
      * @param array $languages
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($languages = [])
     {
@@ -72,12 +80,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $schema
+     * @param string $schema
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setSchemaToDisplay($schema)
     {
@@ -89,10 +94,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getSchemaToDisplay()
     {
@@ -100,12 +102,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $url
+     * @param string $url
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setWsUrl($url)
     {
@@ -115,10 +114,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getWsUrl()
     {
@@ -127,9 +123,6 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContentType()
     {
@@ -138,13 +131,10 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     /**
      * @param string $message
-     * @param int $code
+     * @param int|null $code
      * @param array $extra
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderErrors($message, $code = null, $extra = [])
     {
@@ -161,12 +151,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $field
+     * @param array $field
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderField($field)
     {
@@ -188,15 +175,12 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param      $nodeName
-     * @param      $params
-     * @param null $moreAttr
+     * @param string $nodeName
+     * @param array $params
+     * @param array|null $moreAttr
      * @param bool $hasChild
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderNodeHeader($nodeName, $params, $moreAttr = null, $hasChild = true)
     {
@@ -216,12 +200,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getNodeName($params)
     {
@@ -234,11 +215,8 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $nodeName
-     * @param $params
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $nodeName
+     * @param array $params
      */
     public function renderNodeFooter($nodeName, $params)
     {
@@ -262,12 +240,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $content
+     * @param string $content
      *
-     * @return mixed|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function overrideContent($content)
     {
@@ -286,12 +261,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $languages
+     * @param array $languages
      *
-     * @return $this
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setLanguages($languages)
     {
@@ -302,9 +274,6 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderAssociationWrapperHeader()
     {
@@ -313,9 +282,6 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderAssociationWrapperFooter()
     {
@@ -323,15 +289,12 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param      $obj
-     * @param      $params
-     * @param      $assocName
+     * @param ObjectModel$obj
+     * @param array $params
+     * @param string $assocName
      * @param bool $closedTags
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderAssociationHeader($obj, $params, $assocName, $closedTags = false)
     {
@@ -339,23 +302,19 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $obj
-     * @param $params
-     * @param $assocName
+     * @param ObjectModel $obj
+     * @param array $params
+     * @param string $assocName
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function renderAssociationFooter($obj, $params, $assocName)
     {
-        return;
+        return '';
     }
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderErrorsHeader()
     {
@@ -364,9 +323,6 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderErrorsFooter()
     {
@@ -374,12 +330,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $field
+     * @param array $field
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderAssociationField($field)
     {
@@ -387,12 +340,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     }
 
     /**
-     * @param $field
+     * @param array $field
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderi18nField($field)
     {
@@ -403,7 +353,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
      * Returns field value
      *
      * @param array $field
-     * @return mixed
+     * @return string
      */
     protected function getFieldValue($field)
     {

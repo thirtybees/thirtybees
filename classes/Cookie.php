@@ -32,7 +32,6 @@
 /**
  * Class CookieCore
  *
- * @since 1.0.0
  *
  * Known properties set up by core:
  *
@@ -42,38 +41,67 @@
  */
 class CookieCore
 {
-    // @codingStandardsIgnoreStart
-    /** @var array Contain cookie content in a key => value format */
+    /**
+     * @var array Contain cookie content in a key => value format
+     */
     protected $_content;
-    /** @var array Crypted cookie name for setcookie() */
+
+    /**
+     * @var array Crypted cookie name for setcookie()
+     */
     protected $_name;
-    /** @var array expiration date for setcookie() */
+
+    /**
+     * @var array expiration date for setcookie()
+     */
     protected $_expire;
-    /** @var array Website domain for setcookie() */
+
+    /**
+     * @var array Website domain for setcookie()
+     */
     protected $_domain;
-    /** @var array Path for setcookie() */
+
+    /**
+     * @var array Path for setcookie()
+     */
     protected $_path;
-    /** @var bool $_modified */
+
+    /**
+     * @var bool $_modified
+     */
     protected $_modified = false;
+
+    /**
+     * @var bool
+     */
     protected $_allow_writing;
+
+    /**
+     * @var string
+     */
     protected $_salt;
+
+    /**
+     * @var bool
+     */
     protected $_standalone;
+
+    /**
+     * @var bool
+     */
     protected $_secure = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Get data if the cookie exists and else initialize an new one
      *
-     * @param string      $name Cookie name before encrypting
-     * @param string      $path
+     * @param string $name Cookie name before encrypting
+     * @param string $path
      *
      * @param string|null $expire
-     * @param array|null  $sharedUrls
-     * @param bool        $standalone
-     * @param bool        $secure
+     * @param array|null $sharedUrls
+     * @param bool $standalone
+     * @param bool $secure
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($name, $path = '', $expire = null, $sharedUrls = null, $standalone = false, $secure = false)
@@ -104,12 +132,10 @@ class CookieCore
     }
 
     /**
-     * @param null $sharedUrls
+     * @param array|null $sharedUrls
      *
-     * @return bool|string
+     * @return string|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function getDomain($sharedUrls = null)
@@ -153,8 +179,7 @@ class CookieCore
     /**
      * Get cookie content
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -220,6 +245,7 @@ class CookieCore
     /**
      * Delete cookie
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0 Use Customer::logout() or Employee::logout() instead;
      */
     public function logout()
@@ -231,7 +257,7 @@ class CookieCore
     /**
      * Deletes cookie
      *
-     * @since   1.1.1
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -244,8 +270,7 @@ class CookieCore
     /**
      * Setcookie according to php version
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _setcookie($cookie = null)
     {
@@ -261,8 +286,7 @@ class CookieCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function disallowWriting()
     {
@@ -273,9 +297,6 @@ class CookieCore
      * Set expiration date
      *
      * @param int $expire Expiration time from now
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setExpire($expire)
     {
@@ -288,9 +309,6 @@ class CookieCore
      * @param string $key key wanted
      *
      * @return string value corresponding to the key
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __get($key)
     {
@@ -300,11 +318,8 @@ class CookieCore
     /**
      * Magic method which adds data into _content array
      *
-     * @param string $key   Access key for the value
-     * @param mixed  $value Value corresponding to the key
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $key Access key for the value
+     * @param mixed $value Value corresponding to the key
      */
     public function __set($key, $value)
     {
@@ -330,9 +345,6 @@ class CookieCore
      * @param string $key key wanted
      *
      * @return bool key existence
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __isset($key)
     {
@@ -343,9 +355,6 @@ class CookieCore
      * Magic method wich delete data into _content array
      *
      * @param string $key key wanted
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __unset($key)
     {
@@ -358,11 +367,11 @@ class CookieCore
     /**
      * Check customer informations saved into cookie and return customer validity
      *
-     * @deprecated 1.0.0 use Customer::isLogged() instead
-     *
      * @param bool $withGuest
      *
      * @return bool customer validity
+     * @throws PrestaShopException
+     * @deprecated 1.0.0 use Customer::isLogged() instead
      */
     public function isLogged($withGuest = false)
     {
@@ -382,8 +391,9 @@ class CookieCore
     /**
      * Check employee informations saved into cookie and return employee validity
      *
-     * @deprecated 1.0.0 use Employee::isLoggedBack() instead
      * @return bool employee validity
+     * @throws PrestaShopException
+     * @deprecated 1.0.0 use Employee::isLoggedBack() instead
      */
     public function isLoggedBack()
     {
@@ -423,8 +433,7 @@ class CookieCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function makeNewLog()
     {
@@ -435,8 +444,7 @@ class CookieCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __destruct()
     {
@@ -448,8 +456,7 @@ class CookieCore
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function write()
     {
@@ -481,9 +488,6 @@ class CookieCore
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @param string $origin
      */
     public function unsetFamily($origin)
@@ -496,9 +500,6 @@ class CookieCore
 
     /**
      * Get a family of variables (e.g. "filter_")
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param string $origin
      *
@@ -521,9 +522,6 @@ class CookieCore
 
     /**
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getAll()
     {
@@ -532,9 +530,6 @@ class CookieCore
 
     /**
      * @return String name of cookie
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getName()
     {
@@ -545,9 +540,6 @@ class CookieCore
      * Check if the cookie exists
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function exists()
     {
@@ -560,7 +552,6 @@ class CookieCore
      * @return Encryptor
      *
      * @throws PrestaShopException
-     * @since 1.0.1
      */
     public function getCipherTool()
     {

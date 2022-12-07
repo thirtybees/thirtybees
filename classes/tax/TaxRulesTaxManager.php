@@ -31,16 +31,23 @@
 
 /**
  * Class TaxRulesTaxManagerCore
- *
- * @since 1.0.0
  */
 class TaxRulesTaxManagerCore implements TaxManagerInterface
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var Address
+     */
     public $address;
+
+    /**
+     * @var int
+     */
     public $type;
+
+    /**
+     * @var TaxCalculator
+     */
     public $tax_calculator;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @var Core_Business_ConfigurationInterface
@@ -48,12 +55,10 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
     private $configurationManager;
 
     /**
-     *
      * @param Address $address
-     * @param mixed   $type An additional parameter for the tax manager (ex: tax rules id for TaxRuleTaxManager)
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int $type TaxRulesGroup id
+     * @param Core_Business_ConfigurationInterface|null $configurationManager
+     * @throws PrestaShopException
      */
     public function __construct(Address $address, $type, Core_Business_ConfigurationInterface $configurationManager = null)
     {
@@ -71,9 +76,6 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
      * Returns true if this tax manager is available for this address
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isAvailableForThisAddress(Address $address)
     {
@@ -87,8 +89,6 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxCalculator()
     {

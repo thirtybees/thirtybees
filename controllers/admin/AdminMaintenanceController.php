@@ -31,15 +31,13 @@
 
 /**
  * Class AdminMaintenanceControllerCore
- *
- * @since 1.0.0
  */
 class AdminMaintenanceControllerCore extends AdminController
 {
     /**
      * AdminMaintenanceControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {

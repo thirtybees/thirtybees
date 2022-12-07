@@ -31,12 +31,9 @@
 
 /**
  * Class CartControllerCore
- *
- * @since 1.0.0
  */
 class CartControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'cart';
     /** @var bool $ssl */
@@ -53,14 +50,11 @@ class CartControllerCore extends FrontController
     protected $qty;
     /** @var bool $ajax_refresh */
     protected $ajax_refresh = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * This is not a public page, so the canonical redirection is disabled
      *
      * @param string $canonicalUrl
-     *
-     * @since 1.0.0
      */
     public function canonicalRedirection($canonicalUrl = '')
     {
@@ -69,9 +63,9 @@ class CartControllerCore extends FrontController
     /**
      * Initialize cart controller
      *
-     * @see   FrontController::init()
-     *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function init()
     {
@@ -93,7 +87,8 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -146,6 +141,7 @@ class CartControllerCore extends FrontController
 
     /**
      * This process add or update a product in the cart
+     * @throws PrestaShopException
      */
     protected function processChangeProductInCart()
     {
@@ -282,7 +278,6 @@ class CartControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function processDeleteProductInCart()
     {
@@ -351,7 +346,8 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processChangeProductAddressDelivery()
     {
@@ -386,7 +382,8 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processAllowSeperatedPackage()
     {
@@ -408,7 +405,8 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processDuplicateProduct()
     {
@@ -429,7 +427,7 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initContent()
     {
@@ -444,7 +442,8 @@ class CartControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function displayAjax()
     {
@@ -491,6 +490,7 @@ class CartControllerCore extends FrontController
     /**
      * Remove discounts from cart
      *
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     protected function processRemoveDiscounts()

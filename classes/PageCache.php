@@ -31,9 +31,6 @@
 
 /**
  * Class PageCache
- *
- * @since 1.0.0
- * @since 1.0.1 Overridable
  */
 class PageCacheCore
 {
@@ -43,7 +40,7 @@ class PageCacheCore
     const CACHE_ENTRY_TTL = 86400;
 
     /**
-     * @var PageCacheEntry holds current page cache entry
+     * @var PageCacheEntry|null holds current page cache entry
      */
     protected static $entry = null;
 
@@ -51,8 +48,7 @@ class PageCacheCore
      * @return bool true if full page cache is enabled and user user is not
      *              logged in, else false.
      *
-     * @version 1.0.7 Initial version.
-     * @version 1.1.0 Always return false for logged in users.
+     * @throws PrestaShopException
      */
     public static function isEnabled()
     {
@@ -70,8 +66,6 @@ class PageCacheCore
      *
      * @param string $template
      * @throws PrestaShopException
-     *
-     * @since 1.0.7
      */
     public static function set($template)
     {
@@ -97,8 +91,6 @@ class PageCacheCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.7
      */
     public static function get()
     {
@@ -131,14 +123,12 @@ class PageCacheCore
      * Register cache key and set its metadata
      *
      * @param string $key
-     * @param int    $idCurrency
-     * @param int    $idLanguage
-     * @param int    $idCountry
-     * @param int    $idShop
+     * @param int $idCurrency
+     * @param int $idLanguage
+     * @param int $idCountry
+     * @param int $idShop
      * @param string $entityType
-     * @param int    $idEntity
-     *
-     * @since 1.0.0
+     * @param int $idEntity
      */
     public static function cacheKey($key, $idCurrency, $idLanguage, $idCountry, $idShop, $entityType, $idEntity)
     {
@@ -166,10 +156,9 @@ class PageCacheCore
     /**
      * Invalidate an entity from the cache
      *
-     * @param string   $entityType
+     * @param string $entityType
      * @param int|null $idEntity
      *
-     * @since 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -235,7 +224,6 @@ class PageCacheCore
     /**
      * Flush all data
      *
-     * @since 1.0.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -251,14 +239,13 @@ class PageCacheCore
     /**
      * Get keys to invalidate
      *
-     * @param string   $entityType
+     * @param string $entityType
      * @param int|null $idEntity
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected static function getKeysToInvalidate($entityType, $idEntity = null)
     {

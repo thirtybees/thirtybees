@@ -31,8 +31,6 @@
 
 /**
  * Class NotificationCore
- *
- * @since 1.0.0
  */
 class NotificationCore
 {
@@ -61,8 +59,6 @@ class NotificationCore
      *
      * @param EmployeeCore|null $employee
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($employee = null)
     {
@@ -212,7 +208,7 @@ class NotificationCore
     /**
      * Returns true, if $type is supported
      *
-     * @param $type
+     * @param string $type
      * @return bool
      */
     public function hasType($type)
@@ -255,8 +251,6 @@ class NotificationCore
      * @return array containing the notifications
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getNotifications($typeFilter = null)
     {

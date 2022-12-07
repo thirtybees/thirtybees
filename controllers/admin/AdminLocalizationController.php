@@ -31,15 +31,14 @@
 
 /**
  * Class AdminLocalizationControllerCore
- *
- * @since 1.0.0
  */
 class AdminLocalizationControllerCore extends AdminController
 {
     /**
      * AdminLocalizationControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -169,7 +168,7 @@ class AdminLocalizationControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -219,8 +218,6 @@ class AdminLocalizationControllerCore extends AdminController
      * @param array $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     public function sortLocalizationsPack($a, $b)
     {
@@ -230,7 +227,9 @@ class AdminLocalizationControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function display()
     {
@@ -241,7 +240,9 @@ class AdminLocalizationControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -267,7 +268,9 @@ class AdminLocalizationControllerCore extends AdminController
     /**
      * @return string|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -396,7 +399,7 @@ class AdminLocalizationControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {
@@ -411,7 +414,8 @@ class AdminLocalizationControllerCore extends AdminController
     /**
      * @param string $value
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateOptionPsCurrencyDefault($value)
     {

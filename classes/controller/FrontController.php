@@ -31,8 +31,6 @@
 
 /**
  * Class FrontControllerCore.
- *
- * @since 1.0.0
  */
 class FrontControllerCore extends Controller
 {
@@ -71,7 +69,7 @@ class FrontControllerCore extends Controller
      * @var int[] Holds current customer's groups.
      */
     protected static $currentCustomerGroups;
-    /** @var $errorsarray */
+    /** @var array errors array */
     public $errors = [];
     /** @var string Language ISO code */
     public $iso;
@@ -104,7 +102,6 @@ class FrontControllerCore extends Controller
     /** @var bool SSL connection flag */
     public $ssl = false;
 
-    // @codingStandardsIgnoreStart
     /** @var bool If false, does not build left page column content and hides it. */
     public $display_column_left = true;
 
@@ -116,16 +113,13 @@ class FrontControllerCore extends Controller
     protected $restrictedCountry = false;
     /** @var bool If true, forces display to maintenance page. */
     protected $maintenance = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Controller constructor.
      *
+     * @throws PrestaShopException
+     *
      * @global bool $useSSL SSL connection flag
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -163,9 +157,6 @@ class FrontControllerCore extends Controller
      *
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCurrentCustomerGroups()
@@ -200,13 +191,9 @@ class FrontControllerCore extends Controller
     /**
      * Check if the controller is available for the current user/visitor.
      *
-     * @see     Controller::checkAccess()
+     * @see Controller::checkAccess()
      *
      * @return bool
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     public function checkAccess()
     {
@@ -216,13 +203,9 @@ class FrontControllerCore extends Controller
     /**
      * Check if the current user/visitor has valid view permissions.
      *
-     * @see     Controller::viewAccess
+     * @see Controller::viewAccess
      *
      * @return bool
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     public function viewAccess()
     {
@@ -233,10 +216,7 @@ class FrontControllerCore extends Controller
      * Method that is executed after init() and checkAccess().
      * Used to process user input.
      *
-     * @see     Controller::run()
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @see Controller::run()
      */
     public function postProcess()
     {
@@ -247,7 +227,9 @@ class FrontControllerCore extends Controller
      *
      * Overrides Controller::run() to allow full page cache
      *
-     * @since   1.0.7
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function run()
     {
@@ -278,9 +260,6 @@ class FrontControllerCore extends Controller
     /**
      * Initializes common front page content: header, footer and side columns.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function initContent()
@@ -357,10 +336,7 @@ class FrontControllerCore extends Controller
      * Called before compiling common page sections (header, footer, columns).
      * Good place to modify smarty variables.
      *
-     * @see     FrontController::initContent()
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @see FrontController::initContent()
      */
     public function process()
     {
@@ -369,13 +345,9 @@ class FrontControllerCore extends Controller
     /**
      * Checks if mobile theme is active and in use.
      *
-     * @staticvar bool|null $use_mobile_template
-     *
      * @return bool
      *
-     * @since     1.0.0
-     *
-     * @version   1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function useMobileTheme()
     {
@@ -394,9 +366,6 @@ class FrontControllerCore extends Controller
      *
      * @return string html code for the new tags
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getSeoFields()
@@ -493,9 +462,6 @@ class FrontControllerCore extends Controller
      * @return string[] HTML of the hreflang tags
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
-     *
      */
     public function getHrefLang($entity, $idItem, $languages, $idLangDefault)
     {
@@ -558,13 +524,12 @@ class FrontControllerCore extends Controller
      * Get rel prev/next tags for paginated pages.
      *
      * @param string $entity type of object
-     * @param int    $idItem id of he object
+     * @param int $idItem id of he object
      *
      * @return string string containing the new tags
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getRelPrevNext($entity, $idItem)
     {
@@ -622,6 +587,8 @@ class FrontControllerCore extends Controller
      *
      * @param bool $display If true, renders visual page header section
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @deprecated 2.0.0
      */
     public function displayHeader($display = true)
@@ -667,9 +634,7 @@ class FrontControllerCore extends Controller
     /**
      * Initializes page header variables.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initHeader()
     {
@@ -700,9 +665,7 @@ class FrontControllerCore extends Controller
      *
      * @return array
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initLogoAndFavicon()
     {
@@ -733,9 +696,7 @@ class FrontControllerCore extends Controller
      *
      * @return bool|string
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLayout()
     {
@@ -766,9 +727,7 @@ class FrontControllerCore extends Controller
      *
      * @return string
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getThemeDir()
     {
@@ -780,9 +739,7 @@ class FrontControllerCore extends Controller
      *
      * @return string
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getOverrideThemeDir()
     {
@@ -794,12 +751,8 @@ class FrontControllerCore extends Controller
      *
      * @param array|string $content Template file(s) to be rendered
      *
-     * @throws Exception
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function smartyOutputContent($content)
     {
@@ -863,6 +816,8 @@ class FrontControllerCore extends Controller
      *
      * @param bool $display
      *
+     * @throws SmartyException
+     * @throws PrestaShopException
      * @deprecated 2.0.0
      */
     public function displayFooter($display = true)
@@ -874,9 +829,8 @@ class FrontControllerCore extends Controller
     /**
      * Renders and outputs maintenance page and ends controller process.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initCursedPage()
     {
@@ -886,9 +840,8 @@ class FrontControllerCore extends Controller
     /**
      * Displays maintenance page if shop is closed.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function displayMaintenancePage()
     {
@@ -922,9 +875,7 @@ class FrontControllerCore extends Controller
      *
      * @return string
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTemplatePath($template)
     {
@@ -953,12 +904,8 @@ class FrontControllerCore extends Controller
      *
      * @return bool
      *
-     * @throws Exception
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function display()
     {
@@ -1026,9 +973,7 @@ class FrontControllerCore extends Controller
      * Renders page content.
      * Used for retrocompatibility with PS 1.4.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public function displayContent()
     {
@@ -1111,9 +1056,7 @@ class FrontControllerCore extends Controller
      * Specific medias for mobile device.
      * If autoload directory is present in the mobile theme, these files will not be loaded.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setMobileMedia()
     {
@@ -1139,8 +1082,8 @@ class FrontControllerCore extends Controller
      *
      * @see Controller::addJS()
      *
-     * @param array|string $jsUri     Path to file, or an array of paths
-     * @param bool         $checkPath If true, checks if files exists
+     * @param array|string $jsUri Path to file, or an array of paths
+     * @param bool $checkPath If true, checks if files exists
      *
      * @return bool
      */
@@ -1152,17 +1095,13 @@ class FrontControllerCore extends Controller
     /**
      * Adds a media file(s) (CSS, JS) to page header.
      *
-     * @param string|array $mediaUri     Path to file, or an array of paths like: array(array(uri => media_type), ...)
-     * @param string|null  $cssMediaType CSS media type
-     * @param int|null     $offset
-     * @param bool         $remove       If True, removes media files
-     * @param bool         $checkPath    If true, checks if files exists
+     * @param string|array $mediaUri Path to file, or an array of paths like: array(array(uri => media_type), ...)
+     * @param string|null $cssMediaType CSS media type
+     * @param int|null $offset
+     * @param bool $remove If True, removes media files
+     * @param bool $checkPath If true, checks if files exists
      *
      * @return bool
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     public function addMedia($mediaUri, $cssMediaType = null, $offset = null, $remove = false, $checkPath = true)
     {
@@ -1235,10 +1174,10 @@ class FrontControllerCore extends Controller
      *
      * @see Controller::addCSS()
      *
-     * @param array|string $cssUri       $media_uri Path to file, or an array of paths like: array(array(uri => media_type), ...)
-     * @param string       $cssMediaType CSS media type
-     * @param int|null     $offset
-     * @param bool         $checkPath    If true, checks if files exists
+     * @param array|string $cssUri Path to file, or an array of paths like: array(array(uri => media_type), ...)
+     * @param string $cssMediaType CSS media type
+     * @param int|null $offset
+     * @param bool $checkPath If true, checks if files exists
      *
      * @return bool
      */
@@ -1250,8 +1189,7 @@ class FrontControllerCore extends Controller
     /**
      * Initializes page footer variables.
      *
-     * @since 1.0.0
-     * @since 1.1.0 Add debug messages as JavaScript console messages.
+     * @throws PrestaShopException
      */
     public function initFooter()
     {
@@ -1296,15 +1234,14 @@ class FrontControllerCore extends Controller
      *
      * @return string HTML
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getLiveEditFooter()
     {
         if ($this->checkLiveEditAccess()) {
             $data = $this->context->smarty->createData();
-            // @codingStandardsIgnoreStart
             $data->assign(
                 [
                     'ad'        => Tools::getValue('ad'),
@@ -1313,7 +1250,6 @@ class FrontControllerCore extends Controller
                     'id_shop'   => $this->context->shop->id,
                 ]
             );
-            // @codingStandardsIgnoreEnd
 
             return $this->context->smarty->createTemplate(_PS_ALL_THEMES_DIR_.'live_edit.tpl', $data)->fetch();
         } else {
@@ -1326,9 +1262,8 @@ class FrontControllerCore extends Controller
      *
      * @return bool
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function checkLiveEditAccess()
     {
@@ -1346,9 +1281,7 @@ class FrontControllerCore extends Controller
     /**
      * Assigns product list page sorting variables.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function productSort()
     {
@@ -1391,10 +1324,7 @@ class FrontControllerCore extends Controller
      * @param int|null $totalProducts
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function pagination($totalProducts = null)
     {
@@ -1469,24 +1399,21 @@ class FrontControllerCore extends Controller
      * Initializes front controller: sets smarty variables,
      * class properties, redirects depending on context, etc.
      *
-     * @global bool     $useSSL         SSL connection flag
-     * @global Cookie   $cookie         Visitor's cookie
-     * @global Smarty   $smarty
-     * @global Cart     $cart           Visitor's cart
-     * @global string   $iso            Language ISO
-     * @global Country  $defaultCountry Visitor's country object
-     * @global string   $protocol_link
-     * @global string   $protocol_content
-     * @global Link     $link
-     * @global array    $css_files
-     * @global array    $js_files
-     * @global Currency $currency       Visitor's selected currency
-     *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
+     * @global bool $useSSL SSL connection flag
+     * @global Cookie $cookie Visitor's cookie
+     * @global Smarty $smarty
+     * @global Cart $cart Visitor's cart
+     * @global string $iso Language ISO
+     * @global Country $defaultCountry Visitor's country object
+     * @global string $protocol_link
+     * @global string $protocol_content
+     * @global Link $link
+     * @global array $css_files
+     * @global array $js_files
+     * @global Currency $currency Visitor's selected currency
      */
     public function init()
     {
@@ -1864,9 +1791,7 @@ class FrontControllerCore extends Controller
     /**
      * Redirects to correct protocol if settings and request methods don't match.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function sslRedirection()
     {
@@ -1889,9 +1814,7 @@ class FrontControllerCore extends Controller
      *
      * @return int|false
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function recoverCart()
     {
@@ -1930,9 +1853,6 @@ class FrontControllerCore extends Controller
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     protected function geolocationManagement($defaultCountry)
     {
@@ -2007,13 +1927,9 @@ class FrontControllerCore extends Controller
     /**
      * Checks if user's location is whitelisted.
      *
-     * @staticvar bool|null $allowed
-     *
      * @return bool
      *
-     * @since     1.0.0
-     *
-     * @version   1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function isInWhitelistForGeolocation()
     {
@@ -2052,9 +1968,7 @@ class FrontControllerCore extends Controller
      *
      * @param string $canonicalUrl
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function canonicalRedirection($canonicalUrl = '')
     {
@@ -2116,9 +2030,8 @@ class FrontControllerCore extends Controller
     /**
      * Displays 'country restricted' page if user's country is not allowed.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function displayRestrictedCountryPage()
     {
@@ -2139,9 +2052,7 @@ class FrontControllerCore extends Controller
      *
      * @return bool
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isTokenValid()
     {
@@ -2155,13 +2066,9 @@ class FrontControllerCore extends Controller
     /**
      * Removes CSS file(s) from page header.
      *
-     * @param array|string $cssUri       $media_uri Path to file, or an array of paths like: array(array(uri => media_type), ...)
-     * @param string       $cssMediaType CSS media type
-     * @param bool         $checkPath    If true, checks if files exists
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @param array|string $cssUri Path to file, or an array of paths like: array(array(uri => media_type), ...)
+     * @param string $cssMediaType CSS media type
+     * @param bool $checkPath If true, checks if files exists
      */
     public function removeCSS($cssUri, $cssMediaType = 'all', $checkPath = true)
     {
@@ -2171,13 +2078,9 @@ class FrontControllerCore extends Controller
     /**
      * Removes media file(s) from page header.
      *
-     * @param string|array $mediaUri     Path to file, or an array paths of like: array(array(uri => media_type), ...)
-     * @param string|null  $cssMediaType CSS media type
-     * @param bool         $checkPath    If true, checks if files exists
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @param string|array $mediaUri Path to file, or an array paths of like: array(array(uri => media_type), ...)
+     * @param string|null $cssMediaType CSS media type
+     * @param bool $checkPath If true, checks if files exists
      */
     public function removeMedia($mediaUri, $cssMediaType = null, $checkPath = true)
     {
@@ -2187,12 +2090,8 @@ class FrontControllerCore extends Controller
     /**
      * Removes JS file(s) from page header.
      *
-     * @param array|string $jsUri     Path to file, or an array of paths
-     * @param bool         $checkPath If true, checks if files exists
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @param array|string $jsUri Path to file, or an array of paths
+     * @param bool $checkPath If true, checks if files exists
      */
     public function removeJS($jsUri, $checkPath = true)
     {
@@ -2204,9 +2103,6 @@ class FrontControllerCore extends Controller
      *
      * @param string $defaultTemplate
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function setTemplate($defaultTemplate)
@@ -2231,9 +2127,8 @@ class FrontControllerCore extends Controller
      *
      * @param string $template
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMobileTemplate($template)
     {
@@ -2276,9 +2171,6 @@ class FrontControllerCore extends Controller
      *
      * @return string|bool
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getOverrideTemplate()
@@ -2303,9 +2195,7 @@ class FrontControllerCore extends Controller
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function addColorsToProductList(&$products)
     {
@@ -2357,10 +2247,6 @@ class FrontControllerCore extends Controller
      * @param int $idProduct
      *
      * @return string
-     *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
      */
     protected function getColorsListCacheId($idProduct)
     {
@@ -2370,10 +2256,7 @@ class FrontControllerCore extends Controller
     /**
      * Redirects to redirect_after link.
      *
-     * @see     $redirect_after
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function redirect()
     {

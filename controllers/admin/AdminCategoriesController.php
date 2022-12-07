@@ -31,28 +31,37 @@
 
 /**
  * Class AdminCategoriesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCategoriesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
-    /** @var bool does the product have to be removed during the delete process */
+    /**
+     * @var bool does the product have to be removed during the delete process
+     */
     public $remove_products = true;
-    /** @var bool does the product have to be disable during the delete process */
+
+    /**
+     * @var bool does the product have to be disable during the delete process
+     */
     public $disable_products = false;
+
     /**
      * @var Category instance for navigation
      */
     protected $_category = null;
+
+    /**
+     * @var string
+     */
     protected $position_identifier = 'id_category_to_move';
+
+    /**
+     * @var string
+     */
     protected $original_filter = '';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminCategoriesControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -118,11 +127,9 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @param $description
+     * @param string $description
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function getDescriptionClean($description)
     {
@@ -130,8 +137,6 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
-     *
      * @throws PrestaShopException
      */
     public function init()
@@ -176,7 +181,6 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
@@ -210,7 +214,8 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -228,7 +233,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -238,14 +243,15 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
+     * @param int $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int $start
+     * @param int|null $limit
      * @param bool $idLangShop
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -265,7 +271,9 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -275,7 +283,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -347,7 +355,9 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -391,7 +401,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -423,9 +433,10 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -496,7 +507,6 @@ class AdminCategoriesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -778,7 +788,8 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -797,7 +808,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processForceDeleteImage()
     {
@@ -810,7 +821,8 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processForceDeleteThumb()
     {
@@ -846,7 +858,8 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -881,7 +894,6 @@ class AdminCategoriesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function processDelete()
@@ -907,7 +919,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processPosition()
     {
@@ -926,7 +938,6 @@ class AdminCategoriesControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessUpdatePositions()
     {
@@ -963,7 +974,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessStatusCategory()
     {
@@ -985,7 +996,6 @@ class AdminCategoriesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function processBulkDelete()
     {
@@ -1019,7 +1029,7 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     protected function setDeleteMode()
     {
@@ -1047,7 +1057,6 @@ class AdminCategoriesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processFatherlessProducts($idParent, array $products)
     {
@@ -1100,7 +1109,6 @@ class AdminCategoriesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function postImage($id)

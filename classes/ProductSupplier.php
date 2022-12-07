@@ -31,40 +31,36 @@
 
 /**
  * Class ProductSupplierCore
- *
- * @since 1.0.0
  */
 class ProductSupplierCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int product ID
-     * */
+     */
     public $id_product;
     /**
      * @var int product attribute ID
-     * */
+     */
     public $id_product_attribute;
     /**
      * @var int the supplier ID
-     * */
+     */
     public $id_supplier;
     /**
      * @var string The supplier reference of the product
-     * */
+     */
     public $product_supplier_reference;
     /**
      * @var int the currency ID for unit price tax excluded
-     * */
+     */
     public $id_currency;
     /**
      * @var string The unit price tax excluded of the product
-     * */
+     */
     public $product_supplier_price_te;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'product_supplier',
@@ -108,8 +104,6 @@ class ProductSupplierCore extends ObjectModel
      *
      * @return string|false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getProductSupplierReference($idProduct, $idProductAttribute, $idSupplier)
@@ -127,15 +121,13 @@ class ProductSupplierCore extends ObjectModel
     /**
      * For a given product and supplier, gets the product supplier unit price
      *
-     * @param int  $idProduct
-     * @param int  $idProductAttribute
-     * @param int  $idSupplier
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $idSupplier
      * @param bool $withCurrency Optional
      *
      * @return int|array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getProductSupplierPrice($idProduct, $idProductAttribute, $idSupplier, $withCurrency = false)
@@ -174,8 +166,6 @@ class ProductSupplierCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByProductAndSupplier($idProduct, $idProductAttribute, $idSupplier)
@@ -193,10 +183,10 @@ class ProductSupplierCore extends ObjectModel
     /**
      * For a given Supplier, Product, returns the purchased price
      *
-     * @param int  $idSupplier
-     * @param int  $idProduct
-     * @param int  $idProductAttribute
-     * @param bool $convertedPrice      Whether price should be converted to
+     * @param int $idSupplier
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param bool $convertedPrice Whether price should be converted to
      *                                  the current currency.
      *
      * @return bool|float Price, rounded to _TB_PRICE_DATABASE_PRECISION_, or
@@ -204,8 +194,6 @@ class ProductSupplierCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public static function getProductPrice($idSupplier, $idProduct, $idProductAttribute = 0, $convertedPrice = false)
     {
@@ -234,8 +222,6 @@ class ProductSupplierCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -258,13 +244,11 @@ class ProductSupplierCore extends ObjectModel
     /**
      * For a given product, retrieves its suppliers
      *
-     * @param int  $idProduct
+     * @param int $idProduct
      * @param bool $groupBySupplier
      *
      * @return PrestaShopCollection Collection of ProductSupplier
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getSupplierCollection($idProduct, $groupBySupplier = true)

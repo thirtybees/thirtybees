@@ -34,6 +34,10 @@
  */
 class AdminGroupsControllerCore extends AdminController
 {
+    /**
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -143,6 +147,10 @@ class AdminGroupsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -150,6 +158,10 @@ class AdminGroupsControllerCore extends AdminController
         $this->addJqueryUi('ui.sortable');
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initToolbar()
     {
         if ($this->display == 'add' || $this->display == 'edit') {
@@ -163,6 +175,10 @@ class AdminGroupsControllerCore extends AdminController
         parent::initToolbar();
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
@@ -176,6 +192,9 @@ class AdminGroupsControllerCore extends AdminController
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @return void
+     */
     public function initProcess()
     {
         $this->id_object = Tools::getValue('id_'.$this->table);
@@ -201,12 +220,19 @@ class AdminGroupsControllerCore extends AdminController
         parent::initProcess();
     }
 
+    /**
+     * @return string|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderView()
     {
         if (!($group = $this->loadObject(true))) {
             return;
         }
 
+        /** @var Group $group */
         $this->tpl_view_vars = [
             'group' => $group,
             'language' => $this->context->language,
@@ -217,6 +243,13 @@ class AdminGroupsControllerCore extends AdminController
         return parent::renderView();
     }
 
+    /**
+     * @param Group $group
+     * @return false|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     protected function renderCustomersList($group)
     {
         $this->table = 'customer_group';
@@ -249,12 +282,22 @@ class AdminGroupsControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @param bool $value
+     * @param array $customer
+     * @return string
+     */
     public function printOptinIcon($value, $customer)
     {
         return ($value ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>');
     }
 
-
+    /**
+     * @return string|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         if (!($group = $this->loadObject(true))) {
@@ -364,6 +407,12 @@ class AdminGroupsControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * @param int $id_group
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function formatCategoryDiscountList($id_group)
     {
         $group_reductions = GroupReduction::getGroupReductions((int)$id_group, $this->context->language->id);
@@ -397,6 +446,12 @@ class AdminGroupsControllerCore extends AdminController
         return $category_reductions;
     }
 
+    /**
+     * @param int $id_group
+     * @return array[]
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function formatModuleListAuth($id_group)
     {
         $modules = Module::getModulesInstalled();
@@ -448,6 +503,11 @@ class AdminGroupsControllerCore extends AdminController
         return ['unauth_modules' => $unauth_modules, 'auth_modules' => $auth_modules];
     }
 
+    /**
+     * @return false|ObjectModel|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function processSave()
     {
         if (!$this->validateDiscount(Tools::getValue('reduction'))) {
@@ -460,6 +520,10 @@ class AdminGroupsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param float $reduction
+     * @return bool
+     */
     protected function validateDiscount($reduction)
     {
         if (!Validate::isPrice($reduction) || $reduction > 100 || $reduction < 0) {
@@ -469,6 +533,10 @@ class AdminGroupsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function ajaxProcessAddCategoryReduction()
     {
         $category_reduction = Tools::getValue('category_reduction');
@@ -492,6 +560,8 @@ class AdminGroupsControllerCore extends AdminController
 
     /**
      * Update (or create) restrictions for modules by group
+     *
+     * @throws PrestaShopException
      */
     protected function updateRestrictions()
     {
@@ -508,6 +578,11 @@ class AdminGroupsControllerCore extends AdminController
         return $return;
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function updateCategoryReduction()
     {
         $category_reduction = Tools::getValue('category_reduction');
@@ -543,6 +618,7 @@ class AdminGroupsControllerCore extends AdminController
 
     /**
      * Toggle show prices flag
+     * @throws PrestaShopException
      */
     public function processChangeShowPricesVal()
     {
@@ -561,9 +637,11 @@ class AdminGroupsControllerCore extends AdminController
     /**
      * Print enable / disable icon for show prices option
      *
-     * @param $id_group integer Group ID
-     * @param $tr array Row data
+     * @param int $id_group Group ID
+     * @param array $tr Row data
      * @return string HTML link and icon
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function printShowPricesIcon($id_group, $tr)
     {
@@ -576,6 +654,12 @@ class AdminGroupsControllerCore extends AdminController
             '</a>';
     }
 
+    /**
+     * @return false|string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderList()
     {
         $unidentified = new Group(Configuration::get('PS_UNIDENTIFIED_GROUP'));
@@ -602,6 +686,15 @@ class AdminGroupsControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @param string $token
+     * @param int $id
+     * @param string|null $name
+     *
+     * @return false|string
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function displayEditLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');

@@ -19,13 +19,13 @@
 
 namespace Thirtybees\Core\Tracking\Extractor;
 
+use PrestaShopDatabaseException;
+use PrestaShopException;
 use Thirtybees\Core\Tracking\DataExtractor;
 use Db;
 
 /**
  * Class DbExtractorCore
- *
- * @since 1.3.0
  */
 class DbExtractorCore extends DataExtractor
 {
@@ -53,7 +53,9 @@ class DbExtractorCore extends DataExtractor
     /**
      * Extracts value
      *
-     * @return mixed
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function extractValue()
     {

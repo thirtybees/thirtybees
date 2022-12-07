@@ -31,14 +31,11 @@
 
 /**
  * Class OrderDetailCore
- *
- * @since 1.0.0
  */
 class OrderDetailCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_detail',
@@ -168,11 +165,11 @@ class OrderDetailCore extends ObjectModel
     public $download_nb;
     /** @var datetime $download_deadline */
     public $download_deadline;
-    /** @var string $tax_name * */
+    /** @var string $tax_name */
     public $tax_name;
-    /** @var float $tax_rate * */
+    /** @var float $tax_rate */
     public $tax_rate;
-    /** @var float $tax_computation_method * */
+    /** @var float $tax_computation_method */
     public $tax_computation_method;
     /** @var int $id_tax_rules_group Id tax rules group */
     public $id_tax_rules_group;
@@ -188,19 +185,20 @@ class OrderDetailCore extends ObjectModel
     public $original_wholesale_price;
     /** @var bool $outOfStock */
     protected $outOfStock = false;
-    /** @var null|TaxCalculator $tax_calculator */
+    /** @var TaxCalculator|null $tax_calculator */
     protected $tax_calculator = null;
-    /** @var null|Address $vat_address */
+    /** @var Address|null $vat_address */
     protected $vat_address = null;
-    /** @var null|Address $specificPrice */
+    /** @var Address|null $specificPrice */
     protected $specificPrice = null;
-    /** @var null|Customer $customer */
+    /** @var Customer|null $customer */
     protected $customer = null;
-    /** @var null|Context $context */
+    /** @var Context|null $context */
     protected $context = null;
 
-    // @codingStandardsIgnoreEnd
-
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields'        => [
             'id_order'                    => ['xlink_resource' => 'orders'],
@@ -226,12 +224,12 @@ class OrderDetailCore extends ObjectModel
     /**
      * OrderDetailCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
-     * @param null $context
+     * @param int|null $id
+     * @param int|null $idLang
+     * @param Context|null $context
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $context = null)
     {
@@ -253,8 +251,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -274,8 +270,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDownloadFromHash($hash)
     {
@@ -301,8 +295,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function incrementDownload($idOrderDetail, $increment = 1)
     {
@@ -322,8 +314,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxCalculator()
     {
@@ -339,8 +329,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTaxCalculatorStatic($idOrderDetail)
     {
@@ -367,7 +355,7 @@ class OrderDetailCore extends ObjectModel
      * Save the tax calculator
      *
      * @param Order $order
-     * @param bool  $replace
+     * @param bool $replace
      *
      * @return bool
      * @throws PrestaShopDatabaseException
@@ -434,8 +422,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updateTaxAmount(Order $order)
     {
@@ -456,8 +442,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getList($idOrder)
     {
@@ -470,12 +454,10 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @return mixed
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxList()
     {
@@ -485,12 +467,10 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param int $idOrderDetail
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTaxListStatic($idOrderDetail)
     {
@@ -506,17 +486,15 @@ class OrderDetailCore extends ObjectModel
      * Create a list of order detail for a specified id_order using cart
      *
      * @param object|Order $order
-     * @param Cart|object  $cart
-     * @param int          $idOrderState
-     * @param array[]      $productList
-     * @param int          $idOrderInvoice
-     * @param bool         $useTaxes set to false if you don't want to use taxes
-     * @param int          $idWarehouse
+     * @param Cart|object $cart
+     * @param int $idOrderState
+     * @param array[] $productList
+     * @param int $idOrderInvoice
+     * @param bool $useTaxes set to false if you don't want to use taxes
+     * @param int $idWarehouse
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public function createList(Order $order, Cart $cart, $idOrderState, $productList, $idOrderInvoice = 0, $useTaxes = true, $idWarehouse = 0)
     {
@@ -539,9 +517,6 @@ class OrderDetailCore extends ObjectModel
      * Get the state of the current stock product
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStockState()
     {
@@ -557,8 +532,6 @@ class OrderDetailCore extends ObjectModel
      * @return void
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setShippingCost(Order $order, $product)
     {
@@ -580,12 +553,10 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWsTaxes()
     {
@@ -607,8 +578,6 @@ class OrderDetailCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCrossSells($idProduct, $idLang, $limit = 12)
     {
@@ -689,8 +658,8 @@ class OrderDetailCore extends ObjectModel
     /**
      * @return float
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getWholeSalePrice()
     {
@@ -710,8 +679,8 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param int $idShop
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function setContext($idShop)
     {
@@ -721,10 +690,8 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @param $product
+     * @param array $product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setVirtualProductInformation($product)
@@ -746,12 +713,10 @@ class OrderDetailCore extends ObjectModel
      * Check the order status
      *
      * @param array $product
-     * @param int   $idOrderState
+     * @param int $idOrderState
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function checkProductStock($product, $idOrderState)
     {
@@ -775,8 +740,6 @@ class OrderDetailCore extends ObjectModel
      * @param Order $order
      * @param array $product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setProductTax(Order $order, $product)
@@ -805,11 +768,9 @@ class OrderDetailCore extends ObjectModel
     /**
      * Set specific price of the product
      *
-     * @param Order      $order
+     * @param Order $order
      * @param array|null $product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function setSpecificPrice(Order $order, $product = null)
@@ -851,13 +812,11 @@ class OrderDetailCore extends ObjectModel
      * Set detailed product price to the order detail
      *
      * @param Order $order
-     * @param Cart  $cart
+     * @param Cart $cart
      * @param array $product
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function setDetailProductPrice(Order $order, Cart $cart, $product)
     {
@@ -982,17 +941,15 @@ class OrderDetailCore extends ObjectModel
      * Create an order detail liable to an id_order
      *
      * @param Order $order
-     * @param Cart  $cart
+     * @param Cart $cart
      * @param array $product
-     * @param int   $idOrderState
-     * @param int   $idOrderInvoice
-     * @param bool  $useTaxes set to false if you don't want to use taxes
-     * @param int   $idWarehouse
+     * @param int $idOrderState
+     * @param int $idOrderInvoice
+     * @param bool $useTaxes set to false if you don't want to use taxes
+     * @param int $idWarehouse
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function create(Order $order, Cart $cart, $product, $idOrderState, $idOrderInvoice, $useTaxes = true, $idWarehouse = 0)
     {

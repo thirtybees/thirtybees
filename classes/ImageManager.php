@@ -31,8 +31,6 @@
 
 /**
  * Class ImageManagerCore
- *
- * @since 1.0.0
  */
 class ImageManagerCore
 {
@@ -47,17 +45,15 @@ class ImageManagerCore
     /**
      * Generate a cached thumbnail for object lists (eg. carrier, order statuses...etc)
      *
-     * @param string $image        Real image filename
-     * @param string $cacheImage   Cached filename
-     * @param int    $size         Desired size
-     * @param string $imageType    Image type
-     * @param bool   $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
-     * @param bool   $regenerate   When turned on and the file already exist, the file will be regenerated
+     * @param string $image Real image filename
+     * @param string $cacheImage Cached filename
+     * @param int $size Desired size
+     * @param string $imageType Image type
+     * @param bool $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
+     * @param bool $regenerate When turned on and the file already exist, the file will be regenerated
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function thumbnail($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
@@ -190,12 +186,9 @@ class ImageManagerCore
     /**
      * Check if memory limit is too long or not
      *
-     * @param $image
+     * @param string $image
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkImageMemoryLimit($image)
     {
@@ -225,23 +218,21 @@ class ImageManagerCore
     /**
      * Resize, cut and optimize image
      *
-     * @param string $srcFile   Image object from $_FILE
-     * @param string $dstFile   Destination filename
-     * @param int    $dstWidth  Desired width (optional)
-     * @param int    $dstHeight Desired height (optional)
+     * @param string $srcFile Image object from $_FILE
+     * @param string $dstFile Destination filename
+     * @param int $dstWidth Desired width (optional)
+     * @param int $dstHeight Desired height (optional)
      * @param string $fileType
-     * @param bool   $forceType
-     * @param int    $error
-     * @param int    $tgtWidth
-     * @param int    $tgtHeight
-     * @param int    $quality
-     * @param int    $srcWidth
-     * @param int    $srcHeight
+     * @param bool $forceType
+     * @param int $error
+     * @param int $tgtWidth
+     * @param int $tgtHeight
+     * @param int $quality
+     * @param int $srcWidth
+     * @param int $srcHeight
      *
      * @return bool Operation result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function resize(
@@ -412,9 +403,6 @@ class ImageManagerCore
      * @param string $filename
      *
      * @return resource
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function create($type, $filename)
     {
@@ -435,22 +423,20 @@ class ImageManagerCore
     }
 
     /**
-     * @param     $dstImage
-     * @param     $srcImage
-     * @param     $dstX
-     * @param     $dstY
-     * @param     $srcX
-     * @param     $srcY
-     * @param     $dstW
-     * @param     $dstH
-     * @param     $srcW
-     * @param     $srcH
+     * @param GdImage $dstImage
+     * @param GdImage $srcImage
+     * @param int $dstX
+     * @param int $dstY
+     * @param int $srcX
+     * @param int $srcY
+     * @param int $dstW
+     * @param int $dstH
+     * @param int $srcW
+     * @param int $srcH
      * @param int $quality
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.4.0
      */
     public static function imagecopyresampled($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH, $quality = 3)
@@ -462,14 +448,12 @@ class ImageManagerCore
     /**
      * Generate and write image
      *
-     * @param string   $type
+     * @param string $type
      * @param resource $resource
-     * @param string   $filename
+     * @param string $filename
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function write($type, $resource, $filename)
@@ -522,13 +506,10 @@ class ImageManagerCore
     /**
      * Validate image upload (check image type and weight)
      *
-     * @param array $file        Upload $_FILE value
-     * @param int   $maxFileSize Maximum upload size
+     * @param array $file Upload $_FILE value
+     * @param int $maxFileSize Maximum upload size
      *
      * @return bool|string Return false if no error encountered
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function validateUpload($file, $maxFileSize = 0, $types = null)
     {
@@ -548,14 +529,11 @@ class ImageManagerCore
     /**
      * Check if file is a real image
      *
-     * @param string $filename     File path to check
+     * @param string $filename File path to check
      * @param string $fileMimeType File known mime type (generally from $_FILES)
-     * @param array  $mimeTypeList Allowed MIME types
+     * @param array $mimeTypeList Allowed MIME types
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isRealImage($filename, $fileMimeType = null, $mimeTypeList = null)
     {
@@ -608,13 +586,10 @@ class ImageManagerCore
     /**
      * Check if image file extension is correct
      *
-     * @param string     $filename Real filename
+     * @param string $filename Real filename
      * @param array|null $authorizedExtensions
      *
      * @return bool True if it's correct
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isCorrectImageFileExt($filename, $authorizedExtensions = null)
     {
@@ -638,13 +613,10 @@ class ImageManagerCore
     /**
      * Validate icon upload
      *
-     * @param array $file        Upload $_FILE value
-     * @param int   $maxFileSize Maximum upload size
+     * @param array $file Upload $_FILE value
+     * @param int $maxFileSize Maximum upload size
      *
      * @return bool|string Return false if no error encountered
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function validateIconUpload($file, $maxFileSize = 0)
     {
@@ -668,18 +640,16 @@ class ImageManagerCore
     /**
      * Cut image
      *
-     * @param string $srcFile   Origin filename
-     * @param string $dstFile   Destination filename
-     * @param int    $dstWidth  Desired width
-     * @param int    $dstHeight Desired height
+     * @param string $srcFile Origin filename
+     * @param string $dstFile Destination filename
+     * @param int $dstWidth Desired width
+     * @param int $dstHeight Desired height
      * @param string $fileType
-     * @param int    $dstX
-     * @param int    $dstY
+     * @param int $dstX
+     * @param int $dstY
      *
      * @return bool Operation result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function cut($srcFile, $dstFile, $dstWidth = null, $dstHeight = null, $fileType = 'jpg', $dstX = 0, $dstY = 0)
@@ -720,9 +690,6 @@ class ImageManagerCore
      * @param int $height
      *
      * @return resource
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function createWhiteImage($width, $height)
     {
@@ -739,9 +706,6 @@ class ImageManagerCore
      * @param string $fileName
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMimeTypeByExtension($fileName)
     {
@@ -777,7 +741,7 @@ class ImageManagerCore
      * resolutions while a larger source image can be used for large resolutions.
      *
      * @param string $source Path to the source image file.
-     * @param array  $sizes  Optional. An array of sizes (each size is an array with a width and height) that the source image should be rendered at in the generated ICO file. If sizes are not supplied, the size of the source image will be used.
+     * @param array $sizes Optional. An array of sizes (each size is an array with a width and height) that the source image should be rendered at in the generated ICO file. If sizes are not supplied, the size of the source image will be used.
      *
      * @return boolean true on success and false on failure.
      *
@@ -917,8 +881,6 @@ class ImageManagerCore
      * Returns true, if webp images can be used for current request
      *
      * @return bool
-     *
-     * @since 1.0.4
      */
     public static function webpSupport()
     {
@@ -978,7 +940,6 @@ class ImageManagerCore
      * will be used by store
      *
      * @return bool
-     * @since 1.4.0
      */
     public static function generateWebpImages()
     {
@@ -1005,8 +966,6 @@ class ImageManagerCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.4
      */
     public static function retinaSupport()
     {

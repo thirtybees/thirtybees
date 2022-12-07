@@ -34,8 +34,23 @@
  */
 class FreeOrderCore extends PaymentModule
 {
+    /**
+     * @var int
+     */
     public $active = 1;
+
+    /**
+     * @var string Unique name
+     */
     public $name = 'free_order';
+
+    /**
+     * @var string Human name
+     */
     public $displayName = 'free_order';
+
+    /**
+     * @var bool
+     */
     public $free_order_class = true;
 }

@@ -31,12 +31,9 @@
 
 /**
  * Class AttachmentCore
- *
- * @since 1.0.0
  */
 class AttachmentCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string $file */
     public $file;
     /** @var string $file_name */
@@ -51,10 +48,9 @@ class AttachmentCore extends ObjectModel
     public $description;
     /** @var int position */
     public $position;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'attachment',
@@ -78,8 +74,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -93,8 +89,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -106,8 +102,6 @@ class AttachmentCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -138,8 +132,6 @@ class AttachmentCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteSelection($attachments)
     {
@@ -170,14 +162,11 @@ class AttachmentCore extends ObjectModel
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @param int  $idLang
-     * @param int  $idProduct
+     * @param int $idLang
+     * @param int $idProduct
      * @param bool $include
      *
-     * @return array|false|null|PDOStatement
+     * @return array|false|PDOStatement
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -203,8 +192,6 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -229,8 +216,6 @@ class AttachmentCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function attachProduct($idProduct)
     {
@@ -251,15 +236,13 @@ class AttachmentCore extends ObjectModel
      * Associate an array of id_attachment $array to the product $id_product
      * and remove eventual previous association
      *
-     * @param int   $idProduct
+     * @param int $idProduct
      * @param array $array
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function attachToProduct($idProduct, $array)
     {
@@ -287,15 +270,13 @@ class AttachmentCore extends ObjectModel
     }
 
     /**
-     * @param int   $idLang
+     * @param int $idLang
      * @param array $list
      *
      * @return array|bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProductAttached($idLang, $list)
     {

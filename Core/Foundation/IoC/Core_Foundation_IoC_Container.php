@@ -31,8 +31,6 @@
 
 /**
  * Class Core_Foundation_IoC_Container
- *
- * @since 1.0.0
  */
 class Core_Foundation_IoC_Container
 {
@@ -61,9 +59,6 @@ class Core_Foundation_IoC_Container
      * @param string $serviceName
      *
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function knows($serviceName)
     {
@@ -83,12 +78,9 @@ class Core_Foundation_IoC_Container
     /**
      * @param string $serviceName
      * @param string|callable|object $constructor
-     * @param bool   $shared
+     * @param bool $shared
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function bind($serviceName, $constructor, $shared = false)
     {
@@ -102,14 +94,11 @@ class Core_Foundation_IoC_Container
     }
 
     /**
-     * @param $alias
-     * @param $namespacePrefix
+     * @param string $alias
+     * @param string $namespacePrefix
      *
-     * @return $this
+     * @return static
      * @throws Core_Foundation_IoC_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function aliasNamespace($alias, $namespacePrefix)
     {
@@ -127,12 +116,9 @@ class Core_Foundation_IoC_Container
     }
 
     /**
-     * @param $className
+     * @param string $className
      *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function resolveClassName($className)
     {
@@ -149,14 +135,11 @@ class Core_Foundation_IoC_Container
     }
 
     /**
-     * @param       $className
+     * @param string $className
      * @param array $alreadySeen
      *
      * @return object
      * @throws Core_Foundation_IoC_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function makeInstanceFromClassName($className, array $alreadySeen)
     {
@@ -203,14 +186,11 @@ class Core_Foundation_IoC_Container
 
 
     /**
-     * @param       $serviceName
+     * @param string $serviceName
      * @param array $alreadySeen
      *
      * @return mixed|object
      * @throws Core_Foundation_IoC_Exception
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function doMake($serviceName, array $alreadySeen = [])
     {
@@ -257,8 +237,6 @@ class Core_Foundation_IoC_Container
      *
      * @return mixed|object
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @throws Core_Foundation_IoC_Exception
      */
     public function make($serviceName)

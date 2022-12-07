@@ -31,17 +31,27 @@
 
 /**
  * Class LanguageCore
- *
- * @since 1.0.0
  */
 class LanguageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var array Languages cache */
     protected static $_checkedLangs;
+
+    /**
+     * @var array[]
+     */
     protected static $_LANGUAGES;
+
+    /**
+     * @var int[]
+     */
     protected static $countActiveLanguages = [];
+
+    /**
+     * @var int|null
+     */
     protected static $_cache_language_installation = null;
+
     /** @var string Name */
     public $name;
     /** @var string 2-letter iso code */
@@ -56,10 +66,9 @@ class LanguageCore extends ObjectModel
     public $is_rtl = false;
     /** @var bool Status */
     public $active = true;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'lang',
@@ -82,10 +91,17 @@ class LanguageCore extends ObjectModel
             ],
         ],
     ];
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectNodeName'  => 'language',
         'objectsNodeName' => 'languages',
     ];
+
+    /**
+     * @var string[]
+     */
     protected $translationsFilesAndVars = [
         'fields' => '_FIELDS',
         'errors' => '_ERRORS',
@@ -102,8 +118,6 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -113,13 +127,11 @@ class LanguageCore extends ObjectModel
     /**
      * Returns an array of language IDs
      *
-     * @param bool     $active Select only active languages
+     * @param bool $active Select only active languages
      * @param int|bool $idShop Shop ID
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIDs($active = true, $idShop = false)
@@ -130,14 +142,12 @@ class LanguageCore extends ObjectModel
     /**
      * Returns available languages
      *
-     * @param bool     $active  Select only active languages
-     * @param int|bool $idShop  Shop ID
-     * @param bool     $idsOnly If true, returns an array of language IDs
+     * @param bool $active Select only active languages
+     * @param int|bool $idShop Shop ID
+     * @param bool $idsOnly If true, returns an array of language IDs
      *
      * @return array Languages
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLanguages($active = true, $idShop = false, $idsOnly = false)
@@ -161,8 +171,6 @@ class LanguageCore extends ObjectModel
     /**
      * Load all languages in memory for caching
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function loadLanguages()
@@ -184,12 +192,9 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return bool | array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getLanguage($idLang)
     {
@@ -205,8 +210,6 @@ class LanguageCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLanguageCodeByIso($isoCode)
@@ -228,8 +231,6 @@ class LanguageCore extends ObjectModel
      *
      * @return bool|Language
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLanguageByIETFCode($code)
@@ -272,8 +273,6 @@ class LanguageCore extends ObjectModel
      *
      * @return array Language (id_lang, iso_code)
      * @throws PrestaShopException
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public static function getIsoIds($active = true)
     {
@@ -292,8 +291,6 @@ class LanguageCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function copyLanguageData($from, $to)
     {
@@ -328,13 +325,11 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $iso_code
+     * @param string $iso_code
      *
      * @return bool|mixed
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isInstalled($iso_code)
     {
@@ -360,8 +355,6 @@ class LanguageCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function isMultiLanguageActivated($idShop = null)
     {
@@ -371,11 +364,9 @@ class LanguageCore extends ObjectModel
     /**
      * @param int $idShop
      *
-     * @return mixed
+     * @return int
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function countActiveLanguages($idShop = null)
     {
@@ -401,8 +392,6 @@ class LanguageCore extends ObjectModel
      * @param array $modulesList
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function updateModulesTranslations(Array $modulesList)
     {
@@ -435,16 +424,14 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param string      $iso
+     * @param string $iso
      * @param string|null $version
-     * @param array|null  $params
-     * @param bool        $install
+     * @param array|null $params
+     * @param bool $install
      *
      * @return array|bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function downloadAndInstallLanguagePack($iso, $version = null, $params = null, $install = true)
     {
@@ -541,7 +528,7 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param string      $iso
+     * @param string $iso
      * @param Archive_Tar $tar
      *
      * @return array
@@ -566,16 +553,13 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param string        $isoCode
+     * @param string $isoCode
      * @param Language|bool $langPack
-     * @param bool          $onlyAdd
-     * @param array|null    $paramsLang
+     * @param bool $onlyAdd
+     * @param array|null $paramsLang
      *
      * @throws PrestaShopException
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkAndAddLanguage($isoCode, $langPack = false, $onlyAdd = false, $paramsLang = null)
     {
@@ -665,12 +649,10 @@ class LanguageCore extends ObjectModel
      * Return id from iso code
      *
      * @param string $isoCode Iso code
-     * @param bool   $noCache
+     * @param bool $noCache
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByIso($isoCode, $noCache = false)
@@ -703,8 +685,6 @@ class LanguageCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false, $onlyAdd = false)
@@ -738,8 +718,6 @@ class LanguageCore extends ObjectModel
      * Generate translations files
      *
      * @param string $newIso
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _generateFiles($newIso = null)
     {
@@ -781,8 +759,6 @@ class LanguageCore extends ObjectModel
      * @return bool true if succeed
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function loadUpdateSQL()
     {
@@ -855,16 +831,13 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param int        $id
+     * @param int $id
      * @param int|string $iso
      *
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
-     * @since 1.0.2 Made public
      *        Accept an ID or ISO, ID has a higher priority
      */
     public static function _copyNoneFlag($id, $iso = null)
@@ -893,12 +866,9 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::getFields()
      * @return array
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFields()
     {
@@ -915,8 +885,6 @@ class LanguageCore extends ObjectModel
      *
      * @param string $newIso
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function moveToIso($newIso)
     {
@@ -965,8 +933,6 @@ class LanguageCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function checkFiles()
@@ -983,8 +949,6 @@ class LanguageCore extends ObjectModel
      *
      * @return bool true if all files exists
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function checkFilesWithIsoCode($isoCode)
@@ -1004,18 +968,16 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param string      $isoFrom
-     * @param string      $themeFrom
+     * @param string $isoFrom
+     * @param string $themeFrom
      * @param bool|string $isoTo
      * @param bool|string $themeTo
-     * @param bool        $select
-     * @param bool        $check
-     * @param bool        $modules
+     * @param bool $select
+     * @param bool $check
+     * @param bool $modules
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getFilesList($isoFrom, $themeFrom, $isoTo = false, $themeTo = false, $select = false, $check = false, $modules = false)
@@ -1177,8 +1139,6 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function deleteSelection($selection)
     {
@@ -1200,8 +1160,6 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -1295,8 +1253,6 @@ class LanguageCore extends ObjectModel
      *
      * @return string Iso code
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIsoById($idLang)
@@ -1313,12 +1269,9 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function recurseDeleteDir($dir)
     {

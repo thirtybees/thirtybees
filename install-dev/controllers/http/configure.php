@@ -34,14 +34,24 @@
  */
 class InstallControllerHttpConfigure extends InstallControllerHttp
 {
+    /**
+     * @var array
+     */
     public $listCountries = [];
 
-    /** @var InstallSession $session */
+    /**
+     * @var InstallSession $session
+     */
     public $session;
 
-    /** @var array $listActivities */
+    /**
+     * @var array $listActivities
+     */
     public $listActivities;
 
+    /**
+     * @var string
+     */
     public $installType;
 
     /**
@@ -124,6 +134,9 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
         return count($this->errors) ? false : true;
     }
 
+    /**
+     * @return void
+     */
     public function process()
     {
         if (Tools::getValue('timezoneByIso')) {
@@ -133,6 +146,8 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
 
     /**
      * Obtain the timezone associated to an iso
+     *
+     * @return void
      */
     public function processTimezoneByIso()
     {

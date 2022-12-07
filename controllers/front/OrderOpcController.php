@@ -31,23 +31,21 @@
 
 /**
  * Class OrderOpcControllerCore
- *
- * @since 1.0.0
  */
 class OrderOpcControllerCore extends ParentOrderController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'order-opc';
     /** @var bool $isLogged */
     public $isLogged;
     /** @var bool $ajax_refresh */
     protected $ajax_refresh = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize order opc controller
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @see FrontController::init()
      */
     public function init()
@@ -350,7 +348,8 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return array|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _getPaymentMethods()
     {
@@ -423,7 +422,9 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function _getCarrierList()
     {
@@ -518,6 +519,11 @@ class OrderOpcControllerCore extends ParentOrderController
         }
     }
 
+    /**
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function getFormatedSummaryDetail()
     {
         $result = [
@@ -550,7 +556,8 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _processAddressFormat()
     {
@@ -608,7 +615,7 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -637,13 +644,11 @@ class OrderOpcControllerCore extends ParentOrderController
     /**
      * Assign template vars related to page content
      *
-     * @see FrontController::initContent()
-     *
      * @return void
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version.
-     * @version 1.0.6 Use VatNumber::assignTemplateVars().
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -750,7 +755,7 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _getGuestInformations()
     {
@@ -826,7 +831,8 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _assignCarrier()
     {
@@ -858,7 +864,7 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _assignPayment()
     {

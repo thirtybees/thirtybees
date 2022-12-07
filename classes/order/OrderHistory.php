@@ -31,7 +31,6 @@
 
 class OrderHistoryCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int Order id */
     public $id_order;
     /** @var int Order status id */
@@ -42,10 +41,9 @@ class OrderHistoryCore extends ObjectModel
     public $date_add;
     /** @var string Object last modification date */
     public $date_upd;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_history',
@@ -66,7 +64,7 @@ class OrderHistoryCore extends ObjectModel
     ];
 
     /**
-     * @see  ObjectModel::$webserviceParameters
+     * @see ObjectModel::$webserviceParameters
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'order_histories',
@@ -83,9 +81,9 @@ class OrderHistoryCore extends ObjectModel
     /**
      * Sets the new state of the given order
      *
-     * @param int       $newOrderState
-     * @param int|Order $idOrder
-     * @param bool      $useExistingPayment
+     * @param int $newOrderState
+     * @param int|OrderCore $idOrder
+     * @param bool $useExistingPayment
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -383,7 +381,7 @@ class OrderHistoryCore extends ObjectModel
      * @return OrderState|false
      *
      * @deprecated 2.0.0
-     * @see        Order->current_state
+     * @see Order->current_state
      * @throws PrestaShopException
      */
     public static function getLastOrderState($idOrder)
@@ -413,16 +411,15 @@ class OrderHistoryCore extends ObjectModel
     }
 
     /**
-     * @param bool       $autodate     Optional
+     * @param bool $autodate Optional
      * @param bool|array $templateVars Optional
-     * @param Context    $context      Deprecated
+     * @param Context|null $context Deprecated
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial versions
+     * @throws SmartyException
      */
     public function addWithemail($autodate = true, $templateVars = false, Context $context = null)
     {
@@ -441,14 +438,13 @@ class OrderHistoryCore extends ObjectModel
 
     /**
      * @param Order $order
-     * @param bool  $templateVars
+     * @param array|bool $templateVars
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function sendEmail($order, $templateVars = false)
     {
@@ -544,8 +540,8 @@ class OrderHistoryCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -566,8 +562,6 @@ class OrderHistoryCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isValidated()
@@ -589,6 +583,7 @@ class OrderHistoryCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function addWs()
     {

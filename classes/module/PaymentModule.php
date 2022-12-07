@@ -31,8 +31,6 @@
 
 /**
  * Class PaymentModuleCore
- *
- * @since 1.0.0
  */
 abstract class PaymentModuleCore extends Module
 {
@@ -58,14 +56,13 @@ abstract class PaymentModuleCore extends Module
     /**
      * Allows specified payment modules to be used by a specific currency
      *
-     * @since 1.4.5
-     *
-     * @param int   $idCurrency
+     * @param int $idCurrency
      * @param array $idModuleList
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addCurrencyPermissions($idCurrency, array $idModuleList = [])
     {
@@ -95,12 +92,11 @@ abstract class PaymentModuleCore extends Module
     /**
      * List all installed and active payment modules
      *
-     * @see   Module::getPaymentModules() if you need a list of module related to the user context
-     *
-     * @since 1.4.5
      * @return array module information
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see Module::getPaymentModules() if you need a list of module related to the user context
      */
     public static function getInstalledPaymentModules()
     {
@@ -130,7 +126,8 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function preCall($moduleName)
     {
@@ -151,8 +148,8 @@ abstract class PaymentModuleCore extends Module
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function install()
     {
@@ -202,8 +199,8 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addCheckboxCurrencyRestrictionsForModule(array $shops = [])
     {
@@ -241,8 +238,8 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addRadioCurrencyRestrictionsForModule(array $shops = [])
     {
@@ -273,8 +270,8 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addCheckboxCountryRestrictionsForModule(array $shops = [])
     {
@@ -293,6 +290,8 @@ abstract class PaymentModuleCore extends Module
      * @param array $shops
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addCheckboxCarrierRestrictionsForModule(array $shops = [])
     {
@@ -330,8 +329,8 @@ abstract class PaymentModuleCore extends Module
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function uninstall()
     {
@@ -354,19 +353,17 @@ abstract class PaymentModuleCore extends Module
      * @param int $idOrderState
      * @param float $amountPaid Amount really paid by customer (in the default currency)
      * @param string $paymentMethod Payment method (eg. 'Credit card')
-     * @param null $message Message to attach to order
+     * @param string|null $message Message to attach to order
      * @param array $extraVars
-     * @param null $currencySpecial
+     * @param int|null $currencySpecial
      * @param bool $dontTouchAmount
      * @param bool $secureKey
-     * @param Shop $shop
+     * @param Shop|null $shop
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function validateOrder(
         $idCart,
@@ -1108,13 +1105,13 @@ abstract class PaymentModuleCore extends Module
      * Fetch the content of $template_name inside the folder current_theme/mails/current_iso_lang/ if found, otherwise in mails/current_iso_lang
      *
      * @param string $templateName template name with extension
-     * @param int    $mailType     Mail::TYPE_HTML or Mail::TYPE_TXT
-     * @param array  $var          list send to smarty
+     * @param int $mailType Mail::TYPE_HTML or Mail::TYPE_TXT
+     * @param array $var list send to smarty
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function getEmailTemplateContent($templateName, $mailType, $var)
     {
@@ -1140,12 +1137,12 @@ abstract class PaymentModuleCore extends Module
     }
 
     /**
+     * @param Address $theAddress
      * @param Object Address $the_address that needs to be txt formated
-     *
+     * @param array $fieldsStyle
      * @return String the txt formated address block
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _getFormatedAddress(Address $theAddress, $lineSep, $fieldsStyle = [])
     {
@@ -1153,10 +1150,9 @@ abstract class PaymentModuleCore extends Module
     }
 
     /**
+     * @param string $content
      *
-     * @param mixed $content
-     *
-     * @return mixed
+     * @return string
      *
      * @deprecated 1.0.0
      */
@@ -1168,12 +1164,11 @@ abstract class PaymentModuleCore extends Module
     }
 
     /**
-     * @param int $id_currency : this parameter is optionnal but on 1.5 version of Prestashop, it will be REQUIRED
+     * @param int|null $currentIdCurrency
+     * @return array|bool|Currency|PDOStatement
      *
-     * @return Currency
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getCurrency($currentIdCurrency = null)
     {
@@ -1212,8 +1207,7 @@ abstract class PaymentModuleCore extends Module
      *
      * @return String the txt formated address block
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _getTxtFormatedAddress($theAddress)
     {

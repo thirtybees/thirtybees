@@ -31,12 +31,9 @@
 
 /**
  * Class DiscountControllerCore
- *
- * @since 1.0.0
  */
 class DiscountControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -45,7 +42,6 @@ class DiscountControllerCore extends FrontController
     public $authRedirection = 'discount';
     /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize content
@@ -54,7 +50,6 @@ class DiscountControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function initContent()
     {

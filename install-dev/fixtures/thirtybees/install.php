@@ -35,6 +35,17 @@
  */
 class InstallFixturesthirtybees extends InstallXmlLoader
 {
+    /**
+     * @param string $identifier
+     * @param array $data
+     * @param array $data_lang
+     *
+     * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestashopInstallerException
+     */
     public function createEntityCustomer($identifier, array $data, array $data_lang)
     {
         if ($identifier == 'John') {

@@ -105,6 +105,14 @@ class InstallModelDatabase extends InstallAbstractModel
         return $errors;
     }
 
+    /**
+     * @param string $server
+     * @param string $database
+     * @param string $login
+     * @param string $password
+     * @param bool $dropit
+     * @return false|mixed
+     */
     public function createDatabase($server, $database, $login, $password, $dropit = false)
     {
         $class = Db::getClass();

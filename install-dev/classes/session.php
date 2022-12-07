@@ -62,7 +62,6 @@
  * @property boolean configurationAgreement
  *
  * @property array xmlLoaderIds
- *
  */
 class InstallSession
 {
@@ -77,9 +76,6 @@ class InstallSession
 
     /**
      * @return InstallSession
-     *
-     * @since 1.0.0
-     * @throws PrestaShopException
      */
     public static function getInstance()
     {
@@ -93,7 +89,6 @@ class InstallSession
     /**
      * InstallSession constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -113,7 +108,7 @@ class InstallSession
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function clean()
     {
@@ -126,6 +121,10 @@ class InstallSession
         }
     }
 
+    /**
+     * @param string $varname
+     * @return false|mixed|string|null
+     */
     public function &__get($varname)
     {
         if (InstallSession::$cookieMode) {
@@ -144,6 +143,11 @@ class InstallSession
         return $ref;
     }
 
+    /**
+     * @param string $varname
+     * @param mixed $value
+     * @return void
+     */
     public function __set($varname, $value)
     {
         if (InstallSession::$cookieMode) {
@@ -159,6 +163,10 @@ class InstallSession
         }
     }
 
+    /**
+     * @param string $varname
+     * @return bool
+     */
     public function __isset($varname)
     {
         if (InstallSession::$cookieMode) {
@@ -168,6 +176,10 @@ class InstallSession
         }
     }
 
+    /**
+     * @param string $varname
+     * @return void
+     */
     public function __unset($varname)
     {
         if (InstallSession::$cookieMode) {

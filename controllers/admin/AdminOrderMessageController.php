@@ -31,15 +31,13 @@
 
 /**
  * Class AdminOrderMessageControllerCore
- *
- * @since 1.0.0
  */
 class AdminOrderMessageControllerCore extends AdminController
 {
     /**
      * AdminOrderMessageControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -114,7 +112,7 @@ class AdminOrderMessageControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {

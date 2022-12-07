@@ -31,15 +31,13 @@
 
 /**
  * Class AdminPPreferencesControllerCore
- *
- * @since 1.0.0
  */
 class AdminPPreferencesControllerCore extends AdminController
 {
     /**
      * AdminPPreferencesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -318,7 +316,8 @@ class AdminPPreferencesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {

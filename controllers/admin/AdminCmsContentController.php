@@ -31,25 +31,20 @@
 
 /**
  * Class AdminCmsContentControllerCore
- *
- * @since 1.0.0
  */
 class AdminCmsContentControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var CMSCategory Cms category instance for navigation */
     protected static $category = null;
     /** @var AdminCmsCategoriesController $admin_cms_categories */
     protected $admin_cms_categories;
     /** @var object adminCMS() instance */
     protected $admin_cms;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminCmsContentControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -82,8 +77,6 @@ class AdminCmsContentControllerCore extends AdminController
      * Return current category
      *
      * @return CMSCategory
-     *
-     * @since 1.0.0
      */
     public static function getCurrentCMSCategory()
     {
@@ -96,8 +89,6 @@ class AdminCmsContentControllerCore extends AdminController
      * @param bool $disable
      *
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function viewAccess($disable = false)
     {
@@ -113,7 +104,9 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -166,7 +159,8 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function renderPageHeaderToolbar()
     {
@@ -241,7 +235,8 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -279,7 +274,7 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -293,7 +288,8 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateCmsPositions()
     {
@@ -329,7 +325,8 @@ class AdminCmsContentControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateCmsCategoriesPositions()
     {
@@ -366,7 +363,6 @@ class AdminCmsContentControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessPublishCMS()
     {

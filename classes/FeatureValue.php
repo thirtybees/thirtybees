@@ -31,8 +31,6 @@
 
 /**
  * Class FeatureValueCore
- *
- * @since 1.0.0
  */
 class FeatureValueCore extends ObjectModel
 {
@@ -48,7 +46,7 @@ class FeatureValueCore extends ObjectModel
     public $custom = 0;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'feature_value',
@@ -70,6 +68,9 @@ class FeatureValueCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'product_feature_values',
         'objectNodeName'  => 'product_feature_value',
@@ -87,8 +88,6 @@ class FeatureValueCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeatureValues($idFeature)
     {
@@ -103,7 +102,7 @@ class FeatureValueCore extends ObjectModel
     /**
      * Get all values for a given feature and language
      *
-     * @param int  $idLang    Language id
+     * @param int $idLang Language id
      * @param bool $idFeature Feature id
      * @param bool $custom Deprecated
      *
@@ -111,8 +110,6 @@ class FeatureValueCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeatureValuesWithLang($idLang, $idFeature, $custom = false)
     {
@@ -137,8 +134,6 @@ class FeatureValueCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getFeatureValueLang($id_feature_value, $id_product = 0)
     {
@@ -158,16 +153,14 @@ class FeatureValueCore extends ObjectModel
     }
 
     /**
-     * @param int      $idFeature
-     * @param string   $value
+     * @param int $idFeature
+     * @param string $value
      * @param int|null $idLang
      *
      * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function addFeatureValueImport($idFeature, $value, $idLang)
     {
@@ -203,8 +196,6 @@ class FeatureValueCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -223,8 +214,6 @@ class FeatureValueCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function delete()
@@ -248,8 +237,6 @@ class FeatureValueCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -266,6 +253,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @param string $value
      * @return string | null
+     * @throws PrestaShopException
      */
     public static function validateFeatureValue($value)
     {
@@ -298,7 +286,6 @@ class FeatureValueCore extends ObjectModel
      * @return bool Update result
      *
      * @throws PrestaShopException
-     * @since   1.4.0
      */
     public function updatePosition($way, $position)
     {
@@ -342,7 +329,6 @@ class FeatureValueCore extends ObjectModel
      *
      * @return bool $return
      *
-     * @since   1.4.0
      * @throws PrestaShopException
      */
     public static function cleanPositions($idFeature)
@@ -364,7 +350,6 @@ class FeatureValueCore extends ObjectModel
      *
      * @return int $position
      *
-     * @since   1.4.0
      * @throws PrestaShopException
      */
     public static function getHighestPosition($idFeature)

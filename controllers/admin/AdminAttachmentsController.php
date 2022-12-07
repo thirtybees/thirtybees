@@ -31,21 +31,23 @@
 
 /**
  * Class AdminAttachmentsControllerCore
- *
- * @since 1.0.0
  */
 class AdminAttachmentsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var bool
+     */
     public $bootstrap = true;
 
+    /**
+     * @var array
+     */
     protected $product_attachements = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminAttachmentsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -96,11 +98,9 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
-     * @param $size
+     * @param int $size
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function displayHumanReadableSize($size)
     {
@@ -108,7 +108,7 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -119,7 +119,7 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -135,7 +135,7 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function renderView()
     {
@@ -150,7 +150,9 @@ class AdminAttachmentsControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -203,14 +205,16 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
-     * @param bool $idLangShop
+     * Get the current objects' list form the database
      *
-     * @since 1.0.0
+     * @param int $idLang Language used for display
+     * @param string|null $orderBy ORDER BY clause
+     * @param string|null $orderWay Order way (ASC, DESC)
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param int|bool $idLangShop
+     *
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -245,7 +249,8 @@ class AdminAttachmentsControllerCore extends AdminController
     /**
      * @return bool|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

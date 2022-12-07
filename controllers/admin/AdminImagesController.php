@@ -31,8 +31,6 @@
 
 /**
  * Class AdminImagesControllerCore
- *
- * @since 1.0.0
  */
 class AdminImagesControllerCore extends AdminController
 {
@@ -43,8 +41,6 @@ class AdminImagesControllerCore extends AdminController
 
     /**
      * AdminImagesControllerCore constructor.
-     *
-     * @since 1.0.0
      *
      * @throws PrestaShopException
      */
@@ -407,12 +403,10 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Print Entity Active icon
      *
-     * @param mixed $value
-     * @param mixed $object
+     * @param bool $value
+     * @param array $object
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public static function printEntityActiveIcon($value, $object)
     {
@@ -424,7 +418,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function postProcess()
@@ -477,8 +470,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.4
      */
     public function ajaxProcessRegenerateThumbnails()
     {
@@ -541,7 +532,7 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Ajax - delete all previous images
      *
-     * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteOldImages()
     {
@@ -575,7 +566,7 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Ajax - delete all previous images
      *
-     * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function ajaxProcessResetImageStats()
     {
@@ -608,14 +599,13 @@ class AdminImagesControllerCore extends AdminController
      * Regenerate thumbnails
      *
      * @param string $type
-     * @param bool   $deleteOldImages
+     * @param bool $deleteOldImages
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @deprecatd 1.0.4 Replaced by ajax regeneration
+     * @deprecated 1.0.4 Replaced by ajax regeneration
      */
     protected function _regenerateThumbnails($type = 'all', $deleteOldImages = false)
     {
@@ -682,14 +672,13 @@ class AdminImagesControllerCore extends AdminController
      * Delete resized image then regenerate new one with updated settings
      *
      * @param string $dir
-     * @param array  $type
-     * @param bool   $product
+     * @param array $type
+     * @param bool $product
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function _deleteOldImages($dir, $type, $product = false)
     {
@@ -749,12 +738,10 @@ class AdminImagesControllerCore extends AdminController
      * Regenerate images for one entity
      *
      * @param string $entityType
-     * @param int    $idEntity
+     * @param int $idEntity
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.4
      */
     protected function regenerateNewImage($entityType, $idEntity)
     {
@@ -922,8 +909,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return int
      * @throws PrestaShopException
-     *
-     * @since 1.0.4
      */
     protected function getNextEntityId($entityType)
     {
@@ -948,8 +933,8 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Regenerate images
      *
-     * @param      $dir
-     * @param      $type
+     * @param string $dir
+     * @param array[] $type
      * @param bool $productsImages
      *
      * @return bool|string
@@ -957,7 +942,6 @@ class AdminImagesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
-     * @since 1.0.0
      * @deprecated 1.0.4
      */
     protected function _regenerateNewImages($dir, $type, $productsImages = false)
@@ -1051,13 +1035,12 @@ class AdminImagesControllerCore extends AdminController
      * Regenerate watermark
      *
      * @param string $dir
-     * @param null   $type
+     * @param string|null $type
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function _regenerateWatermark($dir, $type = null)
     {
@@ -1096,13 +1079,12 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Regenerate no-pictures images
      *
-     * @param string     $dir
+     * @param string $dir
      * @param string[][] $type
      * @param string[][] $languages
      *
      * @return bool
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     protected function _regenerateNoPictureImages($dir, $type, $languages)
@@ -1157,7 +1139,7 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -1177,11 +1159,9 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return void
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -1210,7 +1190,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function initRegenerate()
     {
@@ -1243,7 +1222,6 @@ class AdminImagesControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function _childValidation()
     {
@@ -1254,8 +1232,6 @@ class AdminImagesControllerCore extends AdminController
 
     /**
      * @return array|false
-     *
-     * @since 1.0.4
      */
     protected function getIndexationStatus()
     {

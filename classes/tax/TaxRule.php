@@ -31,19 +31,48 @@
  */
 class TaxRuleCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var int
+     */
     public $id_tax_rules_group;
-    public $id_country;
-    public $id_state;
-    public $zipcode_from;
-    public $zipcode_to;
-    public $id_tax;
-    public $behavior;
-    public $description;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var int
+     */
+    public $id_country;
+
+    /**
+     * @var int
+     */
+    public $id_state;
+
+    /**
+     * @var string
+     */
+    public $zipcode_from;
+
+    /**
+     * @var string
+     */
+    public $zipcode_to;
+
+    /**
+     * @var int
+     */
+    public $id_tax;
+
+    /**
+     * @var int
+     */
+    public $behavior;
+
+    /**
+     * @var string
+     */
+    public $description;
+
+    /**
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'tax_rule',
@@ -68,6 +97,9 @@ class TaxRuleCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_tax_rules_group' => ['xlink_resource' => 'tax_rule_groups'],
@@ -77,12 +109,10 @@ class TaxRuleCore extends ObjectModel
     ];
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deleteByGroupId($idGroup)
@@ -95,14 +125,12 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-     * @param $idTaxRule
+     * @param int $idTaxRule
      *
      * @return array|bool|null|object
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function retrieveById($idTaxRule)
     {
@@ -117,12 +145,10 @@ class TaxRuleCore extends ObjectModel
      * @param int $idLang
      * @param int $idGroup
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getTaxRulesByGroupId($idLang, $idGroup)
     {
@@ -151,8 +177,6 @@ class TaxRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deleteTaxRuleByIdTax($idTax)
@@ -169,8 +193,6 @@ class TaxRuleCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isTaxInUse($idTax)
@@ -187,12 +209,9 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-     * @param string $zipcode a range of zipcode (eg: 75000 / 75000-75015)
+     * @param string $zipCodes a range of zipcode (eg: 75000 / 75000-75015)
      *
      * @return array an array containing two zipcode ordered by zipcode
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function breakDownZipCode($zipCodes)
     {
@@ -224,9 +243,9 @@ class TaxRuleCore extends ObjectModel
      * @param int $oldId
      * @param int $newId
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function swapTaxId($oldId, $newId)
     {

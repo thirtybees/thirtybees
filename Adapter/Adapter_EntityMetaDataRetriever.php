@@ -31,22 +31,14 @@
 
 /**
  * Class Adapter_EntityMetaDataRetriever
- *
- * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 class Adapter_EntityMetaDataRetriever
 {
-    // @codingStandardsIgnoreEnd
-
     /**
      * @param string $className
      *
      * @return Core_Foundation_Database_EntityMetaData
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getEntityMetaData($className)
     {

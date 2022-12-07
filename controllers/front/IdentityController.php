@@ -31,12 +31,9 @@
 
 /**
  * Class IdentityControllerCore
- *
- * @since 1.0.0
  */
 class IdentityControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $auth */
     public $auth = true;
     /** @var string $php_self */
@@ -47,12 +44,13 @@ class IdentityControllerCore extends FrontController
     public $ssl = true;
     /** @var Customer */
     protected $customer;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize controller
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function init()
     {
@@ -65,7 +63,8 @@ class IdentityControllerCore extends FrontController
      *
      * @return Customer
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -141,9 +140,8 @@ class IdentityControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
+     * @throws PrestaShopException
      * @see FrontController::initContent()
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -190,7 +188,8 @@ class IdentityControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setMedia()
     {

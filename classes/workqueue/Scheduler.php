@@ -28,8 +28,6 @@ use Tools;
 
 /**
  * Class SchedulerCore
- *
- * @since 1.3.0
  */
 class SchedulerCore
 {
@@ -130,8 +128,7 @@ class SchedulerCore
 
     /**
      * Executes all scheduled tasks
-     *
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function run()
     {
@@ -152,7 +149,7 @@ class SchedulerCore
     /**
      * Executes all active tasks that should be executed
      *
-     * @throws Exception
+     * @throws PrestaShopException
      */
     protected function runTasks()
     {
@@ -173,7 +170,7 @@ class SchedulerCore
 
         // execute all tasks
         foreach ($taskToRun as $task) {
-            /** @var $task ScheduledTask  */
+            /** @var ScheduledTask $task  */
             $task->run($this->workQueueClient);
         }
     }
@@ -194,6 +191,8 @@ class SchedulerCore
 
     /**
      * Releases lock
+     *
+     * @return void
      */
     protected function releaseLock()
     {

@@ -31,17 +31,18 @@
 
 /**
  * Class AdminCarriersControllerCore
- *
- * @since 1.0.0
  */
 class AdminCarriersControllerCore extends AdminController
 {
+    /**
+     * @var string Identifier to use for changing positions in lists (can be omitted if positions cannot be changed)
+     */
     protected $position_identifier = 'id_carrier';
 
     /**
      * AdminCarriersControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -128,7 +129,7 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -140,7 +141,7 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -159,7 +160,8 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -173,7 +175,9 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * @return string|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -434,7 +438,8 @@ class AdminCarriersControllerCore extends AdminController
      *
      * @param ObjectModel $obj
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getFieldsValues($obj)
     {
@@ -482,7 +487,10 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function postProcess()
     {
@@ -589,10 +597,11 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idCarrier
+     * @param int $idCarrier
      * @param bool $delete
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
@@ -621,7 +630,6 @@ class AdminCarriersControllerCore extends AdminController
      * @param int $id
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function changeZones($id)
     {
@@ -643,7 +651,7 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processIsFree()
     {
@@ -661,16 +669,14 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * Modifying initial getList method to display position feature (drag and drop)
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -683,7 +689,7 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdatePositions()
     {
@@ -711,13 +717,14 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @param null $token
-     * @param      $id
-     * @param null $name
+     * @param string $token
+     * @param int $id
+     * @param string|null $name
      *
      * @return string|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayEditLink($token, $id, $name = null)
     {
@@ -740,13 +747,14 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @param null $token
-     * @param      $id
-     * @param null $name
+     * @param string $token
+     * @param int $id
+     * @param string|null $name
      *
      * @return string|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
@@ -791,6 +799,7 @@ class AdminCarriersControllerCore extends AdminController
      * @param Carrier $object
      *
      * @return int
+     * @throws PrestaShopException
      */
     protected function beforeDelete($object)
     {

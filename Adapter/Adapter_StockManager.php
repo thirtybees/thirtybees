@@ -31,23 +31,19 @@
 
 /**
  * Class Adapter_StockManager
- *
- * @since 1.0.0
  */
 class Adapter_StockManager
 {
 
     /**
      * @param Product $product
-     * @param null    $idProductAttribute
-     * @param null    $idShop
+     * @param int|null $idProductAttribute
+     * @param int|null $idShop
      *
      * @return StockAvailable
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getStockAvailableByProduct($product, $idProductAttribute = null, $idShop = null)
     {

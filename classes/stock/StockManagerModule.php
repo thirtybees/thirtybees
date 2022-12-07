@@ -31,22 +31,19 @@
 
 /**
  * Class StockManagerModuleCore
- *
- * @since 1.0.0
  */
 abstract class StockManagerModuleCore extends Module
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     public $stock_manager_class;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function install()
     {
@@ -54,11 +51,9 @@ abstract class StockManagerModuleCore extends Module
     }
 
     /**
-     * @return bool
+     * @return false | StockManagerInterface
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public function hookStockManager()
     {

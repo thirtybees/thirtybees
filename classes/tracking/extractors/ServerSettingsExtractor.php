@@ -23,8 +23,6 @@ use Thirtybees\Core\Tracking\DataExtractor;
 
 /**
  * Class ServerSettingsExtractorCore
- *
- * @since 1.3.0
  */
 class ServerSettingsExtractorCore extends DataExtractor
 {
@@ -51,7 +49,7 @@ class ServerSettingsExtractorCore extends DataExtractor
     /**
      * Extracts value
      *
-     * @return mixed
+     * @return array
      */
     public function extractValue()
     {

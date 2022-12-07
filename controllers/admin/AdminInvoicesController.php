@@ -31,15 +31,13 @@
 
 /**
  * Class AdminInvoicesControllerCore
- *
- * @since 1.0.0
  */
 class AdminInvoicesControllerCore extends AdminController
 {
     /**
      * AdminInvoicesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -142,8 +140,6 @@ class AdminInvoicesControllerCore extends AdminController
      * Get invoice models
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     protected function getInvoicesModels()
     {
@@ -171,8 +167,6 @@ class AdminInvoicesControllerCore extends AdminController
      * @param string $directory
      *
      * @return array|false
-     *
-     * @since 1.0.0
      */
     protected function getInvoicesModelsFromDir($directory)
     {
@@ -194,7 +188,9 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -223,7 +219,7 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -236,7 +232,9 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initFormByDate()
     {
@@ -288,7 +286,9 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initFormByStatus()
     {
@@ -348,8 +348,6 @@ class AdminInvoicesControllerCore extends AdminController
      * Initialize toolbar title
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initToolbarTitle()
     {
@@ -361,7 +359,8 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -403,7 +402,7 @@ class AdminInvoicesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {

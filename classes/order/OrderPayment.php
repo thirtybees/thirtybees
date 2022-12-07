@@ -31,12 +31,9 @@
 
 /**
  * Class OrderPaymentCore
- *
- * @since 1.0.0
  */
 class OrderPaymentCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string $order_reference */
     public $order_reference;
     /** @var int $id_currency */
@@ -59,10 +56,9 @@ class OrderPaymentCore extends ObjectModel
     public $card_holder;
     /** @var string $date_add */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_payment',
@@ -94,8 +90,8 @@ class OrderPaymentCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -140,8 +136,6 @@ class OrderPaymentCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getByOrderReference($orderReference)
     {

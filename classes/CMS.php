@@ -31,14 +31,11 @@
 
 /**
  * Class CMSCore
- *
- * @since 1.0.0
  */
 class CMSCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'cms',
@@ -67,34 +64,70 @@ class CMSCore extends ObjectModel
             ]
         ],
     ];
-    /** @var string Name */
+
+    /**
+     * @var string Name
+     */
     public $meta_title;
+
+    /**
+     * @var string
+     */
     public $meta_description;
+
+    /**
+     * @var string
+     */
     public $meta_keywords;
+
+    /**
+     * @var string
+     */
     public $content;
+
+    /**
+     * @var string
+     */
     public $link_rewrite;
+
+    /**
+     * @var int
+     */
     public $id_cms_category;
+
+    /**
+     * @var int
+     */
     public $position;
+
+    /**
+     * @var bool
+     */
     public $indexation;
-    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var bool
+     */
     public $active;
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectNodeName'  => 'content',
         'objectsNodeName' => 'content_management_system',
     ];
 
     /**
-     * @param int        $idLang
+     * @param int $idLang
      * @param array|null $selection
-     * @param bool       $active
-     * @param Link|null  $link
+     * @param bool $active
+     * @param Link|null $link
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getLinks($idLang, $selection = null, $active = true, Link $link = null)
     {
@@ -126,15 +159,13 @@ class CMSCore extends ObjectModel
 
     /**
      * @param int|null $idLang
-     * @param bool     $idBlock
-     * @param bool     $active
+     * @param bool $idBlock
+     * @param bool $active
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function listCms($idLang = null, $idBlock = false, $active = true)
     {
@@ -159,15 +190,13 @@ class CMSCore extends ObjectModel
     /**
      * @param int|null $idLang
      * @param int|null $idCmsCategory
-     * @param bool     $active
+     * @param bool $active
      * @param int|null $idShop
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCMSPages($idLang = null, $idCmsCategory = null, $active = true, $idShop = null)
     {
@@ -203,12 +232,10 @@ class CMSCore extends ObjectModel
     /**
      * @param int $idCms
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getUrlRewriteInformations($idCms)
     {
@@ -223,7 +250,7 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param int      $idCms
+     * @param int $idCms
      * @param int|null $idLang
      * @param int|null $idShop
      *
@@ -231,8 +258,6 @@ class CMSCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCMSContent($idCms, $idLang = null, $idShop = null)
     {
@@ -255,9 +280,6 @@ class CMSCore extends ObjectModel
 
     /**
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRepositoryClassName()
     {
@@ -270,8 +292,6 @@ class CMSCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -286,8 +306,6 @@ class CMSCore extends ObjectModel
      *
      * @return false|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLastPosition($idCategory)
@@ -307,8 +325,6 @@ class CMSCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -330,8 +346,6 @@ class CMSCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanPositions($idCategory)
     {
@@ -361,8 +375,6 @@ class CMSCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -379,14 +391,12 @@ class CMSCore extends ObjectModel
 
     /**
      * @param bool $way
-     * @param int  $position
+     * @param int $position
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {

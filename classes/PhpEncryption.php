@@ -28,16 +28,18 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
 
 /**
  * Class PhpEncryptionCore
- *
- * @since 1.0.0
  */
 class PhpEncryptionCore
 {
+    /**
+     * @var Key
+     */
     protected $key;
 
     /**
@@ -47,7 +49,6 @@ class PhpEncryptionCore
      *
      * @throws \Defuse\Crypto\Exception\BadFormatException
      * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
-     * @since 1.0.0
      */
     public function __construct($asciiKey)
     {

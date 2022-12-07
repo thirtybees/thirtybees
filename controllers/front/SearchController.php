@@ -31,8 +31,6 @@
 
 /**
  * Class SearchControllerCore
- *
- * @since 1.0.0
  */
 class SearchControllerCore extends FrontController
 {
@@ -48,10 +46,10 @@ class SearchControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @see   FrontController::init()
-     *
-     * @since 1.0.0
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -74,9 +72,8 @@ class SearchControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @see   FrontController::initContent()
-     *
-     * @since 1.0.0
+     * @throws SmartyException
+     * @see FrontController::initContent()
      */
     public function initContent()
     {
@@ -191,7 +188,8 @@ class SearchControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayHeader($display = true)
     {
@@ -209,7 +207,8 @@ class SearchControllerCore extends FrontController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayFooter($display = true)
     {
@@ -225,7 +224,6 @@ class SearchControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -239,7 +237,7 @@ class SearchControllerCore extends FrontController
     /**
      * findFirstClosestWord
      *
-     * @param $searchString
+     * @param string $searchString
      *
      * @return string
      * @throws PrestaShopDatabaseException

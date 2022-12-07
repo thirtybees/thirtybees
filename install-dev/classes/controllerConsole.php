@@ -31,8 +31,6 @@
 
 /**
  * Class InstallControllerConsole
- *
- * @since 1.0.0
  */
 class InstallControllerConsole
 {
@@ -43,7 +41,6 @@ class InstallControllerConsole
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      * @throws PrestashopInstallerException
-     * @since 1.0.0
      */
     final public static function execute($argc, $argv)
     {

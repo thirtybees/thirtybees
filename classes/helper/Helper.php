@@ -31,8 +31,6 @@
 
 /**
  * Class HelperCore
- *
- * @since 1.0.0
  */
 class HelperCore
 {
@@ -62,7 +60,7 @@ class HelperCore
     public $toolbar_btn = [];
 
     /**
-     * @var mixed $ps_help_context
+     * @var string $ps_help_context
      */
     public $ps_help_context;
 
@@ -123,9 +121,6 @@ class HelperCore
 
     /**
      * HelperCore constructor.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -135,13 +130,13 @@ class HelperCore
     /**
      * @deprecated 2.0.0
      *
-     * @param array  $translations
-     * @param array  $selectedCat
+     * @param array $translations
+     * @param array $selectedCat
      * @param string $inputName
-     * @param bool   $useRadio
-     * @param bool   $useSearch
-     * @param array  $disabledCategories
-     * @param bool   $useInPopup
+     * @param bool $useRadio
+     * @param bool $useSearch
+     * @param array $disabledCategories
+     * @param bool $useInPopup
      *
      * @return string
      * @throws PrestaShopException
@@ -170,18 +165,15 @@ class HelperCore
     }
 
     /**
-     *
-     * @param array  $root        array with the name and ID of the tree root category, if null the Shop's root category will be used
-     * @param array  $selectedCat array of selected categories
-     * @param string $inputName   name of input
-     * @param bool   $useRadio    use radio tree or checkbox tree
-     * @param bool   $useSearch   display a find category search box
-     * @param array  $disabledCategories
+     * @param array $root array with the name and ID of the tree root category, if null the Shop's root category will be used
+     * @param array $selectedCat array of selected categories
+     * @param string $inputName name of input
+     * @param bool $useRadio use radio tree or checkbox tree
+     * @param bool $useSearch display a find category search box
+     * @param array $disabledCategories
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function renderCategoryTree(
@@ -372,8 +364,6 @@ class HelperCore
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setTpl($tpl)
     {
@@ -389,9 +379,6 @@ class HelperCore
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createTemplate($tplName)
     {
@@ -408,10 +395,7 @@ class HelperCore
      *
      * @return string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function generate()
     {
@@ -425,16 +409,13 @@ class HelperCore
      *
      * @param string $className
      * @param string $identifier
-     * @param array  $tableFields
+     * @param array $tableFields
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderRequiredFields($className, $identifier, $tableFields)
     {
@@ -471,12 +452,10 @@ class HelperCore
     /**
      * @param array $modulesList
      *
-     * @return mixed
+     * @return string|false
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderModulesList($modulesList)
     {
@@ -499,15 +478,12 @@ class HelperCore
     /**
      * use translations files to replace english expression.
      *
-     * @param mixed  $string       term or expression in english
+     * @param mixed $string term or expression in english
      * @param string $class
-     * @param bool   $addslashes   if set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
-     * @param bool   $htmlentities if set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
+     * @param bool $addslashes if set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
+     * @param bool $htmlentities if set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
      *
      * @return string the translation if available, or the english default text.
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function l($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true)
     {

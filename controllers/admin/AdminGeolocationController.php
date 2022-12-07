@@ -31,8 +31,6 @@
 
 /**
  * Class AdminGeolocationControllerCore
- *
- * @since 1.0.0
  */
 class AdminGeolocationControllerCore extends AdminController
 {
@@ -40,7 +38,6 @@ class AdminGeolocationControllerCore extends AdminController
      * AdminGeolocationControllerCore constructor.
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function __construct()
     {
@@ -111,6 +108,7 @@ class AdminGeolocationControllerCore extends AdminController
 
     /**
      * Registers javascript assets
+     * @throws PrestaShopException
      */
     public function setMedia()
     {
@@ -121,7 +119,6 @@ class AdminGeolocationControllerCore extends AdminController
     /**
      * Process update options
      *
-     * @since 1.0.0
      * @return void
      * @throws PrestaShopException
      */
@@ -150,7 +147,7 @@ class AdminGeolocationControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function renderOptions()
     {

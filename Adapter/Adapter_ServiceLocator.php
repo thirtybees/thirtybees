@@ -38,7 +38,6 @@ class Adapter_ServiceLocator
 {
     /**
      * @param Core_Foundation_IoC_Container $container
-     * @throws Exception
      */
     public static function setServiceContainerInstance(Core_Foundation_IoC_Container $container)
     {
@@ -51,10 +50,8 @@ class Adapter_ServiceLocator
      *
      * @param string $serviceName
      *
-     * @return mixed
+     * @return mixed|object
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function get($serviceName)

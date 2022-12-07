@@ -33,14 +33,11 @@ use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class CategoryCore
- *
- * @since 1.0.0
  */
 class CategoryCore extends ObjectModel implements InitializationCallback
 {
-    // @codingStandardsIgnoreStart
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'          => 'category',
@@ -82,6 +79,9 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             ],
         ],
     ];
+    /**
+     * @var array
+     */
     protected static $_links = [];
     /** @var int category ID */
     public $id_category;
@@ -91,7 +91,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public $active = 1;
     /** @var bool Status for displaying subcategory products */
     public $display_from_sub = 1;
-    /** @var  int category position */
+    /** @var int category position */
     public $position;
     /** @var string Description */
     public $description;
@@ -121,9 +121,17 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public $is_root_category;
     /** @var int */
     public $id_shop_default;
+    /**
+     * @var array
+     */
     public $groupBox = null;
+
     /** @var string id_image is the category ID when an image exists and 'default' otherwise */
     public $id_image = 'default';
+
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectsNodeName' => 'categories',
         'hidden_fields'   => ['nleft', 'nright', 'groupBox'],
@@ -137,17 +145,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             'products'   => ['getter' => 'getProductsWs', 'resource' => 'product',],
         ],
     ];
-    // @codingStandardsIgnoreEnd
 
     /**
      * CategoryCore constructor.
      *
-     * @param null $idCategory
-     * @param null $idLang
-     * @param null $idShop
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param int|null $idCategory
+     * @param int|null $idLang
+     * @param int|null $idShop
      *
      * @throws PrestaShopException
      */
@@ -159,13 +163,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param      $categories
-     * @param      $current
-     * @param null $idCategory
-     * @param int  $idSelected
+     * @param array[] $categories
+     * @param array $current
+     * @param int|null $idCategory
+     * @param int $idSelected
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function recurseCategory($categories, $current, $idCategory = null, $idSelected = 1)
@@ -186,10 +188,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Return available categories
      *
-     * @param bool   $idLang Language ID
-     * @param bool   $active return only active categories
+     * @param bool $idLang Language ID
+     * @param bool $active return only active categories
      *
-     * @param bool   $order
+     * @param bool $order
      * @param string $sqlFilter
      * @param string $sqlSort
      * @param string $sqlLimit
@@ -198,8 +200,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategories($idLang = false, $active = true, $order = true, $sqlFilter = '', $sqlSort = '', $sqlLimit = '')
     {
@@ -253,21 +253,19 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param null   $rootCategory
-     * @param bool   $idLang
-     * @param bool   $active
-     * @param null   $groups
-     * @param bool   $useShopRestriction
+     * @param int|null $rootCategory
+     * @param bool $idLang
+     * @param bool $active
+     * @param array|null $groups
+     * @param bool $useShopRestriction
      * @param string $sqlFilter
      * @param string $sqlSort
      * @param string $sqlLimit
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAllCategoriesName(
         $rootCategory = null,
@@ -315,11 +313,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param null   $rootCategory
-     * @param bool   $idLang
-     * @param bool   $active
-     * @param null   $groups
-     * @param bool   $useShopRestriction
+     * @param int|null $rootCategory
+     * @param bool $idLang
+     * @param bool $active
+     * @param array|null $groups
+     * @param bool $useShopRestriction
      * @param string $sqlFilter
      * @param string $sqlSort
      * @param string $sqlLimit
@@ -328,8 +326,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getNestedCategories(
         $rootCategory = null,
@@ -395,15 +391,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param null      $idLang
+     * @param int|null $idLang
      * @param Shop|null $shop
      *
      * @return Category
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getRootCategory($idLang = null, Shop $shop = null)
     {
@@ -431,12 +425,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCategoriesWithoutParent()
     {
@@ -462,8 +454,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return Category
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getTopCategory($idLang = null)
@@ -491,12 +481,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSimpleCategories($idLang)
     {
@@ -516,7 +504,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Return main categories
      *
-     * @param int  $idLang Language ID
+     * @param int $idLang Language ID
      * @param bool $active return only active categories
      *
      * @param bool $idShop
@@ -525,8 +513,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHomeCategories($idLang, $active = true, $idShop = false)
     {
@@ -534,9 +520,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     *
-     * @param int  $idParent
-     * @param int  $idLang
+     * @param int $idParent
+     * @param int $idLang
      * @param bool $active
      * @param bool $idShop
      *
@@ -544,8 +529,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getChildren($idParent, $idLang, $active = true, $idShop = false)
     {
@@ -570,9 +553,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     *
-     * @param int  $idParent
-     * @param int  $idLang
+     * @param int $idParent
+     * @param int $idLang
      * @param bool $active
      * @param bool $idShop
      *
@@ -580,8 +562,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hasChildren($idParent, $idLang, $active = true, $idShop = false)
     {
@@ -607,18 +587,15 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * This method allow to return children categories with the number of sub children selected for a product
      *
-     * @param int   $idParent
+     * @param int $idParent
      * @param array $selectedCat
-     * @param int   $idLang
-     * @param Shop  $shop
-     * @param bool  $useShopContext
+     * @param int $idLang
+     * @param Shop|null $shop
+     * @param bool $useShopContext
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @internal param int $id_product
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public static function getChildrenWithNbSelectedSubCat($idParent, $selectedCat, $idLang, Shop $shop = null, $useShopContext = true)
     {
@@ -660,15 +637,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Copy products from a category to another
      *
-     * @param int  $idOld Source category ID
+     * @param int $idOld Source category ID
      * @param bool $idNew Destination category ID
      *
      * @return bool Duplication result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function duplicateProductCategories($idOld, $idNew)
     {
@@ -706,14 +681,12 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * The category cannot be moved in a child category.
      *
      * @param int $idCategory current category
-     * @param int $idParent   Parent candidate
+     * @param int $idParent Parent candidate
      *
      * @return bool Parent validity
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function checkBeforeMove($idCategory, $idParent)
     {
@@ -741,13 +714,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $idCategory
-     * @param $idLang
+     * @param int $idCategory
+     * @param int $idLang
      *
      * @return bool|mixed
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLinkRewrite($idCategory, $idLang)
@@ -773,15 +744,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Search with Pathes for categories
      *
-     * @param int    $idLang           Language ID
-     * @param string $path             of category
-     * @param bool   $objectToCreate   a category
+     * @param int $idLang Language ID
+     * @param string $path of category
+     * @param bool $objectToCreate a category
      *                                 * @param bool $methodToCreate a category
      *
      * @return array Corresponding categories
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -814,16 +783,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Retrieve category by name and parent category id
      *
-     * @param int    $idLang           Language ID
-     * @param string $categoryName     Searched category name
-     * @param int    $idParentCategory parent category ID
+     * @param int $idLang Language ID
+     * @param string $categoryName Searched category name
+     * @param int $idParentCategory parent category ID
      *
      * @return array Corresponding category
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function searchByNameAndParentCategoryId($idLang, $categoryName, $idParentCategory)
     {
@@ -843,16 +810,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Light back office search for categories
      *
-     * @param int    $idLang       Language ID
-     * @param string $query        Searched string
-     * @param bool   $unrestricted allows search without lang and includes first category and exact match
-     * @param bool   $skipCache
+     * @param int $idLang Language ID
+     * @param string $query Searched string
+     * @param bool $unrestricted allows search without lang and includes first category and exact match
+     * @param bool $skipCache
      *
      * @return array Corresponding categories
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function searchByName($idLang, $query, $unrestricted = false, $skipCache = false)
@@ -896,8 +861,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function categoryExists($idCategory)
     {
@@ -916,8 +879,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function setNewGroupForHome($idGroup)
@@ -942,10 +903,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idCategory
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -962,13 +921,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int       $idCategory
+     * @param int $idCategory
      * @param Shop|null $shop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function inShopStatic($idCategory, Shop $shop = null)
@@ -1001,9 +958,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return array | false
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @throws PrestaShopException
      */
     public static function getInterval($id)
@@ -1028,14 +982,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     *
      * @param array $idsCategory
-     * @param int   $idLang
+     * @param int $idLang
      *
      * @return array|false
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -1068,12 +1018,9 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
     /**
      * @param int|null $idLang
-     * @param bool     $active
+     * @param bool $active
      *
      * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -1100,10 +1047,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idCategory
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopException
      */
@@ -1121,12 +1065,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * Update categories for a shop
      *
      * @param array $categories Categories list to associate a shop
-     * @param int   $idShop     Categories list to associate a shop
+     * @param int $idShop Categories list to associate a shop
      *
-     * @return array|false Update/insertion result
+     * @return bool|false Update/insertion result
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateFromShop($categories, $idShop)
@@ -1149,9 +1091,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @throws PrestaShopException
      */
     public static function deleteCategoriesFromShop($idShop)
@@ -1163,12 +1102,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * Add some categories to a shop
      *
      * @param array $categories
-     *
+     * @param int $idShop
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function addToShop(array $categories, $idShop)
@@ -1196,13 +1133,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param int      $position
+     * @param int $position
      * @param int|null $idShop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function addPosition($position, $idShop = null)
@@ -1249,8 +1184,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getLastPosition($idCategoryParent, $idShop)
@@ -1282,9 +1215,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @param bool $nullValues
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -1330,9 +1260,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return int Depth level
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @throws PrestaShopException
      */
     public function calcLevelDepth()
@@ -1352,9 +1279,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
     /**
      * Re-calculate the values of all branches of the nested tree
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -1381,9 +1305,9 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $categories
-     * @param $idCategory
-     * @param $n
+     * @param array $categories
+     * @param int $idCategory
+     * @param int $n
      *
      * @deprecated 1.0.0
      * @throws PrestaShopException
@@ -1394,12 +1318,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $categories
-     * @param $idCategory
-     * @param $n
+     * @param array $categories
+     * @param int $idCategory
+     * @param int $n
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected static function subTree(&$categories, $idCategory, &$n)
@@ -1425,8 +1347,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @param int[] $groupIds List of group IDs
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1441,8 +1361,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1460,8 +1378,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addGroups($groups)
     {
@@ -1489,8 +1405,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function update($nullValues = false)
     {
@@ -1552,8 +1466,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @return false|null|string first category found
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDuplicatePosition()
     {
@@ -1573,19 +1485,17 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * but remove duplicate position. Should not be used if positions
      * are clean at the beginning !
      *
-     * @param mixed $idCategoryParent
+     * @param int|null $idCategoryParent
      *
      * @return bool true if succeed
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function cleanPositions($idCategoryParent = null)
     {
         if ($idCategoryParent === null) {
-            return;
+            return false;
         }
 
         $return = true;
@@ -1619,8 +1529,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function recalculateLevelDepth($idCategory)
     {
@@ -1655,11 +1563,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @see     ObjectModel::toggleStatus()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
      * @throws PrestaShopException
      */
     public function toggleStatus()
@@ -1673,17 +1576,15 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Recursive scan of subcategories
      *
-     * @param int   $maxDepth         Maximum depth of the tree (i.e. 2 => 3 levels depth)
-     * @param int   $currentDepth     specify the current depth in the tree (don't use it, only for rucursivity!)
-     * @param int   $idLang           Specify the id of the language used
+     * @param int $maxDepth Maximum depth of the tree (i.e. 2 => 3 levels depth)
+     * @param int $currentDepth specify the current depth in the tree (don't use it, only for rucursivity!)
+     * @param int $idLang Specify the id of the language used
      * @param array $excludedIdsArray specify a list of ids to exclude of results
      *
      * @return array Subcategories lite tree
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function recurseLiteCategTree($maxDepth = 3, $currentDepth = 0, $idLang = null, $excludedIdsArray = null)
     {
@@ -1722,15 +1623,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Return current category childs
      *
-     * @param int  $idLang Language ID
+     * @param int $idLang Language ID
      * @param bool $active return only active categories
      *
      * @return array Categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSubCategories($idLang, $active = true)
     {
@@ -1768,9 +1667,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @param string $description
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getDescriptionClean($description)
     {
@@ -1781,9 +1677,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * Delete several categories from database
      *
      * return boolean Deletion result
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @throws PrestaShopException
      */
@@ -1805,8 +1698,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isRootCategoryForAShop()
@@ -1824,8 +1715,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {
@@ -1875,8 +1764,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return PrestaShopCollection Collection of Category
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAllChildren($idLang = null)
@@ -1895,8 +1782,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteLite()
@@ -1908,9 +1793,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function cleanAssoProducts()
     {
@@ -1919,9 +1803,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
     /**
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getShopID()
     {
@@ -1931,24 +1812,22 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Returns category products
      *
-     * @param int          $idLang                 Language ID
-     * @param int          $p                      Page number
-     * @param int          $n                      Number of products per page
-     * @param string|null  $orderBy                ORDER BY column
-     * @param string|null  $orderWay               Order way
-     * @param bool         $getTotal               If set to true, returns the total number of results only
-     * @param bool         $active                 If set to true, finds only active products
-     * @param bool         $random                 If true, sets a random filter for returned products
-     * @param int          $randomNumberProducts   Number of products to return if random is activated
-     * @param bool         $checkAccess            If set tot rue, check if the current customer
+     * @param int $idLang Language ID
+     * @param int $p Page number
+     * @param int $n Number of products per page
+     * @param string|null $orderBy ORDER BY column
+     * @param string|null $orderWay Order way
+     * @param bool $getTotal If set to true, returns the total number of results only
+     * @param bool $active If set to true, finds only active products
+     * @param bool $random If true, sets a random filter for returned products
+     * @param int $randomNumberProducts Number of products to return if random is activated
+     * @param bool $checkAccess If set tot rue, check if the current customer
      *                                             can see products from this category
      * @param Context|null $context
      *
      * @return array|int|false Products, number of products or false (no access)
      * @throws PrestaShopDatabaseException
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getProducts($idLang, $p, $n, $orderBy = null, $orderWay = null, $getTotal = false, $active = true, $random = false, $randomNumberProducts = 1, $checkAccess = true, Context $context = null)
@@ -2078,8 +1957,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @access  public
      * @return bool true if access allowed for customer $id_customer
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function checkAccess($idCustomer)
@@ -2117,8 +1994,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return PrestaShopCollection Collection of Category
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAllParents($idLang = null)
@@ -2136,12 +2011,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
     /**
      * @param Link|null $link
-     * @param null      $idLang
+     * @param int|null $idLang
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getLink(Link $link = null, $idLang = null)
@@ -2166,8 +2039,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getName($idLang = null)
@@ -2225,8 +2096,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getParentsCategories($idLang = null)
     {
@@ -2295,14 +2164,12 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addGroupsIfNoExist($idGroup)
     {
@@ -2320,8 +2187,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getGroups()
     {
@@ -2350,15 +2215,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $way
-     * @param $position
+     * @param int $way
+     * @param int $position
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {
@@ -2414,14 +2277,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Check if current category is a child of shop root category
      *
-     * @since   1.5.0
-     *
-     * @param Shop $shop
+     * @param Shop|null $shop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function inShop(Shop $shop = null)
@@ -2438,12 +2297,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getChildrenWs()
     {
@@ -2465,7 +2322,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return int[]
      *
-     * @since 1.4.0
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -2489,8 +2345,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getProductsWs()
     {
@@ -2508,8 +2362,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @return false|int|null|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getWsNbProductsRecursive()
@@ -2542,8 +2394,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function isParentCategoryAvailable($idShop)
@@ -2570,8 +2420,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addShop($idShop)
     {
@@ -2596,12 +2444,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $id_shop
+     * @param int $id_shop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function existsInShop($id_shop)
@@ -2622,8 +2468,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteFromShop($idShop)
@@ -2637,13 +2481,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Recursively add specified category childs to $to_delete array
      *
-     * @param array &$toDelete  Array reference where categories ID will be saved
-     * @param int   $idCategory Parent category ID
+     * @param array &$toDelete Array reference where categories ID will be saved
+     * @param int $idCategory Parent category ID
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @deprecated 1.4.0 -- not used by core
      */
     protected function recursiveDelete(&$toDelete, $idCategory)
@@ -2668,8 +2510,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Get all ids of all subcategories of the current category
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @return array list of ids of the subcategories
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2685,7 +2525,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

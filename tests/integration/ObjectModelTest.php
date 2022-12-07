@@ -3,6 +3,9 @@
 
 class ObjectModelTest extends \Codeception\Test\Unit
 {
+    /**
+     * @var ObjectModel[]
+     */
     private static $models = null;
 
     /**
@@ -14,9 +17,9 @@ class ObjectModelTest extends \Codeception\Test\Unit
      * This tests verifies ObjectModel class contains properties for all fields in $definition
      *
      * @dataProvider getObjectModels
-     * @param $className string object model class name
-     * @param $definition array object model definition
-     * @param $reflection ReflectionClass for $className
+     * @param string $className object model class name
+     * @param array $definition object model definition
+     * @param ReflectionClass $reflection reflection class $className
      * @throws ReflectionException
      */
     public function testModelProperties($className, $definition, $reflection)
@@ -36,8 +39,8 @@ class ObjectModelTest extends \Codeception\Test\Unit
      * This tests verifies ObjectModel class contains properties for all fields in $definition
      *
      * @dataProvider getObjectModels
-     * @param $className string object model class name
-     * @param $definition array object model definition
+     * @param string $className object model class name
+     * @param string $definition object model definition
      */
     public function testFormatFields($className, $definition)
     {
@@ -84,8 +87,9 @@ class ObjectModelTest extends \Codeception\Test\Unit
     /**
      * Method returns array of all ObjectModel subclasses in the system
      *
-     * @return array
+     * @return ObjectModel[]
      * @throws ReflectionException
+     * @throws PrestaShopException
      */
     public function getObjectModels()
     {

@@ -31,8 +31,6 @@
 
 /**
  * Class ImageCore
- *
- * @since 1.0.0
  */
 class ImageCore extends ObjectModel
 {
@@ -60,7 +58,7 @@ class ImageCore extends ObjectModel
     protected $existing_path;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'image',
@@ -94,8 +92,8 @@ class ImageCore extends ObjectModel
      * @param int|null $id
      * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -107,17 +105,15 @@ class ImageCore extends ObjectModel
     /**
      * Return first image (by position) associated with a product attribute
      *
-     * @param int $idShop             Shop ID
-     * @param int $idLang             Language ID
-     * @param int $idProduct          Product ID
+     * @param int $idShop Shop ID
+     * @param int $idLang Language ID
+     * @param int $idProduct Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getBestImageAttribute($idShop, $idLang, $idProduct, $idProductAttribute)
     {
@@ -146,16 +142,14 @@ class ImageCore extends ObjectModel
     /**
      * Return available images for a product
      *
-     * @param int $idLang             Language ID. Null/0/false = all languages.
-     * @param int $idProduct          Product ID
+     * @param int $idLang Language ID. Null/0/false = all languages.
+     * @param int $idProduct Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
      * @return array Images
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getImages($idLang, $idProduct, $idProductAttribute = null)
     {
@@ -179,14 +173,12 @@ class ImageCore extends ObjectModel
     /**
      * Check if a product has an image available
      *
-     * @param int $idLang             Language ID. Null/0/false = all languages.
-     * @param int $idProduct          Product ID
+     * @param int $idLang Language ID. Null/0/false = all languages.
+     * @param int $idProduct Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function hasImages($idLang, $idProduct, $idProductAttribute = null)
@@ -214,8 +206,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getAllImages()
     {
@@ -236,8 +226,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getImagesTotal($idProduct)
     {
@@ -260,8 +248,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteCover($idProduct)
     {
@@ -292,8 +278,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCover($idProduct)
     {
@@ -315,8 +299,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getGlobalCover($idProduct)
     {
@@ -332,13 +314,11 @@ class ImageCore extends ObjectModel
     /**
      * Copy images from a product to another
      *
-     * @param int   $idProductOld Source product ID
-     * @param bool  $idProductNew Destination product ID
+     * @param int $idProductOld Source product ID
+     * @param bool $idProductNew Destination product ID
      * @param array $combinationImages
      *
      * @return bool
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -401,8 +381,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -428,8 +406,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHighestPosition($idProduct)
     {
@@ -447,9 +423,6 @@ class ImageCore extends ObjectModel
      * Returns the path where a product image should be created (without file format)
      *
      * @return string path
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getPathForCreation()
     {
@@ -466,9 +439,6 @@ class ImageCore extends ObjectModel
      * Create parent folders for the image in the new filesystem
      *
      * @return bool success
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function createImgFolder()
     {
@@ -478,10 +448,8 @@ class ImageCore extends ObjectModel
 
         if (!file_exists(_PS_PROD_IMG_DIR_.$this->getImgFolder())) {
             // Apparently sometimes mkdir cannot set the rights, and sometimes chmod can't. Trying both.
-            // @codingStandardsIgnoreStart
             $success = @mkdir(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights, true);
             $chmod = @chmod(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights);
-            // @codingStandardsIgnoreEnd
 
             // Create an index.php file in the new folder
             if (($success || $chmod)
@@ -496,12 +464,9 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param $combinationImages
-     * @param $savedId
-     * @param $idImage
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param array $combinationImages
+     * @param int $savedId
+     * @param int $idImage
      */
     protected static function replaceAttributeImageAssociationId(&$combinationImages, $savedId, $idImage)
     {
@@ -526,8 +491,6 @@ class ImageCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function duplicateAttributeImageAssociations($combinationImages)
     {
@@ -548,15 +511,13 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param array  $params
+     * @param array $params
      * @param Smarty $smarty
      *
-     * @return mixed
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getWidth($params, $smarty)
     {
@@ -566,14 +527,12 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param mixed $type
+     * @param string $type
      *
-     * @return mixed
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getSize($type)
     {
@@ -592,15 +551,13 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param array  $params
+     * @param array $params
      * @param Smarty $smarty
      *
-     * @return mixed
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getHeight($params, $smarty)
     {
@@ -612,8 +569,7 @@ class ImageCore extends ObjectModel
     /**
      * Clear all images in tmp dir
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function clearTmpDir()
     {
@@ -632,8 +588,6 @@ class ImageCore extends ObjectModel
      *
      * @return bool success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function deleteAllImages($path = _PS_PROD_IMG_DIR_, $formats = null)
@@ -689,10 +643,10 @@ class ImageCore extends ObjectModel
      *
      * @param int $maxExecutionTime
      *
-     * @return mixed success or timeout
+     * @return bool|string success or timeout
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function moveToNewFileSystem($maxExecutionTime = 0)
     {
@@ -718,13 +672,11 @@ class ImageCore extends ObjectModel
                     $newPath = _PS_PROD_IMG_DIR_.$image->getImgPath().(isset($matches[3]) ? $matches[3] : '').'.jpg';
                     if (file_exists($newPath)) {
                         if (!file_exists(_PS_PROD_IMG_DIR_.$tmpFolder)) {
-                            // @codingStandardsIgnoreStart
                             @mkdir(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                             @chmod(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                         }
                         $tmp_path = _PS_PROD_IMG_DIR_.$tmpFolder.basename($file);
                         if (!@rename($newPath, $tmp_path) || !file_exists($tmp_path)) {
-                            // @codingStandardsIgnoreEnd
                             return false;
                         }
                     }
@@ -746,9 +698,6 @@ class ImageCore extends ObjectModel
      * Try to create and delete some folders to check if moving images to new file system will be possible
      *
      * @return bool success
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function testFileSystem()
     {
@@ -763,10 +712,8 @@ class ImageCore extends ObjectModel
             return false;
         }
 
-        // @codingStandardsIgnoreStart
         @mkdir($testFolder, static::$access_rights, true);
         @chmod($testFolder, static::$access_rights);
-        // @codingStandardsIgnoreEnd
         if (!is_writeable($testFolder)) {
             return false;
         }
@@ -784,8 +731,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -801,9 +748,6 @@ class ImageCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function delete()
@@ -835,9 +779,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteProductAttributeImage()
     {
@@ -847,9 +790,6 @@ class ImageCore extends ObjectModel
     /**
      * Delete the product image from disk and remove the containing folder if empty
      * Handles both legacy and new image filesystems
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      *
      * @param bool $forceDelete
      *
@@ -899,7 +839,6 @@ class ImageCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.4.0
      */
     protected function deleteImageFormat($format)
     {
@@ -940,9 +879,6 @@ class ImageCore extends ObjectModel
      * Returns image path in the old or in the new filesystem
      *
      * @return string image path
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getExistingImgPath()
     {
@@ -961,9 +897,6 @@ class ImageCore extends ObjectModel
      * Returns the path to the image without file extension
      *
      * @return string path
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getImgPath()
     {
@@ -992,9 +925,6 @@ class ImageCore extends ObjectModel
      * Returns the path to the folder containing the image in the new filesystem
      *
      * @return string path to folder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getImgFolder()
     {
@@ -1012,12 +942,9 @@ class ImageCore extends ObjectModel
     /**
      * Returns the path to the folder containing the image in the new filesystem
      *
-     * @param mixed $idImage
+     * @param int $idImage
      *
      * @return string path to folder
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getImgFolderStatic($idImage)
     {
@@ -1032,7 +959,7 @@ class ImageCore extends ObjectModel
     /**
      * Reposition image
      *
-     * @param int  $position  Position
+     * @param int $position Position
      * @param bool $direction Direction
      *
      * @throws PrestaShopDatabaseException
@@ -1077,15 +1004,13 @@ class ImageCore extends ObjectModel
     /**
      * Change an image position and update relative positions
      *
-     * @param int $way      position is moved up if 0, moved down if 1
+     * @param int $way position is moved up if 0, moved down if 1
      * @param int $position new position of the moved image
      *
-     * @return int success
+     * @return bool success
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {
@@ -1113,7 +1038,7 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

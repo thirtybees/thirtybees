@@ -55,26 +55,32 @@ abstract class InstallControllerHttp
      * @var array List of errors
      */
     public $errors = [];
+
     /**
      * @var InstallSession
      */
     public $session;
+
     /**
      * @var InstallLanguages
      */
     public $language;
+
     /**
      * @var bool If false, disable next button access
      */
     public $nextButton = true;
+
     /**
      * @var bool If false, disable previous button access
      */
     public $previousButton = true;
+
     /**
      * @var InstallAbstractModel
      */
     public $model;
+
     /**
      * @var array Magic vars
      */
@@ -85,9 +91,7 @@ abstract class InstallControllerHttp
      *
      * @param string $step
      *
-     * @since 1.0.0
      * @throws PrestashopInstallerException
-     * @throws PrestaShopException
      */
     final public function __construct($step)
     {
@@ -112,7 +116,7 @@ abstract class InstallControllerHttp
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function init()
     {
@@ -121,8 +125,6 @@ abstract class InstallControllerHttp
     /**
      * @throws PrestashopInstallerException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     final public static function execute()
     {
@@ -215,8 +217,6 @@ abstract class InstallControllerHttp
      * @param string $step Step name
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     public static function getStepOffset($step)
     {
@@ -245,7 +245,7 @@ abstract class InstallControllerHttp
     abstract public function display();
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function process()
     {
@@ -255,8 +255,6 @@ abstract class InstallControllerHttp
      * Get steps list
      *
      * @return array
-     *
-     * @since 1.0.0
      */
     public function getSteps()
     {
@@ -347,9 +345,7 @@ abstract class InstallControllerHttp
     }
 
     /**
-     * @return mixed|null
-     *
-     * @since 1.0.0
+     * @return string
      */
     public function getLastStep()
     {
@@ -360,6 +356,8 @@ abstract class InstallControllerHttp
      * Get link to documentation for this language
      *
      * Enter description here ...
+     *
+     * @return string|null
      */
     public function getDocumentationLink()
     {
@@ -369,7 +367,7 @@ abstract class InstallControllerHttp
     /**
      * Get link to tailored help for this language
      *
-     * Enter description here ...
+     * @return string|null
      */
     public function getTailoredHelp()
     {
@@ -379,7 +377,7 @@ abstract class InstallControllerHttp
     /**
      * Get link to forum for this language
      *
-     * Enter description here ...
+     * @return string|null
      */
     public function getForumLink()
     {
@@ -389,7 +387,7 @@ abstract class InstallControllerHttp
     /**
      * Get link to blog for this language
      *
-     * Enter description here ...
+     * @return string|null
      */
     public function getBlogLink()
     {
@@ -399,7 +397,7 @@ abstract class InstallControllerHttp
     /**
      * Get link to support for this language
      *
-     * Enter description here ...
+     * @return string|null
      */
     public function getSupportLink()
     {
@@ -409,10 +407,8 @@ abstract class InstallControllerHttp
     /**
      * Send AJAX response in JSON format {success: bool, message: string[]}
      *
-     * @param bool  $success
+     * @param bool $success
      * @param array $message Messages array
-     *
-     * @since 1.0.0
      */
     public function ajaxJsonAnswer($success, $message = [])
     {
@@ -467,14 +463,12 @@ abstract class InstallControllerHttp
     /**
      * Display a template
      *
-     * @param string $template  Template name
-     * @param bool   $getOutput Is true, return template html
-     *
-     * @param null   $path
+     * @param string $template Template name
+     * @param bool $getOutput Is true, return template html
+     * @param string|null $path
      *
      * @return string
      * @throws PrestashopInstallerException
-     * @since 1.0.0
      */
     public function displayTemplate($template, $getOutput = false, $path = null)
     {

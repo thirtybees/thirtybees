@@ -28,8 +28,6 @@ use Shop;
 
 /**
  * Class WorkQueueTaskCore
- *
- * @since 1.3.0
  */
 class WorkQueueContextCore
 {
@@ -203,7 +201,6 @@ class WorkQueueContextCore
      *
      * @param mixed $input
      * @return int | null
-     *
      */
     protected static function idOrNull($input)
     {

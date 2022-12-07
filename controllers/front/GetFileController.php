@@ -33,17 +33,13 @@
  * Class GetFileControllerCore
  *
  * @return void
- *
- * @since 1.0.0
  */
 class GetFileControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $display_header */
     protected $display_header = false;
     /** @var bool $display_footer */
     protected $display_footer = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize
@@ -52,7 +48,6 @@ class GetFileControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function init()
     {
@@ -331,8 +326,6 @@ class GetFileControllerCore extends FrontController
      * and redirect using js function
      *
      * @param string $msg
-     *
-     * @since 1.0.0
      */
     protected function displayCustomError($msg)
     {

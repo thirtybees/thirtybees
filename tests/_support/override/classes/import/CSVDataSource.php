@@ -21,8 +21,6 @@ namespace Thirtybees\Core\Import;
 
 /**
  * Class CSVDataSource
- *
- * @since 1.4.0
  */
 class CSVDataSource extends CSVDataSourceCore
 {

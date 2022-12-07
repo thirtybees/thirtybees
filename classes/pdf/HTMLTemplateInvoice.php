@@ -29,27 +29,20 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/**
- * @since 1.5
- */
 class HTMLTemplateInvoiceCore extends HTMLTemplate
 {
-    // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
     /** @var OrderInvoice $order_invoice */
     public $order_invoice;
     /** @var bool $available_in_your_account */
     public $available_in_your_account = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param OrderInvoice $orderInvoice
-     * @param Smarty       $smarty
-     * @param bool         $bulkMode
+     * @param Smarty $smarty
+     * @param bool $bulkMode
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
@@ -82,11 +75,8 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string HTML header
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {
@@ -101,12 +91,9 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string HTML content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
@@ -304,14 +291,11 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
     /**
      * Returns the tax tab content
      *
-     * @return string|string[] Tax tab html content
+     * @return false|string Tax tab html content
      *
-     * @throws Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getTaxTabContent()
     {
@@ -353,9 +337,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -367,8 +348,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string filename
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFilename()
@@ -392,12 +371,9 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
     /**
      * Compute layout elements size
      *
-     * @param $params array Layout elements
+     * @param array $params Layout elements
      *
      * @return array Layout elements columns size
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function computeLayout($params)
     {
@@ -469,8 +445,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getTaxBreakdown()
     {

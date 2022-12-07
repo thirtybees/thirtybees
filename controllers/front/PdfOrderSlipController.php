@@ -31,12 +31,9 @@
 
 /**
  * Class PdfOrderSlipControllerCore
- *
- * @since 1.0.0
  */
 class PdfOrderSlipControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'pdf-order-slip';
     /** @var bool $display_header */
@@ -45,7 +42,6 @@ class PdfOrderSlipControllerCore extends FrontController
     protected $display_footer = false;
     /** @var OrderSlip $order_slip */
     protected $order_slip;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Post processing
@@ -54,7 +50,6 @@ class PdfOrderSlipControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -80,7 +75,6 @@ class PdfOrderSlipControllerCore extends FrontController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function display()
     {

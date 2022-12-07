@@ -31,15 +31,19 @@
 
 /**
  * Class InstallControllerHttpProcess
- *
- * @since 1.0.0
  */
 class InstallControllerHttpProcess extends InstallControllerHttp
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
 
+    /**
+     * @var array
+     */
     public $processSteps = [];
 
+    /**
+     * @var bool
+     */
     public $previousButton = false;
 
     /** @var InstallModelInstall $modelInstall */
@@ -49,7 +53,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public $session;
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function init()
     {
@@ -58,7 +62,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function processNextStep()
     {
@@ -66,8 +70,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
      */
     public function validate()
     {
@@ -75,9 +77,8 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     }
 
     /**
-     * @since 1.0.0
-     *
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function process()
     {
@@ -125,7 +126,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : generateSettingsFile
      *
-     * @since 1.0.0
+     * @throws PrestashopInstallerException
      */
     public function processGenerateSettingsFile()
     {
@@ -161,6 +162,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     /**
      * PROCESS : installDefaultData
      * Create default shop and languages
+     * @throws PrestaShopException
      */
     public function processInstallDefaultData()
     {
@@ -176,7 +178,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : populateDatabase
      * Populate database with default data
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processPopulateDatabase()
     {
@@ -250,7 +254,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processInstallFixtures()
     {
@@ -304,7 +310,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      * PROCESS : installTheme
      * Install theme
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws PrestashopInstallerException
      */
     public function processInstallTheme()
     {

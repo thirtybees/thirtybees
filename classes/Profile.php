@@ -31,8 +31,6 @@
 
 /**
  * Class ProfileCore
- *
- * @since 1.0.0
  */
 class ProfileCore extends ObjectModel
 {
@@ -41,15 +39,23 @@ class ProfileCore extends ObjectModel
     const PERMISSION_EDIT = 'edit';
     const PERMISSION_DELETE = 'delete';
 
+    /**
+     * @var array
+     */
     protected static $_cache_accesses = [];
 
+    /**
+     * @var array
+     */
     protected static $_cache_permissions = [];
 
-    /** @var string Name */
+    /**
+     * @var string Name
+     */
     public $name;
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'profile',
@@ -64,14 +70,12 @@ class ProfileCore extends ObjectModel
     /**
      * Get all available profiles
      *
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array Profiles
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProfiles($idLang)
     {
@@ -88,15 +92,13 @@ class ProfileCore extends ObjectModel
     /**
      * Get the current profile name
      *
-     * @param int      $idProfile
+     * @param int $idProfile
      * @param int|null $idLang
      *
      * @return string|false Profile
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProfile($idProfile, $idLang = null)
     {
@@ -122,8 +124,6 @@ class ProfileCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProfileAccess($idProfile, $idTab)
     {
@@ -197,15 +197,13 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * @param int    $idProfile
+     * @param int $idProfile
      * @param string $type
      *
      * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProfileAccesses($idProfile, $type = 'id_tab')
     {
@@ -260,8 +258,6 @@ class ProfileCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
@@ -285,8 +281,6 @@ class ProfileCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -303,7 +297,7 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * @param $table \CoreUpdater\TableSchema
+     * @param \CoreUpdater\TableSchema $table
      */
     public static function processTableSchema($table)
     {

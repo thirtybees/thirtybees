@@ -31,8 +31,6 @@
 
 /**
  * Class AdminAccessControllerCore
- *
- * @since 1.0.0
  */
 class AdminAccessControllerCore extends AdminController
 {
@@ -44,7 +42,6 @@ class AdminAccessControllerCore extends AdminController
     /**
      * AdminAccessControllerCore constructor.
      *
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function __construct()
@@ -63,7 +60,6 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -106,7 +102,7 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -120,7 +116,6 @@ class AdminAccessControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -194,8 +189,6 @@ class AdminAccessControllerCore extends AdminController
      * Get the current profile id
      *
      * @return int the $_GET['profile'] if valid, else 1 (the first profile id)
-     *
-     * @since 1.0.0
      */
     public function getCurrentProfileId()
     {
@@ -203,7 +196,7 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initToolbarTitle()
     {
@@ -212,8 +205,6 @@ class AdminAccessControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function ajaxProcessUpdateAccess()
     {
@@ -274,8 +265,6 @@ class AdminAccessControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function ajaxProcessUpdateModuleAccess()
     {
@@ -316,12 +305,10 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-     * @param $a
-     * @param $b
+     * @param array $a
+     * @param array $b
      *
      * @return int
-     *
-     * @since 1.0.0
      */
     protected function sortModuleByName($a, $b)
     {

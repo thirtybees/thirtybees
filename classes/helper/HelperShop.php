@@ -31,8 +31,6 @@
 
 /**
  * Class HelperShopCore
- *
- * @since 1.0.0
  */
 class HelperShopCore extends Helper
 {
@@ -41,11 +39,8 @@ class HelperShopCore extends Helper
      *
      * @return string
      *
-     * @throws Exception
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getRenderedShopList()
     {

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminDeliverySlipControllerCore
- *
- * @since 1.0.0
  */
 class AdminDeliverySlipControllerCore extends AdminController
 {
     /**
      * AdminDeliverySlipControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -81,7 +79,7 @@ class AdminDeliverySlipControllerCore extends AdminController
     /**
      * Post processing
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -107,7 +105,9 @@ class AdminDeliverySlipControllerCore extends AdminController
     /**
      * Initialize content
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -132,7 +132,9 @@ class AdminDeliverySlipControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {

@@ -31,20 +31,33 @@
 
 /**
  * Class AdminAttributesGroupsControllerCore
- *
- * @since 1.0.0
  */
 class AdminAttributesGroupsControllerCore extends AdminController
 {
+    /**
+     * @var bool
+     */
     public $bootstrap = true;
+
+    /**
+     * @var int
+     */
     protected $id_attribute;
+
+    /**
+     * @var string
+     */
     protected $position_identifier = 'id_attribute_group';
+
+    /**
+     * @var string
+     */
     protected $attribute_name;
 
     /**
      * AdminAttributesGroupsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -97,7 +110,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -113,7 +126,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -161,7 +175,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -217,7 +231,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -248,7 +262,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * @return string|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -332,7 +348,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderFormAttributes()
     {
@@ -464,7 +482,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -478,7 +497,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {
@@ -547,7 +568,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initToolbarTitle()
     {
@@ -600,7 +623,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     public function initProcess()
     {
@@ -625,7 +648,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
      */
     protected function setTypeAttribute()
     {
@@ -641,9 +664,10 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return Attribute|AttributeGroup
+     * @return AttributeGroup|ProductAttribute
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processPosition()
     {
@@ -667,6 +691,11 @@ class AdminAttributesGroupsControllerCore extends AdminController
         return $object;
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function postProcess()
     {
         if (!Combination::isFeatureActive()) {
@@ -772,9 +801,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * Call the right method for creating or updating object
      *
-     * @return mixed
+     * @return AttributeGroup|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -790,9 +819,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return AttributeGroup
+     * @return AttributeGroup|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -820,6 +849,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             }
         }
 
+        /** @var AttributeGroup|false $object */
         $object = parent::processAdd();
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
@@ -838,12 +868,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return false|ObjectModel
+     * @return AttributeGroup|false
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
+        /** @var AttributeGroup|false $object */
         $object = parent::processUpdate();
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
@@ -870,12 +901,12 @@ class AdminAttributesGroupsControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      */
@@ -913,9 +944,10 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * Overrides parent to delete items from sublist
      *
-     * @return mixed
+     * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processBulkDelete()
     {
@@ -935,7 +967,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateGroupsPositions()
     {
@@ -970,7 +1004,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateAttributesPositions()
     {

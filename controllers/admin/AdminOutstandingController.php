@@ -31,15 +31,13 @@
 
 /**
  * Class AdminOutstandingControllerCore
- *
- * @since 1.0.0
  */
 class AdminOutstandingControllerCore extends AdminController
 {
     /**
      * AdminOutstandingControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -137,10 +135,12 @@ class AdminOutstandingControllerCore extends AdminController
     /**
      * Column callback for print PDF incon
      *
-     * @param int   $idInvoice Invoice ID
-     * @param array $tr        Row data
+     * @param int $idInvoice Invoice ID
+     * @param array $tr Row data
      *
      * @return string HTML content
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function printPDFIcons($idInvoice, $tr)
     {
@@ -156,13 +156,11 @@ class AdminOutstandingControllerCore extends AdminController
     /**
      * Print outstanding calculation
      *
-     * @param int   $idInvoice
+     * @param int $idInvoice
      * @param array $tr
      *
      * @return string
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function printOutstandingCalculation($idInvoice, $tr)
     {
@@ -188,8 +186,6 @@ class AdminOutstandingControllerCore extends AdminController
      * @throws PrestaShopException Invalid objects
      *
      * @return string
-     *
-     * @since 1.0.0
      */
     public function renderView()
     {

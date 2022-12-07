@@ -31,20 +31,16 @@
 
 /**
  * Class AdminModulesPositionsControllerCore
- *
- * @since 1.0.0
  */
 class AdminModulesPositionsControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var int $display_key */
     protected $display_key = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminModulesPositionsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -57,7 +53,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -255,7 +252,9 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -286,7 +285,7 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -304,7 +303,9 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -397,11 +398,12 @@ class AdminModulesPositionsControllerCore extends AdminController
      * Display module exception list
      *
      * @param array $fileList
-     * @param int   $idShop
+     * @param int $idShop
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function displayModuleExceptionList($fileList, $idShop)
     {
@@ -456,7 +458,9 @@ class AdminModulesPositionsControllerCore extends AdminController
     /**
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initMain()
     {
@@ -539,7 +543,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getLiveEditUrl($liveEditParams)
     {
@@ -563,7 +568,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdatePositions()
     {
@@ -591,7 +597,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetHookableList()
     {
@@ -644,7 +651,6 @@ class AdminModulesPositionsControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function ajaxProcessGetHookableModuleList()
     {
@@ -682,7 +688,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessSaveHook()
     {
@@ -744,7 +751,8 @@ class AdminModulesPositionsControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxProcessGetPossibleHookingListForModule()
     {

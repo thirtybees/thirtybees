@@ -31,12 +31,9 @@
 
 /**
  * Class SceneCore
- *
- * @since 1.0.0
  */
 class SceneCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
     /** @var bool Active Scene */
@@ -47,10 +44,9 @@ class SceneCore extends ObjectModel
     public $categories = [];
     /** @var array Products */
     public $products;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'scene',
@@ -72,13 +68,13 @@ class SceneCore extends ObjectModel
     /**
      * SceneCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
+     * @param int|null $id
+     * @param int|null $idLang
      * @param bool $liteResult
      * @param bool $hideScenePosition
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $liteResult = true, $hideScenePosition = false)
     {
@@ -96,10 +92,14 @@ class SceneCore extends ObjectModel
     /**
      * Get all products of this scene
      *
+     * @param bool $onlyActive
+     * @param int|null $idLang
+     * @param bool $liteResult
+     * @param Context|null $context
      * @return array Products
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getProducts($onlyActive = true, $idLang = null, $liteResult = true, Context $context = null)
     {
@@ -147,8 +147,7 @@ class SceneCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -161,9 +160,6 @@ class SceneCore extends ObjectModel
      * @param string $name Scene name
      *
      * @return string Name without position
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function hideScenePosition($name)
     {
@@ -173,7 +169,15 @@ class SceneCore extends ObjectModel
     /**
      * Get all scenes of a category
      *
+     * @param int $idCategory
+     * @param int|null $idLang
+     * @param bool $onlyActive
+     * @param bool $liteResult
+     * @param bool $hideScenePosition
+     * @param Context|null $context
      * @return array Products
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getScenes(
         $idCategory,
@@ -225,8 +229,8 @@ class SceneCore extends ObjectModel
      *
      * @return array Categories where scene is indexed
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getIndexedCategories($idScene)
     {
@@ -243,8 +247,8 @@ class SceneCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -268,8 +272,7 @@ class SceneCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function updateZoneProducts()
     {
@@ -286,8 +289,6 @@ class SceneCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteZoneProducts()
@@ -300,12 +301,12 @@ class SceneCore extends ObjectModel
     }
 
     /**
-     * @param $zones
+     * @param array $zones
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addZoneProducts($zones)
     {
@@ -327,8 +328,7 @@ class SceneCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function updateCategories()
     {
@@ -345,8 +345,6 @@ class SceneCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function deleteCategories()
@@ -359,12 +357,12 @@ class SceneCore extends ObjectModel
     }
 
     /**
-     * @param $categories
+     * @param int[] $categories
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addCategories($categories)
     {
@@ -385,8 +383,8 @@ class SceneCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -412,8 +410,7 @@ class SceneCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -432,8 +429,8 @@ class SceneCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteImage($forceDelete = false)
     {

@@ -31,21 +31,28 @@
 
 /**
  * Class AdminTaxRulesGroupControllerCore
- *
- * @since 1.0.0
  */
 class AdminTaxRulesGroupControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var TaxRule
+     */
     public $tax_rule;
+
+    /**
+     * @var array
+     */
     public $selected_countries = [];
+
+    /**
+     * @var array
+     */
     public $selected_states = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminTaxRulesGroupControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -93,7 +100,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -113,7 +120,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -128,7 +136,9 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -208,7 +218,9 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initRuleForm()
     {
@@ -359,7 +371,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initRulesList($idGroup)
     {
@@ -430,8 +443,6 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -463,7 +474,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processCreateRule()
     {
@@ -564,7 +576,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function validateTaxRule(TaxRule $tr)
     {
@@ -577,7 +590,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @return TaxRulesGroup
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function updateTaxRulesGroup($object)
     {
@@ -593,7 +607,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processBulkDeleteTaxRules()
     {
@@ -605,7 +620,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      *
      * @param array $idTaxRuleList
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function deleteTaxRule(array $idTaxRuleList)
     {
@@ -631,7 +647,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function processDeleteTaxRule()
     {
@@ -641,7 +658,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function displayAjaxUpdateTaxRule()
     {

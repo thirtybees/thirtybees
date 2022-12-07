@@ -21,17 +21,17 @@ use Thirtybees\Core\DependencyInjection\ServiceLocator;
 
 /**
  * Class TriggerControllerCore
- *
- * @since 1.3.0
  */
 class TriggerControllerCore extends FrontController
 {
+    /**
+     * @var string
+     */
     public $php_self = 'trigger';
 
     /**
      * Initialize content
-     *
-     * @throws Exception
+     * @throws PrestaShopException
      */
     public function initContent()
     {

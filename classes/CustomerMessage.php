@@ -31,12 +31,9 @@
 
 /**
  * Class CustomerMessageCore
- *
- * @since 1.0.0
  */
 class CustomerMessageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int $id_customer_thread */
     public $id_customer_thread;
     /** @var int $id_employee */
@@ -57,10 +54,9 @@ class CustomerMessageCore extends ObjectModel
     public $date_upd;
     /** @var bool $read */
     public $read;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'customer_message',
@@ -85,6 +81,9 @@ class CustomerMessageCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_employee'        => [
@@ -97,15 +96,13 @@ class CustomerMessageCore extends ObjectModel
     ];
 
     /**
-     * @param int  $idOrder
+     * @param int $idOrder
      * @param bool $hidePrivate
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getMessagesByOrderId($idOrder, $hidePrivate = true)
     {
@@ -133,9 +130,6 @@ class CustomerMessageCore extends ObjectModel
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public static function getTotalCustomerMessages($where = null)
@@ -162,8 +156,7 @@ class CustomerMessageCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {

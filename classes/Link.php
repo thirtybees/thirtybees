@@ -32,33 +32,53 @@
 /**
  * Class LinkCore
  *
- * @since 1.0.0
  *
  * Backwards compatible properties and methods (accessed via magic methods):
  * @property array|null $category_disable_rewrite
  */
 class LinkCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array[]
+     */
     public static $cache = ['page' => []];
-    /** @var array|null $categoryDisableRewrite */
+
+    /**
+     * @var array|null $categoryDisableRewrite
+     */
     protected static $categoryDisableRewrite = null;
+
+    /**
+     * @var string|null
+     */
     public $protocol_link;
+
+    /**
+     * @var string|null
+     */
     public $protocol_content;
-    /** @var bool Rewriting activation */
+
+    /**
+     * @var bool Rewriting activation
+     */
     protected $allow;
+
+    /**
+     * @var string
+     */
     protected $url;
+
+    /**
+     * @var bool
+     */
     protected $ssl_enable;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Constructor (initialization only)
      *
-     * @param null $protocolLink
-     * @param null $protocolContent
+     * @param string|null $protocolLink
+     * @param string|null $protocolContent
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($protocolLink = null, $protocolContent = null)
@@ -79,7 +99,7 @@ class LinkCore
             static::$categoryDisableRewrite = [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')];
         }
 
-        $this->ssl_enable = Configuration::get('PS_SSL_ENABLED');
+        $this->ssl_enable = (bool)Configuration::get('PS_SSL_ENABLED');
     }
 
     /**
@@ -91,8 +111,6 @@ class LinkCore
      * @param string $property Property name
      *
      * @return mixed
-     *
-     * @since 1.0.1
      */
     public function &__get($property)
     {
@@ -108,13 +126,11 @@ class LinkCore
     /**
      * Create a link to delete a product
      *
-     * @param mixed $product   ID of the product OR a Product object
-     * @param int   $idPicture ID of the picture to delete
+     * @param int|Product $product ID of the product OR a Product object
+     * @param int $idPicture ID of the picture to delete
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getProductDeletePictureLink($product, $idPicture)
@@ -125,22 +141,20 @@ class LinkCore
     }
 
     /**
-     * @param int|Product $product
+     * @param int|ProductCore $product
      * @param string|null $alias
-     * @param int|null    $category
+     * @param int|null $category
      * @param string|null $ean13
-     * @param int|null    $idLang
-     * @param int|null    $idShop
-     * @param int         $ipa
-     * @param bool        $forceRoutes
-     * @param bool        $relativeProtocol
-     * @param bool        $addAnchor
-     * @param array       $extraParams
+     * @param int|null $idLang
+     * @param int|null $idShop
+     * @param int $ipa
+     * @param bool $forceRoutes
+     * @param bool $relativeProtocol
+     * @param bool $addAnchor
+     * @param array $extraParams
      *
      * @return string
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
      */
     public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
     {
@@ -229,13 +243,12 @@ class LinkCore
     }
 
     /**
-     * @param int|null  $idShop
+     * @param int|null $idShop
      * @param bool|null $ssl
-     * @param bool      $relativeProtocol
+     * @param bool $relativeProtocol
      *
      * @return string
      *
-     * @since 1.0.0 Function has become public
      * @throws PrestaShopException
      */
     public function getBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
@@ -265,13 +278,12 @@ class LinkCore
     }
 
     /**
-     * @param int|null     $idLang
+     * @param int|null $idLang
      * @param Context|null $context
-     * @param int|null     $idShop
+     * @param int|null $idShop
      *
      * @return string
      *
-     * @since 1.0.0 Function has become public
      * @throws PrestaShopException
      */
     public function getLangLink($idLang = null, Context $context = null, $idShop = null)
@@ -295,13 +307,11 @@ class LinkCore
      * Use controller name to create a link
      *
      * @param string $controller
-     * @param bool   $withToken include or not the token in the url
-     * @param array  $params optional parameters
+     * @param bool $withToken include or not the token in the url
+     * @param array $params optional parameters
      *
      * @return string url
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAdminLink($controller, $withToken = true, $params = [])
@@ -318,17 +328,15 @@ class LinkCore
     /**
      * Returns a link to a product image for display
      *
-     * @param string $name    Rewrite link of the image
-     * @param string $ids     ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
-     * @param string $type    Image type
-     * @param string $format  Image format (jpg/png/webp). Auto-detected by default
-     * @param bool   $highDpi Higher resolution
+     * @param string $name Rewrite link of the image
+     * @param string $ids ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
+     * @param string $type Image type
+     * @param string $format Image format (jpg/png/webp). Auto-detected by default
+     * @param bool $highDpi Higher resolution
      *
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getImageLink($name, $ids, $type = null, $format = null, $highDpi = false)
     {
@@ -394,8 +402,6 @@ class LinkCore
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getMediaLink($filepath)
@@ -404,17 +410,15 @@ class LinkCore
     }
 
     /**
-     * @param string      $name
-     * @param int         $idCategory
+     * @param string $name
+     * @param int $idCategory
      * @param string|null $type
-     * @param string      $format - image format (jpg/png/webp). Auto-detected by default
-     * @param boolean     $highDpi
+     * @param string $format - image format (jpg/png/webp). Auto-detected by default
+     * @param boolean $highDpi
      *
      * @return string
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Use getGenericImageLink().
      */
     public function getCatImageLink($name, $idCategory, $type = null, $format = null, $highDpi = false)
     {
@@ -435,22 +439,21 @@ class LinkCore
     /**
      * Get an image link to anything but products.
      *
-     * @param string  $class      Class of the image. 'categories',
+     * @param string $class Class of the image. 'categories',
      *                            'manufacturers', ... For a list of choices,
      *                            see _TB_IMAGE_MAP_. For class 'products',
      *                            use getImageLink().
-     * @param int     $id         ID of the image.
-     * @param string  $type       Image type, like 'home', 'home_small', ...
-     * @param string  $resolution Image resolution. '', '2x', '3x', ...
-     * @param bool    $webp       Whether to use the WEBP format, if available. Auto-detected by default
-     * @param string  $name       An image name for pretty/SEO-friendly URLs.
+     * @param int $id ID of the image.
+     * @param string $type Image type, like 'home', 'home_small', ...
+     * @param string $resolution Image resolution. '', '2x', '3x', ...
+     * @param bool $webp Whether to use the WEBP format, if available. Auto-detected by default
+     * @param string $name An image name for pretty/SEO-friendly URLs.
      *                            Currently, only (products and) categories
      *                            support such names.
      *
      * @return string Full URL to the image.
      *
      * @throws PrestaShopException
-     * @version 1.1.0 Initial version.
      */
     public static function getGenericImageLink($class, $id, $type, $resolution = '', $webp = null, $name = '')
     {
@@ -484,13 +487,11 @@ class LinkCore
     /**
      * Create link after language change, for the change language block
      *
-     * @param int     $idLang Language ID
-     * @param Context $context
+     * @param int $idLang Language ID
+     * @param Context|null $context
      *
      * @return string link
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getLanguageLink($idLang, Context $context = null)
@@ -540,16 +541,14 @@ class LinkCore
     }
 
     /**
-     * @param int|Category $category
-     * @param string|null  $alias
-     * @param int|null     $idLang
-     * @param string|null  $selectedFilters
-     * @param int|null     $idShop
-     * @param bool         $relativeProtocol
+     * @param int|CategoryCore $category
+     * @param string|null $alias
+     * @param int|null $idLang
+     * @param string|null $selectedFilters
+     * @param int|null $idShop
+     * @param bool $relativeProtocol
      *
      * @return string
-     * @throws PrestaShopException
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function getCategoryLink($category, $alias = null, $idLang = null, $selectedFilters = null, $idShop = null, $relativeProtocol = false)
@@ -595,16 +594,13 @@ class LinkCore
     /**
      * Create a link to a supplier
      *
-     * @param mixed    $supplier Supplier object (can be an ID supplier, but deprecated)
-     * @param string   $alias
-     * @param int      $idLang
+     * @param int|Supplier $supplier Supplier object
+     * @param string $alias
+     * @param int $idLang
      * @param int|null $idShop
-     * @param bool     $relativeProtocol
+     * @param bool $relativeProtocol
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function getSupplierLink($supplier, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
@@ -636,16 +632,13 @@ class LinkCore
     /**
      * Create a link to a manufacturer
      *
-     * @param mixed    $manufacturer Manufacturer object (can be an ID supplier, but deprecated)
-     * @param string   $alias
-     * @param int      $idLang
+     * @param Manufacturer|int $manufacturer Manufacturer object
+     * @param string $alias
+     * @param int $idLang
      * @param int|null $idShop
-     * @param bool     $relativeProtocol
+     * @param bool $relativeProtocol
      *
      * @return string
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     public function getManufacturerLink($manufacturer, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
@@ -675,12 +668,12 @@ class LinkCore
     }
 
     /**
-     * @param int|CMS     $cms
+     * @param int|CMS $cms
      * @param string|null $alias
-     * @param null        $ssl
-     * @param null        $idLang
-     * @param null        $idShop
-     * @param bool        $relativeProtocol
+     * @param bool|null $ssl
+     * @param int|null $idLang
+     * @param int|null $idShop
+     * @param bool $relativeProtocol
      *
      * @return string
      * @throws PrestaShopException
@@ -762,10 +755,10 @@ class LinkCore
 
     /**
      * @param int|CMSCategory $cmsCategory
-     * @param string|null     $alias
-     * @param int|null        $idLang
-     * @param int|null        $idShop
-     * @param bool            $relativeProtocol
+     * @param string|null $alias
+     * @param int|null $idLang
+     * @param int|null $idShop
+     * @param bool $relativeProtocol
      *
      * @return string
      * @throws PrestaShopException
@@ -831,18 +824,15 @@ class LinkCore
     /**
      * Create a link to a module
      *
-     * @param string   $module Module name
-     * @param string   $controller
-     * @param array    $params
-     * @param null     $ssl
-     * @param int      $idLang
+     * @param string $module Module name
+     * @param string $controller
+     * @param array $params
+     * @param bool|null $ssl
+     * @param int $idLang
      * @param int|null $idShop
-     * @param bool     $relativeProtocol
+     * @param bool $relativeProtocol
      *
      * @return string
-     * @internal param string $process Action name
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getModuleLink($module, $controller = 'default', array $params = [], $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
@@ -879,18 +869,16 @@ class LinkCore
     /**
      * Create a simple link
      *
-     * @param string       $controller
-     * @param bool         $ssl
-     * @param int          $idLang
+     * @param string $controller
+     * @param bool $ssl
+     * @param int $idLang
      * @param string|array $request
-     * @param bool         $requestUrlEncode Use URL encode
-     * @param int|null     $idShop
-     * @param bool         $relativeProtocol
+     * @param bool $requestUrlEncode Use URL encode
+     * @param int|null $idShop
+     * @param bool $relativeProtocol
      *
      * @return string Page link
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getPageLink($controller, $ssl = null, $idLang = null, $request = null, $requestUrlEncode = false, $idShop = null, $relativeProtocol = false)
@@ -935,12 +923,9 @@ class LinkCore
 
     /**
      * @param string $url
-     * @param int    $p
+     * @param int $p
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function goPage($url, $p)
     {
@@ -952,17 +937,15 @@ class LinkCore
     /**
      * Get pagination link
      *
-     * @param string     $type       Controller name
+     * @param string $type Controller name
      * @param object|int $idObject
-     * @param bool       $nb         Show nb element per page attribute
-     * @param bool       $sort       Show sort attribute
-     * @param bool       $pagination Show page number attribute
-     * @param bool       $array      If false return an url, if true return an array
+     * @param bool $nb Show nb element per page attribute
+     * @param bool $sort Show sort attribute
+     * @param bool $pagination Show page number attribute
+     * @param bool $array If false return an url, if true return an array
      *
      * @return array|string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getPaginationLink($type, $idObject, $nb = false, $sort = false, $pagination = false, $array = false)
@@ -1040,9 +1023,6 @@ class LinkCore
      * @param string $orderway
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function addSortDetails($url, $orderby, $orderway)
     {
@@ -1053,9 +1033,6 @@ class LinkCore
      * @param string $url
      *
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function matchQuickLink($url)
     {
@@ -1071,9 +1048,6 @@ class LinkCore
      * @param string $url
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getQuickLink($url)
     {

@@ -31,12 +31,9 @@
 
 /**
  * Class OrderCartRuleCore
- *
- * @since 1.0.0
  */
 class OrderCartRuleCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_order_cart_rule;
 
@@ -60,10 +57,9 @@ class OrderCartRuleCore extends ObjectModel
 
     /** @var bool value : voucher gives free shipping or not */
     public $free_shipping;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'order_cart_rule',
@@ -85,6 +81,9 @@ class OrderCartRuleCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id_order' => ['xlink_resource' => 'orders'],

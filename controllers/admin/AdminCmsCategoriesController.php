@@ -31,22 +31,23 @@
 
 /**
  * Class AdminCmsCategoriesControllerCore
- *
- * @since 1.0.0
  */
 class AdminCmsCategoriesControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
-    /** @var object CMSCategory() instance for navigation */
+    /**
+     * @var CMSCategory instance for navigation
+     */
     protected $cms_category;
 
+    /**
+     * @var string
+     */
     protected $position_identifier = 'id_cms_category_to_move';
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminCmsCategoriesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -98,7 +99,8 @@ class AdminCmsCategoriesControllerCore extends AdminController
     /**
      * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -114,7 +116,8 @@ class AdminCmsCategoriesControllerCore extends AdminController
     /**
      * @return bool|CMSCategory|false|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -213,7 +216,9 @@ class AdminCmsCategoriesControllerCore extends AdminController
     /**
      * @return string|null
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {

@@ -31,48 +31,39 @@
 
 /**
  * Class ConfigurationKPICore
- *
- * @since 1.0.0
  */
 class ConfigurationKPICore extends Configuration
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var array
+     */
     public static $definition_backup;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function setKpiDefinition()
     {
-        // @codingStandardsIgnoreStart
         ConfigurationKPI::$definition_backup = Configuration::$definition;
-        // @codingStandardsIgnoreEnd
         Configuration::$definition['table'] = 'configuration_kpi';
         Configuration::$definition['primary'] = 'id_configuration_kpi';
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     public static function unsetKpiDefinition()
     {
-        // @codingStandardsIgnoreStart
         Configuration::$definition = ConfigurationKPI::$definition_backup;
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @param string   $key
+     * @param string $key
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByName($key, $idShopGroup = null, $idShop = null)
@@ -85,8 +76,9 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function loadConfiguration()
     {
@@ -96,15 +88,13 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string   $key
+     * @param string $key
      * @param int|null $idLang
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function get($key, $idLang = null, $idShopGroup = null, $idShop = null)
@@ -117,13 +107,11 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string   $key
+     * @param string $key
      * @param int|null $idLang
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getGlobalValue($key, $idLang = null)
@@ -136,14 +124,12 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string   $key
+     * @param string $key
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
      * @return array
-     * @since   1.0.0
      *
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getInt($key, $idShopGroup = null, $idShop = null)
@@ -157,14 +143,12 @@ class ConfigurationKPICore extends Configuration
 
     /**
      * @param array $keys
-     * @param null  $idLang
-     * @param null  $idShopGroup
-     * @param null  $idShop
+     * @param int|null $idLang
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getMultiple($keys, $idLang = null, $idShopGroup = null, $idShop = null)
@@ -178,14 +162,14 @@ class ConfigurationKPICore extends Configuration
 
     /**
      * @param string $key
-     * @param null   $idLang
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param int|null $idLang
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function hasKey($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -198,12 +182,11 @@ class ConfigurationKPICore extends Configuration
 
     /**
      * @param string $key
-     * @param mixed  $values
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param mixed $values
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function set($key, $values, $idShopGroup = null, $idShop = null)
     {
@@ -214,13 +197,11 @@ class ConfigurationKPICore extends Configuration
 
     /**
      * @param string $key
-     * @param mixed  $values
-     * @param bool   $html
+     * @param mixed $values
+     * @param bool $html
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateGlobalValue($key, $values, $html = false)
@@ -233,16 +214,14 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string   $key
-     * @param mixed    $values
-     * @param bool     $html
+     * @param string $key
+     * @param mixed $values
+     * @param bool $html
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
@@ -261,8 +240,6 @@ class ConfigurationKPICore extends Configuration
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteByName($key)
     {
@@ -278,8 +255,6 @@ class ConfigurationKPICore extends Configuration
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteFromContext($key)
     {
@@ -290,13 +265,13 @@ class ConfigurationKPICore extends Configuration
 
     /**
      * @param string $key
-     * @param int    $idLang
-     * @param int    $context
+     * @param int $idLang
+     * @param int $context
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function hasContext($key, $idLang, $context)
     {
@@ -312,8 +287,6 @@ class ConfigurationKPICore extends Configuration
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function isOverridenByCurrentContext($key)
@@ -330,8 +303,7 @@ class ConfigurationKPICore extends Configuration
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isLangKey($key)
     {
@@ -347,9 +319,6 @@ class ConfigurationKPICore extends Configuration
      * @param int $idShop
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected static function sqlRestriction($idShopGroup, $idShop)
     {

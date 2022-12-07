@@ -31,35 +31,31 @@
 
 /**
  * Class WarehouseProductLocationCore
- *
- * @since 1.0.0
  */
 class WarehouseProductLocationCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /**
      * @var int product ID
-     * */
+     */
     public $id_product;
 
     /**
      * @var int product attribute ID
-     * */
+     */
     public $id_product_attribute;
 
     /**
      * @var int warehouse ID
-     * */
+     */
     public $id_warehouse;
 
     /**
      * @var string location of the product
-     * */
+     */
     public $location;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'warehouse_product_location',
@@ -79,7 +75,7 @@ class WarehouseProductLocationCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::$webserviceParameters
+     * @var array Webservice Parameters
      */
     protected $webserviceParameters = [
         'fields'        => [
@@ -93,14 +89,12 @@ class WarehouseProductLocationCore extends ObjectModel
     /**
      * For a given product and warehouse, gets the location
      *
-     * @param int $idProduct          product ID
+     * @param int $idProduct product ID
      * @param int $idProductAttribute product attribute ID
-     * @param int $idWarehouse        warehouse ID
+     * @param int $idWarehouse warehouse ID
      *
      * @return string|false $location Location of the product
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getProductLocation($idProduct, $idProductAttribute, $idWarehouse)
@@ -127,8 +121,6 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @return int $id_warehouse_product_location ID of the WarehouseProductLocation
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getIdByProductAndWarehouse($idProduct, $idProductAttribute, $idWarehouse)
@@ -153,8 +145,6 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @return PrestaShopCollection The type of the collection is WarehouseProductLocation
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public static function getCollection($idProduct)
@@ -166,14 +156,12 @@ class WarehouseProductLocationCore extends ObjectModel
     }
 
     /**
-     * @param $idWarehouse
+     * @param int $idWarehouse
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getProducts($idWarehouse)
     {

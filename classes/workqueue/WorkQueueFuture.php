@@ -21,8 +21,6 @@ namespace Thirtybees\Core\WorkQueue;
 
 /**
  * Class WorkQueueFutureCore
- *
- * @since 1.3.0
  */
 class WorkQueueFutureCore
 {

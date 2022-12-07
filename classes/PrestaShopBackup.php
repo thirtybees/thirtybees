@@ -31,12 +31,9 @@
 
 /**
  * Class PrestaShopBackupCore
- *
- * @since 1.0.0
  */
 class PrestaShopBackupCore
 {
-    // @codingStandardsIgnoreStart
     /** @var string default backup directory. */
     public static $backupDir = '/backups/';
     /** @var int Object id */
@@ -49,15 +46,12 @@ class PrestaShopBackupCore
     public $psBackupAll = true;
     /** @var bool|string $psBackupDropTable */
     public $psBackupDropTable = true;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Creates a new backup object
      *
-     * @param string $filename Filename of the backup file
+     * @param string|null $filename Filename of the backup file
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct($filename = null)
@@ -75,12 +69,11 @@ class PrestaShopBackupCore
     /**
      * get the path to use for backup (customBackupDir if specified, or default)
      *
-     * @param string $filename filename to use
+     * @param string|null $filename filename to use
      *
      * @return string full path
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getRealBackupPath($filename = null)
     {
@@ -108,8 +101,6 @@ class PrestaShopBackupCore
      * @return string The full path of the backup file, or false if the backup file does not exists
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function getBackupPath($filename = '')
     {
@@ -141,8 +132,6 @@ class PrestaShopBackupCore
      * @return bool true if backup file exist
      *
      * @throws PrestaShopException
-     * @version 1.0.0 Initial version
-     * @since   1.0.0
      */
     public static function backupExist($filename)
     {
@@ -163,9 +152,6 @@ class PrestaShopBackupCore
      * @param string $dir
      *
      * @return bool bo
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setCustomBackupPath($dir)
     {
@@ -183,9 +169,6 @@ class PrestaShopBackupCore
      * Get the URL used to retrieve this backup file
      *
      * @return string The url used to request the backup file
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getBackupURL()
     {
@@ -195,10 +178,10 @@ class PrestaShopBackupCore
     /**
      * Deletes a range of backup files
      *
+     * @param string[] $list
      * @return bool True on success
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteSelection($list)
     {
@@ -221,8 +204,6 @@ class PrestaShopBackupCore
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add()
     {
@@ -357,9 +338,6 @@ class PrestaShopBackupCore
      * Delete the current backup file
      *
      * @return bool Deletion result, true on success
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function delete()
     {

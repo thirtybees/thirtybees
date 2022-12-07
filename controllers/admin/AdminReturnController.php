@@ -31,15 +31,13 @@
 
 /**
  * Class AdminReturnControllerCore
- *
- * @since 1.0.0
  */
 class AdminReturnControllerCore extends AdminController
 {
     /**
      * AdminReturnControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -97,7 +95,9 @@ class AdminReturnControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -207,7 +207,7 @@ class AdminReturnControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -231,7 +231,8 @@ class AdminReturnControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

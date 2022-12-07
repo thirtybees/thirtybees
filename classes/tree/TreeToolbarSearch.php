@@ -31,25 +31,21 @@
 
 /**
  * Class TreeToolbarSearchCore
- *
- * @since 1.0.0
  */
 class TreeToolbarSearchCore extends TreeToolbarButtonCore implements ITreeToolbarButtonCore
 {
-    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
     protected $_template = 'tree_toolbar_search.tpl';
-    // @codingStandardsIgnoreEnd
 
     /**
      * TreeToolbarSearchCore constructor.
      *
-     * @param      $label
-     * @param null $id
-     * @param null $name
-     * @param null $class
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @param string $label
+     * @param int|null $id
+     * @param string|null $name
+     * @param string|null $class
      */
     public function __construct($label, $id, $name = null, $class = null)
     {
@@ -63,8 +59,8 @@ class TreeToolbarSearchCore extends TreeToolbarButtonCore implements ITreeToolba
     /**
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function render()
     {
@@ -96,7 +92,7 @@ class TreeToolbarSearchCore extends TreeToolbarButtonCore implements ITreeToolba
     }
 
     /**
-     * @param $data
+     * @param array $data
      *
      * @return string
      * @throws PrestaShopException

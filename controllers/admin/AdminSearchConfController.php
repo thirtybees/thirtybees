@@ -31,20 +31,16 @@
 
 /**
  * Class AdminSearchConfControllerCore
- *
- * @since 1.0.0
  */
 class AdminSearchConfControllerCore extends AdminController
 {
-    // @codingStandardsIgnoreStart
     /** @var bool $toolbar_scroll */
     protected $toolbar_scroll = false;
-    // @codingStandardsIgnoreEnd
 
     /**
      * AdminSearchConfControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -293,7 +289,7 @@ class AdminSearchConfControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -318,8 +314,6 @@ class AdminSearchConfControllerCore extends AdminController
      * Initialize processing
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -335,7 +329,9 @@ class AdminSearchConfControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {
@@ -364,7 +360,9 @@ class AdminSearchConfControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -409,7 +407,6 @@ class AdminSearchConfControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function processSave()
     {

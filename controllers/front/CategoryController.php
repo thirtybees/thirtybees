@@ -31,12 +31,9 @@
 
 /**
  * Class CategoryControllerCore
- *
- * @since 1.0.0
  */
 class CategoryControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** string Internal controller name */
     public $php_self = 'category';
     /** @var bool If set to false, customer cannot view the current category. */
@@ -47,7 +44,6 @@ class CategoryControllerCore extends FrontController
     protected $nbProducts;
     /** @var array Products to be displayed in the current page . */
     protected $cat_products;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Sets default media for this controller
@@ -56,7 +52,6 @@ class CategoryControllerCore extends FrontController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -88,7 +83,6 @@ class CategoryControllerCore extends FrontController
      * @param string $canonicalUrl
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     public function canonicalRedirection($canonicalUrl = '')
     {
@@ -113,10 +107,10 @@ class CategoryControllerCore extends FrontController
     /**
      * Initializes controller
      *
-     * @see   FrontController::init()
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
+     * @throws SmartyException
+     * @see FrontController::init()
      */
     public function init()
     {
@@ -149,8 +143,9 @@ class CategoryControllerCore extends FrontController
     /**
      * Initializes page content variables
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -230,7 +225,6 @@ class CategoryControllerCore extends FrontController
      * @return void
      *
      * @throws PrestaShopException
-     * @since 1.0.0
      */
     protected function assignSubcategories()
     {
@@ -250,8 +244,9 @@ class CategoryControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @throws SmartyException
      */
     public function assignProductList()
     {
@@ -300,8 +295,6 @@ class CategoryControllerCore extends FrontController
      * Returns an instance of the current category
      *
      * @return Category
-     *
-     * @since 1.0.0
      */
     public function getCategory()
     {

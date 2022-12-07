@@ -31,13 +31,17 @@
 
 /**
  * Class TranslatedConfigurationCore
- *
- * @since 1.0.0
  */
 class TranslatedConfigurationCore extends Configuration
 {
+    /**
+     * @var array
+     */
     public $value = [];
 
+    /**
+     * @var array
+     */
     public static $definition = [
         'table'     => 'configuration',
         'primary'   => 'id_configuration',
@@ -65,6 +69,9 @@ class TranslatedConfigurationCore extends Configuration
             ],
         ],
     ];
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'objectNodeName'  => 'translated_configuration',
         'objectsNodeName' => 'translated_configurations',
@@ -83,8 +90,6 @@ class TranslatedConfigurationCore extends Configuration
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -115,8 +120,6 @@ class TranslatedConfigurationCore extends Configuration
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -160,12 +163,10 @@ class TranslatedConfigurationCore extends Configuration
      * @param string $sqlSort
      * @param string $sqlLimit
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {

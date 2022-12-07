@@ -221,7 +221,7 @@ class Datas
     public $shopName;
 
     /**
-     * @var  int
+     * @var int
      */
     public $shopActivity;
 

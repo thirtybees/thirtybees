@@ -31,8 +31,6 @@
 
 /**
  * Class PrestaShopCollectionCore
- *
- * @since 1.0.0
  */
 class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
 {
@@ -41,7 +39,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     const LEFT_OUTER_JOIN = 3;
     const LANG_ALIAS = 'l';
 
-    // @codingStandardsIgnoreStart
     /**
      * @var string Object class name
      */
@@ -82,21 +79,37 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @var int Size of a page
      */
     protected $page_size = 0;
+
+    /**
+     * @var array[]
+     */
     protected $fields = [];
+
+    /**
+     * @var string[]
+     */
     protected $alias = [];
+
+    /**
+     * @var int
+     */
     protected $alias_iterator = 0;
+
+    /**
+     * @var array[]
+     */
     protected $join_list = [];
+
+    /**
+     * @var array[]
+     */
     protected $association_definition = [];
-    // @codingStandardsIgnoreEnd
 
     /**
      * @param string $classname
-     * @param int    $idLang
+     * @param int $idLang
      *
      * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct($classname, $idLang = null)
     {
@@ -120,8 +133,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function sqlWhere($sql)
@@ -138,8 +149,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function parseFields($str)
@@ -159,8 +168,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function parseField($field)
@@ -176,9 +183,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $field Field name
      *
      * @return array
-     * @throws PrestaShopException
-     * @throws PrestaShopException
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     protected function getFieldInfo($field)
@@ -236,8 +240,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return array
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getDefinition($association)
     {
@@ -319,12 +321,10 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $association Association name
      * @param string $on
-     * @param int    $type
+     * @param int $type
      *
      * @return false|static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function join($association, $on = '', $type = null)
@@ -378,9 +378,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $association Use empty association for alias on current table
      *
      * @return string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function generateAlias($association = '')
     {
@@ -394,14 +391,12 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Add HAVING restriction on query
      *
-     * @param string $field    Field name
+     * @param string $field Field name
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function having($field, $operator, $value)
@@ -412,17 +407,13 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Add WHERE restriction on query
      *
-     * @param string $field    Field name
+     * @param string $field Field name
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
-     * @param mixed  $value
+     * @param mixed $value
      * @param string $method
      *
      * @return static
      * @throws PrestaShopException
-     * @internal param string $type where|having
-     *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
      */
     public function where($field, $operator, $value, $method = 'where')
     {
@@ -480,13 +471,11 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Format a value with the type of the given field
      *
-     * @param mixed  $value
+     * @param mixed $value
      * @param string $field Field name
      *
-     * @return mixed
+     * @return array|bool|float|int|string|string[]|null
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     protected function formatValue($value, $field)
@@ -511,8 +500,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function sqlHaving($sql)
     {
@@ -529,8 +517,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function orderBy($field, $order = 'asc')
     {
@@ -550,8 +536,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function sqlOrderBy($sql)
@@ -568,8 +552,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function groupBy($field)
@@ -586,8 +568,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function sqlGroupBy($sql)
@@ -602,8 +582,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return false|ObjectModel
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getFirst()
@@ -623,8 +601,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return static
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getAll($displayQuery = false)
@@ -674,10 +650,12 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * @param $table
-     * @param $alias
-     * @param $on
-     * @param $joinType
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @param int $joinType
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function joinTable($table, $alias, $on, $joinType)
     {
@@ -699,8 +677,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return array
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getResults()
@@ -713,10 +689,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * This method is called when a foreach begin
      *
-     * @see     Iterator::rewind()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     #[\ReturnTypeWillChange]
@@ -731,11 +703,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Get current result
      *
-     * @see     Iterator::current()
      * @return ObjectModel
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -746,11 +714,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Check if there is a current result
      *
-     * @see     Iterator::valid()
      * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     #[\ReturnTypeWillChange]
     public function valid()
@@ -761,11 +725,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Get current result index
      *
-     * @see     Iterator::key()
      * @return int
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     #[\ReturnTypeWillChange]
     public function key()
@@ -775,11 +735,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
 
     /**
      * Go to next result
-     *
-     * @see     Iterator::next()
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function next()
@@ -790,11 +746,8 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Get total of results
      *
-     * @see     Countable::count()
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     #[\ReturnTypeWillChange]
@@ -812,8 +765,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     #[\ReturnTypeWillChange]
@@ -831,8 +782,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @return ObjectModel
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -848,12 +797,10 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Add an element in the collection
      *
-     * @param int   $offset
+     * @param int $offset
      * @param mixed $value
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -873,12 +820,8 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Delete an element from the collection
      *
-     * @see     ArrayAccess::offsetUnset()
+     * @param mixed $offset
      *
-     * @param $offset
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     #[\ReturnTypeWillChange]
@@ -894,9 +837,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param int $pageNumber
      *
      * @return static
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setPageNumber($pageNumber)
     {
@@ -916,9 +856,6 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param int $pageSize
      *
      * @return static
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setPageSize($pageSize)
     {

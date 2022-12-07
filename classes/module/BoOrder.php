@@ -31,17 +31,13 @@
 
 /**
  * Class BoOrder
- *
- * @since 1.0.0
  */
 class BoOrderCore extends PaymentModule
 {
-    // @codingStandardsIgnoreStart
     /** @var int $active */
     public $active = 1;
     /** @var string $name */
     public $name = 'bo_order';
-    // @codingStandardsIgnoreEnd
 
     /**
      * BoOrder constructor.

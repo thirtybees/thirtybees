@@ -31,14 +31,13 @@
 
 /**
  * Class ChangeCurrencyControllerCore
- *
- * @since 1.0.0
  */
 class ChangeCurrencyControllerCore extends FrontController
 {
     /**
      * Assign template vars related to page content
      *
+     * @throws PrestaShopException
      * @see FrontController::initContent()
      */
     public function initContent()

@@ -31,15 +31,13 @@
 
 /**
  * Class AdminWarehousesControllerCore
- *
- * @since 1.0.0
  */
 class AdminWarehousesControllerCore extends AdminController
 {
     /**
      * AdminWarehousesControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -99,7 +97,7 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -117,11 +115,11 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * AdminController::renderList() override
      *
-     * @see AdminController::renderList()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderList()
      */
     public function renderList()
     {
@@ -161,11 +159,12 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * AdminController::renderForm() override
      *
-     * @see AdminController::renderForm()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderForm()
      */
     public function renderForm()
     {
@@ -445,11 +444,12 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::renderView()
-     *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @see AdminController::renderView()
      */
     public function renderView()
     {
@@ -492,18 +492,16 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @see AdminController::getList()
      *
-     * @param int         $idLang
+     * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
-     * @param int         $start
-     * @param int|null    $limit
-     * @param int|bool    $idLangShop
+     * @param int $start
+     * @param int|null $limit
+     * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
      *
      * @return void
-     *
-     * @since 1.0.0
      */
     public function getList(
         $idLang,
@@ -540,7 +538,8 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -556,7 +555,7 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function isAdvancedStockManagementActive()
     {
@@ -570,9 +569,9 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @return bool
+     * @return bool|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -584,11 +583,11 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::processAdd();
-     *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see AdminController::processAdd();
      */
     public function processAdd()
     {
@@ -609,7 +608,8 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function updateAddress()
     {
@@ -675,9 +675,10 @@ class AdminWarehousesControllerCore extends AdminController
      *  - nor it has some pending supply orders
      * before actual deletion
      *
-     * @return bool|mixed
+     * @return bool|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -696,11 +697,11 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @param $warehouse
+     * @param Warehouse $warehouse
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function shouldForbidWarehouseDeletion($warehouse)
     {
@@ -726,9 +727,10 @@ class AdminWarehousesControllerCore extends AdminController
     /**
      * @param Warehouse $warehouse
      *
-     * @return mixed
+     * @return bool|ObjectModel
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function deleteWarehouse(Warehouse $warehouse)
     {
@@ -747,7 +749,7 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function markAddressAsDeleted(Address $address)
     {
@@ -757,11 +759,11 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::processUpdate();
-     *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see AdminController::processUpdate();
      */
     public function processUpdate()
     {
@@ -786,13 +788,13 @@ class AdminWarehousesControllerCore extends AdminController
      * Called once $object is set.
      * Used to process the associations with address/shops/carriers
      *
-     * @see AdminController::afterAdd()
-     *
      * @param Warehouse $object
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see AdminController::afterAdd()
      */
     protected function afterAdd($object)
     {
@@ -819,7 +821,8 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function updateAssoShop($idObject)
     {

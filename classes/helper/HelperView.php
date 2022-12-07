@@ -31,8 +31,6 @@
 
 /**
  * Class HelperViewCore
- *
- * @since 1.0.0
  */
 class HelperViewCore extends Helper
 {
@@ -63,9 +61,6 @@ class HelperViewCore extends Helper
 
     /**
      * HelperViewCore constructor.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -77,10 +72,8 @@ class HelperViewCore extends Helper
     /**
      * @return string
      *
-     * @throws Exception
      * @throws SmartyException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function generateView()
     {

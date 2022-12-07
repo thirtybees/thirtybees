@@ -31,15 +31,13 @@
 
 /**
  * Class AdminCartsControllerCore
- *
- * @since 1.0.0
  */
 class AdminCartsControllerCore extends AdminController
 {
     /**
      * AdminCartsControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -142,7 +140,7 @@ class AdminCartsControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function getOrderTotalUsingTaxCalculationMethod($idCart)
     {
@@ -155,12 +153,12 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @param $echo
-     * @param $tr
+     * @param string $echo
+     * @param array $tr
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function replaceZeroByShopName($echo, $tr)
     {
@@ -168,7 +166,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -184,9 +182,10 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @return mixed
+     * @return false|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
@@ -265,7 +264,6 @@ class AdminCartsControllerCore extends AdminController
      *
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
      */
     public function renderView()
     {
@@ -375,7 +373,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxPreProcess()
     {
@@ -435,7 +433,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteProduct()
     {
@@ -459,7 +457,8 @@ class AdminCartsControllerCore extends AdminController
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function ajaxReturnVars()
     {
@@ -508,7 +507,8 @@ class AdminCartsControllerCore extends AdminController
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getCartSummary()
     {
@@ -548,7 +548,8 @@ class AdminCartsControllerCore extends AdminController
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getDeliveryOptionList()
     {
@@ -595,7 +596,8 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function ajaxProcessUpdateCustomizationFields()
     {
@@ -664,7 +666,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateQty()
     {
@@ -719,7 +721,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateDeliveryOption()
     {
@@ -743,7 +745,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateOrderMessage()
     {
@@ -768,7 +770,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateCurrency()
     {
@@ -784,7 +786,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateLang()
     {
@@ -799,7 +801,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDuplicateOrder()
     {
@@ -822,7 +824,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessDeleteVoucher()
     {
@@ -834,7 +836,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessupdateFreeShipping()
     {
@@ -867,7 +869,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessAddVoucher()
     {
@@ -888,7 +890,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateAddress()
     {
@@ -898,7 +900,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateAddresses()
     {
@@ -923,7 +925,6 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
      * @throws PrestaShopException
      */
     public function displayAjaxSearchCarts()
@@ -965,7 +966,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -974,7 +975,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function displayAjaxGetSummary()
     {
@@ -982,7 +983,7 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateProductPrice()
     {
@@ -1010,13 +1011,14 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
-     * @param null $token
-     * @param      $id
-     * @param null $name
+     * @param string $token
+     * @param int $id
+     * @param string|null $name
      *
      * @return string|void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDeleteLink($token, $id, $name = null)
     {
@@ -1033,7 +1035,8 @@ class AdminCartsControllerCore extends AdminController
     /**
      * @return bool|string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {

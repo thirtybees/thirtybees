@@ -31,19 +31,15 @@
 
 /**
  * Class DateRangeCore
- *
- * @since 1.0.0
  */
 class DateRangeCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string $time_start */
     public $time_start;
     /** @var string $time_end */
     public $time_end;
-    // @codingStandardsIgnoreEnd
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'date_range',
@@ -55,12 +51,10 @@ class DateRangeCore extends ObjectModel
     ];
 
     /**
-     * @return mixed
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getCurrentRange()
     {

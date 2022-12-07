@@ -31,8 +31,6 @@
 
 /**
  * Class HelperTreeCategoriesCore
- *
- * @since 1.0.0
  */
 class HelperTreeCategoriesCore extends TreeCore
 {
@@ -98,14 +96,12 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * HelperTreeCategoriesCore constructor.
      *
-     * @param int         $id
+     * @param string|int $id
      * @param string|null $title
-     * @param int|null    $rootCategory
-     * @param int|null    $lang
-     * @param bool        $useShopRestriction
+     * @param int|null $rootCategory
+     * @param int|null $lang
+     * @param bool $useShopRestriction
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function __construct(
@@ -129,14 +125,12 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @param array $categories
-     * @param int   $idCategory
+     * @param int $idCategory
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function fillTree(&$categories, $idCategory)
     {
@@ -154,12 +148,10 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getData()
     {
@@ -219,10 +211,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param mixed $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setChildrenOnly($value)
     {
@@ -234,10 +223,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param mixed $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setFullTree($value)
     {
@@ -248,9 +234,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getFullTree()
     {
@@ -260,10 +243,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param mixed $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setDisabledCategories($value)
     {
@@ -274,9 +254,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getDisabledCategories()
     {
@@ -286,10 +263,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param mixed $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setInputName($value)
     {
@@ -300,9 +274,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getInputName()
     {
@@ -316,10 +287,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param int $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setLang($value)
     {
@@ -330,9 +298,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getLang()
     {
@@ -344,10 +309,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeFolderTemplate()
     {
@@ -359,10 +321,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getNodeItemTemplate()
     {
@@ -376,11 +335,8 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param int $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setRootCategory($value)
     {
@@ -395,9 +351,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getRootCategory()
     {
@@ -407,11 +360,8 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param array $value
      *
-     * @return $this
+     * @return static
      * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function setSelectedCategories($value)
     {
@@ -426,9 +376,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return array
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function getSelectedCategories()
     {
@@ -442,10 +389,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param Shop $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setShop($value)
     {
@@ -457,8 +401,6 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @return Shop
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
     public function getShop()
@@ -479,10 +421,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return string
      */
     public function getTemplate()
     {
@@ -494,12 +433,9 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUseCheckBox($value)
     {
@@ -511,10 +447,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUseSearch($value)
     {
@@ -526,10 +459,7 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @param bool $value
      *
-     * @return $this
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @return static
      */
     public function setUseShopRestriction($value)
     {
@@ -540,9 +470,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useCheckBox()
     {
@@ -551,9 +478,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useSearch()
     {
@@ -562,9 +486,6 @@ class HelperTreeCategoriesCore extends TreeCore
 
     /**
      * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function useShopRestriction()
     {
@@ -572,14 +493,13 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @throws SmartyException
      */
     public function render($data = null)
     {
@@ -646,14 +566,11 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param null $data
+     * @param array|null $data
      *
      * @return string
      * @throws PrestaShopException
      * @throws SmartyException
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function renderNodes($data = null)
     {
@@ -697,11 +614,8 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param      $categories
-     * @param null $disabledCategories
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param array[] $categories
+     * @param array|null $disabledCategories
      */
     protected function _disableCategories(&$categories, $disabledCategories = null)
     {
@@ -718,14 +632,11 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param      $categories
-     * @param      $selected
-     * @param null $parent
+     * @param array[] $categories
+     * @param array $selected
+     * @param array $parent
      *
      * @return int
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _getSelectedChildNumbers(&$categories, $selected, &$parent = null)
     {

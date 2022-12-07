@@ -31,12 +31,9 @@
 
 /**
  * Class OrderMessageCore
- *
- * @since 1.0.0
  */
 class OrderMessageCore extends ObjectModel
 {
-    // @codingStandardsIgnoreStart
     /** @var string name name */
     public $name;
 
@@ -45,10 +42,9 @@ class OrderMessageCore extends ObjectModel
 
     /** @var string Object creation date */
     public $date_add;
-    // @codingStandardsIgnoreEnd
 
     /**
-     * @see ObjectModel::$definition
+     * @var array Object model definition
      */
     public static $definition = [
         'table'     => 'order_message',
@@ -61,6 +57,9 @@ class OrderMessageCore extends ObjectModel
         ],
     ];
 
+    /**
+     * @var array Webservice parameters
+     */
     protected $webserviceParameters = [
         'fields' => [
             'id'       => ['sqlId' => 'id_discount_type', 'xlink_resource' => 'order_message_lang'],
@@ -69,14 +68,12 @@ class OrderMessageCore extends ObjectModel
     ];
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|bool|PDOStatement
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function getOrderMessages($idLang)
     {

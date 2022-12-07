@@ -31,15 +31,13 @@
 
 /**
  * Class AdminStoresControllerCore
- *
- * @since 1.0.0
  */
 class AdminStoresControllerCore extends AdminController
 {
     /**
      * AdminStoresControllerCore constructor.
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -128,9 +126,7 @@ class AdminStoresControllerCore extends AdminController
     }
 
     /**
-     * @param $formFields
-     *
-     * @since 1.0.0
+     * @param array $formFields
      */
     protected function _buildOrderedFieldsShop($formFields)
     {
@@ -169,7 +165,8 @@ class AdminStoresControllerCore extends AdminController
     /**
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _getDefaultFieldsContent()
     {
@@ -265,7 +262,9 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderOptions()
     {
@@ -283,7 +282,7 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initToolbar()
     {
@@ -301,7 +300,7 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -321,7 +320,8 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderList()
     {
@@ -348,7 +348,9 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -544,7 +546,8 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -611,7 +614,8 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {
@@ -627,11 +631,12 @@ class AdminStoresControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $value
+     * @param int $value
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateOptionPsShopCountryId($value)
     {
@@ -645,11 +650,12 @@ class AdminStoresControllerCore extends AdminController
     }
 
     /**
-     * @param mixed $value
+     * @param int $value
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateOptionPsShopStateId($value)
     {
@@ -667,7 +673,8 @@ class AdminStoresControllerCore extends AdminController
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function postImage($id)
     {
