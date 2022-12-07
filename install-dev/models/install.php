@@ -713,7 +713,7 @@ class InstallModelInstall extends InstallAbstractModel
         $localizationFileContent = $this->getLocalizationPackContent($version, $data['shopCountry']);
 
         $locale = new LocalizationPackCore();
-        $locale->loadLocalisationPack($localizationFileContent, '', true);
+        $locale->loadLocalisationPack($localizationFileContent, [], true);
 
         // Create default employee
         if (isset($data['adminFirstname']) && isset($data['adminLastname']) && isset($data['adminPassword']) && isset($data['adminEmail'])) {
