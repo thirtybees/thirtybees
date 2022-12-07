@@ -38,7 +38,6 @@ class AdminCmsControllerCore extends AdminController
 {
     // @codingStandardsIgnoreStart
     public $id_cms_category;
-    protected $category;
     protected $position_identifier = 'id_cms';
     /** @var CMS $object */
     public $object;

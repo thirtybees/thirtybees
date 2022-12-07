@@ -28,8 +28,7 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-class TreeToolbarSearchCategoriesCore extends TreeToolbarButtonCore implements
-    ITreeToolbarButtonCore
+class TreeToolbarSearchCategoriesCore extends TreeToolbarButtonCore implements ITreeToolbarButtonCore
 {
     // @codingStandardsIgnoreStart
     protected $_template = 'tree_toolbar_search.tpl';

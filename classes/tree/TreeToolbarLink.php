@@ -34,13 +34,9 @@
  *
  * @since 1.0.0
  */
-class TreeToolbarLinkCore extends TreeToolbarButtonCore implements
-    ITreeToolbarButtonCore
+class TreeToolbarLinkCore extends TreeToolbarButtonCore implements ITreeToolbarButtonCore
 {
     // @codingStandardsIgnoreStart
-    private $_action;
-    private $_icon_class;
-    private $_link;
     protected $_template = 'tree_toolbar_link.tpl';
     // @codingStandardsIgnoreEnd
 

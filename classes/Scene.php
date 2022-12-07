@@ -37,7 +37,6 @@
 class SceneCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    protected static $feature_active = null;
     /** @var string Name */
     public $name;
     /** @var bool Active Scene */

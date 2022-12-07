@@ -39,7 +39,6 @@ class PageCore extends ObjectModel
     // @codingStandardsIgnoreStart
     public $id_page_type;
     public $id_object;
-    public $name;
     // @codingStandardsIgnoreEnd
     /**
      * @see ObjectModel::$definition

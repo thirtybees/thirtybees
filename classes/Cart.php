@@ -94,7 +94,6 @@ class CartCore extends ObjectModel
     /** @var array $_totalWeight */
     protected static $_totalWeight = [];
     protected static $_carriers = null;
-    protected static $_taxes_rate = null;
     protected static $_attributesLists = [];
     /** @var Customer|null */
     protected static $_customer = null;
@@ -130,8 +129,6 @@ class CartCore extends ObjectModel
     public $date_upd;
     /** @var bool $checkedTos */
     public $checkedTos = false;
-    public $pictures;
-    public $textFields;
     public $delivery_option;
     /** @var bool Allow to seperate order in multiple package in order to recieve as soon as possible the available products */
     public $allow_seperated_package = false;

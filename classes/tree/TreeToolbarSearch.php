@@ -34,8 +34,7 @@
  *
  * @since 1.0.0
  */
-class TreeToolbarSearchCore extends TreeToolbarButtonCore implements
-    ITreeToolbarButtonCore
+class TreeToolbarSearchCore extends TreeToolbarButtonCore implements ITreeToolbarButtonCore
 {
     // @codingStandardsIgnoreStart
     protected $_template = 'tree_toolbar_search.tpl';

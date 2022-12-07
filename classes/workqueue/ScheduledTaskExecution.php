@@ -19,7 +19,6 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
-use Exceptin;
 use ObjectModel;
 
 /**

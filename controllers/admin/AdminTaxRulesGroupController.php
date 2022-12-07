@@ -40,7 +40,6 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     public $tax_rule;
     public $selected_countries = [];
     public $selected_states = [];
-    public $errors_tax_rule;
     // @codingStandardsIgnoreEnd
 
     /**

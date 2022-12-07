@@ -19031,7 +19031,7 @@ class PDFGeneratorCore extends TCPDF
     public $footer;
     public $pagination;
     public $content;
-    public $font; // end of encoding maps
+    public $font;
     public $font_by_lang = [
         'ja' => 'cid0jp',
         'bg' => 'freeserif',

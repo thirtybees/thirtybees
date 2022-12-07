@@ -38,11 +38,7 @@ abstract class TreeToolbarButtonCore
 
     // @codingStandardsIgnoreStart
     protected $_attributes;
-    private $_class;
     private $_context;
-    private $_id;
-    private $_label;
-    private $_name;
     protected $_template;
     protected $_template_directory;
     // @codingStandardsIgnoreEnd

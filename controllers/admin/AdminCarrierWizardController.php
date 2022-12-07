@@ -36,8 +36,6 @@
  */
 class AdminCarrierWizardControllerCore extends AdminController
 {
-    protected $wizard_access;
-
     /**
      * AdminCarrierWizardControllerCore constructor.
      *

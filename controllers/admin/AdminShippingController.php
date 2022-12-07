@@ -37,7 +37,6 @@
 class AdminShippingControllerCore extends AdminController
 {
     // @codingStandardsIgnoreStart
-    protected $_fieldsHandling;
     // @codingStandardsIgnoreEnd
 
     /**
