@@ -45,14 +45,6 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
     public $databasePassword;
     public $databasePrefix;
     public $databaseClear;
-    public $useSmtp;
-    public $smtpEncryption;
-    public $smtpPort;
-
-    /**
-     * @var InstallModelMail
-     */
-    public $modelMail;
 
     public function init()
     {
@@ -168,9 +160,6 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
             }
 
             $this->databaseClear = true;
-            $this->useSmtp = false;
-            $this->smtpEncryption = 'off';
-            $this->smtpPort = 25;
         } else {
             $this->databaseServer = $this->session->databaseServer;
             $this->databaseName = $this->session->databaseName;
@@ -178,10 +167,6 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
             $this->databasePassword = $this->session->databasePassword;
             $this->databasePrefix = $this->session->databasePrefix;
             $this->databaseClear = $this->session->databaseClear;
-
-            $this->useSmtp = $this->session->useSmtp;
-            $this->smtpEncryption = $this->session->smtpEncryption;
-            $this->smtpPort = $this->session->smtpPort;
         }
 
         $this->displayTemplate('database');

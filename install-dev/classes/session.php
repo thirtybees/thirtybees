@@ -48,10 +48,6 @@
  * @property string databasePrefix
  * @property boolean databaseClear
  *
- * @property boolean useSmtp
- * @property boolean smtpEncryption
- * @property int smtpPort
- *
  * @property string shopName
  * @property string shopActivity
  * @property string shopCountry

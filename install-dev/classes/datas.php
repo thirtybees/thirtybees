@@ -148,11 +148,6 @@ class Datas
             'default' => 0,
             'help'    => 'show thirty bees license',
         ],
-        'sendEmail'        => [
-            'name'    => 'send_email',
-            'default' => 1,
-            'help'    => 'send an email to the administrator after installation',
-        ],
     ];
 
     /**
@@ -259,11 +254,6 @@ class Datas
      * @var bool
      */
     public $showLicense;
-
-    /**
-     * @var bool
-     */
-    public $sendEmail;
 
     /**
      * @param string[] $argv

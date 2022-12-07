@@ -620,9 +620,6 @@ class InstallModelInstall extends InstallAbstractModel
             'shopActivity'   => '',
             'shopCountry'    => 'us',
             'shopTimezone'   => 'US/Eastern',
-            'useSmtp'        => false,
-            'smtpEncryption' => 'off',
-            'smtpPort'       => 25,
             'rewriteEngine'  => false,
         ];
 
@@ -650,9 +647,9 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configurationAgreement']);
 
         // Set mails configuration
-        Configuration::updateGlobalValue('PS_MAIL_METHOD', ($data['useSmtp']) ? Mail::MAIL_METHOD_SMTP : Mail::MAIL_METHOD_MAIL);
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', $data['smtpEncryption']);
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', $data['smtpPort']);
+        Configuration::updateGlobalValue('PS_MAIL_METHOD', Mail::MAIL_METHOD_MAIL);
+        Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', 'off');
+        Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', 25);
 
         // Set default rewriting settings
         Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewriteEngine']);

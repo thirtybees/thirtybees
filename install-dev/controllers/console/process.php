@@ -134,12 +134,6 @@ class InstallControllerConsoleProcess
                 $this->printErrors();
             }
         }
-
-        if ($this->datas->sendEmail) {
-            if (!$this->processSendEmail()) {
-                $this->printErrors();
-            }
-        }
     }
 
     /**
@@ -285,7 +279,6 @@ class InstallControllerConsoleProcess
                 'shopActivity'           => $this->datas->shopActivity,
                 'shopCountry'            => $this->datas->shopCountry,
                 'shopTimezone'           => $this->datas->timezone,
-                'useSmtp'                => false,
                 'adminFirstname'         => $this->datas->adminFirstname,
                 'adminLastname'          => $this->datas->adminLastname,
                 'adminPassword'          => $this->datas->adminPassword,
@@ -360,52 +353,6 @@ class InstallControllerConsoleProcess
         $this->initializeContext();
 
         return $this->modelInstall->installTheme();
-    }
-
-    /**
-     * PROCESS : sendEmail
-     * Send information e-mail
-     *
-     * @return bool
-     *
-     * @throws PrestaShopException
-     * @throws PrestashopInstallerException
-     */
-    public function processSendEmail()
-    {
-        require_once _PS_INSTALL_MODELS_PATH_.'mail.php';
-        $mail = new InstallModelMail(
-            false,
-            $this->datas->smtpServer,
-            $this->datas->smtpLogin,
-            $this->datas->smtpPassword,
-            $this->datas->smtpPort,
-            $this->datas->smtpEncryption,
-            $this->datas->adminEmail
-        );
-
-        if (file_exists(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt')) {
-            $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt');
-        } else {
-            $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.InstallLanguages::DEFAULT_ISO.'/mail_identifiers.txt');
-        }
-
-        $vars = [
-            '{firstname}' => $this->datas->adminFirstname,
-            '{lastname}'  => $this->datas->adminLastname,
-            '{shop_name}' => $this->datas->shopName,
-            '{passwd}'    => $this->datas->adminPassword,
-            '{email}'     => $this->datas->adminEmail,
-            '{shop_url}'  => Tools::getHttpHost(true).__PS_BASE_URI__,
-        ];
-        $content = str_replace(array_keys($vars), array_values($vars), $content);
-
-        $mail->send(
-            $this->l('%s Login information', $this->datas->shopName),
-            $content
-        );
-
-        return true;
     }
 
     /**
