@@ -106,10 +106,9 @@ class ErrorDescriptionCore
     public function __construct()
     {
         $this->phpVersion = phpversion();
-        $this->codeBuildFor = _TB_BUILD_PHP_;
-        $this->codeRevision = _TB_REVISION_;
+        $this->codeBuildFor = static::resolveCodeBuildFor();
+        $this->codeRevision = static::resolveCodeRevision();
     }
-
 
     /**
      * @param string $errorName
@@ -507,5 +506,33 @@ class ErrorDescriptionCore
             throw new \PrestaShopException("Missing key '$name'");
         }
         return $default;
+    }
+
+    /**
+     * @return string
+     */
+    protected static function resolveCodeBuildFor()
+    {
+        if (defined('_TB_BUILD_PHP_')) {
+            return _TB_BUILD_PHP_;
+        }
+        if (defined('_TB_INSTALL_BUILD_PHP_')) {
+            return _TB_INSTALL_BUILD_PHP_;
+        }
+        return 'unknown';
+    }
+
+    /**
+     * @return string
+     */
+    protected static function resolveCodeRevision()
+    {
+        if (defined('_TB_REVISION_')) {
+            return _TB_REVISION_;
+        }
+        if (defined('_TB_INSTALL_REVISION_')) {
+            return _TB_INSTALL_REVISION_;
+        }
+        return 'unknown';
     }
 }
