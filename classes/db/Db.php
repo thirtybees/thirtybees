@@ -721,13 +721,17 @@ abstract class DbCore
 
         // This method must be used only with queries which display results
         if (! preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
-            $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
-            $error = 'Db::executeS method should be used for SELECT queries only. ';
-            $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
-            $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
-            $error .= 'Illegal SQL: [' . $sql . ']';
-            trigger_error($error, E_USER_DEPRECATED);
-            return $this->execute($sql, $useCache);
+            if ($this->throwOnError) {
+                throw new PrestaShopDatabaseException("Db::executeS method should be used for SELECT queries only.", $sql);
+            } else {
+                $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
+                $error = 'Db::executeS method should be used for SELECT queries only. ';
+                $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
+                $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
+                $error .= 'Illegal SQL: [' . $sql . ']';
+                trigger_error($error, E_USER_DEPRECATED);
+                return $this->execute($sql, $useCache);
+            }
         }
 
         $this->result = $this->query($sql);
