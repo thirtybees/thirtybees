@@ -2567,15 +2567,6 @@ CREATE TABLE `PREFIX_tab_lang` (
   PRIMARY KEY (`id_tab`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `PREFIX_tab_module_preference` (
-  `id_tab_module_preference` int(11) NOT NULL AUTO_INCREMENT,
-  `id_employee` int(11) NOT NULL,
-  `id_tab` int(11) NOT NULL,
-  `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_tab_module_preference`),
-  UNIQUE KEY `employee_module` (`id_employee`,`id_tab`,`module`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE `PREFIX_tag` (
   `id_tag` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_lang` int(11) unsigned NOT NULL,

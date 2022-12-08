@@ -301,23 +301,12 @@ class AdminModulesControllerCore extends AdminController
 
         // Retrieve Modules Preferences
         $modulesPreferences = [];
-        $tabModulesPreferences = [];
         $modulesPreferencesTmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
             ->select('*')
             ->from('module_preference')
             ->where('`id_employee` = '.(int) $this->id_employee)
         );
-        $tabModulesPreferencesTmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-            ->select('*')
-            ->from('tab_module_preference')
-            ->where('`id_employee` = '.(int) $this->employee)
-        );
-
-        foreach ($tabModulesPreferencesTmp as $i => $j) {
-            $tabModulesPreferences[$j['module']][] = $j['id_tab'];
-        }
 
         foreach ($modulesPreferencesTmp as $k => $v) {
             if ($v['interest'] == null) {
@@ -516,7 +505,6 @@ class AdminModulesControllerCore extends AdminController
             'list_modules_categories'   => $cleanedList,
             'list_modules_authors'      => $this->modules_authors,
             'add_permission'            => $this->tabAccess['add'],
-            'tab_modules_preferences'   => $tabModulesPreferences,
             'kpis'                      => $this->renderKpis(),
             'module_name'               => Tools::getValue('module_name'),
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
@@ -974,33 +962,6 @@ class AdminModulesControllerCore extends AdminController
                 $insert['favorite'] = ($value == '' ? null : (int) $value);
             }
             Db::getInstance()->insert('module_preference', $insert, true);
-        }
-        $this->ajaxDie('OK');
-    }
-
-    /**
-     * Ajax process save tab module preferences
-     *
-     * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function ajaxProcessSaveTabModulePreferences()
-    {
-        $values = Tools::getValue('value_pref');
-        $module = Tools::getValue('module_pref');
-        if (Validate::isModuleName($module)) {
-            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'tab_module_preference` WHERE `id_employee` = '.(int) $this->id_employee.' AND `module` = \''.pSQL($module).'\'');
-            if (is_array($values) && count($values)) {
-                foreach ($values as $value) {
-                    Db::getInstance()->execute(
-                        '
-                        INSERT INTO `'._DB_PREFIX_.'tab_module_preference` (`id_tab_module_preference`, `id_employee`, `id_tab`, `module`)
-                        VALUES (NULL, '.(int) $this->id_employee.', '.(int) $value.', \''.pSQL($module).'\');'
-                    );
-                }
-            }
         }
         $this->ajaxDie('OK');
     }

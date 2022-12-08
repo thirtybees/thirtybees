@@ -1115,22 +1115,6 @@ class CoreModelsCore
             ],
         ];
 
-        $tabModulePreference = [
-            'table' => 'tab_module_preference',
-            'primary' => 'id_tab_module_preference',
-            'primaryKeyDbType' => 'int(11)',
-            'fields' => [
-                'id_employee'              => ['type' => ObjectModel::TYPE_INT, 'dbType' => 'int(11)', 'required' => true],
-                'id_tab'                   => ['type' => ObjectModel::TYPE_INT, 'dbType' => 'int(11)', 'required' => true],
-                'module'                   => ['type' => ObjectModel::TYPE_STRING, 'size' => 64, 'required' => true],
-            ],
-            'keys' => [
-                'tab_module_preference' => [
-                    'employee_module' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_employee', 'id_tab', 'module']],
-                ],
-            ],
-        ];
-
         $tagCount = [
             'table' => 'tag_count',
             'fields' => [
@@ -1310,7 +1294,6 @@ class CoreModelsCore
             'SpecificPricePriority' => $specificPricePriority,
             'SpecificPriceRuleCondition' => $specificPriceRuleCondition,
             'SpecificPriceRuleConditionGroup' => $specificPriceRuleConditionGroup,
-            'TabModulePreference' => $tabModulePreference,
             'TagCount' => $tagCount,
             'ThemeMeta' => $themeMeta,
             'ThemeSpecific' => $themeSpecific,

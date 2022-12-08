@@ -215,31 +215,6 @@
 			setFilter(); 
 		});
 
-		$('.moduleTabPreferencesChoise').change(function()
-		{			
-			var value_pref = $(this).val();
-			var module_pref = $(this).attr('name');
-			module_pref = module_pref.substring(2, module_pref.length);
-
-			$.ajax({
-				type:"POST",
-				url : ajaxCurrentIndex,
-				async: true,
-				data : {
-					ajax : "1",
-					token : token,
-					controller : "AdminModules",
-					action : "saveTabModulePreferences",
-					module_pref : module_pref,
-					value_pref : value_pref
-				},
-				success : function(data){
-					if (data == 'OK')
-						showSuccessMessage(confirmPreferencesSaved);
-				}
-			});
-		});
-		
 		// Method to save favorites preferences
 		$('.moduleFavorite').change(function()
 		{
