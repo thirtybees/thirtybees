@@ -1774,7 +1774,6 @@ class AdminThemesControllerCore extends AdminController
         $helper->toolbar_btn = $toolbarBtn;
         $helper->fields_value['themearchiveUrl'] = '';
         $helper->fields_value['theme_archive_server'] = [];
-        $helper->multiple_fieldsets = true;
         $helper->override_folder = $this->tpl_folder;
         $helper->languages = $this->getLanguages();
         $helper->default_form_language = (int) $this->context->language->id;
