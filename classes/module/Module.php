@@ -105,8 +105,8 @@ abstract class ModuleCore
     public $avg_rate;
     /** @var array $badges */
     public $badges;
-    /** @var int need_instance */
-    public $need_instance = 1;
+    /** @var bool need_instance */
+    public $need_instance = true;
     /** @var string Admin tab corresponding to the module */
     public $tab = null;
     /** @var bool Status */
@@ -827,7 +827,7 @@ abstract class ModuleCore
                 }
                 libxml_clear_errors();
 
-                // If no errors in Xml, no need instand and no need new config.xml file, we load only translations
+                // If no errors in Xml, no need instance and no need new config.xml file, we load only translations
                 if (!count($errors) && (int) $xmlModule->need_instance == 0) {
                     $file = _PS_MODULE_DIR_.$module.'/'.Context::getContext()->language->iso_code.'.php';
                     if (file_exists($file) && include_once($file)) {
@@ -909,8 +909,8 @@ abstract class ModuleCore
                         'author_uri'             => (isset($tmpModule->author_uri) && $tmpModule->author_uri) ? $tmpModule->author_uri : false,
                         'limited_countries'      => $tmpModule->limited_countries,
                         'parent_class'           => get_parent_class($module),
-                        'is_configurable'        => $tmpModule->is_configurable = method_exists($tmpModule, 'getContent') ? 1 : 0,
-                        'need_instance'          => $tmpModule->need_instance ?? 0,
+                        'is_configurable'        => $tmpModule->isModuleConfigurable(),
+                        'need_instance'          => $tmpModule->need_instance,
                         'active'                 => $tmpModule->active,
                         'trusted'                => true,
                         'currencies'             => $tmpModule->currencies ?? null,
@@ -3455,10 +3455,6 @@ abstract class ModuleCore
             if (isset($this->author_uri)) {
                 $authorUri = $this->author_uri;
             }
-            $isConfigurable = 0;
-            if (isset($this->is_configurable)) {
-                $isConfigurable = (int)$this->is_configurable;
-            }
             $limitedCountries = '';
             if (count($this->limited_countries) == 1) {
                 $limitedCountries = $this->limited_countries[0];
@@ -3473,10 +3469,14 @@ abstract class ModuleCore
                          'author_uri' => $authorUri,
                          'tab' => $this->tab,
                          'confirmUninstall' => $this->confirmUninstall,
-                         'is_configurable' => $isConfigurable,
+                         'is_configurable' => $this->isModuleConfigurable(),
                          'need_instance' => $this->need_instance,
                          'limited_countries' => $limitedCountries,
-                     ] as $node => $value) {
+                     ] as $node => $value)
+            {
+                if (is_bool($value)) {
+                    $value = (int)$value;
+                }
                 if (is_string($value) && strlen($value)) {
                     $element = $xml->createElement($node);
                     $element->appendChild($xml->createCDATASection($value));
@@ -3583,6 +3583,18 @@ abstract class ModuleCore
         return array_filter($contentLines, function($line) {
             return !preg_match("/^\s*$/", $line);
         });
+    }
+
+    /**
+     * Returns true if module can be configured
+     *
+     * Module can be configured if it implements method getContent()
+     *
+     * @return bool
+     */
+    public function isModuleConfigurable()
+    {
+        return method_exists($this, 'getContent');
     }
 }
 

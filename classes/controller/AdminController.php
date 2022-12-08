@@ -3417,7 +3417,7 @@ class AdminControllerCore extends Controller
             'onclick' => $onclickOptions['configure'],
             'title'   => '',
             'text'    => $this->translationsTab['Configure'],
-            'cond'    => $module->id && isset($module->is_configurable) && $module->is_configurable,
+            'cond'    => $module->id && $module->is_configurable,
             'icon'    => 'wrench',
         ];
 
