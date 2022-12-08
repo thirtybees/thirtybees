@@ -264,14 +264,7 @@ class AdminLoginControllerCore extends AdminController
                 }
 
                 $cookie->write();
-
-                // If there is a valid controller name submitted, redirect to it
-                if (isset($_POST['redirect']) && Validate::isControllerName($_POST['redirect'])) {
-                    $url = $this->context->link->getAdminLink($_POST['redirect']);
-                } else {
-                    $tab = new Tab((int) $this->context->employee->default_tab);
-                    $url = $this->context->link->getAdminLink($tab->class_name);
-                }
+                $url = static::getAdminDefaultTab($this->context->link, $this->context->employee);
 
                 if (Tools::isSubmit('ajax')) {
                     $this->ajaxDie(json_encode(['hasErrors' => false, 'redirect' => $url]));
@@ -342,5 +335,40 @@ class AdminLoginControllerCore extends AdminController
         } elseif (Tools::isSubmit('ajax')) {
             $this->ajaxDie(json_encode(['hasErrors' => true, 'errors' => $this->errors]));
         }
+    }
+
+    /**
+     * Get url to admin page that should be displayed after login
+     *
+     * @param Link $link
+     * @param Employee $employee
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getAdminDefaultTab(Link $link, Employee $employee): string
+    {
+        $url = null;
+
+        // if valid redirect was passed, use it
+        $redirect = Tools::getValue('redirect');
+        if ($redirect && Validate::isControllerName($_POST['redirect'])) {
+            $url = $link->getAdminLink($_POST['redirect']);
+        }
+
+        if (! $url && Validate::isLoadedObject($employee)) {
+            $tab = new Tab((int)$employee->default_tab);
+            if (Validate::isLoadedObject($tab)) {
+                $url = $link->getAdminLink($tab->class_name);
+            }
+        }
+
+        if (! $url) {
+            $url = $link->getAdminLink('AdminDashboard');
+        }
+
+        return $url;
     }
 }
