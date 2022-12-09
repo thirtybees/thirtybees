@@ -2751,10 +2751,8 @@ abstract class ModuleCore
             $output .= $error;
         }
 
-        // Close div openned previously
+        // Close div opened previously
         $output .= '</div></div>';
-
-        $this->error = true;
 
         return $output;
     }
