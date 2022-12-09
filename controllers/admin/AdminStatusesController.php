@@ -625,6 +625,7 @@ class AdminStatusesControllerCore extends AdminController
             'pdf_delivery_on' => $this->getFieldValue($obj, 'pdf_delivery'),
             'pdf_invoice_on'  => $this->getFieldValue($obj, 'pdf_invoice'),
             'active_on'       => $this->getFieldValue($obj, 'active'),
+            'icon'            => false,
         ];
 
         if ($this->getFieldValue($obj, 'color') !== false) {
