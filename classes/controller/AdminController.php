@@ -3391,7 +3391,7 @@ class AdminControllerCore extends Controller
             'uninstall' =>  'return confirm(\''.$this->translationsTab['confirm_uninstall_popup'].'\');',
         ];
 
-        if (Validate::isModuleName($module->name)) {
+        if (Validate::isModuleName($module->name) && Module::isEnabled($module->name)) {
             $instance = Module::getInstanceByName($module->name);
             if ($instance) {
                 // check if module has reset capability
