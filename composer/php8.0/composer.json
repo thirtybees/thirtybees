@@ -18,19 +18,22 @@
         "jaybizzle/crawler-detect": "^1.2"
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^2.5.2",
         "phpunit/phpunit": "^9.0",
-        "codeception/codeception": "^4.2",
-        "codeception/aspect-mock": "^1.0 || ^2.0",
-        "codeception/module-asserts": "^2.0",
-        "codeception/module-webdriver": "^2.0",
-        "codeception/module-db": "^2.0",
-        "codeception/module-phpbrowser": "^2.0"
+        "codeception/codeception": "^5.0",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-webdriver": "^3.0",
+        "codeception/module-db": "^3.0",
+        "codeception/module-phpbrowser": "^3.0"
     },
     "config": {
         "platform": {
             "php": "8.0"
         },
         "autoloader-suffix": "ThirtybeesVendor"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     }
 }

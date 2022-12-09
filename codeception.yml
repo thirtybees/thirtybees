@@ -1,10 +1,12 @@
-actor: Tester
+namespace: Tests
+support_namespace: Support
 paths:
     tests: tests
-    log: tests/_output
-    data: tests/_data
-    support: tests/_support
+    output: tests/_output
+    data: tests/Support/Data
+    support: tests/Support
     envs: tests/_envs
+actor_suffix: Tester
 settings:
     colors: true
     memory_limit: 1280M
@@ -27,12 +29,3 @@ modules:
             window_size: 1920x1080
         PhpBrowser:
             url: 'http://thirty.bees:8888'
-coverage:
-    enabled: true
-    remote: false
-    include:
-        - classes/*
-        - controllers/*
-    low_limit: 30
-    high_limit: 70
-

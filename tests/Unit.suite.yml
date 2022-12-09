@@ -1,0 +1,10 @@
+# Codeception Test Suite Configuration
+#
+# Suite for unit (internal) tests.
+
+actor: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - Tests\Support\Helper\Unit
+bootstrap: _bootstrap.php
