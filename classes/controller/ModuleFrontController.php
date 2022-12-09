@@ -34,7 +34,9 @@
  */
 class ModuleFrontControllerCore extends FrontController
 {
-    /** @var Module $module */
+    /**
+     * @var Module $module
+     */
     public $module;
 
     /**
@@ -55,13 +57,14 @@ class ModuleFrontControllerCore extends FrontController
 
         $this->controller_type = 'modulefront';
 
-        $inBase = isset($this->page_name) && is_object($this->context->theme) && $this->context->theme->hasColumnsSettings($this->page_name);
-
-        $tmp = isset($this->display_column_left) ? (bool) $this->display_column_left : true;
-        $this->display_column_left = $inBase ? $this->context->theme->hasLeftColumn($this->page_name) : $tmp;
-
-        $tmp = isset($this->display_column_right) ? (bool) $this->display_column_right : true;
-        $this->display_column_right = $inBase ? $this->context->theme->hasRightColumn($this->page_name) : $tmp;
+        $theme = $this->context->theme;
+        if ($this->page_name && Validate::isLoadedObject($theme) && $theme->hasColumnsSettings($this->page_name)) {
+            $this->display_column_left = $theme->hasLeftColumn($this->page_name);
+            $this->display_column_right = $theme->hasRightColumn($this->page_name);
+        } else {
+            $this->display_column_left = $this->display_column_left ?? true;
+            $this->display_column_right = $this->display_column_right ?? true;
+        }
     }
 
     /**

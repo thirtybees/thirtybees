@@ -109,6 +109,12 @@ class FrontControllerCore extends Controller
     public $display_column_right = true;
     /** @var int */
     public $nb_items_per_page;
+
+    /**
+     * @var string|null Controller rewrite name
+     */
+    public $page_name = null;
+
     /** @var bool If true, switches display to restricted country page during init. */
     protected $restrictedCountry = false;
     /** @var bool If true, forces display to maintenance page. */
