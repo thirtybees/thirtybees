@@ -2538,26 +2538,23 @@
         },
         {
             "name": "codeception/module-db",
-            "version": "2.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/module-db.git",
-                "reference": "024505fff8faf6825478003151ad97c0fe46a942"
+                "reference": "65c5ed9d56825e419ea9954eaf8fdcaf7da5b5ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-db/zipball/024505fff8faf6825478003151ad97c0fe46a942",
-                "reference": "024505fff8faf6825478003151ad97c0fe46a942",
+                "url": "https://api.github.com/repos/Codeception/module-db/zipball/65c5ed9d56825e419ea9954eaf8fdcaf7da5b5ed",
+                "reference": "65c5ed9d56825e419ea9954eaf8fdcaf7da5b5ed",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "*@dev",
+                "codeception/codeception": "^4.1",
                 "ext-json": "*",
                 "ext-pdo": "*",
                 "php": "^7.4 | ^8.0"
-            },
-            "conflict": {
-                "codeception/codeception": "<4.0"
             },
             "type": "library",
             "autoload": {
@@ -2586,9 +2583,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/module-db/issues",
-                "source": "https://github.com/Codeception/module-db/tree/2.0.2"
+                "source": "https://github.com/Codeception/module-db/tree/2.1.0"
             },
-            "time": "2022-03-05T19:30:01+00:00"
+            "time": "2022-12-03T09:54:05+00:00"
         },
         {
             "name": "codeception/module-phpbrowser",
