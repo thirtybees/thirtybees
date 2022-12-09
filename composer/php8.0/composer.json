@@ -1,7 +1,7 @@
 {
     "require": {
         "php": "^8.0",
-        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/guzzle": "^7.5",
         "swiftmailer/swiftmailer": "~5.4",
         "tecnickcom/tcpdf": "~6.2",
         "ezyang/htmlpurifier": "^4.8",
