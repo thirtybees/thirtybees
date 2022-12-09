@@ -2397,14 +2397,24 @@ class ToolsCore
     }
 
     /**
+     * Convert the first character of each word to uppercase, and all other characters to lowercase.
+     *
+     * Difference between this function and php ucwords function is that this method also converts
+     * other characters to lowercase.
+     *
+     * Example:
+     *
+     *     ucwords('heLLo thEre');        // HeLLo ThEre
+     *     Tools::ucwords('heLLo thEre'); // Hello There
+     *
      * @param string $str
      *
      * @return string
-     *
-     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function ucwords($str)
     {
+        $str = (string)$str;
+
         if (function_exists('mb_convert_case')) {
             return mb_convert_case($str, MB_CASE_TITLE);
         }
