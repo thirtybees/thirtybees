@@ -64,7 +64,7 @@ class StockManagerCore implements StockManagerInterface
      * @param int $idProductAttribute
      * @param Warehouse $warehouse
      * @param int $quantity
-     * @param int $idStockMvtReason
+     * @param int|null $idStockMvtReason
      * @param float $priceTe
      * @param bool $isUsable
      * @param int|null $idSupplyOrder
@@ -629,9 +629,9 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param int $idsWarehouse
+     * @param int|int[]|null $idsWarehouse
      *
-     * @return array
+     * @return int[]
      */
     public function normalizeWarehouseIds($idsWarehouse)
     {
@@ -648,7 +648,15 @@ class StockManagerCore implements StockManagerInterface
         return $normalizedWarehouseIds;
     }
 
+
     /**
+     * @param int $idProduct
+     * @param int|null $idProductAttribute
+     * @param array|int $idsWarehouse
+     * @param bool $usable
+     *
+     * @return float|int|mixed
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getProductRealQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false)

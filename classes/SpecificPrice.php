@@ -272,10 +272,10 @@ class SpecificPriceCore extends ObjectModel
     /**
      * Remove or add useless fields value depending on the values in the database (cache friendly)
      *
-     * @param int $idProduct
-     * @param int $idProductAttribute
-     * @param int $idCustomer
-     * @param int $idCart
+     * @param int|null $idProduct
+     * @param int|null $idProductAttribute
+     * @param int|null $idCustomer
+     * @param int|null $idCart
      * @param string|null $beginning
      * @param string|null $ending
      *

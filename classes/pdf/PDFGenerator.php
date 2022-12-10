@@ -19959,7 +19959,7 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Swap X and Y coordinates of page boxes (change page boxes orientation).
      *
-     * @param int int $page page number
+     * @param int $page page number
      *
      * @return array array of page dimensions.
      */

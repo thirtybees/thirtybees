@@ -554,7 +554,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * For a given {product, warehouse}, gets the carrier available
      *
      * @param Product $product The id of the product, or an array with at least the package size and weight
-     * @param int $idWarehouse
+     * @param int|null $idWarehouse
      * @param int $idAddressDelivery
      * @param int $idShop
      * @param Cart $cart

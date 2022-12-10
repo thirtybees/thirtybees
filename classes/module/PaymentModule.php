@@ -1138,7 +1138,7 @@ abstract class PaymentModuleCore extends Module
 
     /**
      * @param Address $theAddress
-     * @param Object Address $the_address that needs to be txt formated
+     * @param string $lineSep Address $the_address that needs to be txt formatted
      * @param array $fieldsStyle
      * @return String the txt formated address block
      *
@@ -1203,7 +1203,7 @@ abstract class PaymentModuleCore extends Module
     }
 
     /**
-     * @param Object Address $the_address that needs to be txt formated
+     * @param Object $theAddress Address $the_address that needs to be txt formated
      *
      * @return String the txt formated address block
      *

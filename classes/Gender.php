@@ -125,7 +125,7 @@ class GenderCore extends ObjectModel
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @return string
      */
     protected static function getGenderImage($id)

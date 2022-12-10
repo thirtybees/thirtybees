@@ -6171,7 +6171,8 @@ class AdminProductsControllerCore extends AdminController
      * Display preview link
      *
      * @param string $token
-     * @param intid * @param string|null $name
+     * @param int $id
+     * @param string|null $name
      *
      * @return string
      *

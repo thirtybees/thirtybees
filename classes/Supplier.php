@@ -288,9 +288,9 @@ class SupplierCore extends ObjectModel
 
     /**
      * @param int $idSupplier
-     * @param int $idLang
-     * @param int $p
-     * @param int $n
+     * @param int|null $idLang
+     * @param int|null $p
+     * @param int|null $n
      * @param string|null $orderBy
      * @param string|null $orderWay
      * @param bool $getTotal

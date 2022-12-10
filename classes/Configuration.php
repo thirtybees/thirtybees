@@ -488,9 +488,9 @@ class ConfigurationCore extends ObjectModel
      * Check if key exists in configuration
      *
      * @param string $key
-     * @param int $idLang
-     * @param int $idShopGroup
-     * @param int $idShop
+     * @param int|null $idLang
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return bool
      *
@@ -951,7 +951,7 @@ class ConfigurationCore extends ObjectModel
      * Check if configuration var is defined in given context
      *
      * @param string $key
-     * @param int $idLang
+     * @param int|null $idLang
      * @param int $context
      *
      * @throws PrestaShopDatabaseException

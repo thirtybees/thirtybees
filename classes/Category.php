@@ -1812,9 +1812,9 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * Returns category products
      *
-     * @param int $idLang Language ID
-     * @param int $p Page number
-     * @param int $n Number of products per page
+     * @param int|null $idLang Language ID
+     * @param int|null $p Page number
+     * @param int|null $n Number of products per page
      * @param string|null $orderBy ORDER BY column
      * @param string|null $orderWay Order way
      * @param bool $getTotal If set to true, returns the total number of results only

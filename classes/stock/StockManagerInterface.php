@@ -48,10 +48,10 @@ interface StockManagerInterface
      * @param int $idProductAttribute
      * @param Warehouse $warehouse
      * @param int $quantity
-     * @param int $idStockMovementReason
+     * @param int|null $idStockMovementReason
      * @param float $priceTe
      * @param bool $isUsable
-     * @param int $idSupplyOrder optionnal
+     * @param int $idSupplyOrder optional
      *
      * @return bool
      */
@@ -106,7 +106,7 @@ interface StockManagerInterface
      * If $usable is defined, real quantity: usable_qty + supply_orders_qty - client_orders_qty
      *
      * @param int $idProduct
-     * @param int $idProductAttribute
+     * @param int|null $idProductAttribute
      * @param array|int $idsWarehouse optional
      * @param bool $usable false by default
      *

@@ -1007,7 +1007,7 @@ class ProductCore extends ObjectModel
      * @param bool $withEcotax insert ecotax in price output.
      * @param array|null $specificPrice If a specific price applies regarding the previous parameters,
      *                                   this variable is filled with the corresponding SpecificPrice object
-     * @param bool $useGroupReduction
+     * @param bool|null $useGroupReduction
      * @param int $idCustomer
      * @param bool $useCustomerPrice
      * @param int $idCart
@@ -5092,7 +5092,7 @@ class ProductCore extends ObjectModel
     /**
      * @param int $idProduct
      *
-     * @return bool|int
+     * @return int|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -5348,7 +5348,7 @@ class ProductCore extends ObjectModel
      * @param int $quantity DEPRECATED
      * @param array $idImages
      * @param string $reference
-     * @param int $idSupplier
+     * @param int|null $idSupplier
      * @param string $ean13
      * @param string $default
      * @param string|null $location
@@ -5401,7 +5401,7 @@ class ProductCore extends ObjectModel
     /**
      * Sets or updates Supplier Reference
      *
-     * @param int $idSupplier
+     * @param int|null $idSupplier
      * @param int $idProductAttribute
      * @param string $supplierReference
      * @param float $price

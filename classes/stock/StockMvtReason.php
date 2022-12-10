@@ -138,7 +138,7 @@ class StockMvtReasonCore extends ObjectModel
     /**
      * For a given id_stock_mvt_reason, tells if it exists
      *
-     * @param int $idStockMvtReason
+     * @param int|null $idStockMvtReason
      *
      * @return bool
      *

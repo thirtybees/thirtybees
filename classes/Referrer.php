@@ -286,7 +286,7 @@ class ReferrerCore extends ObjectModel
     /**
      * Get some statistics on visitors connection for current referrer
      *
-     * @param int $idProduct
+     * @param int|null $idProduct
      * @param Employee $employee
      *
      * @return array|bool|null|object
@@ -322,7 +322,7 @@ class ReferrerCore extends ObjectModel
     /**
      * Get some statistics on customers registrations for current referrer
      *
-     * @param int $idProduct
+     * @param int|null $idProduct
      * @param Employee $employee
      *
      * @return int
@@ -358,7 +358,7 @@ class ReferrerCore extends ObjectModel
     /**
      * Get some statistics on orders for current referrer
      *
-     * @param int $idProduct
+     * @param int|null $idProduct
      * @param Employee $employee
      *
      * @return array|bool|null|object

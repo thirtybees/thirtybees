@@ -142,7 +142,7 @@ class ImageCore extends ObjectModel
     /**
      * Return available images for a product
      *
-     * @param int $idLang Language ID. Null/0/false = all languages.
+     * @param int|null $idLang Language ID. Null/0/false = all languages.
      * @param int $idProduct Product ID
      * @param int $idProductAttribute Product Attribute ID
      *

@@ -1266,7 +1266,7 @@ class CartCore extends ObjectModel
     /**
      * Set the delivery option and id_carrier, if there is only one carrier
      *
-     * @param array ?null $deliveryOption
+     * @param array|null $deliveryOption
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

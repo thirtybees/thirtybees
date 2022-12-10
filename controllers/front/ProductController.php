@@ -612,7 +612,7 @@ class ProductControllerCore extends FrontController
      * Format quantity discounts
      *
      * @param array $specificPrices
-     * @param float $price
+     * @param float|null $price unused
      * @param float $taxRate
      * @param float $ecotaxAmount
      *
