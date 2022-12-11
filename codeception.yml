@@ -9,6 +9,7 @@ paths:
 actor_suffix: Tester
 settings:
     colors: true
+    error_level: E_ALL | E_STRICT
     memory_limit: 1280M
 bootstrap: _bootstrap.php
 extensions:
