@@ -2572,7 +2572,7 @@ class ToolsCore
             ]);
             try {
                 $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return null;
             }
             Cache::store($cache_id, $result);
@@ -2614,7 +2614,7 @@ class ToolsCore
 
         try {
             $guzzle->get($source, ['sink' => $destination]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
 

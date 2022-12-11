@@ -456,7 +456,7 @@ class LanguageCore extends ObjectModel
 
         try {
             $langPackLink = (string) $guzzle->get("{$iso}.json")->getBody();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $langPackLink = false;
             $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
             $errors[] = sprintf(
@@ -483,7 +483,7 @@ class LanguageCore extends ObjectModel
             try {
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
                 $success = true;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $success = false;
                 $errors[] = Tools::displayError('No translations pack available for your version.');
                 $errors[] = sprintf(
@@ -589,7 +589,7 @@ class LanguageCore extends ObjectModel
             try {
                 $lowerIso = mb_strtolower($isoCode);
                 $langPack = json_decode((string) $guzzle->get("{$lowerIso}.json")->getBody());
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $langPack = false;
             }
         }

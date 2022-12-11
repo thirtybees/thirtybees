@@ -2452,7 +2452,7 @@ class AdminThemesControllerCore extends AdminController
                 'verify'      => Configuration::getSslTrustStore(),
                 'timeout'     => 20,
             ]))->get('https://raw.githubusercontent.com/thirtybees/favicons/master/template.html')->getBody();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->ajaxDie(json_encode([
                 'hasError' => true,
                 'error'    => $e->getMessage(),

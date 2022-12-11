@@ -19,6 +19,8 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
+use Throwable;
+
 /**
  * Class WorkQueueTaskCallable
  */
@@ -29,6 +31,8 @@ interface WorkQueueTaskCallable
      * @param array $parameters
      *
      * @return mixed
+     *
+     * @throws Throwable
      */
     public function execute(WorkQueueContext $context, array $parameters);
 }

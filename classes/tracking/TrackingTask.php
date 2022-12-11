@@ -19,10 +19,10 @@
 
 namespace Thirtybees\Core\Tracking;
 
-
 use Configuration;
 use Db;
-use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Thirtybees\Core\InitializationCallback;
@@ -50,13 +50,13 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
      * @return string
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
+     * @throws GuzzleException
      */
     public function execute(WorkQueueContext $context, array $parameters)
     {
         $allowedExtractors = Consent::getAllowedExtractors();
         $dataset = [];
         foreach ($allowedExtractors as $extractorId) {
-            /** @var DataExtractor $extractor */
             $extractor = DataExtractor::getExtractor($extractorId);
             $value = $extractor->extractValue();
             if ($this->valueChanged($extractor, $value)) {
@@ -92,11 +92,13 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
      * Sends payload with collected information to thirty bees api server
      *
      * @param array $dataset
+     *
      * @throws PrestaShopException
+     * @throws GuzzleException
      */
     protected function send($dataset)
     {
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'base_uri'    => Configuration::getApiServer(),
             'timeout'     => 15,
             'verify'      => Configuration::getSslTrustStore()

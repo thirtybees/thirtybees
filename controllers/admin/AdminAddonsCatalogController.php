@@ -85,7 +85,7 @@ class AdminAddonsCatalogControllerCore extends AdminController
 
         try {
             return $guzzle->get(static::ADDONS_URL)->getBody();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

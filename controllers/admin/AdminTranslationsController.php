@@ -222,7 +222,7 @@ class AdminTranslationsControllerCore extends AdminController
         ]);
         try {
             $langPacks = (string) $guzzle->get($fileName)->getBody();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         if ($langPacks && $langPacks = json_decode($langPacks, true)) {
@@ -1199,7 +1199,7 @@ class AdminTranslationsControllerCore extends AdminController
             $arrImportLang[1] = $version;
             try {
                 $guzzle->get("{$arrImportLang[1]}/{$arrImportLang[0]}.gzip", ['sink' => $file]);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
 
             if (file_exists($file)) {

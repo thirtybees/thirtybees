@@ -238,7 +238,7 @@ class WorkQueueTaskCore extends ObjectModel
 
     /**
      * Executes task, does not handle and task persistence
-     * @throws PrestaShopException
+     * @throws Throwable
      */
     public function execute()
     {

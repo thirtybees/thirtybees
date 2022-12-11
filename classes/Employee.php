@@ -417,7 +417,7 @@ class EmployeeCore extends ObjectModel
                         $this->optin = false;
                     }
 
-                } catch (RequestException $e) {
+                } catch (Throwable $e) {
                     $success = false;
                     $this->optin = false;
                 }

@@ -1158,8 +1158,8 @@ class ThemeCore extends ObjectModel
             $archive->extract($directoryPath);
         } catch (PrestaShopException $e) {
             throw $e;
-        } catch (Exception $e) {
-            throw new PrestaShopException("Failed to download file from thirty bees api server", $e);
+        } catch (Throwable $e) {
+            throw new PrestaShopException("Failed to download file from thirty bees api server", 0, $e);
         } finally {
             @unlink($archiveFile);
         }

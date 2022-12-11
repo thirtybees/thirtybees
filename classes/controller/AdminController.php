@@ -3287,7 +3287,7 @@ class AdminControllerCore extends Controller
                 $content = (string) $guzzle->get($externalFile)->getBody();
 
                 return (bool) file_put_contents(_PS_ROOT_DIR_.$fileToRefresh, $content);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 static::$isThirtybeesUp = false;
 
                 return false;
