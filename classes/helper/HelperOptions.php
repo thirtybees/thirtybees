@@ -69,9 +69,7 @@ class HelperOptionsCore extends Helper
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
         $tab = Tab::getTab($this->context->language->id, $this->id);
-        if (!isset($languages)) {
-            $languages = Language::getLanguages(false);
-        }
+        $languages = Language::getLanguages(false);
 
         $useMultishop = false;
         $hideMultishopCheckbox = Shop::getTotalShops(false, null) < 2;
