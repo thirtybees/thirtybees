@@ -1015,7 +1015,7 @@ class CoreModelsCore
             'fields' => [
                 'id_shop' => ['type' => ObjectModel::TYPE_INT, 'default' => '1', 'required' => true],
                 'id_lang' => ['type' => ObjectModel::TYPE_INT, 'required' => true],
-                'word'    => ['type' => ObjectModel::TYPE_STRING, 'size' => 15, 'required' => true],
+                'word'    => ['type' => ObjectModel::TYPE_STRING, 'size' => 30, 'required' => true],
             ],
             'keys' => [
                 'search_word' => [

@@ -2160,7 +2160,7 @@ CREATE TABLE `PREFIX_search_word` (
   `id_word` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_shop` int(11) unsigned NOT NULL DEFAULT '1',
   `id_lang` int(11) unsigned NOT NULL,
-  `word` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `word` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_word`),
   UNIQUE KEY `id_lang` (`id_lang`,`id_shop`,`word`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

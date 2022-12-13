@@ -29,7 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-define('PS_SEARCH_MAX_WORD_LENGTH', 15);
+define('PS_SEARCH_MAX_WORD_LENGTH', 30);
 
 /* Copied from Drupal search module, except for \x{0}-\x{2f} that has been replaced by \x{0}-\x{2c}\x{2e}-\x{2f} in order to keep the char '-' */
 define(
