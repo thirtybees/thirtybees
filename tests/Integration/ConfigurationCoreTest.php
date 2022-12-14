@@ -6,9 +6,14 @@ use Codeception\Test\Unit;
 use Configuration;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Tests\Support\UnitTester;
 
 class ConfigurationCoreTest extends Unit
 {
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
 
     /**
      * @return array[]

@@ -27,6 +27,7 @@ use CoreUpdater\DatabaseSchemaComparator;
 use Db;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Tests\Support\UnitTester;
 
 /**
  * Class DatabaseMigrationTest
@@ -48,6 +49,11 @@ use PrestaShopException;
 class DatabaseMigrationTest extends Unit
 {
     const TEST_TABLE = 'migration_test_table';
+
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
 
     /**
      * Prepares all test cases

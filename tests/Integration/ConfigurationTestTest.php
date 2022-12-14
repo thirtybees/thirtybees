@@ -4,9 +4,15 @@ namespace Tests\Integration;
 
 use Codeception\Test\Unit;
 use ConfigurationTest;
+use Tests\Support\UnitTester;
 
 class ConfigurationTestTest extends Unit
 {
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
+
     /**
      * @return void
      */

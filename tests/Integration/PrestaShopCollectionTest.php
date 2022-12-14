@@ -9,10 +9,16 @@ use PrestaShopException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
+use Tests\Support\UnitTester;
 use Tools;
 
 class PrestaShopCollectionTest extends Unit
 {
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
+
     /**
      * This tests verifies that all defined associations can be queried
      *

@@ -13,11 +13,17 @@ use PrestaShopDatabaseException;
 use PrestaShopException;
 use Product;
 use StockAvailable;
+use Tests\Support\UnitTester;
 use Warehouse;
 use WarehouseProductLocation;
 
 class CartPackageListTest extends Unit
 {
+
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
 
     /**
      * Before each test callback

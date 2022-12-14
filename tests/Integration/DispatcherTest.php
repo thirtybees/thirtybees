@@ -7,9 +7,15 @@ use Configuration;
 use Dispatcher;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Tests\Support\UnitTester;
 
 class DispatcherTest extends Unit
 {
+
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
 
     /**
      * @return array[]

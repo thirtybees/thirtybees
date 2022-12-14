@@ -11,7 +11,7 @@ class ValidateTest extends Unit
     /**
      * @var UnitTester
      */
-    public $tester;
+    protected UnitTester $tester;
 
     /**
      * @return array[]

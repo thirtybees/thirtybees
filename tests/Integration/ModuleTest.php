@@ -8,9 +8,16 @@ use Employee;
 use Module;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Tests\Support\UnitTester;
 
 class ModuleTest extends Unit
 {
+
+    /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
+
     /**
      * @return void
      * @throws PrestaShopDatabaseException
