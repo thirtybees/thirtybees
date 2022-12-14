@@ -267,7 +267,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'tax_rates'                 => $this->product->getTaxesRate(),
                 'generate'                  => isset($_POST['generate']) && !count($this->errors),
                 'combinations_size'         => count($this->combinations),
-                'product_name'              => $this->product->name[$this->context->language->id],
+                'product_name'              => $this->product->name[$this->context->language->id] ?? '',
                 'product_reference'         => $this->product->reference,
                 'url_generator'             => static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&attributegenerator&token='.Tools::getValue('token'),
                 'attribute_groups'          => $attributeGroups,
