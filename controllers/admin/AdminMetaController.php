@@ -283,7 +283,7 @@ class AdminMetaControllerCore extends AdminController
                     'enableLiveAutocompletion'  => true,
                     'maxLines'                  => 400,
                     'visibility'                => Shop::CONTEXT_ALL,
-                    'value'                     => Tools::isSubmit('robots') ? Tools::getValue('robots') : @file_get_contents(_PS_ROOT_DIR_.'/robots.txt'),
+                    'value'                     => Tools::isSubmit('robots') ? Tools::getValue('robots') : $this->loadRobotsFile(),
                     'auto_value'                => false,
                 ],
             ],
@@ -1069,5 +1069,19 @@ class AdminMetaControllerCore extends AdminController
         }
 
         return true;
+    }
+
+    /**
+     * Loads content of robots.txt file
+     *
+     * @return false|string
+     */
+    protected function loadRobotsFile()
+    {
+        if (file_exists($this->rb_file)) {
+            return file_get_contents($this->rb_file);
+        } else {
+            return false;
+        }
     }
 }
