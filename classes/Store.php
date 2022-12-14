@@ -34,39 +34,89 @@
  */
 class StoreCore extends ObjectModel
 {
-    /** @var int Country id */
+    /**
+     * @var int Country id
+     */
     public $id_country;
-    /** @var int State id */
+
+    /**
+     * @var int State id
+     */
     public $id_state;
-    /** @var string Store name */
+
+    /**
+     * @var string Store name
+     */
     public $name;
-    /** @var string Address first line */
+
+    /**
+     * @var string Address first line
+     */
     public $address1;
-    /** @var string Address second line (optional) */
+
+    /**
+     * @var string Address second line (optional)
+     */
     public $address2;
-    /** @var string Postal code */
+
+    /**
+     * @var string Postal code
+     */
     public $postcode;
-    /** @var string City */
+
+    /**
+     * @var string City
+     */
     public $city;
-    /** @var float Latitude */
+
+    /**
+     * @var float Latitude
+     */
     public $latitude;
-    /** @var float Longitude */
+
+    /**
+     * @var float Longitude
+     */
     public $longitude;
-    /** @var string Store hours (JSON encoded array) */
+
+    /**
+     * @var string Store hours (JSON encoded array)
+     */
     public $hours;
-    /** @var string Phone number */
+
+    /**
+     * @var string Phone number
+     */
     public $phone;
-    /** @var string Fax number */
+
+    /**
+     * @var string Fax number
+     */
     public $fax;
-    /** @var string Note */
+
+    /**
+     * @var string Note
+     */
     public $note;
-    /** @var string e-mail */
+
+    /**
+     * @var string e-mail
+     */
     public $email;
-    /** @var string Object creation date */
+
+    /**
+     * @var string Object creation date
+     */
     public $date_add;
-    /** @var string Object last modification date */
+
+    /**
+     * @var string Object last modification date
+     */
     public $date_upd;
-    /** @var bool Store status */
+
+    /**
+     * @var bool Store status
+     */
     public $active = true;
 
     /**
@@ -124,7 +174,6 @@ class StoreCore extends ObjectModel
     public function __construct($idStore = null, $idLang = null)
     {
         parent::__construct($idStore);
-        $this->id_image = ($this->id && file_exists(_PS_STORE_IMG_DIR_.(int) $this->id.'.jpg')) ? (int) $this->id : false;
         $this->image_dir = _PS_STORE_IMG_DIR_;
     }
 
