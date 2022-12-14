@@ -1,29 +1,11 @@
 <?php
 
-namespace Tests\Functional;
+namespace Tests\Functional\Front;
 
 use Tests\Support\FunctionalTester;
 
 class MyAccountCest
 {
-    /**
-     * @param FunctionalTester $I
-     *
-     * @return void
-     */
-    public function _before(FunctionalTester $I)
-    {
-    }
-
-    /**
-     * @param FunctionalTester $I
-     *
-     * @return void
-     */
-    public function _after(FunctionalTester $I)
-    {
-    }
-
     /**
      * @param FunctionalTester $I
      *

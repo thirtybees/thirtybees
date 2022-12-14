@@ -9,5 +9,5 @@ modules:
     enabled:
         - Asserts
         - WebDriver
-        - \Helper\Acceptance
+        - Tests\Support\Helper\Acceptance
 bootstrap: _bootstrap.php
