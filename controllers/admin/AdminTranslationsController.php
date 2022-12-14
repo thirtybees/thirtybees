@@ -1320,9 +1320,9 @@ class AdminTranslationsControllerCore extends AdminController
         $result = file_put_contents(
             $filePath,
             "<?php\n\n"
-            ."global \$${varName};\n\n"
-            ."\$${varName} = ".var_export($translationsArray, true).";\n\n"
-            ."return \$${varName};\n"
+            ."global \$$varName;\n\n"
+            ."\$$varName = ".var_export($translationsArray, true).";\n\n"
+            ."return \$$varName;\n"
         );
         if ($result !== false) {
             if (function_exists('opcache_invalidate')) {
