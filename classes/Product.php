@@ -993,7 +993,7 @@ class ProductCore extends ObjectModel
      *
      * @param int $idShop Shop id
      * @param int $idProduct Product id
-     * @param int $idProductAttribute Product attribute id
+     * @param int|false|null $idProductAttribute Product attribute id
      * @param int $idCountry Country id
      * @param int $idState State id
      * @param string $zipcode

@@ -880,7 +880,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @return array|mixed
+     * @return int[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -893,7 +893,7 @@ class CustomerCore extends ObjectModel
     /**
      * @param int $idCustomer
      *
-     * @return array|mixed
+     * @return int[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
