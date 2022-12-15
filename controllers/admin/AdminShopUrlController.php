@@ -35,6 +35,16 @@
 class AdminShopUrlControllerCore extends AdminController
 {
     /**
+     * @var int
+     */
+    protected $id_shop;
+
+    /**
+     * @var bool
+     */
+    protected $redirect_shop_url;
+
+    /**
      * AdminShopUrlControllerCore constructor.
      *
      * @throws PrestaShopException
