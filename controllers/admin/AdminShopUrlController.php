@@ -45,7 +45,6 @@ class AdminShopUrlControllerCore extends AdminController
         $this->table = 'shop_url';
         $this->className = 'ShopUrl';
         $this->lang = false;
-        $this->requiredDatabase = true;
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->bulk_actions = [];
 

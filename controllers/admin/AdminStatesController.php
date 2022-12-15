@@ -45,7 +45,6 @@ class AdminStatesControllerCore extends AdminController
         $this->table = 'state';
         $this->className = 'State';
         $this->lang = false;
-        $this->requiredDatabase = true;
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
