@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Functional\Front;
+namespace Tests\Functional\Back;
 
 use Tests\Support\FunctionalTester;
 

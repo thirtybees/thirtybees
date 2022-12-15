@@ -1,17 +1,19 @@
 <?php
 
-namespace Tests\Functional\Front;
+namespace Tests\Functional\Back;
 
 use Codeception\Example;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Tab;
 use Tests\Support\FunctionalTester;
-use Tools;
 
 class AdminControllerWalkerCest
 {
     /**
+     * This tests walks through all back office controller default pages
+     * and ensures that no error is thrown
+     *
      * @param FunctionalTester $I
      * @param Example $example
      *
@@ -21,9 +23,11 @@ class AdminControllerWalkerCest
      */
     public function testController(FunctionalTester $I, Example $example)
     {
+        $controller = $example['controller'];
+        $token = $I->getAdminToken($controller);
         $I->amLoggedInToBackOffice();
         $I->see('Dashboard');
-        $I->amOnPage('/admin-dev/index.php?controller='.$example['controller'].'&token=' . $example['token']);
+        $I->amOnPage("/admin-dev/index.php?controller=$controller&token=$token");
         $I->see('Dashboard');
         $I->withoutErrors();
     }
@@ -39,11 +43,7 @@ class AdminControllerWalkerCest
         $urls = [];
         foreach ($tabs as $tab) {
             if ($tab != 'AdminLogin') {
-                $token = Tools::getAdminToken($tab . (int)Tab::getIdFromClassName($tab) . '1');
-                $urls[] = [
-                    'controller' => $tab,
-                    'token' => $token,
-                ];
+                $urls[] = [ 'controller' => $tab ];
             }
         }
         return $urls;
