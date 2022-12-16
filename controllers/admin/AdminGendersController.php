@@ -60,9 +60,6 @@ class AdminGendersControllerCore extends AdminController
             ]
         ];
 
-        $this->default_image_height = 16;
-        $this->default_image_width = 16;
-
         $this->fieldImageSettings = [
             'name' => 'image',
             'dir' => 'genders'
@@ -200,8 +197,8 @@ class AdminGendersControllerCore extends AdminController
         }
 
         $this->fields_value = [
-            'img_width' => $this->default_image_width,
-            'img_height' => $this->default_image_height,
+            'img_width' => 16,
+            'img_height' => 16,
             'image' => $obj->getImage()
         ];
 

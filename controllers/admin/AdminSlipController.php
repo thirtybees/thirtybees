@@ -78,7 +78,6 @@ class AdminSlipControllerCore extends AdminController
         ];
 
         $this->_select = 'a.id_order_slip AS id_pdf';
-        $this->optionTitle = $this->l('Slip');
 
         $this->fields_options = [
             'general' => [
