@@ -67,12 +67,12 @@ class AdminStatesControllerCore extends AdminController
         $this->_use_found_rows = false;
 
         $countriesArray = $zonesArray = [];
-        $this->zones = Zone::getZones();
-        $this->countries = Country::getCountries($this->context->language->id, false, true, false);
-        foreach ($this->zones as $zone) {
+        foreach (Zone::getZones() as $zone) {
             $zonesArray[$zone['id_zone']] = $zone['name'];
         }
-        foreach ($this->countries as $country) {
+
+        $countries = Country::getCountries($this->context->language->id, false, true, false);
+        foreach ($countries as $country) {
             $countriesArray[$country['id_country']] = $country['name'];
         }
 
