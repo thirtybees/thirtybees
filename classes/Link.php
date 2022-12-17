@@ -318,6 +318,16 @@ class LinkCore
     {
         $idLang = Context::getContext()->language->id;
 
+        if (! is_array($params)) {
+            $callPoint = Tools::getCallPoint([Link::class]);
+            $errorMessage = 'Link::getAdminLink(): parameter $params has invalid type. ';
+            $errorMessage .= 'Expected array, got ' . gettype($params) . '. ';
+            $errorMessage .= 'This will raise error in future version of thirty bees. ';
+            $errorMessage .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'];
+            trigger_error($errorMessage, E_USER_WARNING);
+            $params = [];
+        }
+
         if ($withToken) {
             $params['token'] = Tools::getAdminTokenLite($controller);
         }
