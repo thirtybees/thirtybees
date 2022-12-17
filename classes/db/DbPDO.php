@@ -112,7 +112,7 @@ class DbPDOCore extends Db
         try {
             $this->link = $this->_getPDO($this->server, $this->user, $this->password, $this->database, 5);
         } catch (PDOException $e) {
-            die(sprintf(Tools::displayError('Link to database cannot be established: %s'), utf8_encode($e->getMessage())));
+            die(sprintf(Tools::displayError('Link to database cannot be established: %s'), $e->getMessage()));
         }
 
         // UTF-8 support

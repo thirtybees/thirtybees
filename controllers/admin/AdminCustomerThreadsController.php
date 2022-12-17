@@ -397,7 +397,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                             $message = base64_decode($message);
                         }
                         $message = quoted_printable_decode($message);
-                        $message = utf8_encode($message);
+                        $message = mb_convert_encoding($message, 'UTF-8', mb_list_encodings());
                         $message = quoted_printable_decode($message);
                         $message = nl2br($message);
                         $message = mb_substr($message, 0, (int) CustomerMessage::$definition['fields']['message']['size']);

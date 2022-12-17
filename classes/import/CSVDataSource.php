@@ -120,7 +120,7 @@ class CSVDataSourceCore implements DataSourceInterface
     {
         $row = fgetcsv($this->handle, 0, $this->separator);
         if ($row && $this->convert) {
-            $row = array_map('utf8_encode', $row);
+            $row = array_map([static::class, 'convertString'], $row);
         }
         return $row;
     }
@@ -164,5 +164,17 @@ class CSVDataSourceCore implements DataSourceInterface
         return $cnt;
     }
 
+    /**
+     * @param string|null $string
+     *
+     * @return string
+     */
+    protected static function convertString($string)
+    {
+        if (! is_string($string)) {
+            return '';
+        }
+        return mb_convert_encoding((string)$string, 'UTF-8', mb_list_encodings());
+    }
 
 }

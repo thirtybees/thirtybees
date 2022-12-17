@@ -1833,7 +1833,7 @@ class ToolsCore
     public static function link_rewrite($str, $utf8Decode = null)
     {
         if ($utf8Decode !== null) {
-            Tools::displayParameterAsDeprecated('utf8_decode');
+            Tools::displayParameterAsDeprecated('utf8Decode');
         }
 
         return Tools::str2url($str);
@@ -2090,9 +2090,7 @@ class ToolsCore
         if (mb_strlen($str) <= $maxLength) {
             return $str;
         }
-        $str = utf8_decode($str);
-
-        return (utf8_encode(substr($str, 0, $maxLength - mb_strlen($suffix)).$suffix));
+        return mb_substr($str, 0, $maxLength - mb_strlen($suffix)) . $suffix;
     }
 
     /**
