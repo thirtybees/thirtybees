@@ -6649,7 +6649,7 @@ class ProductCore extends ObjectModel
      * @param int|bool $idLang
      * @param int|null $idShop
      *
-     * @return array|bool|PDOStatement
+     * @return array|bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -8248,6 +8248,27 @@ class ProductCore extends ObjectModel
             }
         }
         return $shopId;
+    }
+
+    /**
+     * Returns true, if customization is required for a product
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function isCustomizationRequired()
+    {
+        if ($this->customizable) {
+            return (bool)Db::getInstance()->getValue((new DbQuery)
+                ->select('1')
+                ->from('customization_field', 'cf')
+                ->where('cf.id_product = '.(int)$this->id)
+                ->where('cf.`required`')
+            );
+        }
+        return false;
     }
 
 }

@@ -267,15 +267,9 @@ class ProductControllerCore extends FrontController
                 ]
             );
 
-            $this->product->customization_required = false;
-            $customizationFields = $this->product->customizable ? $this->product->getCustomizationFields($this->context->language->id) : false;
-            if (is_array($customizationFields)) {
-                foreach ($customizationFields as $customizationField) {
-                    if ($this->product->customization_required = $customizationField['required']) {
-                        break;
-                    }
-                }
-            }
+            $customizationFields = $this->product->customizable
+                ? $this->product->getCustomizationFields($this->context->language->id)
+                : false;
 
             // Assign template vars related to the category + execute hooks related to the category
             $this->assignCategory();
@@ -312,6 +306,7 @@ class ProductControllerCore extends FrontController
             $this->context->smarty->assign(
                 [
                     'stock_management'         => Configuration::get('PS_STOCK_MANAGEMENT'),
+                    'customizationRequired'    => $this->product->isCustomizationRequired(),
                     'customizationFields'      => $customizationFields,
                     'id_customization'         => empty($customizationDatas) ? null : $customizationDatas[0]['id_customization'],
                     'accessories'              => $accessories,
