@@ -45,32 +45,8 @@ class AdminImportControllerCore extends AdminController
     public static $columnMask;
     /** @var array $defaultValues */
     public static $defaultValues = [];
-    /** @var array $validators */
-    public static $validators = [
-        'active'            => ['self', 'getBoolean'],
-        'tax_rate'          => ['self', 'getPrice'],
-        /** Tax excluded */
-        'price_tex'         => ['self', 'getPrice'],
-        /** Tax included */
-        'price_tin'         => ['self', 'getPrice'],
-        'reduction_price'   => ['self', 'getPrice'],
-        'reduction_percent' => ['self', 'getPrice'],
-        'wholesale_price'   => ['self', 'getPrice'],
-        'ecotax'            => ['self', 'getPrice'],
-        'name'              => ['self', 'createMultiLangField'],
-        'description'       => ['self', 'createMultiLangField'],
-        'description_short' => ['self', 'createMultiLangField'],
-        'meta_title'        => ['self', 'createMultiLangField'],
-        'meta_keywords'     => ['self', 'createMultiLangField'],
-        'meta_description'  => ['self', 'createMultiLangField'],
-        'link_rewrite'      => ['self', 'createMultiLangField'],
-        'available_now'     => ['self', 'createMultiLangField'],
-        'available_later'   => ['self', 'createMultiLangField'],
-        'category'          => ['self', 'split'],
-        'online_only'       => ['self', 'getBoolean'],
-        'accessories'       => ['self', 'split'],
-        'image_alt'         => ['self', 'split'],
-    ];
+    /** @var callable[] $validators */
+    public static $validators;
     /** @var array $entitities */
     public $entities = [];
     /** @var array $available_fields */
@@ -125,6 +101,31 @@ class AdminImportControllerCore extends AdminController
         }
 
         $this->entities = array_flip($this->entities);
+
+        // initialize default validators
+        static::$validators = [
+            'active'            => [static::class, 'getBoolean'],
+            'tax_rate'          => [static::class, 'getPrice'],
+            'price_tex'         => [static::class, 'getPrice'],
+            'price_tin'         => [static::class, 'getPrice'],
+            'reduction_price'   => [static::class, 'getPrice'],
+            'reduction_percent' => [static::class, 'getPrice'],
+            'wholesale_price'   => [static::class, 'getPrice'],
+            'ecotax'            => [static::class, 'getPrice'],
+            'name'              => [static::class, 'createMultiLangField'],
+            'description'       => [static::class, 'createMultiLangField'],
+            'description_short' => [static::class, 'createMultiLangField'],
+            'meta_title'        => [static::class, 'createMultiLangField'],
+            'meta_keywords'     => [static::class, 'createMultiLangField'],
+            'meta_description'  => [static::class, 'createMultiLangField'],
+            'link_rewrite'      => [static::class, 'createMultiLangField'],
+            'available_now'     => [static::class, 'createMultiLangField'],
+            'available_later'   => [static::class, 'createMultiLangField'],
+            'category'          => [static::class, 'split'],
+            'online_only'       => [static::class, 'getBoolean'],
+            'accessories'       => [static::class, 'split'],
+            'image_alt'         => [static::class, 'split'],
+        ];
 
         switch ((int) Tools::getValue('entity')) {
             case $this->entities[$this->l('Combinations')]:
@@ -227,10 +228,7 @@ class AdminImportControllerCore extends AdminController
                 break;
 
             case $this->entities[$this->l('Products')]:
-                static::$validators['image'] = [
-                    'self',
-                    'split',
-                ];
+                static::$validators['image'] = [ static::class, 'split' ];
 
                 $this->available_fields = [
                     'no'                        => ['label' => $this->l('Ignore this column')],
@@ -428,11 +426,11 @@ class AdminImportControllerCore extends AdminController
             case $this->entities[$this->l('Suppliers')]:
                 //Overwrite validators AS name is not MultiLangField
                 static::$validators = [
-                    'description'       => ['self', 'createMultiLangField'],
-                    'short_description' => ['self', 'createMultiLangField'],
-                    'meta_title'        => ['self', 'createMultiLangField'],
-                    'meta_keywords'     => ['self', 'createMultiLangField'],
-                    'meta_description'  => ['self', 'createMultiLangField'],
+                    'description'       => [static::class, 'createMultiLangField'],
+                    'short_description' => [static::class, 'createMultiLangField'],
+                    'meta_title'        => [static::class, 'createMultiLangField'],
+                    'meta_keywords'     => [static::class, 'createMultiLangField'],
+                    'meta_description'  => [static::class, 'createMultiLangField'],
                 ];
 
                 $this->available_fields = [
@@ -474,9 +472,9 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
             case $this->entities[$this->l('Store contacts')]:
-                unset(static::$validators['name']);
+                // Overwrite validators
                 static::$validators = [
-                    'hours' => ['self', 'split'],
+                    'hours' => [static::class, 'split'],
                 ];
                 $this->required_fields = [
                     'address1',
@@ -1008,7 +1006,7 @@ class AdminImportControllerCore extends AdminController
         $extensions = $this->getFileExtensions();
 
         $filesToImport = scandir(static::getPath());
-        uasort($filesToImport, ['self', 'usortFiles']);
+        uasort($filesToImport, [static::class, 'usortFiles']);
         foreach ($filesToImport as $k => &$filename) {
             if (is_dir(static::getPath().$filename)) {
                 unset($filesToImport[$k]);
@@ -1705,7 +1703,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $category);
+        array_walk($info, [static::class, 'fillInfo'], $category);
 
         // Parent category
         if (isset($category->parent) && is_numeric($category->parent)) {
@@ -2353,7 +2351,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         static::setEntityDefaultValues($product);
-        array_walk($info, ['self', 'fillInfo'], $product);
+        array_walk($info, [static::class, 'fillInfo'], $product);
 
         if (!$shopIsFeatureActive) {
             $product->shop = (int) Configuration::get('PS_SHOP_DEFAULT');
@@ -3180,7 +3178,7 @@ class AdminImportControllerCore extends AdminController
             $autodate = false;
         }
 
-        array_walk($info, ['self', 'fillInfo'], $customer);
+        array_walk($info, [static::class, 'fillInfo'], $customer);
 
         if ($customer->passwd) {
             $customer->passwd = Tools::hash($customer->passwd);
@@ -3385,7 +3383,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $address);
+        array_walk($info, [static::class, 'fillInfo'], $address);
 
         if (isset($address->country) && is_numeric($address->country)) {
             if (Country::getNameById(Configuration::get('PS_LANG_DEFAULT'), (int) $address->country)) {
@@ -4233,7 +4231,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $manufacturer);
+        array_walk($info, [static::class, 'fillInfo'], $manufacturer);
 
         $res = false;
         if (($fieldError = $manufacturer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
@@ -4367,7 +4365,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $supplier);
+        array_walk($info, [static::class, 'fillInfo'], $supplier);
         if (($fieldError = $supplier->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
             ($langFieldError = $supplier->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
@@ -4486,7 +4484,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $alias);
+        array_walk($info, [static::class, 'fillInfo'], $alias);
 
         $res = false;
         if (($fieldError = $alias->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
@@ -4583,7 +4581,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        array_walk($info, ['self', 'fillInfo'], $store);
+        array_walk($info, [static::class, 'fillInfo'], $store);
 
         if (isset($store->image) && !empty($store->image)) {
             if (!(static::copyImg($store->id, null, $store->image, 'stores', !$regenerate))) {
@@ -4814,7 +4812,7 @@ class AdminImportControllerCore extends AdminController
             }
 
             // sets parameters
-            array_walk($info, ['self', 'fillInfo'], $supplyOrder);
+            array_walk($info, [static::class, 'fillInfo'], $supplyOrder);
 
             if ((int) $supplyOrder->id && ($supplyOrder->exists((int) $supplyOrder->id) || $supplyOrder->exists($supplyOrder->reference))) {
                 $res = ($validateOnly || $supplyOrder->update());
@@ -4982,7 +4980,7 @@ class AdminImportControllerCore extends AdminController
 
                 // creates new product
                 $supplyOrderDetail = new SupplyOrderDetail();
-                array_walk($info, ['self', 'fillInfo'], $supplyOrderDetail);
+                array_walk($info, [static::class, 'fillInfo'], $supplyOrderDetail);
 
                 // sets parameters
                 $supplyOrderDetail->id_supply_order = $supplyOrder->id;
@@ -5157,7 +5155,7 @@ class AdminImportControllerCore extends AdminController
                 'buildin-csv' => [
                     'name' => $this->l('Build-in CSV import'),
                     'extensions' => [ 'csv' ],
-                    'constructor' => ['AdminImportController', 'createCsvDataSource']
+                    'constructor' => [static::class, 'createCsvDataSource']
                 ]
             ];
 
