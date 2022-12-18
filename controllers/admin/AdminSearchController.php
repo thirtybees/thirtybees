@@ -35,6 +35,11 @@
 class AdminSearchControllerCore extends AdminController
 {
     /**
+     * @var string
+     */
+    protected $query;
+
+    /**
      * AdminSearchControllerCore constructor.
      *
      * @throws PrestaShopException
