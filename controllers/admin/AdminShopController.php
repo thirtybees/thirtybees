@@ -35,6 +35,16 @@
 class AdminShopControllerCore extends AdminController
 {
     /**
+     * @var int
+     */
+    protected $id_shop_group;
+
+    /**
+     * @var int
+     */
+    protected $id_shop;
+
+    /**
      * AdminShopControllerCore constructor.
      *
      * @throws PrestaShopException
