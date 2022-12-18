@@ -40,6 +40,16 @@ class AdminSupplyOrdersControllerCore extends AdminController
     protected $warehouses;
 
     /**
+     * @var boolean
+     */
+    protected $is_template_list;
+
+    /**
+     * @var bool
+     */
+    protected $is_editing_order;
+
+    /**
      * AdminSupplyOrdersControllerCore constructor.
      *
      * @throws PrestaShopException
