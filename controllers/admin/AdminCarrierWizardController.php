@@ -35,6 +35,22 @@
 class AdminCarrierWizardControllerCore extends AdminController
 {
     /**
+     * @var int
+     */
+    protected $type_context;
+
+    /**
+     * @var Context
+     */
+    protected $old_context;
+
+    /**
+     * @var array
+     */
+    protected $wizard_steps = [];
+
+
+    /**
      * AdminCarrierWizardControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -48,7 +64,6 @@ class AdminCarrierWizardControllerCore extends AdminController
         $this->className = 'Carrier';
         $this->lang = false;
         $this->deleted = true;
-        $this->step_number = 0;
         $this->type_context = Shop::getContext();
         $this->old_context = Context::getContext();
         $this->multishop_context = Shop::CONTEXT_ALL;
