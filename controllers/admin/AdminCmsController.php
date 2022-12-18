@@ -88,16 +88,16 @@ class AdminCmsControllerCore extends AdminController
             $this->redirect();
         }
 
-        $this->_category = AdminCmsContentController::getCurrentCMSCategory();
+        $category = AdminCmsContentController::getCurrentCMSCategory();
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = sprintf(
             $this->l('Pages in category "%s"'),
-            $this->_category->name[$this->context->employee->id_lang]
+            $category->name[$this->context->employee->id_lang]
         );
         $this->_join = '
 		LEFT JOIN `'._DB_PREFIX_.'cms_category` c ON (c.`id_cms_category` = a.`id_cms_category`)';
         $this->_select = 'a.position ';
-        $this->_where = ' AND c.id_cms_category = '.(int) $this->_category->id;
+        $this->_where = ' AND c.id_cms_category = '.(int) $category->id;
 
         parent::__construct();
     }
