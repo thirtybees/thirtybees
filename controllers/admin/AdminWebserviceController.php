@@ -153,6 +153,7 @@ class AdminWebserviceControllerCore extends AdminController
      */
     public function renderForm()
     {
+        /** @var WebserviceKey|false $obj */
         if (!($obj = $this->loadObject(true))) {
             return '';
         }
@@ -306,7 +307,7 @@ class AdminWebserviceControllerCore extends AdminController
         foreach ($this->_list as $k => $item) {
             if ($item['is_module'] && $item['class_name'] && $item['module_name'] &&
                 ($instance = Module::getInstanceByName($item['module_name'])) &&
-                !$instance->useNormalPermissionBehaviour()
+                (method_exists($instance, 'useNormalPermissionBehaviour') && !$instance->useNormalPermissionBehaviour())
             ) {
                 unset($this->_list[$k]);
             }
