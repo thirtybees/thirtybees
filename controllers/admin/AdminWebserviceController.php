@@ -250,10 +250,13 @@ class AdminWebserviceControllerCore extends AdminController
         $permissions = WebserviceKey::getPermissionForAccount($obj->key);
 
         $this->tpl_form_vars = [
-            'ressources'  => $resources,
+            'resources'  => $resources,
             'permissions' => $permissions,
         ];
 
+        $this->fields_value = [
+            'resources' => $resources
+        ];
         return parent::renderForm();
     }
 
