@@ -2857,10 +2857,14 @@ class AdminControllerCore extends Controller
      */
     public function getFieldValue($obj, $key, $idLang = null)
     {
-        if ($idLang) {
-            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
+        if (property_exists($obj, $key)) {
+            if ($idLang) {
+                $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
+            } else {
+                $defaultValue = $obj->{$key} ?? false;
+            }
         } else {
-            $defaultValue = $obj->{$key} ?? false;
+            $defaultValue = false;
         }
 
         return Tools::getValue($key.($idLang ? '_'.$idLang : ''), $defaultValue);
