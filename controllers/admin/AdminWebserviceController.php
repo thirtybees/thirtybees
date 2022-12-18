@@ -34,9 +34,14 @@
  */
 class AdminWebserviceControllerCore extends AdminController
 {
-    /** @var array $fields_form */
+    /**
+     * @var array $fields_form
+     */
     public $fields_form = ['webservice form'];
-    /** @var bool $toolbar_scroll */
+
+    /**
+     * @var bool $toolbar_scroll
+     */
     protected $toolbar_scroll = false;
 
     /**
@@ -50,9 +55,6 @@ class AdminWebserviceControllerCore extends AdminController
         $this->table = 'webservice_account';
         $this->className = 'WebserviceKey';
         $this->lang = false;
-        $this->edit = true;
-        $this->delete = true;
-        $this->id_lang_default = Configuration::get('PS_LANG_DEFAULT');
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'employee` b ON (b.`id_employee` = a.`context_employee_id`)';
         $this->_select = 'concat(concat(b.`firstname`, " "), b.`lastname`) as employee';
 
