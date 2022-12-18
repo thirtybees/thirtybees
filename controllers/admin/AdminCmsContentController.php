@@ -257,7 +257,6 @@ class AdminCmsContentControllerCore extends AdminController
             $this->display = 'edit_page';
         } else {
             $this->display = 'list';
-            $this->id_cms_category = (int) Tools::getValue('id_cms_category');
         }
 
         if (isset($this->admin_cms->errors)) {
