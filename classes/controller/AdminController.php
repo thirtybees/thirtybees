@@ -2849,7 +2849,7 @@ class AdminControllerCore extends Controller
      * Case 1 : Return value if present in $_POST / $_GET
      * Case 2 : Return object value
      *
-     * @param ObjectModel $obj Object
+     * @param ObjectModel|null $obj Object
      * @param string $key Field name
      * @param int|null $idLang Language id (optional)
      *
@@ -2857,7 +2857,7 @@ class AdminControllerCore extends Controller
      */
     public function getFieldValue($obj, $key, $idLang = null)
     {
-        if (property_exists($obj, $key)) {
+        if (is_object($obj) && property_exists($obj, $key)) {
             if ($idLang) {
                 $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
             } else {
