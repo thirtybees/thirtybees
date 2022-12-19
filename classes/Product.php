@@ -1598,15 +1598,6 @@ class ProductCore extends ObjectModel
         $onlyActive = false,
         Context $context = null
     ) {
-        if (!$context) {
-            $context = Context::getContext();
-        }
-
-        $front = true;
-        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
-            $front = false;
-        }
-
         if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
             throw new PrestaShopException(sprintf(Tools::displayError('Invalid ordering parameters: orderBy=[%s] orderWay=[%s]'), $orderBy, $orderWay));
         }
@@ -1632,7 +1623,7 @@ class ProductCore extends ObjectModel
             ($idCategory ? 'LEFT JOIN `'._DB_PREFIX_.'category_product` c ON (c.`id_product` = p.`id_product`)' : '').'
 				WHERE pl.`id_lang` = '.(int) $idLang.
             ($idCategory ? ' AND c.`id_category` = '.(int) $idCategory : '').
-            ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
+            (static::isFrontOfficeContext($context) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
             ($onlyActive ? ' AND product_shop.`active` = 1' : '').'
 				ORDER BY '.(isset($orderByPrefix) ? pSQL($orderByPrefix).'.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay).
             ($limit > 0 ? ' LIMIT '.(int) $start.','.(int) $limit : '');
@@ -1689,21 +1680,12 @@ class ProductCore extends ObjectModel
      */
     public static function getSimpleProducts($idLang, Context $context = null)
     {
-        if (!$context) {
-            $context = Context::getContext();
-        }
-
-        $front = true;
-        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
-            $front = false;
-        }
-
         $sql = 'SELECT p.`id_product`, pl.`name`
 				FROM `'._DB_PREFIX_.'product` p
 				'.Shop::addSqlAssociation('product', 'p').'
 				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (p.`id_product` = pl.`id_product` '.Shop::addSqlRestrictionOnLang('pl').')
 				WHERE pl.`id_lang` = '.(int) $idLang.'
-				'.($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
+				'.(static::isFrontOfficeContext($context) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
 				ORDER BY pl.`name`';
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -1756,10 +1738,7 @@ class ProductCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        $front = true;
-        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
-            $front = false;
-        }
+        $front = static::isFrontOfficeContext($context);
 
         if ($pageNumber < 0) {
             $pageNumber = 0;
@@ -2330,11 +2309,6 @@ class ProductCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        $front = true;
-        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
-            $front = false;
-        }
-
         $currentDate = date('Y-m-d H:i:00');
         $productReductions = static::_getProductIdByDate((!$beginning ? $currentDate : $beginning), (!$ending ? $currentDate : $ending), $context, true);
 
@@ -2365,7 +2339,7 @@ class ProductCore extends ObjectModel
 				   		ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.id_shop='.(int) $context->shop->id.')
 					WHERE p.id_product=pr.id_product AND (pr.id_product_attribute = 0 OR product_attribute_shop.id_product_attribute = pr.id_product_attribute) AND product_shop.`active` = 1
 						'.$sqlGroups.'
-					'.($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
+					'.(static::isFrontOfficeContext($context) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
 					ORDER BY RAND()';
 
             $result = Db::getInstance()->getRow($sql);
@@ -2511,10 +2485,7 @@ class ProductCore extends ObjectModel
             }
         }
 
-        $front = true;
-        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
-            $front = false;
-        }
+        $front = static::isFrontOfficeContext($context);
 
         $sqlGroups = '';
         if (Group::isFeatureActive()) {
@@ -8271,4 +8242,25 @@ class ProductCore extends ObjectModel
         return false;
     }
 
+    /**
+     * Returns true, if Context represents front office context
+     *
+     * @param Context|null $context
+     *
+     * @return bool
+     */
+    protected static function isFrontOfficeContext($context): bool
+    {
+        if (!$context) {
+            $context = Context::getContext();
+        }
+
+        // this is not front office context if if controller is not set
+        if (! isset($context->controller)) {
+            return false;
+        }
+
+        // check controller type
+        return in_array($context->controller->controller_type, ['front', 'modulefront']);
+    }
 }
