@@ -401,9 +401,6 @@ class ErrorDescriptionCore
     public function toArray()
     {
         $source = [
-            'phpVersion' => $this->getPhpVersion(),
-            'codeBuildFor' => $this->getCodeBuildFor(),
-            'codeRevision' => $this->getCodeRevision(),
             'type' => $this->getSourceType(),
             'file' => $this->getSourceFile(),
             'line' => $this->getSourceLine(),
@@ -414,6 +411,9 @@ class ErrorDescriptionCore
             $source['realLine'] = $this->realSourceLine;
         }
         $data = [
+            'phpVersion' => $this->getPhpVersion(),
+            'codeBuildFor' => $this->getCodeBuildFor(),
+            'codeRevision' => $this->getCodeRevision(),
             'errorName' => $this->getErrorName(),
             'message' => $this->getMessage(),
             'source' => $source,
