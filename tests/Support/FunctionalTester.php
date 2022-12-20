@@ -12,6 +12,11 @@ class FunctionalTester extends Actor
     * Define custom actions here
     */
 
+    /**
+     * Helper method to log in to back office
+     *
+     * @return void
+     */
    function amLoggedInToBackOffice()
    {
        $this->amOnPage('/admin-dev/index.php?controller=AdminLogin');
@@ -20,6 +25,20 @@ class FunctionalTester extends Actor
        $this->click('submitLogin');
        $this->see('Dashboard');
    }
+
+    /**
+     * Helper method to log in to front office
+     *
+     * @return void
+     */
+    public function amLoggedInToFrontOffice()
+    {
+        $this->amOnPage('/index.php?controller=authentication');
+        $this->fillField(['css' => '#email'], 'pub@thirtybees.com');
+        $this->fillField(['css' => '#passwd'], '123456789');
+        $this->click('#SubmitLogin');
+        $this->see("John DOE");
+    }
 
     /**
      * Define custom actions here
