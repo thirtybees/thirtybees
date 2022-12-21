@@ -21,7 +21,6 @@ namespace Thirtybees\Core\WorkQueue;
 
 use ObjectModel;
 use ReflectionClass;
-use PrestaShopDatabaseException;
 use PrestaShopException;
 use ReflectionException;
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
@@ -181,7 +180,6 @@ class WorkQueueTaskCore extends ObjectModel
      * WorkQueueTaskCore constructor.
      *
      * @param int|null $id
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function __construct($id = null)

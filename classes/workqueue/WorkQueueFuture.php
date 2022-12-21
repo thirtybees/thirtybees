@@ -19,13 +19,15 @@
 
 namespace Thirtybees\Core\WorkQueue;
 
+use PrestaShopException;
+
 /**
  * Class WorkQueueFutureCore
  */
 class WorkQueueFutureCore
 {
     /**
-     * @var string internal id
+     * @var string unique internal id, implementation specific
      */
     protected $id;
 
@@ -42,13 +44,22 @@ class WorkQueueFutureCore
     /**
      * WorkQueueFutureCore constructor.
      *
-     * @param string $implementation
+     * @param WorkQueueExecutor $executor
      * @param string $id
      * @param string $status
+     * @throws PrestaShopException
      */
-    public function __construct($implementation, $id, $status)
+    public function __construct(WorkQueueExecutor $executor, $id, $status)
     {
-        $this->implementation = $implementation;
+        if (! in_array($status, [
+            WorkQueueTask::STATUS_PENDING,
+            WorkQueueTask::STATUS_RUNNING,
+            WorkQueueTask::STATUS_SUCCESS,
+            WorkQueueTask::STATUS_FAILURE,
+        ])) {
+            throw new PrestaShopException('Invalid work queue status: ' . $status);
+        }
+        $this->implementation = $executor->getExecutorIdentifier();
         $this->id = $id;
         $this->status = $status;
     }

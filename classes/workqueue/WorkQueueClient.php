@@ -25,11 +25,6 @@ namespace Thirtybees\Core\WorkQueue;
 class WorkQueueClientCore
 {
     /**
-     * Fallback work queue executor
-     */
-    const INSTANT_EXECUTOR = 'instant';
-
-    /**
      * Enqueues new work queue task
      *
      * @param WorkQueueTask $task
@@ -37,51 +32,46 @@ class WorkQueueClientCore
      */
     public function enqueue(WorkQueueTask $task)
     {
-        $executor = $this->getExecutor();
-        if ($executor) {
-            return $executor->enqueue($task);
-        } else {
-            return $this->runImmediately($task);
-        }
+        return $this->getExecutor()->enqueue($task);
     }
 
     /**
-     * Immediately executes work queue task
+     * Immediately executes work queue task and waits for its completion.
+     *
+     * If executor implementation does not support immediate execution,
+     * WorkQueueImmediateExecutor will be used as a fallback
      *
      * @param WorkQueueTask $task
      * @return WorkQueueFuture
      */
     public function runImmediately(WorkQueueTask $task)
     {
-        return new WorkQueueFuture(
-            static::INSTANT_EXECUTOR,
-            $this->getId($task),
-            $task->run()
-        );
+        $executor = $this->getExecutor();
+        if ($executor->supportsImmediateExecution()) {
+            return $executor->run($task);
+        } else {
+            return $this->getImmediateExecutor()->run($task);
+        }
+    }
+
+    /**
+     * Returns immediate work queue executor
+     *
+     * @return WorkQueueExecutor
+     */
+    public function getImmediateExecutor()
+    {
+        return WorkQueueImmediateExecutor::getInstance();
     }
 
     /**
      * Returns work queue executor
      *
-     * @return null
+     * @return WorkQueueExecutor
      */
     public function getExecutor()
     {
-        // TODO: implement executors
-        return null;
+        return $this->getImmediateExecutor();
     }
 
-    /**
-     * Generates id for task
-     *
-     * @param WorkQueueTask $task
-     * @return string
-     */
-    protected function getId(WorkQueueTask $task)
-    {
-        if ($task->id) {
-            return WorkQueueTask::class . '::' . $task->id;
-        }
-        return $task->task . '::' . time();
-    }
 }
