@@ -103,4 +103,5 @@
   <tab id="Duplicate_URLs" name="כתובות זהות"/>
   <tab id="Image_Mapping" name="מיפוי תמונה"/>
   <tab id="CustomerMerge" name="Merge customers"/>
+  <tab id="SystemNotifications" name="System notifications"/>
 </entity_tab>

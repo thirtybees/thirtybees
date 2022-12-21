@@ -1141,7 +1141,10 @@ class ThemeCore extends ObjectModel
             $guzzle->post("/coreupdater/v2.php", [
                 'form_params' => $request,
                 'http_errors' => false,
-                'sink' => $archiveFile
+                'sink' => $archiveFile,
+                'headers' => [
+                    'X-SID' => Configuration::getServerTrackingId()
+                ]
             ]);
             if (!is_file($archiveFile)) {
                 throw new PrestaShopException("Failed to download file from thirty bees api server");

@@ -176,6 +176,7 @@ class ConfigurationCore extends ObjectModel
     const SHOW_NEW_ORDERS = 'PS_SHOW_NEW_ORDERS';
     const SHOW_NEW_CUSTOMERS = 'PS_SHOW_NEW_CUSTOMERS';
     const SHOW_NEW_MESSAGES = 'PS_SHOW_NEW_MESSAGES';
+    const SHOW_NEW_SYSTEM_NOTIFICATIONS = 'TB_SHOW_NEW_SYSTEM_NOTIFICATIONS';
     const FEATURE_FEATURE_ACTIVE = 'PS_FEATURE_FEATURE_ACTIVE';
     const COMBINATION_FEATURE_ACTIVE = 'PS_COMBINATION_FEATURE_ACTIVE';
     const SPECIFIC_PRICE_FEATURE_ACTIVE = 'PS_SPECIFIC_PRICE_FEATURE_ACTIVE';
@@ -279,6 +280,8 @@ class ConfigurationCore extends ObjectModel
     const DEPRECATED_CONFIG_KEYS = [
         self::PRICE_DISPLAY_PRECISION => 'Use Currency::getDisplayPrecision() method instead'
     ];
+
+    const LAST_SEEN_NOTIFICATION_UUID = 'TB_LAST_SEEN_NOTIFICATION_UUID';
 
     /**
      * @var array Object model definition

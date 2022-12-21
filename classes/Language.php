@@ -130,7 +130,7 @@ class LanguageCore extends ObjectModel
      * @param bool $active Select only active languages
      * @param int|bool $idShop Shop ID
      *
-     * @return array
+     * @return int[]
      *
      * @throws PrestaShopException
      */
@@ -162,7 +162,7 @@ class LanguageCore extends ObjectModel
                 continue;
             }
 
-            $languages[] = $idsOnly ? $language['id_lang'] : $language;
+            $languages[] = $idsOnly ? (int)$language['id_lang'] : $language;
         }
 
         return $languages;

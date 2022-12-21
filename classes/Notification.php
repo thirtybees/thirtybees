@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Notification\SystemNotification;
+
 /**
  * Class NotificationCore
  */
@@ -119,6 +121,24 @@ class NotificationCore
                 'header' => $this->l('Latest Messages'),
                 'emptyMessage' => $this->l('No new messages have been posted on your shop.'),
                 'showAll' => $this->l('Show all messages'),
+            ]);
+        }
+
+        if (Configuration::get(Configuration::SHOW_NEW_SYSTEM_NOTIFICATIONS)) {
+            $this->registerType('system_notification', [
+                'getNotifications' => [$this, 'getNewSystemNotifications'],
+                'renderer' => 'renderSystemNotification',
+                'rendererData' => [
+                    SystemNotification::IMPORTANCE_LOW => $this->l('Low'),
+                    SystemNotification::IMPORTANCE_MEDIUM => $this->l('Medium'),
+                    SystemNotification::IMPORTANCE_HIGH => $this->l('High'),
+                    SystemNotification::IMPORTANCE_URGENT => $this->l('Urgent'),
+                ],
+                'controller' => 'AdminSystemNotification',
+                'icon' => 'icon-globe',
+                'header' => $this->l('System Notifications'),
+                'emptyMessage' => $this->l('No new notifications have been posted.'),
+                'showAll' => $this->l('Show all notifications'),
             ]);
         }
 
@@ -461,6 +481,59 @@ class NotificationCore
                 'link' => $link->getAdminLink('AdminCustomerThreads', true, ['viewcustomer_thread' => 1, 'id_customer_thread' => $threadId]),
                 'id' => $id,
                 'from' => $from,
+                'ts' => (int)strtotime($row['date_add'])
+            ];
+        }
+
+        return [
+            'total' => $total,
+            'lastId' => $lastId,
+            'results' => $results
+        ];
+    }
+
+    /**
+     * Returns information about system notifications created after $lastId
+     *
+     * @param int $lastId order id
+     * @param int $limit number of detail rows to return
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    protected function getNewSystemNotifications($lastId, $limit)
+    {
+        $lastId = (int)$lastId;
+        $link = Context::getContext()->link;
+
+        $detailSql = (new DbQuery())
+            ->select('*')
+            ->from('system_notification', 'sn')
+            ->where('sn.`id_system_notification` > ' . $lastId)
+            ->orderBy('sn.`id_system_notification` DESC')
+            ->limit($limit);
+
+        $totalSql = (new DbQuery())
+            ->select('COUNT(1)')
+            ->from('system_notification', 'sn')
+            ->where('sn.`id_system_notification` > ' . $lastId);
+
+        $connection = Db::readOnly();
+
+        $result = $connection->getArray($detailSql);
+        $total = (int)$connection->getValue($totalSql);
+
+        $results = [];
+        foreach ($result as $row) {
+            $id = (int)$row['id_system_notification'];
+            $lastId = max($id, $lastId);
+            $results[] = [
+                'link' => $link->getAdminLink('AdminSystemNotification', true, ['viewsystem_notification' => 1, 'id_system_notification' => $id]),
+                'id' => $id,
+                'importance' => $row['importance'],
+                'badgeClass' => SystemNotification::getBadgeClass($row['importance']),
+                'title' => $row['title'],
                 'ts' => (int)strtotime($row['date_add'])
             ];
         }

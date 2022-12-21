@@ -132,3 +132,13 @@ function renderCustomerMessageNotification(notification, translations) {
   html += "</a>";
   return html;
 }
+
+function renderSystemNotification(notification, translations) {
+  var html = '';
+  console.log(notification);
+  html += "<a id='notification_system_notification_"+notification.id+"' href='"+notification.link+"'>";
+  html += "<p><span class='badge "+notification.badgeClass+"'>" + translations[notification.importance] + "</span> &nbsp;<strong>" + notification.title + "</strong></p>";
+  html += "<small class='text-muted'><i class='icon-time'></i>&nbsp;" + moment(notification.ts * 1000).fromNow() + "</small>";
+  html += "</a>";
+  return html;
+}

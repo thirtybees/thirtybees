@@ -3611,11 +3611,15 @@ abstract class ModuleCore
 
             $guzzle = new GuzzleHttp\Client([
                 'base_uri' => Configuration::getApiServer(),
-                'verify'   => Configuration::getSslTrustStore()
+                'verify'   => Configuration::getSslTrustStore(),
             ]);
 
             try {
-                $response = (string)$guzzle->get("updates/modules/all.json")->getBody();
+                $response = (string)$guzzle->get("updates/modules/all.json", [
+                    'headers' => [
+                        'X-SID' => Configuration::getServerTrackingId()
+                    ]
+                ])->getBody();
                 $modules = json_decode($response, true);
                 $cache = [];
                 if ($modules && is_array($modules)) {

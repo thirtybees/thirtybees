@@ -84,7 +84,11 @@ class AdminAddonsCatalogControllerCore extends AdminController
         ]);
 
         try {
-            return $guzzle->get(static::ADDONS_URL)->getBody();
+            return $guzzle->get(static::ADDONS_URL, [
+                'headers' => [
+                    'X-SID' => Configuration::getServerTrackingId()
+                ]
+            ])->getBody();
         } catch (Throwable $e) {
             return null;
         }

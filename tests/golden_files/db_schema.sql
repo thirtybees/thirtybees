@@ -2558,6 +2558,19 @@ CREATE TABLE `PREFIX_supply_order_state_lang` (
   PRIMARY KEY (`id_supply_order_state`,`id_lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_system_notification` (
+  `id_system_notification` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `importance` enum('LOW','MEDIUM','HIGH','URGENT') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `message` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `date_created` datetime DEFAULT NULL,
+  `date_add` datetime DEFAULT NULL,
+  `date_upd` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_system_notification`),
+  UNIQUE KEY `notification_uuid` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_tab` (
   `id_tab` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_parent` int(11) NOT NULL,

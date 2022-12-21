@@ -105,4 +105,5 @@
   <tab id="Redirects" name="Doorverwijzingen"/>
   <tab id="Duplicate_URLs" name="Dubbele URL's"/>
   <tab id="CustomerMerge" name="Merge customers"/>
+  <tab id="SystemNotifications" name="System notifications"/>
 </entity_tab>

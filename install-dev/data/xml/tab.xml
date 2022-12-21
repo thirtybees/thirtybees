@@ -285,6 +285,9 @@
     <tab id="Menus" id_parent="Administration" active="1">
       <class_name>AdminTabs</class_name>
     </tab>
+    <tab id="SystemNotifications" id_parent="Administration" active="1">
+      <class_name>AdminSystemNotification</class_name>
+    </tab>
     <tab id="Stats_1" id_parent="Stats" active="1">
       <class_name>AdminStats</class_name>
     </tab>

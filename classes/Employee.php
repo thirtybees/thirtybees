@@ -410,6 +410,9 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
                                 'language' => $context->language->iso_code,
                                 'URL'      => $context->shop->getBaseURL(),
                             ],
+                            'headers' => [
+                                'X-SID' => Configuration::getServerTrackingId()
+                            ]
                         ]
                     )->getBody();
 

@@ -102,4 +102,5 @@
   <tab id="Custom_Code" name="Custom Code"/>
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
   <tab id="CustomerMerge" name="Merge customers"/>
+  <tab id="SystemNotifications" name="System notifications"/>
 </entity_tab>

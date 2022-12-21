@@ -120,7 +120,7 @@
 	<div class="panel col-lg-12">
 		<div class="panel-heading">
 			{if isset($icon)}<i class="{$icon}"></i> {/if}{if is_array($title)}{$title|end}{else}{$title}{/if}
-			{if isset($toolbar_btn) && count($toolbar_btn) >0}
+			{if isset($toolbar_btn) && is_array($toolbar_btn)}
 				<span class="badge">{$list_total}</span>
 				<span class="panel-heading-action">
 				{foreach from=$toolbar_btn item=btn key=k}

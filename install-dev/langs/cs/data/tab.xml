@@ -102,4 +102,5 @@
   <tab id="Custom_Code" name="Vlastní kód"/>
   <tab id="Duplicate_URLs" name="Duplicitní URLs"/>
   <tab id="CustomerMerge" name="Sloučit zákaznické účty"/>
+  <tab id="SystemNotifications" name="Systémové notifikace"/>
 </entity_tab>

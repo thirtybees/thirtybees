@@ -155,6 +155,13 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'bool',
                     ],
+                    Configuration::SHOW_NEW_SYSTEM_NOTIFICATIONS  => [
+                        'title'      => $this->l('Show notifications for new system notifications'),
+                        'hint'       => $this->l('This will display notifications when new system notifications are posted in your shop.'),
+                        'validation' => 'isBool',
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                    ],
                 ],
                 'submit'      => ['title' => $this->l('Save')],
             ],

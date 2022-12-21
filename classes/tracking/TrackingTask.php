@@ -110,6 +110,9 @@ class TrackingTaskCore implements WorkQueueTaskCallable, InitializationCallback
                     'sid' => Configuration::getServerTrackingId(),
                     'ts' => time(),
                     'data' => $dataset
+                ],
+                'headers' => [
+                    'X-SID' => Configuration::getServerTrackingId()
                 ]
             ]
         );
