@@ -1101,30 +1101,8 @@ class AdminModulesControllerCore extends AdminController
 
         // Try to upload and unarchive the module
         if ($this->tabAccess['add'] === '1') {
-            // UPLOAD_ERR_OK: 0
-            // UPLOAD_ERR_INI_SIZE: 1
-            // UPLOAD_ERR_FORM_SIZE: 2
-            // UPLOAD_ERR_NO_TMP_DIR: 6
-            // UPLOAD_ERR_CANT_WRITE: 7
-            // UPLOAD_ERR_EXTENSION: 8
-            // UPLOAD_ERR_PARTIAL: 3
-
             if (isset($_FILES['file']['error']) && $_FILES['file']['error'] != UPLOAD_ERR_OK) {
-                switch ($_FILES['file']['error']) {
-                    case UPLOAD_ERR_INI_SIZE:
-                    case UPLOAD_ERR_FORM_SIZE:
-                        $this->errors[] = sprintf($this->l('File too large (limit of %s bytes).'), Tools::getMaxUploadSize());
-                        break;
-                    case UPLOAD_ERR_PARTIAL:
-                        $this->errors[] = $this->l('File upload was not completed.');
-                        break;
-                    case UPLOAD_ERR_NO_FILE:
-                        $this->errors[] = $this->l('No file was uploaded.');
-                        break;
-                    default:
-                        $this->errors[] = sprintf($this->l('Internal error #%s'), $_FILES['newfile']['error']);
-                        break;
-                }
+                $this->errors[] = Tools::decodeUploadError($_FILES['file']['error']);
             } elseif (!isset($_FILES['file']['tmp_name']) || empty($_FILES['file']['tmp_name'])) {
                 $this->errors[] = $this->l('No file has been selected');
             } elseif (substr($_FILES['file']['name'], -4) != '.tar' && substr($_FILES['file']['name'], -4) != '.zip'

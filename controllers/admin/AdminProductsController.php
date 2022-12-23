@@ -684,18 +684,9 @@ class AdminProductsControllerCore extends AdminController
             $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         if (isset($_FILES['attachment_file'])) {
-            if ((int) $_FILES['attachment_file']['error'] === UPLOAD_ERR_INI_SIZE) {
-                $_FILES['attachment_file']['error'] = [];
-                $uploadMb = floor(Tools::getMaxUploadSize() / (1024 * 1024));
-                $errorMessage = Translate::ppTags(
-                    sprintf(
-                        $this->l('File [1]%1$s[/1] exceeds the size allowed by the server. The limit is set to [2]%2$s[/2] MB.'),
-                        $_FILES['attachment_file']['name'],
-                        $uploadMb
-                    ),
-                    ['<b>', '<b>']
-                );
-                $_FILES['attachment_file']['error'][] = $errorMessage ;
+            $errorCode = (int) $_FILES['attachment_file']['error'];
+            if ($errorCode) {
+                $_FILES['attachment_file']['error'] = [ Tools::decodeUploadError($errorCode) ];
             } else {
                 $_FILES['attachment_file']['error'] = [];
             }

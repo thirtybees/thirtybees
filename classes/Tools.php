@@ -5381,6 +5381,39 @@ FileETag none
         $out = str_replace('%%', '%', $out);
         return $out;
     }
+
+    /**
+     * Method to decode PHP upload file error code to error message
+     *
+     * @param int $error
+     *
+     * @return false|string
+     */
+    public static function decodeUploadError($error)
+    {
+        $error = (int)$error;
+        if (!$error) {
+            return false;
+        }
+        switch ($error) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $limit = floor(static::getMaxUploadSize() / (1024 * 1024));
+                return sprintf(static::displayError('File is too large. Upload limit is set to %s MB.'), $limit);
+            case UPLOAD_ERR_PARTIAL:
+                return static::displayError('The uploaded file was only partially uploaded.');
+            case UPLOAD_ERR_NO_FILE:
+                return static::displayError('No file was uploaded.');
+            case UPLOAD_ERR_NO_TMP_DIR:
+                return static::displayError('Missing a temporary folder.');
+            case UPLOAD_ERR_CANT_WRITE:
+                return static::displayError('Failed to write file to disk.');
+            case UPLOAD_ERR_EXTENSION:
+                return static::displayError('A PHP extension stopped the file upload.');
+            default:
+                return sprintf(static::displayError('Error while uploading image; please change your server\'s settings. (Error code: %s)'), $error);
+        }
+    }
 }
 
 /**

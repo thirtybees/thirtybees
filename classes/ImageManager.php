@@ -516,13 +516,12 @@ class ImageManagerCore
         if ((int) $maxFileSize > 0 && $file['size'] > (int) $maxFileSize) {
             return sprintf(Tools::displayError('Image is too large (%1$d kB). Maximum allowed: %2$d kB'), $file['size'] / 1024, $maxFileSize / 1024);
         }
+        if ($file['error']) {
+            return Tools::decodeUploadError($file['error']);
+        }
         if (!ImageManager::isRealImage($file['tmp_name'], $file['type']) || !ImageManager::isCorrectImageFileExt($file['name'], $types) || preg_match('/%00/', $file['name'])) {
             return Tools::displayError('Image format not recognized, allowed formats are: .gif, .jpg, .png');
         }
-        if ($file['error']) {
-            return sprintf(Tools::displayError('Error while uploading image; please change your server\'s settings. (Error code: %s)'), $file['error']);
-        }
-
         return false;
     }
 

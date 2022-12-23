@@ -677,20 +677,7 @@ class AdminImportControllerCore extends AdminController
         $extensionsRegexp = implode('|', array_map('preg_quote', $extensions));
 
         if (isset($_FILES['file']) && !empty($_FILES['file']['error'])) {
-            switch ($_FILES['file']['error']) {
-                case UPLOAD_ERR_INI_SIZE:
-                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the upload_max_filesize directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess.');
-                    break;
-                case UPLOAD_ERR_FORM_SIZE:
-                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the post_max_size directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess, for example:').'<br/><a href="'.$this->context->link->getAdminLink('AdminMeta').'" ><code>php_value post_max_size 20M</code> '.$this->l('(click to open "Generators" page)').'</a>';
-                    break;
-                case UPLOAD_ERR_PARTIAL:
-                    $_FILES['file']['error'] = $this->l('The uploaded file was only partially uploaded.');
-                    break;
-                case UPLOAD_ERR_NO_FILE:
-                    $_FILES['file']['error'] = $this->l('No file was uploaded.');
-                    break;
-            }
+            $_FILES['file']['error'] = Tools::decodeUploadError($_FILES['file']['error']);
         } elseif (!preg_match('#([^.]*?)\.('.$extensionsRegexp.')$#is', $filename)) {
             $_FILES['file']['error'] = $this->l('Unsupported file type. Supported extensions: ') . implode(', ' , $extensions);
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
