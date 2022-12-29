@@ -309,9 +309,15 @@ class ErrorHandlerCore
     public static function getErrorType($errno)
     {
         switch ($errno) {
+            case E_PARSE:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
             case E_USER_ERROR:
             case E_ERROR:
+            case E_RECOVERABLE_ERROR:
                 return 'Fatal error';
+            case E_CORE_WARNING:
+            case E_COMPILE_WARNING:
             case E_USER_WARNING:
             case E_WARNING:
                 return 'Warning';
