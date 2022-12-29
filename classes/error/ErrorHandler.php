@@ -353,22 +353,26 @@ class ErrorHandlerCore
     public static function getLogLevel($errno)
     {
         switch ($errno) {
-            case E_USER_ERROR:
-            case E_COMPILE_ERROR:
+            case E_PARSE:
             case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+                return LogLevel::CRITICAL;
+            case E_USER_ERROR:
             case E_RECOVERABLE_ERROR:
             case E_ERROR:
-                return 'error';
+                return LogLevel::ERROR;
+            case E_CORE_WARNING:
+            case E_COMPILE_WARNING:
             case E_USER_WARNING:
             case E_WARNING:
             case E_USER_DEPRECATED:
             case E_DEPRECATED:
-                return 'warning';
+                return LogLevel::WARNING;
             case E_USER_NOTICE:
             case E_NOTICE:
-                return 'notice';
+                return LogLevel::NOTICE;
             default:
-                return 'warning';
+                return LogLevel::DEBUG;
         }
     }
 
