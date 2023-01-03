@@ -524,9 +524,9 @@ class OrderControllerCore extends ParentOrderController
         $this->context->smarty->assign($this->context->cart->getSummaryDetails());
 
         if ((bool) Configuration::get('PS_ADVANCED_PAYMENT_API')) {
-            $this->context->cart->checkedTOS = null;
+            $this->context->cart->checkedTos = null;
         } else {
-            $this->context->cart->checkedTOS = 1;
+            $this->context->cart->checkedTos = 1;
         }
 
         // Test if we have to override TOS display through hook
@@ -538,7 +538,7 @@ class OrderControllerCore extends ParentOrderController
                 'taxes_enabled'        => (int) Configuration::get('PS_TAX'),
                 'cms_id'               => (int) Configuration::get('PS_CONDITIONS_CMS_ID'),
                 'conditions'           => (int) Configuration::get('PS_CONDITIONS'),
-                'checkedTOS'           => (int) $this->context->cart->checkedTOS,
+                'checkedTOS'           => (int) $this->context->cart->checkedTos,
                 'override_tos_display' => $hookOverrideTosDisplay,
             ]
         );
