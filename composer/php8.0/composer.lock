@@ -892,16 +892,16 @@
         },
         {
             "name": "mrclay/jsmin-php",
-            "version": "2.4.2",
+            "version": "2.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrclay/jsmin-php.git",
-                "reference": "34324f94d7664ce2e649fb0aa73854186cf503b2"
+                "reference": "49feaa85933458c15bb62ae65644bf22d60b7610"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrclay/jsmin-php/zipball/34324f94d7664ce2e649fb0aa73854186cf503b2",
-                "reference": "34324f94d7664ce2e649fb0aa73854186cf503b2",
+                "url": "https://api.github.com/repos/mrclay/jsmin-php/zipball/49feaa85933458c15bb62ae65644bf22d60b7610",
+                "reference": "49feaa85933458c15bb62ae65644bf22d60b7610",
                 "shasum": ""
             },
             "require": {
@@ -943,9 +943,9 @@
             "support": {
                 "email": "minify@googlegroups.com",
                 "issues": "https://github.com/mrclay/jsmin-php/issues",
-                "source": "https://github.com/mrclay/jsmin-php/tree/2.4.2"
+                "source": "https://github.com/mrclay/jsmin-php/tree/2.4.3"
             },
-            "time": "2022-12-07T19:27:59+00:00"
+            "time": "2022-12-13T20:15:15+00:00"
         },
         {
             "name": "mrclay/minify",
