@@ -106,3 +106,6 @@ $  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --dom
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Testing
+See [TESTING.md](TESTING.md)

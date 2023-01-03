@@ -20,6 +20,8 @@ use WarehouseProductLocation;
 class CartPackageListTest extends Unit
 {
 
+    const ZONE_EUROPE = 1;
+
     /**
      * @var UnitTester
      */
@@ -32,7 +34,7 @@ class CartPackageListTest extends Unit
      */
     protected function _before() {
         $this->reset();
-        $this->associateCarrierWithZone(1, 2);
+        $this->associateCarrierWithZone(1, static::ZONE_EUROPE);
     }
 
     /**
@@ -466,7 +468,7 @@ class CartPackageListTest extends Unit
      */
     public function testUndeliverableProduct()
     {
-        $this->removeCarrierFromZone(1, 2);
+        $this->removeCarrierFromZone(1, static::ZONE_EUROPE);
 
         // restrict product 8 to use carrier 1
         $product1 = new Product(1);
@@ -559,7 +561,7 @@ class CartPackageListTest extends Unit
         $this->deleteWarehouses();
         $this->setASM(false);
         $this->setOOS(2);
-        $this->removeCarrierFromZone(1, 2);
+        $this->removeCarrierFromZone(1, static::ZONE_EUROPE);
         Cache::clean('*');
     }
 
