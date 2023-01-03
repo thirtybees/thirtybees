@@ -34,12 +34,30 @@
  */
 class ParentOrderControllerCore extends FrontController
 {
-    /** @var bool $ssl */
+    /**
+     * @var bool $ssl
+     */
     public $ssl = true;
-    /** @var string $php_self */
+
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'order';
-    /** @var int $nbProducts */
+
+    /**
+     * @var int $nbProducts
+     */
     public $nbProducts;
+
+    /**
+     * @var bool
+     */
+    public $isLogged;
+
+    /**
+     * @var string
+     */
+    public $link_conditions;
 
     /**
      * Initialize parent order controller

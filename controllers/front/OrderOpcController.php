@@ -34,11 +34,14 @@
  */
 class OrderOpcControllerCore extends ParentOrderController
 {
-    /** @var string $php_self */
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'order-opc';
-    /** @var bool $isLogged */
-    public $isLogged;
-    /** @var bool $ajax_refresh */
+
+    /**
+     * @var bool $ajax_refresh
+     */
     protected $ajax_refresh = false;
 
     /**
