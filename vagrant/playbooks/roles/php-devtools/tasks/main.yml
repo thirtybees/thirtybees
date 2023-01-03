@@ -1,3 +1,0 @@
----
-- name: Download and install PHPUnit
-  get_url: url=https://phar.phpunit.de/phpunit.phar dest=/usr/local/bin/phpunit mode=0755
