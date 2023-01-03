@@ -230,11 +230,17 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function clearDatabase($conn)
     {
-        foreach ($conn->executeS('SHOW TABLES') as $row) {
-            $table = current($row);
-            if (!_DB_PREFIX_ || preg_match('#^'._DB_PREFIX_.'#i', $table)) {
-                $conn->execute(('DROP TABLE').' `'.$table.'`');
+        $conn->execute("SET FOREIGN_KEY_CHECKS=0");
+        try {
+            $result = $conn->getArray('SELECT DISTINCT TABLE_NAME AS t FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=database()');
+            $tables = array_column($result, 't');
+            foreach ($tables as $table) {
+                if (!_DB_PREFIX_ || preg_match('#^' . _DB_PREFIX_ . '#i', $table)) {
+                    $conn->execute(('DROP TABLE') . ' `' . $table . '`');
+                }
             }
+        } finally {
+            $conn->execute("SET FOREIGN_KEY_CHECKS=1");
         }
     }
 
