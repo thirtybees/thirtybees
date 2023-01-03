@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Detection\MobileDetect;
+
 /**
  * Class ContextCore
  */
@@ -78,7 +80,7 @@ class ContextCore
     public $theme;
     /** @var Smarty */
     public $smarty;
-    /** @var Mobile_Detect */
+    /** @var MobileDetect */
     public $mobile_detect;
     /** @var int */
     public $mode;
@@ -182,12 +184,12 @@ class ContextCore
     /**
      * Sets Mobile_Detect tool object
      *
-     * @return Mobile_Detect
+     * @return MobileDetect
      */
     public function getMobileDetect()
     {
         if ($this->mobile_detect === null) {
-            $this->mobile_detect = new Mobile_Detect();
+            $this->mobile_detect = new MobileDetect();
         }
 
         return $this->mobile_detect;
