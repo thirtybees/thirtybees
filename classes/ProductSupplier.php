@@ -186,11 +186,9 @@ class ProductSupplierCore extends ObjectModel
      * @param int $idSupplier
      * @param int $idProduct
      * @param int $idProductAttribute
-     * @param bool $convertedPrice Whether price should be converted to
-     *                                  the current currency.
+     * @param bool $convertedPrice Whether price should be converted to the current currency.
      *
-     * @return bool|float Price, rounded to _TB_PRICE_DATABASE_PRECISION_, or
-     *                    false on failure.
+     * @return float|false Price, rounded to _TB_PRICE_DATABASE_PRECISION_, or false on failure.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
