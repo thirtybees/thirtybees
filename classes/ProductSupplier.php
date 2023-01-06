@@ -210,7 +210,7 @@ class ProductSupplierCore extends ObjectModel
         );
         if ($row && isset($row['price_te'])) {
             if ($convertedPrice) {
-                return Tools::convertPrice($row['price_te'], $row['id_currency']);
+                return Tools::convertPrice($row['price_te'], $row['id_currency'], false);
             }
 
             return $row['price_te'];
