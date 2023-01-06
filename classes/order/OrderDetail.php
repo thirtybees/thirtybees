@@ -266,7 +266,7 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param string $hash
      *
-     * @return array|bool|null|object
+     * @return array|bool|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -656,21 +656,31 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
+     * Returns wholesale price of product associated with this OrderDetail line
+     *
+     * @param int|null $currencyId Currency ID. If not specified, returned value will be in default currency
+     *
      * @return float
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getWholeSalePrice()
+    public function getWholeSalePrice($currencyId = null)
     {
         $product = new Product($this->product_id);
         $wholesalePrice = $product->wholesale_price;
 
         if ($this->product_attribute_id) {
             $combination = new Combination((int) $this->product_attribute_id);
-            if ($combination && $combination->wholesale_price != 0.0) {
+            if (Validate::isLoadedObject($combination) && $combination->wholesale_price != 0.0) {
                 $wholesalePrice = $combination->wholesale_price;
             }
+        }
+
+        // Convert wholesalePrice to specified currency
+        $currencyId = (int)$currencyId;
+        if ($currencyId && $currencyId !== (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
+            $wholesalePrice = Tools::convertPrice($wholesalePrice, $currencyId);
         }
 
         return round($wholesalePrice, _TB_PRICE_DATABASE_PRECISION_);
@@ -876,10 +886,9 @@ class OrderDetailCore extends ObjectModel
             _TB_PRICE_DATABASE_PRECISION_
         );
 
-        $this->purchase_supplier_price = round(
-            $product['wholesale_price'],
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        // Supplier price in default currency of the shop
+        $purchaseSupplierPriceDefCur = $product['wholesale_price'];
+
         if ($product['id_supplier']) {
             $supplierPrice = ProductSupplier::getProductPrice(
                 (int) $product['id_supplier'],
@@ -888,9 +897,15 @@ class OrderDetailCore extends ObjectModel
                 true
             );
             if ($supplierPrice !== false) {
-                $this->purchase_supplier_price = $supplierPrice;
+                $purchaseSupplierPriceDefCur = $supplierPrice;
             }
         }
+
+        // Save the purchase_supplier in order currency
+        $this->purchase_supplier_price = round(
+            Tools::convertPrice($purchaseSupplierPriceDefCur, $order->id_currency),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
         $this->setSpecificPrice($order, $product);
 
@@ -983,7 +998,7 @@ class OrderDetailCore extends ObjectModel
         }
         $this->setShippingCost($order, $product);
         $this->setDetailProductPrice($order, $cart, $product);
-        $this->original_wholesale_price = $this->getWholeSalePrice();
+        $this->original_wholesale_price = $this->getWholeSalePrice($order->id_currency);
 
         // Set order invoice id
         $this->id_order_invoice = (int) $idOrderInvoice;
