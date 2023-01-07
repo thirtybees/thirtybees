@@ -410,17 +410,17 @@ class GroupCore extends ObjectModel
      * @param int $limit
      * @param bool $shopFiltering
      *
-     * @return array|false|int
+     * @return array|int
      *
      * @throws PrestaShopException
      */
     public function getCustomers($count = false, $start = 0, $limit = 0, $shopFiltering = false)
     {
         if ($count) {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                    ->select('COUNT(*)')
-                    ->from('customer', 'c')
+                    ->select('COUNT(1)')
+                    ->from('customer_group', 'cg')
                     ->leftJoin('customer', 'c', 'cg.`id_customer` = c.`id_customer`')
                     ->where('cg.`id_group` = '.(int) $this->id.' '.($shopFiltering ? Shop::addSqlRestriction(Shop::SHARE_CUSTOMER) : ''))
                     ->where('c.`deleted` != 1')
