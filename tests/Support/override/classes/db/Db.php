@@ -32,7 +32,7 @@
 /**
  * Class DbCore
  */
-abstract class Db extends DbCore
+class Db extends DbCore
 {
 }
 

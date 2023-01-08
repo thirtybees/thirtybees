@@ -21,66 +21,42 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    thirty bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017-2018 thirty bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    thirty bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017-2018 thirty bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-if (file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
-    include_once(_PS_ROOT_DIR_.'/config/settings.inc.php');
+if (file_exists(_PS_ROOT_DIR_ . '/config/settings.inc.php')) {
+    include_once(_PS_ROOT_DIR_ . '/config/settings.inc.php');
 }
 
 /**
  * Class DbCore
  */
-abstract class DbCore
+class DbCore
 {
-    /** @var int Constant used by insert() method */
+    /**
+     * @var int Constant used by insert() method
+     */
     const INSERT = 1;
 
-    /** @var int Constant used by insert() method */
+    /**
+     * @var int Constant used by insert() method
+     */
     const INSERT_IGNORE = 2;
 
-    /** @var int Constant used by insert() method */
+    /**
+     * @var int Constant used by insert() method
+     */
     const REPLACE = 3;
 
-    /** @var int Constant used by insert() method */
+    /**
+     * @var int Constant used by insert() method
+     */
     const ON_DUPLICATE_KEY = 4;
-
-    /** @var string Server (eg. localhost) */
-    protected $server;
-
-    /**  @var string Database user (eg. root) */
-    protected $user;
-
-    /** @var string Database password (eg. can be empty !) */
-    protected $password;
-
-    /** @var string Database name */
-    protected $database;
-
-    /** @var boolean */
-    protected $throwOnError;
-
-    /**
-     * @var bool
-     *
-     * @deprecated 1.0.4 For backwards compatibility only
-     */
-    protected $is_cache_enabled = false;
-
-    /**
-     * @var PDO Resource link
-     */
-    protected $link;
-
-    /**
-     * @var PDOStatement|false SQL cached result
-     */
-    protected $result;
 
     /**
      * @var array List of DB instances
@@ -98,11 +74,44 @@ abstract class DbCore
     public static $_slave_servers_loaded = null;
 
     /**
+     * @var string Server (eg. localhost)
+     */
+    protected $server;
+
+    /**
+     * @var string Database user (eg. root)
+     */
+    protected $user;
+
+    /**
+     * @var string Database password (eg. can be empty !)
+     */
+    protected $password;
+
+    /**
+     * @var string Database name
+     */
+    protected $database;
+
+    /**
+     * @var boolean
+     */
+    protected $throwOnError;
+
+    /**
+     * @var PDO Resource link
+     */
+    protected $link;
+
+    /**
+     * @var PDOStatement|false SQL cached result
+     */
+    protected $result;
+
+    /**
      * Store last executed query
      *
      * @var string
-     *
-     * @deprecated 1.0.4 For backwards compatibility only
      */
     protected $last_query;
 
@@ -122,138 +131,475 @@ abstract class DbCore
      *
      * @deprecated 1.0.4 For backwards compatibility only
      */
-    protected $last_cached;
+    protected $last_cached = false;
+
+    /**
+     * @var bool
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
+     */
+    protected $is_cache_enabled = false;
+
+    /**
+     * Instantiates a database connection
+     *
+     * @param string $server Server address
+     * @param string $user User login
+     * @param string $password User password
+     * @param string $database Database name
+     * @param bool $connect If false, don't connect in constructor (since 1.5.0.1)
+     */
+    public function __construct($server, $user, $password, $database, $connect = true)
+    {
+        $this->server = $server;
+        $this->user = $user;
+        $this->password = $password;
+        $this->database = $database;
+        $this->throwOnError = defined('_PS_DEBUG_SQL_') && _PS_DEBUG_SQL_;
+
+        if ($connect) {
+            $this->connect();
+        }
+    }
 
     /**
      * Opens a database connection
      *
      * @return PDO
      */
-    abstract public function connect();
+    public function connect()
+    {
+        try {
+            $this->link = $this->_getPDO($this->server, $this->user, $this->password, $this->database, 5);
+        } catch (PDOException $e) {
+            die(sprintf(Tools::displayError('Link to database cannot be established: %s'), $e->getMessage()));
+        }
+
+        // UTF-8 support
+        if ($this->link->exec('SET NAMES \'utf8mb4\'') === false) {
+            die(Tools::displayError('thirty bees Fatal error: no UTF-8 support. Please check your server configuration.'));
+        }
+
+        $this->link->exec('SET SESSION sql_mode = \'\'');
+
+        return $this->link;
+    }
 
     /**
-     * Closes database connection
-     */
-    abstract public function disconnect();
-
-    /**
-     * Execute a query and get result resource
+     * Returns a new PDO object (database link)
      *
-     * @param string $sql
-     * @return PDOStatement|false
+     * @param string $host
+     * @param string $user
+     * @param string $password
+     * @param string $dbname
+     * @param int $timeout
+     *
+     * @return PDO
      */
-    abstract protected function _query($sql);
+    protected static function _getPDO($host, $user, $password, $dbname, $timeout = 5)
+    {
+        $dsn = 'mysql:';
+        if ($dbname) {
+            $dsn .= 'dbname=' . $dbname . ';';
+        }
+        if (preg_match('/^(.*):([0-9]+)$/', $host, $matches)) {
+            $dsn .= 'host=' . $matches[1] . ';port=' . $matches[2];
+        } elseif (preg_match('#^.*:(/.*)$#', $host, $matches)) {
+            $dsn .= 'unix_socket=' . $matches[1];
+        } else {
+            $dsn .= 'host=' . $host;
+        }
+
+        return new PDO($dsn, $user, $password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
+            PDO::ATTR_TIMEOUT => $timeout,
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+            PDO::ATTR_STRINGIFY_FETCHES => true,
+        ]);
+    }
 
     /**
-     * Get number of rows in a result
+     * Displays last SQL error
      *
-     * @param PDOStatement $result
-     * @return int
-     */
-    abstract protected function _numRows($result);
-
-    /**
-     * Get the ID generated from the previous INSERT operation
+     * @param string|bool $sql
      *
-     * @return int|string
+     * @throws PrestaShopDatabaseException
      */
-    abstract public function Insert_ID();
-
-    /**
-     * Get number of affected rows in previous database operation
-     *
-     * @return int
-     */
-    abstract public function Affected_Rows();
-
-    /**
-     * Get next row for a query which does not return an array
-     *
-     * @param PDOStatement|bool $result
-     * @return array|object|false|null
-     */
-    abstract public function nextRow($result = false);
-
-    /**
-     * Get all rows for a query which return an array
-     *
-     * @param PDOStatement|bool|null $result
-     * @return array
-     */
-    abstract protected function getAll($result = false);
-
-    /**
-     * Get database version
-     *
-     * @return string
-     */
-    abstract public function getVersion();
-
-    /**
-     * Protect string against SQL injections
-     *
-     * @param string $str
-     * @return string
-     */
-    abstract public function _escape($str);
-
-    /**
-     * Returns the text of the error message from previous database operation
-     *
-     * @return string
-     */
-    abstract public function getMsgError();
+    public function displayError($sql = false)
+    {
+        $errno = $this->getNumberError();
+        if ($errno) {
+            throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
+        }
+    }
 
     /**
      * Returns the number of the error from previous database operation
      *
      * @return int
      */
-    abstract public function getNumberError();
+    public function getNumberError()
+    {
+        $error = $this->link->errorInfo();
+
+        return isset($error[1]) ? $error[1] : 0;
+    }
 
     /**
-     * Sets the current active database on the server that's associated with the specified link identifier.
-     * Do not remove, useful for some modules.
+     * Returns the text of the error message from previous database operation
      *
-     * @param string $dbName
-     *
-     * @return bool|int
-     */
-    abstract public function set_db($dbName);
-
-    /**
-     * Selects best table engine.
+     * @param bool $query
      *
      * @return string
      */
-    abstract public function getBestEngine();
+    public function getMsgError($query = false)
+    {
+        $error = $this->link->errorInfo();
+
+        return ($error[0] == '00000') ? '' : $error[2];
+    }
 
     /**
-     * Sets time zone for database connection.
+     * Try a connection to the database
      *
-     * @param string $timezone
-     * @return void
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
+     * @param bool $newDbLink
+     * @param string|bool $engine
+     * @param int $timeout
+     *
+     * @return int Error code or 0 if connection was successful
+     *
      */
-    abstract public function setTimeZone($timezone);
+    public static function tryToConnect($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
+    {
+        try {
+            $link = static::_getPDO($server, $user, $pwd, $db, $timeout);
+        } catch (PDOException $e) {
+            // hhvm wrongly reports error status 42000 when the database does not exist - might change in the future
+            return ($e->getCode() == 1049 || (defined('HHVM_VERSION') && $e->getCode() == 42000)) ? 2 : 1;
+        }
+        unset($link);
+
+        return 0;
+    }
 
     /**
-     * Creates new database object instance.
-     * @param string $server
+     * Tries to connect and create a new database
+     *
+     * @param string $host
      * @param string $user
      * @param string $password
-     * @param string $database
-     * @return Db
+     * @param string $dbname
+     * @param bool $dropAfter If true, drops the created database.
+     *
+     * @return bool
      */
-    public static function createInstance($server, $user, $password, $database)
+    public static function createDatabase($host, $user, $password, $dbname, $dropAfter = false)
     {
-        $class = static::getClass();
-        return new $class($server, $user, $password, $database);
+        try {
+            $link = static::_getPDO($host, $user, $password, false);
+            $escapedName = str_replace('`', '\\`', $dbname);
+            $createDbDDL = 'CREATE DATABASE `' . $escapedName . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+            $success = $link->exec($createDbDDL);
+            if ($dropAfter && ($link->exec('DROP DATABASE `' . $escapedName . '`') !== false)) {
+                return true;
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+
+        return $success;
+    }
+
+    /**
+     * Try a connection to the database and set names to UTF-8
+     *
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     *
+     * @return bool
+     */
+    public static function tryUTF8($server, $user, $pwd)
+    {
+        try {
+            $link = static::_getPDO($server, $user, $pwd, false, 5);
+        } catch (PDOException $e) {
+            return false;
+        }
+        $result = $link->exec('SET NAMES \'utf8mb4\'');
+        unset($link);
+
+        return $result !== false;
+    }
+
+    /**
+     * @param Db $testDb
+     * Unit testing purpose only
+     */
+    public static function setInstanceForTesting($testDb)
+    {
+        static::$instance[0] = $testDb;
+    }
+
+    /**
+     * Unit testing purpose only
+     *
+     * @return void
+     */
+    public static function deleteTestingInstance()
+    {
+        static::$instance = [];
+    }
+
+    /**
+     * Try a connection to the database
+     *
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
+     * @param bool $newDbLink
+     * @param string|bool $engine
+     * @param int $timeout
+     *
+     * @return int Error code or 0 if connection was successful
+     */
+    public static function checkConnection($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
+    {
+        return static::tryToConnect($server, $user, $pwd, $db, $newDbLink, $engine, $timeout);
+    }
+
+
+    /**
+     * Try a connection to the database and set names to UTF-8
+     *
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     *
+     * @return bool
+     */
+    public static function checkEncoding($server, $user, $pwd)
+    {
+        return static::tryUTF8($server, $user, $pwd);
+    }
+
+    /**
+     * Try a connection to the database and check if at least one table with same prefix exists
+     *
+     * @param string $server Server address
+     * @param string $user Login for database connection
+     * @param string $pwd Password for database connection
+     * @param string $db Database name
+     * @param string $prefix Tables prefix
+     *
+     * @return bool
+     */
+    public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
+    {
+        try {
+            $link = static::_getPDO($server, $user, $pwd, $db, 5);
+        } catch (PDOException $e) {
+            return false;
+        }
+
+        $sql = 'SHOW TABLES LIKE \'' . $prefix . '%\'';
+        $result = $link->query($sql);
+
+        return (bool)$result->fetch();
+    }
+
+    /**
+     * Execute a query and get result resource
+     *
+     * @param string|DbQuery $sql
+     *
+     * @return PDOStatement|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function query($sql)
+    {
+        if ($sql instanceof DbQuery) {
+            $sql = $sql->build();
+        }
+
+        $this->result = $this->link->query($sql);
+
+        if ($this->result === false && $this->getNumberError() == 2006) {
+            if ($this->connect()) {
+                $this->result = $this->link->query($sql);
+            }
+        }
+
+        if ($this->result === false && $this->throwOnError) {
+            $this->displayError($sql);
+        }
+
+        return $this->result;
+    }
+
+    /**
+     * Tries to connect to the database and create a table (checking creation privileges)
+     *
+     * @param string $server
+     * @param string $user
+     * @param string $pwd
+     * @param string $db
+     * @param string $prefix
+     * @param string|null $engine Table engine
+     *
+     * @return bool|string True, false or error
+     */
+    public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
+    {
+        try {
+            $link = static::_getPDO($server, $user, $pwd, $db, 5);
+        } catch (PDOException $e) {
+            return false;
+        }
+
+        if ($engine === null) {
+            $engine = 'InnoDB';
+        }
+
+        $result = $link->query('
+		CREATE TABLE `' . $prefix . 'test` (
+			`test` tinyint(1) unsigned NOT NULL
+		) ENGINE=' . $engine);
+        if (!$result) {
+            $error = $link->errorInfo();
+
+            return $error[2];
+        }
+        $link->query('DROP TABLE `' . $prefix . 'test`');
+
+        return true;
+    }
+
+    /**
+     * Checks if auto increment value and offset is 1
+     *
+     * @param string $server
+     * @param string $user
+     * @param string $pwd
+     *
+     * @return bool
+     */
+    public static function checkAutoIncrement($server, $user, $pwd)
+    {
+        try {
+            $link = static::_getPDO($server, $user, $pwd, false, 5);
+        } catch (PDOException $e) {
+            return false;
+        }
+        $ret = (bool)(($result = $link->query('SELECT @@auto_increment_increment as aii')) && ($row = $result->fetch()) && $row['aii'] == 1);
+        $ret &= (bool)(($result = $link->query('SELECT @@auto_increment_offset as aio')) && ($row = $result->fetch()) && $row['aio'] == 1);
+        unset($link);
+
+        return $ret;
+    }
+
+    /**
+     * Executes return the result of $sql as array
+     *
+     * @param string|DbQuery $sql Query to execute
+     * @param bool $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
+     *
+     * @return array|bool|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function executeS($sql, $array = true, $useCache = true)
+    {
+        if ($sql instanceof DbQuery) {
+            $sql = $sql->build();
+        }
+
+        $this->result = false;
+        $this->last_query = $sql;
+
+        // This method must be used only with queries which display results
+        if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
+            if ($this->throwOnError) {
+                throw new PrestaShopDatabaseException("Db::executeS method should be used for SELECT queries only.", $sql);
+            } else {
+                $callPoint = Tools::getCallPoint([Db::class]);
+                $error = 'Db::executeS method should be used for SELECT queries only. ';
+                $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
+                $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
+                $error .= 'Illegal SQL: [' . $sql . ']';
+                trigger_error($error, E_USER_DEPRECATED);
+                return $this->execute($sql, $useCache);
+            }
+        }
+
+        $this->result = $this->query($sql);
+
+        if (!$this->result) {
+            $result = false;
+        } else {
+            if (!$array) {
+                $result = $this->result;
+            } else {
+                $result = $this->getAll($this->result);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Executes a query
+     *
+     * @param string|DbQuery $sql
+     * @param bool $useCache
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function execute($sql, $useCache = true)
+    {
+        if ($sql instanceof DbQuery) {
+            $sql = $sql->build();
+        }
+
+        $this->result = $this->query($sql);
+
+        return (bool)$this->result;
+    }
+
+    /**
+     * Returns all rows from the result set.
+     *
+     * @param bool $result
+     *
+     * @return array|false|null
+     */
+    protected function getAll($result = false)
+    {
+        if (!$result) {
+            $result = $this->result;
+        }
+
+        if (!is_object($result)) {
+            return false;
+        }
+
+        return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Returns database object instance.
      *
      * @param bool $master Decides whether the connection to be returned by the master server or the slave server
+     *
      * @return Db Singleton instance of Db object
      *
      * @throws PrestaShopDatabaseException
@@ -290,32 +636,13 @@ abstract class DbCore
                 static::$_servers[$idServer]['database']
             );
             $connection = static::$instance[$idServer];
-            if (! Configuration::configurationIsLoaded()) {
+            if (!Configuration::configurationIsLoaded()) {
                 Configuration::loadConfigurationFromDB($connection);
             }
             $connection->setTimeZone(Tools::getTimeZone());
         }
 
         return static::$instance[$idServer];
-    }
-
-    /**
-     * @param Db $testDb
-     * Unit testing purpose only
-     */
-    public static function setInstanceForTesting($testDb)
-    {
-        static::$instance[0] = $testDb;
-    }
-
-    /**
-     * Unit testing purpose only
-     *
-     * @return void
-     */
-    public static function deleteTestingInstance()
-    {
-        static::$instance = [];
     }
 
     /**
@@ -330,63 +657,179 @@ abstract class DbCore
         }
 
         // Add here your slave(s) server(s) in this file
-        if (file_exists(_PS_ROOT_DIR_.'/config/db_slave_server.inc.php')) {
-            static::$_servers = array_merge(static::$_servers, require(_PS_ROOT_DIR_.'/config/db_slave_server.inc.php'));
+        if (file_exists(_PS_ROOT_DIR_ . '/config/db_slave_server.inc.php')) {
+            static::$_servers = array_merge(static::$_servers, require(_PS_ROOT_DIR_ . '/config/db_slave_server.inc.php'));
         }
 
         static::$_slave_servers_loaded = true;
     }
 
     /**
-     * Returns the best child layer database class.
+     * Creates new database object instance.
      *
-     * @return string
+     * @param string $server
+     * @param string $user
+     * @param string $password
+     * @param string $database
+     *
+     * @return Db
      */
-    public static function getClass()
+    public static function createInstance($server, $user, $password, $database)
     {
-        return 'DbPDO';
+        return new Db($server, $user, $password, $database);
     }
 
     /**
-     * Instantiates a database connection
+     * Set timezone on current connection.
      *
-     * @param string $server Server address
-     * @param string $user User login
-     * @param string $password User password
-     * @param string $database Database name
-     * @param bool $connect If false, don't connect in constructor (since 1.5.0.1)
+     * @param string $timezone
+     *
+     * @return void
      */
-    public function __construct($server, $user, $password, $database, $connect = true)
+    public function setTimeZone($timezone)
     {
-        $this->server = $server;
-        $this->user = $user;
-        $this->password = $password;
-        $this->database = $database;
-        $this->throwOnError = defined('_PS_DEBUG_SQL_') ? _PS_DEBUG_SQL_ : false;
-
-        if ($connect) {
-            $this->connect();
+        try {
+            $now = new DateTime('now', new DateTimeZone($timezone));
+            $minutes = $now->getOffset() / 60;
+            $sign = ($minutes < 0 ? -1 : 1);
+            $minutes = abs($minutes);
+            $hours = floor($minutes / 60);
+            $minutes -= $hours * 60;
+            $offset = sprintf('%+d:%02d', $hours * $sign, $minutes);
+            $this->link->exec("SET time_zone='$offset'");
+        } catch (Exception $e) {
+            throw new RuntimeException("Failed to set timezone", 0, $e);
         }
     }
 
     /**
-     * Disable the use of the cache
+     * Returns ID of the last inserted row.
      *
-     * @deprecated 1.0.4 For backwards compatibility only
+     * @return string|false
      */
-    public function disableCache()
+    public function Insert_ID()
     {
-        $this->is_cache_enabled = false;
+        return $this->link->lastInsertId();
     }
 
     /**
-     * Enable & flush the cache
+     * Return the number of rows affected by the last SQL query.
      *
-     * @deprecated 1.0.4 For backwards compatibility only
+     * @return int
      */
-    public function enableCache()
+    public function Affected_Rows()
     {
-        $this->is_cache_enabled = false;
+        return $this->result->rowCount();
+    }
+
+    /**
+     * Returns database server version.
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public function getVersion()
+    {
+        return $this->getValue('SELECT VERSION()');
+    }
+
+    /**
+     * Returns a value from the first row, first column of a SELECT query
+     *
+     * @param string|DbQuery $sql
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
+     *
+     * @return mixed|false
+     * @throws PrestaShopException
+     */
+    public function getValue($sql, $useCache = true)
+    {
+        if (!$result = $this->getRow($sql, $useCache)) {
+            return false;
+        }
+
+        return array_shift($result);
+    }
+
+    /**
+     * Returns an associative array containing the first row of the query
+     * This function automatically adds "LIMIT 1" to the query
+     *
+     * @param string|DbQuery $sql the select query (without "LIMIT 1")
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
+     *
+     * @return array|false
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getRow($sql, $useCache = true)
+    {
+        if ($sql instanceof DbQuery) {
+            $sql = $sql->build();
+        }
+
+        $sql = rtrim($sql, " \t\n\r\0\x0B;") . ' LIMIT 1';
+        $this->result = false;
+        $this->last_query = $sql;
+
+        $this->result = $this->query($sql);
+        if (!$this->result) {
+            $result = false;
+        } else {
+            $result = $this->nextRow($this->result);
+        }
+
+        if (!is_array($result)) {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the next row from the result set.
+     *
+     * @param PDOStatement|false $result
+     *
+     * @return array|false|null
+     */
+    public function nextRow($result = false)
+    {
+        if (!$result) {
+            $result = $this->result;
+        }
+
+        if (!is_object($result)) {
+            return false;
+        }
+
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Sets the current active database on the server that's associated with the specified link identifier.
+     * Do not remove, useful for some modules.
+     *
+     * @param string $dbName
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function set_db($dbName)
+    {
+        return $this->link->exec('USE ' . pSQL($dbName));
+    }
+
+    /**
+     * Selects best table engine.
+     *
+     * @return string
+     */
+    public function getBestEngine()
+    {
+        return 'InnoDB';
     }
 
     /**
@@ -402,9 +845,34 @@ abstract class DbCore
     }
 
     /**
-     * Executes SQL query based on selected type
+     * Destroys the database connection link
+     */
+    public function disconnect()
+    {
+        unset($this->link);
+    }
+
+    /**
+     * Filter SQL query within a blacklist
      *
-     * @deprecated 1.5.0.1 Use insert() or update() method instead.
+     * @param string $table Table where insert/update data
+     * @param array $values Data to insert/update
+     * @param string $type INSERT or UPDATE
+     * @param string $where WHERE clause, only for UPDATE (optional)
+     * @param int $limit LIMIT clause (optional)
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     *
+     * @throws PrestaShopException
+     */
+    public function autoExecuteWithNullValues($table, $values, $type, $where = '', $limit = 0)
+    {
+        return $this->autoExecute($table, $values, $type, $where, $limit, 0, true);
+    }
+
+    /**
+     * Executes SQL query based on selected type
      *
      * @param string $table
      * @param array $data
@@ -440,56 +908,6 @@ abstract class DbCore
     }
 
     /**
-     * Filter SQL query within a blacklist
-     *
-     * @param string $table Table where insert/update data
-     * @param array $values Data to insert/update
-     * @param string $type INSERT or UPDATE
-     * @param string $where WHERE clause, only for UPDATE (optional)
-     * @param int $limit LIMIT clause (optional)
-     *
-     * @return bool
-     * @throws PrestaShopDatabaseException
-     *
-     * @throws PrestaShopException
-     */
-    public function autoExecuteWithNullValues($table, $values, $type, $where = '', $limit = 0)
-    {
-        return $this->autoExecute($table, $values, $type, $where, $limit, 0, true);
-    }
-
-    /**
-     * Execute a query and get result resource
-     *
-     * @param string|DbQuery $sql
-     *
-     * @return PDOStatement|false
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function query($sql)
-    {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $this->result = $this->_query($sql);
-
-        if ($this->result === false && $this->getNumberError() == 2006) {
-            if ($this->connect()) {
-                $this->result = $this->_query($sql);
-            }
-        }
-
-        if ($this->result === false && $this->throwOnError) {
-            $this->displayError($sql);
-        }
-
-        return $this->result;
-    }
-
-    /**
      * Executes an INSERT query
      *
      * @param string $table Table name without prefix
@@ -511,7 +929,7 @@ abstract class DbCore
         }
 
         if ($addPrefix && _DB_PREFIX_ && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+            $table = _DB_PREFIX_ . $table;
         }
 
         if ($type == static::INSERT) {
@@ -549,7 +967,7 @@ abstract class DbCore
                         throw new PrestaShopDatabaseException('On duplicate key cannot be used on insert with more than 1 VALUE group');
                     }
                 } else {
-                    $keys[] = '`'.bqSQL($key).'`';
+                    $keys[] = '`' . bqSQL($key) . '`';
                 }
 
                 if (!is_array($value)) {
@@ -562,20 +980,20 @@ abstract class DbCore
                 }
 
                 if ($type == static::ON_DUPLICATE_KEY) {
-                    $duplicateKeyStringified .= '`'.bqSQL($key).'` = '.$stringValue.',';
+                    $duplicateKeyStringified .= '`' . bqSQL($key) . '` = ' . $stringValue . ',';
                 }
             }
             $firstLoop = false;
-            $valuesStringified[] = '('.implode(', ', $values).')';
+            $valuesStringified[] = '(' . implode(', ', $values) . ')';
         }
         $keysStringified = implode(', ', $keys);
 
-        $sql = $insertKeyword.' INTO `'.$table.'` ('.$keysStringified.') VALUES '.implode(', ', $valuesStringified);
+        $sql = $insertKeyword . ' INTO `' . $table . '` (' . $keysStringified . ') VALUES ' . implode(', ', $valuesStringified);
         if ($type == static::ON_DUPLICATE_KEY) {
-            $sql .= ' ON DUPLICATE KEY UPDATE '.substr($duplicateKeyStringified, 0, -1);
+            $sql .= ' ON DUPLICATE KEY UPDATE ' . substr($duplicateKeyStringified, 0, -1);
         }
 
-        return (bool) $this->query($sql);
+        return (bool)$this->query($sql);
     }
 
     /**
@@ -601,34 +1019,34 @@ abstract class DbCore
         }
 
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+            $table = _DB_PREFIX_ . $table;
         }
 
         if (is_array($where)) {
             $where = implode(' AND ', array_filter($where));
         }
 
-        $sql = 'UPDATE `'.bqSQL($table).'` SET ';
+        $sql = 'UPDATE `' . bqSQL($table) . '` SET ';
         foreach ($data as $key => $value) {
             if (!is_array($value)) {
                 $value = ['type' => 'text', 'value' => $value];
             }
             if ($value['type'] == 'sql') {
-                $sql .= '`'.bqSQL($key)."` = {$value['value']},";
+                $sql .= '`' . bqSQL($key) . "` = {$value['value']},";
             } else {
-                $sql .= ($nullValues && ($value['value'] === '' || is_null($value['value']))) ? '`'.bqSQL($key).'` = NULL,' : '`'.bqSQL($key)."` = '{$value['value']}',";
+                $sql .= ($nullValues && ($value['value'] === '' || is_null($value['value']))) ? '`' . bqSQL($key) . '` = NULL,' : '`' . bqSQL($key) . "` = '{$value['value']}',";
             }
         }
 
         $sql = rtrim($sql, ',');
         if ($where) {
-            $sql .= ' WHERE '.$where;
+            $sql .= ' WHERE ' . $where;
         }
         if ($limit) {
-            $sql .= ' LIMIT '.(int) $limit;
+            $sql .= ' LIMIT ' . (int)$limit;
         }
 
-        return (bool) $this->query($sql);
+        return (bool)$this->query($sql);
     }
 
     /**
@@ -647,7 +1065,7 @@ abstract class DbCore
     public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true)
     {
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+            $table = _DB_PREFIX_ . $table;
         }
 
         if (is_array($where)) {
@@ -655,82 +1073,10 @@ abstract class DbCore
         }
 
         $this->result = false;
-        $sql = 'DELETE FROM `'.bqSQL($table).'`'.($where ? ' WHERE '.$where : '').($limit ? ' LIMIT '.(int) $limit : '');
+        $sql = 'DELETE FROM `' . bqSQL($table) . '`' . ($where ? ' WHERE ' . $where : '') . ($limit ? ' LIMIT ' . (int)$limit : '');
         $res = $this->query($sql);
 
-        return (bool) $res;
-    }
-
-    /**
-     * Executes a query
-     *
-     * @param string|DbQuery $sql
-     * @param bool $useCache
-     *
-     * @return bool
-     * @throws PrestaShopException
-     */
-    public function execute($sql, $useCache = true)
-    {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $this->result = $this->query($sql);
-
-        return (bool) $this->result;
-    }
-
-    /**
-     * Executes return the result of $sql as array
-     *
-     * @param string|DbQuery $sql Query to execute
-     * @param bool $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
-     *
-     * @return array|bool|PDOStatement
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function executeS($sql, $array = true, $useCache = true)
-    {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $this->result = false;
-        $this->last_query = $sql;
-
-        // This method must be used only with queries which display results
-        if (! preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
-            if ($this->throwOnError) {
-                throw new PrestaShopDatabaseException("Db::executeS method should be used for SELECT queries only.", $sql);
-            } else {
-                $callPoint = Tools::getCallPoint([Db::class, DbPDO::class]);
-                $error = 'Db::executeS method should be used for SELECT queries only. ';
-                $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
-                $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
-                $error .= 'Illegal SQL: [' . $sql . ']';
-                trigger_error($error, E_USER_DEPRECATED);
-                return $this->execute($sql, $useCache);
-            }
-        }
-
-        $this->result = $this->query($sql);
-
-        if (!$this->result) {
-            $result = false;
-        } else {
-            if (!$array) {
-                $result = $this->result;
-            } else {
-                $result = $this->getAll($this->result);
-            }
-        }
-
-        $this->last_cached = false;
-
-        return $result;
+        return (bool)$res;
     }
 
     /**
@@ -751,105 +1097,17 @@ abstract class DbCore
     }
 
     /**
-     * Returns an associative array containing the first row of the query
-     * This function automatically adds "LIMIT 1" to the query
-     *
-     * @param string|DbQuery $sql the select query (without "LIMIT 1")
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
-     *
-     * @return array|false
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function getRow($sql, $useCache = true)
-    {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $sql = rtrim($sql, " \t\n\r\0\x0B;").' LIMIT 1';
-        $this->result = false;
-        $this->last_query = $sql;
-
-        $this->result = $this->query($sql);
-        if (!$this->result) {
-            $result = false;
-        } else {
-            $result = $this->nextRow($this->result);
-        }
-
-        $this->last_cached = false;
-
-        if (! is_array($result)) {
-            $result = false;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns a value from the first row, first column of a SELECT query
-     *
-     * @param string|DbQuery $sql
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
-     *
-     * @return mixed|false
-     * @throws PrestaShopException
-     */
-    public function getValue($sql, $useCache = true)
-    {
-        if (!$result = $this->getRow($sql, $useCache)) {
-            return false;
-        }
-
-        return array_shift($result);
-    }
-
-    /**
      * Get number of rows for last result
      *
      * @return int
      */
     public function numRows()
     {
-        if (!$this->last_cached && $this->result) {
-            $nrows = $this->_numRows($this->result);
-
-            return $nrows;
+        if ($this->result) {
+            return $this->result->rowCount();
         }
 
         return 0;
-    }
-
-    /**
-     * Executes a query
-     *
-     * @param string|DbQuery $sql
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
-     *
-     * @return bool|PDOStatement
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @deprecated 1.1.1
-     */
-    protected function q($sql, $useCache = true)
-    {
-        Tools::displayAsDeprecated();
-        return $this->query($sql);
-    }
-
-    /**
-     * Displays last SQL error
-     *
-     * @param string|bool $sql
-     * @throws PrestaShopDatabaseException
-     */
-    public function displayError($sql = false)
-    {
-        $errno = $this->getNumberError();
-        if ($errno) {
-            throw new PrestaShopDatabaseException($this->getMsgError(), $sql);
-        }
     }
 
     /**
@@ -879,137 +1137,22 @@ abstract class DbCore
     }
 
     /**
-     * Try a connection to the database
+     * Escapes illegal characters in a string. Protect string against SQL injections
      *
-     * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     * @param string $db Database name
-     * @param bool $newDbLink
-     * @param string|bool $engine
-     * @param int $timeout
+     * @param string $str
      *
-     * @return int Error code or 0 if connection was successful
+     * @return string
      */
-    public static function checkConnection($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
+    public function _escape($str)
     {
-        return call_user_func_array([static::getClass(), 'tryToConnect'], [$server, $user, $pwd, $db, $newDbLink, $engine, $timeout]);
-    }
+        if (is_null($str)) {
+            return '';
+        }
 
-    /**
-     * Try a connection to the database and set names to UTF-8
-     *
-     * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     *
-     * @return bool
-     */
-    public static function checkEncoding($server, $user, $pwd)
-    {
-        return call_user_func_array([static::getClass(), 'tryUTF8'], [$server, $user, $pwd]);
-    }
+        $search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
+        $replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "\'", '\"'];
 
-    /**
-     * Try a connection to the database and check if at least one table with same prefix exists
-     *
-     * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     * @param string $db Database name
-     * @param string $prefix Tables prefix
-     *
-     * @return bool
-     */
-    public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
-    {
-        return call_user_func_array([static::getClass(), 'hasTableWithSamePrefix'], [$server, $user, $pwd, $db, $prefix]);
-    }
-
-    /**
-     * Tries to connect to the database and create a table (checking creation privileges)
-     *
-     * @param string $server
-     * @param string $user
-     * @param string $pwd
-     * @param string $db
-     * @param string $prefix
-     * @param string|null $engine Table engine
-     *
-     * @return bool|string True, false or error
-     */
-    public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
-    {
-        return call_user_func_array([static::getClass(), 'checkCreatePrivilege'], [$server, $user, $pwd, $db, $prefix, $engine]);
-    }
-
-    /**
-     * Checks if auto increment value and offset is 1
-     *
-     * @param string $server
-     * @param string $user
-     * @param string $pwd
-     *
-     * @return bool
-     */
-    public static function checkAutoIncrement($server, $user, $pwd)
-    {
-        return call_user_func_array([static::getClass(), 'checkAutoIncrement'], [$server, $user, $pwd]);
-    }
-
-    /**
-     * Executes a query
-     *
-     * @param string|DbQuery $sql
-     * @param bool $useCache
-     *
-     * @return array|bool|PDOStatement
-     * @throws PrestaShopDatabaseException
-     *
-     * @deprecated 2.0.0
-     * @throws PrestaShopException
-     */
-    public static function s($sql, $useCache = true)
-    {
-        Tools::displayAsDeprecated();
-
-        return static::getInstance()->executeS($sql, true, $useCache);
-    }
-
-    /**
-     * Executes a query
-     *
-     * @param string $sql
-     * @param int $useCache
-     * @return array|bool|PDOStatement
-     *
-     * @deprecated 2.0.0
-     *
-     * @throws PrestaShopException
-     */
-    public static function ps($sql, $useCache = 1)
-    {
-        Tools::displayAsDeprecated();
-        $ret = static::s($sql, $useCache);
-
-        return $ret;
-    }
-
-    /**
-     * Executes a query and kills process (dies)
-     *
-     * @param string $sql
-     * @param int $useCache
-     *
-     * @deprecated 2.0.0
-     *
-     * @throws PrestaShopException
-     */
-    public static function ds($sql, $useCache = 1)
-    {
-        Tools::displayAsDeprecated();
-        static::s($sql, $useCache);
-        exit;
+        return str_replace($search, $replace, $str);
     }
 
     /**
@@ -1021,4 +1164,135 @@ abstract class DbCore
     {
         return $this->link;
     }
+
+    /**
+     * Disable the use of the cache
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
+     */
+    public function disableCache()
+    {
+    }
+
+    /**
+     * Enable & flush the cache
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
+     */
+    public function enableCache()
+    {
+    }
+
+    /**
+     * Returns database class
+     *
+     * @return string
+     *
+     * @deprecated 1.5.0
+     */
+    public static function getClass()
+    {
+        return 'Db';
+    }
+
+    /**
+     * Get number of rows in a result
+     *
+     * @param PDOStatement $result
+     *
+     * @return int
+     *
+     * @deprecated 1.5.0
+     */
+    protected function _numRows($result)
+    {
+        return $result->rowCount();
+    }
+
+    /**
+     * Executes an SQL statement, returning a result set as a PDOStatement object or true/false.
+     *
+     * @param string $sql
+     *
+     * @return PDOStatement|false
+     *
+     * @deprecated 1.5.0
+     */
+    protected function _query($sql)
+    {
+        return $this->link->query($sql);
+    }
+
+    /**
+     * Executes a query
+     *
+     * @param string|DbQuery $sql
+     * @param bool $useCache Deprecated, the internal query cache is no longer used
+     *
+     * @return bool|PDOStatement
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @deprecated 1.1.1
+     */
+    protected function q($sql, $useCache = true)
+    {
+        Tools::displayAsDeprecated();
+        return $this->query($sql);
+    }
+
+    /**
+     * Executes a query
+     *
+     * @param string $sql
+     * @param int $useCache
+     *
+     * @return array|bool|PDOStatement
+     *
+     * @throws PrestaShopException
+     * @deprecated 2.0.0
+     */
+    public static function ps($sql, $useCache = 1)
+    {
+        Tools::displayAsDeprecated();
+        return static::getInstance()->executeS($sql, true, $useCache);
+    }
+
+    /**
+     * Executes a query
+     *
+     * @param string|DbQuery $sql
+     * @param bool $useCache
+     *
+     * @return array|bool|PDOStatement
+     * @throws PrestaShopDatabaseException
+     *
+     * @throws PrestaShopException
+     * @deprecated 2.0.0
+     */
+    public static function s($sql, $useCache = true)
+    {
+        Tools::displayAsDeprecated();
+        return static::getInstance()->executeS($sql, true, $useCache);
+    }
+
+    /**
+     * Executes a query and kills process (dies)
+     *
+     * @param string $sql
+     * @param int $useCache
+     *
+     * @throws PrestaShopException
+     * @deprecated 2.0.0
+     *
+     */
+    public static function ds($sql, $useCache = 1)
+    {
+        Tools::displayAsDeprecated();
+        static::getInstance()->executeS($sql, true, $useCache);
+        exit;
+    }
+
+
 }

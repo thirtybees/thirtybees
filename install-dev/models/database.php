@@ -64,12 +64,11 @@ class InstallModelDatabase extends InstallAbstractModel
         }
 
         if (!$errors) {
-            $dbtype = ' ('.Db::getClass().')';
             // Try to connect to database
             switch (Db::checkConnection($server, $login, $password, $database, true)) {
                 case 0:
                     if (!Db::checkEncoding($server, $login, $password)) {
-                        $errors[] = $this->language->l('Cannot convert database data to utf-8').$dbtype;
+                        $errors[] = $this->language->l('Cannot convert database data to utf-8');
                     }
 
                     // Check if a table with same prefix already exists
@@ -88,11 +87,11 @@ class InstallModelDatabase extends InstallAbstractModel
                     break;
 
                 case 1:
-                    $errors[] = $this->language->l('Database Server is not found. Please verify the login, password and server fields').$dbtype;
+                    $errors[] = $this->language->l('Database Server is not found. Please verify the login, password and server fields');
                     break;
 
                 case 2:
-                    $error = $this->language->l('Connection to MySQL server succeeded, but database "%s" not found', $database).$dbtype;
+                    $error = $this->language->l('Connection to MySQL server succeeded, but database "%s" not found', $database);
                     if ($this->createDatabase($server, $database, $login, $password, true)) {
                         $error .= '<p>'.sprintf('<input type="button" value="%s" class="button" id="btCreateDB">', $this->language->l('Attempt to create the database automatically')).'</p>
 						<script type="text/javascript">bindCreateDB();</script>';
@@ -111,12 +110,12 @@ class InstallModelDatabase extends InstallAbstractModel
      * @param string $login
      * @param string $password
      * @param bool $dropit
-     * @return false|mixed
+     *
+     * @return bool
      */
     public function createDatabase($server, $database, $login, $password, $dropit = false)
     {
-        $class = Db::getClass();
-        return call_user_func([$class, 'createDatabase'], $server, $login, $password, $database, $dropit);
+        return Db::createDatabase($server, $login, $password, $database, $dropit);
     }
 
 }

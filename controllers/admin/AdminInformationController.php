@@ -116,7 +116,7 @@ class AdminInformationControllerCore extends AdminController
                 'user'    => _DB_USER_,
                 'prefix'  => _DB_PREFIX_,
                 'engine'  => _MYSQL_ENGINE_,
-                'driver'  => Db::getClass(),
+                'driver'  => 'PDO',
             ],
             'uname'           => function_exists('php_uname') ? php_uname('s').' '.php_uname('v').' '.php_uname('m') : '',
             'apache_instaweb' => Tools::apacheModExists('mod_instaweb'),
