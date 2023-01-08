@@ -282,7 +282,7 @@ abstract class DbCore
             $idServer = ($totalServers > 2 && ($id % $totalServers) != 0) ? $id % $totalServers : 1;
         }
 
-        if (!isset(static::$instance[$idServer])) {
+        if (!isset(static::$instance[$idServer]) || !static::$instance[$idServer]->link) {
             static::$instance[$idServer] = static::createInstance(
                 static::$_servers[$idServer]['server'],
                 static::$_servers[$idServer]['user'],
