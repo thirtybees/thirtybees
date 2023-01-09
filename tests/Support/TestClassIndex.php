@@ -34,7 +34,6 @@ class TestClassIndex
 
     const NOT_OVERRIDABLE = [
         'PrestaShopAutoload',
-        'Smarty_CacheResource_Mysql'
     ];
 
     const ALIASES = [

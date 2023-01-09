@@ -29,11 +29,17 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Smarty\Cache\CacheResourceMysql;
+
 /**
  * Class SmartyCustomCore
  */
 class SmartyCustomCore extends Smarty
 {
+    const CACHING_TYPE_FILESYSTEM = 'filesystem';
+
+    const CACHING_TYPE_MYSQL = 'mysql';
+
     /**
      * @var array stack trace for currently rendering templates
      */
@@ -41,11 +47,29 @@ class SmartyCustomCore extends Smarty
 
     /**
      * SmartyCustomCore constructor.
+     *
+     * @throws PrestaShopException
      */
     public function __construct()
     {
         parent::__construct();
         $this->template_class = 'Smarty_Custom_Template';
+        $this->resolveCachingType();
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    protected function resolveCachingType()
+    {
+        $cachingType = Configuration::get(Configuration::SMARTY_CACHING_TYPE);
+        if ($cachingType === static::CACHING_TYPE_MYSQL) {
+            $this->registerCacheResource('mysql', new CacheResourceMysql(Encryptor::getInstance()));
+            $this->caching_type = 'mysql';
+        }  else {
+            // fallback to built-in cache resource
+            $this->caching_type = 'file';
+        }
     }
 
     /**

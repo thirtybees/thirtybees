@@ -43,10 +43,6 @@ $smarty->setCacheDir(_PS_CACHE_DIR_.'smarty/cache');
 $smarty->use_sub_dirs = true; // Unused in community-theme-default.
 $smarty->setConfigDir(_PS_SMARTY_DIR_.'configs');
 $smarty->caching = false;
-if (Configuration::get('PS_SMARTY_CACHING_TYPE') == 'mysql') {
-    include(_PS_CLASS_DIR_.'/SmartyCacheResourceMysql.php');
-    $smarty->caching_type = 'mysql';
-}
 $smarty->force_compile = Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SMARTY_FORCE_COMPILE_;
 $smarty->compile_check = Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_;
 $smarty->debug_tpl = _PS_ALL_THEMES_DIR_.'debug.tpl';

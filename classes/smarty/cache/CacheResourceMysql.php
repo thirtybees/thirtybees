@@ -29,11 +29,32 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+namespace Thirtybees\Core\Smarty\Cache;
+
+use Db;
+use Encryptor;
+use PrestaShopDatabaseException;
+use PrestaShopException;
+use Smarty_CacheResource_Custom;
+
 /**
- * Class Smarty_CacheResource_Mysql
+ * Class CacheResourceMysqlCore
  */
-class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
+class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
 {
+    /**
+     * @var Encryptor
+     */
+    protected $encryptor;
+
+    /**
+     * @param Encryptor $encryptor
+     */
+    public function __construct(Encryptor $encryptor)
+    {
+        $this->encryptor = $encryptor;
+    }
+
     /**
      * fetch cached content and its modification time from data source
      *
@@ -57,7 +78,7 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
             if ($encoded) {
                 $encrypted = base64_decode($encoded);
                 if ($encrypted !== false) {
-                    $content = Encryptor::getInstance()->decrypt($encrypted);
+                    $content = $this->encryptor->decrypt($encrypted);
                     $mtime = strtotime($row['modified']);
                     return;
                 }
@@ -111,7 +132,7 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
 			"'.pSQL($id, true).'",
 			"'.pSQL(sha1($name)).'",
 			"'.pSQL($cacheId, true).'",
-			"'.base64_encode(Encryptor::getInstance()->encrypt($content)).'"
+			"'.base64_encode($this->encryptor->encrypt($content)).'"
 		)'
         );
 
