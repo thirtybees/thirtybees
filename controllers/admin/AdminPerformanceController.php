@@ -1229,6 +1229,7 @@ class AdminPerformanceControllerCore extends AdminController
             Tools::generateIndex();
             PageCache::flush();
             Tools::clearOpCache();
+            Cache::getInstance()->flush();
         }
 
         if (Tools::isSubmit('submitAddconfiguration')) {
