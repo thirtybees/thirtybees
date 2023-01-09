@@ -98,7 +98,7 @@ abstract class CacheCore
      *
      * @param string $key
      *
-     * @return mixed
+     * @return mixed|false
      */
     abstract protected function _get($key);
 
@@ -248,7 +248,7 @@ abstract class CacheCore
      *
      * @param string $key
      *
-     * @return array List of deleted keys
+     * @return array|bool List of deleted keys
      */
     public function delete($key)
     {

@@ -31,25 +31,18 @@
 /**
  * This class require Redis server to be installed
  */
-class CacheRedisCore extends CacheCore
+class CacheRedisCore extends Cache
 {
     /**
      * @var bool Connection status
      */
     public $is_connected = false;
-    /**
-     * @var RedisClient $redis
-     */
-    protected $redis;
-    /**
-     * @var array RedisParams
-     */
-    protected $_params = [];
 
     /**
-     * @var array
+     * @var Redis|RedisArray $redis
      */
-    protected $_servers = [];
+    protected $redis;
+
 
     /**
      * CacheRedisCore constructor.
@@ -60,7 +53,7 @@ class CacheRedisCore extends CacheCore
      */
     public function __construct()
     {
-        $this->connect();
+        $this->is_connected = $this->connect();
 
         if ($this->is_connected) {
             $this->keys = @$this->redis->get(_COOKIE_IV_);
@@ -71,9 +64,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * Connect to redis server
+     * Connect to redis server or cluster
      *
-     * @return void
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -81,100 +74,80 @@ class CacheRedisCore extends CacheCore
     public function connect()
     {
         try {
-            $this->is_connected = false;
-            $this->_servers = static::getRedisServers();
-            if (!$this->_servers) {
-                return;
-            } else {
-                if (count($this->_servers) > 1) {
-                    // Multiple servers, set up redis array
-                    $hosts = [];
-                    foreach ($this->_servers as $server) {
-                        $hosts[] = $server['ip'] . ':' . $server['port'];
-                    }
-                    $this->redis = new RedisArray($hosts, ['pconnect' => true]);
-                    foreach ($this->_servers as $server) {
-                        $instance = $this->redis->_instance($server['ip'] . ':' . $server['port']);
-                        if (!empty($server['auth'])) {
-                            if (is_object($instance)) {
-                                if ($instance->auth($server['auth'])) {
-                                    // We're connected as soon as authentication is successful
-                                    $this->is_connected = true;
-                                }
-                            }
-                        } else {
-                            $ping = $this->redis->ping();
-                            // We're connected if a connection without +AUTH receives a +PONG
-                            if ($ping === '+PONG') {
-                                $this->is_connected = true;
-                            } elseif (is_array($ping)) {
-                                $ping = array_values($ping);
-                                if (!empty($ping) && $ping[0] === '+PONG') {
-                                    $this->is_connected = true;
-                                }
-                            }
-                        }
-                    }
-                    if (!empty($this->_servers[0]['auth'])) {
-                        if (!($this->redis->auth($this->_servers[0]['auth']))) {
-                            return;
-                        }
-                    }
-                } elseif (count($this->_servers) === 1) {
-                    $this->redis = new Redis();
-                    if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
-                        $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
-                        if (!empty($this->_servers[0]['auth'])) {
-                            if (!($this->redis->auth($this->_servers[0]['auth']))) {
-                                return;
-                            } else {
-                                $this->is_connected = true;
-                            }
-                        } else {
-                            try {
-                                $this->redis->select($this->_servers[0]['db']);
-                                $ping = $this->redis->ping();
-                                if (is_array($ping)) {
-                                    $ping = array_values($ping);
-                                    if (!empty($ping) && $ping[0] === '+PONG') {
-                                        // We're connected if a connection without +AUTH receives a +PONG
-                                        $this->is_connected = true;
-                                    }
-                                }
-                            } catch (Exception $e) {
-                                $this->is_connected = false;
-                            }
-                        }
-                    }
-                }
+            $servers = static::getRedisServers();
+
+            // no servers defined
+            if (!$servers) {
+                return false;
             }
+
+            return (count($servers) === 1)
+                ? $this->connectSingleServer($servers[0])
+                : $this->connectCluster($servers);
+
         } catch (RedisException $e) {
             throw new PrestaShopException("Failed to connect to redis", 0, $e);
         }
     }
 
     /**
-     * Get list of redis server information
+     * Connect to single redis server
      *
-     * @return array
+     * @param array $serverConfig
      *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
+     * @return bool
+     * @throws RedisException
      */
-    public static function getRedisServer()
+    protected function connectSingleServer($serverConfig)
     {
-        $server = [];
-        // bypass the memory fatal error caused functions nesting on PS 1.5
-        $sql = new DbQuery();
-        $sql->select('`name`, `value`');
-        $sql->from('configuration');
-        $sql->where('`name` = \'TB_REDIS_SERVER\' OR `name` = \'TB_REDIS_PORT\' OR name = \'TB_REDIS_AUTH\' OR name = \'TB_REDIS_DB\'');
-        $params = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
-        foreach ($params as $key => $val) {
-            $server[$val['name']] = $val['value'];
+        $this->redis = new Redis();
+        if ($this->redis->pconnect($serverConfig['ip'], $serverConfig['port'])) {
+            $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+            return $this->authConnection($serverConfig);
         }
+        return false;
+    }
 
-        return $server;
+    /**
+     * Connects to redis cluster
+     *
+     * @param array[] $servers
+     *
+     * @return bool
+     * @throws RedisException
+     */
+    protected function connectCluster($servers)
+    {
+        $hosts = [];
+        foreach ($servers as $server) {
+            $hosts[] = $server['ip'] . ':' . $server['port'];
+        }
+        $this->redis = new RedisArray($hosts, ['pconnect' => true]);
+        $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+
+        $connected = true;
+        foreach ($servers as $serverConfig) {
+            $connected= $connected && $this->authConnection($serverConfig);
+        }
+        return $connected;
+    }
+
+    /**
+     * Authenticate redis connection. Returns true, if connection to redis server(s) is established
+     *
+     * @param array $serverConfig
+     *
+     * @return bool
+     * @throws RedisException
+     */
+    protected function authConnection($serverConfig)
+    {
+        if ($serverConfig['auth']) {
+            return $this->redis->auth($serverConfig['auth']) === true;
+        } else {
+            $this->redis->select($serverConfig['db']);
+            return (bool)$this->redis->ping();
+        }
     }
 
     /**
@@ -199,10 +172,6 @@ class CacheRedisCore extends CacheCore
         $sql->where('`auth` = \''.pSQL($auth).'\'');
         $sql->where('`db` = '.(int) $db);
         if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql, false)) {
-            $context = Context::getContext();
-            $context->controller->errors[] =
-                Tools::displayError('Redis server has already been added');
-
             return false;
         }
 
@@ -232,7 +201,7 @@ class CacheRedisCore extends CacheCore
         $sql->select('*');
         $sql->from('redis_servers');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
     }
 
     /**
@@ -255,14 +224,6 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @return void
-     */
-    public function __destruct()
-    {
-        $this->close();
-    }
-
-    /**
      * Close connection to redis server
      *
      * @return bool
@@ -278,9 +239,11 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::flush()
+     * Clean all cached data
      *
      * @return bool
+     *
+     * @throws RedisException
      */
     public function flush()
     {
@@ -292,9 +255,15 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::_set()
+     * Cache a data
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
      *
      * @return bool
+     *
+     * @throws RedisException
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -306,9 +275,11 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::_exists()
+     * @param string $key
      *
      * @return bool
+     *
+     * @throws RedisException
      */
     protected function _exists($key)
     {
@@ -320,9 +291,11 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::_get()
+     * @param string $key
      *
-     * @return bool
+     * @return mixed
+     *
+     * @throws RedisException
      */
     protected function _get($key)
     {
@@ -334,9 +307,11 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::_delete()
+     * @param string $key
      *
      * @return bool
+     *
+     * @throws RedisException
      */
     protected function _delete($key)
     {
@@ -348,9 +323,9 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * @see Cache::_writeKeys()
-     *
      * @return bool
+     *
+     * @throws RedisException
      */
     protected function _writeKeys()
     {

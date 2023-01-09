@@ -32,7 +32,7 @@
 /**
  * This class requires the PECL APC extension or PECL APCu extension to be installed
  */
-class CacheApcuCore extends CacheCore
+class CacheApcuCore extends Cache
 {
     /**
      * CacheApcCore constructor.
