@@ -738,7 +738,7 @@ class AdminPerformanceControllerCore extends AdminController
                         [
                             'id'    => 'CacheRedis',
                             'value' => 'CacheRedis',
-                            'label' => $this->l('redis').(extension_loaded('redis') ? '' : $warningRedis),
+                            'label' => $this->l('Redis').(extension_loaded('redis') ? '' : $warningRedis),
                         ],
                     ],
                 ],
@@ -1464,26 +1464,35 @@ class AdminPerformanceControllerCore extends AdminController
             $auth = pSQL(Tools::getValue('sAuth', ''));
             $db = (int) Tools::getValue('sDb', 0);
             if ($host != '' && $port != 0) {
-                $res = 0;
-                if (extension_loaded('redis')) {
-                    try {
-                        $redis = new Redis();
-                        if ($redis->connect($host, $port)) {
-                            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
-                            if (!empty($auth)) {
-                                if (!($redis->auth($auth))) {
-                                    $this->ajaxDie(json_encode([0]));
-                                }
-                            }
-                            $redis->select($db);
-
-                            $res = $redis->ping() ? 1 : 0;
-                        }
-                    } catch (Exception $e) {
-                        $this->ajaxDie(json_encode([0]));
+                try {
+                    if (! extension_loaded('redis')) {
+                        throw new PrestaShopException(Tools::displayError("Redis extension not loaded"));
                     }
+
+                    $redis = new Redis();
+                    if ($redis->connect($host, $port)) {
+                        $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+                        if (!empty($auth)) {
+                            if (!($redis->auth($auth))) {
+                                $this->ajaxDie(json_encode([0]));
+                            }
+                        }
+                        $redis->select($db);
+                        if (! $redis->ping()) {
+                            throw new PrestaShopException("Redis server ping failed");
+                        }
+                        $this->ajaxDie(json_encode([
+                            'success' => true,
+                            'message' => $this->l('Connected to Redis server'),
+                        ]));
+                    }
+                } catch (Exception $e) {
+                    $this->ajaxDie(json_encode([
+                        'success' => false,
+                        'error' => $e->getMessage()
+                    ]));
                 }
-                $this->ajaxDie(json_encode([$res]));
+
             }
         }
         exit;

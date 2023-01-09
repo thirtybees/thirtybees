@@ -151,6 +151,12 @@
 							<input class="form-control" type="text" name="redisDb" value="0"/>
 						</div>
 					</div>
+					<div class="form-group" id="redisServerStatus" style="display:none">
+						<label class="control-label col-lg-3">{l s='Status'} </label>
+						<div class="col-lg-9">
+							<p class="alert" id="redisServerStatusMsg"></p>
+						</div>
+					</div>
 					<div class="form-group">
 						<div class="col-lg-9 col-lg-push-3">
 							<input type="submit" value="{l s='Add Server'}" name="submitAddRedisServer" class="btn btn-default"/>
@@ -440,13 +446,15 @@
 					context: document.body,
 					dataType: 'json',
 					success: function (data) {
-						if (data && $.isArray(data)) {
-							var color = data[0] != 0 ? 'lightgreen' : 'red';
-							$('#formRedisServerStatus').show();
-							$('input:text[name=redisIp]').css('background', color);
-							$('input:text[name=redisPort]').css('background', color);
-							$('input:text[name=redisAuth]').css('background', color);
-							$('input:text[name=redisDb]').css('background', color);
+						if (data) {
+							if (data.success) {
+								$('#redisServerStatusMsg').text(data.message);
+								$('#redisServerStatusMsg').removeClass('alert-danger').addClass('alert-success');
+							} else {
+								$('#redisServerStatusMsg').text(data.error);
+								$('#redisServerStatusMsg').removeClass('alert-success').addClass('alert-danger');
+							}
+							$('#redisServerStatus').show();
 						}
 					}
 				});
