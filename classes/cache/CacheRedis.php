@@ -343,7 +343,8 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->set($this->mapKey($key), $value);
+        $timeout = ($ttl > 0) ? $ttl : null;
+        return $this->redis->set($this->mapKey($key), $value, $timeout);
     }
 
     /**
