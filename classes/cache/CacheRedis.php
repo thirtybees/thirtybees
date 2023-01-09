@@ -33,6 +33,8 @@
  */
 class CacheRedisCore extends Cache
 {
+    const KEYS_PREFIX_CONFIG_KEY = 'TB_REDIS_KEYS_PREFIX';
+
     /**
      * @var bool Connection status
      */
@@ -43,24 +45,21 @@ class CacheRedisCore extends Cache
      */
     protected $redis;
 
+    /**
+     * @var string
+     */
+    protected $keysPrefix;
 
     /**
      * CacheRedisCore constructor.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws RedisException
      */
-    public function __construct()
+    public function __construct($keysPrefix = null)
     {
         $this->is_connected = $this->connect();
-
-        if ($this->is_connected) {
-            $this->keys = @$this->redis->get(_COOKIE_IV_);
-            if (!is_array($this->keys)) {
-                $this->keys = [];
-            }
-        }
+        $this->keysPrefix = $keysPrefix ?? static::resolveKeysPrefix();
     }
 
     /**
@@ -225,19 +224,22 @@ class CacheRedisCore extends Cache
     }
 
     /**
-     * Close connection to redis server
+     * Returns redis key to store all existing keys
      *
-     * @return bool
+     * @return string
+     *
+     * @throws PrestaShopException
      */
-    protected function close()
+    protected static function resolveKeysPrefix()
     {
-        if (!$this->is_connected) {
-            return false;
+        $value = Configuration::getGlobalValue(static::KEYS_PREFIX_CONFIG_KEY);
+        if (! $value) {
+            $value = Tools::passwdGen(6);
+            Configuration::updateGlobalValue(static::KEYS_PREFIX_CONFIG_KEY, $value);
         }
-
-        // Don't close the connection, needs to be persistent across PHP-sessions
-        return true;
+        return $value;
     }
+
 
     /**
      * Clean all cached data
@@ -253,6 +255,75 @@ class CacheRedisCore extends Cache
         }
 
         return (bool) $this->redis->flushDB();
+    }
+
+    /**
+     * Store a data in cache
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     *
+     * @return bool
+     * @throws RedisException
+     */
+    public function set($key, $value, $ttl = 0)
+    {
+        return $this->_set($key, $value, $ttl);
+    }
+
+    /**
+     * Retrieve a data from cache
+     *
+     * @param string $key
+     *
+     * @return mixed
+     * @throws RedisException
+     */
+    public function get($key)
+    {
+        return $this->_get($key);
+    }
+
+    /**
+     * Check if a data is cached
+     *
+     * @param string $key
+     *
+     * @return bool
+     * @throws RedisException
+     */
+    public function exists($key)
+    {
+        return $this->_exists($key);
+    }
+
+    /**
+     * Delete one or several data from cache (* joker can be used, but avoid it !)
+     *    E.g.: delete('*'); delete('my_prefix_*'); delete('my_key_name');
+     *
+     * @param string $key
+     *
+     * @return bool
+     * @throws RedisException
+     */
+    public function delete($key)
+    {
+        if (! $this->is_connected) {
+            return false;
+        }
+        if ($key == '*') {
+            $this->flush();
+        } elseif (strpos($key, '*') === false) {
+            $this->_delete($key);
+        } else {
+            $keys = $this->redis->keys($this->mapKey($key));
+            if (is_array($keys) && $keys) {
+                $this->redis->del($keys);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -272,7 +343,7 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->set($key, $value);
+        return $this->redis->set($this->mapKey($key), $value);
     }
 
     /**
@@ -304,7 +375,7 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->get($key);
+        return $this->redis->get($this->mapKey($key));
     }
 
     /**
@@ -320,21 +391,24 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->del($key);
+        return $this->redis->del($this->mapKey($key));
     }
 
     /**
-     * @return bool
-     *
-     * @throws RedisException
+     * Write keys index
      */
     protected function _writeKeys()
     {
-        if (!$this->is_connected) {
-            return false;
-        }
-        $this->redis->set(_COOKIE_IV_, $this->keys);
+        // this implementation do not use keys
+    }
 
-        return true;
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    protected function mapKey($key)
+    {
+        return $this->keysPrefix . ':' . $key;
     }
 }
