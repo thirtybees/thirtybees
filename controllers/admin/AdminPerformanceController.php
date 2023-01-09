@@ -193,7 +193,11 @@ class AdminPerformanceControllerCore extends AdminController
                             'value' => SmartyCustom::CACHING_TYPE_MYSQL,
                             'label' => $this->l('MySQL'),
                         ],
-
+                        [
+                            'id'    => 'smarty_caching_type_ssc',
+                            'value' => SmartyCustom::CACHING_TYPE_SSC,
+                            'label' => $this->l('Server Side Cache'),
+                        ],
                     ],
                 ],
                 [

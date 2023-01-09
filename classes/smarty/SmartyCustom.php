@@ -30,6 +30,7 @@
  */
 
 use Thirtybees\Core\Smarty\Cache\CacheResourceMysql;
+use Thirtybees\Core\Smarty\Cache\CacheResourceServerSideCache;
 
 /**
  * Class SmartyCustomCore
@@ -39,6 +40,8 @@ class SmartyCustomCore extends Smarty
     const CACHING_TYPE_FILESYSTEM = 'filesystem';
 
     const CACHING_TYPE_MYSQL = 'mysql';
+
+    const CACHING_TYPE_SSC = 'ssc';
 
     /**
      * @var array stack trace for currently rendering templates
@@ -66,7 +69,10 @@ class SmartyCustomCore extends Smarty
         if ($cachingType === static::CACHING_TYPE_MYSQL) {
             $this->registerCacheResource('mysql', new CacheResourceMysql(Encryptor::getInstance()));
             $this->caching_type = 'mysql';
-        }  else {
+        }  elseif ($cachingType === static::CACHING_TYPE_SSC) {
+            $this->registerCacheResource('ssc', new CacheResourceServerSideCache(Cache::getInstance()));
+            $this->caching_type = 'ssc';
+        } else {
             // fallback to built-in cache resource
             $this->caching_type = 'file';
         }
