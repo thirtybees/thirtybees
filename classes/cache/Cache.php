@@ -41,6 +41,8 @@ abstract class CacheCore
 
     /**
      * Name of SQL cache index
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     const SQL_TABLES_NAME = 'tablesCached';
 
@@ -55,27 +57,18 @@ abstract class CacheCore
     protected $keys = [];
 
     /**
-     * @var array Store list of tables and their associated keys for SQL cache (warning: this var must not be initialized here !)
+     * @var array
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     protected $sql_tables_cached;
 
     /**
      * @var array List of blacklisted tables for SQL cache, these tables won't be indexed
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
-    protected $blacklist = [
-        'cart',
-        'cart_cart_rule',
-        'cart_product',
-        'connections',
-        'connections_source',
-        'connections_page',
-        'customer',
-        'customer_group',
-        'customized_data',
-        'guest',
-        'pagenotfound',
-        'page_viewed',
-    ];
+    protected $blacklist = [];
 
     /**
      * @var array Store local cache
@@ -169,19 +162,25 @@ abstract class CacheCore
      * Unit testing purpose only
      *
      * @param Cache $testInstance
+     *
+     * @deprecated 1.5.0
      */
     public static function setInstanceForTesting($testInstance)
     {
+        Tools::displayAsDeprecated();
         static::$instance = $testInstance;
     }
 
     /**
      * Unit testing purpose only
      *
+     * @deprecated 1.5.0
+     *
      * @return void
      */
     public static function deleteTestingInstance()
     {
+        Tools::displayAsDeprecated();
         static::$instance = null;
     }
 
@@ -290,107 +289,50 @@ abstract class CacheCore
      * @param array $result
      *
      * @return bool
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     public function setQuery($query, $result)
     {
-        if ($this->isBlacklist($query)) {
-            return true;
-        }
-
-        if (empty($result) || $result === false) {
-            $result = [];
-        }
-
-        if (is_null($this->sql_tables_cached)) {
-            $this->sql_tables_cached = $this->get(Tools::encryptIV(static::SQL_TABLES_NAME));
-            if (!is_array($this->sql_tables_cached)) {
-                $this->sql_tables_cached = [];
-            }
-        }
-
-        // Store query results in cache
-        $key = Tools::encryptIV($query);
-        // no need to check the key existence before the set : if the query is already
-        // in the cache, setQuery is not invoked
-        $this->set($key, $result);
-
-        // Get all table from the query and save them in cache
-        if ($tables = $this->getTables($query)) {
-            foreach ($tables as $table) {
-                if (!isset($this->sql_tables_cached[$table][$key])) {
-                    $this->adjustTableCacheSize($table);
-                    $this->sql_tables_cached[$table][$key] = true;
-                }
-            }
-        }
-        $this->set(Tools::encryptIV(static::SQL_TABLES_NAME), $this->sql_tables_cached);
+        Tools::displayAsDeprecated();
+        return false;
     }
 
     /**
      * Autoadjust the table cache size to avoid storing too big elements in the cache
      *
      * @param string $table
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     protected function adjustTableCacheSize($table)
     {
-        if (isset($this->sql_tables_cached[$table])
-            && count($this->sql_tables_cached[$table]) > 5000
-        ) {
-            // make sure the cache doesn't contains too many elements : delete the first 1000
-            $tableBuffer = array_slice($this->sql_tables_cached[$table], 0, 1000, true);
-            foreach ($tableBuffer as $fsKey => $value) {
-                $this->delete($fsKey);
-                $this->delete($fsKey.'_nrows');
-                unset($this->sql_tables_cached[$table][$fsKey]);
-            }
-        }
+        Tools::displayAsDeprecated();
     }
 
     /**
      * @param string $string
-     * @return array|false
+     *
+     * @return false
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     protected function getTables($string)
     {
-        if (preg_match_all('/(?:from|join|update|into)\s+`?('._DB_PREFIX_.'[0-9a-z_-]+)(?:`?\s{0,},\s{0,}`?('._DB_PREFIX_.'[0-9a-z_-]+)`?)?(?:`|\s+|\Z)(?!\s*,)/Umsi', $string, $res)) {
-            foreach ($res[2] as $table) {
-                if ($table != '') {
-                    $res[1][] = $table;
-                }
-            }
-
-            return array_unique($res[1]);
-        } else {
-            return false;
-        }
+        Tools::displayAsDeprecated();
+        return false;
     }
 
     /**
      * Delete a query from cache
      *
      * @param string $query
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     public function deleteQuery($query)
     {
-        if (is_null($this->sql_tables_cached)) {
-            $this->sql_tables_cached = $this->get(Tools::encryptIV(static::SQL_TABLES_NAME));
-            if (!is_array($this->sql_tables_cached)) {
-                $this->sql_tables_cached = [];
-            }
-        }
-
-        if ($tables = $this->getTables($query)) {
-            foreach ($tables as $table) {
-                if (isset($this->sql_tables_cached[$table])) {
-                    foreach (array_keys($this->sql_tables_cached[$table]) as $fsKey) {
-                        $this->delete($fsKey);
-                        $this->delete($fsKey.'_nrows');
-                    }
-                    unset($this->sql_tables_cached[$table]);
-                }
-            }
-        }
-        $this->set(Tools::encryptIV(static::SQL_TABLES_NAME), $this->sql_tables_cached);
+        Tools::displayAsDeprecated();
     }
 
     /**
@@ -399,15 +341,12 @@ abstract class CacheCore
      * @param string $query
      *
      * @return bool
+     *
+     * @deprecated 1.5.0 We no longer cache query results
      */
     protected function isBlacklist($query)
     {
-        foreach ($this->blacklist as $find) {
-            if (false !== strpos($query, _DB_PREFIX_.$find)) {
-                return true;
-            }
-        }
-
+        Tools::displayAsDeprecated();
         return false;
     }
 
@@ -455,7 +394,7 @@ abstract class CacheCore
     {
         if ($key === '*') {
             static::$local = [];
-        } else if (strpos($key, '*') !== false) {
+        } elseif (strpos($key, '*') !== false) {
             $regexp = str_replace('\\*', '.*', preg_quote($key, '#'));
             foreach (array_keys(static::$local) as $key) {
                 if (preg_match('#^'.$regexp.'$#', $key)) {
