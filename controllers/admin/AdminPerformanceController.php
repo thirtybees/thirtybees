@@ -1422,25 +1422,40 @@ class AdminPerformanceControllerCore extends AdminController
             $port = (int) Tools::getValue('sPort', 0);
             $type = Tools::getValue('type', '');
             if ($host != '' && $port != 0) {
-                $res = 0;
-                if ($type == 'memcached') {
-                    if (extension_loaded('memcached') &&
-                        @fsockopen($host, $port)
-                    ) {
+                try {
+                    $version = false;
+                    if ($type == 'memcached') {
+                        if (! CacheMemcached::checkEnvironment()) {
+                            throw new PrestaShopException(Tools::displayError("Memcached extension not loaded"));
+                        }
                         $memcache = new Memcached();
                         $memcache->addServer($host, $port);
-                        $res =  in_array('255.255.255', $memcache->getVersion(), true) === false;
+                        $versions = $memcache->getVersion();
+                        if ($versions) {
+                            $version = array_values($versions)[0];
+                        }
+                    } else {
+                        if (! CacheMemcache::checkEnvironment()) {
+                            throw new PrestaShopException(Tools::displayError("Memcache extension not loaded"));
+                        }
+                        $memcache = new Memcache();
+                        $memcache->addServer($host, $port);
+                        $version = $memcache->getVersion();
                     }
-                } else {
-                    if (function_exists('memcache_get_server_status') &&
-                        function_exists('memcache_connect') &&
-                        @fsockopen($host, $port)
-                    ) {
-                        $memcache = @memcache_connect($host, $port);
-                        $res      = @memcache_get_server_status($memcache, $host, $port);
+                    if (! $version) {
+                        throw new PrestaShopException("Failed to connect to memcache server");
                     }
+                    $this->ajaxDie(json_encode([
+                        'success' => true,
+                        'message' => sprintf($this->l('Connected to memcache server version %s'), $version),
+                    ]));
+                    $this->ajaxDie(json_encode([]));
+                } catch (Exception $e) {
+                    $this->ajaxDie(json_encode([
+                        'success' => false,
+                        'error' => $e->getMessage()
+                    ]));
                 }
-                $this->ajaxDie(json_encode([$res]));
             }
         }
         exit;

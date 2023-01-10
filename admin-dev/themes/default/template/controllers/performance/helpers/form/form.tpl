@@ -66,7 +66,7 @@
 					<div class="form-group">
 						<label class="control-label col-lg-3">{l s='IP Address'} </label>
 						<div class="col-lg-9">
-							<input class="form-control" type="text" name="memcachedIp"/>
+							<input class="form-control" type="text" name="memcachedIp" value="127.0.0.1" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -79,6 +79,12 @@
 						<label class="control-label col-lg-3">{l s='Weight'} </label>
 						<div class="col-lg-9">
 							<input class="form-control" type="text" name="memcachedWeight" value="1"/>
+						</div>
+					</div>
+					<div class="form-group" id="memcacheServerStatus" style="display:none">
+						<label class="control-label col-lg-3">{l s='Status'} </label>
+						<div class="col-lg-9">
+							<p class="alert" id="memcacheServerStatusMsg"></p>
 						</div>
 					</div>
 					<div class="form-group">
@@ -396,7 +402,7 @@
 					data: {
 						controller: 'adminperformance',
 						token: '{$token|escape:'html':'UTF-8'}',
-						action: 'test_server',
+						action: 'test_memcached_server',
 						sHost: host,
 						sPort: port,
 						type: type,
@@ -406,11 +412,15 @@
 					dataType: 'json',
 					async: false,
 					success: function (data) {
-						if (data && $.isArray(data)) {
-							var color = data[0] != 0 ? 'green' : 'red';
-							{*$('#formMemcachedServerStatus').show();*}
-							$('input:text[name=memcachedIp]').css('background', color);
-							$('input:text[name=memcachedPort]').css('background', color);
+						if (data) {
+							if (data.success) {
+								$('#memcacheServerStatusMsg').text(data.message);
+								$('#memcacheServerStatusMsg').removeClass('alert-danger').addClass('alert-success');
+							} else {
+								$('#memcacheServerStatusMsg').text(data.error);
+								$('#memcacheServerStatusMsg').removeClass('alert-success').addClass('alert-danger');
+							}
+							$('#memcacheServerStatus').show();
 						}
 					}
 				});

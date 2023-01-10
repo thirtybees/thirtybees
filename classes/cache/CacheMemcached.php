@@ -51,7 +51,7 @@ class CacheMemcachedCore extends Cache
      */
     public function __construct()
     {
-        $this->connect();
+        $this->is_connected = $this->connect();
         if ($this->is_connected) {
             $this->memcached->setOption(Memcached::OPT_PREFIX_KEY, _DB_PREFIX_);
             if ($this->memcached->getOption(Memcached::HAVE_IGBINARY)) {
@@ -73,29 +73,41 @@ class CacheMemcachedCore extends Cache
     /**
      * Connect to memcached server
      *
+     * @return bool
+     *
      * @throws PrestaShopException
      */
     public function connect()
     {
-        if (class_exists('Memcached') && extension_loaded('memcached')) {
-            $this->memcached = new Memcached();
-        } else {
-            return;
+        if (! static::checkEnvironment()) {
+            return false;
         }
 
         $servers = static::getMemcachedServers();
-        if (!$servers) {
-            return;
-        }
-        foreach ($servers as $server) {
-            $this->memcached->addServer($server['ip'], $server['port'], (int) $server['weight']);
+        if (! $servers) {
+            return false;
         }
 
-        $this->is_connected = in_array('255.255.255', $this->memcached->getVersion(), true) === false;
+        try {
+            $this->memcached = new Memcached();
+            foreach ($servers as $server) {
+                $this->memcached->addServer($server['ip'], $server['port'], (int) $server['weight']);
+            }
+
+            return (bool)$this->memcached->getVersion();
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
-     * @see Cache::_set()
+     * Cache a data
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     *
+     * @return bool
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -103,11 +115,16 @@ class CacheMemcachedCore extends Cache
             return false;
         }
 
-        return $this->memcached->set($key, $value, $ttl);
+        $expires = $ttl ? time() + $ttl : 0;
+        return $this->memcached->set(static::mapKey($key), $value, $expires);
     }
 
     /**
-     * @see Cache::_get()
+     * Retrieve a cached data by key
+     *
+     * @param string $key
+     *
+     * @return mixed|false
      */
     protected function _get($key)
     {
@@ -115,11 +132,15 @@ class CacheMemcachedCore extends Cache
             return false;
         }
 
-        return $this->memcached->get($key);
+        return $this->memcached->get(static::mapKey($key));
     }
 
     /**
-     * @see Cache::_exists()
+     * Check if a data is cached by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _exists($key)
     {
@@ -127,11 +148,15 @@ class CacheMemcachedCore extends Cache
             return false;
         }
 
-        return ($this->memcached->get($key) !== false);
+        return ($this->memcached->get(static::mapKey($key)) !== false);
     }
 
     /**
-     * @see Cache::_delete()
+     * Delete a data from the cache by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _delete($key)
     {
@@ -139,23 +164,21 @@ class CacheMemcachedCore extends Cache
             return false;
         }
 
-        return $this->memcached->delete($key);
+        return $this->memcached->delete(static::mapKey($key));
     }
 
     /**
-     * @see Cache::_writeKeys()
+     * Write keys index
      */
     protected function _writeKeys()
     {
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return true;
+        // this implementation do not use keys
     }
 
     /**
-     * @see Cache::flush()
+     * Clean all cached data
+     *
+     * @return bool
      */
     public function flush()
     {
@@ -214,6 +237,9 @@ class CacheMemcachedCore extends Cache
      */
     public function delete($key)
     {
+        if (! $this->is_connected) {
+            return false;
+        }
         if ($key == '*') {
             $this->flush();
         } elseif (strpos($key, '*') === false) {
@@ -288,5 +314,27 @@ class CacheMemcachedCore extends Cache
     public static function deleteServer($id_server)
     {
         return Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'memcached_servers WHERE id_memcached_server='.(int) $id_server);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function checkEnvironment()
+    {
+        return (
+            class_exists('Memcached') &&
+            extension_loaded('memcached')
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected static function mapKey($key)
+    {
+        if (strlen($key) > 250)  {
+            return Tools::encrypt($key);
+        }
+        return $key;
     }
 }
