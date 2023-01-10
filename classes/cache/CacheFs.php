@@ -49,13 +49,22 @@ class CacheFsCore extends Cache
         $this->depth = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
 
         $keysFilename = $this->getFilename(static::KEYS_NAME);
-        if (@filemtime($keysFilename)) {
+        if (file_exists($keysFilename)) {
             $this->keys = json_decode(file_get_contents($keysFilename), true);
+            if (! is_array($this->keys)) {
+                $this->keys = [];
+            }
         }
     }
 
     /**
-     * @see Cache::_set()
+     * Cache a data
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     *
+     * @return bool
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -71,57 +80,72 @@ class CacheFsCore extends Cache
     }
 
     /**
-     * @see Cache::_get()
+     * Retrieve a cached data by key
+     *
+     * @param string $key
+     *
+     * @return mixed|false
      */
     protected function _get($key)
     {
-        if ($this->keys[$key] > 0 && $this->keys[$key] < time()) {
+        if (isset($this->keys[$key]) && $this->keys[$key] > 0 && $this->keys[$key] < time()) {
             $this->delete($key);
-
             return false;
         }
 
         $filename = $this->getFilename($key);
-        if (!@filemtime($filename)) {
-            unset($this->keys[$key]);
-            $this->_writeKeys();
-
+        if (! file_exists($filename)) {
+            $this->delete($key);
             return false;
         }
-        $file = file_get_contents($filename);
 
-        return json_decode($file);
+        $file = file_get_contents($filename);
+        if (! $file) {
+            $this->delete($key);
+            return false;
+        }
+
+        return json_decode($file, true);
     }
 
     /**
-     * @see Cache::_exists()
+     * Check if a data is cached by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _exists($key)
     {
-        if ($this->keys[$key] > 0 && $this->keys[$key] < time()) {
+        if (isset($this->keys[$key]) && $this->keys[$key] > 0 && $this->keys[$key] < time()) {
             $this->delete($key);
-
             return false;
         }
 
-        return isset($this->keys[$key]) && @filemtime($this->getFilename($key));
+        return (
+            isset($this->keys[$key]) &&
+            file_exists($this->getFilename($key))
+        );
     }
 
     /**
-     * @see Cache::_delete()
+     * Delete a data from the cache by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _delete($key)
     {
         $filename = $this->getFilename($key);
-        if (!@filemtime($filename)) {
+        if (! file_exists($filename)) {
             return true;
         }
-
         return unlink($filename);
     }
 
     /**
-     * @see Cache::_writeKeys()
+     * Write keys index
      */
     protected function _writeKeys()
     {
@@ -135,7 +159,9 @@ class CacheFsCore extends Cache
     }
 
     /**
-     * @see Cache::flush()
+     * Clean all cached data
+     *
+     * @return bool
      */
     public function flush()
     {
