@@ -35,14 +35,19 @@
 class CacheApcuCore extends Cache
 {
     /**
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
      * CacheApcCore constructor.
-     *
-     * @throws PrestaShopException
      */
     public function __construct()
     {
-        if (!extension_loaded('apcu')) {
-            throw new PrestaShopException('APCu cache has been enabled, but the APCu extension is not available');
+        $this->enabled = extension_loaded('apcu') && apcu_enabled();
+
+        if (! $this->enabled) {
+            trigger_error('APCu cache has been enabled, but the APCu extension is not available', E_USER_WARNING);
         }
     }
 
@@ -56,6 +61,10 @@ class CacheApcuCore extends Cache
      */
     public function delete($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
+
         if ($key == '*') {
             $this->flush();
         } elseif (strpos($key, '*') === false) {
@@ -63,7 +72,7 @@ class CacheApcuCore extends Cache
         } else {
             $pattern = str_replace('\\*', '.*', preg_quote($key));
 
-            $cacheInfo = apcu_cache_info('');
+            $cacheInfo = apcu_cache_info(false);
             foreach ($cacheInfo['cache_list'] as $entry) {
                 if (isset($entry['key'])) {
                     $key = $entry['key'];
@@ -80,49 +89,85 @@ class CacheApcuCore extends Cache
     }
 
     /**
-     * @see Cache::_set()
+     * Cache a data
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     *
+     * @return bool
      */
     protected function _set($key, $value, $ttl = 0)
     {
-        return apcu_store($key, $value, $ttl);
+        if (! $this->enabled) {
+            return false;
+        }
+        return apcu_store($key, $value, $ttl) === true;
     }
 
     /**
-     * @see Cache::_get()
+     * Retrieve a cached data by key
+     *
+     * @param string $key
+     *
+     * @return mixed|false
      */
     protected function _get($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return apcu_fetch($key);
     }
 
     /**
-     * @see Cache::_exists()
+     * Check if a data is cached by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _exists($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return apcu_exists($key);
     }
 
     /**
-     * @see Cache::_delete()
+     * Delete a data from the cache by key
+     *
+     * @param string $key
+     *
+     * @return bool
      */
     protected function _delete($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return apcu_delete($key);
     }
 
     /**
-     * @see Cache::_writeKeys()
+     * Write keys index
      */
     protected function _writeKeys()
     {
+        // this implementation do not use keys
     }
 
     /**
-     * @see Cache::flush()
+     * Clean all cached data
+     *
+     * @return bool
      */
     public function flush()
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return apcu_clear_cache();
     }
 
@@ -131,13 +176,15 @@ class CacheApcuCore extends Cache
      *
      * @param string $key Cache Key
      * @param mixed $value Value
-     * @param int $ttl Time to live in the cache
-     *                      0 = unlimited
+     * @param int $ttl Time to live in the cache, 0 = unlimited
      *
      * @return bool Whether the data was successfully stored.
      */
     public function set($key, $value, $ttl = 0)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return $this->_set($key, $value, $ttl);
     }
 
@@ -150,6 +197,9 @@ class CacheApcuCore extends Cache
      */
     public function get($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return $this->_get($key);
     }
 
@@ -162,6 +212,9 @@ class CacheApcuCore extends Cache
      */
     public function exists($key)
     {
+        if (! $this->enabled) {
+            return false;
+        }
         return $this->_exists($key);
     }
 }
