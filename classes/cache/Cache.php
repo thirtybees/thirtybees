@@ -125,6 +125,16 @@ abstract class CacheCore
      */
     abstract public function flush();
 
+    /***
+     * Returns true, if cache is available for use.
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return true;
+    }
+
     /**
      * Returns true if server-side caching is
      *

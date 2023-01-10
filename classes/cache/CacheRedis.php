@@ -60,6 +60,9 @@ class CacheRedisCore extends Cache
     {
         $this->is_connected = $this->connect();
         $this->keysPrefix = $keysPrefix ?? static::resolveKeysPrefix();
+        if (! $this->is_connected) {
+            trigger_error("Failed to connect to redis", E_USER_WARNING);
+        }
     }
 
     /**
@@ -85,7 +88,6 @@ class CacheRedisCore extends Cache
                 : $this->connectCluster($servers);
 
         } catch (RedisException $e) {
-            trigger_error("Failed to connect to redis: " . $e->getMessage(), E_USER_WARNING);
             return false;
         }
     }
@@ -148,6 +150,17 @@ class CacheRedisCore extends Cache
             $this->redis->select($serverConfig['db']);
             return (bool)$this->redis->ping();
         }
+    }
+
+
+    /***
+     * Returns true, if we are connected to redis cluster
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->is_connected;
     }
 
     /**

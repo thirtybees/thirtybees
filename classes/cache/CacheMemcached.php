@@ -57,6 +57,8 @@ class CacheMemcachedCore extends Cache
             if ($this->memcached->getOption(Memcached::HAVE_IGBINARY)) {
                 $this->memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
             }
+        } else {
+            trigger_error("Failed to connect to memcache", E_USER_WARNING);
         }
     }
 
@@ -98,6 +100,16 @@ class CacheMemcachedCore extends Cache
         } catch (Throwable $e) {
             return false;
         }
+    }
+
+    /***
+     * Returns true, if we are connected to memcache server
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->is_connected;
     }
 
     /**

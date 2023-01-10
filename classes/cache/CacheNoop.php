@@ -24,6 +24,17 @@
  */
 class CacheNoopCore extends Cache
 {
+
+    /***
+     * This cache is never available
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return false;
+    }
+
     /**
      * Cache a data
      *

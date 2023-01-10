@@ -69,9 +69,14 @@ class SmartyCustomCore extends Smarty
         if ($cachingType === static::CACHING_TYPE_MYSQL) {
             $this->registerCacheResource('mysql', new CacheResourceMysql(Encryptor::getInstance()));
             $this->caching_type = 'mysql';
-        }  elseif ($cachingType === static::CACHING_TYPE_SSC) {
-            $this->registerCacheResource('ssc', new CacheResourceServerSideCache(Cache::getInstance()));
-            $this->caching_type = 'ssc';
+        }  elseif ($cachingType === static::CACHING_TYPE_SSC && Cache::isEnabled()) {
+            $cache = Cache::getInstance();
+            if ($cache->isAvailable()) {
+                $this->registerCacheResource('ssc', new CacheResourceServerSideCache(Cache::getInstance()));
+                $this->caching_type = 'ssc';
+            } else {
+                $this->caching_type = 'file';
+            }
         } else {
             // fallback to built-in cache resource
             $this->caching_type = 'file';

@@ -52,6 +52,9 @@ class CacheMemcacheCore extends Cache
     public function __construct()
     {
         $this->is_connected = $this->connect();
+        if (! $this->is_connected) {
+            trigger_error("Failed to connect to memcache", E_USER_WARNING);
+        }
     }
 
     /**
@@ -91,6 +94,16 @@ class CacheMemcacheCore extends Cache
         } catch (Throwable $e) {
             return false;
         }
+    }
+
+    /***
+     * Returns true, if we are connected to memcache server
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->is_connected;
     }
 
     /**
