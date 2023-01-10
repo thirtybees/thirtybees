@@ -86,7 +86,8 @@ class CacheRedisCore extends Cache
                 : $this->connectCluster($servers);
 
         } catch (RedisException $e) {
-            throw new PrestaShopException("Failed to connect to redis", 0, $e);
+            trigger_error("Failed to connect to redis: " . $e->getMessage(), E_USER_WARNING);
+            return false;
         }
     }
 
