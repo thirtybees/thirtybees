@@ -21,15 +21,15 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    thirty bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017-2018 thirty bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    thirty bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017-2018 thirty bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-abstract class Db extends DbCore
+class Db extends DbCore
 {
     /**
      * Add SQL_NO_CACHE in SELECT queries
@@ -50,31 +50,36 @@ abstract class Db extends DbCore
      *
      * @var array
      */
-    public $queries = array();
+    public $queries = [];
 
     /**
      * List of uniq queries (replace numbers by XX)
      *
      * @var array
      */
-    public $uniqQueries = array();
+    public $uniqQueries = [];
 
     /**
      * List of tables
      *
      * @var array
      */
-    public $tables = array();
+    public $tables = [];
 
     /**
      * Execute the query and log some informations
      *
-     * @see DbCore::query()
+     * @param string|DbQuery $sql
+     *
+     * @return PDOStatement|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function query($sql)
     {
         $explain = false;
-        if (preg_match('/^\s*explain\s+/i', $sql) || strpos($sql, _DB_PREFIX_.'modules_perfs')) {
+        if (preg_match('/^\s*explain\s+/i', $sql) || strpos($sql, _DB_PREFIX_ . 'modules_perfs')) {
             $explain = true;
         }
 
@@ -92,7 +97,7 @@ abstract class Db extends DbCore
             }
 
             // Get tables in query
-            preg_match_all('/(from|join)\s+`?'._DB_PREFIX_.'([a-z0-9_-]+)/ui', $sql, $matches);
+            preg_match_all('/(from|join)\s+`?' . _DB_PREFIX_ . '([a-z0-9_-]+)/ui', $sql, $matches);
             foreach ($matches[2] as $table) {
                 if (!isset($this->tables[$table])) {
                     $this->tables[$table] = 0;
@@ -113,9 +118,12 @@ abstract class Db extends DbCore
             while (preg_match('@[/\\\\]classes[/\\\\]db[/\\\\]@i', $stack[0]['file'])) {
                 array_shift($stack);
             }
-            $stack_light = array();
+            $stack_light = [];
             foreach ($stack as $call) {
-                $stack_light[] = array('file' => isset($call['file']) ? $call['file'] : 'undefined', 'line' => isset($call['line']) ? $call['line'] : 'undefined');
+                $stack_light[] = [
+                    'file' => isset($call['file']) ? $call['file'] : 'undefined',
+                    'line' => isset($call['line']) ? $call['line'] : 'undefined'
+                ];
             }
 
             $this->queries[] = array(
