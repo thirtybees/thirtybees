@@ -308,13 +308,15 @@ class LinkCore
      *
      * @param string $controller
      * @param bool $withToken include or not the token in the url
-     * @param array $params optional parameters
+     * @param array $params optional parameters to be passed to controller
+     * @param array $filters admin controller list filter values
      *
      * @return string url
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getAdminLink($controller, $withToken = true, $params = [])
+    public function getAdminLink($controller, $withToken = true, $params = [], $filters = [])
     {
         $idLang = Context::getContext()->language->id;
 
@@ -330,6 +332,13 @@ class LinkCore
 
         if ($withToken) {
             $params['token'] = Tools::getAdminTokenLite($controller);
+        }
+
+        if (is_array($filters) && $filters) {
+            $params['submitFilterForced'] = true;
+            foreach ($filters as $column => $value) {
+                $params['list_idFilter_' . $column] = $value;
+            }
         }
 
         return Dispatcher::getInstance()->createUrl($controller, $idLang, $params, false);
