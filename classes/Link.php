@@ -314,12 +314,19 @@ class LinkCore
      *
      * @throws PrestaShopException
      */
-    public function getAdminLink($controller, $withToken = true, $params = [])
+    public function getAdminLink($controller, $withToken = true, $params = [], $filters = [])
     {
         $idLang = Context::getContext()->language->id;
 
         if ($withToken) {
             $params['token'] = Tools::getAdminTokenLite($controller);
+        }
+
+        if (!empty($filters)) {
+            $params['submitFilterForced'] = true;
+            foreach ($filters as $column => $value) {
+                $params['list_idFilter_' . $column] = pSQL($value);
+            }
         }
 
         return Dispatcher::getInstance()->createUrl($controller, $idLang, $params, false);

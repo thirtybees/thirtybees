@@ -626,6 +626,11 @@ class AdminControllerCore extends Controller
 
         $prefix = $this->getCookieFilterPrefix();
 
+        // Reset current filter, if forced filter was applied
+        if (Tools::isSubmit('submitFilterForced')) {
+            $this->processResetFilters();
+        }
+
         if (isset($this->list_id)) {
             foreach ($_POST as $key => $value) {
                 if ($value === '') {
@@ -638,6 +643,12 @@ class AdminControllerCore extends Controller
             }
 
             foreach ($_GET as $key => $value) {
+
+                // Handle forced filtering parameter by url
+                if (stripos($key, 'list_idFilter_') === 0) {
+                    $key = str_replace('list_id', $this->list_id, $key);
+                }
+
                 if (stripos($key, $this->list_id.'Filter_') === 0) {
                     $this->context->cookie->{$prefix.$key} = !is_array($value) ? $value : json_encode($value);
                 } elseif (stripos($key, 'submitFilter') === 0) {
@@ -3927,6 +3938,7 @@ class AdminControllerCore extends Controller
             || $this->context->cookie->{'submitFilter'.$this->list_id} !== false
             || Tools::getValue($this->list_id.'Orderby')
             || Tools::getValue($this->list_id.'Orderway')
+            || Tools::isSubmit('submitFilterForced')
         ) {
             $this->filter = true;
         }
