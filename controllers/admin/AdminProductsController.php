@@ -339,6 +339,7 @@ class AdminProductsControllerCore extends AdminController
                 'filter_key'   => 'sav!quantity',
                 'orderby'      => true,
                 'badge_danger' => true,
+                'callback' => 'callbackRenderStockLink'
                 //'hint' => $this->l('This is the quantity available in the current shop/group.'),
             ];
         }
@@ -6542,6 +6543,25 @@ class AdminProductsControllerCore extends AdminController
 
         // use shop group settings
         return $shareStock;
+    }
+
+    /**
+     * @param int $quantity
+     * @param array $row
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function callbackRenderStockLink($quantity, $row) {
+        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+            $reference = $row['reference'] ?? '';
+            if ($reference) {
+                $stockLink = $this->context->link->getAdminLink('AdminStockInstantState', true, [], ['reference' => $reference]);
+                $style = $quantity <= 0 ? 'color: #FFF' : 'color: #666';
+                return "<a style='{$style}' href={$stockLink}>{$quantity}</a>";
+            }
+        }
+        return $quantity;
     }
 
 }
