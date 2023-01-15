@@ -31,29 +31,51 @@
 
 abstract class ObjectModel extends ObjectModelCore
 {
-    public static $debug_list = array();
+    /**
+     * @var array[]
+     */
+    public static $debug_list = [];
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    /**
+     * Builds the object
+     *
+     * @param int|null $id If specified, loads and existing object from DB (optional).
+     * @param int|null $idLang Required if object is multilingual (optional).
+     * @param int|null $idShop ID shop for objects with multishop tables.
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id, $idLang, $id_shop);
+        parent::__construct($id, $idLang, $idShop);
 
         $classname = get_class($this);
-        if (!isset(self::$debug_list[$classname])) {
-            self::$debug_list[$classname] = array();
+        if (!isset(static::$debug_list[$classname])) {
+            static::$debug_list[$classname] = [];
         }
 
-        $class_list = array('ObjectModel', 'ObjectModelCore', $classname, $classname.'Core');
+        $classList = [
+            'ObjectModel',
+            'ObjectModelCore',
+            $classname,
+            $classname.'Core'
+        ];
         $backtrace = debug_backtrace();
-        foreach ($backtrace as $trace_id => $row) {
-            if (!isset($backtrace[$trace_id]['class']) || !in_array($backtrace[$trace_id]['class'], $class_list)) {
-                break;
+        if ($backtrace) {
+            foreach ($backtrace as $trace_id => $row) {
+                if (!isset($row['class']) || !in_array($row['class'], $classList)) {
+                    break;
+                }
+            }
+            if (isset($trace_id)) {
+                $trace_id--;
+
+                static::$debug_list[$classname][] = [
+                    'file' => @$backtrace[$trace_id]['file'],
+                    'line' => @$backtrace[$trace_id]['line'],
+                ];
             }
         }
-        $trace_id--;
-
-        self::$debug_list[$classname][] = array(
-            'file' => @$backtrace[$trace_id]['file'],
-            'line' => @$backtrace[$trace_id]['line'],
-        );
     }
 }

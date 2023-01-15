@@ -1,4 +1,7 @@
 <?php
+
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -31,15 +34,25 @@
 
 class Tools extends ToolsCore
 {
-    public static function redirect($url, $base_uri = __PS_BASE_URI__, Link $link = null, $headers = null)
+    /**
+     * @param string $url Desired URL
+     * @param false|string $baseUri Base URI (optional)
+     * @param Link|null $link
+     * @param string|string[]|null $headers A list of headers to send before redirection
+     *
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function redirect($url, $baseUri = __PS_BASE_URI__, Link $link = null, $headers = null)
     {
         if (!$link) {
             $link = Context::getContext()->link;
         }
 
         if (strpos($url, 'http://') === false && strpos($url, 'https://') === false && $link) {
-            if (strpos($url, $base_uri) === 0) {
-                $url = substr($url, strlen($base_uri));
+            if (strpos($url, $baseUri) === 0) {
+                $url = substr($url, strlen($baseUri));
             }
             if (strpos($url, 'index.php?controller=') !== false && strpos($url, 'index.php/') == 0) {
                 $url = substr($url, strlen('index.php?controller='));
@@ -61,7 +74,7 @@ class Tools extends ToolsCore
         // Send additional headers
         if ($headers) {
             if (!is_array($headers)) {
-                $headers = array($headers);
+                $headers = [$headers];
             }
 
             foreach ($headers as $header) {
@@ -72,41 +85,49 @@ class Tools extends ToolsCore
         Context::getContext()->controller->setRedirectAfter($url);
     }
 
+    /**
+     * @return string
+     * @throws PrestaShopException
+     */
     public static function getDefaultControllerClass()
     {
         if (isset(Context::getContext()->employee) && Validate::isLoadedObject(Context::getContext()->employee) && isset(Context::getContext()->employee->default_tab)) {
-            $default_controller = Tab::getClassNameById((int)Context::getContext()->employee->default_tab);
+            $defaultController = Tab::getClassNameById((int)Context::getContext()->employee->default_tab);
         }
-        if (empty($default_controller)) {
-            $default_controller = 'AdminDashboard';
+        if (empty($defaultController)) {
+            $defaultController = 'AdminDashboard';
         }
-        $controllers = Dispatcher::getControllers(array(_PS_ADMIN_DIR_.'/tabs/', _PS_ADMIN_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/admin/'));
-        if (!isset($controllers[strtolower($default_controller)])) {
-            $default_controller = 'adminnotfound';
+        $controllers = Dispatcher::getControllers([
+            _PS_ADMIN_DIR_.'/tabs/',
+            _PS_ADMIN_CONTROLLER_DIR_,
+            _PS_OVERRIDE_DIR_.'controllers/admin/'
+        ]);
+        if (! isset($controllers[strtolower($defaultController)])) {
+            $defaultController = 'adminnotfound';
         }
-        $controller_class = $controllers[strtolower($default_controller)];
-        return $controller_class;
+        return $controllers[strtolower($defaultController)] ?? '';
     }
 
+    /**
+     * @param string $url
+     *
+     * @return void
+     */
     public static function redirectLink($url)
     {
-        if (!preg_match('@^https?://@i', $url)) {
-            if (strpos($url, __PS_BASE_URI__) !== false && strpos($url, __PS_BASE_URI__) == 0) {
-                $url = substr($url, strlen(__PS_BASE_URI__));
-            }
-            $explode = explode('?', $url);
-            $url = Context::getContext()->link->getPageLink($explode[0]);
-            if (isset($explode[1])) {
-                $url .= '?'.$explode[1];
-            }
-        }
     }
 
+    /**
+     * @param string $url
+     *
+     * @return void
+     * @throws SmartyException
+     */
     public static function redirectAdmin($url)
     {
         if (!is_object(Context::getContext()->controller)) {
             try {
-                $controller = Controller::getController(Tools::getDefaultControllerClass());
+                $controller = ServiceLocator::getInstance()->getController(Tools::getDefaultControllerClass());
                 $controller->setRedirectAfter($url);
                 $controller->run();
                 Context::getContext()->controller = $controller;

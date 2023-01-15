@@ -31,20 +31,66 @@
 
 abstract class Controller extends ControllerCore
 {
+    /**
+     * @var int
+     */
     protected $total_filesize = 0;
+
+    /**
+     * @var int
+     */
     protected $total_query_time = 0;
+
+    /**
+     * @var int
+     */
     protected $total_global_var_size = 0;
+
+    /**
+     * @var int
+     */
     protected $total_modules_time = 0;
+
+    /**
+     * @var int
+     */
     protected $total_modules_memory = 0;
-    protected $global_var_size = array();
 
-    protected $modules_perfs = array();
-    protected $hooks_perfs = array();
+    /**
+     * @var array
+     */
+    protected $global_var_size = [];
 
-    protected $array_queries = array();
+    /**
+     * @var array
+     */
+    protected $modules_perfs = [];
 
-    protected $profiler = array();
+    /**
+     * @var array
+     */
+    protected $hooks_perfs = [];
 
+    /**
+     * @var array
+     */
+    protected $array_queries = [];
+
+    /**
+     * @var array
+     */
+    protected $profiler = [];
+
+    /**
+     * @var int
+     */
+    protected $total_cache_size;
+
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getMemoryColor($n)
     {
         $n /= 1048576;
@@ -58,6 +104,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">-</span>';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getPeakMemoryColor($n)
     {
         $n /= 1048576;
@@ -70,28 +121,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">'.sprintf('%0.1f', $n).'</span>';
     }
 
-    private function displaySQLQueries($n)
-    {
-        if ($n > 150) {
-            return '<span style="color:red">'.$n.' queries</span>';
-        }
-        if ($n > 100) {
-            return '<span style="color:#EF8B00">'.$n.' queries</span>';
-        }
-        return '<span style="color:green">'.$n.' quer'.($n == 1 ? 'y' : 'ies').'</span>';
-    }
-
-    private function displayRowsBrowsed($n)
-    {
-        if ($n > 400) {
-            return '<span style="color:red">'.$n.' rows browsed</span>';
-        }
-        if ($n > 100) {
-            return '<span style="color:#EF8B00">'.$n.'  rows browsed</span>';
-        }
-        return '<span style="color:green">'.$n.' row'.($n == 1 ? '' : 's').' browsed</span>';
-    }
-
+    /**
+     * @param string $version
+     *
+     * @return string
+     */
     private function getPhpVersionColor($version)
     {
         if (version_compare($version, '5.6') < 0) {
@@ -102,6 +136,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">'.$version.' (OK)</span>';
     }
 
+    /**
+     * @param string $version
+     *
+     * @return string
+     */
     private function getMySQLVersionColor($version)
     {
         if (version_compare($version, '5.5') < 0) {
@@ -112,6 +151,12 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">'.$version.' (OK)</span>';
     }
 
+    /**
+     * @param int $n
+     * @param bool $kikoo
+     *
+     * @return string
+     */
     private function getLoadTimeColor($n, $kikoo = false)
     {
         if ($n > 1.6) {
@@ -124,6 +169,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">-</span>'.($kikoo ? ' ms - Faster than light' : '');
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getTotalQueriyingTimeColor($n)
     {
         if ($n >= 100) {
@@ -134,6 +184,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">'.$n.'</span>';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getNbQueriesColor($n)
     {
         if ($n >= 100) {
@@ -144,6 +199,11 @@ abstract class Controller extends ControllerCore
         return '<span style="color:green">'.$n.'</span>';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getTimeColor($n)
     {
         if ($n > 4) {
@@ -155,6 +215,11 @@ abstract class Controller extends ControllerCore
         return 'style="color:green"';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getQueryColor($n)
     {
         if ($n > 5) {
@@ -166,6 +231,11 @@ abstract class Controller extends ControllerCore
         return 'style="color:green"';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getTableColor($n)
     {
         if ($n > 30) {
@@ -177,6 +247,11 @@ abstract class Controller extends ControllerCore
         return 'style="color:green"';
     }
 
+    /**
+     * @param int $n
+     *
+     * @return string
+     */
     private function getObjectModelColor($n)
     {
         if ($n > 50) {
@@ -188,11 +263,24 @@ abstract class Controller extends ControllerCore
         return 'style="color:green"';
     }
 
+    /**
+     * @param string $block
+     *
+     * @return array
+     */
     protected function stamp($block)
     {
-        return array('block' => $block, 'memory_usage' => memory_get_usage(), 'peak_memory_usage' => memory_get_peak_usage(), 'time' => microtime(true));
+        return [
+            'block' => $block,
+            'memory_usage' => memory_get_usage(),
+            'peak_memory_usage' => memory_get_peak_usage(),
+            'time' => microtime(true)
+        ];
     }
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->profiler[] = $this->stamp('config');
@@ -201,6 +289,10 @@ abstract class Controller extends ControllerCore
         $this->profiler[] = $this->stamp('__construct');
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
     public function run()
     {
         $this->init();
@@ -246,6 +338,13 @@ abstract class Controller extends ControllerCore
         $this->displayProfiling();
     }
 
+    /**
+     * @param mixed $var
+     *
+     * @return int
+     *
+     * @noinspection PhpUnusedLocalVariableInspection
+     */
     private function getVarSize($var)
     {
         $start_memory = memory_get_usage();
@@ -258,6 +357,11 @@ abstract class Controller extends ControllerCore
         return $size;
     }
 
+    /**
+     * @param mixed $var
+     *
+     * @return string|object
+     */
     private function getVarData($var)
     {
         if (is_object($var)) {
@@ -266,6 +370,11 @@ abstract class Controller extends ControllerCore
         return (string)$var;
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processProfilingData()
     {
         global $start_time;
@@ -309,7 +418,7 @@ abstract class Controller extends ControllerCore
             $this->total_modules_memory += $tmp_memory;
 
             if (!isset($this->modules_perfs[$row['module']])) {
-                $this->modules_perfs[$row['module']] = array('time' => 0, 'memory' => 0, 'methods' => array());
+                $this->modules_perfs[$row['module']] = ['time' => 0, 'memory' => 0, 'methods' => []];
             }
             $this->modules_perfs[$row['module']]['time'] += $tmp_time;
             $this->modules_perfs[$row['module']]['methods'][$row['method']]['time'] = $tmp_time;
@@ -317,31 +426,31 @@ abstract class Controller extends ControllerCore
             $this->modules_perfs[$row['module']]['methods'][$row['method']]['memory'] = $tmp_memory;
 
             if (!isset($this->hooks_perfs[$row['method']])) {
-                $this->hooks_perfs[$row['method']] = array('time' => 0, 'memory' => 0, 'modules' => array());
+                $this->hooks_perfs[$row['method']] = ['time' => 0, 'memory' => 0, 'modules' => []];
             }
             $this->hooks_perfs[$row['method']]['time'] += $tmp_time;
             $this->hooks_perfs[$row['method']]['modules'][$row['module']]['time'] = $tmp_time;
             $this->hooks_perfs[$row['method']]['memory'] += $tmp_memory;
             $this->hooks_perfs[$row['method']]['modules'][$row['module']]['memory'] = $tmp_memory;
         }
-        uasort($this->modules_perfs, 'prestashop_querytime_sort');
-        uasort($this->hooks_perfs, 'prestashop_querytime_sort');
+        uasort($this->modules_perfs, [static::class, 'queryTimeSort']);
+        uasort($this->hooks_perfs, [static::class, 'queryTimeSort']);
 
         $queries = Db::getInstance()->queries;
-        uasort($queries, 'prestashop_querytime_sort');
+        uasort($queries, [static::class, 'queryTimeSort']);
         foreach ($queries as $data) {
-            $query_row = array(
+            $query_row = [
                 'time' => $data['time'],
                 'query' => $data['query'],
                 'location' => str_replace('\\', '/', substr($data['stack'][0]['file'], strlen(_PS_ROOT_DIR_))).':'.$data['stack'][0]['line'],
                 'filesort' => false,
                 'rows' => 1,
                 'group_by' => false,
-                'stack' => array(),
-            );
+                'stack' => [],
+            ];
             if (preg_match('/^\s*select\s+/i', $data['query'])) {
                 $explain = Db::getInstance()->executeS('explain '.$data['query']);
-                if (stristr($explain[0]['Extra'], 'filesort')) {
+                if (stristr($explain[0]['Extra'] ?? '', 'filesort')) {
                     $query_row['filesort'] = true;
                 }
                 foreach ($explain as $row) {
@@ -367,6 +476,9 @@ abstract class Controller extends ControllerCore
         arsort(Db::getInstance()->uniqQueries);
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingLinks()
     {
         echo '
@@ -381,6 +493,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingStyle()
     {
         echo '
@@ -449,6 +564,9 @@ abstract class Controller extends ControllerCore
 		<script type="text/javascript" src="https://raw.githubusercontent.com/drvic10k/bootstrap-sortable/1.11.2/Scripts/bootstrap-sortable.js"></script>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingSummary()
     {
         global $start_time;
@@ -471,6 +589,11 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function displayProfilingConfiguration()
     {
         echo '
@@ -488,6 +611,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingRun()
     {
         global $start_time;
@@ -496,7 +622,7 @@ abstract class Controller extends ControllerCore
 		<div class="col-4">
 			<table class="table table-condensed">
 				<tr><th>&nbsp;</th><th>Time</th><th>Cumulated Time</th><th>Memory Usage</th><th>Memory Peak Usage</th></tr>';
-        $last = array('time' => $start_time, 'memory_usage' => 0);
+        $last = ['time' => $start_time, 'memory_usage' => 0];
         foreach ($this->profiler as $row) {
             if ($row['block'] == 'checkAccess' && $row['time'] == $last['time']) {
                 continue;
@@ -515,6 +641,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingHooks()
     {
         $count_hooks = count($this->hooks_perfs);
@@ -564,6 +693,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingModules()
     {
         $count_modules = count($this->modules_perfs);
@@ -613,6 +745,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingStopwatch()
     {
         echo '
@@ -636,7 +771,7 @@ abstract class Controller extends ControllerCore
 
             echo '
 				<tr>
-					<td class="pre"><pre>'.preg_replace("/(^[\s]*)/m", "", htmlspecialchars($data['query'], ENT_NOQUOTES, 'utf-8', false)).'</pre></td>
+					<td class="pre"><pre>'.preg_replace("/(^\s*)/m", "", htmlspecialchars($data['query'], ENT_NOQUOTES, 'utf-8', false)).'</pre></td>
 					<td data-value="'.$data['time'].'"><span '.$this->getTimeColor($data['time'] * 1000).'>'.(round($data['time'] * 1000, 1) < 0.1 ? '< 1' : round($data['time'] * 1000, 1)).'</span></td>
 					<td>'.(int)$data['rows'].'</td>
 					<td data-value="'.$data['filesort'].'">'.($data['filesort'] ? '<span style="color:red">Yes</span>' : '').'</td>
@@ -651,6 +786,11 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function displayProfilingDoubles()
     {
         echo '<div class="row">
@@ -665,6 +805,11 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function displayProfilingTableStress()
     {
         echo '<div class="row">
@@ -677,6 +822,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingObjectModel()
     {
         echo '
@@ -690,7 +838,7 @@ abstract class Controller extends ControllerCore
 					<td><span '.$this->getObjectModelColor(count($info)).'>'.count($info).'</span></td>
 					<td>';
             foreach ($info as $trace) {
-                echo str_replace(array(_PS_ROOT_DIR_, '\\'), array('', '/'), $trace['file']).' ['.$trace['line'].']<br />';
+                echo str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']).' ['.$trace['line'].']<br />';
             }
             echo '	</td>
 				</tr>';
@@ -699,6 +847,9 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     */
     protected function displayProfilingFiles()
     {
         $i = 0;
@@ -718,6 +869,11 @@ abstract class Controller extends ControllerCore
 		</div>';
     }
 
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function displayProfiling()
     {
         if (!empty($this->redirect_after)) {
@@ -772,12 +928,18 @@ abstract class Controller extends ControllerCore
             echo '</div></body></html>';
         }
     }
-}
 
-function prestashop_querytime_sort($a, $b)
-{
-    if ($a['time'] == $b['time']) {
-        return 0;
+    /**
+     * @param array $a
+     * @param array $b
+     *
+     * @return int
+     */
+    public static function queryTimeSort($a, $b)
+    {
+        if ($a['time'] == $b['time']) {
+            return 0;
+        }
+        return ($a['time'] > $b['time']) ? -1 : 1;
     }
-    return ($a['time'] > $b['time']) ? -1 : 1;
 }

@@ -126,11 +126,11 @@ class Db extends DbCore
                 ];
             }
 
-            $this->queries[] = array(
+            $this->queries[] = [
                 'query' => $sql,
                 'time' => $end - $start,
                 'stack' => $stack_light
-            );
+            ];
         }
 
         return $result;
