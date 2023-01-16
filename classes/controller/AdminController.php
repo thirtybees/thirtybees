@@ -629,6 +629,7 @@ class AdminControllerCore extends Controller
         // Reset current filter, if forced filter was applied
         if (Tools::isSubmit('submitFilterForced')) {
             $this->processResetFilters();
+            $_POST['submitFilter'.$this->list_id] = true;
         }
 
         if (isset($this->list_id)) {
@@ -646,7 +647,7 @@ class AdminControllerCore extends Controller
 
                 // Handle forced filtering parameter by url
                 if (stripos($key, 'list_idFilter_') === 0) {
-                    $key = str_replace('list_id', $this->list_id, $key);
+                    $key = preg_replace('/list_id/', $this->list_id, $key, 1);
                 }
 
                 if (stripos($key, $this->list_id.'Filter_') === 0) {
