@@ -93,7 +93,7 @@ class AdminDashboardControllerCore extends AdminController
                 $forms['payment']['fields']['CONF_'.strtoupper($module->name).'_VAR'] = [
                     'title'        => $module->displayName,
                     'desc'         => sprintf($this->l('Choose a variable fee for each order placed in %1$s with %2$s. It will be applied on the total paid with taxes.'), $currency->iso_code, $module->displayName),
-                    'validation'   => 'isPercentage',
+                    'validation'   => 'isFloat',
                     'cast'         => 'floatval',
                     'type'         => 'text',
                     'defaultValue' => '0',
@@ -113,7 +113,7 @@ class AdminDashboardControllerCore extends AdminController
                     $forms['payment']['fields']['CONF_'.strtoupper($module->name).'_VAR_FOREIGN'] = [
                         'title'        => $module->displayName,
                         'desc'         => sprintf($this->l('Choose a variable fee for each order placed with a foreign currency with %s. It will be applied on the total paid with taxes.'), $module->displayName),
-                        'validation'   => 'isPercentage',
+                        'validation'   => 'isPrice',
                         'cast'         => 'floatval',
                         'type'         => 'text',
                         'defaultValue' => '0',
@@ -127,7 +127,7 @@ class AdminDashboardControllerCore extends AdminController
             $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP'] = [
                 'title'        => $carrier['name'],
                 'desc'         => sprintf($this->l('For the carrier named %s, indicate the domestic delivery costs  in percentage of the price charged to customers.'), $carrier['name']),
-                'validation'   => 'isPercentage',
+                'validation'   => 'isFloat',
                 'cast'         => 'floatval',
                 'type'         => 'text',
                 'defaultValue' => '0',
@@ -136,7 +136,7 @@ class AdminDashboardControllerCore extends AdminController
             $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP_OVERSEAS'] = [
                 'title'        => $carrier['name'],
                 'desc'         => sprintf($this->l('For the carrier named %s, indicate the overseas delivery costs in percentage of the price charged to customers.'), $carrier['name']),
-                'validation'   => 'isPercentage',
+                'validation'   => 'isFloat',
                 'cast'         => 'floatval',
                 'type'         => 'text',
                 'defaultValue' => '0',
@@ -149,7 +149,7 @@ class AdminDashboardControllerCore extends AdminController
         $forms['other']['fields']['CONF_AVERAGE_PRODUCT_MARGIN'] = [
             'title'        => $this->l('Average gross margin percentage'),
             'desc'         => $this->l('You should calculate this percentage as follows: ((total sales revenue) - (cost of goods sold)) / (total sales revenue) * 100. This value is only used to calculate the Dashboard approximate gross margin, if you do not specify the wholesale price for each product.'),
-            'validation'   => 'isPercentage',
+            'validation'   => 'isFloat',
             'cast'         => 'intval',
             'type'         => 'text',
             'defaultValue' => '0',
