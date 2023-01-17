@@ -1309,14 +1309,24 @@ class AdminCustomersControllerCore extends AdminController
         $customers = [];
         $searches = array_unique($searches);
         foreach ($searches as $search) {
-            if (!empty($search) && $results = Customer::searchByName($search, 50)) {
+            if (!empty($search) && $results = Customer::searchByName($search)) {
                 foreach ($results as $result) {
                     if ($result['active']) {
-                        $customers[$result['id_customer']] = $result;
+                        if (!isset($customers[$result['id_customer']])) {
+                            $customers[$result['id_customer']] = $result;
+                            $customers[$result['id_customer']]['sort_score'] = 1;
+                        }
+                        else {
+                            $customers[$result['id_customer']]['sort_score'] += 1;
+                        }
                     }
                 }
             }
         }
+
+        array_multisort(array_column($customers, 'sort_score'), SORT_DESC, $customers);
+
+        $customers = array_slice($customers, 0, 100);
 
         if (! headers_sent()) {
             header('Content-Type: application/json');
