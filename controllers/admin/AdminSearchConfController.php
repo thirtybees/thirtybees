@@ -304,7 +304,7 @@ class AdminSearchConfControllerCore extends AdminController
         parent::initPageHeaderToolbar();
         if ($this->can_import) {
             $this->toolbar_btn['import'] = [
-                'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=alias',
+                'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_ALIAS]),
                 'desc' => $this->l('Import', null, null, false),
             ];
         }

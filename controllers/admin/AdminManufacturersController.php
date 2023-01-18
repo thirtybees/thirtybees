@@ -249,7 +249,7 @@ class AdminManufacturersControllerCore extends AdminController
 
                 if ($this->can_import) {
                     $this->toolbar_btn['import'] = [
-                        'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=manufacturers',
+                        'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_MANUFACTURERS]),
                         'desc' => $this->l('Import'),
                     ];
                 }

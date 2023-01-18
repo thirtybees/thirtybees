@@ -1069,7 +1069,7 @@ class ToolsCore
      * Display date regarding to language preferences
      *
      * @param array $params Date, format...
-     * @param object $smarty Smarty object for language preferences
+     * @param Smarty $smarty Smarty object for language preferences
      *
      * @return string Date
      *

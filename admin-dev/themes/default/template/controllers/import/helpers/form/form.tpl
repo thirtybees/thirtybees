@@ -52,9 +52,9 @@
 					<label for="entity" class="control-label col-lg-4">{l s='What do you want to import?'} </label>
 					<div class="col-lg-8">
 						<select name="entity" id="entity" class="fixed-width-xxl form-control">
-							{foreach $entities AS $entity => $i }
-								<option value="{$i}"{if $entity_selected == $i} selected="selected"{/if}>
-									{$entity}
+							{foreach $entities AS $entityType => $entityName }
+								<option value="{$entityType}"{if $entity_selected === $entityType} selected="selected"{/if}>
+									{$entityName}
 								</option>
 							{/foreach}
 						</select>
@@ -528,50 +528,71 @@
 		});
 
 		$("select#entity").change(function() {
-			if ($("#entity > option:selected").val() == 8 || $("#entity > option:selected").val() == 9) {
+			const entityType = $('#entity').val();
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_CATEGORIES}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_COMBINATIONS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_CUSTOMERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_ADDRESSES}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_MANUFACTURERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_SUPPLIERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_ALIAS}'
+			) {
+				$("#truncate").closest('.form-group').show();
+			} else {
 				$("#truncate").closest('.form-group').hide();
 			}
-			else {
-				$("#truncate").closest('.form-group').show();
-			}
-			if ($("#entity > option:selected").val() == 9) {
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_SUPPLY_ORDER_DETAILS}') {
 				$(".import_supply_orders_details").show();
-			}
-			else {
+			} else {
 				$(".import_supply_orders_details").hide();
 				$('input[name=multiple_value_separator]').val('{if isset($multiple_value_separator_selected)}{$multiple_value_separator_selected}{else},{/if}');
 			}
-			if ($("#entity > option:selected").val() == 1 || $("#entity > option:selected").val() == 2) {
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_COMBINATIONS}'
+			) {
 				$("#match_ref").closest('.form-group').show();
-			}
-			else {
+			} else {
 				$("#match_ref").closest('.form-group').hide();
 			}
-			if ($("#entity > option:selected").val() == 1 || $("#entity > option:selected").val() == 0) {
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_CATEGORIES}'
+			) {
 				$(".import_products_categories").show();
-			}
-			else {
+			} else {
 				$(".import_products_categories").hide();
 			}
-			if ($("#entity > option:selected").val() == 0 || $("#entity > option:selected").val() == 1 ||
-				$("#entity > option:selected").val() == 5 || $("#entity > option:selected").val() == 6 ||
-				$("#entity > option:selected").val() == 8) {
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_CATEGORIES}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_MANUFACTURERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_SUPPLIERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_STORE_CONTACTS}'
+			) {
 				$("#regenerate").closest('.form-group').show();
-			}
-			else {
+			} else {
 				$("#regenerate").closest('.form-group').hide();
 			}
-			if ($("#entity > option:selected").val() == 0 || $("#entity > option:selected").val() == 1 ||
-				$("#entity > option:selected").val() == 3 || $("#entity > option:selected").val() == 4 ||
-				$("#entity > option:selected").val() == 5 || $("#entity > option:selected").val() == 6 ||
-				$("#entity > option:selected").val() == 7 || $("#entity > option:selected").val() == 8) {
+
+			if (entityType === '{AdminImportController::ENTITY_TYPE_CATEGORIES}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_CUSTOMERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_ADDRESSES}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_MANUFACTURERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_SUPPLIERS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_ALIAS}' ||
+				entityType === '{AdminImportController::ENTITY_TYPE_STORE_CONTACTS}'
+			) {
 				$("#forceIDs").closest('.form-group').show();
-			}
-			else {
+			} else {
 				$("#forceIDs").closest('.form-group').hide();
 			}
 
-			if ($("#entity > option:selected").val() == 1) {
+			if (entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}') {
 				$("#forceCat").closest('.form-group').show();
 			} else {
 				$("#forceCat").closest('.form-group').hide();
@@ -584,7 +605,7 @@
 				url: 'ajax.php',
 				data: {
 					getAvailableFields:1,
-					entity: $("#entity").val()
+					entity: entityType
 				},
 				dataType: 'json',
 				success: function(j){

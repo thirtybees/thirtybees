@@ -41,6 +41,18 @@ class AdminImportControllerCore extends AdminController
     const UNFRIENDLY_ERROR = false;
     const MAX_LINE_SIZE = 0;
 
+    const ENTITY_TYPE_CATEGORIES = 'categories';
+    const ENTITY_TYPE_PRODUCTS = 'products';
+    const ENTITY_TYPE_COMBINATIONS = 'combinations';
+    const ENTITY_TYPE_CUSTOMERS = 'customers';
+    const ENTITY_TYPE_ADDRESSES = 'addresses';
+    const ENTITY_TYPE_MANUFACTURERS = 'manufacturers';
+    const ENTITY_TYPE_SUPPLIERS = 'suppliers';
+    const ENTITY_TYPE_ALIAS = 'alias';
+    const ENTITY_TYPE_STORE_CONTACTS = 'store_contacts';
+    const ENTITY_TYPE_SUPPLY_ORDERS = 'supply_orders';
+    const ENTITY_TYPE_SUPPLY_ORDER_DETAILS = 'supply_order_details';
+
     /** @var array $columnMask */
     public static $columnMask;
     /** @var array $defaultValues */
@@ -79,28 +91,21 @@ class AdminImportControllerCore extends AdminController
         parent::__construct();
 
         $this->entities = [
-            $this->l('Categories'),
-            $this->l('Products'),
-            $this->l('Combinations'),
-            $this->l('Customers'),
-            $this->l('Addresses'),
-            $this->l('Brands'),
-            $this->l('Suppliers'),
-            $this->l('Alias'),
-            $this->l('Store contacts'),
+            static::ENTITY_TYPE_CATEGORIES => $this->l('Categories'),
+            static::ENTITY_TYPE_PRODUCTS => $this->l('Products'),
+            static::ENTITY_TYPE_COMBINATIONS => $this->l('Combinations'),
+            static::ENTITY_TYPE_CUSTOMERS => $this->l('Customers'),
+            static::ENTITY_TYPE_ADDRESSES => $this->l('Addresses'),
+            static::ENTITY_TYPE_MANUFACTURERS => $this->l('Manufacturers'),
+            static::ENTITY_TYPE_SUPPLIERS => $this->l('Suppliers'),
+            static::ENTITY_TYPE_ALIAS => $this->l('Alias'),
+            static::ENTITY_TYPE_STORE_CONTACTS => $this->l('Store contacts'),
         ];
 
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-            $this->entities = array_merge(
-                $this->entities,
-                [
-                    $this->l('Supply Orders'),
-                    $this->l('Supply Order Details'),
-                ]
-            );
+            $this->entities[static::ENTITY_TYPE_SUPPLY_ORDERS] = $this->l('Supply Orders');
+            $this->entities[static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS] = $this->l('Supply Order Details');
         }
-
-        $this->entities = array_flip($this->entities);
 
         // initialize default validators
         static::$validators = [
@@ -127,8 +132,9 @@ class AdminImportControllerCore extends AdminController
             'image_alt'         => [static::class, 'split'],
         ];
 
-        switch ((int) Tools::getValue('entity')) {
-            case $this->entities[$this->l('Combinations')]:
+        $selectedEntity = $this->getSelectedEntity();
+        switch ($selectedEntity) {
+            case static::ENTITY_TYPE_COMBINATIONS:
                 $this->required_fields = [
                     'group',
                     'attribute',
@@ -197,7 +203,7 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
 
-            case $this->entities[$this->l('Categories')]:
+            case static::ENTITY_TYPE_CATEGORIES:
                 $this->available_fields = [
                     'no'               => ['label' => $this->l('Ignore this column')],
                     'id'               => ['label' => $this->l('ID')],
@@ -227,7 +233,7 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
 
-            case $this->entities[$this->l('Products')]:
+            case static::ENTITY_TYPE_PRODUCTS:
                 static::$validators['image'] = [ static::class, 'split' ];
 
                 $this->available_fields = [
@@ -348,7 +354,7 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
 
-            case $this->entities[$this->l('Customers')]:
+            case static::ENTITY_TYPE_CUSTOMERS:
                 //Overwrite required_fields AS only email is required whereas other entities
                 $this->required_fields = ['email', 'passwd', 'lastname', 'firstname'];
 
@@ -379,7 +385,7 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
 
-            case $this->entities[$this->l('Addresses')]:
+            case static::ENTITY_TYPE_ADDRESSES:
                 //Overwrite required_fields
                 $this->required_fields = [
                     'alias',
@@ -422,8 +428,8 @@ class AdminImportControllerCore extends AdminController
                     'postcode' => 'X',
                 ];
                 break;
-            case $this->entities[$this->l('Brands')]:
-            case $this->entities[$this->l('Suppliers')]:
+            case static::ENTITY_TYPE_MANUFACTURERS:
+            case static::ENTITY_TYPE_SUPPLIERS:
                 //Overwrite validators AS name is not MultiLangField
                 static::$validators = [
                     'description'       => [static::class, 'createMultiLangField'],
@@ -454,7 +460,7 @@ class AdminImportControllerCore extends AdminController
                     'shop' => Shop::getGroupFromShop(Configuration::get('PS_SHOP_DEFAULT')),
                 ];
                 break;
-            case $this->entities[$this->l('Alias')]:
+            case static::ENTITY_TYPE_ALIAS:
                 //Overwrite required_fields
                 $this->required_fields = [
                     'alias',
@@ -471,7 +477,7 @@ class AdminImportControllerCore extends AdminController
                     'active' => '1',
                 ];
                 break;
-            case $this->entities[$this->l('Store contacts')]:
+            case static::ENTITY_TYPE_STORE_CONTACTS:
                 // Overwrite validators
                 static::$validators = [
                     'hours' => [static::class, 'split'],
@@ -511,65 +517,60 @@ class AdminImportControllerCore extends AdminController
                     'active' => '1',
                 ];
                 break;
-        }
-
-        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-            switch ((int) Tools::getValue('entity')) {
-                case $this->entities[$this->l('Supply Orders')]:
-                    // required fields
-                    $this->required_fields = [
-                        'id_supplier',
-                        'id_warehouse',
-                        'reference',
-                        'date_delivery_expected',
-                    ];
-                    // available fields
-                    $this->available_fields = [
-                        'no'                     => ['label' => $this->l('Ignore this column')],
-                        'id'                     => ['label' => $this->l('ID')],
-                        'id_supplier'            => ['label' => $this->l('Supplier ID *')],
-                        'id_lang'                => ['label' => $this->l('Lang ID')],
-                        'id_warehouse'           => ['label' => $this->l('Warehouse ID *')],
-                        'id_currency'            => ['label' => $this->l('Currency ID *')],
-                        'reference'              => ['label' => $this->l('Supply Order Reference *')],
-                        'date_delivery_expected' => ['label' => $this->l('Delivery Date (Y-M-D)*')],
-                        'discount_rate'          => ['label' => $this->l('Discount rate')],
-                        'is_template'            => ['label' => $this->l('Template')],
-                    ];
-                    // default values
-                    static::$defaultValues = [
-                        'id_lang'       => (int) Configuration::get('PS_LANG_DEFAULT'),
-                        'id_currency'   => Currency::getDefaultCurrency()->id,
-                        'discount_rate' => '0',
-                        'is_template'   => '0',
-                    ];
-                    break;
-                case $this->entities[$this->l('Supply Order Details')]:
-                    // required fields
-                    $this->required_fields = [
-                        'supply_order_reference',
-                        'id_product',
-                        'unit_price_te',
-                        'quantity_expected',
-                    ];
-                    // available fields
-                    $this->available_fields = [
-                        'no'                     => ['label' => $this->l('Ignore this column')],
-                        'supply_order_reference' => ['label' => $this->l('Supply Order Reference *')],
-                        'id_product'             => ['label' => $this->l('Product ID *')],
-                        'id_product_attribute'   => ['label' => $this->l('Product Attribute ID')],
-                        'unit_price_te'          => ['label' => $this->l('Unit Price (tax excl.)*')],
-                        'quantity_expected'      => ['label' => $this->l('Quantity Expected *')],
-                        'discount_rate'          => ['label' => $this->l('Discount Rate')],
-                        'tax_rate'               => ['label' => $this->l('Tax Rate')],
-                    ];
-                    // default values
-                    static::$defaultValues = [
-                        'discount_rate' => '0',
-                        'tax_rate'      => '0',
-                    ];
-                    break;
-            }
+            case static::ENTITY_TYPE_SUPPLY_ORDERS:
+                // required fields
+                $this->required_fields = [
+                    'id_supplier',
+                    'id_warehouse',
+                    'reference',
+                    'date_delivery_expected',
+                ];
+                // available fields
+                $this->available_fields = [
+                    'no'                     => ['label' => $this->l('Ignore this column')],
+                    'id'                     => ['label' => $this->l('ID')],
+                    'id_supplier'            => ['label' => $this->l('Supplier ID *')],
+                    'id_lang'                => ['label' => $this->l('Lang ID')],
+                    'id_warehouse'           => ['label' => $this->l('Warehouse ID *')],
+                    'id_currency'            => ['label' => $this->l('Currency ID *')],
+                    'reference'              => ['label' => $this->l('Supply Order Reference *')],
+                    'date_delivery_expected' => ['label' => $this->l('Delivery Date (Y-M-D)*')],
+                    'discount_rate'          => ['label' => $this->l('Discount rate')],
+                    'is_template'            => ['label' => $this->l('Template')],
+                ];
+                // default values
+                static::$defaultValues = [
+                    'id_lang'       => (int) Configuration::get('PS_LANG_DEFAULT'),
+                    'id_currency'   => Currency::getDefaultCurrency()->id,
+                    'discount_rate' => '0',
+                    'is_template'   => '0',
+                ];
+                break;
+            case static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS:
+                // required fields
+                $this->required_fields = [
+                    'supply_order_reference',
+                    'id_product',
+                    'unit_price_te',
+                    'quantity_expected',
+                ];
+                // available fields
+                $this->available_fields = [
+                    'no'                     => ['label' => $this->l('Ignore this column')],
+                    'supply_order_reference' => ['label' => $this->l('Supply Order Reference *')],
+                    'id_product'             => ['label' => $this->l('Product ID *')],
+                    'id_product_attribute'   => ['label' => $this->l('Product Attribute ID')],
+                    'unit_price_te'          => ['label' => $this->l('Unit Price (tax excl.)*')],
+                    'quantity_expected'      => ['label' => $this->l('Quantity Expected *')],
+                    'discount_rate'          => ['label' => $this->l('Discount Rate')],
+                    'tax_rate'               => ['label' => $this->l('Tax Rate')],
+                ];
+                // default values
+                static::$defaultValues = [
+                    'discount_rate' => '0',
+                    'tax_rate'      => '0',
+                ];
+                break;
         }
 
         $this->separator = substr(trim(Tools::getValue('separator', ',')), 0, 1);
@@ -805,7 +806,8 @@ class AdminImportControllerCore extends AdminController
             $data[$i] = $this->generateContentTable($i, $nbColumn, $previewRows);
         }
 
-        $this->context->cookie->entitySelected = (int) Tools::getValue('entity');
+        $entityType = $this->getSelectedEntity();
+
         $this->context->cookie->isoLangSelected = urlencode(Tools::getValue('iso_lang'));
         $this->context->cookie->separatorSelected = urlencode($this->separator);
         $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
@@ -834,7 +836,7 @@ class AdminImportControllerCore extends AdminController
             'fields_value'     => [
                 'filename'                 => Tools::getValue('filename'),
                 'importer'                 => Tools::getValue('importer'),
-                'entity'                   => (int) Tools::getValue('entity'),
+                'entity'                   => $entityType,
                 'iso_lang'                 => Tools::getValue('iso_lang'),
                 'truncate'                 => Tools::getValue('truncate'),
                 'forceIDs'                 => Tools::getValue('forceIDs'),
@@ -1015,13 +1017,7 @@ class AdminImportControllerCore extends AdminController
         $this->addJqueryPlugin(['fancybox']);
 
 
-        $entitySelected = 0;
-        if (isset($this->entities[$this->l(ucfirst(Tools::getValue('import_type')))])) {
-            $entitySelected = $this->entities[$this->l(ucfirst(Tools::getValue('import_type')))];
-            $this->context->cookie->entitySelected = (int) $entitySelected;
-        } elseif (isset($this->context->cookie->entitySelected)) {
-            $entitySelected = (int) $this->context->cookie->entitySelected;
-        }
+        $entitySelected = $this->getSelectedEntity();
 
         $fileSelected = '';
         if (isset($this->context->cookie->fileSelected) &&
@@ -1236,10 +1232,11 @@ class AdminImportControllerCore extends AdminController
     {
         // Check if the CSV file exist
         if (Tools::getValue('filename')) {
+            $entityType = $this->getSelectedEntity();
             $shopIsFeatureActive = Shop::isFeatureActive();
             // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
             if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
-                $this->truncateTables((int) Tools::getValue('entity'));
+                $this->truncateTables($entityType);
             }
             $doneCount = 0;
             // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
@@ -1251,12 +1248,12 @@ class AdminImportControllerCore extends AdminController
                     $crossStepsVariables = $crossStepsVars;
                 }
             }
-            switch ((int) Tools::getValue('entity')) {
-                case $this->entities[$importType = $this->l('Categories')]:
+            switch ($entityType) {
+                case static::ENTITY_TYPE_CATEGORIES:
                     $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
                     $this->clearSmartyCache();
                     break;
-                case $this->entities[$importType = $this->l('Products')]:
+                case static::ENTITY_TYPE_PRODUCTS:
                     if (!defined('PS_MASS_PRODUCT_CREATION')) {
                         define('PS_MASS_PRODUCT_CREATION', true);
                     }
@@ -1264,46 +1261,37 @@ class AdminImportControllerCore extends AdminController
                     $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
                     $this->clearSmartyCache();
                     break;
-                case $this->entities[$importType = $this->l('Customers')]:
+                case static::ENTITY_TYPE_CUSTOMERS:
                     $doneCount += $this->customerImport($offset, $limit, $validateOnly);
                     break;
-                case $this->entities[$importType = $this->l('Addresses')]:
+                case static::ENTITY_TYPE_ADDRESSES:
                     $doneCount += $this->addressImport($offset, $limit, $validateOnly);
                     break;
-                case $this->entities[$importType = $this->l('Combinations')]:
+                case static::ENTITY_TYPE_COMBINATIONS:
                     $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
                     $this->clearSmartyCache();
                     break;
-                case $this->entities[$importType = $this->l('Brands')]:
+                case static::ENTITY_TYPE_MANUFACTURERS:
                     $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
                     $this->clearSmartyCache();
                     break;
-                case $this->entities[$importType = $this->l('Suppliers')]:
+                case static::ENTITY_TYPE_SUPPLIERS:
                     $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
                     $this->clearSmartyCache();
                     break;
-                case $this->entities[$importType = $this->l('Alias')]:
+                case static::ENTITY_TYPE_ALIAS:
                     $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
                     break;
-                case $this->entities[$importType = $this->l('Store contacts')]:
+                case static::ENTITY_TYPE_STORE_CONTACTS:
                     $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
                     $this->clearSmartyCache();
                     break;
-            }
-
-            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                switch ((int) Tools::getValue('entity')) {
-                    case $this->entities[$importType = $this->l('Supply Orders')]:
-                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                            $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
-                        }
-                        break;
-                    case $this->entities[$importType = $this->l('Supply Order Details')]:
-                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                            $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                        }
-                        break;
-                }
+                case static::ENTITY_TYPE_SUPPLY_ORDERS:
+                    $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
+                    break;
+                case static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS:
+                    $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                    break;
             }
 
             if ($results !== null) {
@@ -1331,32 +1319,30 @@ class AdminImportControllerCore extends AdminController
                 }
             }
 
-            if ($importType) {
-                $logMessage = sprintf($this->l('%s import'), $importType);
-                if ($offset !== false && $limit !== false) {
-                    $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
-                }
-                if (Tools::getValue('truncate')) {
-                    $logMessage .= ' '.$this->l('with truncate');
-                }
-                Logger::addLog($logMessage, 1, null, $importType, null, true, (int) $this->context->employee->id);
+            $logMessage = sprintf($this->l('%s import'), $entityType);
+            if ($offset !== false && $limit !== false) {
+                $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
             }
+            if (Tools::getValue('truncate')) {
+                $logMessage .= ' '.$this->l('with truncate');
+            }
+            Logger::addLog($logMessage, 1, null, $entityType, null, true, (int) $this->context->employee->id);
         } else {
             $this->errors[] = $this->l('To proceed, please upload a file first.');
         }
     }
 
     /**
-     * @param int $case
+     * @param string $entityType
      *
      * @return bool
      *
      * @throws PrestaShopException
      */
-    protected function truncateTables($case)
+    protected function truncateTables($entityType)
     {
-        switch ((int) $case) {
-            case $this->entities[$this->l('Categories')]:
+        switch ($entityType) {
+            case static::ENTITY_TYPE_CATEGORIES:
                 try {
                     Db::getInstance()->delete(
                         'category',
@@ -1394,7 +1380,7 @@ class AdminImportControllerCore extends AdminController
                     }
                 }
                 break;
-            case $this->entities[$this->l('Products')]:
+            case static::ENTITY_TYPE_PRODUCTS:
                 foreach ([
                              'product',
                              'product_shop',
@@ -1455,7 +1441,7 @@ class AdminImportControllerCore extends AdminController
                     mkdir(_PS_PROD_IMG_DIR_);
                 }
                 break;
-            case $this->entities[$this->l('Combinations')]:
+            case static::ENTITY_TYPE_COMBINATIONS:
                 foreach ([
                              'attribute',
                              'attribute_impact',
@@ -1482,21 +1468,21 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to delete from table `%s`'), 'stock_available');
                 }
                 break;
-            case $this->entities[$this->l('Customers')]:
+            case static::ENTITY_TYPE_CUSTOMERS:
                 try {
                     Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customer`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'customer', $e->getMessage());
                 }
                 break;
-            case $this->entities[$this->l('Addresses')]:
+            case static::ENTITY_TYPE_ADDRESSES:
                 try {
                     Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'address`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'address', $e->getMessage());
                 }
                 break;
-            case $this->entities[$this->l('Brands')]:
+            case static::ENTITY_TYPE_MANUFACTURERS:
                 try {
                     Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer`');
                 } catch (PrestaShopException $e) {
@@ -1518,7 +1504,7 @@ class AdminImportControllerCore extends AdminController
                     }
                 }
                 break;
-            case $this->entities[$this->l('Suppliers')]:
+            case static::ENTITY_TYPE_SUPPLIERS:
                 try {
                     Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier`');
                 } catch (PrestaShopException $e) {
@@ -1540,7 +1526,7 @@ class AdminImportControllerCore extends AdminController
                     }
                 }
                 break;
-            case $this->entities[$this->l('Alias')]:
+            case static::ENTITY_TYPE_ALIAS:
                 try {
                     Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'alias`');
                 } catch (PrestaShopException $e) {
@@ -1835,7 +1821,7 @@ class AdminImportControllerCore extends AdminController
 
         //copying images of categories
         if (isset($category->image) && !empty($category->image)) {
-            if (!(static::copyImg($category->id, null, $category->image, 'categories', !$regenerate))) {
+            if (!(static::copyImg($category->id, null, $category->image, static::ENTITY_TYPE_CATEGORIES, !$regenerate))) {
                 $this->warnings[] = $category->image.' '.$this->l('cannot be copied.');
             }
         }
@@ -1898,7 +1884,7 @@ class AdminImportControllerCore extends AdminController
      * @param int $idEntity id of product or category (set in entity)
      * @param int $idImage (default null) id of the image if watermark enabled.
      * @param string $url path or url to use
-     * @param string $entity 'products' or 'categories'
+     * @param string $entity entity type
      * @param bool $regenerate
      *
      * @return bool
@@ -1913,18 +1899,18 @@ class AdminImportControllerCore extends AdminController
 
         switch ($entity) {
             default:
-            case 'products':
+            case static::ENTITY_TYPE_PRODUCTS:
                 $imageObj = new Image($idImage);
                 ImageManager::deleteProductImageThumbnail($idImage);
                 $path = $imageObj->getPathForCreation();
                 break;
-            case 'categories':
+            case static::ENTITY_TYPE_CATEGORIES:
                 $path = _PS_CAT_IMG_DIR_.(int) $idEntity;
                 break;
-            case 'manufacturers':
+            case static::ENTITY_TYPE_MANUFACTURERS:
                 $path = _PS_MANU_IMG_DIR_.(int) $idEntity;
                 break;
-            case 'suppliers':
+            case static::ENTITY_TYPE_SUPPLIERS:
                 $path = _PS_SUPP_IMG_DIR_.(int) $idEntity;
                 break;
             case 'stores':
@@ -2826,7 +2812,7 @@ class AdminImportControllerCore extends AdminController
                         ) {
                             // associate image to selected shops
                             $image->associateTo($shops);
-                            if (!static::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
+                            if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate)) {
                                 $image->delete();
                                 $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             }
@@ -3746,7 +3732,7 @@ class AdminImportControllerCore extends AdminController
                     ) {
                         $image->associateTo($idShopList);
 // FIXME: 2s/image !
-                        if (!static::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
+                        if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate)) {
                             $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             $image->delete();
                         } else {
@@ -4234,7 +4220,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of manufacturer
             if (!$validateOnly && isset($manufacturer->image) && !empty($manufacturer->image)) {
-                if (!static::copyImg($manufacturer->id, null, $manufacturer->image, 'manufacturers', !$regenerate)) {
+                if (!static::copyImg($manufacturer->id, null, $manufacturer->image, static::ENTITY_TYPE_MANUFACTURERS, !$regenerate)) {
                     $this->warnings[] = $manufacturer->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -4367,7 +4353,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of suppliers
             if (!$validateOnly && isset($supplier->image) && !empty($supplier->image)) {
-                if (!static::copyImg($supplier->id, null, $supplier->image, 'suppliers', !$regenerate)) {
+                if (!static::copyImg($supplier->id, null, $supplier->image, static::ENTITY_TYPE_SUPPLIERS, !$regenerate)) {
                     $this->warnings[] = $supplier->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -5201,5 +5187,66 @@ class AdminImportControllerCore extends AdminController
     public static function createCsvDataSource($filename, $params)
     {
         return new CSVDataSource($filename, $params['separator'] ?? ',');
+    }
+
+    /**
+     * Returns currently selected entity type
+     *
+     * @return string
+     */
+    protected function getSelectedEntity()
+    {
+        // first, consider 'entity' parameter
+        $entityType = Tools::getValue('entity');
+        if ($entityType && $this->isValidEntity($entityType)) {
+            return $this->updateSelectedEntity($entityType);
+        }
+
+        // then consider 'import_type' parameter. This is used by drilldown links
+        $importType = Tools::getValue('import_type');
+        if ($importType && $this->isValidEntity($importType)) {
+            return $this->updateSelectedEntity($importType);
+        }
+
+        // take last selected entity type
+        if (isset($this->context->cookie->entitySelected)) {
+            $cookieEntity = $this->context->cookie->entitySelected;
+            if ($this->isValidEntity($cookieEntity)) {
+                return $cookieEntity;
+            }
+        }
+
+        // fallback to 'products' entity type
+        return $this->updateSelectedEntity(static::ENTITY_TYPE_PRODUCTS);
+    }
+
+    /**
+     * Updates currently selected entity type - saves the information into cookie
+     *
+     * @param string $entityType
+     *
+     * @return string
+     */
+    protected function updateSelectedEntity($entityType)
+    {
+        $cookie = $this->context->cookie;
+        if (isset($cookie->entitySelected) && $cookie->entitySelected !== $entityType) {
+            $cookie->entitySelected = $entityType;
+        } else {
+            $cookie->entitySelected = $entityType;
+        }
+        return $entityType;
+    }
+
+    /**
+     * Returns true, if $entityType is known
+     *
+     * @param string $entityType
+     *
+     * @return bool
+     */
+    protected function isValidEntity($entityType)
+    {
+        return isset($this->entities[$entityType]);
     }
 }

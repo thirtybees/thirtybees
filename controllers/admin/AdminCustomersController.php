@@ -279,7 +279,7 @@ class AdminCustomersControllerCore extends AdminController
             unset($this->toolbar_btn['new']);
         } elseif (!$this->display && $this->can_import) {
             $this->toolbar_btn['import'] = [
-                'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=customers',
+                'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_CUSTOMERS]),
                 'desc' => $this->l('Import'),
             ];
         }

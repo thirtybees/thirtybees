@@ -3711,7 +3711,7 @@ class AdminProductsControllerCore extends AdminController
             ];
         } elseif ($this->can_import) {
             $this->toolbar_btn['import'] = [
-                'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=products',
+                'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_PRODUCTS]),
                 'desc' => $this->l('Import'),
             ];
         }

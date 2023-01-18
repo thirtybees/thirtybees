@@ -109,7 +109,7 @@ class AdminAddressesControllerCore extends AdminController
 
         if (!$this->display && $this->can_import) {
             $this->toolbar_btn['import'] = [
-                'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=addresses',
+                'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_ADDRESSES]),
                 'desc' => $this->l('Import'),
             ];
         }

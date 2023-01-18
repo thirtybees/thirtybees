@@ -374,7 +374,7 @@ class AdminSuppliersControllerCore extends AdminController
 
         if (empty($this->display) && $this->can_import) {
             $this->toolbar_btn['import'] = [
-                'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=suppliers',
+                'href' => $this->context->link->getAdminLink('AdminImport', true, ['import_type' => AdminImportController::ENTITY_TYPE_SUPPLIERS]),
                 'desc' => $this->l('Import'),
             ];
         }
