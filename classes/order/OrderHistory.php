@@ -349,6 +349,7 @@ class OrderHistoryCore extends ObjectModel
                     $order->save();
 
                     $payment->conversion_rate = 1;
+                    $payment->setPaymentCostAccounting($order->module, $payment->amount, $payment->id_currency);
                     $payment->save();
                     Db::getInstance()->insert(
                         'order_invoice_payment',
