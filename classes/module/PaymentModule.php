@@ -596,6 +596,8 @@ abstract class PaymentModuleCore extends Module
                         $orderCarrier->weight = (float) $order->getTotalWeight();
                         $orderCarrier->shipping_cost_tax_excl = (float) $order->total_shipping_tax_excl;
                         $orderCarrier->shipping_cost_tax_incl = (float) $order->total_shipping_tax_incl;
+                        $id_country = $address->id_country ?? (new Address($idAddress))->id_country;
+                        $orderCarrier->setShippingCostAccounting($carrier, $orderCarrier->shipping_cost_tax_excl, $id_country, $order->conversion_rate);
                         $orderCarrier->add();
                     }
                 }

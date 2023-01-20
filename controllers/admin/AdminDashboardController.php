@@ -124,6 +124,15 @@ class AdminDashboardControllerCore extends AdminController
         }
 
         foreach ($carriers as $carrier) {
+            $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP_FIXED'] = [
+                'title'        => $carrier['name'],
+                'desc'         => sprintf($this->l('Fixed Fee for the carrier on domestic delivery.'), $carrier['name']),
+                'validation'   => 'isPercentage',
+                'cast'         => 'floatval',
+                'type'         => 'text',
+                'defaultValue' => '0',
+                'suffix'       => $currency->iso_code,
+            ];
             $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP'] = [
                 'title'        => $carrier['name'],
                 'desc'         => sprintf($this->l('For the carrier named %s, indicate the domestic delivery costs  in percentage of the price charged to customers.'), $carrier['name']),
@@ -132,6 +141,15 @@ class AdminDashboardControllerCore extends AdminController
                 'type'         => 'text',
                 'defaultValue' => '0',
                 'suffix'       => '%',
+            ];
+            $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP_FIXED_OVERSEAS'] = [
+                'title'        => $carrier['name'],
+                'desc'         => sprintf($this->l('Fixed Fee for the carrier on oversea delivery.'), $carrier['name']),
+                'validation'   => 'isPrice',
+                'cast'         => 'floatval',
+                'type'         => 'text',
+                'defaultValue' => '0',
+                'suffix'       => $currency->iso_code,
             ];
             $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP_OVERSEAS'] = [
                 'title'        => $carrier['name'],
