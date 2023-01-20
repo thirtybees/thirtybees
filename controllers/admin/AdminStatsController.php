@@ -966,6 +966,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
 			LEFT(`invoice_date`, 10) as date,
 			total_paid_tax_incl / o.conversion_rate as total_paid_tax_incl,
 			total_shipping_tax_excl / o.conversion_rate as total_shipping_tax_excl,
+			op.payment_cost_accounting / o.conversion_rate as payment_cost_accounting,
+			oc.shipping_cost_accounting / o.conversion_rate as shipping_cost_accounting,
 			o.module,
 			a.id_country,
 			o.id_currency,
@@ -974,39 +976,57 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		LEFT JOIN `'._DB_PREFIX_.'address` a ON o.id_address_delivery = a.id_address
 		LEFT JOIN `'._DB_PREFIX_.'carrier` c ON o.id_carrier = c.id_carrier
 		LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
+		LEFT JOIN (
+		    SELECT order_reference, SUM(payment_cost_accounting) AS payment_cost_accounting
+		    FROM `'._DB_PREFIX_.'order_payment`
+		    GROUP BY order_reference
+		) AS op ON o.reference = op.order_reference
+		LEFT JOIN (
+		    SELECT id_order, SUM(shipping_cost_accounting) AS shipping_cost_accounting
+		    FROM `'._DB_PREFIX_.'order_carrier`
+		    GROUP BY id_order
+		) AS oc ON o.id_order = oc.id_order
 		WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 		'.Shop::addSqlRestriction(false, 'o')
         );
         foreach ($orders as $order) {
-            // Add flat fees for this order
-            $flatFees = Configuration::get('CONF_ORDER_FIXED') + (
-                $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED_FOREIGN')
-                );
 
-            // Add variable fees for this order
-            $varFees = $order['total_paid_tax_incl'] * (
-                $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR_FOREIGN')
-                ) / 100;
+            if (($payment_cost_accounting = $order['payment_cost_accounting']) == 0) {
+
+                // Add flat fees for this order
+                $flatFees = Configuration::get('CONF_ORDER_FIXED') + (
+                    $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
+                        ? Configuration::get('CONF_' . strtoupper((string)$order['module']) . '_FIXED')
+                        : Configuration::get('CONF_' . strtoupper((string)$order['module']) . '_FIXED_FOREIGN')
+                    );
+
+                // Add variable fees for this order
+                $varFees = $order['total_paid_tax_incl'] * (
+                    $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
+                        ? Configuration::get('CONF_' . strtoupper((string)$order['module']) . '_VAR')
+                        : Configuration::get('CONF_' . strtoupper((string)$order['module']) . '_VAR_FOREIGN')
+                    ) / 100;
+
+                $payment_cost_accounting = (float)$flatFees + (float)$varFees;
+            }
 
             // Add shipping fees for this order
-            $shippingFees = $order['total_shipping_tax_excl'] * (
-                $order['id_country'] == Configuration::get('PS_COUNTRY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP_OVERSEAS')
-                ) / 100;
+            if (($shipping_cost_accounting = $order['shipping_cost_accounting']) == 0) {
+                $shipping_cost_accounting = $order['total_shipping_tax_excl'] * (
+                    $order['id_country'] == Configuration::get('PS_COUNTRY_DEFAULT')
+                        ? Configuration::get('CONF_' . strtoupper((string)$order['carrier_reference']) . '_SHIP')
+                        : Configuration::get('CONF_' . strtoupper((string)$order['carrier_reference']) . '_SHIP_OVERSEAS')
+                    ) / 100;
+            }
 
             // Tally up these fees
             if ($granularity == 'day') {
                 if (!isset($expenses[strtotime($order['date'])])) {
                     $expenses[strtotime($order['date'])] = 0;
                 }
-                $expenses[strtotime($order['date'])] += $flatFees + $varFees + $shippingFees;
+                $expenses[strtotime($order['date'])] += $payment_cost_accounting + $shipping_cost_accounting;
             } else {
-                $expenses += $flatFees + $varFees + $shippingFees;
+                $expenses += $payment_cost_accounting + $shipping_cost_accounting;
             }
         }
 
