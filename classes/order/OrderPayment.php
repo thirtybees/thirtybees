@@ -216,9 +216,10 @@ class OrderPaymentCore extends ObjectModel
      * @param string $payment_module PaymentModuleName
      * @param float $transaction_amount Transaction Amount
      * @param int $id_currency ID Currency
+     * @param float $conversionRate Order Conversion Rate
      *
      */
-    public function setPaymentCostAccounting($payment_module, $transaction_amount, $id_currency) {
+    public function setPaymentCostAccounting($payment_module, $transaction_amount, $id_currency, $conversionRate) {
 
         $payment_module_config = strtoupper((string)$payment_module);
 
@@ -231,6 +232,6 @@ class OrderPaymentCore extends ObjectModel
             $fee_absolute = Configuration::get('CONF_'.$payment_module_config.'_FIXED_FOREIGN');
         }
 
-        $this->payment_cost_accounting = Tools::ps_round($fee_absolute + ($fee_relative/100*$transaction_amount), 6);
+        $this->payment_cost_accounting = Tools::ps_round($fee_absolute*$conversionRate + ($fee_relative/100*$transaction_amount), 6);
     }
 }
