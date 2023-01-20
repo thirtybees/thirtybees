@@ -433,6 +433,8 @@
 
 		var file_add_button = Ladda.create(document.querySelector('#file-add-button'));
 
+		var truncatable = {$truncatableEntities|json_encode};
+
 		$('#file').fileupload({
 			dataType: 'json',
 			autoUpload: true,
@@ -530,15 +532,7 @@
 		$("select#entity").change(function() {
 			const entityType = $('#entity').val();
 
-			if (entityType === '{AdminImportController::ENTITY_TYPE_CATEGORIES}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_PRODUCTS}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_COMBINATIONS}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_CUSTOMERS}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_ADDRESSES}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_MANUFACTURERS}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_SUPPLIERS}' ||
-				entityType === '{AdminImportController::ENTITY_TYPE_ALIAS}'
-			) {
+			if (truncatable.includes(entityType)) {
 				$("#truncate").closest('.form-group').show();
 			} else {
 				$("#truncate").closest('.form-group').hide();

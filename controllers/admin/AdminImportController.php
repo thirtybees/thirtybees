@@ -31,6 +31,7 @@
 
 use Thirtybees\Core\Import\CSVDataSource;
 use Thirtybees\Core\Import\DataSourceInterface;
+use Thirtybees\Core\Import\ImportEntityType;
 
 /**
  * Class AdminImportControllerCore
@@ -107,6 +108,21 @@ class AdminImportControllerCore extends AdminController
             $this->entities[static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS] = $this->l('Supply Order Details');
         }
 
+        // Register module entity types
+        foreach (static::getEntityTypes() as $key => $entityTypes) {
+            $this->entities[$key] = $entityTypes->getName();
+        }
+
+        $this->separator = substr(trim(Tools::getValue('separator', ',')), 0, 1);
+        $this->multiple_value_separator = substr(trim(Tools::getValue('multiple_value_separator', ';')), 0, 1);
+
+        // initialize selected entity
+        $selectedEntity = $this->getSelectedEntity();
+        if (static::hasEntityType($selectedEntity)) {
+            $this->available_fields = static::getEntityType($selectedEntity)->getAvailableFields();
+            return;
+        }
+
         // initialize default validators
         static::$validators = [
             'active'            => [static::class, 'getBoolean'],
@@ -132,7 +148,6 @@ class AdminImportControllerCore extends AdminController
             'image_alt'         => [static::class, 'split'],
         ];
 
-        $selectedEntity = $this->getSelectedEntity();
         switch ($selectedEntity) {
             case static::ENTITY_TYPE_COMBINATIONS:
                 $this->required_fields = [
@@ -572,9 +587,6 @@ class AdminImportControllerCore extends AdminController
                 ];
                 break;
         }
-
-        $this->separator = substr(trim(Tools::getValue('separator', ',')), 0, 1);
-        $this->multiple_value_separator = substr(trim(Tools::getValue('multiple_value_separator', ';')), 0, 1);
     }
 
     /**
@@ -1058,6 +1070,7 @@ class AdminImportControllerCore extends AdminController
             'path_import'                       => static::getPath(),
             'entities'                          => $this->entities,
             'entity_selected'                   => $entitySelected,
+            'truncatableEntities'               => $this->getTruncatableEntityTypes(),
             'file_selected'                     => $fileSelected,
             'acceptExtensions'                  => implode('|', array_keys($extensions)),
             'importers'                         => $importers,
@@ -1156,7 +1169,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @throws PrestaShopException
      */
-    protected static function createMultiLangField($field)
+    public static function createMultiLangField($field)
     {
         $res = [];
         foreach (Language::getIDs(false) as $idLang) {
@@ -1248,50 +1261,56 @@ class AdminImportControllerCore extends AdminController
                     $crossStepsVariables = $crossStepsVars;
                 }
             }
-            switch ($entityType) {
-                case static::ENTITY_TYPE_CATEGORIES:
-                    $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_PRODUCTS:
-                    if (!defined('PS_MASS_PRODUCT_CREATION')) {
-                        define('PS_MASS_PRODUCT_CREATION', true);
-                    }
-                    $moreStepLabels = [$this->l('Linking Accessories...')];
-                    $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_CUSTOMERS:
-                    $doneCount += $this->customerImport($offset, $limit, $validateOnly);
-                    break;
-                case static::ENTITY_TYPE_ADDRESSES:
-                    $doneCount += $this->addressImport($offset, $limit, $validateOnly);
-                    break;
-                case static::ENTITY_TYPE_COMBINATIONS:
-                    $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_MANUFACTURERS:
-                    $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_SUPPLIERS:
-                    $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_ALIAS:
-                    $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
-                    break;
-                case static::ENTITY_TYPE_STORE_CONTACTS:
-                    $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case static::ENTITY_TYPE_SUPPLY_ORDERS:
-                    $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
-                    break;
-                case static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS:
-                    $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                    break;
+
+            if (static::hasEntityType($entityType)) {
+                $doneCount += $this->importGroup(static::getEntityType($entityType), $offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
+            } else {
+                // fallback to original implementation
+                switch ($entityType) {
+                    case static::ENTITY_TYPE_CATEGORIES:
+                        $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_PRODUCTS:
+                        if (!defined('PS_MASS_PRODUCT_CREATION')) {
+                            define('PS_MASS_PRODUCT_CREATION', true);
+                        }
+                        $moreStepLabels = [$this->l('Linking Accessories...')];
+                        $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_CUSTOMERS:
+                        $doneCount += $this->customerImport($offset, $limit, $validateOnly);
+                        break;
+                    case static::ENTITY_TYPE_ADDRESSES:
+                        $doneCount += $this->addressImport($offset, $limit, $validateOnly);
+                        break;
+                    case static::ENTITY_TYPE_COMBINATIONS:
+                        $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_MANUFACTURERS:
+                        $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_SUPPLIERS:
+                        $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_ALIAS:
+                        $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
+                        break;
+                    case static::ENTITY_TYPE_STORE_CONTACTS:
+                        $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
+                        $this->clearSmartyCache();
+                        break;
+                    case static::ENTITY_TYPE_SUPPLY_ORDERS:
+                        $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
+                        break;
+                    case static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS:
+                        $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                        break;
+                }
             }
 
             if ($results !== null) {
@@ -1341,6 +1360,22 @@ class AdminImportControllerCore extends AdminController
      */
     protected function truncateTables($entityType)
     {
+        // Delegate truncate functionality to entity type
+        if (static::hasEntityType($entityType)) {
+            $importEntityType = static::getEntityType($entityType);
+            if ($importEntityType->supportTruncate()) {
+                $result = $importEntityType->truncate();
+                if ($result === true) {
+                    return true;
+                }
+                foreach ($result as $error) {
+                    $this->errors[] = $error;
+                }
+            }
+            return false;
+        }
+
+        // fallback to core types / old implementation
         switch ($entityType) {
             case static::ENTITY_TYPE_CATEGORIES:
                 try {
@@ -1537,6 +1572,57 @@ class AdminImportControllerCore extends AdminController
         Image::clearTmpDir();
 
         return true;
+    }
+
+    /**
+     * @param ImportEntityType $importEntityType
+     *
+     * @param int|bool $offset
+     * @param int|bool $limit
+     * @param array $crossStepsVariables
+     * @param bool $validateOnly
+     * @param int $moreStep
+     *
+     * @return int
+     * @throws PrestaShopException
+     */
+    public function importGroup($importEntityType, $offset, $limit, $crossStepsVariables, $validateOnly, $moreStep)
+    {
+        $this->receiveTab();
+        $datasource = $this->openDataSource($offset);
+
+        static::setLocale();
+
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
+            $lineCount++;
+
+            if (count($line) == 1 && $line[0] == null) {
+                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
+                continue;
+            }
+
+            $info = static::getMaskedRow($line);
+
+            try {
+                $result = $importEntityType->import($info, $validateOnly);
+                if (isset($result['errors']) && is_array($result['errors'])) {
+                    foreach ($result['errors'] as $error) {
+                        $this->errors[] = $error;
+                    }
+                }
+                if (isset($result['warnings']) && is_array($result['warnings'])) {
+                    foreach ($result['warnings'] as $error) {
+                        $this->warnings[] = $error;
+                    }
+                }
+            } catch (Throwable $e) {
+                $this->errors[] = $e->getMessage();
+            }
+        }
+        $datasource->close();
+
+        return $lineCount;
     }
 
     /**
@@ -5248,5 +5334,91 @@ class AdminImportControllerCore extends AdminController
     protected function isValidEntity($entityType)
     {
         return isset($this->entities[$entityType]);
+    }
+
+    /**
+     * Returns all registered import entity types
+     *
+     * @return ImportEntityType[]
+     * @throws PrestaShopException
+     */
+    protected static function getEntityTypes()
+    {
+        static $entityTypes = null;
+        if ($entityTypes === null) {
+            $entityTypes = [];
+            $result = Hook::exec('actionRegisterImportEntities', null, null, true);
+            if (is_array($result)) {
+                foreach ($result as $moduleId => $mod) {
+                    if (!is_array($mod)) {
+                        $mod = ['default' => $mod];
+                    }
+                    foreach ($mod as $entityTypeId => $entityType) {
+                        if ($entityType instanceof ImportEntityType) {
+                            $entityTypes[$moduleId . ':' . $entityTypeId] = $entityType;
+                        } else {
+                            trigger_error("Module $moduleId registered invalid import entity type");
+                        }
+                    }
+                }
+            }
+        }
+        return $entityTypes;
+    }
+
+    /**
+     * Returns true, if import entity type exits
+     *
+     * @param string $entityTypeId
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected static function hasEntityType(string $entityTypeId)
+    {
+        return array_key_exists($entityTypeId, static::getEntityTypes());
+    }
+
+    /**
+     * Return entity type by ID
+     *
+     * @param string $entityTypeId
+     *
+     * @return ImportEntityType
+     * @throws PrestaShopException
+     */
+    protected static function getEntityType(string $entityTypeId):ImportEntityType
+    {
+        $entityTypes = static::getEntityTypes();
+        if (! array_key_exists($entityTypeId, $entityTypes)) {
+            throw new PrestaShopException("Entity type $entityTypeId not found");
+        }
+        return $entityTypes[$entityTypeId];
+    }
+
+    /**
+     * Return list of entity types that support truncate
+     *
+     * @return string[]
+     * @throws PrestaShopException
+     */
+    protected function getTruncatableEntityTypes()
+    {
+        $truncatable = [
+            AdminImportController::ENTITY_TYPE_CATEGORIES,
+            AdminImportController::ENTITY_TYPE_PRODUCTS,
+            AdminImportController::ENTITY_TYPE_COMBINATIONS,
+            AdminImportController::ENTITY_TYPE_CUSTOMERS,
+            AdminImportController::ENTITY_TYPE_ADDRESSES,
+            AdminImportController::ENTITY_TYPE_MANUFACTURERS,
+            AdminImportController::ENTITY_TYPE_SUPPLIERS,
+            AdminImportController::ENTITY_TYPE_ALIAS
+        ];
+        foreach (static::getEntityTypes() as $key => $entityType) {
+            if ($entityType->supportTruncate()) {
+                $truncatable[] = $key;
+            }
+        }
+        return $truncatable;
     }
 }
