@@ -137,7 +137,7 @@ function addProductRefreshTotal() {
     price = 0;
   }
   var total = makeTotalProductCaculation(quantity, price);
-  $('#add_product_product_total').html(displayPrice(
+  $('#add_product_product_total').html(formatCurrency(
     total,
     window.currency_format,
     window.currency_sign,
@@ -178,23 +178,17 @@ function editProductRefreshTotal(element) {
       if ($(elm).find('.edit_product_quantity').length) {
         qty += parseInt($(elm).find('.edit_product_quantity').val());
         subtotal = makeTotalProductCaculation($(elm).find('.edit_product_quantity').val(), price);
-        $(elm).find('.total_product').html(displayPrice(
-          subtotal, currency_format, currency_sign, currency_blank
-        ));
+        $(elm).find('.total_product').html(formatCurrency(subtotal, currency_format, currency_sign, currency_blank));
       }
     });
 
     var total = makeTotalProductCaculation(qty, price);
-    element.find('td.total_product').html(displayPrice(
-      total, currency_format, currency_sign, currency_blank
-    ));
+    element.find('td.total_product').html(formatCurrency(total, currency_format, currency_sign, currency_blank));
     element.find('td.productQuantity').html(qty);
   }
   else {
     var total = makeTotalProductCaculation(quantity, price);
-    element.find('td.total_product').html(displayPrice(
-      total, currency_format, currency_sign, currency_blank
-    ));
+    element.find('td.total_product').html(formatCurrency(total, currency_format, currency_sign, currency_blank));
   }
 
 }
@@ -245,7 +239,7 @@ function refreshProductLineView(element, view) {
 
 function updateAmounts(order) {
   $('#total_products td.amount').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_products_wt,
       window.currency_format,
       window.currency_sign,
@@ -254,7 +248,7 @@ function updateAmounts(order) {
     $(this).fadeIn('slow');
   });
   $('#total_discounts td.amount').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_discounts_tax_incl,
       window.currency_format,
       window.currency_sign,
@@ -266,7 +260,7 @@ function updateAmounts(order) {
     $('#total_discounts').slideDown('slow');
   }
   $('#total_wrapping td.amount').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_wrapping_tax_incl,
       window.currency_format,
       window.currency_sign,
@@ -278,7 +272,7 @@ function updateAmounts(order) {
     $('#total_wrapping').slideDown('slow');
   }
   $('#total_shipping td.amount').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_shipping_tax_incl,
       window.currency_format,
       window.currency_sign,
@@ -287,7 +281,7 @@ function updateAmounts(order) {
     $(this).fadeIn('slow');
   });
   $('#total_order td.amount').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_paid_tax_incl,
       window.currency_format,
       window.currency_sign,
@@ -296,7 +290,7 @@ function updateAmounts(order) {
     $(this).fadeIn('slow');
   });
   $('.total_paid').fadeOut('slow', function () {
-    $(this).html(displayPrice(
+    $(this).html(formatCurrency(
       order.total_paid_tax_incl,
       window.currency_format,
       window.currency_sign,
@@ -976,12 +970,12 @@ function actualizeRefundVoucher() {
     }
   });
   $('#total_refund_1').remove();
-  $('#lab_refund_1').append('<span id="total_refund_1">' + displayPrice(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+  $('#lab_refund_1').append('<span id="total_refund_1">' + formatCurrency(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   $('#lab_refund_1').append('<input type="hidden" name="order_discount_price" value=' + window.order_discount_price + '/>');
   $('#total_refund_2').remove();
   if (parseFloat(total - window.order_discount_price) > 0.0) {
     document.getElementById('refund_2').disabled = false;
-    $('#lab_refund_2').append('<span id="total_refund_2">' + displayPrice((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+    $('#lab_refund_2').append('<span id="total_refund_2">' + formatCurrency((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   } else {
     if (document.getElementById('refund_2').checked === true) {
       document.getElementById('refund_1').checked = true;
@@ -1000,12 +994,12 @@ function actualizeTotalRefundVoucher() {
     }
   });
   $('#total_refund_1').remove();
-  $('#lab_refund_total_1').append('<span id="total_refund_1">' + displayPrice(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+  $('#lab_refund_total_1').append('<span id="total_refund_1">' + formatCurrency(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   $('#lab_refund_total_1').append('<input type="hidden" name="order_discount_price" value=' + window.order_discount_price + '/>');
   $('#total_refund_2').remove();
   if (parseFloat(total - window.order_discount_price) > 0.0) {
     document.getElementById('refund_total_2').disabled = false;
-    $('#lab_refund_total_2').append('<span id="total_refund_2">' + displayPrice((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+    $('#lab_refund_total_2').append('<span id="total_refund_2">' + formatCurrency((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   }
   else {
     if (document.getElementById('refund_total_2').checked === true) {

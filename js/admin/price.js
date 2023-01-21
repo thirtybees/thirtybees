@@ -132,36 +132,28 @@ function calcPriceTI() {
   var priceTE = parseFloat(document.getElementById('priceTEReal').value);
   var newPrice = addTaxes(priceTE);
 
-  document.getElementById('priceTI').value =
-    displayPriceValue(newPrice + getEcotaxTaxIncluded());
-  document.getElementById('finalPrice').innerHTML =
-    displayPrice(newPrice);
-  document.getElementById('finalPriceWithoutTax').innerHTML =
-    displayPrice(priceTE);
+  document.getElementById('priceTI').value = displayPriceValue(newPrice + getEcotaxTaxIncluded());
+  document.getElementById('finalPrice').innerHTML = formatCurrency(newPrice);
+  document.getElementById('finalPriceWithoutTax').innerHTML = formatCurrency(priceTE);
 }
 
 function calcPriceTE() {
   var priceTI = parseFloat(document.getElementById('priceTI').value);
   var newPrice = removeTaxes(priceTI);
 
-  document.getElementById('priceTE').value =
-    displayPriceValue(newPrice - getEcotaxTaxIncluded());
-  document.getElementById('priceTEReal').value =
-    displayPriceValue(newPrice);
-  document.getElementById('finalPrice').innerHTML =
-    displayPrice(priceTI);
-  document.getElementById('finalPriceWithoutTax').innerHTML =
-    displayPrice(newPrice);
+  document.getElementById('priceTE').value = displayPriceValue(newPrice - getEcotaxTaxIncluded());
+  document.getElementById('priceTEReal').value = displayPriceValue(newPrice);
+  document.getElementById('finalPrice').innerHTML = formatCurrency(priceTI);
+  document.getElementById('finalPriceWithoutTax').innerHTML = formatCurrency(newPrice);
 }
 
 function calcImpactPriceTI() {
   var priceTE = parseFloat(document.getElementById('attribute_priceTEReal').value);
   var newPrice = addTaxes(priceTE);
 
-  document.getElementById('attribute_priceTI').value =
-    displayPriceValue(newPrice);
+  document.getElementById('attribute_priceTI').value = displayPriceValue(newPrice);
 
-  $('#attribute_new_total_price').html(displayPrice(
+  $('#attribute_new_total_price').html(formatCurrency(
     parseFloat($('#attribute_priceTI').val())
     * parseInt($('#attribute_price_impact').val())
     + parseFloat($('#finalPrice').html())
@@ -172,12 +164,10 @@ function calcImpactPriceTE() {
   var priceTI = parseFloat(document.getElementById('attribute_priceTI').value);
   var newPrice = removeTaxes(priceTI);
 
-  document.getElementById('attribute_price').value =
-    displayPriceValue(newPrice);
-  document.getElementById('attribute_priceTEReal').value =
-    displayPriceValue(newPrice);
+  document.getElementById('attribute_price').value = displayPriceValue(newPrice);
+  document.getElementById('attribute_priceTEReal').value = displayPriceValue(newPrice);
 
-  $('#attribute_new_total_price').html(displayPrice(
+  $('#attribute_new_total_price').html(formatCurrency(
     parseFloat($('#attribute_priceTI').val())
     * parseInt($('#attribute_price_impact').val())
     + parseFloat($('#finalPrice').html())
@@ -215,10 +205,8 @@ function reductionPrice() {
     curPrice = curPrice - rprice.value;
   }
 
-  newprice.innerHTML = displayPrice(curPrice + getEcotaxTaxIncluded());
-  newpriceWithoutTax.innerHTML = displayPrice(
-    priceWhithoutTaxes.value - removeTaxes(rprice.value)
-  );
+  newprice.innerHTML = formatCurrency(curPrice + getEcotaxTaxIncluded());
+  newpriceWithoutTax.innerHTML = formatCurrency(priceWhithoutTaxes.value - removeTaxes(rprice.value));
 }
 
 function reductionPercent() {
@@ -246,8 +234,8 @@ function reductionPercent() {
     );
   }
 
-  newprice.innerHTML = displayPrice(curPrice + getEcotaxTaxIncluded());
-  newpriceWithoutTax.innerHTML = displayPrice(removeTaxes(curPrice));
+  newprice.innerHTML = formatCurrency(curPrice + getEcotaxTaxIncluded());
+  newpriceWithoutTax.innerHTML = formatCurrency(removeTaxes(curPrice));
 }
 
 function isInReductionPeriod() {
@@ -280,7 +268,7 @@ function unitPriceWithTax(type) {
   var newPrice = parseFloat(document.getElementById(type + '_price').value);
   newPrice = addTaxes(newPrice);
 
-  $('#' + type + '_price_with_tax').html(displayPrice(newPrice));
+  $('#' + type + '_price_with_tax').html(formatCurrency(newPrice));
 }
 
 function unitySecond() {

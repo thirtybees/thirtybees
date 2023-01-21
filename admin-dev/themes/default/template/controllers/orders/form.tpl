@@ -742,7 +742,7 @@
 			cart_content += (!this.id_customization ? '<div class="input-group fixed-width-md"><div class="input-group-btn"><a href="#" class="btn btn-default increaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><i class="icon-caret-up"></i></a><a href="#" class="btn btn-default decreaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'"><i class="icon-caret-down"></i></a></div>' : '');
 			cart_content += (!this.id_customization ? '<input type="text" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" class="cart_quantity" value="'+this.cart_quantity+'" />' : '');
 			cart_content += (!this.id_customization ? '<div class="input-group-btn"><a href="#" class="delete_product btn btn-default" rel="delete_'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><i class="icon-remove text-danger"></i></a></div></div>' : '');
-            cart_content += '</td><td>' + displayPrice(
+            cart_content += '</td><td>' + formatCurrency(
                 this.numeric_total,
                 currency_format, currency_sign, currency_blank
             ) + '</td></tr>';
@@ -854,34 +854,34 @@
 
 		$('#gift_message').html(jsonSummary.cart.gift_message);
         if ( ! changed_shipping_price) {
-            $('#shipping_price').html('<b>' + displayPrice(
+            $('#shipping_price').html('<b>' + formatCurrency(
                 jsonSummary.summary.total_shipping,
                 currency_format, currency_sign, currency_blank
             ) + '</b>');
         }
 		shipping_price_selected_carrier = jsonSummary.summary.total_shipping;
 
-        $('#total_vouchers').html(displayPrice(
+        $('#total_vouchers').html(formatCurrency(
             jsonSummary.summary.total_discounts_tax_exc,
             currency_format, currency_sign, currency_blank
         ));
-        $('#total_shipping').html(displayPrice(
+        $('#total_shipping').html(formatCurrency(
             jsonSummary.summary.total_shipping_tax_exc,
             currency_format, currency_sign, currency_blank
         ));
-        $('#total_taxes').html(displayPrice(
+        $('#total_taxes').html(formatCurrency(
             jsonSummary.summary.total_tax,
             currency_format, currency_sign, currency_blank
         ));
-        $('#total_without_taxes').html(displayPrice(
+        $('#total_without_taxes').html(formatCurrency(
             jsonSummary.summary.total_price_without_tax,
             currency_format, currency_sign, currency_blank
         ));
-        $('#total_with_taxes').html(displayPrice(
+        $('#total_with_taxes').html(formatCurrency(
             jsonSummary.summary.total_price,
             currency_format, currency_sign, currency_blank
         ));
-        $('#total_products').html(displayPrice(
+        $('#total_products').html(formatCurrency(
             jsonSummary.summary.total_products,
             currency_format, currency_sign, currency_blank
         ));
