@@ -360,7 +360,9 @@ class RequestSqlCore extends ObjectModel
             if (in_array($attr['expr_type'], ['operator', 'const'])) {
                 continue;
             }
-            if ($attribut = $this->cutAttribute($attr['base_expr'], $from)) {
+            if ($attr['expr_type'] === 'bracket_expression') {
+                $tab = array_merge($tab, $this->cutJoin($attr['sub_tree'], $from));
+            } elseif ($attribut = $this->cutAttribute($attr['base_expr'], $from)) {
                 $tab[] = $attribut;
             }
         }
