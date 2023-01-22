@@ -563,72 +563,6 @@ class AdminShopControllerCore extends AdminController
             $disabled = false;
         }
 
-        $importData = [
-            'carrier'            => $this->l('Carriers'),
-            'cms'                => $this->l('CMS pages'),
-            'contact'            => $this->l('Contact information'),
-            'country'            => $this->l('Countries'),
-            'currency'           => $this->l('Currencies'),
-            'discount'           => $this->l('Discount prices'),
-            'employee'           => $this->l('Employees'),
-            'image'              => $this->l('Images'),
-            'lang'               => $this->l('Languages'),
-            'manufacturer'       => $this->l('Manufacturers'),
-            'module'             => $this->l('Modules'),
-            'hook_module'        => $this->l('Module hooks'),
-            'meta_lang'          => $this->l('Meta information'),
-            'product'            => $this->l('Products'),
-            'product_attribute'  => $this->l('Product combinations'),
-            'scene'              => $this->l('Scenes'),
-            'stock_available'    => $this->l('Available quantities for sale'),
-            'store'              => $this->l('Stores'),
-            'warehouse'          => $this->l('Warehouses'),
-            'webservice_account' => $this->l('Webservice accounts'),
-            'attribute_group'    => $this->l('Attribute groups'),
-            'feature'            => $this->l('Features'),
-            'group'              => $this->l('Customer groups'),
-            'tax_rules_group'    => $this->l('Tax rules groups'),
-            'supplier'           => $this->l('Suppliers'),
-            'referrer'           => $this->l('Referrers/affiliates'),
-            'zone'               => $this->l('Zones'),
-            'cart_rule'          => $this->l('Cart rules'),
-        ];
-
-        // Hook for duplication of shop data
-        $modulesList = Hook::getHookModuleExecList('actionShopDataDuplication');
-        if (is_array($modulesList) && count($modulesList) > 0) {
-            foreach ($modulesList as $m) {
-                $importData['Module'.ucfirst($m['module'])] = Module::getModuleName($m['module']);
-            }
-        }
-
-        asort($importData);
-
-        if (!$this->object->id) {
-            $this->fields_import_form = [
-                'radio'       => [
-                    'type'  => 'radio',
-                    'label' => $this->l('Import data'),
-                    'name'  => 'useImportData',
-                    'value' => 1,
-                ],
-                'select'      => [
-                    'type'    => 'select',
-                    'name'    => 'importFromShop',
-                    'label'   => $this->l('Choose the source shop'),
-                    'options' => [
-                        'query' => Shop::getShops(false),
-                        'name'  => 'name',
-                    ],
-                ],
-                'allcheckbox' => [
-                    'type'   => 'checkbox',
-                    'label'  => $this->l('Choose data to import'),
-                    'values' => $importData,
-                ],
-                'desc'        => $this->l('Use this option to associate data (products, modules, etc.) the same way for each selected shop.'),
-            ];
-        }
 
         // determine Shop Group
         if (Tools::getValue('id_shop_group')) {
@@ -667,8 +601,72 @@ class AdminShopControllerCore extends AdminController
             'defaultShop'  => (int) Configuration::get('PS_SHOP_DEFAULT'),
             'ids_category' => $idsCategory,
         ];
-        if (isset($this->fields_import_form)) {
-            $this->tpl_form_vars = array_merge($this->tpl_form_vars, ['form_import' => $this->fields_import_form]);
+
+        if (! $this->object->id) {
+            $importData = [
+                'carrier'            => $this->l('Carriers'),
+                'cms'                => $this->l('CMS pages'),
+                'contact'            => $this->l('Contact information'),
+                'country'            => $this->l('Countries'),
+                'currency'           => $this->l('Currencies'),
+                'discount'           => $this->l('Discount prices'),
+                'employee'           => $this->l('Employees'),
+                'image'              => $this->l('Images'),
+                'lang'               => $this->l('Languages'),
+                'manufacturer'       => $this->l('Manufacturers'),
+                'module'             => $this->l('Modules'),
+                'hook_module'        => $this->l('Module hooks'),
+                'meta_lang'          => $this->l('Meta information'),
+                'product'            => $this->l('Products'),
+                'product_attribute'  => $this->l('Product combinations'),
+                'scene'              => $this->l('Scenes'),
+                'stock_available'    => $this->l('Available quantities for sale'),
+                'store'              => $this->l('Stores'),
+                'warehouse'          => $this->l('Warehouses'),
+                'webservice_account' => $this->l('Webservice accounts'),
+                'attribute_group'    => $this->l('Attribute groups'),
+                'feature'            => $this->l('Features'),
+                'group'              => $this->l('Customer groups'),
+                'tax_rules_group'    => $this->l('Tax rules groups'),
+                'supplier'           => $this->l('Suppliers'),
+                'referrer'           => $this->l('Referrers/affiliates'),
+                'zone'               => $this->l('Zones'),
+                'cart_rule'          => $this->l('Cart rules'),
+            ];
+
+            // Hook for duplication of shop data
+            $modulesList = Hook::getHookModuleExecList('actionShopDataDuplication');
+            if (is_array($modulesList) && count($modulesList) > 0) {
+                foreach ($modulesList as $m) {
+                    $importData['Module'.ucfirst($m['module'])] = Module::getModuleName($m['module']);
+                }
+            }
+
+            asort($importData);
+
+            $this->tpl_form_vars['form_import'] = [
+                'radio'       => [
+                    'type'  => 'radio',
+                    'label' => $this->l('Import data'),
+                    'name'  => 'useImportData',
+                    'value' => 1,
+                ],
+                'select'      => [
+                    'type'    => 'select',
+                    'name'    => 'importFromShop',
+                    'label'   => $this->l('Choose the source shop'),
+                    'options' => [
+                        'query' => Shop::getShops(false),
+                        'name'  => 'name',
+                    ],
+                ],
+                'allcheckbox' => [
+                    'type'   => 'checkbox',
+                    'label'  => $this->l('Choose data to import'),
+                    'values' => $importData,
+                ],
+                'desc'        => $this->l('Use this option to associate data (products, modules, etc.) the same way for each selected shop.'),
+            ];
         }
 
         return parent::renderForm();

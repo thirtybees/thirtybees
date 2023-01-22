@@ -108,7 +108,14 @@
 				<label class="control-label col-lg-3">{$field.label}</label>
 				<div class="col-lg-9">
 				{foreach $field.values as $key => $label}
-					<p class="checkbox"><input type="checkbox" name="importData[{$key}]" checked="checked" /> {$label}</p>
+					<div class="checkbox">
+						{strip}
+						<label for="importData[{$key}]">
+							<input type="checkbox" name="importData[{$key}]" checked="checked" />
+							{$label}
+						</label>
+						{/strip}
+					</div>
 				{/foreach}
 				</div>
 			</div>
