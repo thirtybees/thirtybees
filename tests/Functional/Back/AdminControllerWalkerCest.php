@@ -30,6 +30,20 @@ class AdminControllerWalkerCest
         $I->amOnPage("/admin-dev/index.php?controller=$controller&token=$token");
         $I->see('Dashboard');
         $I->withoutErrors();
+
+        // check subpages
+        foreach ($I->grabMultiple('.panel-heading a', 'href') as $href) {
+            if (strpos($href, 'index.php') === 0) {
+                if (strpos($href, '&export')) {
+                    $I->amOnPage($href);
+                    $I->seeResponseCodeIs(200);
+                } else {
+                    $I->amOnPage($href);
+                    $I->see('Dashboard');
+                    $I->withoutErrors();
+                }
+            }
+        }
     }
 
     /**
