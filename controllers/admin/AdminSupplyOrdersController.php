@@ -192,18 +192,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 ];
 
             case 'update_receipt':
-                // Default cancel button - like old back link
-                if (!isset($this->no_back) || $this->no_back == false) {
-                    $back = Tools::safeOutput(Tools::getValue('back', ''));
-                    if (empty($back)) {
-                        $back = static::$currentIndex.'&token='.$this->token;
-                    }
-
-                    $this->toolbar_btn['cancel'] = [
-                        'href' => $back,
-                        'desc' => $this->l('Cancel'),
-                    ];
-                }
+                $this->toolbar_btn['cancel'] = [
+                    'href' => $this->getBackUrlParameter(),
+                    'desc' => $this->l('Cancel'),
+                ];
                 break;
 
             case 'add':

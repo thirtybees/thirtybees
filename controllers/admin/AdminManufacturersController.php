@@ -230,18 +230,10 @@ class AdminManufacturersControllerCore extends AdminController
                     'desc' => $this->l('Save'),
                 ];
 
-                // Default cancel button - like old back link
-                if (!isset($this->no_back) || $this->no_back == false) {
-                    $back = Tools::safeOutput(Tools::getValue('back', ''));
-                    if (empty($back)) {
-                        $back = static::$currentIndex.'&token='.$this->token;
-                    }
-
-                    $this->toolbar_btn['cancel'] = [
-                        'href' => $back,
-                        'desc' => $this->l('Cancel'),
-                    ];
-                }
+                $this->toolbar_btn['cancel'] = [
+                    'href' => $this->getBackUrlParameter(),
+                    'desc' => $this->l('Cancel'),
+                ];
                 break;
 
             default:
@@ -277,18 +269,10 @@ class AdminManufacturersControllerCore extends AdminController
                 'icon' => 'process-icon-new',
             ];
         } elseif ($this->display == 'editaddresses' || $this->display == 'addaddress') {
-            // Default cancel button - like old back link
-            if (!isset($this->no_back) || $this->no_back == false) {
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
-
-                $this->page_header_toolbar_btn['cancel'] = [
-                    'href' => $back,
-                    'desc' => $this->l('Cancel', null, null, false),
-                ];
-            }
+            $this->page_header_toolbar_btn['cancel'] = [
+                'href' => $this->getBackUrlParameter(),
+                'desc' => $this->l('Cancel', null, null, false),
+            ];
         }
 
         parent::initPageHeaderToolbar();
