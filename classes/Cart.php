@@ -511,8 +511,10 @@ class CartCore extends ObjectModel
                 $row['ecotax'] = (float) $row['ecotax_attr'];
             }
 
+            $quantity = (int)$row['cart_quantity'];
+
             $row['stock_quantity'] = (int) $row['quantity'];
-            $row['quantity'] = (int) $row['cart_quantity'];
+            $row['quantity'] = $quantity;
 
             if (isset($row['id_product_attribute']) && (int) $row['id_product_attribute'] && isset($row['weight_attribute'])) {
                 $row['weight'] = (float) $row['weight_attribute'];
@@ -543,7 +545,7 @@ class CartCore extends ObjectModel
                 null,
                 false,
                 false,
-                $row['cart_quantity'],
+                $quantity,
                 false,
                 (int) $this->id_customer ? (int) $this->id_customer : null,
                 (int) $this->id,
@@ -562,7 +564,7 @@ class CartCore extends ObjectModel
                 null,
                 false,
                 true,
-                $row['cart_quantity'],
+                $quantity,
                 false,
                 (int) $this->id_customer ? (int) $this->id_customer : null,
                 (int) $this->id,
@@ -581,7 +583,7 @@ class CartCore extends ObjectModel
                 null,
                 false,
                 true,
-                $row['cart_quantity'],
+                $quantity,
                 false,
                 (int) $this->id_customer ? (int) $this->id_customer : null,
                 (int) $this->id,
@@ -595,25 +597,24 @@ class CartCore extends ObjectModel
             $row['total'] = $this->roundPrice(
                 $row['price_with_reduction_without_tax'],
                 $row['price_with_reduction'],
-                $row['cart_quantity'],
+                $quantity,
                 false
             );
             $row['total_wt'] = $this->roundPrice(
                 $row['price_with_reduction_without_tax'],
                 $row['price_with_reduction'],
-                $row['cart_quantity'],
+                $quantity,
                 true
             );
 
             // Recalculate prices after rounding, these go into an order.
-            $row['price'] = round(
-                $row['total'] / $row['cart_quantity'],
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-            $row['price_wt'] = round(
-                $row['total_wt'] / $row['cart_quantity'],
-                _TB_PRICE_DATABASE_PRECISION_
-            );
+            if ($quantity !== 0) {
+                $row['price'] = round($row['total'] / $quantity, _TB_PRICE_DATABASE_PRECISION_);
+                $row['price_wt'] = round($row['total_wt'] / $quantity, _TB_PRICE_DATABASE_PRECISION_);
+            } else {
+                $row['price'] = 0.0;
+                $row['price_wt'] = 0.0;
+            }
 
             $row['description_short'] = Tools::nl2br($row['description_short']);
 
@@ -626,7 +627,7 @@ class CartCore extends ObjectModel
             }
 
             $row['reduction_applies'] = ($specificPriceOutput && (float) $specificPriceOutput['reduction']);
-            $row['quantity_discount_applies'] = ($specificPriceOutput && $row['cart_quantity'] >= (int) $specificPriceOutput['from_quantity']);
+            $row['quantity_discount_applies'] = ($specificPriceOutput && $quantity >= (int) $specificPriceOutput['from_quantity']);
             $row['id_image'] = Product::defineProductImage($row, $this->id_lang);
             $row['allow_oosp'] = Product::isAvailableWhenOutOfStock($row['out_of_stock']);
             $row['features'] = Product::getFeaturesStatic((int) $row['id_product']);
