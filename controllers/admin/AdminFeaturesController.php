@@ -784,12 +784,10 @@ class AdminFeaturesControllerCore extends AdminController
             $valuesQuery->from('feature_value', 'fv');
             $valuesQuery->where('fv.id_feature IN ('. implode(',', $ids).')');
             $valuesQuery->groupBy('fv.id_feature');
-            $res = $conn->executeS($valuesQuery);
-            if (is_array($res)) {
-                foreach ($res as $row) {
-                    $id = (int)$row['id_feature'];
-                    $extra[$id]['value'] = (int)$row['count_values'];
-                }
+            $res = $conn->getArray($valuesQuery);
+            foreach ($res as $row) {
+                $id = (int)$row['id_feature'];
+                $extra[$id]['value'] = (int)$row['count_values'];
             }
             // count products using this feature
             $productsQuery = new DbQuery();
@@ -797,12 +795,10 @@ class AdminFeaturesControllerCore extends AdminController
             $productsQuery->from('feature_product', 'fp');
             $productsQuery->where('fp.id_feature IN ('. implode(',', $ids).')');
             $productsQuery->groupBy('fp.id_feature');
-            $res = $conn->executeS($productsQuery);
-            if (is_array($res)) {
-                foreach ($res as $row) {
-                    $id = (int)$row['id_feature'];
-                    $extra[$id]['products'] = (int)$row['count_products'];
-                }
+            $res = $conn->getArray($productsQuery);
+            foreach ($res as $row) {
+                $id = (int)$row['id_feature'];
+                $extra[$id]['products'] = (int)$row['count_products'];
             }
 
             foreach ($this->_list as &$item) {

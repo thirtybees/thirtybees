@@ -258,6 +258,7 @@ class AdminProductsControllerCore extends AdminController
             $this->_select .= ' , cp.`position`, ';
         }
 
+        // filter by feature or feature value
         $featureId = (int)Tools::getValue('id_feature');
         $featureValueId = (int)Tools::getValue('id_feature_value');
         if ($featureId) {
@@ -267,6 +268,24 @@ class AdminProductsControllerCore extends AdminController
             }
             $this->_where .= ')';
         }
+
+        // filter by attribute group or specific attribute
+        $attributeGroupId = (int)Tools::getValue('id_attribute_group');
+        $attributeId = (int)Tools::getValue('id_attribute');
+        if ($attributeGroupId) {
+            $subQuery = (new DbQuery())
+                ->select('1')
+                ->from('product_attribute_combination', 'pac')
+                ->innerJoin('product_attribute', 'pa', '(pac.id_product_attribute = pa.id_product_attribute)')
+                ->innerJoin('attribute', 'attr', '(pac.id_attribute = attr.id_attribute)')
+                ->where('pa.id_product = a.id_product')
+                ->where('attr.id_attribute_group = ' . $attributeGroupId);
+            if ($attributeId) {
+                $subQuery->where('attr.id_attribute = ' . $attributeId);
+            }
+            $this->_where .= " AND EXISTS($subQuery)";
+        }
+
 
         $this->_use_found_rows = false;
         $this->_group = '';

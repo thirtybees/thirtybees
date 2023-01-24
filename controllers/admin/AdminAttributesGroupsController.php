@@ -88,6 +88,14 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 'orderby' => false,
                 'search'  => false,
             ],
+            'products'      => [
+                'title'   => $this->l('Products'),
+                'orderby' => false,
+                'search'  => false,
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+                'callback'=> 'getProductsLink',
+            ],
             'position'           => [
                 'title'      => $this->l('Position'),
                 'filter_key' => 'a!position',
@@ -536,6 +544,14 @@ class AdminAttributesGroupsControllerCore extends AdminController
                     'width'      => 'auto',
                     'filter_key' => 'b!name',
                 ],
+                'products'      => [
+                    'title'   => $this->l('Products'),
+                    'orderby' => false,
+                    'search'  => false,
+                    'align'   => 'center',
+                    'class'   => 'fixed-width-xs',
+                    'callback'=> 'getProductsLink',
+                ],
             ];
 
             if ($obj->group_type == 'color') {
@@ -801,7 +817,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     /**
      * Call the right method for creating or updating object
      *
-     * @return AttributeGroup|false
+     * @return AttributeGroup|ProductAttribute|false
      *
      * @throws PrestaShopException
      */
@@ -819,14 +835,14 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return AttributeGroup|false
+     * @return AttributeGroup|ProductAttribute|false
      *
      * @throws PrestaShopException
      */
     public function processAdd()
     {
         if ($this->table == 'attribute') {
-            /** @var AttributeGroup $object */
+            /** @var ProductAttribute $object */
             $object = new $this->className();
             foreach (Language::getLanguages(false) as $language) {
                 if ($object->isAttribute(
@@ -868,13 +884,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return AttributeGroup|false
+     * @return AttributeGroup|ProductAttribute|false
      *
      * @throws PrestaShopException
      */
     public function processUpdate()
     {
-        /** @var AttributeGroup|false $object */
+        /** @var AttributeGroup|ProductAttribute|false $object */
         $object = parent::processUpdate();
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
@@ -914,29 +930,77 @@ class AdminAttributesGroupsControllerCore extends AdminController
     {
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
+        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+
         if ($this->display == 'view') {
+
+            $ids = array_map('intval', array_column($this->_list, 'id_attribute'));
+
+            // count products using this attribute
+            $productsQuery = new DbQuery();
+            $productsQuery->select('pac.id_attribute, COUNT(DISTINCT pa.id_product) as count_products');
+            $productsQuery->from('product_attribute_combination', 'pac');
+            $productsQuery->innerJoin('product_attribute', 'pa', '(pac.id_product_attribute = pa.id_product_attribute)');
+            $productsQuery->where('pac.id_attribute IN ('. implode(',', $ids).')');
+            $productsQuery->groupBy('pac.id_attribute');
+            $res = $conn->getArray($productsQuery);
+            $products = [];
+            foreach ($res as $row) {
+                $id = (int)$row['id_attribute'];
+                $products[$id] = (int)$row['count_products'];
+            }
+
             foreach ($this->_list as &$list) {
-                if (file_exists(_PS_IMG_DIR_.$this->fieldImageSettings['dir'].'/'.(int) $list['id_attribute'].'.jpg')) {
+                $id = (int)$list['id_attribute'];
+                if (file_exists(_PS_IMG_DIR_.$this->fieldImageSettings['dir']."/$id.jpg")) {
                     if (!isset($list['color']) || !is_array($list['color'])) {
                         $list['color'] = [];
                     }
-                    $list['color']['texture'] = '../img/'.$this->fieldImageSettings['dir'].'/'.(int) $list['id_attribute'].'.jpg';
+                    $list['color']['texture'] = '../img/'.$this->fieldImageSettings['dir']."/$id.jpg";
                 }
+                $list['products'] = $products[$id] ?? 0;
             }
         } else {
-            $nbItems = count($this->_list);
-            for ($i = 0; $i < $nbItems; ++$i) {
-                $item = &$this->_list[$i];
 
-                $query = new DbQuery();
-                $query->select('COUNT(a.id_attribute) as count_values');
-                $query->from('attribute', 'a');
-                $query->join(Shop::addSqlAssociation('attribute', 'a'));
-                $query->where('a.id_attribute_group ='.(int) $item['id_attribute_group']);
-                $query->groupBy('attribute_shop.id_shop');
-                $query->orderBy('count_values DESC');
-                $item['count_values'] = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
-                unset($query);
+            $ids = array_map('intval', array_column($this->_list, 'id_attribute_group'));
+            $extra = [];
+            foreach ($ids as $id) {
+                $extra[$id] = [
+                    'count_values' => 0,
+                    'products' => 0,
+                ];
+            }
+
+            // count attributes count
+            $valuesQuery = new DbQuery();
+            $valuesQuery->select('a.id_attribute_group, COUNT(a.id_attribute) as count_values');
+            $valuesQuery->from('attribute', 'a');
+            $valuesQuery->join(Shop::addSqlAssociation('attribute', 'a'));
+            $valuesQuery->where('a.id_attribute_group IN ('. implode(',', $ids).')');
+            $valuesQuery->groupBy('a.id_attribute_group');
+            $res = $conn->getArray($valuesQuery);
+            foreach ($res as $row) {
+                $id = (int)$row['id_attribute_group'];
+                $extra[$id]['count_values'] = (int)$row['count_values'];
+            }
+
+            // count products using this attribute group
+            $productsQuery = new DbQuery();
+            $productsQuery->select('a.id_attribute_group, COUNT(DISTINCT pa.id_product) as count_products');
+            $productsQuery->from('product_attribute_combination', 'pac');
+            $productsQuery->innerJoin('product_attribute', 'pa', '(pac.id_product_attribute = pa.id_product_attribute)');
+            $productsQuery->innerJoin('attribute', 'a', '(pac.id_attribute = a.id_attribute)');
+            $productsQuery->where('a.id_attribute_group IN ('. implode(',', $ids).')');
+            $productsQuery->groupBy('a.id_attribute_group');
+            $res = $conn->getArray($productsQuery);
+            foreach ($res as $row) {
+                $id = (int)$row['id_attribute_group'];
+                $extra[$id]['products'] = (int)$row['count_products'];
+            }
+
+            foreach ($this->_list as &$item) {
+                $id = (int) $item['id_attribute_group'];
+                $item = array_merge($item, $extra[$id]);
             }
         }
     }
@@ -1046,5 +1110,23 @@ class AdminAttributesGroupsControllerCore extends AdminController
         }
 
         $this->redirect_after = $url.$addUrl;
+    }
+
+    /**
+     * @param int $value
+     * @param array $row
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getProductsLink($value, $row)
+    {
+        $params = [
+            'id_attribute_group' => (int)$row['id_attribute_group']
+        ];
+        if (isset($row['id_attribute'])) {
+            $params['id_attribute'] = (int)$row['id_attribute'];
+        }
+        $link = Context::getContext()->link->getAdminLink('AdminProducts', true, $params);
+        return "<a href=\"$link\">$value</a>";
     }
 }
