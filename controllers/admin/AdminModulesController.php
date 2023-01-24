@@ -1565,13 +1565,15 @@ class AdminModulesControllerCore extends AdminController
                         $this->errors[] = sprintf(Tools::displayError('This module needs to be installed in order to be updated: %s.'), $module->name);
                     } else {
                         // If we install a module, force temporary global context for multishop
-                        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && $method != 'getContent') {
+                        $tmpOldShop = null;
+                        if (Shop::isFeatureActive() && Shop::getContext() !== Shop::CONTEXT_ALL && $method !== 'getContent') {
                             $shopId = (int) $this->context->shop->id;
-                            $this->context->tmpOldShop = clone($this->context->shop);
                             if ($shopId) {
+                                $tmpOldShop = $this->context->shop;
                                 $this->context->shop = new Shop($shopId);
                             }
                         }
+
                         //retrocompatibility
                         if (Tools::getValue('controller') != '') {
                             $_POST['tab'] = Tools::safeOutput(Tools::getValue('controller'));
@@ -1656,10 +1658,6 @@ class AdminModulesControllerCore extends AdminController
                                     'multishop_context' => Shop::CONTEXT_ALL | Shop::CONTEXT_GROUP | Shop::CONTEXT_SHOP,
                                 ]
                             );
-                            if (Shop::isFeatureActive() && isset($this->context->tmpOldShop)) {
-                                $this->context->shop = clone($this->context->tmpOldShop);
-                                unset($this->context->tmpOldShop);
-                            }
                             // Display module configuration
                             $header = $this->context->smarty->fetch('controllers/modules/configure.tpl');
                             $configurationBar = $this->context->smarty->fetch('controllers/modules/configuration_bar.tpl');
@@ -1674,9 +1672,9 @@ class AdminModulesControllerCore extends AdminController
                         } elseif ($echo === false) {
                             $moduleErrors[] = ['name' => $name, 'message' => $module->getErrors()];
                         }
-                        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && isset($this->context->tmpOldShop)) {
-                            $this->context->shop = clone($this->context->tmpOldShop);
-                            unset($this->context->tmpOldShop);
+
+                        if ($tmpOldShop) {
+                            $this->context->shop = $tmpOldShop;
                         }
                     }
                     if ($key != 'configure' && Tools::getIsset('bpay')) {
