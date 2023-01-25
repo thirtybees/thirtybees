@@ -1130,7 +1130,9 @@ CREATE TABLE `PREFIX_log` (
 
 CREATE TABLE `PREFIX_mail` (
   `id_mail` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `recipient_type` enum('to','bcc') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'to',
   `recipient` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `from` varchar(126) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `template` varchar(62) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `subject` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,

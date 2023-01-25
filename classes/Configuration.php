@@ -269,6 +269,7 @@ class ConfigurationCore extends ObjectModel
     const SSL_TRUST_STORE_TYPE = 'TB_SSL_TRUST_STORE_TYPE';
     const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
+    const MAIL_TRANSPORT = 'TB_MAIL_TRANSPORT';
 
     /**
      * @var array Object model definition

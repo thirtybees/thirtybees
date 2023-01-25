@@ -128,14 +128,6 @@ class AdminInformationControllerCore extends AdminController
                 'url'      => $this->context->shop->getBaseURL(),
                 'theme'    => $this->context->shop->theme_name,
             ],
-            'mailMethod'            => Configuration::get('PS_MAIL_METHOD'),
-            'smtp'            => [
-                'server'     => Configuration::get('PS_MAIL_SERVER'),
-                'user'       => Configuration::get('PS_MAIL_USER'),
-                'password'   => Configuration::get('PS_MAIL_PASSWD'),
-                'encryption' => Configuration::get('PS_MAIL_SMTP_ENCRYPTION'),
-                'port'       => Configuration::get('PS_MAIL_SMTP_PORT'),
-            ],
             'user_agent'      => $_SERVER['HTTP_USER_AGENT'],
         ];
 

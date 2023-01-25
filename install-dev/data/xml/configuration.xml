@@ -538,9 +538,6 @@
     <configuration id="PS_SHOP_EMAIL" name="PS_SHOP_EMAIL">
       <value>pub@thirtybees.com</value>
     </configuration>
-    <configuration id="PS_MAIL_METHOD" name="PS_MAIL_METHOD">
-      <value>1</value>
-    </configuration>
     <configuration id="PS_SHOP_ACTIVITY" name="PS_SHOP_ACTIVITY">
       <value>Animaux</value>
     </configuration>

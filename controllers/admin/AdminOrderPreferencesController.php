@@ -73,6 +73,14 @@ class AdminOrderPreferencesControllerCore extends AdminController
         // check Proportionate tax for shipping and wrapping
         $proportionateTax = Carrier::useProportionateTax();
 
+        $contacts = [];
+        foreach (Contact::getContacts($this->context->language->id, true) as $contact) {
+            $contacts[] = [
+                'id' => (int)$contact['id_contact'],
+                'name' => $contact['name']
+            ];
+        }
+
         $this->fields_options = [
             'general' => [
                 'title'  => $this->l('General'),
@@ -141,6 +149,15 @@ class AdminOrderPreferencesControllerCore extends AdminController
                         'list'       => $cmsTab,
                         'identifier' => 'id',
                         'cast'       => 'intval',
+                    ],
+                    'PS_MAIL_EMAIL_MESSAGE' => [
+                        'title'      => $this->l('Send order messages to'),
+                        'hint'       => $this->l('Choose contact to which customers send messages from the order page.'),
+                        'validation' => 'isUnsignedId',
+                        'type'       => 'select',
+                        'cast'       => 'intval',
+                        'identifier' => 'id',
+                        'list'       => $contacts,
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],

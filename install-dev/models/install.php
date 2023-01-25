@@ -630,11 +630,6 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_TIMEZONE', $data['shopTimezone']);
         Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configurationAgreement']);
 
-        // Set mails configuration
-        Configuration::updateGlobalValue('PS_MAIL_METHOD', Mail::MAIL_METHOD_MAIL);
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', 'off');
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', 25);
-
         // Set default rewriting settings
         Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewriteEngine']);
 

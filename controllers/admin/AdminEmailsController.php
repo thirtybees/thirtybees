@@ -50,7 +50,6 @@ class AdminEmailsControllerCore extends AdminController
             $this->lang = false;
             $this->noLink = true;
             $this->list_no_link = true;
-            $this->explicitSelect = true;
             $this->addRowAction('delete');
 
             $this->bulk_actions = [
@@ -68,7 +67,12 @@ class AdminEmailsControllerCore extends AdminController
 
             $this->fields_list = [
                 'id_mail'   => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-                'recipient' => ['title' => $this->l('Recipient')],
+                'from' => [ 'title' => $this->l('From') ],
+                'recipient' => [
+                    'title' => $this->l('Recipient'),
+                    'callback_object' => $this,
+                    'callback' => 'renderRecipient',
+                ],
                 'template'  => ['title' => $this->l('Template')],
                 'language'  => [
                     'title'       => $this->l('Language'),
@@ -92,45 +96,52 @@ class AdminEmailsControllerCore extends AdminController
 
         parent::__construct();
 
-        $arr = [];
-        foreach (Contact::getContacts($this->context->language->id, true) as $contact) {
-            $arr[] = ['email_message' => $contact['id_contact'], 'name' => $contact['name']];
+
+        $transports = [];
+        foreach (Mail::getAvailableTransports() as $key => $transport) {
+            $transports[] = [
+                'id' => $key,
+                'name' => $transport->getName(),
+                'hint' => $transport->getDescription(),
+                'config' => $transport->getConfigUrl()
+            ];
         }
 
         $this->fields_options = [
             'email' => [
-                'title'  => $this->l('Email'),
+                'title'  => $this->l('Sending options'),
                 'icon'   => 'icon-envelope',
                 'fields' => [
-                    'PS_MAIL_EMAIL_MESSAGE' => [
-                        'title'      => $this->l('Send email to'),
-                        'desc'       => $this->l('Where customers send messages from the order page.'),
-                        'validation' => 'isUnsignedId',
-                        'type'       => 'select',
-                        'cast'       => 'intval',
-                        'identifier' => 'email_message',
-                        'list'       => $arr,
-                    ],
-                    'PS_MAIL_METHOD'        => [
-                        'title'      => '',
+                    Configuration::MAIL_TRANSPORT        => [
+                        'title'      => $this->l('Email transport'),
                         'validation' => 'isGenericName',
-                        'type'       => 'radio',
+                        'hint'       => $this->l('Select method for sending emails. If none is available, install some email transport module'),
+                        'type'       => 'select',
                         'required'   => true,
-                        'choices'    => [
-                            Mail::MAIL_METHOD_MAIL => $this->l('Use PHP\'s mail() function'),
-                            Mail::MAIL_METHOD_SMTP => $this->l('Set my own SMTP parameters (for advanced users ONLY)'),
-                            Mail::MAIL_METHOD_NONE => $this->l('Never send emails (may be useful for testing purposes)'),
-                        ],
+                        'identifier' => 'id',
+                        'list'       => $transports,
                     ],
                     'PS_MAIL_TYPE'          => [
-                        'title'      => '',
+                        'title'      => $this->l('Format'),
+                        'hint'       => $this->l('Select in what formats should your store send emails'),
                         'validation' => 'isGenericName',
-                        'type'       => 'radio',
+                        'type'       => 'select',
+                        'cast'       => 'intval',
                         'required'   => true,
-                        'choices'    => [
-                            Mail::TYPE_HTML => $this->l('Send email in HTML format'),
-                            Mail::TYPE_TEXT => $this->l('Send email in text format'),
-                            Mail::TYPE_BOTH => $this->l('Both'),
+                        'identifier' => 'format',
+                        'list'    => [
+                            [
+                                'format' => Mail::TYPE_HTML,
+                                'name' => $this->l('Send email in HTML format'),
+                            ],
+                            [
+                                'format' => Mail::TYPE_TEXT,
+                                'name' => $this->l('Send email in text format'),
+                            ],
+                            [
+                                'format' => Mail::TYPE_BOTH,
+                                'name' => $this->l('Send email as HTML and text'),
+                            ]
                         ],
                     ],
                     'PS_LOG_EMAILS'         => [
@@ -153,115 +164,8 @@ class AdminEmailsControllerCore extends AdminController
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
-            ],
-            'smtp'  => [
-                'title'  => $this->l('Email'),
-                'fields' => [
-                    'PS_MAIL_DOMAIN'          => [
-                        'title' => $this->l('Mail domain name'),
-                        'hint'  => $this->l('Fully qualified domain name (keep this field empty if you don\'t know).'),
-                        'empty' => true, 'validation' =>
-                            'isUrl',
-                        'type'  => 'text',
-                    ],
-                    'PS_MAIL_SERVER'          => [
-                        'title'      => $this->l('SMTP server'),
-                        'hint'       => $this->l('IP address or server name (e.g. smtp.mydomain.com).'),
-                        'validation' => 'isGenericName',
-                        'type'       => 'text',
-                    ],
-                    'PS_MAIL_USER'            => [
-                        'title'      => $this->l('SMTP username'),
-                        'hint'       => $this->l('Leave blank if not applicable.'),
-                        'validation' => 'isGenericName',
-                        'type'       => 'text',
-                    ],
-                    'PS_MAIL_PASSWD'          => [
-                        'title'        => $this->l('SMTP password'),
-                        'hint'         => $this->l('Leave blank if not applicable.'),
-                        'validation'   => 'isAnything',
-                        'type'         => 'password',
-                        'autocomplete' => false,
-                    ],
-                    'PS_MAIL_SMTP_ENCRYPTION' => [
-                        'title'      => $this->l('Encryption'),
-                        'hint'       => $this->l('Use an encrypt protocol'),
-                        'desc'       => extension_loaded('openssl') ? '' : '/!\\ '.$this->l('SSL does not seem to be available on your server.'),
-                        'type'       => 'select',
-                        'cast'       => 'strval',
-                        'identifier' => 'mode',
-                        'list'       => [
-                            [
-                                'mode' => 'off',
-                                'name' => $this->l('None'),
-                            ],
-                            [
-                                'mode' => 'tls',
-                                'name' => $this->l('TLS'),
-                            ],
-                            [
-                                'mode' => 'ssl',
-                                'name' => $this->l('SSL'),
-                            ],
-                        ],
-                    ],
-                    'PS_MAIL_SMTP_PORT'       => [
-                        'title'      => $this->l('Port'),
-                        'hint'       => $this->l('Port number to use.'),
-                        'validation' => 'isInt',
-                        'type'       => 'text',
-                        'cast'       => 'intval',
-                        'class'      => 'fixed-width-sm',
-                    ],
-                ],
-                'submit' => ['title' => $this->l('Save')],
-            ],
-            'test'  => [
-                'title'                   => $this->l('Test your email configuration'),
-                'hide_multishop_checkbox' => true,
-                'fields'                  => [
-                    'PS_SHOP_EMAIL' => [
-                        'title'                 => $this->l('Send a test email to'),
-                        'type'                  => 'text',
-                        'id'                    => 'testEmail',
-                        'no_multishop_checkbox' => true,
-                    ],
-                ],
-                'bottom'                  => '<div class="row"><div class="col-lg-9 col-lg-offset-3">
-					<div class="alert" id="mailResultCheck" style="display:none;"></div>
-				</div></div>',
-                'buttons'                 => [
-                    [
-                        'title' => $this->l('Send a test email'),
-                        'icon'  => 'process-icon-envelope',
-                        'name'  => 'btEmailTest',
-                        'js'    => 'verifyMail()',
-                        'class' => 'btn btn-default pull-right',
-                    ],
-                ],
-            ],
+            ]
         ];
-    }
-
-    /**
-     * Set media
-     *
-     * @return void
-     *
-     * @throws PrestaShopException
-     */
-    public function setMedia()
-    {
-        parent::setMedia();
-
-        $this->addJs(_PS_JS_DIR_.'/admin/email.js');
-
-        Media::addJsDefL('textMsg', $this->l('This is a test message. Your server is now configured to send email.', null, true, false));
-        Media::addJsDefL('textSubject', $this->l('Test message -- thirty bees', null, true, false));
-        Media::addJsDefL('textSendOk', $this->l('A test email has been sent to the email address you provided.', null, true, false));
-        Media::addJsDefL('textSendError', $this->l('Error: Please check your configuration', null, true, false));
-        Media::addJsDefL('token_mail', $this->token);
-        Media::addJsDefL('errorMail', $this->l('This email address is not valid', null, true, false));
     }
 
     /**
@@ -284,60 +188,6 @@ class AdminEmailsControllerCore extends AdminController
     }
 
     /**
-     * @param bool $value
-     *
-     * @return bool
-     *
-     * @throws PrestaShopException
-     */
-    public function updateOptionPsMailPasswd($value)
-    {
-        if (Tools::getValue('PS_MAIL_PASSWD') == '' && Configuration::get('PS_MAIL_PASSWD')) {
-            return true;
-        } else {
-            Configuration::updateValue('PS_MAIL_PASSWD', Tools::getValue('PS_MAIL_PASSWD'));
-        }
-
-        return false;
-    }
-
-    /**
-     * AdminController::initContent() override
-     *
-     * @throws PrestaShopException
-     * @throws SmartyException
-     * @see AdminController::initContent()
-     */
-    public function initContent()
-    {
-        $this->initTabModuleList();
-        $this->initToolbar();
-        $this->initPageHeaderToolbar();
-        $this->addToolBarModulesListButton();
-        unset($this->toolbar_btn['save']);
-        $back = $this->context->link->getAdminLink('AdminDashboard');
-
-        $this->toolbar_btn['back'] = [
-            'href' => $back,
-            'desc' => $this->l('Back to the dashboard'),
-        ];
-
-        // $this->content .= $this->renderOptions();
-
-        $this->context->smarty->assign(
-            [
-                'content'                   => $this->content,
-                'url_post'                  => static::$currentIndex.'&token='.$this->token,
-                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
-                'page_header_toolbar_title' => $this->page_header_toolbar_title,
-                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
-            ]
-        );
-
-        parent::initContent();
-    }
-
-    /**
      * Initialize toolbar
      *
      * @return void
@@ -357,28 +207,12 @@ class AdminEmailsControllerCore extends AdminController
 
     /**
      * Before options update
-     *
-     * @throws PrestaShopException
      */
     public function beforeUpdateOptions()
     {
-        /* thirty bees demo mode */
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
-
             return;
-        }
-        /* thirty bees demo mode*/
-
-        // We don't want to update the shop e-mail when sending test e-mails
-        if (isset($_POST['PS_SHOP_EMAIL'])) {
-            $_POST['PS_SHOP_EMAIL'] = Configuration::get('PS_SHOP_EMAIL');
-        }
-
-        if (isset($_POST['PS_MAIL_METHOD']) && $_POST['PS_MAIL_METHOD'] == Mail::MAIL_METHOD_SMTP
-            && (empty($_POST['PS_MAIL_SERVER']) || empty($_POST['PS_MAIL_SMTP_PORT']))
-        ) {
-            $this->errors[] = Tools::displayError('You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.');
         }
 
         if (isset($_POST['TB_BCC_ALL_MAILS_TO'])) {
@@ -419,45 +253,6 @@ class AdminEmailsControllerCore extends AdminController
     }
 
     /**
-     * Ajax process send test mail
-     *
-     * @throws PrestaShopException
-     */
-    public function ajaxProcessSendMailTest()
-    {
-        /* PrestaShop demo mode */
-        if (_PS_MODE_DEMO_) {
-            $this->ajaxDie(Tools::displayError('This functionality has been disabled.'));
-        }
-        /* PrestaShop demo mode */
-        if ($this->hasViewPermission()) {
-            $smtpChecked = (trim(Tools::getValue('mailMethod')) == 'smtp');
-            $smtpServer = Tools::getValue('smtpSrv');
-            $content = html_entity_decode(urldecode(Tools::getValue('testMsg')));
-            $subject = html_entity_decode(urldecode(Tools::getValue('testSubject')));
-            $type = 'text/html';
-            $to = Tools::getValue('testEmail');
-            $from = Configuration::get('PS_SHOP_EMAIL');
-            $smtpLogin = Tools::getValue('smtpLogin');
-            $smtpPassword = Tools::getValue('smtpPassword');
-            $smtpPassword = (!empty($smtpPassword)) ? urldecode($smtpPassword) : Configuration::get('PS_MAIL_PASSWD');
-            $smtpPassword = str_replace(
-                ['&lt;', '&gt;', '&quot;', '&amp;'],
-                ['<', '>', '"', '&'],
-                Tools::htmlentitiesUTF8($smtpPassword)
-            );
-
-            $smtpPort = Tools::getValue('smtpPort');
-            $smtpEncryption = Tools::getValue('smtpEnc');
-
-            $result = Mail::sendMailTest(Tools::htmlentitiesUTF8($smtpChecked), Tools::htmlentitiesUTF8($smtpServer), $content, $subject, Tools::htmlentitiesUTF8($type), Tools::htmlentitiesUTF8($to), Tools::htmlentitiesUTF8($from), Tools::htmlentitiesUTF8($smtpLogin), $smtpPassword, Tools::htmlentitiesUTF8($smtpPort), Tools::htmlentitiesUTF8($smtpEncryption));
-            $this->ajaxDie($result === true ? 'ok' : $result);
-        } else {
-            $this->ajaxDie(Tools::displayError('Permissions denied'));
-        }
-    }
-
-    /**
      * @param int $idLang
      * @param string|null $orderBy
      * @param string|null $orderWay
@@ -479,6 +274,22 @@ class AdminEmailsControllerCore extends AdminController
 
         foreach ($this->_list as &$row) {
             $row['recipient'] = Tools::convertEmailFromIdn($row['recipient']);
+        }
+    }
+
+    /**
+     * @param string $recipient
+     * @param array $row
+     *
+     * @return string
+     */
+    public function renderRecipient($recipient, $row)
+    {
+        $type = $row['recipient_type'];
+        if ($type === Mail::RECIPIENT_TYPE_BCC) {
+            return '<span title="'.Tools::safeOutput($this->l('BCC recipient')).'"><i class="icon-eye-slash"></i>&nbsp;'.$recipient.'</span>';
+        } else {
+            return '<span title="'.Tools::safeOutput($this->l('Primary recipient')).'"><i class="icon-envelope-o"></i>&nbsp;'.$recipient.'</span>';
         }
     }
 }

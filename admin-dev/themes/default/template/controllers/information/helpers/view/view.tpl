@@ -179,47 +179,7 @@
 					<strong>{l s='Current theme in use:'}</strong> {$shop.theme|escape:'html':'UTF-8'}
 				</p>
 			</div>
-			<div class="panel">
-				<h3>
-					<i class="icon-info"></i>
-					{l s='Mail configuration'}
-				</h3>
-				<p>
-					<strong>{l s='Mail method:'}</strong>
 
-			{if $mailMethod == Mail::MAIL_METHOD_MAIL}
-				{l s='You are using the PHP mail() function.'}</p>
-			{elseif $mailMethod == Mail::MAIL_METHOD_NONE}
-				{l s='Mail functionality is disabled.'}</p>
-			{else}
-				{l s='You are using your own SMTP parameters.'}</p>
-				<p>
-					<strong>{l s='SMTP server'}:</strong> {$smtp.server|escape:'html':'UTF-8'}
-				</p>
-				<p>
-					<strong>{l s='SMTP username'}:</strong>
-					{if $smtp.user neq ''}
-						{l s='Defined'}
-					{else}
-						<span style="color:red;">{l s='Not defined'}</span>
-					{/if}
-				</p>
-				<p>
-					<strong>{l s='SMTP password'}:</strong>
-					{if $smtp.password neq ''}
-						{l s='Defined'}
-					{else}
-						<span style="color:red;">{l s='Not defined'}</span>
-					{/if}
-				</p>
-				<p>
-					<strong>{l s='Encryption:'}</strong> {$smtp.encryption|escape:'html':'UTF-8'}
-				</p>
-				<p>
-					<strong>{l s='SMTP port:'}</strong> {$smtp.port|escape:'html':'UTF-8'}
-				</p>
-			{/if}
-			</div>
 			<div class="panel">
 				<h3>
 					<i class="icon-info"></i>

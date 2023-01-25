@@ -1,3 +1,4 @@
+<?php
 /**
  * 2007-2016 PrestaShop
  *
@@ -28,20 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/* global jQuery, $, window, showSuccessMessage, showErrorMessage */
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 
-$(document).ready(function () {
-  if (parseInt($('input[name=PS_MAIL_METHOD]:checked').val(), 10) === 2) {
-    $('#mail_fieldset_smtp').show();
-  } else {
-    $('#mail_fieldset_smtp').hide();
-  }
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-  $('input[name=PS_MAIL_METHOD]').on('click', function () {
-    if (parseInt($(this).val(), 10) === 2) {
-      $('#mail_fieldset_smtp').slideDown();
-    } else {
-      $('#mail_fieldset_smtp').slideUp();
-    }
-  });
-});
+header('Location: ../../../../../../../../');
+exit;

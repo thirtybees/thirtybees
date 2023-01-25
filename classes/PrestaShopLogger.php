@@ -34,6 +34,8 @@
  */
 class PrestaShopLoggerCore extends ObjectModel
 {
+    const MAIL_ERROR = 'INTERNAL_EMAIL_ERROR';
+
     /**
      * @var array
      */
@@ -110,12 +112,12 @@ class PrestaShopLoggerCore extends ObjectModel
             $log->id_employee = (int) $idEmployee;
         }
 
-        if (!empty($objectType) && !empty($objectId)) {
+        if (!empty($objectType) && !empty($objectId) && $objectType !== static::MAIL_ERROR) {
             $log->object_type = substr($objectType, 0, 31);
             $log->object_id = (int) $objectId;
         }
 
-        if ($objectType != 'Swift_Message') {
+        if ($objectType !== static::MAIL_ERROR) {
             static::sendByMail($log);
         }
 

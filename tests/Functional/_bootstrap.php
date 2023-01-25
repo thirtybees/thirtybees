@@ -3,7 +3,7 @@
 require_once __DIR__.'/../../config/config.inc.php';
 
 // Disable mails
-Configuration::updateValue('PS_MAIL_METHOD', Mail::MAIL_METHOD_NONE);
+Configuration::updateValue(Configuration::MAIL_TRANSPORT, Mail::TRANSPORT_NONE);
 
 // Disable Friendly URLs
 Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
