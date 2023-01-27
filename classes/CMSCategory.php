@@ -111,7 +111,7 @@ class CMSCategoryCore extends ObjectModel
      * @param int $links
      * @param Link|null $link
      *
-     * @return array|bool|null|object
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -134,14 +134,25 @@ class CMSCategoryCore extends ObjectModel
                 ->where('`id_lang` = '.(int) $idLang)
         );
 
+        if (! $category) {
+            return [];
+        }
+
         $sql = 'SELECT c.`id_cms_category`
 				FROM `'._DB_PREFIX_.'cms_category` c
 				WHERE c.`id_parent` = '.(int) $current.
             ($active ? ' AND c.`active` = 1' : '');
-        $result = Db::getInstance()->executeS($sql);
-        foreach ($result as $row) {
-            $category['children'][] = CMSCategory::getRecurseCategory($idLang, $row['id_cms_category'], $active, $links);
+        $result = Db::getInstance()->getArray($sql);
+        $children = [];
+        if ($result) {
+            foreach ($result as $row) {
+                $childrenTree = static::getRecurseCategory($idLang, $row['id_cms_category'], $active, $links);
+                if ($childrenTree) {
+                    $children[] = $childrenTree;
+                }
+            }
         }
+        $category['children'] = $children;
 
         $sql = 'SELECT c.`id_cms`, cl.`meta_title`, cl.`link_rewrite`
 				FROM `'._DB_PREFIX_.'cms` c
@@ -151,7 +162,7 @@ class CMSCategoryCore extends ObjectModel
 				AND cl.`id_lang` = '.(int) $idLang.($active ? ' AND c.`active` = 1' : '').'
 				GROUP BY c.id_cms
 				ORDER BY c.`position`';
-        $category['cms'] = Db::getInstance()->executeS($sql);
+        $category['cms'] = Db::getInstance()->getArray($sql);
         if ($links == 1) {
             $category['link'] = $link->getCMSCategoryLink($current, $category['link_rewrite']);
             foreach ($category['cms'] as $key => $cms) {
