@@ -40,7 +40,7 @@ class InstallSimplexmlElement extends SimpleXMLElement
      * @param string|SimpleXMLElement|null $value
      * @param string|null $namespace
      *
-     * @return SimpleXMLElement
+     * @return SimpleXMLElement|null
      */
     #[\ReturnTypeWillChange]
     public function addChild($name, $value = null, $namespace = null)
