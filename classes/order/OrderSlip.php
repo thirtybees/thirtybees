@@ -415,7 +415,7 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
-     * @return array|bool|null|object
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

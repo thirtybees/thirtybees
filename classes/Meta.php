@@ -385,7 +385,7 @@ class MetaCore extends ObjectModel
      * @param string $page
      * @param int $idLang
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

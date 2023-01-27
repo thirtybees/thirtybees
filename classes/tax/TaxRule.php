@@ -127,7 +127,7 @@ class TaxRuleCore extends ObjectModel
     /**
      * @param int $idTaxRule
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

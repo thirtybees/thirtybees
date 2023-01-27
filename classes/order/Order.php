@@ -1865,7 +1865,7 @@ class OrderCore extends ObjectModel
     /**
      * @param int $idInvoice
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

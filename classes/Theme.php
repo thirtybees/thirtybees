@@ -358,7 +358,7 @@ class ThemeCore extends ObjectModel
     /**
      * @param string $page
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

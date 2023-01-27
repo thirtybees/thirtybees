@@ -587,7 +587,7 @@ class SpecificPriceCore extends ObjectModel
      * @param int|null $idProductAttribute
      * @param int $idCustomer
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

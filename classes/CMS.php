@@ -254,7 +254,7 @@ class CMSCore extends ObjectModel
      * @param int|null $idLang
      * @param int|null $idShop
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

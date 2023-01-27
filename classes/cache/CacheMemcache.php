@@ -141,7 +141,7 @@ class CacheMemcacheCore extends Cache
      *
      * @param string $key
      *
-     * @return mixed|false
+     * @return array|false|string
      */
     protected function _get($key)
     {
@@ -225,7 +225,7 @@ class CacheMemcacheCore extends Cache
      *
      * @param string $key
      *
-     * @return mixed
+     * @return array|false|string
      */
     public function get($key)
     {

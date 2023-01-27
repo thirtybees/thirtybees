@@ -3508,7 +3508,7 @@ class CartCore extends ObjectModel
      * @param int $idCustomization
      * @param int $idAddressDelivery
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

@@ -2815,7 +2815,7 @@ class ProductCore extends ObjectModel
     /**
      * @param int $idProduct
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

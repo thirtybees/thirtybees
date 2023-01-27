@@ -160,7 +160,7 @@ class CurrencyCore extends ObjectModel
      * @param int $idModule
      * @param int|null $idShop
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -241,7 +241,7 @@ class CurrencyCore extends ObjectModel
     /**
      * @param int $idCurrency
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
