@@ -595,7 +595,7 @@ abstract class ModuleStatsCore extends Module
         if ($engineType === static::ENGINE_GRAPH) {
             $customEngine = Configuration::get('PS_STATS_RENDER');
             $defaultEngine = 'ModuleGraphEngine';
-        } else if ($engineType === static::ENGINE_GRID) {
+        } elseif ($engineType === static::ENGINE_GRID) {
             $customEngine = Configuration::get('PS_STATS_GRID_RENDER');
             $defaultEngine = 'ModuleGridEngine';
         } else {

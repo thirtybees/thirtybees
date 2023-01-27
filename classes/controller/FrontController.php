@@ -2010,8 +2010,10 @@ class FrontControllerCore extends Controller
                             }
                         }
                         $params[Tools::safeOutput($key)] = $arrayParams;
-                    } else if (Validate::isUrl($value)) {
-                        $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
+                    } else {
+                        if (Validate::isUrl($value)) {
+                            $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
+                        }
                     }
                 }
             }

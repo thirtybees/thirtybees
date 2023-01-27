@@ -90,12 +90,14 @@ class IdentityControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('This email address is not valid');
             } elseif ($this->customer->email != $email && Customer::customerExists($email, true)) {
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered.');
-            } else if ($this->customer->email != $email || $passwd || $passwdConfirmation){
-                // If email or password value does change, the current password is required
-                if (!Tools::getIsset('old_passwd') || !Customer::checkPassword($this->context->customer->id, Tools::getValue('old_passwd'))) {
-                    $this->errors[] = Tools::displayError('The password you entered is incorrect.');
-                } elseif ($passwd !== $passwdConfirmation) {
-                    $this->errors[] = Tools::displayError('The password and confirmation do not match.');
+            } else {
+                if ($this->customer->email != $email || $passwd || $passwdConfirmation) {
+                    // If email or password value does change, the current password is required
+                    if (!Tools::getIsset('old_passwd') || !Customer::checkPassword($this->context->customer->id, Tools::getValue('old_passwd'))) {
+                        $this->errors[] = Tools::displayError('The password you entered is incorrect.');
+                    } elseif ($passwd !== $passwdConfirmation) {
+                        $this->errors[] = Tools::displayError('The password and confirmation do not match.');
+                    }
                 }
             }
 

@@ -630,14 +630,16 @@ class AdminModulesControllerCore extends AdminController
             ) < 1) {
                 return true;
             }
-        } else if ($selectedCategory !== static::CATEGORY_ALL) {
-            // Handle "others" category
-            $moduleCategory = $this->isModuleCategory($module->tab)
-                ? $module->tab
-                : static::CATEGORY_OTHERS;
+        } else {
+            if ($selectedCategory !== static::CATEGORY_ALL) {
+                // Handle "others" category
+                $moduleCategory = $this->isModuleCategory($module->tab)
+                    ? $module->tab
+                    : static::CATEGORY_OTHERS;
 
-            if ($moduleCategory !== $selectedCategory) {
-                return true;
+                if ($moduleCategory !== $selectedCategory) {
+                    return true;
+                }
             }
         }
 

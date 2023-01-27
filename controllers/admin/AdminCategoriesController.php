@@ -201,15 +201,17 @@ class AdminCategoriesControllerCore extends AdminController
                 'desc' => $this->l('Add new category', null, null, false),
                 'icon' => 'process-icon-new',
             ];
-        } else if ($this->display == 'edit') {
-            // adding button for preview this category
-            $this->page_header_toolbar_btn['preview'] = [
-                'short'  => $this->l('Preview', null, null, false),
-                'href'   => $this->context->link->getCategoryLink($this->_category->id),
-                'desc'   => $this->l('Preview', null, null, false),
-                'target' => true,
-                'class'  => 'previewUrl',
-            ];
+        } else {
+            if ($this->display == 'edit') {
+                // adding button for preview this category
+                $this->page_header_toolbar_btn['preview'] = [
+                    'short' => $this->l('Preview', null, null, false),
+                    'href' => $this->context->link->getCategoryLink($this->_category->id),
+                    'desc' => $this->l('Preview', null, null, false),
+                    'target' => true,
+                    'class' => 'previewUrl',
+                ];
+            }
         }
     }
 

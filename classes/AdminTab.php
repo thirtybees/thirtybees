@@ -263,8 +263,10 @@ abstract class AdminTabCore
         $str = $string;
         if (array_key_exists($thisKey, $_LANGADM) && $_LANGADM[$thisKey] !== '') {
             $str = $_LANGADM[$thisKey];
-        } else if (array_key_exists($classKey, $_LANGADM) && $_LANGADM[$classKey] !== '') {
-            $str = $_LANGADM[$classKey];
+        } else {
+            if (array_key_exists($classKey, $_LANGADM) && $_LANGADM[$classKey] !== '') {
+                $str = $_LANGADM[$classKey];
+            }
         }
         $str = $htmlentities ? htmlentities($str, ENT_QUOTES, 'utf-8') : $str;
 

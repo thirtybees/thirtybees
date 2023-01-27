@@ -2093,10 +2093,10 @@ class AdminImportControllerCore extends AdminController
                             $srcWidth,
                             $srcHeight
                         );
-                        if (ImageManager::retinaSupport())
+                        if (ImageManager::retinaSupport()) {
                             ImageManager::resize(
                                 $tmpfile,
-                                $path.'-'.stripslashes($imageType['name']).'2x.webp',
+                                $path . '-' . stripslashes($imageType['name']) . '2x.webp',
                                 $imageType['width'] * 2,
                                 $imageType['height'] * 2,
                                 'webp',
@@ -2108,6 +2108,7 @@ class AdminImportControllerCore extends AdminController
                                 $srcWidth,
                                 $srcHeight
                             );
+                        }
                     }
 
                     if (in_array($imageType['id_image_type'], $watermarkTypes)) {

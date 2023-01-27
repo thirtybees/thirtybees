@@ -69,9 +69,11 @@ class Core_Business_Stock_StockManager
             // update pack quantity
             if ($product->pack_dynamic) {
                 StockAvailable::synchronizeDynamicPack($product->id);
-            } else if ($product->shouldAdjustPackQuantity()) {
-                $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
-                $stockAvailable->update();
+            } else {
+                if ($product->shouldAdjustPackQuantity()) {
+                    $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
+                    $stockAvailable->update();
+                }
             }
         }
     }
@@ -118,16 +120,18 @@ class Core_Business_Stock_StockManager
                         if ($pack->pack_dynamic) {
                             // dynamic pack, synchronize
                             $dynamicPacks[] = $pack->id;
-                        } else if ($pack->getPackStockType() === Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
-                            // pack with 'Decrement both' settings, adjust quantity only when item quantity decreased
-                            if ($deltaQuantity < 0) {
-                                $quantityByPack = $pack->pack_item_quantity;
-                                $maxPackQuantity = max(0, floor($stockAvailable->quantity / $quantityByPack));
+                        } else {
+                            if ($pack->getPackStockType() === Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
+                                // pack with 'Decrement both' settings, adjust quantity only when item quantity decreased
+                                if ($deltaQuantity < 0) {
+                                    $quantityByPack = $pack->pack_item_quantity;
+                                    $maxPackQuantity = max(0, floor($stockAvailable->quantity / $quantityByPack));
 
-                                $stockAvailablePack = $stockManager->getStockAvailableByProduct($pack, null, $idShop);
-                                if ($stockAvailablePack->quantity > $maxPackQuantity) {
-                                    $stockAvailablePack->quantity = $maxPackQuantity;
-                                    $stockAvailablePack->update();
+                                    $stockAvailablePack = $stockManager->getStockAvailableByProduct($pack, null, $idShop);
+                                    if ($stockAvailablePack->quantity > $maxPackQuantity) {
+                                        $stockAvailablePack->quantity = $maxPackQuantity;
+                                        $stockAvailablePack->update();
+                                    }
                                 }
                             }
                         }

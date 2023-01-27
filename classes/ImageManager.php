@@ -782,8 +782,9 @@ class ImageManagerCore
             imagesavealpha( $new_im, true );
             $source_width = imagesx( $im );
             $source_height = imagesy( $im );
-            if ( false === imagecopyresampled( $new_im, $im, 0, 0, 0, 0, $width, $height, $source_width, $source_height ) )
+            if ( false === imagecopyresampled( $new_im, $im, 0, 0, 0, 0, $width, $height, $source_width, $source_height ) ) {
                 continue;
+            }
 
             static::addFaviconImageData($new_im, $images);
         }
@@ -801,8 +802,9 @@ class ImageManagerCore
      */
     protected static function getIcoData($images)
     {
-        if (!is_array($images) || empty($images))
+        if (!is_array($images) || empty($images)) {
             return false;
+        }
         $data = pack('vvv', 0, 1, count($images));
         $pixel_data = '';
         $icon_dir_entry_size = 16;

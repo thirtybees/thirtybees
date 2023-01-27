@@ -135,8 +135,9 @@ class ModuleGridEngineCore extends Module
      */
     public static function hookGridEngine($params, $grider)
     {
-        if (!isset($params['emptyMsg']))
+        if (!isset($params['emptyMsg'])) {
             $params['emptyMsg'] = 'Empty';
+        }
         $customParams = '';
         if (isset($params['customParams'])) {
             foreach ($params['customParams'] as $name => $value) {
@@ -147,8 +148,9 @@ class ModuleGridEngineCore extends Module
 		<table class="table" id="grid_1">
 			<thead>
 				<tr>';
-        foreach ($params['columns'] as $column)
-            $html .= '<th class="center"><span class="title_box active">'.$column['header'].'</span></th>';
+        foreach ($params['columns'] as $column) {
+            $html .= '<th class="center"><span class="title_box active">' . $column['header'] . '</span></th>';
+        }
         $html .= '</tr>
 			</thead>
 			<tbody></tbody>
@@ -173,12 +175,15 @@ class ModuleGridEngineCore extends Module
 					if (values.length > 0)
 						$.each(values, function(index, row){
 							var newLine = "<tr>";';
-        foreach ($params['columns'] as $column)
-            $html .= '	newLine += "<td'.(isset($column['align']) ? ' align=\"'.$column['align'].'\"' : '').'>" + row["'.$column['dataIndex'].'"] + "</td>";';
-        if (!isset($params['defaultSortColumn']))
+        foreach ($params['columns'] as $column) {
+            $html .= '	newLine += "<td' . (isset($column['align']) ? ' align=\"' . $column['align'] . '\"' : '') . '>" + row["' . $column['dataIndex'] . '"] + "</td>";';
+        }
+        if (!isset($params['defaultSortColumn'])) {
             $params['defaultSortColumn'] = false;
-        if (!isset($params['defaultSortDirection']))
+        }
+        if (!isset($params['defaultSortDirection'])) {
             $params['defaultSortDirection'] = false;
+        }
         $html .= '		$("#grid_1 tbody").append(newLine);
 						});
 					else
