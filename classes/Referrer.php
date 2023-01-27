@@ -289,7 +289,7 @@ class ReferrerCore extends ObjectModel
      * @param int|null $idProduct
      * @param Employee $employee
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -359,9 +359,9 @@ class ReferrerCore extends ObjectModel
      * Get some statistics on orders for current referrer
      *
      * @param int|null $idProduct
-     * @param Employee $employee
+     * @param Employee|null $employee
      *
-     * @return array|bool|null|object
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -378,35 +378,36 @@ class ReferrerCore extends ObjectModel
             ->where('oo.`invoice_date` BETWEEN '.ModuleGraph::getDateBetween($employee).' '.Shop::addSqlRestriction(false, 'rs').' '.Shop::addSqlRestriction(false, 'c').' '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'oo'))
             ->where('oo.`date_add` > cs.`date_add`')
             ->where('rc.`id_referrer` = '.(int) $this->id)
-            ->where('oo.`valid` = 1')
-        ;
+            ->where('oo.`valid` = 1');
 
         if ($idProduct) {
             $sql->leftJoin('order_detail', 'od', 'oo.`id_order` = od.`id_order`');
             $sql->where('od.`product_id` = '.(int) $idProduct);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $orderIds = array_map('intval', array_column($conn->getArray($sql), 'id_order'));
 
-        $implode = [];
-        foreach ($result as $row) {
-            if ((int) $row['id_order']) {
-                $implode[] = (int) $row['id_order'];
+        $orders = 0;
+        $sales = 0;
+
+        if ($orderIds) {
+            $data = $conn->getRow((new DbQuery())
+                ->select('COUNT(`o`.`id_order`) AS `orders`, SUM(`op`.`amount` / `op`.`conversion_rate`) AS `sales`')
+                ->from('orders', 'o')
+                ->leftJoin('order_payment', 'op', '`o`.`reference` = `op`.`order_reference`')
+                ->where('`o`.`id_order` IN (' . implode(',', $orderIds) . ') '. Shop::addSqlRestriction(Shop::SHARE_ORDER))
+                ->where('`o`.`valid` = 1')
+            );
+            if ($data) {
+                $orders = $data['orders'];
+                $sales = $data['sales'];
             }
         }
-
-        if ($implode) {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-                (new DbQuery())
-                    ->select('COUNT(`o`.`id_order`) AS `orders`, SUM(`op`.`amount` / `op`.`conversion_rate`) AS `sales`')
-                    ->from('orders', 'o')
-                    ->leftJoin('order_payment', 'op', '`o`.`reference` = `op`.`order_reference`')
-                    ->where('`o`.`id_order` IN (1,2,3,4,5,6) '.Shop::addSqlRestriction(Shop::SHARE_ORDER))
-                    ->where('`o`.`valid` = 1')
-            );
-        } else {
-            return ['orders' => 0, 'sales' => 0];
-        }
+        return [
+            'orders' => $orders,
+            'sales' => $sales
+        ];
     }
 
     /**
