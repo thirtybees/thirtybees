@@ -4169,14 +4169,14 @@ class ProductCore extends ObjectModel
     /**
      * @param array $products
      *
-     * @return bool|int
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function deleteSelection($products)
     {
-        $return = 1;
+        $return = true;
         if (is_array($products) && ($count = count($products))) {
             // Deleting products can be quite long on a cheap server. Let's say 1.5 seconds by product (I've seen it!).
             if (intval(ini_get('max_execution_time')) < round($count * 1.5)) {
@@ -4185,10 +4185,9 @@ class ProductCore extends ObjectModel
 
             foreach ($products as $idProduct) {
                 $product = new Product((int) $idProduct);
-                $return &= $product->delete();
+                $return = $product->delete() && $return;
             }
         }
-
         return $return;
     }
 
@@ -4391,11 +4390,11 @@ class ProductCore extends ObjectModel
         ');
 
         // mark all products whose position within category (might) have changed as modified
-        $return &= Db::getInstance()->execute('
+        $return = Db::getInstance()->execute('
             UPDATE `'._DB_PREFIX_.'product` p'.Shop::addSqlAssociation('product', 'p').'
             INNER JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = '.$idCategory.' AND cp.`id_product` = p.`id_product` AND cp.`position` >= '.$position.')
             SET p.`date_upd` = "'.$now.'", product_shop.`date_upd` = "'.$now.'"
-        ');
+        ') && $return;
 
         return $return;
     }
@@ -5063,7 +5062,7 @@ class ProductCore extends ObjectModel
     /**
      * @param int $idProduct
      *
-     * @return int|false
+     * @return bool|int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -5080,13 +5079,13 @@ class ProductCore extends ObjectModel
             'id_product = '.(int) $idProduct.Shop::addSqlRestriction()
         );
 
-        $result &= Db::getInstance()->update(
+        $result = Db::getInstance()->update(
             'product',
             [
                 'cache_default_attribute' => $idDefaultAttribute,
             ],
             'id_product = '.(int) $idProduct
-        );
+        ) && $result;
 
         if ($result && $idDefaultAttribute) {
             return $idDefaultAttribute;
@@ -7082,13 +7081,13 @@ class ProductCore extends ObjectModel
             'a.`id_product` = '.(int) $this->id.' AND a.`id_product_attribute` = '.(int) $idProductAttribute
         );
 
-        $result &= ObjectModel::updateMultishopTable(
+        $result = ObjectModel::updateMultishopTable(
             'product',
             [
                 'cache_default_attribute' => (int) $idProductAttribute,
             ],
             'a.`id_product` = '.(int) $this->id
-        );
+        ) && $result;
         $this->cache_default_attribute = (int) $idProductAttribute;
 
         return $result;

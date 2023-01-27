@@ -261,7 +261,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     /**
      * @param bool $nullValues
      *
-     * @return bool|int
+     * @return bool
      *
      * @throws PrestaShopException
      */
@@ -269,34 +269,40 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     {
         $this->clearCache();
 
-        $result = 1;
+        $result = true;
+
+        $tableName = $this->def['table'].'_lang';
         $fields = $this->getFieldsLang();
+        $conn = Db::getInstance();
+        $featureId = (int)$this->id;
         foreach ($fields as $field) {
             foreach (array_keys($field) as $key) {
                 if (!Validate::isTableOrIdentifier($key)) {
                     throw new PrestaShopException('key '.$key.' is not a valid table or identifier');
                 }
             }
+            $langId = (int)$field['id_lang'];
 
-            $mode = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $exists = (bool)$conn->getValue(
                 (new DbQuery())
-                ->select('`id_lang`')
-                ->from(bqSQL(static::$definition['table']).'_lang')
-                ->where('`id_feature` = '.(int) $this->id)
-                ->where('`id_lang` = '.(int) $field['id_lang'])
+                ->select('1')
+                ->from($tableName)
+                ->where("id_feature = $featureId")
+                ->where("id_lang = $langId")
             );
-            $result &= (!$mode) ? Db::getInstance()->insert($this->def['table'].'_lang', $field) :
-                Db::getInstance()->update(
-                    $this->def['table'].'_lang',
-                    $field,
-                    '`'.$this->def['primary'].'` = '.(int) $this->id.' AND `id_lang` = '.(int) $field['id_lang']
-                );
+
+            if (! $exists) {
+                $result = $conn->insert($tableName, $field) && $result;
+            } else {
+                $where =  "id_feature = $featureId AND id_lang = $langId";
+                $result = $conn->update($tableName, $field, $where) && $result;
+            }
         }
 
         if ($result) {
-            $result &= parent::update($nullValues);
+            $result = parent::update($nullValues);
             if ($result) {
-                Hook::exec('actionFeatureSave', ['id_feature' => $this->id]);
+                Hook::exec('actionFeatureSave', ['id_feature' => $featureId]);
             }
         }
 

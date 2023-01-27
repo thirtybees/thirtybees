@@ -4398,10 +4398,16 @@ class CartCore extends ObjectModel
 
         // Delete customization picture if necessary
         if ($custData['type'] == 0) {
-            $result &= (@unlink(_PS_UPLOAD_DIR_.$custData['value']) && @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small'));
+            $result = (
+                @unlink(_PS_UPLOAD_DIR_.$custData['value']) &&
+                @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small')
+            );
         }
 
-        $result &= Db::getInstance()->delete('customized_data', '`id_customization` = '.(int) $custData['id_customization'].' AND `index` = '.(int) $index);
+        $result = (
+            Db::getInstance()->delete('customized_data', '`id_customization` = '.(int) $custData['id_customization'].' AND `index` = '.(int) $index) &&
+            $result
+        );
 
         return $result;
     }

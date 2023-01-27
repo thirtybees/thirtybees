@@ -245,10 +245,10 @@ class CombinationCore extends ObjectModel
      */
     public function deleteAssociations()
     {
-        $result = Db::getInstance()->delete('product_attribute_combination', '`id_product_attribute` = '.(int) $this->id);
-        $result &= Db::getInstance()->delete('cart_product', '`id_product_attribute` = '.(int) $this->id);
-        $result &= Db::getInstance()->delete('product_attribute_image', '`id_product_attribute` = '.(int) $this->id);
-
+        $conn = Db::getInstance();
+        $result = $conn->delete('product_attribute_combination', '`id_product_attribute` = '.(int) $this->id);
+        $result = $conn->delete('cart_product', '`id_product_attribute` = '.(int) $this->id) && $result;
+        $result = $conn->delete('product_attribute_image', '`id_product_attribute` = '.(int) $this->id) && $result;
         return $result;
     }
 
