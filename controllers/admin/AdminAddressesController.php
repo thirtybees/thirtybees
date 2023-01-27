@@ -377,28 +377,38 @@ class AdminAddressesControllerCore extends AdminController
     {
         $tmpAddr = new Address((int) Tools::getValue('id_address'));
 
-        $selectedCountry = ($tmpAddr && $tmpAddr->id_country) ? $tmpAddr->id_country : (int) Configuration::get('PS_COUNTRY_DEFAULT');
+        $selectedCountry = $tmpAddr->id_country
+            ? (int)$tmpAddr->id_country
+            : (int)Configuration::get('PS_COUNTRY_DEFAULT');
 
         $invAdrFields = AddressFormat::getOrderedAddressFields($selectedCountry, false, true);
+        $invAllFields = static::getAllAddressFields($invAdrFields);
+
         $dlvAdrFields = AddressFormat::getOrderedAddressFields($selectedCountry, false, true);
+        $dlvAllFields = static::getAllAddressFields($dlvAdrFields);
 
-        $invAllFields = [];
-        $dlvAllFields = [];
+        return [
+            'inv_adr_fields' => $invAdrFields,
+            'inv_all_fields' => $invAllFields,
+            'dlv_adr_fields' => $dlvAdrFields,
+            'dlv_all_fields' => $dlvAllFields,
+        ];
+    }
 
-        $out = [];
-
-        foreach (['inv', 'dlv'] as $adrType) {
-            foreach (${$adrType.'AdrFields'} as $fieldsLine) {
-                foreach (explode(' ', $fieldsLine) as $fieldItem) {
-                    ${$adrType.'AllFields'}[] = trim($fieldItem);
-                }
+    /**
+     * @param array $lines
+     *
+     * @return array
+     */
+    protected function getAllAddressFields(array $lines)
+    {
+        $fields = [];
+        foreach ($lines as $line) {
+            foreach (explode(' ', $line) as $fieldItem) {
+                $fields[] = trim($fieldItem);
             }
-
-            $out[$adrType.'_adr_fields'] = ${$adrType.'AdrFields'};
-            $out[$adrType.'_all_fields'] = ${$adrType.'AllFields'};
         }
-
-        return $out;
+        return $fields;
     }
 
     /**
@@ -440,7 +450,7 @@ class AdminAddressesControllerCore extends AdminController
         $idState = (int) Tools::getValue('id_state');
         $idCountry = (int) Tools::getValue('id_country');
         $country = new Country((int) $idCountry);
-        if ($country && !(int) $country->contains_states && $idState) {
+        if (!(int) $country->contains_states && $idState) {
             $this->errors[] = Tools::displayError('You have selected a state for a country that does not contain states.');
         }
 
