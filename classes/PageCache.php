@@ -180,7 +180,7 @@ class PageCacheCore
             if ($idEntity) {
                 // Invalidate product's categories only
                 $product = new Product((int) $idEntity);
-                if ($product) {
+                if (Validate::isLoadedObject($product)) {
                     $categories = $product->getCategories();
                     foreach ($categories as $idCategory) {
                         $keysToInvalidate = array_merge(
