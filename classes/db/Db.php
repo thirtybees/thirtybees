@@ -780,11 +780,9 @@ class DbCore
             $result = $this->nextRow($this->result);
         }
 
-        if (!is_array($result)) {
-            $result = false;
-        }
-
-        return $result;
+        return is_array($result)
+            ? $result
+            : false;
     }
 
     /**

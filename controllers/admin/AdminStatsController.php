@@ -860,7 +860,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateFrom
      * @param string $dateTo
      *
-     * @return array|bool|null|object
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -879,9 +879,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59"
 		'.Shop::addSqlRestriction()
         );
-        $row['orders'] = round(100 * $row['orders'] / $totalOrders, 1);
+        if ($row) {
+            $row['orders'] = round(100 * $row['orders'] / $totalOrders, 1);
+            return $row;
+        }
 
-        return $row;
+        return false;
     }
 
     /**
