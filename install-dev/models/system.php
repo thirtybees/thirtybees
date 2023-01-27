@@ -61,7 +61,7 @@ class InstallModelSystem extends InstallAbstractModel
 
         $success = true;
         foreach ($tests as $result) {
-            $success &= ($result == 'ok') ? true : false;
+            $success = $success && $result == 'ok';
         }
 
         return [

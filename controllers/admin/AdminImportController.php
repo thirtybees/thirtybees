@@ -3310,9 +3310,9 @@ class AdminImportControllerCore extends AdminController
                         $customer->id_shop_group = (int) $id;
                         if (isset($currentIdCustomer) && $customerExist && (isset($currentIdShopGroup) && (int) $currentIdShopGroup == (int) $id || isset($currentIdShop) && in_array($currentIdShop, ShopGroup::getShopsFromGroup($id)))) {
                             $customer->id = (int) $currentIdCustomer;
-                            $res &= ($validateOnly || $customer->update());
+                            $res = ($validateOnly || $customer->update()) && $res;
                         } else {
-                            $res &= ($validateOnly || $customer->add($autodate));
+                            $res = ($validateOnly || $customer->add($autodate)) && $res;
                             if (!$validateOnly && isset($addresses)) {
                                 foreach ($addresses as $address) {
                                     $address['id_customer'] = $customer->id;
@@ -3330,9 +3330,9 @@ class AdminImportControllerCore extends AdminController
                     $customer->id_shop_group = $idGroup;
                     if ($customerExist && isset($currentIdShop) && isset($currentIdCustomer) && (int) $idShop == (int) $currentIdShop) {
                         $customer->id = (int) $currentIdCustomer;
-                        $res &= ($validateOnly || $customer->update());
+                        $res = ($validateOnly || $customer->update()) && $res;
                     } else {
-                        $res &= ($validateOnly || $customer->add($autodate));
+                        $res = ($validateOnly || $customer->add($autodate)) && $res;
                         if (!$validateOnly && isset($addresses)) {
                             foreach ($addresses as $address) {
                                 $address['id_customer'] = $customer->id;

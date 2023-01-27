@@ -623,8 +623,6 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      */
     protected function deleteTaxRule(array $idTaxRuleList)
     {
-        $result = true;
-
         foreach ($idTaxRuleList as $idTaxRule) {
             $taxRule = new TaxRule((int) $idTaxRule);
             if (Validate::isLoadedObject($taxRule)) {
@@ -632,7 +630,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
                 $taxRulesGroup = $this->updateTaxRulesGroup($taxRulesGroup);
                 $taxRule = new TaxRule($taxRulesGroup->getIdTaxRuleGroupFromHistorizedId((int) $idTaxRule));
                 if (Validate::isLoadedObject($taxRule)) {
-                    $result &= $taxRule->delete();
+                    $taxRule->delete();
                 }
             }
         }

@@ -3460,7 +3460,9 @@ class CartCore extends ObjectModel
     protected function _deleteCustomization($idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery = 0)
     {
         $result = true;
-        $customization = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+
+        $conn = Db::getInstance();
+        $customization = $conn->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('customization')
@@ -3468,7 +3470,7 @@ class CartCore extends ObjectModel
         );
 
         if ($customization) {
-            $custData = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $custData = $conn->getRow(
                 (new DbQuery())
                     ->select('*')
                     ->from('customized_data')
@@ -3477,29 +3479,24 @@ class CartCore extends ObjectModel
 
             // Delete customization picture if necessary
             if (isset($custData['type']) && $custData['type'] == 0) {
-                $result &= (@unlink(_PS_UPLOAD_DIR_.$custData['value']) && @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small'));
-            }
-
-            $result &= Db::getInstance()->delete('customized_data', '`id_customization` = '.(int) $idCustomization);
-
-            if ($result) {
-                $result &= Db::getInstance()->update(
-                    'cart_product',
-                    [
-                        'quantity' => ['type' => 'sql', 'value' => '`quantity` - '.(int) $customization['quantity']],
-                    ],
-                    '`id_cart` = '.(int) $this->id.' AND `id_product` = '.(int) $idProduct.((int) $idProductAttribute ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_address_delivery` = '.(int) $idAddressDelivery
+                $result = (
+                    @unlink(_PS_UPLOAD_DIR_.$custData['value']) &&
+                    @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small')
                 );
             }
 
-            if (!$result) {
-                return false;
-            }
-
-            return Db::getInstance()->delete('customization', '`id_customization` = '.(int) $idCustomization);
+            $result = $conn->delete('customized_data', '`id_customization` = '.(int) $idCustomization) && $result;
+            $result = $conn->update(
+                'cart_product',
+                [
+                    'quantity' => ['type' => 'sql', 'value' => '`quantity` - '.(int) $customization['quantity']],
+                ],
+                '`id_cart` = '.(int) $this->id.' AND `id_product` = '.(int) $idProduct.((int) $idProductAttribute ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_address_delivery` = '.(int) $idAddressDelivery
+            ) && $result;
+            $result = $conn->delete('customization', '`id_customization` = '.(int) $idCustomization) && $result;
         }
 
-        return true;
+        return $result;
     }
 
     /**
@@ -4478,7 +4475,7 @@ class CartCore extends ObjectModel
                 }
             }
 
-            $success &= $cart->updateQty(
+            $success = $cart->updateQty(
                 (int) $product['quantity'],
                 (int) $product['id_product'],
                 (int) $product['id_product_attribute'],
@@ -4487,7 +4484,7 @@ class CartCore extends ObjectModel
                 (int) $idAddressDelivery,
                 new Shop((int) $cart->id_shop),
                 false
-            );
+            ) && $success;
         }
 
         // Customized products

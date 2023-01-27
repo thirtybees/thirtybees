@@ -683,6 +683,7 @@ class ConfigurationCore extends ObjectModel
             $values = [$values];
         }
 
+        $conn = Db::getInstance();
         $result = true;
         foreach ($values as $lang => $rawValue) {
             $lang = (int)$lang;
@@ -691,7 +692,7 @@ class ConfigurationCore extends ObjectModel
                 // If key exists already, update value.
                 if (!$lang) {
                     // Update config not linked to lang
-                    $result &= Db::getInstance()->update(
+                    $result = $conn->update(
                         static::$definition['table'],
                         [
                             'value'    => $value,
@@ -700,7 +701,7 @@ class ConfigurationCore extends ObjectModel
                         '`name` = \''.$key.'\''.Configuration::sqlRestriction($idShopGroup, $idShop),
                         1,
                         true
-                    );
+                    ) && $result;
                 } else {
                     // Update multi lang
                     $sql = 'UPDATE `'._DB_PREFIX_.static::$definition['table'].'_lang` cl
@@ -713,7 +714,7 @@ class ConfigurationCore extends ObjectModel
                                     WHERE c.name = \''.$key.'\''
                         .Configuration::sqlRestriction($idShopGroup, $idShop)
                         .')';
-                    $result &= Db::getInstance()->execute($sql);
+                    $result = $conn->execute($sql) && $result;
                 }
             } else {
                 // If key doesn't exist, create it.
@@ -726,12 +727,12 @@ class ConfigurationCore extends ObjectModel
                         'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
                         'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
                     ];
-                    $result &= Db::getInstance()->insert(static::$definition['table'], $data, true);
-                    $configID = Db::getInstance()->Insert_ID();
+                    $result = $conn->insert(static::$definition['table'], $data, true) && $result;
+                    $configID = $conn->Insert_ID();
                 }
 
                 if ($lang) {
-                    $result &= Db::getInstance()->insert(
+                    $result = $conn->insert(
                         static::$definition['table'].'_lang',
                         [
                             static::$definition['primary'] => $configID,
@@ -739,7 +740,7 @@ class ConfigurationCore extends ObjectModel
                             'value'                      => $value,
                             'date_upd'                   => date('Y-m-d H:i:s'),
                         ]
-                    );
+                    ) && $result;
                 }
             }
         }

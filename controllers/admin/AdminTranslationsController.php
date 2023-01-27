@@ -639,7 +639,7 @@ class AdminTranslationsControllerCore extends AdminController
         // Do not use file_exists because it changes over time!
         if (!file_exists($path)) {
             if (!mkdir($path, 0777, true)) {
-                $bool &= false;
+                $bool = false;
                 $this->errors[] = sprintf($this->l('Cannot create the folder "%s". Please check your directory writing permissions.'), $path);
             }
         }

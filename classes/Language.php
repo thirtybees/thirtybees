@@ -823,7 +823,7 @@ class LanguageCore extends ObjectModel
                 }
                 $sql = rtrim($sql, ', ');
                 $sql .= ' FROM `'._DB_PREFIX_.'lang` CROSS JOIN `'.bqSQL(str_replace('_lang', '', $name)).'`)';
-                $return &= Db::getInstance()->execute($sql);
+                $return = Db::getInstance()->execute($sql) && $return;
             }
         }
 

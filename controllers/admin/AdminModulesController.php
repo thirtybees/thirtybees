@@ -865,13 +865,10 @@ class AdminModulesControllerCore extends AdminController
 
         foreach ($allModules as $module) {
             if (!isset($tabModulesList) || in_array($module->name, $tabModulesList)) {
-                $perm = true;
                 if ($module->id) {
-                    $perm &= Module::getPermissionStatic($module->id, 'configure');
+                    $perm = Module::getPermissionStatic($module->id, 'configure');
                 } else {
-                    if (! $this->hasEditPermission()) {
-                        $perm = false;
-                    }
+                    $perm = $this->hasEditPermission();
                 }
 
                 if (in_array($module->name, $this->list_partners_modules)) {

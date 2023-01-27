@@ -601,13 +601,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Database insertion
         $fields = $this->getFieldsPrimary();
-        if (!$result = Db::getInstance()->insert($this->def['table'], $fields, $nullValues)) {
+        if (! Db::getInstance()->insert($this->def['table'], $fields, $nullValues)) {
             return false;
         }
 
         // Get object id in database
         $this->id = Db::getInstance()->Insert_ID();
 
+        $result = true;
         // Database insertion for multishop fields related to the object
         if (Shop::isTableAssociated($this->def['table'])) {
             $fields = $this->getFieldsShop();
@@ -615,7 +616,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             foreach ($idShopList as $idShop) {
                 $fields['id_shop'] = (int) $idShop;
-                $result &= Db::getInstance()->insert($this->def['table'].'_shop', $fields, $nullValues);
+                $result = Db::getInstance()->insert($this->def['table'].'_shop', $fields, $nullValues) && $result;
             }
         }
 
@@ -640,10 +641,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                     if ($asso !== false && $asso['type'] == 'fk_shop') {
                         foreach ($shops as $idShop) {
                             $field['id_shop'] = (int) $idShop;
-                            $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field);
+                            $result = Db::getInstance()->insert($this->def['table'].'_lang', $field) && $result;
                         }
                     } else {
-                        $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field);
+                        $result = Db::getInstance()->insert($this->def['table'].'_lang', $field) && $result;
                     }
                 }
             }
@@ -770,7 +771,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Database update
         $primaryFields = $this->getFieldsPrimary();
-        if (!$result = Db::getInstance()->update($this->def['table'], $primaryFields, '`'.pSQL($this->def['primary']).'` = '.(int) $this->id, 0, $nullValues)) {
+        $conn = Db::getInstance();
+        if (!$result = $conn->update($this->def['table'], $primaryFields, '`'.pSQL($this->def['primary']).'` = '.(int) $this->id, 0, $nullValues)) {
             return false;
         }
 
@@ -799,14 +801,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             foreach ($idShopList as $idShop) {
                 $where = $this->def['primary'].' = '.(int) $this->id.' AND id_shop = '.(int) $idShop;
 
-                $shopEntryExists = Db::getInstance()->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
+                $shopEntryExists = $conn->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
                 if ($shopEntryExists) {
                     // if multishop db entry exists, we use $updateFields array to update it
-                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $updateFields, $where, 0, $nullValues);
+                    $result = $conn->update($this->def['table'].'_shop', $updateFields, $where, 0, $nullValues) && $result;
                 } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
                     // if multishop db entry doesnt exist yet, we use $insertFields array to create it
                     $insertFields['id_shop'] = (int) $idShop;
-                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $insertFields, $nullValues);
+                    $static = $conn->insert($this->def['table'].'_shop', $insertFields, $nullValues) && $result;
                 }
             }
         }
@@ -834,19 +836,19 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                             $field['id_shop'] = (int) $idShop;
                             $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'].' AND id_shop = '.(int) $idShop;
 
-                            if (Db::getInstance()->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
-                                $result &= Db::getInstance()->update($this->def['table'].'_lang', $field, $where);
+                            if ($conn->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
+                                $result = $conn->update($this->def['table'].'_lang', $field, $where) && $result;
                             } else {
-                                $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field);
+                                $result = $conn->insert($this->def['table'].'_lang', $field) && $result;
                             }
                         }
                     } else {
                         // If this table is not linked to multishop system ...
                         $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'];
-                        if (Db::getInstance()->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
-                            $result &= Db::getInstance()->update($this->def['table'].'_lang', $field, $where);
+                        if ($conn->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
+                            $result = $conn->update($this->def['table'].'_lang', $field, $where) && $result;
                         } else {
-                            $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field, $nullValues);
+                            $result = $conn->insert($this->def['table'].'_lang', $field, $nullValues) && $result;
                         }
                     }
                 }
@@ -875,6 +877,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $this->clearCache();
         $result = true;
         // Remove association to multishop table
+        $conn = Db::getInstance();
         if (Shop::isTableAssociated($this->def['table'])) {
             if (is_array($this->id_shop_list) && count($this->id_shop_list)) {
                 $idShopList = $this->id_shop_list;
@@ -882,13 +885,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $idShopList = Shop::getContextListShopID();
             }
 
-            $result &= Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int) $this->id.' AND id_shop IN ('.implode(', ', $idShopList).')');
+            $result = $conn->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int) $this->id.' AND id_shop IN ('.implode(', ', $idShopList).')') && $result;
         }
 
         // Database deletion
         $hasMultishopEntries = $this->hasMultishopEntries();
         if ($result && !$hasMultishopEntries) {
-            $result &= Db::getInstance()->delete($this->def['table'], '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
+            $result = $conn->delete($this->def['table'], '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
         }
 
         if (!$result) {
@@ -897,7 +900,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Database deletion for multilingual fields related to the object
         if (!empty($this->def['multilang']) && !$hasMultishopEntries) {
-            $result &= Db::getInstance()->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
+            $result = $conn->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
         }
 
         // @hook actionObject*DeleteAfter
@@ -2261,7 +2264,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $sql .= ')';
 
         try {
-            $success &= Db::getInstance()->execute($sql);
+            $success = Db::getInstance()->execute($sql);
         } catch (\PrestaShopDatabaseException $exception) {
             static::dropDatabase($className);
 
@@ -2299,7 +2302,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $sql .= ')';
 
             try {
-                $success &= Db::getInstance()->execute($sql);
+                $success = Db::getInstance()->execute($sql) && $success;
             } catch (\PrestaShopDatabaseException $exception) {
                 static::dropDatabase($className);
 
@@ -2334,7 +2337,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $sql .= ')';
 
             try {
-                $success &= Db::getInstance()->execute($sql);
+                $success = Db::getInstance()->execute($sql) && $success;
             } catch (\PrestaShopDatabaseException $exception) {
                 static::dropDatabase($className);
 
@@ -2356,23 +2359,22 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public static function dropDatabase($className = null)
     {
-        $success = true;
         if (empty($className)) {
             $className = get_called_class();
         }
 
         $definition = \ObjectModel::getDefinition($className);
 
-        $success &= Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'`');
+        $success = Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'`');
 
         if (isset($definition['multilang']) && $definition['multilang']
             || isset($definition['multilang_shop']) && $definition['multilang_shop']) {
-            $success &= Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'_lang`');
+            $success = Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'_lang`') && $success;
         }
 
         if (isset($definition['multishop']) && $definition['multishop']
             || isset($definition['multilang_shop']) && $definition['multilang_shop']) {
-            $success &= Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'_shop`');
+            $success = Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'_shop`') && $success;
         }
 
         return $success;
@@ -2486,7 +2488,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 }
             }
             if (!$exists) {
-                $success &= static::createColumn($columnName, $columnDefinition);
+                $success = static::createColumn($columnName, $columnDefinition) && $success;
             }
         }
 

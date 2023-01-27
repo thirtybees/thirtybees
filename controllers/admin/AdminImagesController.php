@@ -812,20 +812,20 @@ class AdminImagesControllerCore extends AdminController
                             }
                         }
                         if (ImageManager::generateWebpImages()) {
-                            $success &= ImageManager::resize(
+                            $success = ImageManager::resize(
                                 $dir.$image,
                                 $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.webp',
                                 (int) $imageType['width'],
                                 (int) $imageType['height'],
                                 'webp'
-                            );
+                            ) && $success;
                             if (ImageManager::retinaSupport()) {
-                                $success &= ImageManager::resize(
+                                $success = ImageManager::resize(
                                     $dir.$image,
                                     $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.webp',
                                     (int) $imageType['width'] * 2,
                                     (int) $imageType['height'] * 2
-                                );
+                                ) && $success;
                             }
                         }
 

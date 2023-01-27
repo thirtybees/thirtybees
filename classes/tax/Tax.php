@@ -135,7 +135,7 @@ class TaxCore extends ObjectModel
             $res = $this->add();
 
             // change tax id in the tax rule table
-            $res &= TaxRule::swapTaxId($historizedTax->id, $this->id);
+            $res = TaxRule::swapTaxId($historizedTax->id, $this->id) && $res;
 
             return $res;
         } elseif (parent::update($nullValues)) {

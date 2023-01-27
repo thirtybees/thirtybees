@@ -979,7 +979,7 @@ class OrderInvoiceCore extends ObjectModel
     {
         $isCorrect = true;
         foreach ($taxesAmount as $idTax => $amount) {
-            $isCorrect &= Db::getInstance()->insert(
+            $isCorrect = Db::getInstance()->insert(
                 'order_invoice_tax',
                 [
                     'id_order_invoice' => (int) $this->id,
@@ -990,7 +990,7 @@ class OrderInvoiceCore extends ObjectModel
                         _TB_PRICE_DATABASE_PRECISION_
                     ),
                 ]
-            );
+            ) && $isCorrect;
         }
 
         return $isCorrect;
@@ -1008,7 +1008,7 @@ class OrderInvoiceCore extends ObjectModel
     {
         $isCorrect = true;
         foreach ($taxesAmount as $idTax => $amount) {
-            $isCorrect &= Db::getInstance()->insert(
+            $isCorrect = Db::getInstance()->insert(
                 'order_invoice_tax',
                 [
                     'id_order_invoice' => (int) $this->id,
@@ -1016,7 +1016,7 @@ class OrderInvoiceCore extends ObjectModel
                     'id_tax'           => (int) $idTax,
                     'amount'           => (float) $amount,
                 ]
-            );
+            ) && $isCorrect;
         }
 
         return $isCorrect;

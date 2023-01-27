@@ -306,7 +306,7 @@ class AttributeGroupCore extends ObjectModel
         if (!empty($toRemove)) {
             foreach ($toRemove as $remove) {
                 $combination = new Combination($remove);
-                $return &= $combination->delete();
+                $return = $combination->delete() && $return;
             }
         }
 

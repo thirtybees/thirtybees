@@ -699,7 +699,6 @@ class AdminModulesPositionsControllerCore extends AdminController
                 $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
 
-            $hooksList = explode(',', Tools::getValue('hooks_list'));
             $idShop = (int) Tools::getValue('id_shop');
             if (!$idShop) {
                 $idShop = $this->context->shop->id;
@@ -708,10 +707,11 @@ class AdminModulesPositionsControllerCore extends AdminController
             $res = true;
             $hooksList = Tools::getValue('hook');
 
+            $conn = Db::getInstance();
             foreach ($hooksList as $idHook => $modules) {
                 // 1st, drop all previous hooked modules
                 $sql = 'DELETE FROM `'._DB_PREFIX_.'hook_module` WHERE `id_hook` =  '.(int) $idHook.' AND id_shop = '.(int) $idShop;
-                $res &= Db::getInstance()->execute($sql);
+                $res = $conn->execute($sql) && $res;
 
                 $i = 1;
                 $value = '';
@@ -729,18 +729,16 @@ class AdminModulesPositionsControllerCore extends AdminController
 
                     if ($value) {
                         $value = rtrim($value, ',');
-                        $res &= Db::getInstance()->execute('INSERT INTO  `'._DB_PREFIX_.'hook_module` (id_module, id_shop, id_hook, position) VALUES '.$value);
+                        $res = (
+                            $conn->execute('INSERT INTO  `'._DB_PREFIX_.'hook_module` (id_module, id_shop, id_hook, position) VALUES '.$value) &&
+                            $res
+                        );
                     }
                 }
             }
-            if ($res) {
-                $hasError = true;
-            } else {
-                $hasError = false;
-            }
 
             $this->ajaxDie(json_encode([
-                'hasError' => $hasError,
+                'hasError' => !$res,
                 'errors'   => '',
             ]));
         }

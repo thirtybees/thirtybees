@@ -245,6 +245,8 @@ class ShopCore extends ObjectModel
             return false;
         }
 
+        $conn = Db::getInstance();
+
         foreach (static::getAssoTables() as $tableName => $row) {
             $id = 'id_'.$row['type'];
             if ($row['type'] == 'fk_shop') {
@@ -252,26 +254,26 @@ class ShopCore extends ObjectModel
             } else {
                 $tableName .= '_'.$row['type'];
             }
-            $res &= Db::getInstance()->delete(bqSQL($tableName), '`'.bqSQL($id).'`='.(int) $this->id);
+            $res = $conn->delete(bqSQL($tableName), '`'.bqSQL($id).'`='.(int) $this->id) && $res;
         }
 
         // removes stock available
-        $res &= Db::getInstance()->delete('stock_available', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('stock_available', '`id_shop` = '.(int) $this->id) && $res;
 
         // Remove urls
-        $res &= Db::getInstance()->delete('shop_url', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('shop_url', '`id_shop` = '.(int) $this->id) && $res;
 
         // Remove currency restrictions
-        $res &= Db::getInstance()->delete('module_currency', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('module_currency', '`id_shop` = '.(int) $this->id) && $res;
 
         // Remove group restrictions
-        $res &= Db::getInstance()->delete('module_group', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('module_group', '`id_shop` = '.(int) $this->id) && $res;
 
         // Remove country restrictions
-        $res &= Db::getInstance()->delete('module_country', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('module_country', '`id_shop` = '.(int) $this->id) && $res;
 
         // Remove carrier restrictions
-        $res &= Db::getInstance()->delete('module_carrier', '`id_shop` = '.(int) $this->id);
+        $res = $conn->delete('module_carrier', '`id_shop` = '.(int) $this->id) && $res;
 
         static::cacheShops(true);
 

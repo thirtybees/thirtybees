@@ -206,7 +206,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     /**
      * Management of images URL segment
      *
-     * @return bool|void
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -318,41 +318,24 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
         $this->imageType = $this->wsObject->urlSegment[1];
 
-        switch ($this->wsObject->urlSegment[1]) {
+        switch ($this->imageType) {
             // general images management : like header's logo, invoice logo, etc...
             case 'general':
                 return $this->manageGeneralImages();
-                break;
             // normal images management : like the most entity images (categories, manufacturers..)...
             case 'categories':
+                return $this->manageDeclinatedImages(_PS_CAT_IMG_DIR_);
             case 'manufacturers':
+                return $this->manageDeclinatedImages(_PS_MANU_IMG_DIR_);
             case 'suppliers':
+                return $this->manageDeclinatedImages(_PS_SUPP_IMG_DIR_);
             case 'stores':
-                switch ($this->wsObject->urlSegment[1]) {
-                    case 'categories':
-                        $directory = _PS_CAT_IMG_DIR_;
-                        break;
-                    case 'manufacturers':
-                        $directory = _PS_MANU_IMG_DIR_;
-                        break;
-                    case 'suppliers':
-                        $directory = _PS_SUPP_IMG_DIR_;
-                        break;
-                    case 'stores':
-                        $directory = _PS_STORE_IMG_DIR_;
-                        break;
-                }
-
-                return $this->manageDeclinatedImages($directory);
-                break;
-
+                return $this->manageDeclinatedImages(_PS_STORE_IMG_DIR_);
             // product image management : many image for one entity (product)
             case 'products':
                 return $this->manageProductImages();
-                break;
             case 'customizations':
                 return $this->manageCustomizationImages();
-                break;
             // images root node management : many image for one entity (product)
             case '':
                 $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image_types', []);
@@ -367,7 +350,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 $this->output .= $this->objOutput->getObjectRender()->renderNodeFooter('image_types', []);
 
                 return true;
-                break;
             default:
                 $exception = new WebserviceException(sprintf('Image of type "%s" does not exist', $this->wsObject->urlSegment[1]), [48, 400]);
                 throw $exception->setDidYouMean($this->wsObject->urlSegment[1], array_keys($this->imageTypes));
@@ -710,14 +692,11 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             // Match the default images
             case 'default':
                 return $this->manageDefaultDeclinatedImages($directory, $normalImageSizes);
-                break;
             // Display the list of images
             case '':
                 return $this->manageListDeclinatedImages($directory, $normalImageSizes);
-                break;
             default:
                 return $this->manageEntityDeclinatedImages($directory, $normalImageSizes);
-                break;
         }
     }
 
@@ -728,7 +707,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function manageProductImages()
     {
-        $this->manageDeclinatedImages(_PS_PROD_IMG_DIR_);
+        return $this->manageDeclinatedImages(_PS_PROD_IMG_DIR_);
     }
 
     /**

@@ -225,7 +225,7 @@ class GroupReductionCore extends ObjectModel
                 if ($reductions) {
                     foreach ($reductions as $reduction) {
                         $currentGroupReduction = new GroupReduction((int) $reduction['id_group_reduction']);
-                        $res &= $currentGroupReduction->_setCache();
+                        $res = $currentGroupReduction->_setCache() && $res;
                     }
                 }
             }
@@ -395,13 +395,13 @@ class GroupReductionCore extends ObjectModel
 
         $result = true;
         if ($ids) {
-            $result &= Db::getInstance()->update(
+            $result = Db::getInstance()->update(
                 'product_group_reduction_cache',
                 [
                     'reduction' => (float) $this->reduction,
                 ],
                 '`id_product` IN('.implode(', ', $ids).') AND `id_group` = '.(int) $this->id_group
-            );
+            ) && $result;
         }
 
         return $result;

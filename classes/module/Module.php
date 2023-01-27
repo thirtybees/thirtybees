@@ -592,7 +592,7 @@ abstract class ModuleCore
         // Enable each module
         foreach ($name as $n) {
             if (Validate::isModuleName($n)) {
-                $res &= Module::getInstanceByName($n)->enable();
+                $res = Module::getInstanceByName($n)->enable() && $res;
             }
         }
 
@@ -1669,7 +1669,7 @@ abstract class ModuleCore
         foreach (Tools::scandir($this->getLocalPath().'override', 'php', '', true) as $file) {
             $class = basename($file, '.php');
             if (PrestaShopAutoload::getInstance()->getClassPath($class.'Core') || Module::getModuleIdByName($class)) {
-                $result &= $this->addOverride($class);
+                $result = $this->addOverride($class) && $result;
             }
         }
 
@@ -1859,7 +1859,7 @@ abstract class ModuleCore
         foreach (Tools::scandir($this->getLocalPath().'override', 'php', '', true) as $file) {
             $class = basename($file, '.php');
             if (PrestaShopAutoload::getInstance()->getClassPath($class.'Core') || Module::getModuleIdByName($class)) {
-                $result &= $this->removeOverride($class);
+                $result = $this->removeOverride($class) && $result;
             }
         }
 
@@ -2581,7 +2581,7 @@ abstract class ModuleCore
                 }
 
                 // Register module in hook
-                $return &= Db::getInstance()->insert(
+                $return = Db::getInstance()->insert(
                     'hook_module',
                     [
                         'id_module' => (int) $this->id,
@@ -2589,11 +2589,11 @@ abstract class ModuleCore
                         'id_shop'   => (int) $shopId,
                         'position'  => (int) ($position + 1),
                     ]
-                );
+                ) && $return;
 
                 if (!in_array($shopId, $shopListEmployee)) {
                     $where = '`id_module` = '.(int) $this->id.' AND `id_shop` = '.(int) $shopId;
-                    $return &= Db::getInstance()->delete('module_shop', $where);
+                    $return = Db::getInstance()->delete('module_shop', $where) && $return;
                 }
             }
 
@@ -2620,7 +2620,7 @@ abstract class ModuleCore
         foreach ($excepts as $shopId => $except) {
             $shopList = ($shopId == 0) ? Shop::getContextListShopID() : [$shopId];
             $this->unregisterExceptions($idHook, $shopList);
-            $result &= $this->registerExceptions($idHook, $except, $shopList);
+            $result = $this->registerExceptions($idHook, $except, $shopList) && $result;
 
         }
 

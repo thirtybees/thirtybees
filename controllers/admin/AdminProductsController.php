@@ -1624,7 +1624,7 @@ class AdminProductsControllerCore extends AdminController
                     }
                 }
                 $img->position = (int) $position;
-                $res &= $img->update();
+                $res = $img->update() && $res;
             }
         }
         if ($res) {
@@ -1678,29 +1678,28 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessDeleteProductImage()
     {
         $this->display = 'content';
-        $res = true;
         /* Delete product image */
         $image = new Image((int) Tools::getValue('id_image'));
         $this->content['id'] = $image->id;
-        $res &= $image->delete();
+        $res = $image->delete();
         // if deleted image was the cover, change it to the first one
         if (!Image::getCover($image->id_product)) {
-            $res &= Db::getInstance()->execute(
+            $res = Db::getInstance()->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'image_shop` image_shop
 			SET image_shop.`cover` = 1
 			WHERE image_shop.`id_product` = '.(int) $image->id_product.'
 			AND id_shop='.(int) $this->context->shop->id.' LIMIT 1'
-            );
+            ) && $res;
         }
 
         if (!Image::getGlobalCover($image->id_product)) {
-            $res &= Db::getInstance()->execute(
+            $res = Db::getInstance()->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'image` i
 			SET i.`cover` = 1
 			WHERE i.`id_product` = '.(int) $image->id_product.' LIMIT 1'
-            );
+            ) && $res;
         }
 
         if ($res) {
@@ -2419,7 +2418,7 @@ class AdminProductsControllerCore extends AdminController
         /* Assign tags to this product */
         foreach ($languages as $language) {
             if ($value = Tools::getValue('tags_'.$language['id_lang'])) {
-                $tagSuccess &= Tag::addTags($language['id_lang'], (int) $product->id, $value);
+                $tagSuccess = Tag::addTags($language['id_lang'], (int) $product->id, $value) && $tagSuccess;
             }
         }
 

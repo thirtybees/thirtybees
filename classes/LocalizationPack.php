@@ -100,12 +100,12 @@ class LocalizationPackCore
         $res = true;
 
         if (empty($selection)) {
-            $res &= $this->_installStates($xml);
-            $res &= $this->_installTaxes($xml);
-            $res &= $this->_installCurrencies($xml, $installMode);
-            $res &= $this->installConfiguration($xml);
-            $res &= $this->installModules($xml);
-            $res &= $this->updateDefaultGroupDisplayMethod($xml);
+            $res = $this->_installStates($xml);
+            $res = $this->_installTaxes($xml) && $res;
+            $res = $this->_installCurrencies($xml, $installMode) && $res;
+            $res = $this->installConfiguration($xml) && $res;
+            $res = $this->installModules($xml) && $res;
+            $res = $this->updateDefaultGroupDisplayMethod($xml) && $res;
 
             if (($res || $installMode) && isset($this->iso_code_lang)) {
                 if (!($idLang = (int) Language::getIdByIso($this->iso_code_lang, true))) {
@@ -119,19 +119,23 @@ class LocalizationPackCore
             }
 
             if (!Language::isInstalled(Language::getIsoById($idLang))) {
-                $res &= $this->_installLanguages($xml, $installMode);
-                $res &= $this->_installUnits($xml);
+                $res = $this->_installLanguages($xml, $installMode) && $res;
+                $res = $this->_installUnits($xml) && $res;
             }
 
             if ($installMode && $res && isset($this->iso_currency)) {
                 Cache::clean('Currency::getIdByIsoCode_*');
-                $res &= Configuration::updateValue('PS_CURRENCY_DEFAULT', (int) Currency::getIdByIsoCode($this->iso_currency));
+                $res = Configuration::updateValue('PS_CURRENCY_DEFAULT', (int) Currency::getIdByIsoCode($this->iso_currency)) && $res;
                 Currency::refreshCurrencies();
             }
         } else {
             foreach ($selection as $selected) {
                 // No need to specify the install_mode because if the selection mode is used, then it's not the install
-                $res &= Validate::isLocalizationPackSelection($selected) ? $this->{'_install'.$selected}($xml) : false;
+                $res = (
+                    Validate::isLocalizationPackSelection($selected) &&
+                    $this->{'_install' . $selected}($xml) &&
+                    $res
+                );
             }
         }
 

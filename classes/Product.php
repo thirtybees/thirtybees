@@ -3006,7 +3006,7 @@ class ProductCore extends ObjectModel
             foreach ($row as $k => $v) {
                 $combination->$k = $v;
             }
-            $return &= $combination->save();
+            $return = $combination->save() && $return;
 
             $idProductAttributeNew = (int) $combination->id;
 
@@ -3022,7 +3022,7 @@ class ProductCore extends ObjectModel
                 $combinations[$idProductAttributeOld] = (int) $idProductAttributeNew;
                 foreach ($result2 as $row2) {
                     $row2['id_product_attribute'] = $idProductAttributeNew;
-                    $return &= Db::getInstance()->insert('product_attribute_combination', $row2);
+                    $return = Db::getInstance()->insert('product_attribute_combination', $row2) && $return;
                 }
             } else {
                 Shop::setContext($contextOld, $contextShopIdOld);
@@ -3041,7 +3041,7 @@ class ProductCore extends ObjectModel
                 unset($row3['id_product_supplier']);
                 $row3['id_product'] = $idProductNew;
                 $row3['id_product_attribute'] = $idProductAttributeNew;
-                $return &= Db::getInstance()->insert('product_supplier', $row3);
+                $return = Db::getInstance()->insert('product_supplier', $row3) && $return;
             }
         }
 
@@ -3141,7 +3141,7 @@ class ProductCore extends ObjectModel
                 'id_product_1' => (int) $idProductNew,
                 'id_product_2' => (int) $row['id_product_2'],
             ];
-            $return &= Db::getInstance()->insert('accessory', $data);
+            $return = Db::getInstance()->insert('accessory', $data) && $return;
         }
 
         return $return;
@@ -3265,14 +3265,15 @@ class ProductCore extends ObjectModel
     {
         $return = true;
 
-        $result = Db::getInstance()->executeS(
+        $conn = Db::getInstance();
+        $result = $conn->executeS(
             '
 		SELECT *
 		FROM `'._DB_PREFIX_.'feature_product`
 		WHERE `id_product` = '.(int) $idProductOld
         );
         foreach ($result as $row) {
-            $result2 = Db::getInstance()->getRow(
+            $result2 = $conn->getRow(
                 '
 			SELECT *
 			FROM `'._DB_PREFIX_.'feature_value`
@@ -3282,8 +3283,8 @@ class ProductCore extends ObjectModel
             if ($result2['custom']) {
                 $oldIdFeatureValue = $result2['id_feature_value'];
                 unset($result2['id_feature_value']);
-                $return &= Db::getInstance()->insert('feature_value', $result2);
-                $maxFv = Db::getInstance()->getRow(
+                $return = $conn->insert('feature_value', $result2) && $return;
+                $maxFv = $conn->getRow(
                     '
 					SELECT MAX(`id_feature_value`) AS nb
 					FROM `'._DB_PREFIX_.'feature_value`'
@@ -3291,7 +3292,7 @@ class ProductCore extends ObjectModel
                 $newIdFeatureValue = $maxFv['nb'];
 
                 foreach (Language::getIDs(false) as $idLang) {
-                    $result3 = Db::getInstance()->getRow(
+                    $result3 = $conn->getRow(
                         '
 					SELECT *
 					FROM `'._DB_PREFIX_.'feature_value_lang`
@@ -3302,14 +3303,14 @@ class ProductCore extends ObjectModel
                     if ($result3) {
                         $result3['id_feature_value'] = (int) $newIdFeatureValue;
                         $result3['value'] = pSQL($result3['value']);
-                        $return &= Db::getInstance()->insert('feature_value_lang', $result3);
+                        $return = $conn->insert('feature_value_lang', $result3) && $return;
                     }
                 }
                 $row['id_feature_value'] = $newIdFeatureValue;
             }
 
             $row['id_product'] = (int) $idProductNew;
-            $return &= Db::getInstance()->insert('feature_product', $row);
+            $return = $conn->insert('feature_product', $row) && $return;
         }
 
         return $return;
@@ -4102,12 +4103,12 @@ class ProductCore extends ObjectModel
               AND `id_category` ='.$categoryId
         );
 
-        $result &= Db::getInstance()->execute('
+        $result = Db::getInstance()->execute('
             UPDATE `'._DB_PREFIX_.'category_product`
             SET `position` = '.(int) $newPosition.'
             WHERE `id_product` = '.$productId.'
               AND `id_category` ='.$categoryId
-        );
+        ) && $result;
 
         static::cleanPositions($categoryId);
 
@@ -4233,7 +4234,12 @@ class ProductCore extends ObjectModel
 
         // Removes the product from StockAvailable, for the current shop
         StockAvailable::removeProductFromStockAvailable($this->id);
-        $result &= ($this->deleteProductAttributes() && $this->deleteImages() && $this->deleteSceneProducts());
+        $result = (
+            $this->deleteProductAttributes() &&
+            $this->deleteImages() &&
+            $this->deleteSceneProducts() &&
+            $result
+        );
         // If there are still entries in product_shop, don't remove completely the product
         if ($this->hasMultishopEntries()) {
             return true;
@@ -4280,7 +4286,7 @@ class ProductCore extends ObjectModel
         $combinations = new PrestaShopCollection('Combination');
         $combinations->where('id_product', '=', $this->id);
         foreach ($combinations as $combination) {
-            $result &= $combination->delete();
+            $result = $combination->delete() && $result;
         }
         SpecificPriceRule::applyAllRules([(int) $this->id]);
         Tools::clearColorListCache($this->id);
@@ -4309,7 +4315,7 @@ class ProductCore extends ObjectModel
         if ($result) {
             foreach ($result as $row) {
                 $image = new Image($row['id_image']);
-                $status &= $image->delete();
+                $status = $image->delete() && $status;
             }
         }
 
@@ -4358,7 +4364,7 @@ class ProductCore extends ObjectModel
 
         if ($cleanPositions && is_array($categories) && $categories) {
             foreach ($categories as $row) {
-                $return &= static::cleanPositions((int) $row['id_category']);
+                $return = static::cleanPositions((int) $row['id_category']) && $return;
             }
         }
 
@@ -4702,7 +4708,7 @@ class ProductCore extends ObjectModel
         $collectionDownload->where('id_product', '=', $this->id);
         foreach ($collectionDownload as $productDownload) {
             /** @var ProductDownload $productDownload */
-            $result &= $productDownload->delete($productDownload->checkFile());
+            $result = $productDownload->delete($productDownload->checkFile()) && $result;
         }
 
         return $result;
@@ -5151,7 +5157,7 @@ class ProductCore extends ObjectModel
                         'id_attribute'         => (int) $idAttribute,
                     ];
                 }
-                $res &= Db::getInstance()->insert('product_attribute_combination', $attributeList);
+                $res = Db::getInstance()->insert('product_attribute_combination', $attributeList) && $res;
             }
         }
 

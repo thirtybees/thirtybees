@@ -127,12 +127,13 @@ class ZoneCore extends ObjectModel
     {
         if (parent::delete()) {
             // Delete regarding delivery preferences
-            $result = Db::getInstance()->delete('carrier_zone', 'id_zone = '.(int) $this->id);
-            $result &= Db::getInstance()->delete('delivery', 'id_zone = '.(int) $this->id);
+            $conn = Db::getInstance();
+            $result = $conn->delete('carrier_zone', 'id_zone = '.(int) $this->id);
+            $result = $conn->delete('delivery', 'id_zone = '.(int) $this->id) && $result;
 
             // Update Country & state zone with 0
-            $result &= Db::getInstance()->update('country', ['id_zone' => 0], 'id_zone = '.(int) $this->id);
-            $result &= Db::getInstance()->update('state', ['id_zone' => 0], 'id_zone = '.(int) $this->id);
+            $result = $conn->update('country', ['id_zone' => 0], 'id_zone = '.(int) $this->id) && $result;
+            $result = $conn->update('state', ['id_zone' => 0], 'id_zone = '.(int) $this->id) && $result;
 
             return $result;
         }

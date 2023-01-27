@@ -668,7 +668,7 @@ class CMSCategoryCore extends ObjectModel
         $return = true;
         foreach ($categories as $idCategoryCms) {
             $categoryCms = new CMSCategory($idCategoryCms);
-            $return &= $categoryCms->delete();
+            $return = $categoryCms->delete() && $return;
         }
 
         return $return;

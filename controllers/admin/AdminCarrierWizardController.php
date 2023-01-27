@@ -1097,10 +1097,10 @@ class AdminCarrierWizardControllerCore extends AdminController
         foreach ($zones as $zone) {
             if (count($carrier->getZone($zone['id_zone']))) {
                 if (!isset($_POST['zone_'.$zone['id_zone']]) || !$_POST['zone_'.$zone['id_zone']]) {
-                    $return &= $carrier->deleteZone((int) $zone['id_zone']);
+                    $return = $carrier->deleteZone((int) $zone['id_zone']) && $return;
                 }
             } elseif (isset($_POST['zone_'.$zone['id_zone']]) && $_POST['zone_'.$zone['id_zone']]) {
-                $return &= $carrier->addZone((int) $zone['id_zone']);
+                $return = $carrier->addZone((int) $zone['id_zone']) && $return;
             }
         }
 

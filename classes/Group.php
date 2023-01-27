@@ -373,11 +373,11 @@ class GroupCore extends ObjectModel
 
         $res = true;
         foreach ($shops as $shop) {
-            $res &= Db::getInstance()->execute(
+            $res = Db::getInstance()->execute(
                 '
 			INSERT INTO `'._DB_PREFIX_.'module_group` (`id_module`, `id_shop`, `id_group`)
 			(SELECT '.(int) $idModule.', '.(int) $shop.', id_group FROM `'._DB_PREFIX_.'group`)'
-            );
+            ) && $res;
         }
 
         return $res;

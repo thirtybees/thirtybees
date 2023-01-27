@@ -174,7 +174,7 @@ abstract class PaymentModuleCore extends Module
         $return = $this->addCheckboxCountryRestrictionsForModule();
 
         // Insert carrier availability
-        $return &= $this->addCheckboxCarrierRestrictionsForModule();
+        $return = $this->addCheckboxCarrierRestrictionsForModule() && $return;
 
         if (!Configuration::get('CONF_'.strtoupper($this->name).'_FIXED')) {
             Configuration::updateValue('CONF_'.strtoupper($this->name).'_FIXED', '0.2');
@@ -731,7 +731,7 @@ abstract class PaymentModuleCore extends Module
                         $productVarTplList[] = $productVarTpl;
                         // Check if is not a virutal product for the displaying of shipping
                         if (!$product['is_virtual']) {
-                            $virtualProduct &= false;
+                            $virtualProduct = false;
                         }
                     } // end foreach ($products)
 

@@ -1693,7 +1693,7 @@ class AdminOrdersControllerCore extends AdminController
                             $orderCartRule->name = Tools::getValue('discount_name');
                             $orderCartRule->value = $cartRule['value_tax_incl'];
                             $orderCartRule->value_tax_excl = $cartRule['value_tax_excl'];
-                            $res &= $orderCartRule->add();
+                            $res = $orderCartRule->add() && $res;
 
                             $order->total_discounts += $orderCartRule->value;
                             $order->total_discounts_tax_incl += $orderCartRule->value;
@@ -1704,7 +1704,7 @@ class AdminOrdersControllerCore extends AdminController
                         }
 
                         // Update Order
-                        $res &= $order->update();
+                        $res = $order->update() && $res;
                     }
 
                     if ($res) {
@@ -2577,7 +2577,6 @@ class AdminOrdersControllerCore extends AdminController
         $result = array_diff($newCartRules, $oldCartRules);
         $refresh = false;
 
-        $res = true;
         foreach ($result as $cartRule) {
             $refresh = true;
             // Create OrderCartRule
@@ -2593,7 +2592,7 @@ class AdminOrdersControllerCore extends AdminController
             $orderCartRule->name = $cartRule['name'];
             $orderCartRule->value = $values['tax_incl'];
             $orderCartRule->value_tax_excl = $values['tax_excl'];
-            $res &= $orderCartRule->add();
+            $orderCartRule->add();
 
             $order->total_discounts += $orderCartRule->value;
             $order->total_discounts_tax_incl += $orderCartRule->value;
@@ -2795,7 +2794,7 @@ class AdminOrdersControllerCore extends AdminController
                 $oldOrderInvoice->total_paid_tax_excl -= $orderDetail->total_price_tax_excl;
                 $oldOrderInvoice->total_paid_tax_incl -= $orderDetail->total_price_tax_incl;
 
-                $res &= $oldOrderInvoice->update();
+                $res = $oldOrderInvoice->update();
 
                 $orderInvoice->total_products += $orderDetail->total_price_tax_excl;
                 $orderInvoice->total_products_wt += $orderDetail->total_price_tax_incl;
@@ -2832,7 +2831,7 @@ class AdminOrdersControllerCore extends AdminController
             $order->total_paid_tax_excl += $diffPriceTaxExcl;
             $order->total_paid_tax_incl += $diffPriceTaxIncl;
 
-            $res &= $order->update();
+            $res = $order->update() && $res;
         }
 
         $oldQuantity = $orderDetail->product_quantity;
@@ -2841,16 +2840,16 @@ class AdminOrdersControllerCore extends AdminController
         $orderDetail->reduction_percent = 0;
 
         // update taxes
-        $res &= $orderDetail->updateTaxAmount($order);
+        $res = $orderDetail->updateTaxAmount($order) && $res;
 
         // Save order detail
-        $res &= $orderDetail->update();
+        $res = $orderDetail->update() && $res;
 
         // Update weight SUM
         $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
         if (Validate::isLoadedObject($orderCarrier)) {
             $orderCarrier->weight = (float) $order->getTotalWeight();
-            $res &= $orderCarrier->update();
+            $res = $orderCarrier->update() && $res;
             if ($res) {
                 $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
             }
@@ -2858,7 +2857,7 @@ class AdminOrdersControllerCore extends AdminController
 
         // Save order invoice
         if (isset($orderInvoice)) {
-            $res &= $orderInvoice->update();
+            $res = $orderInvoice->update() && $res;
         }
 
         // Update product available quantity
@@ -2998,7 +2997,7 @@ class AdminOrdersControllerCore extends AdminController
             $orderInvoice->total_paid_tax_incl -= $orderDetail->total_price_tax_incl;
             $orderInvoice->total_products -= $orderDetail->total_price_tax_excl;
             $orderInvoice->total_products_wt -= $orderDetail->total_price_tax_incl;
-            $res &= $orderInvoice->update();
+            $res = $orderInvoice->update() && $res;
         }
 
         // Update Order
@@ -3008,7 +3007,7 @@ class AdminOrdersControllerCore extends AdminController
         $order->total_products -= $orderDetail->total_price_tax_excl;
         $order->total_products_wt -= $orderDetail->total_price_tax_incl;
 
-        $res &= $order->update();
+        $res = $order->update() && $res;
 
         // Reinject quantity in stock
         $this->reinjectQuantity($orderDetail, $orderDetail->product_quantity, true);
@@ -3017,7 +3016,7 @@ class AdminOrdersControllerCore extends AdminController
         $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
         if (Validate::isLoadedObject($orderCarrier)) {
             $orderCarrier->weight = (float) $order->getTotalWeight();
-            $res &= $orderCarrier->update();
+            $res = $orderCarrier->update() && $res;
             if ($res) {
                 $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
             }
@@ -3025,7 +3024,7 @@ class AdminOrdersControllerCore extends AdminController
 
         if (!$res) {
             $this->ajaxDie(json_encode([
-                'result' => $res,
+                'result' => false,
                 'error'  => Tools::displayError('An error occurred while attempting to delete the product line.'),
             ]));
         }

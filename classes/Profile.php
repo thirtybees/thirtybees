@@ -264,13 +264,13 @@ class ProfileCore extends ObjectModel
     {
         if (parent::add($autoDate, true)) {
             $result = Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'access (SELECT '.(int) $this->id.', id_tab, 0, 0, 0, 0 FROM '._DB_PREFIX_.'tab)');
-            $result &= Db::getInstance()->execute(
+            $result = Db::getInstance()->execute(
                 '
 				INSERT INTO '._DB_PREFIX_.'module_access
 				(`id_profile`, `id_module`, `configure`, `view`, `uninstall`)
 				(SELECT '.(int) $this->id.', id_module, 0, 1, 0 FROM '._DB_PREFIX_.'module)
 			'
-            );
+            ) && $result;
 
             return $result;
         }

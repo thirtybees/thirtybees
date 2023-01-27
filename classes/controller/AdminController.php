@@ -3251,13 +3251,10 @@ class AdminControllerCore extends Controller
         $allModules = Module::getModulesOnDisk(true);
         $this->modules_list = [];
         foreach ($allModules as $module) {
-            $perm = true;
             if ($module->id) {
-                $perm &= Module::getPermissionStatic($module->id, 'configure');
+                $perm = Module::getPermissionStatic($module->id, 'configure');
             } else {
-                if (! $this->context->employee->hasAccess(AdminModulesController::class, Profile::PERMISSION_EDIT)) {
-                    $perm = false;
-                }
+                $perm = $this->context->employee->hasAccess(AdminModulesController::class, Profile::PERMISSION_EDIT);
             }
 
             if (in_array($module->name, $filterModulesList) && $perm) {
@@ -4609,6 +4606,7 @@ class AdminControllerCore extends Controller
      * @param bool $status
      *
      * @return bool true if success
+     *
      * @throws PrestaShopException
      */
     protected function processBulkStatusSelection($status)
@@ -4620,7 +4618,7 @@ class AdminControllerCore extends Controller
                 $object = new $this->className((int) $id);
                 $object->setFieldsToUpdate(['active' => true]);
                 $object->active = (int) $status;
-                $result &= $object->update();
+                $result = $object->update() && $result;
             }
         }
 

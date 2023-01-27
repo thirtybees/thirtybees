@@ -881,11 +881,12 @@ class OrderCore extends ObjectModel
         $virtual = true;
 
         foreach ($products as $product) {
-            if ($strict === false && (bool) $product['is_virtual']) {
+            $isVirtual = (bool) $product['is_virtual'];
+            if ($strict === false && $isVirtual) {
                 return true;
             }
 
-            $virtual &= (bool) $product['is_virtual'];
+            $virtual = $virtual && $isVirtual;
         }
 
         return $virtual;

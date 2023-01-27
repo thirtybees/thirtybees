@@ -404,7 +404,7 @@ class OrderSlipCore extends ObjectModel
         $res = true;
 
         foreach ($productList as $product) {
-            $res &= $orderSlip->addProductOrderSlip($product);
+            $res = $orderSlip->addProductOrderSlip($product) && $res;
         }
 
         return $res;

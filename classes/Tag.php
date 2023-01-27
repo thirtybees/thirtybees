@@ -197,7 +197,10 @@ class TagCore extends ObjectModel
         $result = Db::getInstance()->delete('product_tag', '`id_tag` = '.(int) $this->id);
         if (is_array($array)) {
             $array = array_map('intval', $array);
-            $result &= ObjectModel::updateMultishopTable('Product', ['indexed' => 0], 'a.id_product IN ('.implode(',', $array).')');
+            $result = (
+                ObjectModel::updateMultishopTable('Product', ['indexed' => 0], 'a.id_product IN ('.implode(',', $array).')') &&
+                $result
+            );
             $ids = [];
             foreach ($array as $idProduct) {
                 $ids[] = [
@@ -208,9 +211,9 @@ class TagCore extends ObjectModel
             }
 
             if ($result) {
-                $result &= Db::getInstance()->insert('product_tag', $ids);
+                $result = Db::getInstance()->insert('product_tag', $ids);
                 if (Configuration::get('PS_SEARCH_INDEXATION')) {
-                    $result &= Search::indexation(false);
+                    $result = Search::indexation(false) && $result;
                 }
             }
         }

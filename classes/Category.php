@@ -1146,30 +1146,30 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         if (is_null($idShop)) {
             if (Shop::getContext() != Shop::CONTEXT_SHOP) {
                 foreach (Shop::getContextListShopID() as $idShop) {
-                    $return &= Db::getInstance()->execute(
+                    $return = Db::getInstance()->execute(
                         '
 						INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 						('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
 						ON DUPLICATE KEY UPDATE `position` = '.(int) $position
-                    );
+                    ) && $return;
                 }
             } else {
                 $id = Context::getContext()->shop->id;
                 $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
-                $return &= Db::getInstance()->execute(
+                $return = Db::getInstance()->execute(
                     '
 					INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 					('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
 					ON DUPLICATE KEY UPDATE `position` = '.(int) $position
-                );
+                ) && $return;
             }
         } else {
-            $return &= Db::getInstance()->execute(
+            $return = Db::getInstance()->execute(
                 '
 			INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 			('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
 			ON DUPLICATE KEY UPDATE `position` = '.(int) $position
-            );
+            ) && $return;
         }
 
         return $return;
@@ -1386,10 +1386,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         foreach ($groups as $groupId) {
             $groupId = (int)$groupId;
             if ($groupId) {
-                $result &= Db::getInstance()->insert('category_group', [
+                $result = Db::getInstance()->insert('category_group', [
                     'id_category' => $categoryId,
                     'id_group' => $groupId,
-                ]);
+                ]) && $result;
             }
         }
         Cache::clean('Category::getGroups_' . $categoryId);
@@ -1509,14 +1509,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         );
         $count = count($result);
         for ($i = 0; $i < $count; $i++) {
-            $return &= Db::getInstance()->execute(
+            $return = Db::getInstance()->execute(
                 '
             UPDATE `'._DB_PREFIX_.'category` c '.Shop::addSqlAssociation('category', 'c').'
             SET c.`position` = '.(int) ($i).',
             category_shop.`position` = '.(int) ($i).',
             c.`date_upd` = "'.date('Y-m-d H:i:s').'"
             WHERE c.`id_parent` = '.(int) $idCategoryParent.' AND c.`id_category` = '.(int) $result[$i]['id_category']
-            );
+            ) && $return;
         }
 
         return $return;
@@ -1682,13 +1682,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function deleteSelection($categories)
     {
-        $return = 1;
+        $return = true;
         foreach ($categories as $idCategory) {
             $category = new Category($idCategory);
             if ($category->isRootCategoryForAShop()) {
-                return false;
+                $return = false;
             } else {
-                $return &= $category->delete();
+                $return = $category->delete() && $return;
             }
         }
 

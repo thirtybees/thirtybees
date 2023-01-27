@@ -813,7 +813,7 @@ class CartRuleCore extends ObjectModel
         $cartRules = new PrestaShopCollection('CartRule');
         $cartRules->where('id_customer', '=', $idCustomer);
         foreach ($cartRules as $cartRule) {
-            $return &= $cartRule->delete();
+            $return = $cartRule->delete() && $return;
         }
 
         return $return;
@@ -1297,21 +1297,22 @@ class CartRuleCore extends ObjectModel
 
         Configuration::updateGlobalValue('PS_CART_RULE_FEATURE_ACTIVE', static::isCurrentlyUsed($this->def['table'], true));
 
-        $r = Db::getInstance()->delete('cart_cart_rule', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_carrier', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_shop', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_group', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_country', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_combination', '`id_cart_rule_1` = '.(int) $this->id.' OR `id_cart_rule_2` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete('cart_rule_product_rule_group', '`id_cart_rule` = '.(int) $this->id);
-        $r &= Db::getInstance()->delete(
+        $conn = Db::getInstance();
+        $r = $conn->delete('cart_cart_rule', '`id_cart_rule` = '.(int) $this->id);
+        $r = $conn->delete('cart_rule_carrier', '`id_cart_rule` = '.(int) $this->id) && $r;
+        $r = $conn->delete('cart_rule_shop', '`id_cart_rule` = '.(int) $this->id) && $r;
+        $r = $conn->delete('cart_rule_group', '`id_cart_rule` = '.(int) $this->id) && $r;
+        $r = $conn->delete('cart_rule_country', '`id_cart_rule` = '.(int) $this->id) && $r;
+        $r = $conn->delete('cart_rule_combination', '`id_cart_rule_1` = '.(int) $this->id.' OR `id_cart_rule_2` = '.(int) $this->id) && $r;
+        $r = $conn->delete('cart_rule_product_rule_group', '`id_cart_rule` = '.(int) $this->id) && $r;
+        $r = $conn->delete(
             'cart_rule_product_rule', 'NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'cart_rule_product_rule_group`
 			WHERE `'._DB_PREFIX_.'cart_rule_product_rule`.`id_product_rule_group` = `'._DB_PREFIX_.'cart_rule_product_rule_group`.`id_product_rule_group`)'
-        );
-        $r &= Db::getInstance()->delete(
+        ) && $r;
+        $r = $conn->delete(
             'cart_rule_product_rule_value', 'NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'cart_rule_product_rule`
 			WHERE `'._DB_PREFIX_.'cart_rule_product_rule_value`.`id_product_rule` = `'._DB_PREFIX_.'cart_rule_product_rule`.`id_product_rule`)'
-        );
+        ) && $r;
 
         return $r;
     }

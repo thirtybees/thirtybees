@@ -287,11 +287,11 @@ class CustomerThreadCore extends ObjectModel
                 if (!Validate::isLoadedObject($message)) {
                     $return = false;
                 } else {
-                    $return &= $message->delete();
+                    $return = $message->delete() && $return;
                 }
             }
         }
-        $return &= parent::delete();
+        $return = parent::delete() && $return;
 
         return $return;
     }

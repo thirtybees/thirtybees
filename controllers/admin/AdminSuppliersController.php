@@ -599,37 +599,37 @@ class AdminSuppliersControllerCore extends AdminController
             $imagesTypes = ImageType::getImagesTypes('suppliers');
             foreach ($imagesTypes as $k => $imageType) {
                 $file = _PS_SUPP_IMG_DIR_.$idSupplier.'.jpg';
-                $return &= ImageManager::resize(
+                $return = ImageManager::resize(
                     $file,
                     _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.jpg',
                     (int) $imageType['width'],
                     (int) $imageType['height']
-                );
+                ) && $return;
                 if (ImageManager::generateWebpImages()) {
-                    $return &= ImageManager::resize(
+                    $return = ImageManager::resize(
                         $file,
                         _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.webp',
                         (int) $imageType['width'],
                         (int) $imageType['height'],
                         'webp'
-                    );
+                    ) && $return;
                 }
 
                 if (ImageManager::retinaSupport()) {
-                    $return &= ImageManager::resize(
+                    $return = ImageManager::resize(
                         $file,
                         _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.jpg',
                         (int) $imageType['width'] * 2,
                         (int) $imageType['height'] * 2
-                    );
+                    ) && $return;
                     if (ImageManager::generateWebpImages()) {
-                        $return &= ImageManager::resize(
+                        $return = ImageManager::resize(
                             $file,
                             _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.webp',
                             (int) $imageType['width'] * 2,
                             (int) $imageType['height'] * 2,
                             'webp'
-                        );
+                        ) && $return;
                     }
                 }
             }

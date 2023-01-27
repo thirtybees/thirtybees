@@ -1132,29 +1132,29 @@ class AdminCategoriesControllerCore extends AdminController
                         (int) $imageType['height']
                     );
                     if (ImageManager::generateWebpImages()) {
-                        $success &= ImageManager::resize(
+                        $success = ImageManager::resize(
                             _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                             _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
                             (int) $imageType['width'],
                             (int) $imageType['height'],
                             'webp'
-                        );
+                        ) && $success;
                     }
                     if (ImageManager::retinaSupport()) {
-                        $success &= ImageManager::resize(
+                        $success = ImageManager::resize(
                             _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                             _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.'.$this->imageType,
                             (int) $imageType['width'] * 2,
                             (int) $imageType['height'] * 2
-                        );
+                        ) && $success;
                         if (ImageManager::generateWebpImages()) {
-                            $success &= ImageManager::resize(
+                            $success = ImageManager::resize(
                                 _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
                                 (int) $imageType['width'] * 2,
                                 (int) $imageType['height'] * 2,
                                 'webp'
-                            );
+                            ) && $success;
                         }
                     }
 

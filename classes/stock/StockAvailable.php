@@ -466,11 +466,11 @@ class StockAvailableCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        if (!$result = parent::add($autoDate, $nullValues)) {
+        if (! parent::add($autoDate, $nullValues)) {
             return false;
         }
 
-        $result &= $this->postSave();
+        $result = $this->postSave();
 
         $this->triggerUpdateHook();
 

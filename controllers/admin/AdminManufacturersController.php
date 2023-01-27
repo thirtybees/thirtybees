@@ -961,36 +961,36 @@ class AdminManufacturersControllerCore extends AdminController
         ) {
             $imagesTypes = ImageType::getImagesTypes('manufacturers');
             foreach ($imagesTypes as $k => $imageType) {
-                $res &= ImageManager::resize(
+                $res = ImageManager::resize(
                     _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                     _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.jpg',
                     (int) $imageType['width'],
                     (int) $imageType['height']
-                );
+                ) && $res;
                 if (ImageManager::generateWebpImages()) {
-                    $res &= ImageManager::resize(
+                    $res = ImageManager::resize(
                         _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                         _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.webp',
                         (int) $imageType['width'],
                         (int) $imageType['height'],
                         'webp'
-                    );
+                    ) && $res;
                 }
                 if (ImageManager::retinaSupport()) {
-                    $res &= ImageManager::resize(
+                    $res = ImageManager::resize(
                         _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                         _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.jpg',
                         (int) $imageType['width'] * 2,
                         (int) $imageType['height'] * 2
-                    );
+                    ) && $res;
                     if (ImageManager::generateWebpImages()) {
-                        $res &= ImageManager::resize(
+                        $res = ImageManager::resize(
                             _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                             _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.webp',
                             (int) $imageType['width'] * 2,
                             (int) $imageType['height'] * 2,
                             'webp'
-                        );
+                        ) && $res;
                     }
                 }
             }

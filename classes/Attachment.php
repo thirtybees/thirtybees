@@ -155,7 +155,7 @@ class AttachmentCore extends ObjectModel
         foreach ($attachmentsData as $attachmentData) {
             $attachment = new Attachment();
             $attachment->hydrate($attachmentData);
-            $return &= $attachment->delete();
+            $return = $attachment->delete() && $return;
         }
 
         return $return;

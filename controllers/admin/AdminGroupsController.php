@@ -573,7 +573,7 @@ class AdminGroupsControllerCore extends AdminController
         }
         $shops = Shop::getShops(true, null, true);
         if (is_array($auth_modules)) {
-            $return &= Group::addModulesRestrictions($id_group, $auth_modules, $shops);
+            $return = Group::addModulesRestrictions($id_group, $auth_modules, $shops) && $return;
         }
         return $return;
     }
