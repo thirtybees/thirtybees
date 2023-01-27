@@ -52,6 +52,6 @@ class InstallFixturesthirtybees extends InstallXmlLoader
             $data['passwd'] = Tools::encrypt('123456789');
         }
 
-        return $this->createEntity('customer', $identifier, 'Customer', $data, $data_lang);
+        $this->createEntity('customer', $identifier, 'Customer', $data, $data_lang);
     }
 }

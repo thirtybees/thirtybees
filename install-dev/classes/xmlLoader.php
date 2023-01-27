@@ -531,6 +531,9 @@ class InstallXmlLoader
      * @param string $classname
      * @param array $data
      * @param array $dataLang
+     *
+     * @return void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws PrestashopInstallerException
