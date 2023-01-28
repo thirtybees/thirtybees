@@ -72,13 +72,25 @@ if (!empty($_FILES)) {
             move_uploaded_file($tempFile, $targetFile);
             chmod($targetFile, 0755);
 
-            $memory_error = false;
-            if (!create_img_gd($targetFile, $targetFileThumb, 122, 91)) {
-                $memory_error = false;
-            } else {
-                if (!new_thumbnails_creation($targetPath, $targetFile, $_FILES['file']['name'], $current_path, $relative_image_creation, $relative_path_from_current_pos, $relative_image_creation_name_to_prepend, $relative_image_creation_name_to_append, $relative_image_creation_width, $relative_image_creation_height, $fixed_image_creation, $fixed_path_from_filemanager, $fixed_image_creation_name_to_prepend, $fixed_image_creation_to_append, $fixed_image_creation_width, $fixed_image_creation_height)) {
-                    $memory_error = false;
-                } else {
+            if (create_img_gd($targetFile, $targetFileThumb, 122, 91)) {
+                if (new_thumbnails_creation(
+                        $targetPath,
+                        $targetFile,
+                        $_FILES['file']['name'],
+                        $current_path,
+                        $relative_image_creation,
+                        $relative_path_from_current_pos,
+                        $relative_image_creation_name_to_prepend,
+                        $relative_image_creation_name_to_append,
+                        $relative_image_creation_width,
+                        $relative_image_creation_height,
+                        $fixed_image_creation,
+                        $fixed_path_from_filemanager,
+                        $fixed_image_creation_name_to_prepend,
+                        $fixed_image_creation_to_append,
+                        $fixed_image_creation_width,
+                        $fixed_image_creation_height)
+                ) {
                     $imginfo = getimagesize($targetFile);
                     $srcWidth = $imginfo[0];
                     $srcHeight = $imginfo[1];
@@ -114,12 +126,6 @@ if (!empty($_FILES)) {
                         create_img_gd($targetFile, $targetFile, $srcWidth, $srcHeight);
                     }
                 }
-            }
-            if ($memory_error) {
-                //error
-                unlink($targetFile);
-                header('HTTP/1.1 406 Not enought Memory', true, 406);
-                exit();
             }
         } else {
             move_uploaded_file($tempFile, $targetFile);

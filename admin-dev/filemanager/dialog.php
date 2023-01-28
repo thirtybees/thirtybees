@@ -1010,7 +1010,6 @@ if (isset($_POST['submit'])) {
         }
 
         $is_icon_thumb = false;
-        $is_icon_thumb_mini = false;
         $no_thumb = false;
         if ($src_thumb == "") {
             $no_thumb = true;
@@ -1020,9 +1019,6 @@ if (isset($_POST['submit'])) {
                 $src_thumb = "img/".$icon_theme."/default.jpg";
             }
             $is_icon_thumb = true;
-        }
-        if ($mini_src == "") {
-            $is_icon_thumb_mini = false;
         }
 
         $class_ext = 0;
@@ -1041,19 +1037,19 @@ if (isset($_POST['submit'])) {
         }
 
     /* PrestaShop */
-    if (isset($src_thumb) && $src_thumb) {
+    if ($src_thumb) {
         if (($src_thumb = preg_replace('#('.addslashes($current_path).')#ism', Tools::safeOutput(Context::getContext()->shop->physical_uri.'img/cms/'), $src_thumb)) == $src_thumb) {
             $src_thumb = preg_replace('#('.addslashes($thumbs_base_path).')#ism', Tools::safeOutput(Context::getContext()->shop->physical_uri.'img/tmp/cms/'), $src_thumb);
         }
     }
-        if (isset($mini_src) && $mini_src) {
+        if ($mini_src) {
             if (($mini_src = preg_replace('#('.addslashes($current_path).')#ism', Tools::safeOutput(Context::getContext()->shop->physical_uri.'img/cms/'), $mini_src)) == $mini_src) {
                 $mini_src = preg_replace('#('.addslashes($thumbs_base_path).')#ism', Tools::safeOutput(Context::getContext()->shop->physical_uri.'img/tmp/cms/'), $mini_src);
             }
         }
     /* END PrestaShop */
 
-    if ((!(Tools::getValue('type') == 1 && !$is_img) && !((Tools::getValue('type') == 3 && !$is_video) && (Tools::getValue('type') == 3 && !$is_audio))) && $class_ext > 0) {
+    if ((!(Tools::getValue('type') == 1 && !$is_img) && !((Tools::getValue('type') == 3 && !$is_video) && (Tools::getValue('type') == 3 && !$is_audio)))) {
         ?>
 	<li class="ff-item-type-<?php echo Tools::safeOutput($class_ext);
         ?> file" data-name="<?php echo Tools::safeOutput($file);
@@ -1093,7 +1089,7 @@ if (isset($_POST['submit'])) {
 						<?php if ($mini_src != "") {
     ?>
 							<img alt="<?php echo Tools::safeOutput($filename." thumbnails");
-    ?>" class="<?php echo $show_original_mini ? "original" : "" ?> <?php echo $is_icon_thumb_mini ? "icon" : "" ?>" src="<?php echo Tools::safeOutput($mini_src);
+    ?>" class="<?php echo $show_original_mini ? "original" : "" ?> " src="<?php echo Tools::safeOutput($mini_src);
     ?>">
 						<?php 
 }

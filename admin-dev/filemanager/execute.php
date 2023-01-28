@@ -202,6 +202,5 @@ if (isset($_GET['action'])) {
             break;
         default:
             die('wrong action');
-            break;
     }
 }
