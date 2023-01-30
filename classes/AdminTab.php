@@ -1560,7 +1560,7 @@ abstract class AdminTabCore
                 $id = (int) (Tools::getValue($this->identifier));
 
                 /* Object update */
-                if (isset($id) && !empty($id)) {
+                if ($id) {
                     if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee') && Tools::isSubmit('updateemployee'))) {
                         /** @var ObjectModel $object */
                         $object = new $this->className($id);

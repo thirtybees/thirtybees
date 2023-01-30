@@ -306,7 +306,7 @@ class AdminTaxesControllerCore extends AdminController
                 $id = (int) (Tools::getValue('id_'.$this->table));
 
                 /* Object update */
-                if (isset($id) && !empty($id)) {
+                if ($id) {
                     /** @var Tax $object */
                     $object = new $this->className($id);
                     if (Validate::isLoadedObject($object)) {

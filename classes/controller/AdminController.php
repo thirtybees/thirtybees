@@ -1274,7 +1274,7 @@ class AdminControllerCore extends Controller
             $id = (int) Tools::getValue($this->identifier);
 
             /* Object update */
-            if (isset($id) && !empty($id)) {
+            if ($id) {
                 /** @var ObjectModel $object */
                 $object = new $this->className($id);
                 if (Validate::isLoadedObject($object)) {

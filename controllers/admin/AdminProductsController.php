@@ -2534,7 +2534,7 @@ class AdminProductsControllerCore extends AdminController
 
         $id = (int) Tools::getValue('id_'.$this->table);
         /* Update an existing product */
-        if (isset($id) && !empty($id)) {
+        if ($id) {
             /** @var Product $object */
             $object = new $this->className((int) $id);
             $this->object = $object;
