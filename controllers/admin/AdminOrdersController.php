@@ -2294,12 +2294,9 @@ class AdminOrdersControllerCore extends AdminController
         $this->context->cart = $cart;
         $this->context->customer = new Customer($order->id_customer);
 
-        // always add taxes even if there are not displayed to the customer
-        $useTaxes = true;
-
         $initialProductPriceTaxIncl = Product::getPriceStatic(
             $product->id,
-            $useTaxes,
+            true,
             isset($combination) ? $combination->id : null,
             _TB_PRICE_DATABASE_PRECISION_,
             null,
@@ -2406,11 +2403,11 @@ class AdminOrdersControllerCore extends AdminController
                 $orderInvoice->total_paid_tax_excl
                     = $cart->getOrderTotal(false, $totalMethod);
                 $orderInvoice->total_paid_tax_incl
-                    = $cart->getOrderTotal($useTaxes, $totalMethod);
+                    = $cart->getOrderTotal(true, $totalMethod);
                 $orderInvoice->total_products
                     = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
                 $orderInvoice->total_products_wt
-                    = $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
+                    = $cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
                 $orderInvoice->total_shipping_tax_excl
                     = $cart->getTotalShippingCost(null, false);
                 $orderInvoice->total_shipping_tax_incl
@@ -2419,20 +2416,20 @@ class AdminOrdersControllerCore extends AdminController
                 $orderInvoice->total_wrapping_tax_excl
                   = $cart->getOrderTotal(false, Cart::ONLY_WRAPPING);
                 $orderInvoice->total_wrapping_tax_incl
-                    = $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
+                    = $cart->getOrderTotal(true, Cart::ONLY_WRAPPING);
                 $orderInvoice->shipping_tax_computation_method = (int) $taxCalculator->computation_method;
 
                 // Update current order field, only shipping because other field is updated later
                 $order->total_shipping += $orderInvoice->total_shipping_tax_incl;
                 $order->total_shipping_tax_excl += $orderInvoice->total_shipping_tax_excl;
-                $order->total_shipping_tax_incl += ($useTaxes) ? $orderInvoice->total_shipping_tax_incl : $orderInvoice->total_shipping_tax_excl;
+                $order->total_shipping_tax_incl += $orderInvoice->total_shipping_tax_incl;
 
                 $order->total_wrapping
-                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
+                    += $cart->getOrderTotal(true, Cart::ONLY_WRAPPING);
                 $order->total_wrapping_tax_excl
                     += $cart->getOrderTotal(false, Cart::ONLY_WRAPPING);
                 $order->total_wrapping_tax_incl
-                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
+                    += $cart->getOrderTotal(true, Cart::ONLY_WRAPPING);
                 $orderInvoice->add();
 
                 $orderInvoice->saveCarrierTaxCalculator($taxCalculator->getTaxesAmount($orderInvoice->total_shipping_tax_excl));
@@ -2443,7 +2440,7 @@ class AdminOrdersControllerCore extends AdminController
                 $orderCarrier->id_order_invoice = (int) $orderInvoice->id;
                 $orderCarrier->weight = (float) $cart->getTotalWeight();
                 $orderCarrier->shipping_cost_tax_excl = (float) $orderInvoice->total_shipping_tax_excl;
-                $orderCarrier->shipping_cost_tax_incl = ($useTaxes) ? (float) $orderInvoice->total_shipping_tax_incl : (float) $orderInvoice->total_shipping_tax_excl;
+                $orderCarrier->shipping_cost_tax_incl = (float) $orderInvoice->total_shipping_tax_incl;
                 $orderCarrier->add();
             } // Update current invoice
             else {
@@ -2452,24 +2449,32 @@ class AdminOrdersControllerCore extends AdminController
                     _TB_PRICE_DATABASE_PRECISION_
                 );
                 $orderInvoice->total_paid_tax_incl += round(
-                    $cart->getOrderTotal($useTaxes, $totalMethod),
+                    $cart->getOrderTotal(true, $totalMethod),
                     _TB_PRICE_DATABASE_PRECISION_
                 );
                 $orderInvoice->total_products
                     += $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
                 $orderInvoice->total_products_wt
-                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
+                    += $cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
                 $orderInvoice->update();
             }
         }
 
         // Create Order detail information
         $orderDetail = new OrderDetail();
-        $orderDetail->createList($order, $cart, $order->getCurrentState(), $cart->getProducts(), (isset($orderInvoice) ? $orderInvoice->id : 0), $useTaxes, (int) Tools::getValue('add_product_warehouse'));
+        $orderDetail->createList(
+            $order,
+            $cart,
+            $order->getCurrentState(),
+            $cart->getProducts(),
+            (isset($orderInvoice) ? $orderInvoice->id : 0),
+            true,
+            (int) Tools::getValue('add_product_warehouse')
+        );
 
         // update totals amount of order
         $order->total_products += (float) $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
-        $order->total_products_wt += (float) $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
+        $order->total_products_wt += (float) $cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
 
         $order->total_paid += round(
             $cart->getOrderTotal(true, $totalMethod),
@@ -2480,7 +2485,7 @@ class AdminOrdersControllerCore extends AdminController
             _TB_PRICE_DATABASE_PRECISION_
         );
         $order->total_paid_tax_incl += round(
-            $cart->getOrderTotal($useTaxes, $totalMethod),
+            $cart->getOrderTotal(true, $totalMethod),
             _TB_PRICE_DATABASE_PRECISION_
         );
 
@@ -2917,7 +2922,7 @@ class AdminOrdersControllerCore extends AdminController
             $this->ajaxDie(
                 json_encode(
                     [
-                        'result' => $res,
+                        'result' => false,
                         'error'  => Tools::displayError('An error occurred while editing the product line.'),
                     ]
                 )
@@ -2997,7 +3002,7 @@ class AdminOrdersControllerCore extends AdminController
             $orderInvoice->total_paid_tax_incl -= $orderDetail->total_price_tax_incl;
             $orderInvoice->total_products -= $orderDetail->total_price_tax_excl;
             $orderInvoice->total_products_wt -= $orderDetail->total_price_tax_incl;
-            $res = $orderInvoice->update() && $res;
+            $res = $orderInvoice->update();
         }
 
         // Update Order
