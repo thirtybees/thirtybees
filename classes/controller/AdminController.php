@@ -977,26 +977,9 @@ class AdminControllerCore extends Controller
         if (!Validate::isTableOrIdentifier($this->table)) {
             throw new PrestaShopException(sprintf('Table name %s is invalid:', $this->table));
         }
-        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower(get_class($this)));
-        if (empty($orderBy)) {
-            if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
-                $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
-            } elseif ($this->_orderBy) {
-                $orderBy = $this->_orderBy;
-            } else {
-                $orderBy = $this->_defaultOrderBy;
-            }
-        }
 
-        if (empty($orderWay)) {
-            if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
-                $orderWay = $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
-            } elseif ($this->_orderWay) {
-                $orderWay = $this->_orderWay;
-            } else {
-                $orderWay = $this->_defaultOrderWay;
-            }
-        }
+        $orderBy = $this->resolveOrderBy($orderBy);
+        $orderWay = $this->resolveOrderWay($orderWay);
 
         $limit = (int) Tools::getValue($this->list_id.'_pagination', $limit);
         if (in_array($limit, $this->_pagination) && $limit != $this->_default_pagination) {
@@ -1863,7 +1846,7 @@ class AdminControllerCore extends Controller
             $listId = isset($this->list_id) ? $this->list_id : $this->table;
         }
 
-        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower(get_class($this)));
+        $prefix = $this->getCookieFilterPrefix();
         $filters = $this->context->cookie->getFamily($prefix.$listId.'Filter_');
         foreach ($filters as $cookieKey => $filter) {
             if (strncmp($cookieKey, $prefix.$listId.'Filter_', 7 + mb_strlen($prefix.$listId)) == 0) {
@@ -4855,5 +4838,45 @@ class AdminControllerCore extends Controller
             return false;
         }
         return (bool)$this->tabAccess[$permission];
+    }
+
+    /**
+     * @param string|null $orderBy
+     *
+     * @return string|null
+     */
+    protected function resolveOrderBy(?string $orderBy)
+    {
+        if (! empty($orderBy)) {
+            return $orderBy;
+        }
+        $prefix = $this->getCookieFilterPrefix();
+        if ($this->context->cookie->{$prefix . $this->list_id . 'Orderby'}) {
+            return $this->context->cookie->{$prefix . $this->list_id . 'Orderby'};
+        }
+        if ($this->_orderBy) {
+            return $this->_orderBy;
+        }
+        return $this->_defaultOrderBy;
+    }
+
+    /**
+     * @param string|null $orderWay
+     *
+     * @return string|null
+     */
+    protected function resolveOrderWay(?string $orderWay)
+    {
+        if (! empty($orderWay)) {
+            return $orderWay;
+        }
+        $prefix = $this->getCookieFilterPrefix();
+        if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
+            return $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
+        }
+        if ($this->_orderWay) {
+            return $this->_orderWay;
+        }
+        return $this->_defaultOrderWay;
     }
 }
