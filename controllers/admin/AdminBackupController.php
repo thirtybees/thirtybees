@@ -36,8 +36,15 @@
  */
 class AdminBackupControllerCore extends AdminController
 {
-    /** @var string The field we are sorting on */
-    protected $sort_by = 'date';
+    const ORDER_BY_FILENAME = 'filename';
+    const ORDER_BY_FILESIZE = 'filesize';
+    const ORDER_BY_DATE = 'date';
+    const ORDER_BY_AGE = 'age';
+
+    /**
+     * @var string The field we are sorting on
+     */
+    protected $sort_by = self::ORDER_BY_DATE;
 
     /**
      * AdminBackupControllerCore constructor.
@@ -53,10 +60,10 @@ class AdminBackupControllerCore extends AdminController
         parent::__construct();
 
         $this->fields_list = [
-            'date'     => ['title' => $this->l('Date'), 'type' => 'datetime', 'class' => 'fixed-width-lg', 'orderby' => false, 'search' => false],
-            'age'      => ['title' => $this->l('Age'), 'orderby' => false, 'search' => false],
-            'filename' => ['title' => $this->l('File name'), 'orderby' => false, 'search' => false],
-            'filesize' => ['title' => $this->l('File size'), 'class' => 'fixed-width-sm', 'orderby' => false, 'search' => false],
+            'date'     => ['title' => $this->l('Date'), 'type' => 'datetime', 'class' => 'fixed-width-lg', 'orderby' => self::ORDER_BY_DATE, 'search' => false],
+            'age'      => ['title' => $this->l('Age'), 'orderby' => self::ORDER_BY_AGE, 'search' => false],
+            'filename' => ['title' => $this->l('File name'), 'orderby' => self::ORDER_BY_FILENAME, 'search' => false],
+            'filesize' => ['title' => $this->l('File size'), 'class' => 'fixed-width-sm', 'orderby' => self::ORDER_BY_FILESIZE, 'search' => false],
         ];
 
         $this->bulk_actions = [
@@ -101,8 +108,17 @@ class AdminBackupControllerCore extends AdminController
     {
         $this->addRowAction('view');
         $this->addRowAction('delete');
+        $this->tpl_list_vars = ['show_filters' => true];
 
         return parent::renderList();
+    }
+
+    /**
+     * @return void
+     */
+    public function processFilter()
+    {
+        // no-op, because the list is not SQL based
     }
 
     /**
@@ -198,7 +214,7 @@ class AdminBackupControllerCore extends AdminController
             $this->display = 'list';
         }
 
-        return parent::initContent();
+        parent::initContent();
     }
 
     /**
@@ -260,36 +276,34 @@ class AdminBackupControllerCore extends AdminController
         }
 
         // Try and obtain getList arguments from $_GET
-        $orderBy = Tools::getValue($this->table.'Orderby');
-        $orderWay = Tools::getValue($this->table.'Orderway');
+        $orderBy = strtolower((string)Tools::getValue($this->table.'Orderby'));
+        $orderWay = strtolower((string)Tools::getValue($this->table.'Orderway'));
 
         // Validate the orderBy and orderWay fields
-        switch ($orderBy) {
-            case 'filename':
-            case 'filesize':
-            case 'date':
-            case 'age':
-                break;
-            default:
-                $orderBy = 'date';
+        if (! in_array($orderBy, [
+            static::ORDER_BY_FILENAME,
+            static::ORDER_BY_FILESIZE,
+            static::ORDER_BY_DATE,
+            static::ORDER_BY_AGE,
+        ])) {
+            $orderBy = static::ORDER_BY_DATE;
         }
-        switch ($orderWay) {
-            case 'asc':
-            case 'desc':
-                break;
-            default:
-                $orderWay = 'desc';
+
+        if (! in_array($orderWay, ['asc', 'desc'])) {
+            $orderWay = 'desc';
         }
+
         if (empty($limit)) {
-            $limit = ((!isset($this->context->cookie->{$this->table.'_pagination'})) ? $this->_pagination[0] : $limit =
-                $this->context->cookie->{$this->table.'_pagination'});
+            $limit = isset($this->context->cookie->{$this->table.'_pagination'})
+                ? $this->context->cookie->{$this->table.'_pagination'}
+                : $this->_pagination[0];
         }
         $limit = (int) Tools::getValue('pagination', $limit);
         $this->context->cookie->{$this->table.'_pagination'} = $limit;
 
         /* Determine offset from current page */
         if (!empty($_POST['submitFilter'.$this->list_id]) && is_numeric($_POST['submitFilter'.$this->list_id])) {
-            $start = (int) $_POST['submitFilter'.$this->list_id] - 1 * $limit;
+            $start = (int) $_POST['submitFilter'.$this->list_id] - $limit;
         }
 
         $this->_orderBy = $orderBy;
@@ -336,16 +350,17 @@ class AdminBackupControllerCore extends AdminController
 
         // Sort the _list based on the order requirements
         switch ($this->_orderBy) {
-            case 'filename':
+            case static::ORDER_BY_FILENAME:
                 $this->sort_by = 'filename';
                 $sorter = 'strSort';
                 break;
-            case 'filesize':
+            case static::ORDER_BY_FILESIZE:
                 $this->sort_by = 'filesize_sort';
                 $sorter = 'intSort';
                 break;
-            case 'age':
-            case 'date':
+            case static::ORDER_BY_AGE:
+            case static::ORDER_BY_DATE:
+            default:
                 $this->sort_by = 'timestamp';
                 $sorter = 'intSort';
                 break;
@@ -355,26 +370,28 @@ class AdminBackupControllerCore extends AdminController
     }
 
     /**
-     * @param int $a
-     * @param int $b
+     * @param array $a
+     * @param array $b
      *
      * @return int
      */
     public function intSort($a, $b)
     {
-        return $this->_orderWay == 'ASC' ? $a[$this->sort_by] - $b[$this->sort_by] :
-            $b[$this->sort_by] - $a[$this->sort_by];
+        return $this->_orderWay == 'ASC'
+            ? $a[$this->sort_by] - $b[$this->sort_by]
+            : $b[$this->sort_by] - $a[$this->sort_by];
     }
 
     /**
-     * @param string $a
-     * @param string $b
+     * @param array $a
+     * @param array $b
      *
      * @return int
      */
     public function strSort($a, $b)
     {
-        return $this->_orderWay == 'ASC' ? strcmp($a[$this->sort_by], $b[$this->sort_by]) :
-            strcmp($b[$this->sort_by], $a[$this->sort_by]);
+        return $this->_orderWay == 'ASC'
+            ? strcmp($a[$this->sort_by], $b[$this->sort_by])
+            : strcmp($b[$this->sort_by], $a[$this->sort_by]);
     }
 }
