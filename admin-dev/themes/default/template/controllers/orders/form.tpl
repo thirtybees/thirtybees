@@ -390,9 +390,18 @@
 				},
 			success : function(res)
 			{
-				id_cart = res.cart.id;
-				$('#id_cart').val(id_cart);
-				displaySummary(res);
+				let error = "{Tools::displayError('Failed to duplicate order')|escape:'javascript'}";
+				if (res) {
+					if (res.cart) {
+						id_cart = res.cart.id;
+						$('#id_cart').val(id_cart);
+						displaySummary(res);
+						return;
+					} else if (res.error) {
+						error = res.error;
+					}
+				}
+				jAlert(error);
 			}
 		});
 	}

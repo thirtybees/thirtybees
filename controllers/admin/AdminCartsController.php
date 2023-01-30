@@ -806,21 +806,29 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessDuplicateOrder()
     {
         if ($this->hasEditPermission()) {
-            $errors = [];
-            if (!$idOrder = Tools::getValue('id_order')) {
-                $errors[] = Tools::displayError('Invalid order');
-            }
-            $cart = Cart::getCartByOrderId($idOrder);
-            $newCart = $cart->duplicate();
-            if (!$newCart || !Validate::isLoadedObject($newCart['cart'])) {
-                $errors[] = Tools::displayError('The order cannot be renewed.');
-            } elseif (!$newCart['success']) {
-                $errors[] = Tools::displayError('The order cannot be renewed.');
+            if ($idOrder = Tools::getValue('id_order')) {
+                $cart = Cart::getCartByOrderId($idOrder);
+                if (Validate::isLoadedObject($cart)) {
+                    $newCart = $cart->duplicate();
+                    if (!$newCart || !Validate::isLoadedObject($newCart['cart'])) {
+                        $error = Tools::displayError('The order cannot be renewed.');
+                    } elseif (!$newCart['success']) {
+                        $error = Tools::displayError('The order cannot be renewed.');
+                    } else {
+                        $this->context->cart = $newCart['cart'];
+                        $this->ajaxDie(json_encode($this->ajaxReturnVars()));
+                        exit;
+                    }
+                } else {
+                    $error = Tools::displayError('Failed to resolve cart for order');
+                }
             } else {
-                $this->context->cart = $newCart['cart'];
-                $this->ajaxDie(json_encode($this->ajaxReturnVars()));
+                $error = Tools::displayError('Invalid order');
             }
+        } else {
+            $error = Tools::displayError('No permissions');
         }
+        $this->ajaxDie(json_encode(['error' => $error]));
     }
 
     /**
