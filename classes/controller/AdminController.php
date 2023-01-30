@@ -2766,7 +2766,9 @@ class AdminControllerCore extends Controller
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
 
             $helper->back_url = $this->getBackUrlParameter();
-            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
+            if ($this->base_tpl_form) {
+                $helper->base_tpl = $this->base_tpl_form;
+            }
             if ($this->hasViewPermission()) {
                 if (Tools::getValue('back')) {
                     $helper->tpl_vars['back'] = Tools::safeOutput(Tools::getValue('back'));
