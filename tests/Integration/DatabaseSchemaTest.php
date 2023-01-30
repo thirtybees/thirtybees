@@ -111,6 +111,10 @@ class DatabaseSchemaTest extends Unit
                 'tbhtmlblock_hook',
                 'tbhtmlblock_lang',
                 'coreupdater_cache',
+                'collectlogs_convert_message',
+                'collectlogs_extra',
+                'collectlogs_logs',
+                'collectlogs_stats',
             ]
         ]);
 

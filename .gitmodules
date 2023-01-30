@@ -239,3 +239,6 @@
 	path = themes/niara
 	url = https://github.com/thirtybees/niara.git
 	ignore = dirty
+[submodule "modules/collectlogs"]
+	path = modules/collectlogs
+	url = https://github.com/thirtybees/collectlogs.git
