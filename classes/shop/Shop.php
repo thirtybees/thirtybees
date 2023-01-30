@@ -1212,19 +1212,23 @@ class ShopCore extends ObjectModel
 
     /**
      * @param int $oldId
-     * @param bool $tablesImport
+     * @param array $tablesImport
      * @param bool $deleted
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function copyShopData($oldId, $tablesImport = false, $deleted = false)
+    public function copyShopData($oldId, $tablesImport = [], $deleted = false)
     {
         // If we duplicate some specific data, automatically duplicate other data linked to the first
         // E.g. if carriers are duplicated for the shop, duplicate carriers langs too
 
         if (!$oldId) {
             $oldId = Configuration::get('PS_SHOP_DEFAULT');
+        }
+
+        if (! is_array($tablesImport)) {
+            $tablesImport = [];
         }
 
         if (isset($tablesImport['carrier'])) {
