@@ -501,12 +501,6 @@ class AdminProductsControllerCore extends AdminController
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = null)
     {
-        $orderByPriceFinal = (empty($orderBy) ? ($this->context->cookie->__get($this->table.'Orderby') ? $this->context->cookie->__get($this->table.'Orderby') : 'id_'.$this->table) : $orderBy);
-        $orderWayPriceFinal = (empty($orderWay) ? ($this->context->cookie->__get($this->table.'Orderway') ? $this->context->cookie->__get($this->table.'Orderby') : 'ASC') : $orderWay);
-        if ($orderByPriceFinal == 'price_final') {
-            $orderBy = 'id_'.$this->table;
-            $orderWay = 'ASC';
-        }
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $this->context->shop->id);
 
         /* update product quantity with attributes ...*/
@@ -526,7 +520,7 @@ class AdminProductsControllerCore extends AdminController
                 }
                 // convert price with the currency from context
                 $this->_list[$i]['price'] = Tools::convertPrice($this->_list[$i]['price'], $this->context->currency, true, $this->context);
-                $this->_list[$i]['price_tmp'] = Product::getPriceStatic(
+                $this->_list[$i]['price_final'] = Product::getPriceStatic(
                     $this->_list[$i]['id_product'],
                     true,
                     null,
@@ -545,18 +539,6 @@ class AdminProductsControllerCore extends AdminController
                     $context
                 );
             }
-        }
-
-        if ($orderByPriceFinal == 'price_final') {
-            if (strtolower($orderWayPriceFinal) == 'desc') {
-                uasort($this->_list, 'cmpPriceDesc');
-            } else {
-                uasort($this->_list, 'cmpPriceAsc');
-            }
-        }
-        for ($i = 0; $this->_list && $i < $nb; $i++) {
-            $this->_list[$i]['price_final'] = $this->_list[$i]['price_tmp'];
-            unset($this->_list[$i]['price_tmp']);
         }
     }
 
