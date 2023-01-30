@@ -236,9 +236,7 @@ class ContactControllerCore extends FrontController
                     }
                 }
 
-                if (count($this->errors) > 1) {
-                    array_unique($this->errors);
-                } elseif (!count($this->errors)) {
+                if (! $this->errors) {
                     $this->context->smarty->assign('confirmation', 1);
                 }
             }
