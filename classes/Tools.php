@@ -3992,9 +3992,13 @@ FileETag none
     {
         $len1 = count(explode('.', trim($v1, '.')));
         $len2 = count(explode('.', trim($v2, '.')));
+
+        if ($len1 === $len2) {
+            return;
+        }
+
         $len = 0;
         $str = '';
-
         if ($len1 > $len2) {
             $len = $len1 - $len2;
             $str = &$v2;
@@ -4003,9 +4007,7 @@ FileETag none
             $str = &$v1;
         }
 
-        for ($len; $len > 0; $len--) {
-            $str .= '.0';
-        }
+        $str .= str_repeat('.0', $len);
     }
 
     /**
