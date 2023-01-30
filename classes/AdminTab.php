@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+
 /**
  * @deprecated 1.0.0
  */
@@ -1824,6 +1826,13 @@ abstract class AdminTabCore
                 echo '</ol>';
             }
             echo '</div>';
+        }
+        if ($this->_includeContainer) {
+            $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+            $errorMessages = $errorHandler->getErrorMessages(false, E_ALL);
+            $smarty = Context::getContext()->smarty;
+            $smarty->assign('php_errors', $errorMessages);
+            echo $smarty->fetch('error.tpl');
         }
         $this->includeSubTab('displayErrors');
     }
