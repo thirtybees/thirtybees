@@ -2429,25 +2429,43 @@ class ToolsCore
     public static function orderbyPrice(&$array, $order_way)
     {
         foreach ($array as &$row) {
-            $row['price_tmp'] = Product::getPriceStatic(
-                $row['id_product'],
-                true,
-                (isset($row['id_product_attribute'])
-                && ! empty($row['id_product_attribute'])) ?
-                  (int) $row['id_product_attribute'] : null
-            );
+            $productId = (int)$row['id_product'];
+            $productAttributeId = (isset($row['id_product_attribute']) && ! empty($row['id_product_attribute']))
+                ? (int)$row['id_product_attribute']
+                : null;
+            $row['price_tmp'] = (float)Product::getPriceStatic($productId, true, $productAttributeId);
         }
-
         unset($row);
 
-        if (mb_strtolower($order_way) == 'desc') {
-            uasort($array, 'cmpPriceDesc');
-        } else {
-            uasort($array, 'cmpPriceAsc');
-        }
+        $asc = mb_strtolower($order_way) !== 'desc';
+        uasort($array, function($a, $b) use ($asc) {
+            return static::compareFloats($a, $b, 'price_tmp', $asc);
+        });
+
         foreach ($array as &$row) {
             unset($row['price_tmp']);
         }
+    }
+
+    /**
+     * @param array $array1
+     * @param array $array2
+     * @param string $key
+     * @param bool $asc
+     *
+     * @return int
+     */
+    public static function compareFloats($array1, $array2, $key, $asc = true)
+    {
+        $value1 = $array1[$key] ?? 0.0;
+        $value2 = $array2[$key] ?? 0.0;
+        if ($value1 < $value2) {
+            return $asc ? -1 : 1;
+        }
+        if ($value1 > $value2) {
+            return $asc ? 1 : -11;
+        }
+        return 0;
     }
 
     /**
@@ -5419,24 +5437,17 @@ FileETag none
 /**
  * Compare 2 prices to sort products
  *
- * @param float $a
- * @param float $b
+ * @param array $a
+ * @param array $b
  *
  * @return int
  *
- *
- * @todo    : move into class
+ * @deprecated 1.5.0
  */
-/* Externalized because of a bug in PHP 5.1.6 when inside an object */
 function cmpPriceAsc($a, $b)
 {
-    if ((float) $a['price_tmp'] < (float) $b['price_tmp']) {
-        return (-1);
-    } elseif ((float) $a['price_tmp'] > (float) $b['price_tmp']) {
-        return (1);
-    }
-
-    return 0;
+    Tools::displayAsDeprecated("Global function cmpPriceAsc will be removed in next version of thirty bees");
+    return Tools::compareFloats($a, $b, 'price_tmp', true);
 }
 
 /**
@@ -5445,16 +5456,10 @@ function cmpPriceAsc($a, $b)
  *
  * @return int
  *
- *
- * @todo    : move into class
+ * @deprecated 1.5.0
  */
 function cmpPriceDesc($a, $b)
 {
-    if ((float) $a['price_tmp'] < (float) $b['price_tmp']) {
-        return 1;
-    } elseif ((float) $a['price_tmp'] > (float) $b['price_tmp']) {
-        return -1;
-    }
-
-    return 0;
+    Tools::displayAsDeprecated("Global function cmpPriceDesc will be removed in next version of thirty bees");
+    return Tools::compareFloats($a, $b, 'price_tmp', false);
 }
