@@ -339,7 +339,7 @@ class OrderInvoiceCore extends ObjectModel
      *
      * @param array|bool $products
      * @param array|bool $selectedProducts
-     * @param int|bool $selectedQty
+     * @param array|bool $selectedQty
      *
      * @return array Products with price, quantity (with taxe and without)
      *
@@ -358,11 +358,11 @@ class OrderInvoiceCore extends ObjectModel
         $resultArray = [];
         foreach ($products as $row) {
             // Change qty if selected
-            if ($selectedQty) {
+            if ($selectedQty && $selectedProducts) {
                 $row['product_quantity'] = 0;
                 foreach ($selectedProducts as $key => $idProduct) {
                     if ($row['id_order_detail'] == $idProduct) {
-                        $row['product_quantity'] = (int) $selectedQty[$key];
+                        $row['product_quantity'] = (int)$selectedQty[$key] ?? 0;
                     }
                 }
                 if (!$row['product_quantity']) {
@@ -375,7 +375,7 @@ class OrderInvoiceCore extends ObjectModel
             $this->setProductCustomizedDatas($row, $customizedData);
 
             // Add information for virtual product
-            if ($row['download_hash'] && !empty($row['download_hash'])) {
+            if (!empty($row['download_hash'])) {
                 $row['filename'] = ProductDownload::getFilenameFromIdProduct((int) $row['product_id']);
                 // Get the display filename
                 $row['display_filename'] = ProductDownload::getFilenameFromFilename($row['filename']);
