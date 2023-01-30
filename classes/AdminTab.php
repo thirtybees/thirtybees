@@ -200,6 +200,8 @@ abstract class AdminTabCore
      */
     public function __construct()
     {
+        Tools::displayAsDeprecated("AdminTab will be removed in thirty bees 1.6.0. Please update module");
+
         $this->context = Context::getContext();
 
         $this->id = Tab::getIdFromClassName(get_class($this));
