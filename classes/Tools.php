@@ -1169,7 +1169,7 @@ class ToolsCore
                     'class' => $class,
                     'function' => $trace['function'],
                     'line' => $prev['line'],
-                    'file' => $prev['file'],
+                    'file' => ErrorUtils::getRelativeFile($prev['file']),
                 ];
             }
             $prev = $trace;

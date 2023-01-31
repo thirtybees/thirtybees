@@ -362,6 +362,19 @@ class LinkCore
         $ids = (string)$ids;
         $context = Context::getContext();
 
+        if (is_null($name)) {
+            $name = $ids;
+        }
+        if (! is_string($name)) {
+            $callPoint = Tools::getCallPoint([Link::class]);
+            $errorMessage = 'Link::getImageLink(): parameter $name has invalid type. ';
+            $errorMessage .= 'Expected string, got ' . gettype($name) . '. ';
+            $errorMessage .= 'This will raise error in future version of thirty bees. ';
+            $errorMessage .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'];
+            trigger_error($errorMessage, E_USER_WARNING);
+            $name = static::resolveName($name, $ids);
+        }
+
         if (!$format) {
             $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
         }
@@ -1205,5 +1218,27 @@ class LinkCore
         }
 
         return false;
+    }
+
+    /**
+     * @param mixed $name
+     * @param string $default
+     *
+     * @return string
+     */
+    protected static function resolveName($name, $default)
+    {
+        if (is_array($name)) {
+            $languageId = Context::getContext()->language->id;
+            if (isset($name[$languageId])) {
+                return (string)$name[$languageId];
+            }
+            foreach ($name as $value) {
+                if (is_string($value)) {
+                    return $value;
+                }
+            }
+        }
+        return $default;
     }
 }
