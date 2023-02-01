@@ -35,11 +35,25 @@
 abstract class PaymentModuleCore extends Module
 {
     const DEBUG_MODE = false;
-    /** @var int Current order's id */
+
+    /**
+     * @var int Current order's id
+     */
     public $currentOrder;
-    /** @var bool $currencies */
+
+    /**
+     * @var string contains generated reference code of current order
+     */
+    public $currentOrderReference;
+
+    /**
+     * @var bool $currencies
+     */
     public $currencies = true;
-    /** @var string $currencies_mode */
+
+    /**
+     * @var string $currencies_mode
+     */
     public $currencies_mode = 'checkbox';
     /**
      * Can be used to show that this module is compatible with the
