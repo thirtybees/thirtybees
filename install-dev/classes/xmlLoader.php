@@ -1420,8 +1420,7 @@ class InstallXmlLoader
             $value = $row[$idFormat];
             $value = preg_replace('#[^a-z0-9_-]#i', '_', $value);
             $value = preg_replace('#_+#', '_', $value);
-            $value = preg_replace('#^_+#', '', $value);
-            $value = preg_replace('#_+$#', '', $value);
+            $value = trim($value, "_");
 
             $storeIdentifier = $value;
             $i = 1;
