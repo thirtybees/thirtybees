@@ -1165,29 +1165,6 @@ class ProductCore extends ObjectModel
             $price = $productTaxCalculator->addTaxes($price);
         }
 
-        // Eco Tax
-        if (($result['ecotax'] || isset($result['attribute_ecotax'])) && $withEcotax) {
-            $ecotax = $result['ecotax'];
-            if (isset($result['attribute_ecotax']) && $result['attribute_ecotax'] > 0) {
-                $ecotax = $result['attribute_ecotax'];
-            }
-
-            if ($idCurrency) {
-                $ecotax = Tools::convertPrice($ecotax, $idCurrency);
-            }
-            if ($useTax) {
-                // reinit the tax manager for ecotax handling
-                $taxManager = TaxManagerFactory::getManager(
-                    $address,
-                    (int) Configuration::get('PS_ECOTAX_TAX_RULES_GROUP_ID')
-                );
-                $ecotaxTaxCalculator = $taxManager->getTaxCalculator();
-                $price += $ecotaxTaxCalculator->addTaxes($ecotax);
-            } else {
-                $price += $ecotax;
-            }
-        }
-
         // Reduction
         $specificPriceReduction = 0;
         if (($onlyReduc || $useReduc) && $specificPrice) {
@@ -1258,6 +1235,29 @@ class ProductCore extends ObjectModel
                 );
             } else {
                 return Tools::ps_round($specificPriceReduction, $decimals);
+            }
+        }
+		
+		// Eco Tax
+        if (($result['ecotax'] || isset($result['attribute_ecotax'])) && $withEcotax) {
+            $ecotax = $result['ecotax'];
+            if (isset($result['attribute_ecotax']) && $result['attribute_ecotax'] > 0) {
+                $ecotax = $result['attribute_ecotax'];
+            }
+
+            if ($idCurrency) {
+                $ecotax = Tools::convertPrice($ecotax, $idCurrency);
+            }
+            if ($useTax) {
+                // reinit the tax manager for ecotax handling
+                $taxManager = TaxManagerFactory::getManager(
+                    $address,
+                    (int) Configuration::get('PS_ECOTAX_TAX_RULES_GROUP_ID')
+                );
+                $ecotaxTaxCalculator = $taxManager->getTaxCalculator();
+                $price += $ecotaxTaxCalculator->addTaxes($ecotax);
+            } else {
+                $price += $ecotax;
             }
         }
 
