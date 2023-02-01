@@ -143,8 +143,10 @@ abstract class AdminTabCore
     protected $_list = [];
     /** @var int Number of results in list */
     protected $_listTotal = 0;
-    /** @var array WHERE clause determined by filter fields */
+    /** @var string WHERE clause determined by filter fields */
     protected $_filter;
+    /** @var string HAVING clause */
+    protected $_filterHaving;
     /** @var array Temporary SQL table WHERE clause determinated by filter fields */
     protected $_tmpTableFilter = '';
     /** @var array Number of results in list per page (used in select field) */
