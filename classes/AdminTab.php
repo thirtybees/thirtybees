@@ -559,7 +559,6 @@ abstract class AdminTabCore
         }
 
         /* Cache */
-        $this->_lang = (int) ($idLang);
         $this->_orderBy = $orderBy;
         $this->_orderWay = mb_strtoupper($orderWay);
 

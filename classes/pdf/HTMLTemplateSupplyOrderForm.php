@@ -231,7 +231,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     public function getFooter()
     {
-        $this->address = $this->address_warehouse;
         $freeText = [];
         $freeText[] = HTMLTemplateSupplyOrderForm::l('TE: Tax excluded');
         $freeText[] = HTMLTemplateSupplyOrderForm::l('TI: Tax included');
