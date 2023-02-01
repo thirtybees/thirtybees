@@ -94,26 +94,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
     }
 
     /**
-     * @param string $segments
-     *
-     * @return static
-     */
-    public function setUrlSegment($segments)
-    {
-        $this->urlSegment = $segments;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrlSegment()
-    {
-        return $this->urlSegment;
-    }
-
-    /**
      * WebserviceRequestCore
      *
      * @throws WebserviceException
@@ -129,8 +109,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
         $objectsCategories = [];
         $objectsProducts['empty'] = new Product();
         $objectsCategories['empty'] = new Category();
-
-        $this->_resourceConfiguration = $objectsProducts['empty']->getWebserviceParameters();
 
         if (!$this->wsObject->setFieldsToDisplay()) {
             return false;
@@ -154,11 +132,6 @@ class WebserviceSpecificManagementSearchCore implements WebserviceSpecificManage
         }
 
         $this->output .= $this->objOutput->getContent($objectsProducts, null, $this->wsObject->fieldsToDisplay, $this->wsObject->depth, WebserviceOutputBuilder::VIEW_LIST, false);
-        // @todo allow fields of type category and product
-        // $this->_resourceConfiguration = $objects_categories['empty']->getWebserviceParameters();
-        // if (!$this->setFieldsToDisplay())
-        // return false;
-
         $this->output .= $this->objOutput->getContent($objectsCategories, null, $this->wsObject->fieldsToDisplay, $this->wsObject->depth, WebserviceOutputBuilder::VIEW_LIST, false);
     }
 
