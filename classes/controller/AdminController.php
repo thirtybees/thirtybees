@@ -546,8 +546,7 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @TODO    uses redirectAdmin only if !$this->ajax
-     * @return bool
+     * @return false|mixed
      */
     public function postProcess()
     {
