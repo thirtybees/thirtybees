@@ -215,7 +215,7 @@ class TaxRuleCore extends ObjectModel
      */
     public function breakDownZipCode($zipCodes)
     {
-        $zipCodes = preg_split('/-/', $zipCodes);
+        $zipCodes = explode('-', $zipCodes);
 
         $from = $zipCodes[0];
         $to = isset($zipCodes[1]) ? $zipCodes[1] : 0;

@@ -465,7 +465,7 @@ class SpecificPriceCore extends ObjectModel
         }
         $priority = 'id_customer;'.$priority;
 
-        return preg_split('/;/', $priority);
+        return explode(';', $priority);
     }
 
     /**
