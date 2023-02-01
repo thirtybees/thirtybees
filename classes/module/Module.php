@@ -3258,15 +3258,6 @@ abstract class ModuleCore
      */
     public function getPosition($id_hook)
     {
-        if (isset(Hook::$preloadModulesFromHooks)) {
-            if (isset(Hook::$preloadModulesFromHooks[$id_hook])) {
-                if (isset(Hook::$preloadModulesFromHooks[$id_hook]['module_position'][$this->id])) {
-                    return Hook::$preloadModulesFromHooks[$id_hook]['module_position'][$this->id];
-                } else {
-                    return 0;
-                }
-            }
-        }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
                 ->select('`position`')
