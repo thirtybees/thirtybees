@@ -31,6 +31,8 @@ use Throwable;
  */
 class ErrorHandlerCore
 {
+    const MAX_ERROR_MESSAGES = 1000;
+
     /**
      * @var ErrorResponseInterface
      */
@@ -211,7 +213,9 @@ class ErrorHandlerCore
             $error['realLine'] = $realLine;
         }
 
-        $this->errorMessages[] = $error;
+        if (count($this->errorMessages) < static::MAX_ERROR_MESSAGES) {
+            $this->errorMessages[] = $error;
+        }
         if (! $suppressed) {
             $this->logMessage($error);
         }
