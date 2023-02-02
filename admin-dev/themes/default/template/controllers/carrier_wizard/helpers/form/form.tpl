@@ -53,7 +53,7 @@
           </span>
         </div>
         <p class="help-block">
-          {l s='Format:'} JPG, GIF, PNG. {l s='Filesize:'} {$max_image_size|string_format:"%.2f"} {l s='MB max.'}
+          {l s='Format:'} {implode(', ', ImageManager::getAllowedImageExtensions(true, true))}. {l s='Filesize:'} {$max_image_size|string_format:"%.2f"} {l s='MB max.'}
           {l s='Current size:'} <span id="carrier_logo_size">{l s='undefined'}</span>.
         </p>
       </div>

@@ -123,7 +123,8 @@ class StoresControllerCore extends FrontController
 
             $addressesFormatted[$store['id_store']] = AddressFormat::getFormattedLayoutData($address);
 
-            $store['has_picture'] = file_exists(_PS_STORE_IMG_DIR_.(int) $store['id_store'].'.jpg');
+            $store['has_picture'] = (bool)ImageManager::getSourceImage(_PS_STORE_IMG_DIR_, $store['id_store']);
+
             if ($workingHours = $this->renderStoreWorkingHours($store)) {
                 $store['working_hours'] = $workingHours;
             }
@@ -211,12 +212,13 @@ class StoresControllerCore extends FrontController
             $newnode->addAttribute('other', $other);
             $newnode->addAttribute('phone', $store['phone']);
             $newnode->addAttribute('id_store', (int) $store['id_store']);
-            $newnode->addAttribute('has_store_picture', file_exists(_PS_STORE_IMG_DIR_.(int) $store['id_store'].'.jpg'));
+            $newnode->addAttribute('has_store_picture', (bool)ImageManager::getSourceImage(_PS_STORE_IMG_DIR_, (int)$store['id_store']));
             $newnode->addAttribute('lat', (float) $store['latitude']);
             $newnode->addAttribute('lng', (float) $store['longitude']);
             if (isset($store['distance'])) {
                 $newnode->addAttribute('distance', (int) $store['distance']);
             }
+
         }
 
         header('Content-type: text/xml');

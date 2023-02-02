@@ -55,98 +55,115 @@ class PageNotFoundControllerCore extends FrontController
     {
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
         $urlPath = parse_url($requestUri, PHP_URL_PATH);
-        if ($urlPath && preg_match('/\.(webp|gif|jpe?g|png|ico)$/i', $urlPath)) {
+
+        $mainImageExtensions = implode('|', ImageManager::getAllowedImageExtensions(false, true));
+
+        if ($urlPath && preg_match('/\.('.$mainImageExtensions.'|ico)$/i', $urlPath)) {
             $requestUri = urldecode($requestUri);
             $this->context->cookie->disallowWriting();
 
             $imageType = null;
             $sourcePath = null;
             $sendPath = null;
+            $imageTypeName = '';
 
-            // product image without image types: /127/name.jpg
-            if (preg_match('@^'.__PS_BASE_URI__.'([0-9]+)/.+\.(webp|png|jpe?g|gif)$@', $requestUri, $matches)) {
-                $root = _PS_PROD_IMG_DIR_;
-                $file = $matches[1];
-                $folder = Image::getImgFolderStatic($file);
-                $ext = '.'. $this->normalizeImageExtension($matches[2]);
-                $sendPath = $this->getImageSourcePath($root.$folder.$file.$ext);
-            // product image url with image type: /127-cart/name.jpg
-            } elseif (
-                preg_match('@^'.__PS_BASE_URI__.'([0-9]+)-([_a-zA-Z0-9\s-]+)(/.+)?\.(webp|png|jpe?g|gif)$@', $requestUri, $matches) ||
-                preg_match('@^'._PS_PROD_IMG_.'[0-9/]+/([0-9]+)-([_a-zA-Z0-9\s-]+)(\.)(webp|png|jpe?g|gif)$@', $requestUri, $matches)
-            ) {
-                $imageType = ImageType::getByNameNType($matches[2], 'products');
-                if ($imageType) {
-                    $root = _PS_PROD_IMG_DIR_;
-                    $folder = Image::getImgFolderStatic($matches[1]);
-                    $file = $matches[1];
-                    $ext = '.'. $this->normalizeImageExtension($matches[4]);
+            $uriParts = explode('/', ltrim($requestUri, '/'));
 
-                    $sourcePath = $root.$folder.$file.$ext;
-                    $sendPath = $root.$folder.$file.'-'.$imageType['name'].$ext;
-                }
-            } else {
-                foreach ([
-                    // Entries should match the list in
-                    // ImageType::getByNameNType(), except for 'products'.
-                    'categories'    => _THEME_CAT_DIR_,
-                    'manufacturers' => _THEME_MANU_DIR_,
-                    'suppliers'     => _THEME_SUP_DIR_,
-                    'scenes'        => _THEME_SCENE_DIR_,
-                    'stores'        => _THEME_STORE_DIR_,
-                ] as $type => $path) {
-                    $dir = str_replace(_PS_IMG_, '', $path);
-                    if (preg_match('@^'.__PS_BASE_URI__.$dir.'([0-9]+)-([_a-zA-Z0-9\s-]+)(/.+)?\.(webp|png|jpe?g|gif)$@', $requestUri, $matches) ||
-                        preg_match('@^'.$path .'([0-9]+)-([_a-zA-Z0-9\s-]+)(\.)(webp|png|jpe?g|gif)$@', $requestUri, $matches)
-                    ) {
-                        $imageType = ImageType::getByNameNType(
-                            $matches[2],
-                            $type
-                        );
-                        if ($imageType) {
-                            $root = _PS_IMG_DIR_.$dir;
-                            $file = $matches[1];
-                            $ext = '.'.$this->normalizeImageExtension($matches[4]);
+            if (($imageEntityName = $uriParts[0]) && ($imageEntity = ImageEntity::getImageEntities($imageEntityName, true))) {
 
-                            $sourcePath = $root.$file.$ext;
-                            $sendPath = $root.$file.'-'.$imageType['name'].$ext;
+                /* Todo: Datakick This function was complettly rewriten, maybe some parts can be done cleaner with pregmatch
+                    not sure if we need keep old mechanism for backward compatibility too
+                */
+                // Check if we have a model
+                $idEntity_imageType = '';
+                $linkRewrite_retina_imageExtension = '';
 
-                            break;
-                        }
+                if (count($uriParts)==4) {
+                    $idEntity_imageType = $uriParts[2];
+                    $linkRewrite_retina_imageExtension = $uriParts[3];
+                } else {
+                    if (count($uriParts) == 3) {
+                        $idEntity_imageType = $uriParts[1];
+                        $linkRewrite_retina_imageExtension = $uriParts[2];
                     }
                 }
+
+                // Separate idEntity and imageTypeName
+                $parts = explode('-', $idEntity_imageType);
+                $idEntity = $parts[0];
+                $imageTypeName = count($parts) > 1 ? str_replace($idEntity.'-', '', $idEntity_imageType) : '';
+
+                // Check if $imageTypeName is actually allowed for this entity
+                if (!$imageTypeName || in_array($imageTypeName, array_column($imageEntity['imageTypes'], 'name'))) {
+
+                    $imageType = ImageType::getInstanceByName($imageTypeName);
+
+                    // Check if imageType has a parent
+                    if ($imageType->id_image_type_parent) {
+                        $imageType = new ImageType($imageType->id_image_type_parent);
+                        $imageTypeName = $imageType->name;
+                    }
+
+                    $imageTypeNameFormatted = $imageTypeName ? '-' . $imageTypeName : '';
+
+                    // Separate retina and imageExtension
+                    $imageExtension = pathinfo($linkRewrite_retina_imageExtension, PATHINFO_EXTENSION);
+                    $imageExtension = $this->normalizeImageExtension($imageExtension);
+                    $retina = str_contains($linkRewrite_retina_imageExtension, '2x.' . $imageExtension) && $imageType->id ? '2x' : '';
+
+                    // As products have a sophisticated image system with folder structure
+                    $subfolder = ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS) ? Image::getImgFolderStatic($idEntity) : '';
+
+                    $sendPath = $imageEntity['path'] . $subfolder . $idEntity . $imageTypeNameFormatted . $retina . '.' . $imageExtension;
+                    $sourcePath = ImageManager::getSourceImage($imageEntity['path'] . $subfolder, $idEntity);
+                }
+            }
+            else {
+                // Check if source file is actually requested, but in a missing extension
+                $sendPath = ImageManager::tryRestoreImage($requestUri);
             }
 
             if ($sendPath) {
-                if (! file_exists($sendPath) && $sourcePath && $imageType) {
-                    $sourcePath = $this->getImageSourcePath($sourcePath);
-                    if ($sourcePath) {
-                        ImageManager::resize(
-                            $sourcePath,
-                            $sendPath,
-                            (int) $imageType['width'],
-                            (int) $imageType['height']
-                        );
-                    }
+
+                if (!file_exists($sendPath) && $sourcePath && $imageType->width && $imageType->height) {
+                    // Create the image in the default imageExtension (readable by the user)
+                    ImageManager::resize(
+                        $sourcePath,
+                        $sendPath,
+                        $imageType->width,
+                        $imageType->height,
+                    );
                 }
 
                 if (file_exists($sendPath)) {
-                    $type = pathinfo($sendPath, PATHINFO_EXTENSION);
-                    $type = str_replace('jpg', 'jpeg', $type);
+                    $imageExtension = pathinfo($sendPath, PATHINFO_EXTENSION);
+                    $mimeType = Media::getFileInformations('images', $imageExtension)['mimeType'] ?? 'image/jpeg';
                     header('HTTP/1.1 200 Found');
                     header('Status: 200 Found');
-                    header('Content-Type: image/'.$type);
+                    header('Content-Type: '.$mimeType);
                     readfile($sendPath);
-
                     exit;
                 }
             }
 
+            // We haven't found any image, we try to display the default image
+            if ($notFoundImage = $this->context->link->getDefaultImageUri($this->context->language->iso_code, $imageTypeName, false, '', true)) {
+                $imageExtension = pathinfo($notFoundImage, PATHINFO_EXTENSION);
+                $mimeType = Media::getFileInformations('images', $imageExtension)['mimeType'] ?? 'image/jpeg';
+                header('HTTP/1.1 200 Found');
+                header('Status: 200 Found');
+                header('Content-Type: '.$mimeType);
+                readfile($notFoundImage);
+                exit;
+            }
+
+            // We haven't even found the default image (should never happen in theory)
             header('HTTP/1.1 404 Not Found');
             header('Status: 404 Not Found');
             header('Content-Type: image/gif');
             readfile(_PS_IMG_DIR_.'404.gif');
             exit;
+
         } elseif (in_array(mb_strtolower(substr($requestUri, -3)), ['.js', 'css'])) {
             $this->context->cookie->disallowWriting();
             exit;
@@ -179,26 +196,6 @@ class PageNotFoundControllerCore extends FrontController
     protected function sslRedirection()
     {
         // 404 - no need to redirect
-    }
-
-    /**
-     * Returns valid image source path
-     *
-     * @param string $sourcePath
-     * @return string | null
-     */
-    protected function getImageSourcePath(string $sourcePath)
-    {
-        if (file_exists($sourcePath)) {
-            return $sourcePath;
-        }
-        foreach (['.jpg', '.webp', '.jpeg'] as $ext) {
-            $sourcePath = preg_replace( '/\.(webp|gif|jpe?g|png|ico)$/i', $ext, $sourcePath);
-            if (file_exists($sourcePath)) {
-                return $sourcePath;
-            }
-        }
-        return null;
     }
 
     /**

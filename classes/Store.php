@@ -29,10 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class StoreCore
  */
-class StoreCore extends ObjectModel
+class StoreCore extends ObjectModel implements InitializationCallback
 {
     /**
      * @var int Country id
@@ -149,6 +151,12 @@ class StoreCore extends ObjectModel
                 'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
             ],
         ],
+        'images' => [
+            ImageEntity::ENTITY_TYPE_STORES => [
+                'inputName' => 'image',
+                'path' => _PS_STORE_IMG_DIR_,
+            ],
+        ],
     ];
 
     /**
@@ -205,5 +213,17 @@ class StoreCore extends ObjectModel
         $this->hours = json_encode(explode(';', $hours));
 
         return true;
+    }
+
+    /**
+     * Database initialization callback
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        ImageEntity::rebuildImageEntities(static::class, self::$definition['images']);
     }
 }

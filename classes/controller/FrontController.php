@@ -929,6 +929,15 @@ class FrontControllerCore extends Controller
             }
         }
 
+        // Get img_formats dynamically (Todo: Datakick -> 'img_formats' doesn't seem to be used even once)
+        $supportedMainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
+        $img_formats = [];
+        foreach ($supportedMainImageExtensions as $mainImageExtension) {
+            if ($mimeType = Media::getFileInformations('images', $mainImageExtension)['mimeType']) {
+                $img_formats[$mainImageExtension] = $mimeType;
+            }
+        }
+
         $this->context->smarty->assign(
             [
                 'css_files'      => $this->css_files,
@@ -937,7 +946,7 @@ class FrontControllerCore extends Controller
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
                 'display_footer' => $this->display_footer,
-                'img_formats'    => ['webp' => 'image/webp', 'jpg' => 'image/jpeg']
+                'img_formats'    => $img_formats
             ]
         );
 
@@ -1708,7 +1717,7 @@ class FrontControllerCore extends Controller
                 'currencySign'        => $currency->sign, // backward compat, see global.tpl
                 'currencyFormat'      => $currency->format, // backward compat
                 'currencyBlank'       => $currency->blank, // backward compat
-                'high_dpi'            => (bool) Configuration::get('PS_HIGHT_DPI'),
+                'high_dpi'            => ImageManager::retinaSupport(),
                 'lazy_load'           => (bool) Configuration::get('TB_LAZY_LOAD'),
                 'webp'                => ImageManager::webpSupport(),
             ]

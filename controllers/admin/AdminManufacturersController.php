@@ -68,11 +68,6 @@ class AdminManufacturersControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->fieldImageSettings = [
-            'name' => 'logo',
-            'dir'  => 'm',
-        ];
-
         $this->fields_list = [
             'id_manufacturer' => [
                 'title' => $this->l('ID'),
@@ -498,16 +493,17 @@ class AdminManufacturersControllerCore extends AdminController
             return '';
         }
 
-        $image = _PS_MANU_IMG_DIR_.$manufacturer->id.'.jpg';
-        $imageUrl = ImageManager::thumbnail(
-            $image,
-            $this->table.'_'.(int) $manufacturer->id.'.'.$this->imageType,
-            350,
-            $this->imageType,
-            true,
-            true
-        );
-        $imageSize = file_exists($image) ? filesize($image) / 1000 : false;
+        if ($image = ImageManager::getSourceImage(_PS_MANU_IMG_DIR_, $manufacturer->id)) {
+            $imageUrl = ImageManager::thumbnail(
+                $image,
+                $this->table . '_' . (int)$manufacturer->id . '.' . $this->imageType,
+                350,
+                $this->imageType,
+                true,
+                true
+            );
+            $imageSize = filesize($image) / 1000;
+        }
 
         $this->fields_form = [
             'tinymce' => true,
@@ -550,9 +546,10 @@ class AdminManufacturersControllerCore extends AdminController
                     'type'          => 'file',
                     'label'         => $this->l('Logo'),
                     'name'          => 'logo',
-                    'image'         => $imageUrl ? $imageUrl : false,
-                    'size'          => $imageSize,
+                    'image'         => $imageUrl ?? false,
+                    'size'          => $imageSize ?? false,
                     'display_image' => true,
+                    'delete_url'    => true,
                     'col'           => 6,
                     'hint'          => $this->l('Upload a manufacturer logo from your computer.'),
                 ],
@@ -897,77 +894,6 @@ class AdminManufacturersControllerCore extends AdminController
         }
 
         return parent::processSave();
-    }
-
-    /**
-     * After image upload
-     *
-     * @return bool Indicates whether post processing was successful
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function afterImageUpload()
-    {
-        $res = true;
-
-        /* Generate image with differents size */
-        if (($idManufacturer = Tools::getIntValue('id_manufacturer')) &&
-            $_FILES &&
-            file_exists(_PS_MANU_IMG_DIR_.$idManufacturer.'.jpg')
-        ) {
-            $imagesTypes = ImageType::getImagesTypes('manufacturers');
-            foreach ($imagesTypes as $imageType) {
-                $res = ImageManager::resize(
-                    _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
-                    _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.jpg',
-                    (int) $imageType['width'],
-                    (int) $imageType['height']
-                ) && $res;
-                if (ImageManager::generateWebpImages()) {
-                    $res = ImageManager::resize(
-                        _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
-                        _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.webp',
-                        (int) $imageType['width'],
-                        (int) $imageType['height'],
-                        'webp'
-                    ) && $res;
-                }
-                if (ImageManager::retinaSupport()) {
-                    $res = ImageManager::resize(
-                        _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
-                        _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.jpg',
-                        (int) $imageType['width'] * 2,
-                        (int) $imageType['height'] * 2
-                    ) && $res;
-                    if (ImageManager::generateWebpImages()) {
-                        $res = ImageManager::resize(
-                            _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
-                            _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.webp',
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2,
-                            'webp'
-                        ) && $res;
-                    }
-                }
-            }
-
-            $currentLogoFile = _PS_TMP_IMG_DIR_.'manufacturer_mini_'.$idManufacturer.'_'.$this->context->shop->id.'.jpg';
-
-            if ($res && file_exists($currentLogoFile)) {
-                unlink($currentLogoFile);
-            }
-        }
-
-        if (!$res) {
-            $this->errors[] = Tools::displayError('Unable to resize one or more of your pictures.');
-        } else {
-            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_MANUFACTURERS') < $idManufacturer) {
-                Configuration::updateValue('TB_IMAGES_LAST_UPD_MANUFACTURERS', $idManufacturer);
-            }
-        }
-
-        return $res;
     }
 
     /**

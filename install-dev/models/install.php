@@ -453,8 +453,9 @@ class InstallModelInstall extends InstallAbstractModel
 
             // Copy language flag
             if (is_writable(_PS_IMG_DIR_.'l/')) {
-                if (!copy(_PS_INSTALL_LANGS_PATH_.$iso.'/flag.jpg', _PS_IMG_DIR_.'l/'.$idLang.'.jpg')) {
-                    throw new PrestashopInstallerException($this->language->l('Cannot copy flag language "%s"', _PS_INSTALL_LANGS_PATH_.$iso.'/flag.jpg => '._PS_IMG_DIR_.'l/'.$idLang.'.jpg'));
+                $hardcodedImageExtension = 'jpg';
+                if (!copy(_PS_INSTALL_LANGS_PATH_.$iso.'/flag.'.$hardcodedImageExtension, _PS_IMG_DIR_.'l/'.$idLang.'.'.$hardcodedImageExtension)) {
+                    throw new PrestashopInstallerException($this->language->l('Cannot copy flag language "%s"', _PS_INSTALL_LANGS_PATH_.$iso.'/flag.'.$hardcodedImageExtension.' => '._PS_IMG_DIR_.'l/'.$idLang.'.'.$hardcodedImageExtension));
                 }
             }
         }
@@ -543,42 +544,17 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function copyLanguageImages($iso)
     {
-        $imgPath = _PS_INSTALL_LANGS_PATH_.$iso.'/img/';
-        if (!is_dir($imgPath)) {
-            return;
+        $dstPath = _PS_IMG_DIR_.'l/';
+
+        if (!$sourceImage = ImageManager::getSourceImage(_PS_IMG_DIR_.'/flags/', $iso, 'png', false)) {
+            $sourceImage = _PS_INSTALL_LANGS_PATH_."$iso/flag.jpg";
         }
 
-        $list = [
-            'products'      => _PS_PROD_IMG_DIR_,
-            'categories'    => _PS_CAT_IMG_DIR_,
-            'manufacturers' => _PS_MANU_IMG_DIR_,
-            'suppliers'     => _PS_SUPP_IMG_DIR_,
-            'scenes'        => _PS_SCENE_IMG_DIR_,
-            'stores'        => _PS_STORE_IMG_DIR_,
-            null            => _PS_IMG_DIR_.'l/', // Little trick to copy images in img/l/ path with all types
-        ];
+        $imageExtension = ImageManager::getDefaultImageExtension();
+        $newSourceImage = $dstPath.$iso.'.'.$imageExtension;
+        ImageManager::convertImageToExtension($sourceImage, $imageExtension, $newSourceImage);
 
-        foreach ($list as $cat => $dstPath) {
-            if (!is_writable($dstPath)) {
-                continue;
-            }
-
-            if (file_exists(_PS_IMG_DIR_."/flags/$iso.png")) {
-                $src = _PS_IMG_DIR_."/flags/$iso.png";
-            } else {
-                $src = _PS_INSTALL_LANGS_PATH_."$iso/flag.jpg";
-            }
-            copy($src, $dstPath.$iso.'.jpg');
-
-            $types = ImageType::getImagesTypes($cat);
-            foreach ($types as $type) {
-                if (file_exists($imgPath.$iso.'-default-'.$type['name'].'.jpg')) {
-                    copy($imgPath.$iso.'-default-'.$type['name'].'.jpg', $dstPath.$iso.'-default-'.$type['name'].'.jpg');
-                } else {
-                    ImageManager::resize($imgPath.$iso.'.jpg', $dstPath.$iso.'-default-'.$type['name'].'.jpg', $type['width'], $type['height']);
-                }
-            }
-        }
+        Language::regenerateDefaultImages($iso);
     }
 
     /**
@@ -672,8 +648,8 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // Set logo configuration
-        if (file_exists(_PS_IMG_DIR_.'logo.jpg')) {
-            list($width, $height) = getimagesize(_PS_IMG_DIR_.'logo.jpg');
+        if ($sourceImage = ImageManager::getSourceImage(_PS_IMG_DIR_, 'logo')) {
+            list($width, $height) = getimagesize($sourceImage);
             Configuration::updateGlobalValue('SHOP_LOGO_WIDTH', round($width));
             Configuration::updateGlobalValue('SHOP_LOGO_HEIGHT', round($height));
         }

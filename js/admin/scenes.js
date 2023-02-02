@@ -127,7 +127,7 @@ function afterTextInserted(event, data, formatted) {
 
   // If the element exist, then the user confirm the editing
   // The variable need to be reinitialized to null for the next
-  if (typeof window.lastEditedItem !== 'undefined') {
+  if (typeof window.lastEditedItem !== 'undefined' && window.lastEditedItem !== null) {
     window.lastEditedItem.remove();
   }
   window.lastEditedItem = null;
@@ -170,6 +170,7 @@ function addProduct(zoneIndex, x1, y1, width, height, idProduct, nameProduct) {
 }
 
 $(window).load(function () {
+
   /* function autocomplete */
   $('#product_autocomplete_input')
     .autocomplete('ajax_products_list.php', {

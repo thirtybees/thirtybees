@@ -195,7 +195,7 @@ class QqUploadedFileForm
         } elseif (!ImageManager::resize($tmpName, $newPath.'.'.$image->image_format)) {
             return ['error' => Tools::displayError('An error occurred while copying image.')];
         } elseif ($method == 'auto') {
-            $imagesTypes = ImageType::getImagesTypes('products');
+            $imagesTypes = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS);
             foreach ($imagesTypes as $imageType) {
                 if (!ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
                     return ['error' => Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name'])];
@@ -319,7 +319,7 @@ class QqUploadedFileXhr
         } elseif (!ImageManager::resize($tmpName, $newPath.'.'.$image->image_format)) {
             return ['error' => Tools::displayError('An error occurred while copying image.')];
         } elseif ($method == 'auto') {
-            $imagesTypes = ImageType::getImagesTypes('products');
+            $imagesTypes = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS);
             foreach ($imagesTypes as $imageType) {
                 /*
                     $theme = (Shop::isFeatureActive() ? '-'.$imageType['id_theme'] : '');

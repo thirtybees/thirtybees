@@ -797,6 +797,10 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
      */
     public function getImage()
     {
+        if ($sourceImage = ImageManager::getSourceImage(_PS_EMPLOYEE_IMG_DIR_, $this->id)) {
+            return str_replace(_PS_CORE_DIR_, '', $sourceImage);
+        }
+
         return Context::getContext()->link->getMediaLink(_PS_IMG_.'admin/employees_xl.png');
     }
 

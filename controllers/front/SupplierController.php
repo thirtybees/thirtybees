@@ -186,7 +186,7 @@ class SupplierControllerCore extends FrontController
 
             $suppliers = Supplier::getSuppliers(true, $this->context->language->id, true, $this->p, $this->n);
             foreach ($suppliers as &$row) {
-                $row['image'] = (!file_exists(_PS_SUPP_IMG_DIR_.'/'.$row['id_supplier'].'-'.ImageType::getFormatedName('medium').'.jpg')) ? $this->context->language->iso_code.'-default' : $row['id_supplier'];
+                $row['image'] = $row['id_supplier'];
             }
 
             $this->context->smarty->assign(

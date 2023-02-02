@@ -95,6 +95,15 @@ class AdminEmployeesControllerCore extends AdminController
             }
         }
 
+        $this->fieldImageSettings = [
+            [
+                'name' => 'avatar',
+                'dir'  => _PS_EMPLOYEE_IMG_DIR_,
+                'width' => 150,
+                'height' => 150,
+            ],
+        ];
+
         $this->fields_list = [
             'id_employee' => [
                 'title' => $this->l('ID'),
@@ -360,8 +369,20 @@ class AdminEmployeesControllerCore extends AdminController
             ];
         }
 
+        $image = _PS_EMPLOYEE_IMG_DIR_.$obj->id.'.'.$this->imageType;
+        $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 150, $this->imageType, true, true);
+
+
         $this->fields_form['input'] = array_merge(
             $this->fields_form['input'], [
+                [
+                    'type'          => 'file',
+                    'label'         => $this->l('Avatar'),
+                    'name'          => 'avatar',
+                    'display_image' => true,
+                    'image'         => $imageUrl ?: false,
+                    'delete_url'    => static::$currentIndex.'&'.$this->identifier.'='.$this->object->id.'&token='.$this->token.'&deleteImage=1',
+                ],
                 [
                     'type'     => 'switch',
                     'label'    => $this->l('Subscribe to thirty bees newsletter'),

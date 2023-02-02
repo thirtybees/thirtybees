@@ -61,11 +61,6 @@ class AdminCountriesControllerCore extends AdminController
             'affectzone' => ['text' => $this->l('Assign to a new zone')],
         ];
 
-        $this->fieldImageSettings = [
-            'name' => 'logo',
-            'dir'  => 'st',
-        ];
-
         $this->fields_options = [
             'general' => [
                 'title'  => $this->l('Country options'),

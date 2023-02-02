@@ -29,10 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class SceneCore
  */
-class SceneCore extends ObjectModel
+class SceneCore extends ObjectModel implements InitializationCallback
 {
     /** @var string|string[] Name */
     public $name;
@@ -61,6 +63,22 @@ class SceneCore extends ObjectModel
         'keys' => [
             'scene_shop' => [
                 'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+        ],
+        'images' => [
+            ImageEntity::ENTITY_TYPE_SCENES => [
+                'inputName' => 'image',
+                'path' => _PS_SCENE_IMG_DIR_,
+                'imageTypes' => [
+                    ['name' => 'scene_default', 'width' => 870, 'height' => 270]
+                ]
+            ],
+            ImageEntity::ENTITY_TYPE_SCENES_THUMB => [
+                'inputName' => 'thumb',
+                'path' => _PS_SCENE_IMG_DIR_.'thumbs/',
+                'imageTypes' => [
+                    ['name' => 'm_scene_default', 'width' => 161, 'height' => 58]
+                ]
             ],
         ],
     ];
@@ -432,7 +450,7 @@ class SceneCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function deleteImage($forceDelete = false)
+    public function deleteImage($forceDelete = false, $path = '')
     {
         if (file_exists($this->image_dir.'thumbs/'.$this->id.'-m_scene_default.'.$this->image_format)
             && !unlink($this->image_dir.'thumbs/'.$this->id.'-m_scene_default.'.$this->image_format)
@@ -444,5 +462,17 @@ class SceneCore extends ObjectModel
         }
 
         return true;
+    }
+
+    /**
+     * Database initialization callback
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        ImageEntity::rebuildImageEntities(static::class, self::$definition['images']);
     }
 }

@@ -29,10 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class ManufacturerCore
  */
-class ManufacturerCore extends ObjectModel
+class ManufacturerCore extends ObjectModel implements InitializationCallback
 {
     /**
      * @var string[]
@@ -127,6 +129,12 @@ class ManufacturerCore extends ObjectModel
         'keys' => [
             'manufacturer_shop' => [
                 'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+        ],
+        'images' => [
+            ImageEntity::ENTITY_TYPE_MANUFACTURERS => [
+                'inputName' => 'logo',
+                'path' => _PS_MANU_IMG_DIR_,
             ],
         ],
     ];
@@ -680,5 +688,17 @@ class ManufacturerCore extends ObjectModel
                 ->from('address')
                 ->where('`id_manufacturer` = '.(int) $this->id)
         );
+    }
+
+    /**
+     * Database initialization callback
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        ImageEntity::rebuildImageEntities(static::class, self::$definition['images']);
     }
 }

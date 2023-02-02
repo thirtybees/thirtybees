@@ -632,26 +632,26 @@ class InstallXmlLoader
      * @param string $identifier
      * @param string $path
      * @param array $data
-     * @param string $extension
+     * @param string $imageExtension
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function copyImages($entity, $identifier, $path, array $data, $extension = 'jpg')
+    public function copyImages($entity, $identifier, $path, array $data, $imageExtension = 'jpg')
     {
-        // Get list of image types
+        // Get list of image types (note: the $entity is given in singularity, but ImageType uses plurality)
         $reference = [
-            'product'      => 'products',
-            'category'     => 'categories',
-            'manufacturer' => 'manufacturers',
-            'supplier'     => 'suppliers',
-            'scene'        => 'scenes',
-            'store'        => 'stores',
+            'product'      => ImageEntity::ENTITY_TYPE_PRODUCTS,
+            'category'     => ImageEntity::ENTITY_TYPE_CATEGORIES,
+            'manufacturer' => ImageEntity::ENTITY_TYPE_MANUFACTURERS,
+            'supplier'     => ImageEntity::ENTITY_TYPE_SUPPLIERS,
+            'scene'        => ImageEntity::ENTITY_TYPE_SCENES,
+            'store'        => ImageEntity::ENTITY_TYPE_STORES,
         ];
 
-        $types = [];
+        $imageTypes = [];
         if (isset($reference[$entity])) {
-            $types = ImageType::getImagesTypes($reference[$entity]);
+            $imageTypes = ImageType::getImagesTypes($reference[$entity]);
         }
 
         // For each path copy images
@@ -661,27 +661,26 @@ class InstallXmlLoader
             $dstPath = _PS_IMG_DIR_.$p.'/';
             $entityId = $this->retrieveId($entity, $identifier);
 
-            if (!@copy($fromPath.$identifier.'.'.$extension, $dstPath.$entityId.'.'.$extension)) {
+            if (!@copy($fromPath.$identifier.'.'.$imageExtension, $dstPath.$entityId.'.'.$imageExtension)) {
                 $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier, $entity));
-
                 return;
             }
 
-            foreach ($types as $type) {
-                $originFile = $fromPath.$identifier.'-'.$type['name'].'.'.$extension;
-                $targetFile = $dstPath.$entityId.'-'.$type['name'].'.'.$extension;
+            foreach ($imageTypes as $type) {
+                $originFile = $fromPath.$identifier.'-'.$type['name'].'.'.$imageExtension;
+                $targetFile = $dstPath.$entityId.'-'.$type['name'].'.'.$imageExtension;
 
                 // Test if dest folder is writable
                 if (!is_writable(dirname($targetFile))) {
                     $this->setError($this->language->l('Cannot create image "%1$s" (bad permissions on folder "%2$s")', $identifier.'-'.$type['name'], dirname($targetFile)));
-                } // If a file named folder/entity-type.extension exists just copy it, this is an optimisation in order to prevent to much resize
+                } // If a file named folder/entity-type.extension exists just copy it, this is an optimisation in order to prevent too much resize
                 elseif (file_exists($originFile)) {
                     if (!@copy($originFile, $targetFile)) {
                         $this->setError($this->language->l('Cannot create image "%s"', $identifier.'-'.$type['name']));
                     }
                     @chmod($targetFile, 0644);
                 } // Resize the image if no cache was prepared in fixtures
-                elseif (!ImageManager::resize($fromPath.$identifier.'.'.$extension, $targetFile, $type['width'], $type['height'])) {
+                elseif (!ImageManager::resize($fromPath.$identifier.'.'.$imageExtension, $targetFile, $type['width'], $type['height'])) {
                     $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier.'-'.$type['name'], $entity));
                 }
             }
@@ -878,9 +877,11 @@ class InstallXmlLoader
         $dstPath = _PS_IMG_DIR_.'scenes/thumbs/';
         $entityId = $this->retrieveId('scene', $identifier);
 
-        if (!@copy($fromPath.$identifier.'-m_scene_default.jpg', $dstPath.$entityId.'-m_scene_default.jpg')) {
-            $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier, 'scene'));
+        $sourceImage = ImageManager::getSourceImage($fromPath, $identifier.'-m_scene_default');
+        $sourceImageNew = str_replace($fromPath.'/'.$identifier, $dstPath.'/'.$entityId, $sourceImage);
 
+        if (!@copy($sourceImage, $sourceImageNew)) {
+            $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier, 'scene'));
             return;
         }
     }
@@ -909,7 +910,6 @@ class InstallXmlLoader
             //test if file exist in install dir and if do not exist in dest folder.
             if (!@copy($fromPath.$data['class_name'].'.gif', $dstPath.$data['class_name'].'.gif')) {
                 $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier, 'tab'));
-
                 return;
             }
         }
@@ -925,17 +925,17 @@ class InstallXmlLoader
     {
         $path = $this->img_path.'p/';
         $image = new Image($this->retrieveId('image', $identifier));
+        $sourceImage = ImageManager::getSourceImage($path, $identifier);
         $dstPath = $image->getPathForCreation();
-        if (!@copy($path.$identifier.'.jpg', $dstPath.'.'.$image->image_format)) {
+        if (!@copy($sourceImage, $dstPath.'.'.$image->image_format)) {
             $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier, 'product'));
-
             return;
         }
         @chmod($dstPath.'.'.$image->image_format, 0644);
 
-        $types = ImageType::getImagesTypes('products');
+        $types = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS);
         foreach ($types as $type) {
-            $originFile = $path.$identifier.'-'.$type['name'].'.jpg';
+            $originFile = ImageManager::getSourceImage($path, $identifier.'-'.$type['name']);
             $targetFile = $dstPath.'-'.$type['name'].'.'.$image->image_format;
 
             // Test if dest folder is writable
@@ -948,7 +948,7 @@ class InstallXmlLoader
                 }
                 @chmod($targetFile, 0644);
             } // Resize the image if no cache was prepared in fixtures
-            elseif (!ImageManager::resize($path.$identifier.'.jpg', $targetFile, $type['width'], $type['height'])) {
+            elseif (!ImageManager::resize(ImageManager::getSourceImage($path, $identifier), $targetFile, $type['width'], $type['height'])) {
                 $this->setError($this->language->l('Cannot create image "%1$s" for entity "%2$s"', $identifier.'-'.$type['name'], 'product'));
             }
         }
@@ -1460,26 +1460,26 @@ class InstallXmlLoader
     }
 
     /**
-     * @param string $entity
+     * @param string $entityType
      * @param string $path
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function backupImage($entity, $path)
+    public function backupImage($entityType, $path)
     {
         $reference = [
-            'product'      => 'products',
-            'category'     => 'categories',
-            'manufacturer' => 'manufacturers',
-            'supplier'     => 'suppliers',
-            'scene'        => 'scenes',
-            'store'        => 'stores',
+            'product'      => ImageEntity::ENTITY_TYPE_PRODUCTS,
+            'category'     => ImageEntity::ENTITY_TYPE_CATEGORIES,
+            'manufacturer' => ImageEntity::ENTITY_TYPE_MANUFACTURERS,
+            'supplier'     => ImageEntity::ENTITY_TYPE_SUPPLIERS,
+            'scene'        => ImageEntity::ENTITY_TYPE_SCENES,
+            'store'        => ImageEntity::ENTITY_TYPE_STORES,
         ];
 
         $types = [];
-        if (isset($reference[$entity])) {
-            foreach (ImageType::getImagesTypes($reference[$entity]) as $type) {
+        if (isset($reference[$entityType])) {
+            foreach (ImageType::getImagesTypes($reference[$entityType]) as $type) {
                 $types[] = $type['name'];
             }
         }
@@ -1493,12 +1493,14 @@ class InstallXmlLoader
                 $this->setError(sprintf('Cannot create directory <i>%s</i>', $backupPath));
             }
 
+            $mainImageExtensions = implode('|',ImageManager::getAllowedImageExtensions(true, true));
+
             foreach (scandir($fromPath) as $file) {
-                if ($file[0] != '.' && preg_match('#^(([0-9]+)(-('.implode('|', $types).'))?)\.(gif|jpg|jpeg|png)$#i', $file, $m)) {
+                if ($file[0] != '.' && preg_match('#^(([0-9]+)(-('.implode('|', $types).'))?)\.('.$mainImageExtensions.')$#i', $file, $m)) {
                     $fileId = $m[2];
                     $fileType = $m[3];
                     $fileExtension = $m[5];
-                    copy($fromPath.$file, $backupPath.$this->generateId($entity, $fileId).$fileType.'.'.$fileExtension);
+                    copy($fromPath.$file, $backupPath.$this->generateId($entityType, $fileId).$fileType.'.'.$fileExtension);
                 }
             }
         }
@@ -1547,7 +1549,7 @@ class InstallXmlLoader
     public function backupImageImage()
     {
         $types = [];
-        foreach (ImageType::getImagesTypes('products') as $type) {
+        foreach (ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS) as $type) {
             $types[] = $type['name'];
         }
 

@@ -2047,24 +2047,19 @@ class AdminThemesControllerCore extends AdminController
                 return;
             }
 
-            $ext = ($fieldName == 'PS_STORES_ICON') ? '.gif' : '.jpg';
-            $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.$ext;
+            $imageExtension = ($fieldName == 'PS_STORES_ICON') ? 'gif' : 'jpg';
+            $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.'.'.$imageExtension;
 
             if ($this->context->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0
                 || Shop::isFeatureActive() == false
             ) {
-                $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').$ext;
+                $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').'.'.$imageExtension;
             }
 
-            if ($fieldName == 'PS_STORES_ICON') {
-                if (!@ImageManager::resize($tmpName, _PS_IMG_DIR_.$logoName, null, null, 'gif', true)) {
-                    $this->errors[] = Tools::displayError('An error occurred while attempting to copy your logo.');
-                }
-            } else {
-                if (!@ImageManager::resize($tmpName, _PS_IMG_DIR_.$logoName)) {
-                    $this->errors[] = Tools::displayError('An error occurred while attempting to copy your logo.');
-                }
+            if (!@ImageManager::convertImageToExtension($tmpName, $imageExtension, _PS_IMG_DIR_.$logoName)) {
+                $this->errors[] = Tools::displayError('An error occurred while attempting to copy your logo.');
             }
+
             $idShop = null;
             $idShopGroup = null;
             if (!count($this->errors) && @filemtime(_PS_IMG_DIR_.Configuration::get($fieldName))) {
@@ -2813,7 +2808,7 @@ class AdminThemesControllerCore extends AdminController
      * @param string $image Real image filename
      * @param string $cacheImage Cached filename
      * @param int $size Desired size
-     * @param string $imageType Image type
+     * @param string $imageExtension Image type
      * @param bool $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
      * @param bool $regenerate When turned on and the file already exist, the file will be regenerated
      *
@@ -2821,7 +2816,7 @@ class AdminThemesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      */
-    protected function thumbnail($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
+    protected function thumbnail($image, $cacheImage, $size, $imageExtension = null, $disableCache = true, $regenerate = false)
     {
         if (!file_exists($image)) {
             return '';
@@ -2854,7 +2849,7 @@ class AdminThemesControllerCore extends AdminController
                     $size = $y / ($x / $maxX);
                 }
 
-                ImageManager::resize($image, _PS_TMP_IMG_DIR_.$cacheImage, $ratio_x, $size, $imageType);
+                ImageManager::resize($image, _PS_TMP_IMG_DIR_.$cacheImage, $ratio_x, $size, $imageExtension);
             }
         }
         // Relative link will always work, whatever the base uri set in the admin

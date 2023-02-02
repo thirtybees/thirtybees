@@ -34,7 +34,7 @@
 		<div class="form-group">
 			<label class="control-label col-lg-3 file_upload_label">
 				<span class="label-tooltip" data-toggle="tooltip"
-					title="{l s='Format:'} JPG, GIF, PNG. {l s='Filesize:'} {$max_image_size|string_format:"%.2f"} {l s='MB max.'}">
+					title="{l s='Format:'} {implode(', ', ImageManager::getAllowedImageExtensions(true))}. {l s='Filesize:'} {$max_image_size|string_format:"%.2f"} {l s='MB max.'}">
 					{if isset($id_image)}{l s='Edit this product\'s image:'}{else}{l s='Add a new image to this product'}{/if}
 				</span>
 			</label>
@@ -111,9 +111,9 @@
 	<table id="lineType" style="display:none;">
 		<tr id="image_id">
 			<td>
-				<a href="{$smarty.const._THEME_PROD_DIR_}image_path.jpg" class="fancybox">
+				<a href="{$smarty.const._THEME_PROD_DIR_}image_path.{$imageExtension}" class="fancybox">
 					<img
-						src="{$smarty.const._THEME_PROD_DIR_}{$iso_lang}-default-{$imageType}.jpg"
+						src="{$smarty.const._THEME_PROD_DIR_}{$iso_lang}-default-{$imageType}.{$imageExtension}"
 						alt="legend"
 						title="legend"
 						class="img-thumbnail" />

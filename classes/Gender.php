@@ -126,22 +126,31 @@ class GenderCore extends ObjectModel
 
     /**
      * @param int|null $id
+     *
      * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function getGenderImage($id)
     {
         $id = (int)$id;
-        if (!$id || !file_exists(_PS_GENDERS_DIR_ . $id . '.jpg')) {
-            return _THEME_GENDERS_DIR_ . 'Unknown.jpg';
+
+        if ($id && ($sourceImage = ImageManager::getSourceImage(_PS_GENDERS_DIR_, $id))) {
+            return str_replace(_PS_GENDERS_DIR_, _THEME_GENDERS_DIR_, $sourceImage);
+
         }
 
-        return _THEME_GENDERS_DIR_ . $id . '.jpg';
+        return _THEME_GENDERS_DIR_ . 'Unknown.jpg';
     }
 
     /**
      * @param bool $useUnknown
      *
      * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getImage($useUnknown = false)
     {

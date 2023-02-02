@@ -55,11 +55,6 @@ class AdminStoresControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->fieldImageSettings = [
-            'name' => 'image',
-            'dir'  => 'st',
-        ];
-
         $this->fields_list = [
             'id_store' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'name'     => ['title' => $this->l('Name'), 'filter_key' => 'a!name'],
@@ -360,16 +355,17 @@ class AdminStoresControllerCore extends AdminController
             return '';
         }
 
-        $image = _PS_STORE_IMG_DIR_.$obj->id.'.jpg';
-        $imageUrl = ImageManager::thumbnail(
-            $image,
-            $this->table.'_'.(int) $obj->id.'.'.$this->imageType,
-            350,
-            $this->imageType,
-            true,
-            true
-        );
-        $imageSize = file_exists($image) ? filesize($image) / 1000 : false;
+        if ($image = ImageManager::getSourceImage(_PS_STORE_IMG_DIR_, $obj->id)) {
+            $imageUrl = ImageManager::thumbnail(
+                $image,
+                $this->table.'_'.(int) $obj->id.'.'.$this->imageType,
+                350,
+                $this->imageType,
+                true,
+                true
+            );
+            $imageSize = filesize($image) / 1000;
+        }
 
         $tmpAddr = new Address();
         $res = $tmpAddr->getFieldsRequiredDatabase();
@@ -495,8 +491,9 @@ class AdminStoresControllerCore extends AdminController
                     'label'         => $this->l('Picture'),
                     'name'          => 'image',
                     'display_image' => true,
-                    'image'         => $imageUrl ? $imageUrl : false,
-                    'size'          => $imageSize,
+                    'delete_url'    => true,
+                    'image'         => $imageUrl ?? false,
+                    'size'          => $imageSize ?? false,
                     'hint'          => $this->l('Storefront picture.'),
                 ],
             ],
@@ -660,62 +657,5 @@ class AdminStoresControllerCore extends AdminController
                 Configuration::updateValue('PS_SHOP_STATE', $state->name);
             }
         }
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function postImage($id)
-    {
-        $ret = parent::postImage($id);
-
-        if (($idStore = Tools::getIntValue('id_store')) && $_FILES && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
-            $imageTypes = ImageType::getImagesTypes('stores');
-            foreach ($imageTypes as $imageType) {
-                ImageManager::resize(
-                    _PS_STORE_IMG_DIR_.$idStore.'.jpg',
-                    _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.jpg',
-                    (int) $imageType['width'],
-                    (int) $imageType['height']
-                );
-                if (ImageManager::retinaSupport()) {
-                    ImageManager::resize(
-                        _PS_STORE_IMG_DIR_.$idStore.'.jpg',
-                        _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'2x.jpg',
-                        (int) $imageType['width'] * 2,
-                        (int) $imageType['height'] * 2
-                    );
-                }
-                if (ImageManager::generateWebpImages()) {
-                    ImageManager::resize(
-                        _PS_STORE_IMG_DIR_.$idStore.'.jpg',
-                        _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.webp',
-                        (int) $imageType['width'],
-                        (int) $imageType['height'],
-                        'webp'
-                    );
-                    if (ImageManager::retinaSupport()) {
-                        ImageManager::resize(
-                            _PS_STORE_IMG_DIR_.$idStore.'.jpg',
-                            _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'2x.webp',
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2,
-                            'webp'
-                        );
-                    }
-                }
-
-                if (Configuration::get('TB_IMAGE_LAST_UPD_STORES') < $idStore) {
-                    Configuration::updateValue('TB_IMAGE_LAST_UPD_STORES', $idStore);
-                }
-            }
-        }
-
-        return $ret;
     }
 }

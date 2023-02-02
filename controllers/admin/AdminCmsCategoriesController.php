@@ -153,7 +153,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
         } /* Delete object */
         elseif (Tools::isSubmit('delete'.$this->table)) {
             if ($this->hasDeletePermission()) {
-                if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
+                if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var CMSCategory $object */
                     $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                     if ($this->deleted) {

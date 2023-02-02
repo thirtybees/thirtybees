@@ -79,8 +79,10 @@ class AdminCarriersControllerCore extends AdminController
         ];
 
         $this->fieldImageSettings = [
-            'name' => 'logo',
-            'dir'  => 's',
+            [
+                'name' => 'logo',
+                'dir'  => _PS_SHIP_IMG_DIR_,
+            ]
         ];
 
         $this->fields_list = [
@@ -209,7 +211,7 @@ class AdminCarriersControllerCore extends AdminController
                     'type'  => 'file',
                     'label' => $this->l('Logo'),
                     'name'  => 'logo',
-                    'hint'  => $this->l('Upload a logo from your computer.').' (.gif, .jpg, .jpeg '.$this->l('or').' .png)',
+                    'hint'  => $this->l('Upload a logo from your computer.').' ('.implode(', ', ImageManager::getAllowedImageExtensions(true, true)).')',
                 ],
                 [
                     'type'      => 'text',

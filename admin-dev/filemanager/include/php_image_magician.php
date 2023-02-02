@@ -203,7 +203,7 @@ class imageLib
     /**
      * @var string[]
      */
-    private $transparentArray = ['.png', '.gif', 'webp'];
+    private $transparentArray = ['.png', '.gif', '.webp'];
     /**
      * @var bool
      */
@@ -215,7 +215,7 @@ class imageLib
     /**
      * @var string[]
      */
-    private $sharpenArray = ['jpg'];
+    private $sharpenArray = ['.jpg'];
     /**
      * @var string
      */
