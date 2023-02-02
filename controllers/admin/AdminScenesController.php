@@ -53,10 +53,6 @@ class AdminScenesControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $this->identifier = 'id_scene';
-        $this->fieldImageSettings = [
-            ['name' => 'image', 'dir' => 'scenes'],
-            ['name' => 'thumb', 'dir' => 'scenes/thumbs'],
-        ];
 
         $this->fields_list = [
             'id_scene' => [
@@ -115,14 +111,14 @@ class AdminScenesControllerCore extends AdminController
     public function initFieldsForm()
     {
         $obj = $this->loadObject(true);
-        $sceneImageTypes = ImageType::getImagesTypes('scenes');
+        $sceneImageTypes = ImageType::getImagesTypes();
         $largeSceneImageType = null;
         $thumbSceneImageType = null;
         foreach ($sceneImageTypes as $sceneImageType) {
-            if ($sceneImageType['name'] == 'scene_default') {
+            if ($sceneImageType['name'] == 'scene') {
                 $largeSceneImageType = $sceneImageType;
             }
-            if ($sceneImageType['name'] == 'm_scene_default') {
+            if ($sceneImageType['name'] == 'm_scene') {
                 $thumbSceneImageType = $sceneImageType;
             }
         }
@@ -178,7 +174,7 @@ class AdminScenesControllerCore extends AdminController
         ];
         $this->fields_form = $fieldsForm;
 
-        $imageToMapDesc = '<div class="help-block">' . $this->l('Format:') . ' JPG, GIF, PNG. ' . $this->l('File size:') . ' '
+        $imageToMapDesc = '<div class="help-block">' . $this->l('Format:') . ' ' . implode(', ', ImageManager::getAllowedImageExtensions(true, true)) . '. ' . $this->l('File size:') . ' '
             . (Tools::getMaxUploadSize() / 1024) . $this->l('Kb max.') . ' '
             . sprintf(
                 $this->l('If an image is too large, it will be reduced to %1$d x %2$dpx (width x height).'),
@@ -188,12 +184,13 @@ class AdminScenesControllerCore extends AdminController
             $this->l('Note: To change image dimensions, please change the \'large_scene\' image type settings to the desired size (in Back Office > Preferences > Images).')
             . '</div>';
 
-        if ($obj->id && file_exists(_PS_SCENE_IMG_DIR_.$obj->id.'-scene_default.jpg')) {
+        if ($obj->id && ImageManager::getSourceImage(_PS_SCENE_IMG_DIR_, $obj->id)) {
             $this->addJqueryPlugin('autocomplete');
             $this->addJqueryPlugin('imgareaselect');
             $this->addJs(_PS_JS_DIR_.'admin/scenes.js');
-            $imageToMapDesc .= '<div class="panel panel-default"><span class="thumbnail row-margin-bottom"><img id="large_scene_image" alt="" src="'.
-                _THEME_SCENE_DIR_.$obj->id.'-scene_default.jpg?rand='.(int) rand().'" /></span>';
+            $sourceImageSrc = Link::getGenericImageLink(ImageEntity::ENTITY_TYPE_SCENES, $obj->id, 'scene');
+            $imageToMapDesc .= '<div class="panel panel-default"><span class="thumbnail row-margin-bottom"><img id="large_scene_image" style="margin-left:0;" alt="" width="870" height="270" src="'.
+                $sourceImageSrc.'" /></span>';
 
             $imageToMapDesc .= '
 				<div id="ajax_choose_product" class="row" style="display:none;">
@@ -213,18 +210,19 @@ class AdminScenesControllerCore extends AdminController
 				</div>
 				';
 
-            if (file_exists(_PS_SCENE_IMG_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg')) {
-                $imageToMapDesc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'._THEME_SCENE_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg?rand='.(int) rand().'" />';
+            if ($sourceImage = ImageManager::getSourceImage(_PS_SCENE_IMG_DIR_.'thumbs/', $obj->id.'-m_scene')) {
+                $sourceImageSrc = str_replace(_PS_SCENE_IMG_DIR_, _THEME_SCENE_DIR_, $sourceImage);
+                $imageToMapDesc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'.$sourceImageSrc.'" />';
             }
 
             $imgAltDesc = $this->l('If you want to use a thumbnail other than one generated from simply reducing the mapped image, please upload it here.')
-                . '<br />' . $this->l('Format:') . ' JPG, GIF, PNG. '
+                . '<br />' . $this->l('Format:') . ' ' . implode(', ', ImageManager::getAllowedImageExtensions(true, true)) . '. '
                 . $this->l('File size:') . ' ' . (Tools::getMaxUploadSize() / 1024) . $this->l('Kb max.') . ' '
                 . sprintf(
                     $this->l('Automatically resized to %1$d x %2$dpx (width x height).'),
                     $thumbSceneImageType['width'], $thumbSceneImageType['height']
                 ) . '.<br />'
-                . $this->l('Note: To change image dimensions, please change the \'m_scene_default\' image type settings to the desired size (in Back Office > Preferences > Images).');
+                . $this->l('Note: To change image dimensions, please change the \'m_scene\' image type settings to the desired size (in Back Office > Preferences > Images).');
 
             $inputImgAlt = [
                 'type'  => 'file',
@@ -352,108 +350,6 @@ class AdminScenesControllerCore extends AdminController
                 return false;
             }
         }
-        parent::postProcess();
-    }
-
-    /**
-     * After image upload
-     *
-     * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function afterImageUpload()
-    {
-        /* Generate image with differents size */
-        if (!($obj = $this->loadObject(true))) {
-            return false;
-        }
-
-        if ($obj->id && (isset($_FILES['image']) || isset($_FILES['thumb']))) {
-            $baseImgPath = _PS_SCENE_IMG_DIR_.$obj->id.'.jpg';
-            $imagesTypes = ImageType::getImagesTypes('scenes');
-
-            foreach ($imagesTypes as $imageType) {
-                if ($imageType['name'] == 'm_scene_default') {
-                    if (isset($_FILES['thumb']) && !$_FILES['thumb']['error']) {
-                        $baseThumbPath = _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'.jpg';
-                    } else {
-                        $baseThumbPath = $baseImgPath;
-                    }
-                    ImageManager::resize(
-                        $baseThumbPath,
-                        _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.jpg',
-                        (int) $imageType['width'],
-                        (int) $imageType['height']
-                    );
-                    if (ImageManager::retinaSupport()) {
-                        ImageManager::resize(
-                            $baseThumbPath,
-                            _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.jpg',
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2
-                        );
-                    }
-                    if (ImageManager::generateWebpImages()) {
-                        ImageManager::resize(
-                            $baseThumbPath,
-                            _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
-                            (int) $imageType['width'],
-                            (int) $imageType['height'],
-                            'webp'
-                        );
-                        if (ImageManager::retinaSupport()) {
-                            ImageManager::resize(
-                                $baseThumbPath,
-                                _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.webp',
-                                (int) $imageType['width'] * 2,
-                                (int) $imageType['height'] * 2,
-                                'webp'
-                            );
-                        }
-                    }
-                } elseif (isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
-                    ImageManager::resize(
-                        $baseImgPath,
-                        _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.jpg',
-                        (int) $imageType['width'],
-                        (int) $imageType['height']
-                    );
-                    if (ImageManager::retinaSupport()) {
-                        ImageManager::resize(
-                            $baseImgPath,
-                            _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.jpg',
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2
-                        );
-                    }
-                    if (ImageManager::generateWebpImages()) {
-                        ImageManager::resize(
-                            $baseImgPath,
-                            _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
-                            (int) $imageType['width'],
-                            (int) $imageType['height'],
-                            'webp'
-                        );
-                        if (ImageManager::retinaSupport()) {
-                            ImageManager::resize(
-                                $baseImgPath,
-                                _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.webp',
-                                (int) $imageType['width'] * 2,
-                                (int) $imageType['height'] * 2,
-                                'webp'
-                            );
-                        }
-                    }
-                }
-            }
-
-            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_SCENES') < $obj->id) {
-                Configuration::updateValue('TB_IMAGES_LAST_UPD_SCENES', $obj->id);
-            }
-        }
-
-        return true;
+        return parent::postProcess();
     }
 }

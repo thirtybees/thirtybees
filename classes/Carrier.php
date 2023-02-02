@@ -839,7 +839,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
             $row['price'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], true, null, null, $idZone));
             $row['price_tax_exc'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], false, null, null, $idZone));
-            $row['img'] = file_exists(_PS_SHIP_IMG_DIR_.(int) $row['id_carrier'].'.jpg') ? _THEME_SHIP_DIR_.(int) $row['id_carrier'].'.jpg' : '';
+            $fileExtension = ImageManager::getDefaultImageExtension();
+            $row['img'] = file_exists(_PS_SHIP_IMG_DIR_.(int) $row['id_carrier'].'.'.$fileExtension) ? _THEME_SHIP_DIR_.(int) $row['id_carrier'].'.'.$fileExtension : '';
 
             // If price is false, then the carrier is unavailable (carrier module)
             if ($row['price'] === false) {
@@ -1666,17 +1667,17 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             return;
         }
 
-        $oldLogo = _PS_SHIP_IMG_DIR_.'/'.(int) $oldId.'.jpg';
-        if (file_exists($oldLogo)) {
-            copy($oldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $this->id.'.jpg');
+        $fileExtension = ImageManager::getDefaultImageExtension();
+
+        if ($sourceFile = ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $oldId)) {
+            copy($sourceFile, _PS_SHIP_IMG_DIR_.'/'.(int) $this->id.'.'.$fileExtension);
         }
 
-        $oldTmpLogo = _PS_TMP_IMG_DIR_.'/carrier_mini_'.(int) $oldId.'.jpg';
-        if (file_exists($oldTmpLogo)) {
+        if ($sourceFileOldTmpLogo = ImageManager::getSourceImage(_PS_TMP_IMG_DIR_, 'carrier_mini_'.(int) $oldId)) {
             if (!isset($_FILES['logo'])) {
-                copy($oldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$this->id.'.jpg');
+                copy($sourceFileOldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$this->id.'.'.$fileExtension);
             }
-            unlink($oldTmpLogo);
+            unlink($sourceFileOldTmpLogo);
         }
 
         // Copy existing ranges price

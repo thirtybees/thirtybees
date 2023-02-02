@@ -201,7 +201,7 @@ class CategoryControllerCore extends FrontController
         $this->context->smarty->assign('scenes', $scenes);
 
         // Scenes images formats
-        if ($scenes && ($sceneImageTypes = ImageType::getImagesTypes('scenes'))) {
+        if ($scenes && ($sceneImageTypes = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_SCENES))) {
             foreach ($sceneImageTypes as $sceneImageType) {
                 if ($sceneImageType['name'] == ImageType::getFormatedName('m_scene')) {
                     $thumbSceneImageType = $sceneImageType;

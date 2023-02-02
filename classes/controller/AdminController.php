@@ -123,7 +123,7 @@ class AdminControllerCore extends Controller
     /** @var array Name and directory where class image are located */
     public $fieldImageSettings = [];
     /** @var string Image type */
-    public $imageType = 'jpg';
+    public $imageType;
     /** @var string Current controller name without suffix */
     public $controller_name;
     /** @var int */
@@ -436,6 +436,8 @@ class AdminControllerCore extends Controller
         $this->initShopContext();
 
         $this->context->currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+        $this->imageType = ImageManager::getDefaultImageExtension();
+        $this->cleanFieldImageSettings();
 
         $this->admin_webpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
         $this->admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $this->admin_webpath);
@@ -826,6 +828,15 @@ class AdminControllerCore extends Controller
     public function processDeleteImage()
     {
         if (Validate::isLoadedObject($object = $this->loadObject())) {
+
+            if (($inputName = Tools::getValue('inputName')) && !empty($this->fieldImageSettings)) {
+                foreach ($this->fieldImageSettings as $fieldImageSetting) {
+                    if ($fieldImageSetting['inputName']==$inputName && !empty($fieldImageSetting['path'])) {
+                        $object->image_dir = $fieldImageSetting['path'];
+                        break;
+                    }
+                }
+            }
             if (($object->deleteImage())) {
                 $redirect = static::$currentIndex.'&update'.$this->table.'&'.$this->identifier.'='.Tools::getValue($this->identifier).'&conf=7&token='.$this->token;
                 if (!$this->ajax) {
@@ -835,7 +846,6 @@ class AdminControllerCore extends Controller
                 }
             }
         }
-        $this->errors[] = Tools::displayError('An error occurred while attempting to delete the image. (cannot load object).');
 
         return $object;
     }
@@ -1225,7 +1235,10 @@ class AdminControllerCore extends Controller
             } else {
                 if ($this->deleted) {
                     if (!empty($this->fieldImageSettings)) {
-                        $res = $object->deleteImage();
+                        foreach ($this->fieldImageSettings as $fieldImageSetting) {
+                            $object->image_dir = $fieldImageSetting['path'];
+                            $res = $object->deleteImage();
+                        }
                     }
 
                     if (!$res) {
@@ -1281,7 +1294,6 @@ class AdminControllerCore extends Controller
         $this->validateRules();
         if (empty($this->errors)) {
             $id = Tools::getIntValue($this->identifier);
-
             /* Object update */
             if ($id) {
                 /** @var ObjectModel $object */
@@ -1595,6 +1607,47 @@ class AdminControllerCore extends Controller
     }
 
     /**
+     * Gathering ObjectModel data and setting $fieldImageSettings as a multidimensional array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    private function cleanFieldImageSettings()
+    {
+        // Make sure, that fieldImageSettings is a multidimensional array
+        if (isset($this->fieldImageSettings['name']) && isset($this->fieldImageSettings['dir'])) {
+            $this->fieldImageSettings = [$this->fieldImageSettings];
+        }
+
+        if (empty($this->fieldImageSettings) && $this->className && !empty($this->className::$definition['images'])) {
+            $this->fieldImageSettings = $this->className::$definition['images'];
+            ImageEntity::rebuildImageEntities($this->className, $this->fieldImageSettings);
+        }
+
+        if (!empty($this->fieldImageSettings)) {
+            foreach ($this->fieldImageSettings as &$fieldImageSetting) {
+
+                // Set inputName
+                if (!isset($fieldImageSetting['inputName']) && isset($fieldImageSetting['name'])) {
+                    $fieldImageSetting['inputName'] = $fieldImageSetting['name'];
+                }
+
+                // Set path
+                if (!isset($fieldImageSetting['path']) && isset($fieldImageSetting['dir'])) {
+                    $fieldImageSetting['path'] = $fieldImageSetting['dir'];
+                }
+                // Check if there is a full path
+
+                if (!str_contains($fieldImageSetting['path'], _PS_CORE_DIR_)) {
+                    $fieldImageSetting['path'] = _PS_IMG_DIR_.$fieldImageSetting['path'];
+                }
+                $fieldImageSetting['path'] = rtrim($fieldImageSetting['path'], '/') . '/'; // Make sure to end with a /
+            }
+        }
+    }
+
+
+    /**
      * Overload this method for custom checking
      *
      * @param int $id Object id used for deleting images
@@ -1606,24 +1659,25 @@ class AdminControllerCore extends Controller
      */
     protected function postImage($id)
     {
-        if (isset($this->fieldImageSettings['name']) && isset($this->fieldImageSettings['dir'])) {
-            return $this->uploadImage($id, $this->fieldImageSettings['name'], $this->fieldImageSettings['dir'].'/');
-        } elseif (!empty($this->fieldImageSettings)) {
-            foreach ($this->fieldImageSettings as $image) {
-                if (isset($image['name']) && isset($image['dir'])) {
-                    $this->uploadImage($id, $image['name'], $image['dir'].'/');
+        if (!empty($this->fieldImageSettings)) {
+            foreach ($this->fieldImageSettings as $imageEntityName => $fieldImageSetting) {
+                $imageExtension = $fieldImageSetting['imageExtension'] ?? false;
+                $imageTypes = ImageType::getImagesTypes($imageEntityName);
+                if (isset($fieldImageSetting['inputName']) && isset($fieldImageSetting['path'])) {
+                    $width = $fieldImageSetting['width'] ?? null;
+                    $height = $fieldImageSetting['height'] ?? null;
+                    $this->uploadImage($id, $fieldImageSetting['inputName'], $fieldImageSetting['path'], $imageExtension, $width, $height, $imageTypes);
                 }
             }
         }
-
         return !count($this->errors) ? true : false;
     }
 
     /**
      * @param int $id
      * @param string $name
-     * @param string $dir
-     * @param string|bool $ext
+     * @param string $path
+     * @param string|bool $imageExtension
      * @param int|null $width
      * @param int|null $height
      *
@@ -1632,18 +1686,23 @@ class AdminControllerCore extends Controller
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function uploadImage($id, $name, $dir, $ext = false, $width = null, $height = null)
+    protected function uploadImage($id, $name, $path, $imageExtension = false, $width = null, $height = null, $generateImageTypes = [])
     {
         if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
+
             // Delete old image
             if (Validate::isLoadedObject($object = $this->loadObject())) {
-                $object->deleteImage();
+                // A few times we use strings for filename instead of int -> we shouldn't delete in this case (needed for AdminLanguagesController)
+                if (Validate::isInt($id)) {
+                    $object->image_dir = $path;
+                    $object->deleteImage();
+                }
             } else {
                 return false;
             }
 
             // Check image validity
-            $maxSize = isset($this->max_image_size) ? $this->max_image_size : 0;
+            $maxSize = $this->max_image_size ?? 0;
             if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize($maxSize))) {
                 $this->errors[] = $error;
             }
@@ -1662,9 +1721,47 @@ class AdminControllerCore extends Controller
                 $this->errors[] = Tools::displayError('Due to memory limit restrictions, this image cannot be loaded. Please increase your memory_limit value via your server\'s configuration settings. ');
             }
 
+            // Check if the dir path exits (otherwise create it)
+            if (!file_exists($path)) {
+                // Apparently sometimes mkdir cannot set the rights, and sometimes chmod can't. Trying both.
+                $success = @mkdir($path, 0775, true);
+                $chmod = @chmod($path, 0775);
+
+                // Create an index.php file in the new folder
+                if (($success || $chmod)
+                    && !file_exists($path.'index.php')
+                    && file_exists(_PS_IMG_DIR_.'index.php')
+                ) {
+                    @copy(_PS_IMG_DIR_.'index.php', $path.'index.php');
+                }
+            }
+
             // Copy new image
-            if (empty($this->errors) && !ImageManager::resize($tmpName, _PS_IMG_DIR_.$dir.$id.'.'.$this->imageType, (int) $width, (int) $height, ($ext ? $ext : $this->imageType))) {
-                $this->errors[] = Tools::displayError('An error occurred while uploading the image.');
+            if (!$imageExtension) {
+                $imageExtension = $this->imageType;
+            }
+
+            if (empty($this->errors)) {
+                // Some controller (example: AdminGenders) use fixed sizes for uploads
+                if ($width && $height) {
+                    $success = ImageManager::resize($tmpName, $path.$id.'.'.$imageExtension, $width, $height, $imageExtension);
+                }
+                else {
+                    $success = ImageManager::convertImageToExtension($tmpName, $imageExtension, $path.$id.'.'.$imageExtension);
+                }
+
+                if (!$success) {
+                    $this->errors[] = Tools::displayError('An error occurred while uploading the image.');
+                }
+            }
+
+            if (empty($this->errors) && !empty($generateImageTypes)) {
+                foreach ($generateImageTypes as $imageType) {
+                    ImageManager::resize($path.$id.'.'.$imageExtension, $path.$id.'-'.$imageType['name'].'.'.$imageExtension, $imageType['width'], $imageType['height'], $imageExtension);
+                    if (ImageManager::retinaSupport()) {
+                        ImageManager::resize($path.$id.'.'.$imageExtension, $path.$id.'-'.$imageType['name'].'2x.'.$imageExtension, $imageType['width'] * 2, $imageType['height'] * 2, $imageExtension);
+                    }
+                }
             }
 
             if (count($this->errors)) {
@@ -1672,11 +1769,13 @@ class AdminControllerCore extends Controller
             }
             if ($this->afterImageUpload()) {
                 unlink($tmpName);
-
                 return true;
             }
 
             return false;
+        }
+        elseif (isset($_FILES[$name]['name']) && !empty($_FILES[$name]['name'])) {
+            $this->errors[] = $this->l('Image upload failed!');
         }
 
         return true;
@@ -3864,7 +3963,6 @@ class AdminControllerCore extends Controller
     public function initProcess()
     {
         $this->ensureListIdDefinition();
-
         // Manage list filtering
         if (Tools::isSubmit('submitFilter'.$this->list_id)
             || $this->context->cookie->{'submitFilter'.$this->list_id} !== false

@@ -22,17 +22,20 @@ class LinkTest extends Unit
      */
     protected $raised = false;
 
+    /**
+     * @return array[]
+     */
     protected function getImageLinkData()
     {
         return [
-            ['1/name.jpg', 1, 'name', 1, null],
-            ['img/p/1/1.jpg', 0, 'name', 1, null],
-            ['1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
-            ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home'],
-            ['img/p/en-default-Niara_home.jpg', 1, 'name', 111111, 'home'],
-            ['img/p/en-default-Niara_home.jpg', 0, 'name', 111111, 'home'],
-            ['1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
-            ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home'],
+            ['products/1/name.jpg', 1, 'name', 1, null, 'img/p/1/1.jpg'],
+            ['img/p/1/1.jpg', 0, 'name', 1, null, 'img/p/1/1.jpg'],
+            ['products/1-Niara_home/name.jpg', 1, 'name', 1, 'home', 'img/p/1/1-Niara_home.jpg'],
+            ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home', 'img/p/1/1-Niara_home.jpg'],
+            ['img/l/en-default-Niara_home.jpg', 1, 'name', 111111, 'home', 'img/l/en-default-Niara_home.jpg'],
+            ['img/l/en-default-Niara_home.jpg', 0, 'name', 111111, 'home', 'img/l/en-default-Niara_home.jpg'],
+            ['products/1-Niara_home/name.jpg', 1, 'name', 1, 'home', 'img/p/1/1-Niara_home.jpg'],
+            ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home', 'img/p/1/1-Niara_home.jpg'],
         ];
     }
 
@@ -42,9 +45,10 @@ class LinkTest extends Unit
      * @dataProvider getImageLinkData
      *
      */
-    public function testImageLink($expected, $rewrite, $name, $ids, $type)
+    public function testImageLink($expected, $rewrite, $name, $ids, $type, $actualFile)
     {
         try {
+            $this->ensureFile($actualFile);
             Configuration::updateValue('PS_REWRITING_SETTINGS', $rewrite);
             $link = new Link('http://', 'http://');
             assertEquals($expected, static::getRelativeUrl($link->getImageLink($name, $ids, $type)));
@@ -60,12 +64,13 @@ class LinkTest extends Unit
     public function testImageLinkForSingleLangProduct()
     {
         try {
+            $this->ensureFile('img/p/1/1-Niara_cart.jpg');
             Configuration::updateValue('PS_REWRITING_SETTINGS', 1);
             $link = new Link('http://', 'http://');
             $product = new Product(1, false, 1);
             $imageId = $product->getCoverWs();
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
         } finally {
             Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
         }
@@ -83,11 +88,12 @@ class LinkTest extends Unit
             return true;
         });
         try {
+            $this->ensureFile('img/p/1/1-Niara_cart.jpg');
             Configuration::updateValue('PS_REWRITING_SETTINGS', 1);
             $link = new Link('http://', 'http://');
             $product = new Product(1);
             $imageId = $product->getCoverWs();
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
             assertEquals(true, $this->raised, "Error should have been raised");
         } finally {
             Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
@@ -105,4 +111,16 @@ class LinkTest extends Unit
         return str_replace(trim(_PS_BASE_URL_, '/') . '/', '', $url);
     }
 
+    /**
+     * @param $relative
+     *
+     * @return void
+     */
+    protected function ensureFile($relative)
+    {
+        $filepath = _PS_ROOT_DIR_ . '/' . $relative;
+        if (! file_exists($filepath)) {
+            touch($filepath);
+        }
+    }
 }

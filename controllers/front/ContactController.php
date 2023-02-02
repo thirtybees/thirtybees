@@ -50,7 +50,20 @@ class ContactControllerCore extends FrontController
     public function postProcess()
     {
         if (Tools::isSubmit('submitMessage')) {
-            $extension = ['.txt', '.rtf', '.doc', '.docx', '.pdf', '.zip', '.png', '.jpeg', '.gif', '.jpg'];
+
+            // Todo: Once getFileInformations() is also defined for other types than image, the $extensions array can be emptied
+            $extension = ['.txt', '.rtf', '.doc', '.docx', '.pdf', '.zip'];
+
+            $fileInfos = Media::getFileInformations();
+
+            foreach ($fileInfos as $fileInfo) {
+                foreach ($fileInfo as $mainExtension => $fileExtensionInfo) {
+                    if ($fileExtensionInfo['uploadFrontOffice']) {
+                        $extension[] = '.'.$mainExtension;
+                    }
+                }
+            }
+
             $fileAttachment = Tools::fileAttachment('fileUpload');
             $message = Tools::getValue('message'); // Html entities is not usefull, iscleanHtml check there is no bad html tags.
             if (!($from = Tools::convertEmailToIdn(trim(Tools::getValue('from')))) || !Validate::isEmail($from)) {

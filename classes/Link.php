@@ -350,15 +350,15 @@ class LinkCore
      *
      * @param string $name Rewrite link of the image
      * @param string|int|null $ids ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
-     * @param string $type Image type
-     * @param string $format Image format (jpg/png/webp). Auto-detected by default
+     * @param string $imageType Image type
+     * @param string $imageExtension Image format (jpg/png/webp). Auto-detected by default
      * @param bool $highDpi Higher resolution
      *
      * @return string
      *
      * @throws PrestaShopException
      */
-    public function getImageLink($name, $ids, $type = null, $format = null, $highDpi = false)
+    public function getImageLink($name, $ids, $imageType = null, $imageExtension = null, $highDpi = false)
     {
         $ids = (string)$ids;
         $context = Context::getContext();
@@ -376,11 +376,11 @@ class LinkCore
             $name = static::resolveName($name, $ids);
         }
 
-        if (!$format) {
-            $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
+        if (!$imageExtension) {
+            $imageExtension = ImageManager::getDefaultImageExtension();
         }
 
-        $formattedType = ImageType::getFormatedName($type) ?? '';
+        $formattedType = ImageType::getFormatedName($imageType) ?? '';
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
         // TODO: this functionality should be extracted to post-processing hook
@@ -403,27 +403,27 @@ class LinkCore
             if (isset($matches[2])) {
                 // if $ids contains image type, use it
                 $overrideType = ImageType::getFormatedName($matches[2]) ?? '';
-                $uriPath = $this->getProductDefaultImageUri($iso, $overrideType, $highDpi, $format);
+                $uriPath = $this->getProductDefaultImageUri($iso, $overrideType, $highDpi, $imageExtension);
             }
             if (! $uriPath) {
-                $uriPath = $this->getProductDefaultImageUri($iso, $formattedType, $highDpi, $format);
+                $uriPath = $this->getProductDefaultImageUri($iso, $formattedType, $highDpi, $imageExtension);
             }
         } else {
             // ids can either be single number, or in format id_product-id_image
             $splitIds = explode('-', $ids);
             $idImage = (int)($splitIds[1] ?? $splitIds[0]);
             if ($idImage) {
-                $uriPath = $this->getProductImageUri($idImage, $formattedType, $highDpi, $format, $name);
+                $uriPath = $this->getProductImageUri($idImage, $formattedType, $highDpi, $imageExtension, $name);
             }
         }
 
         // fallback to default image uri
-        if (! $uriPath) {
-            $uriPath = $this->getProductDefaultImageUri($context->language->iso_code, $formattedType, $highDpi, $format);
+        if (!$uriPath) {
+            $uriPath = $this->getProductDefaultImageUri($context->language->iso_code, $formattedType, $highDpi, $imageExtension);
         }
 
         // image file not found
-        if (! $uriPath) {
+        if (!$uriPath) {
             $uriPath = _PS_IMG_ . '404.gif';
         }
 
@@ -445,26 +445,22 @@ class LinkCore
     /**
      * @param string $name
      * @param int $idCategory
-     * @param string|null $type
-     * @param string $format - image format (jpg/png/webp). Auto-detected by default
+     * @param string|null $imageType
+     * @param string $imageExtension Deprecated, since Auto-detected
      * @param boolean $highDpi
      *
      * @return string
      *
      * @throws PrestaShopException
      */
-    public function getCatImageLink($name, $idCategory, $type = null, $format = null, $highDpi = false)
+    public function getCatImageLink($name, $idCategory, $imageType = null, $imageExtension = null, $highDpi = false)
     {
-        if (is_null($format)) {
-            $format = ImageManager::webpSupport() ? 'webp' : 'jpg';
-        }
-
         return static::getGenericImageLink(
             'categories',
             $idCategory,
-            $type,
+            $imageType,
             $highDpi ? '2x' : '',
-            $format === 'webp',
+            null,
             $name
         );
     }
@@ -472,15 +468,12 @@ class LinkCore
     /**
      * Get an image link to anything but products.
      *
-     * @param string $class Class of the image. 'categories',
-     *                            'manufacturers', ... For a list of choices,
-     *                            see _TB_IMAGE_MAP_. For class 'products',
-     *                            use getImageLink().
+     * @param string $imageEntityName name of the imageEntity. 'categories', 'manufacturers', ...
      * @param int $id ID of the image.
-     * @param string $type Image type, like 'home', 'home_small', ...
-     * @param string $resolution Image resolution. '', '2x', '3x', ...
-     * @param bool $webp Whether to use the WEBP format, if available. Auto-detected by default
-     * @param string $name An image name for pretty/SEO-friendly URLs.
+     * @param string $imageType Image type name, like 'home', 'home_small', ...
+     * @param bool $highDpi Higher resolution
+     * @param bool $webp Deprecated, since Auto-detected
+     * @param string $link_rewrite An image name for pretty/SEO-friendly URLs.
      *                            Currently, only (products and) categories
      *                            support such names.
      *
@@ -488,33 +481,27 @@ class LinkCore
      *
      * @throws PrestaShopException
      */
-    public static function getGenericImageLink($class, $id, $type, $resolution = '', $webp = null, $name = '')
+    public static function getGenericImageLink($imageEntityName, $id, $imageType = null, $highDpi = false, $webp = null, $link_rewrite = '')
     {
-        $type = ImageType::getFormatedName($type);
+        // Format imageType
+        $imageType = ImageType::getFormatedName($imageType);
+        $imageType = $imageType ? '-'.$imageType : '';
 
-        // resolve image format
-        $format = 'jpg';
-        if (is_null($webp) || $webp === true) {
-            if (ImageManager::webpSupport()) {
-                $format = 'webp';
-            }
-        }
+        // Format link rewrite
+        $link_rewrite = (Configuration::get('PS_REWRITING_SETTINGS') && $link_rewrite) ? $link_rewrite : $id;
 
-        if (Configuration::get('PS_REWRITING_SETTINGS')
-            && $class == 'categories'
-            && $name
-        ) {
-            $uriPath = __PS_BASE_URI__._TB_IMAGE_MAP_[$class]
-                       .$id.'-'.$type.'/'
-                       .$name.$resolution.'.'.$format;
+        $highDpi = $highDpi ? '2x' : '';
+
+        // Get default image extension
+        $imageExtension = ImageManager::getDefaultImageExtension();
+
+        if ((int)Configuration::get('PS_REWRITING_SETTINGS') || !isset(_TB_IMAGE_MAP_[$imageEntityName])) {
+            $uriPath = __PS_BASE_URI__.$imageEntityName.'/'.$id.$imageType.'/'.$link_rewrite.$highDpi.'.'.$imageExtension;
         } else {
-            $uriPath = _PS_IMG_._TB_IMAGE_MAP_[$class]
-                       .$id.'-'.$type.$resolution.'.'.$format;
+            $uriPath = _PS_IMG_._TB_IMAGE_MAP_[$imageEntityName].$id.$imageType.$highDpi.'.'.$imageExtension;
         }
 
-        return Tools::getShopProtocol()
-               .Tools::getMediaServer($uriPath)
-               .$uriPath;
+        return Tools::getShopProtocol().Tools::getMediaServer($uriPath).$uriPath;
     }
 
     /**
@@ -1111,7 +1098,7 @@ class LinkCore
                 $selectedTypes = array_map('intval', explode(',', $selectedTypes));
                 if ($selectedTypes) {
                     $hash = Configuration::get('WATERMARK_HASH');
-                    foreach (ImageType::getImagesTypes('products') as $imageType) {
+                    foreach (ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS) as $imageType) {
                         if (in_array((int)$imageType['id_image_type'], $selectedTypes)) {
                             $imageTypeName = $imageType['name'];
                             $watermarkTypes[$imageTypeName] = $imageTypeName . '-' . $hash;
@@ -1129,20 +1116,16 @@ class LinkCore
      * @param string $iso language iso code for which to display image
      * @param string $formattedType formatted image type, ie. 'Niara_home'
      * @param bool $highDpi true, if high resolution image should be displayed
-     * @param string $preferredExtension preferred image extension ['jpg', 'webp']
+     * @param string $preferredExtension preferred image extension ['jpg', 'png', 'gif', webp']
+     * @param bool $returnFullUri basically adds _PS_CORE_DIR_ if true
      *
      * @return string | false
      * @throws PrestaShopException
      */
-    protected function getProductDefaultImageUri(string $iso, string $formattedType, bool $highDpi, string $preferredExtension)
+    public function getDefaultImageUri(string $iso, string $formattedType, bool $highDpi, string $preferredExtension = '', bool $returnFullUri = false)
     {
         $typeDimension = $formattedType ? '-'.$formattedType : '';
         $highDpiDimension = $highDpi ? '2x' : '';
-
-        $extensions = [ $preferredExtension ];
-        if ($preferredExtension === 'webp') {
-            $extensions[] = 'jpg';
-        }
 
         $isoCandidates = array_unique(array_filter([
             $iso,
@@ -1152,25 +1135,43 @@ class LinkCore
         ], ['Validate', 'isLangIsoCode']));
 
         // build list of candidate image files
-        $fileCandidates = [];
+        $fileNameCandidates = [];
         foreach ($isoCandidates as $isoCandidate) {
-            foreach ($extensions as $extension) {
-                $fileCandidates[] = $isoCandidate . '-default' . $typeDimension . $highDpiDimension . '.' . $extension;
-                $fileCandidates[] = $isoCandidate . '-default' . $typeDimension . '.' . $extension;
-                $fileCandidates[] = $isoCandidate . '-default' . $highDpiDimension . '.' . $extension;
-                $fileCandidates[] = $isoCandidate . '-default' . '.' . $extension;
-            }
+            $fileNameCandidates[] = $isoCandidate . '-default' . $typeDimension . $highDpiDimension;
+            $fileNameCandidates[] = $isoCandidate . '-default' . $typeDimension;
+            $fileNameCandidates[] = $isoCandidate . '-default' . $highDpiDimension;
+            $fileNameCandidates[] = $isoCandidate . '-default';
         }
-        $fileCandidates = array_unique($fileCandidates);
 
-        foreach ($fileCandidates as $candidate) {
-            if (file_exists(_PS_PROD_IMG_DIR_ . $candidate)) {
-                return _THEME_PROD_DIR_ . $candidate;
+        $fileNameCandidates = array_unique($fileNameCandidates);
+
+        foreach ($fileNameCandidates as $candidate) {
+            if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, $candidate, $preferredExtension)) {
+                return $returnFullUri
+                    ? $sourceImage
+                    : str_replace(_PS_LANG_IMG_DIR_, _THEME_LANG_DIR_, $sourceImage);
             }
         }
 
         // Default image was not found
         return false;
+    }
+
+    /**
+     * This method returns uri to default product image, for example /img/p/en-default-Niara_home.jpg
+     *
+     * @param string $iso language iso code for which to display image
+     * @param string $formattedType formatted image type, ie. 'Niara_home'
+     * @param bool $highDpi true, if high resolution image should be displayed
+     * @param string $preferredExtension preferred image extension ['jpg', 'webp']
+     *
+     * @return string|false
+     *
+     * @throws PrestaShopException
+     */
+    public function getProductDefaultImageUri(string $iso, string $formattedType, bool $highDpi, string $preferredExtension)
+    {
+        return $this->getDefaultImageUri($iso, $formattedType, $highDpi, $preferredExtension);
     }
 
     /**
@@ -1182,7 +1183,10 @@ class LinkCore
      * @param string $preferredExtension
      * @param string $name
      *
-     * @return string | false
+     * @return string|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getProductImageUri(int $imageId, string $formattedType, bool $highDpi, string $preferredExtension, string $name): string
     {
@@ -1190,30 +1194,25 @@ class LinkCore
         $typeDimension = $formattedType ? '-'.$formattedType : '';
         $highDpiDimension = $highDpi ? '2x' : '';
 
-        $extensions = [ $preferredExtension ];
-        if ($preferredExtension === 'webp') {
-            $extensions[] = 'jpg';
-        }
-
         // resolve image dir
         $imgDir = Image::getImgFolderStatic($imageId);
 
         // build list of candidate image files
         $candidates = [];
-        foreach ($extensions as $extension) {
-            $candidates[$imgDir . $imageId . $typeDimension . $highDpiDimension . '.' . $extension] = $imageId . $typeDimension . '/' . $name . $highDpiDimension . '.' . $extension;
-            $candidates[$imgDir . $imageId . $typeDimension . '.' . $extension] = $imageId . $typeDimension . '/' . $name . '.' . $extension;
-            $candidates[$imgDir . $imageId . $highDpiDimension . '.' . $extension] = $imageId . '/' . $name . $highDpiDimension . '.' . $extension;
-            $candidates[$imgDir . $imageId . '.' . $extension] = $imageId . '/' . $name . '.' . $extension;
-        }
+        $candidates[$imageId . $typeDimension . $highDpiDimension] = $imageId . $typeDimension . '/' . $name . $highDpiDimension;
+        $candidates[$imageId . $typeDimension] = $imageId . $typeDimension . '/' . $name;
+        $candidates[$imageId . $highDpiDimension] = $imageId . '/' . $name . $highDpiDimension;
+        $candidates[$imageId] = $imageId . '/' . $name;
 
         // find first existing file
-        foreach ($candidates as $file => $friendlyUri) {
-            if (file_exists(_PS_PROD_IMG_DIR_ . $file)) {
-                if ($this->allow == 1) {
-                    return __PS_BASE_URI__ . $friendlyUri;
+        foreach ($candidates as $fileName => $friendlyUri) {
+            if ($sourceImage = ImageManager::getSourceImage(_PS_PROD_IMG_DIR_.$imgDir, $fileName, $preferredExtension)) {
+                if ($this->allow) {
+                    $sourceImageExtension = substr(strrchr($sourceImage, '.'), 1);
+                    return __PS_BASE_URI__ . 'products/' . $friendlyUri.'.'.$sourceImageExtension;
                 } else {
-                    return _THEME_PROD_DIR_ . $file;
+                    $relativePath = str_replace(_PS_PROD_IMG_DIR_, '', $sourceImage);
+                    return _THEME_PROD_DIR_ . $relativePath;
                 }
             }
         }

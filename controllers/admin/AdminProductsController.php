@@ -143,7 +143,6 @@ class AdminProductsControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->imageType = 'jpg';
         $this->_defaultOrderBy = 'position';
         $this->max_file_size = (int) (Configuration::get('PS_LIMIT_UPLOAD_FILE_VALUE') * 1000000);
         $this->max_image_size = (int) Configuration::get('PS_PRODUCT_PICTURE_MAX_SIZE');
@@ -875,7 +874,7 @@ class AdminProductsControllerCore extends AdminController
      */
     public function processDelete()
     {
-        if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
+        if (Validate::isLoadedObject($object = $this->loadObject())) {
             /*
              * It is NOT possible to delete a product if there is/are currently:
              * - a physical stock for this product
@@ -984,7 +983,8 @@ class AdminProductsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function ajaxProcessEditSpecificPrice() {
+    public function ajaxProcessEditSpecificPrice()
+    {
         $idSpecificPrice = Tools::getIntValue('id_specific_price');
         $error = null;
         $specificPriceData = [];
@@ -1870,7 +1870,6 @@ class AdminProductsControllerCore extends AdminController
         if ($error = ImageManager::validateUpload($_FILES['image_product'])) {
             $this->errors[] = $error;
         } else {
-            $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
 
             $image = new Image($idImage);
 
@@ -1879,55 +1878,10 @@ class AdminProductsControllerCore extends AdminController
             }
             if (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES['image_product']['tmp_name'], $tmpName)) {
                 $this->errors[] = Tools::displayError('An error occurred during the image upload process.');
-            } elseif (!ImageManager::resize($tmpName, $newPath.'.'.$image->image_format)) {
+            } elseif (!ImageManager::convertImageToExtension($tmpName, $image->image_format, $newPath.'.'.$image->image_format)) {
                 $this->errors[] = Tools::displayError('An error occurred while copying the image.');
             } elseif ($method == 'auto') {
-                $imagesTypes = ImageType::getImagesTypes('products');
-                foreach ($imagesTypes as $imageType) {
-                    if (!ImageManager::resize(
-                        $tmpName,
-                        $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
-                        (int) $imageType['width'],
-                        (int) $imageType['height'],
-                        $image->image_format
-                    )) {
-                        $this->errors[] = Tools::displayError('An error occurred while copying this image: '.stripslashes($imageType['name']));
-                    } else {
-                        if ($highDpi) {
-                            ImageManager::resize(
-                                $tmpName,
-                                $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format,
-                                (int) $imageType['width'] * 2,
-                                (int) $imageType['height'] * 2,
-                                $image->image_format
-                            );
-                        }
-
-                        if (ImageManager::generateWebpImages()) {
-                            ImageManager::resize(
-                                $tmpName,
-                                $newPath.'-'.stripslashes($imageType['name']).'.webp',
-                                (int) $imageType['width'],
-                                (int) $imageType['height'],
-                                'webp'
-                            );
-
-                            if ($highDpi) {
-                                ImageManager::resize(
-                                    $tmpName,
-                                    $newPath.'-'.stripslashes($imageType['name']).'2x.webp',
-                                    (int) $imageType['width'] * 2,
-                                    (int) $imageType['height'] * 2,
-                                    'webp'
-                                );
-                            }
-                        }
-
-                        if ((int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $idProduct) {
-                            Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $idProduct);
-                        }
-                    }
-                }
+                ImageManager::generateImageTypesByEntity(ImageEntity::ENTITY_TYPE_PRODUCTS, $idProduct);
             }
 
             @unlink($tmpName);
@@ -4852,7 +4806,7 @@ class AdminProductsControllerCore extends AdminController
             }
             $data->assign('images', $images);
         }
-        $data->assign('imagesTypes', ImageType::getImagesTypes('products'));
+        $data->assign('imagesTypes', ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS));
 
         $product->tags = Tag::getProductTags($product->id);
 
@@ -5017,7 +4971,7 @@ class AdminProductsControllerCore extends AdminController
         }
 
         $imageUploader = new HelperImageUploader('file');
-        $imageUploader->setAcceptTypes(['jpeg', 'gif', 'png', 'jpg'])->setMaxSize($this->max_image_size);
+        $imageUploader->setMaxSize($this->max_image_size);
         $files = $imageUploader->process();
 
         foreach ($files as &$file) {
@@ -5055,18 +5009,18 @@ class AdminProductsControllerCore extends AdminController
 
                 $error = 0;
 
-                if (!ImageManager::resize($file['save_path'], $newPath.'.'.$image->image_format, null, null, 'jpg', false, $error)) {
+                if (!ImageManager::convertImageToExtension($file['save_path'], $image->image_format, $newPath.'.'.$image->image_format, $error)) {
                     switch ($error) {
                         case ImageManager::ERROR_FILE_NOT_EXIST:
                             $file['error'] = Tools::displayError('An error occurred while copying image, the file does not exist anymore.');
                             break;
 
-                        case ImageManager::ERROR_FILE_WIDTH:
-                            $file['error'] = Tools::displayError('An error occurred while copying image, the file width is 0px.');
-                            break;
-
                         case ImageManager::ERROR_MEMORY_LIMIT:
                             $file['error'] = Tools::displayError('An error occurred while copying image, check your memory limit.');
+                            break;
+
+                        case ImageManager::ERROR_FORBIDDEN_IMAGE_EXTENSION:
+                            $file['error'] = Tools::displayError('This image extension is not allowed.');
                             break;
 
                         default:
@@ -5074,76 +5028,15 @@ class AdminProductsControllerCore extends AdminController
                             break;
                     }
                     continue;
-                } else {
-                    $imagesTypes = ImageType::getImagesTypes('products');
-                    $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
-                    $webpSupport = (bool) ImageManager::generateWebpImages();
-                    $tmpName = $file['save_path'];
-
-                    $results = [];
-                    foreach ($imagesTypes as $imageType) {
-                        # Default format
-                        if (!ImageManager::resize(
-                            $tmpName,
-                            $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
-                            (int) $imageType['width'],
-                            (int) $imageType['height'],
-                            $image->image_format
-                        )) {
-                            $results[$image->image_format] = '';
-                        } else {
-                            if ($highDpi) {
-                                $results['2x'.$image->image_format] = ImageManager::resize(
-                                    $tmpName,
-                                    $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format,
-                                    (int) $imageType['width'] * 2,
-                                    (int) $imageType['height'] * 2,
-                                    $image->image_format
-                                );
-                            }
-
-                            if ($webpSupport) {
-                                $results['webp'] = ImageManager::resize(
-                                    $tmpName,
-                                    $newPath.'-'.stripslashes($imageType['name']).'.webp',
-                                    (int) $imageType['width'],
-                                    (int) $imageType['height'],
-                                    'webp'
-                                );
-                            }
-
-                            if ($webpSupport && $highDpi){
-                                $results['2x.webp'] = ImageManager::resize(
-                                    $tmpName,
-                                    $newPath.'-'.stripslashes($imageType['name']).'2x.webp',
-                                    (int) $imageType['width'] * 2,
-                                    (int) $imageType['height'] * 2,
-                                    'webp'
-                                );
-                            }
-                        }
-
-                        if ((int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $product->id) {
-                            Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $product->id);
-                        }
-
-                        # Some errors?
-                        if ($results) {
-                            foreach ($results as $format => $r){
-                                if ( ! $r) {
-                                    $file['error'] .= '<br/>'.sprintf(
-                                        $this->l('An error occurred while generate: %s.%s'),
-                                        stripslashes($imageType['name']),
-                                        $format
-                                    );
-                                }
-                            }
-                        }
-                    }
+                } elseif (!ImageManager::generateImageTypesByEntity(ImageEntity::ENTITY_TYPE_PRODUCTS, $product->id, [$image->id])) {
+                    $file['error'] .= '<br/>'.$file['save_path'];
+                    $file['error'] .= '<br/>'.$image->image_format;
+                    $file['error'] .= '<br/>'.$newPath.'.'.$image->image_format;
+                    $file['error'] .= '<br/>'.$this->l('An error occurred while generating image types');
                 }
 
                 unlink($file['save_path']);
-                //Necesary to prevent hacking
+                // Necessary to prevent hacking
                 unset($file['save_path']);
                 Hook::triggerEvent('actionWatermark', ['id_image' => $image->id, 'id_product' => $product->id]);
 
@@ -5237,7 +5130,8 @@ class AdminProductsControllerCore extends AdminController
                         'languages'           => $languages,
                         'default_language'    => $this->getDefaultFormLanguage(),
                         'image_uploader'      => $imageUploader->render(),
-                        'imageType'           => ImageType::getFormatedName('small'),
+                        'imageType'           => 'backoffice_product_medium',
+                        'imageExtension'      => ImageManager::getDefaultImageExtension(),
                     ]
                 );
             } else {
@@ -5302,7 +5196,7 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('ps_stock_mvt_reason_default', Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
                 $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
                 $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
-                $data->assign('imageType', ImageType::getFormatedName('small'));
+                $data->assign('imageType', 'backoffice_product_medium');
                 $i = 0;
                 foreach ($images as $k => $image) {
                     $images[$k]['obj'] = new Image($image['id_image']);
@@ -6478,7 +6372,8 @@ class AdminProductsControllerCore extends AdminController
      * @return string
      * @throws PrestaShopException
      */
-    public function callbackRenderStockLink($quantity, $row) {
+    public function callbackRenderStockLink($quantity, $row)
+    {
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $reference = $row['reference'] ?? '';
             if ($reference) {

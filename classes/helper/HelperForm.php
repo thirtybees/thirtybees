@@ -214,6 +214,11 @@ class HelperFormCore extends Helper
                             $uploader->setUseAjax($params['ajax'] ?? false);
                             $uploader->setMaxFiles($params['max_files'] ?? null);
 
+                            // Generate dynamic delete_url
+                            if (isset($params['delete_url']) && $params['delete_url']===true) {
+                                $params['delete_url'] = $this->currentIndex.'&'.$this->identifier.'='.$this->id.'&token='.$this->token.'&action=deleteImage&inputName='.$params['name'];
+                            }
+
                             if (isset($params['files']) && $params['files']) {
                                 $uploader->setFiles($params['files']);
                             } elseif (isset($params['image']) && $params['image']) { // Use for retrocompatibility

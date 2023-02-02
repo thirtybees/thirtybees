@@ -1107,4 +1107,107 @@ class MediaCore
         }
         return $uri;
     }
+
+    /**
+     * Get information for supported files
+     *
+     * @param string $type (Atm: 'images') Todo: also use this array for other types like 'documents' in future
+     *
+     * @return array|bool
+     */
+    public static function getFileInformations($type = null, $mainExtension = null)
+    {
+        $allowedExtensions = [
+            'images' => [
+                'jpg' => [
+                    'mimeType'           => 'image/jpeg',
+                    'extensions'        => ['jpg', 'jpeg', 'jpe', 'pjpeg'],
+                    'imageSupport'      => true,
+                    'uploadFrontOffice' => true,
+                    'uploadBackOffice'  => true,
+                ],
+                'png' => [
+                    'mimeType'           => 'image/png',
+                    'extensions'        => ['png', 'x-png'],
+                    'imageSupport'      => true,
+                    'uploadFrontOffice' => true,
+                    'uploadBackOffice'  => true,
+                ],
+                'gif' => [
+                    'mimeType'           => 'image/gif',
+                    'extensions'        => ['gif'],
+                    'imageSupport'      => true,
+                    'uploadFrontOffice' => true,
+                    'uploadBackOffice'  => true,
+                ],
+                'ico' => [
+                    'mimeType'           => 'image/x-icon',
+                    'extensions'        => ['ico'],
+                    'imageSupport'      => false,
+                    'uploadFrontOffice' => false,
+                    'uploadBackOffice'  => true,
+                ],
+                'bmp' => [
+                    'mimeType'           => 'image/bmp',
+                    'extensions'        => ['bmp'],
+                    'imageSupport'      => false,
+                    'uploadFrontOffice' => false,
+                    'uploadBackOffice'  => true,
+                ],
+                'tiff' => [
+                    'mimeType'           => 'image/tiff',
+                    'extensions'        => ['tiff'],
+                    'imageSupport'      => false,
+                    'uploadFrontOffice' => false,
+                    'uploadBackOffice'  => true,
+                ],
+                'svg' => [
+                    'mimeType'           => 'image/svg+xml',
+                    'extensions'        => ['svg'],
+                    'imageSupport'      => false,
+                    'uploadFrontOffice' => false,
+                    'uploadBackOffice'  => true,
+                ],
+            ]
+        ];
+
+        if (ImageManager::serverSupportsWebp()) {
+            $allowedExtensions['images']['webp'] = [
+                'mimeType'           => 'image/webp',
+                'extensions'        => ['webp'],
+                'imageSupport'      => true,
+                'uploadFrontOffice' => true,
+                'uploadBackOffice'  => true,
+            ];
+        }
+
+        if ($type) {
+
+            // Check if the type is defined
+            if (!isset($allowedExtensions[$type])) {
+                return false;
+            }
+
+            // Check if the mainExtension is defined
+            if ($mainExtension) {
+                return $allowedExtensions[$type][$mainExtension] ?? false;
+            }
+
+            return $allowedExtensions[$type];
+        }
+
+        // Strange case, where $mainExtension has been submitted but not $type
+        if ($mainExtension) {
+            foreach ($allowedExtensions as $allowedExtension) {
+                foreach ($allowedExtension as $mainExtensionKey => $extensionInfo) {
+                    if ($mainExtension == $mainExtensionKey) {
+                        return $extensionInfo;
+                    }
+                }
+            }
+            return false;
+        }
+
+        return $allowedExtensions;
+    }
 }

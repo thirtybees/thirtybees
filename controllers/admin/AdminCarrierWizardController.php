@@ -72,7 +72,7 @@ class AdminCarrierWizardControllerCore extends AdminController
 
         $this->fieldImageSettings = [
             'name' => 'logo',
-            'dir'  => 's',
+            'dir'  => _PS_SHIP_IMG_DIR_,
         ];
 
         parent::__construct();
@@ -149,9 +149,11 @@ class AdminCarrierWizardControllerCore extends AdminController
             array_splice($this->tpl_view_vars['wizard_contents']['contents'], 1, 0, [0 => $this->renderStepTwo($carrier)]);
         }
 
+        $imageExtension = ImageManager::getDefaultImageExtension();
+
         $this->context->smarty->assign(
             [
-                'carrier_logo' => (Validate::isLoadedObject($carrier) && file_exists(_PS_SHIP_IMG_DIR_.$carrier->id.'.jpg') ? _THEME_SHIP_DIR_.$carrier->id.'.jpg' : false),
+                'carrier_logo' => (Validate::isLoadedObject($carrier) && ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $carrier->id) ? _THEME_SHIP_DIR_.$carrier->id.'.'.$imageExtension : false),
             ]
         );
 
@@ -931,16 +933,19 @@ class AdminCarrierWizardControllerCore extends AdminController
             $this->ajaxDie('<return result="error" message="'.Tools::displayError('You do not have permission to use this wizard.').'" />');
         }
 
+        $allowedImageExtensions = implode('|', ImageManager::getAllowedImageExtensions());
+        $imageExtension = ImageManager::getDefaultImageExtension();
+
         $logo = (isset($_FILES['carrier_logo_input']) ? $_FILES['carrier_logo_input'] : false);
         if ($logo && !empty($logo['tmp_name']) && $logo['tmp_name'] != 'none'
             && (!isset($logo['error']) || !$logo['error'])
-            && preg_match('/\.(jpe?g|gif|png)$/', $logo['name'])
+            && preg_match('/\.('.$allowedImageExtensions.')$/', $logo['name'])
             && is_uploaded_file($logo['tmp_name'])
             && ImageManager::isRealImage($logo['tmp_name'], $logo['type'])
         ) {
             $file = $logo['tmp_name'];
             do {
-                $tmpName = uniqid().'.jpg';
+                $tmpName = uniqid().'.'.$imageExtension;
             } while (file_exists(_PS_TMP_IMG_DIR_.$tmpName));
             if (!ImageManager::resize($file, _PS_TMP_IMG_DIR_.$tmpName)) {
                 $this->ajaxDie('<return result="error" message="Impossible to resize the image into '.Tools::safeOutput(_PS_TMP_IMG_DIR_).'" />');
@@ -1047,11 +1052,12 @@ class AdminCarrierWizardControllerCore extends AdminController
                 }
 
                 if (Tools::getValue('logo')) {
-                    if (Tools::getValue('logo') == 'null' && file_exists(_PS_SHIP_IMG_DIR_.$carrier->id.'.jpg')) {
-                        unlink(_PS_SHIP_IMG_DIR_.$carrier->id.'.jpg');
+                    if (Tools::getValue('logo') == 'null' && ($sourceFile = ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $carrier->id))) {
+                        unlink($sourceFile);
                     } else {
                         $logo = basename(Tools::getValue('logo'));
-                        if (!file_exists(_PS_TMP_IMG_DIR_.$logo) || !@copy(_PS_TMP_IMG_DIR_.$logo, _PS_SHIP_IMG_DIR_.$carrier->id.'.jpg')) {
+                        $imageExtension = ImageManager::getDefaultImageExtension();
+                        if (!file_exists(_PS_TMP_IMG_DIR_.$logo) || !@copy(_PS_TMP_IMG_DIR_.$logo, _PS_SHIP_IMG_DIR_.$carrier->id.'.'.$imageExtension)) {
                             $return['has_error'] = true;
                             $return['errors'][] = $this->l('An error occurred while saving carrier logo.');
                         }
@@ -1066,20 +1072,23 @@ class AdminCarrierWizardControllerCore extends AdminController
     /**
      * @param int $newId
      * @param int $oldId
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function duplicateLogo($newId, $oldId)
     {
-        $oldLogo = _PS_SHIP_IMG_DIR_.'/'.(int) $oldId.'.jpg';
-        if (file_exists($oldLogo)) {
-            @copy($oldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $newId.'.jpg');
+        if ($sourceImageOldLogo = ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $oldId)) {
+            $imageExtension = explode('.', $sourceImageOldLogo)[1];
+            @copy($sourceImageOldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $newId.'.'.$imageExtension);
         }
 
-        $oldTmpLogo = _PS_TMP_IMG_DIR_.'/carrier_mini_'.(int) $oldId.'.jpg';
-        if (file_exists($oldTmpLogo)) {
+        if ($sourceImageOldTmpLogo = ImageManager::getSourceImage(_PS_TMP_IMG_DIR_, '/carrier_mini_'.(int) $oldId)) {
             if (!isset($_FILES['logo'])) {
-                @copy($oldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$newId.'.jpg');
+                $imageExtension = explode('.', $sourceImageOldTmpLogo)[1];
+                @copy($sourceImageOldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$newId.'.'.$imageExtension);
             }
-            unlink($oldTmpLogo);
+            unlink($sourceImageOldTmpLogo);
         }
     }
 

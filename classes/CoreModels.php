@@ -463,6 +463,21 @@ class CoreModelsCore
             ],
         ];
 
+        $imageEntityType = [
+            'table' => 'image_entity_type',
+            'primaryKeyDbType' => 'int(10)',
+            'fields' => [
+                'id_image_entity'  => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'id_image_type'    => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+            ],
+            'keys' => [
+                'image_entity_type' => [
+                    'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_image_entity', 'id_image_type']],
+                ],
+            ],
+
+        ];
+
         $importMatch = [
             'table' => 'import_match',
             'primary' => 'id_import_match',
@@ -1260,6 +1275,7 @@ class CoreModelsCore
             'HookAlias' => $hookAlias,
             'HookModule' => $hookModule,
             'HookModuleExceptions' => $hookModuleExceptions,
+            'ImageEntityType' => $imageEntityType,
             'ImportMatch' => $importMatch,
             'MemcachedServers' => $memcachedServers,
             'MessageReaded' => $messageReaded,

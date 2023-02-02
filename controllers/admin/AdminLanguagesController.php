@@ -55,11 +55,12 @@ class AdminLanguagesControllerCore extends AdminController
         $this->fieldImageSettings = [
             [
                 'name' => 'flag',
-                'dir'  => 'l',
+                'dir'  => _PS_LANG_IMG_DIR_,
             ],
             [
                 'name' => 'no_picture',
-                'dir'  => 'p',
+                'dir'  => _PS_LANG_IMG_DIR_,
+                'imageTypes' => ImageType::getImagesTypes(),
             ],
         ];
 
@@ -382,19 +383,19 @@ class AdminLanguagesControllerCore extends AdminController
     protected function deleteNoPictureImages($idLanguage)
     {
         $language = Language::getIsoById($idLanguage);
-        $imageTypes = ImageType::getImagesTypes('products');
+        $imageTypes = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS);
         $dirs = [_PS_PROD_IMG_DIR_, _PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_SUPP_IMG_DIR_, _PS_MANU_IMG_DIR_];
         foreach ($dirs as $dir) {
             foreach ($imageTypes as $imageType) {
-                if (file_exists($dir.$language.'-default-'.stripslashes($imageType['name']).'.jpg')) {
-                    if (!unlink($dir.$language.'-default-'.stripslashes($imageType['name']).'.jpg')) {
+                if ($sourceImage = ImageManager::getSourceImage($dir, $language.'-default-'.stripslashes($imageType['name']))) {
+                    if (!unlink($sourceImage)) {
                         $this->errors[] = Tools::displayError('An error occurred during image deletion process.');
                     }
                 }
             }
 
-            if (file_exists($dir.$language.'.jpg')) {
-                if (!unlink($dir.$language.'.jpg')) {
+            if ($sourceImageOriginal = ImageManager::getSourceImage($dir, $language)) {
+                if (!unlink($sourceImageOriginal)) {
                     $this->errors[] = Tools::displayError('An error occurred during image deletion process.');
                 }
             }
@@ -478,72 +479,14 @@ class AdminLanguagesControllerCore extends AdminController
     {
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
-
             return false;
         }
 
         if (!empty($_POST['iso_code']) && Validate::isLanguageIsoCode(Tools::getValue('iso_code')) && Language::getIdByIso($_POST['iso_code'])) {
             $this->errors[] = Tools::displayError('This ISO code is already linked to another language.');
         }
-        if ((!empty($_FILES['no_picture']['tmp_name']) || !empty($_FILES['flag']['tmp_name'])) && Validate::isLanguageIsoCode(Tools::getValue('iso_code'))) {
-            if ($_FILES['no_picture']['error'] == UPLOAD_ERR_OK) {
-                $this->copyNoPictureImage(strtolower(Tools::getValue('iso_code')));
-            }
-            unset($_FILES['no_picture']);
-        }
 
-        $success = parent::processAdd();
-
-        if (empty($_FILES['flag']['tmp_name'])) {
-            Language::_copyNoneFlag($this->object->id, $_POST['iso_code']);
-        }
-
-        return $success;
-    }
-
-    /**
-     * Copy a no-product image
-     *
-     * @param string $language Language iso_code for no_picture image filename
-     *
-     * @return void
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function copyNoPictureImage($language)
-    {
-        if (isset($_FILES['no_picture']) && $_FILES['no_picture']['error'] === 0) {
-            if ($error = ImageManager::validateUpload($_FILES['no_picture'], Tools::getMaxUploadSize())) {
-                $this->errors[] = $error;
-            } else {
-                if (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES['no_picture']['tmp_name'], $tmpName)) {
-                    return;
-                }
-                if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'p/'.$language.'.jpg')) {
-                    $this->errors[] = Tools::displayError('An error occurred while copying "No Picture" image to your product folder.');
-                }
-                if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'c/'.$language.'.jpg')) {
-                    $this->errors[] = Tools::displayError('An error occurred while copying "No picture" image to your category folder.');
-                }
-                if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'m/'.$language.'.jpg')) {
-                    $this->errors[] = Tools::displayError('An error occurred while copying "No picture" image to your manufacturer folder.');
-                } else {
-                    $imageTypes = ImageType::getImagesTypes('products');
-                    foreach ($imageTypes as $imageType) {
-                        if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'p/'.$language.'-default-'.stripslashes($imageType['name']).'.jpg', $imageType['width'], $imageType['height'])) {
-                            $this->errors[] = Tools::displayError('An error occurred while resizing "No picture" image to your product directory.');
-                        }
-                        if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'c/'.$language.'-default-'.stripslashes($imageType['name']).'.jpg', $imageType['width'], $imageType['height'])) {
-                            $this->errors[] = Tools::displayError('An error occurred while resizing "No picture" image to your category directory.');
-                        }
-                        if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'m/'.$language.'-default-'.stripslashes($imageType['name']).'.jpg', $imageType['width'], $imageType['height'])) {
-                            $this->errors[] = Tools::displayError('An error occurred while resizing "No picture" image to your manufacturer directory.');
-                        }
-                    }
-                }
-                unlink($tmpName);
-            }
-        }
+        return parent::processAdd();
     }
 
     /**
@@ -557,18 +500,7 @@ class AdminLanguagesControllerCore extends AdminController
     {
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
-
             return false;
-        }
-
-        if ((isset($_FILES['no_picture']) && !$_FILES['no_picture']['error'] || isset($_FILES['flag']) && !$_FILES['flag']['error'])
-            && Validate::isLanguageIsoCode(Tools::getValue('iso_code'))
-        ) {
-            if ($_FILES['no_picture']['error'] == UPLOAD_ERR_OK) {
-                $this->copyNoPictureImage(strtolower(Tools::getValue('iso_code')));
-            }
-            // class AdminTab deal with every $_FILES content, don't do that for no_picture
-            unset($_FILES['no_picture']);
         }
 
         /** @var Language $object */
@@ -661,35 +593,24 @@ class AdminLanguagesControllerCore extends AdminController
     }
 
     /**
-     * After image upload
+     * @param int $id
+     * @param string $name
+     * @param string $dir
+     * @param string|bool $imageExtension
+     * @param int|null $width
+     * @param int|null $height
      *
      * @return bool
+
      * @throws PrestaShopException
      */
-    protected function afterImageUpload()
+    protected function uploadImage($id, $name, $dir, $imageExtension = false, $width = null, $height = null, $generateImageTypes = [])
     {
-        parent::afterImageUpload();
-
-        $idLang = Tools::getIntValue('id_lang');
-        if ($idLang && $_FILES && file_exists(_PS_LANG_IMG_DIR_.$idLang.'.jpg')) {
-            $this->deleteFlagThumbnail($idLang);
+        // Making sure that default image are saved with correct name
+        if ($name === 'no_picture') {
+            $id = Tools::getValue('iso_code').'-default';
         }
-        return true;
-    }
 
-    /**
-     * @param int $langId
-     *
-     * @throws PrestaShopException
-     */
-    protected function deleteFlagThumbnail($langId)
-    {
-        $langId = (int)$langId;
-        foreach (Shop::getShops(true, null, true) as $shopId) {
-            $currentFile = _PS_TMP_IMG_DIR_ . 'lang_mini_' . $langId . '_' . (int)$shopId . '.jpg';
-            if (file_exists($currentFile)) {
-                unlink($currentFile);
-            }
-        }
+        return parent::uploadImage($id, $name, $dir, $imageExtension, $width, $height, $generateImageTypes);
     }
 }

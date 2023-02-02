@@ -1378,6 +1378,8 @@ class AdminImportControllerCore extends AdminController
 
         // fallback to core types / old implementation
         $conn = Db::getInstance();
+        $mainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
+
         switch ($entityType) {
             case static::ENTITY_TYPE_CATEGORIES:
                 try {
@@ -1412,7 +1414,7 @@ class AdminImportControllerCore extends AdminController
                     return false;
                 }
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.('.implode('|', $mainImageExtensions).')$/', $d)) {
                         unlink(_PS_CAT_IMG_DIR_.$d);
                     }
                 }
@@ -1529,7 +1531,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_shop', $e->getMessage());
                 }
                 foreach (scandir(_PS_MANU_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.('.implode('|', $mainImageExtensions).')$/', $d)) {
                         unlink(_PS_MANU_IMG_DIR_.$d);
                     }
                 }
@@ -1551,7 +1553,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_shop', $e->getMessage());
                 }
                 foreach (scandir(_PS_SUPP_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.('.implode('|', $mainImageExtensions).')$/', $d)) {
                         unlink(_PS_SUPP_IMG_DIR_.$d);
                     }
                 }
@@ -1965,7 +1967,7 @@ class AdminImportControllerCore extends AdminController
      * @param int $idEntity id of product or category (set in entity)
      * @param int $idImage (default null) id of the image if watermark enabled.
      * @param string $url path or url to use
-     * @param string $entity entity type
+     * @param string $entityType entity type
      * @param bool $regenerate
      *
      * @return bool
@@ -1973,32 +1975,9 @@ class AdminImportControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function copyImg($idEntity, $idImage = null, $url = '', $entity = 'products', $regenerate = true)
+    protected static function copyImg($idEntity, $idImage = null, $url = '', $entityType = 'products', $regenerate = true)
     {
         $tmpfile = tempnam(_PS_TMP_IMG_DIR_, 'ps_import');
-        $watermarkTypes = explode(',', (string)Configuration::get('WATERMARK_TYPES'));
-
-        switch ($entity) {
-            default:
-            case static::ENTITY_TYPE_PRODUCTS:
-                $imageObj = new Image($idImage);
-                ImageManager::deleteProductImageThumbnail($idImage);
-                $path = $imageObj->getPathForCreation();
-                break;
-            case static::ENTITY_TYPE_CATEGORIES:
-                $path = _PS_CAT_IMG_DIR_.(int) $idEntity;
-                break;
-            case static::ENTITY_TYPE_MANUFACTURERS:
-                $path = _PS_MANU_IMG_DIR_.(int) $idEntity;
-                break;
-            case static::ENTITY_TYPE_SUPPLIERS:
-                $path = _PS_SUPP_IMG_DIR_.(int) $idEntity;
-                break;
-            case 'stores':
-                $path = _PS_STORE_IMG_DIR_.(int) $idEntity;
-                break;
-        }
-
         $url = urldecode(trim($url));
         $parsedUrl = parse_url($url);
 
@@ -2026,91 +2005,31 @@ class AdminImportControllerCore extends AdminController
             // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
             if (!ImageManager::checkImageMemoryLimit($tmpfile)) {
                 @unlink($tmpfile);
-
                 return false;
             }
 
-            $tgtWidth = $tgtHeight = 0;
-            $srcWidth = $srcHeight = 0;
-            $error = 0;
-            ImageManager::resize($tmpfile, $path.'.jpg', null, null, 'jpg', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
-            if (ImageManager::generateWebpImages()) {
-                ImageManager::resize($tmpfile, $path.'.webp', null, null, 'webp', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
+            // Find path depending on $entityType
+            if (empty($imageEntity = ImageEntity::getImageEntities($entityType))) {
+                @unlink($tmpfile);
+                return false;
             }
-            $imagesTypes = ImageType::getImagesTypes($entity, true);
 
-            if ($regenerate) {
-                foreach ($imagesTypes as $imageType) {
-                    $tgtWidthX2 = $tgtWidth * 2;
-                    $tgtHeightX2 = $tgtHeight * 2;
-                    ImageManager::resize(
-                        $tmpfile,
-                        $path.'-'.stripslashes($imageType['name']).'.jpg',
-                        $imageType['width'],
-                        $imageType['height'],
-                        'jpg',
-                        false,
-                        $error,
-                        $tgtWidth,
-                        $tgtHeight,
-                        5,
-                        $srcWidth,
-                        $srcHeight
-                    );
-                    if (ImageManager::retinaSupport()) {
-                        ImageManager::resize(
-                            $tmpfile,
-                            $path.'-'.stripslashes($imageType['name']).'2x.jpg',
-                            $imageType['width'] * 2,
-                            $imageType['height'] * 2,
-                            'jpg',
-                            false,
-                            $error,
-                            $tgtWidthX2,
-                            $tgtHeightX2,
-                            5,
-                            $srcWidth,
-                            $srcHeight
-                        );
-                    }
-                    if (ImageManager::generateWebpImages()) {
-                        ImageManager::resize(
-                            $tmpfile,
-                            $path.'-'.stripslashes($imageType['name']).'.webp',
-                            $imageType['width'],
-                            $imageType['height'],
-                            'webp',
-                            false,
-                            $error,
-                            $tgtWidth,
-                            $tgtHeight,
-                            5,
-                            $srcWidth,
-                            $srcHeight
-                        );
-                        if (ImageManager::retinaSupport()) {
-                            ImageManager::resize(
-                                $tmpfile,
-                                $path . '-' . stripslashes($imageType['name']) . '2x.webp',
-                                $imageType['width'] * 2,
-                                $imageType['height'] * 2,
-                                'webp',
-                                false,
-                                $error,
-                                $tgtWidthX2,
-                                $tgtHeightX2,
-                                5,
-                                $srcWidth,
-                                $srcHeight
-                            );
-                        }
-                    }
+            $path = $imageEntity['path'];
+            $filename = $idEntity;
 
-                    if (in_array($imageType['id_image_type'], $watermarkTypes)) {
-                        Hook::triggerEvent('actionWatermark', ['id_image' => $idImage, 'id_product' => $idEntity]);
-                    }
-                }
+            if ($entityType === ImageEntity::ENTITY_TYPE_PRODUCTS) {
+                $path .= Image::getImgFolderStatic($idImage);
+                $filename = $idImage;
             }
+
+            // Create the new source image file
+            $imageExtension = ImageManager::getDefaultImageExtension();
+
+            if (ImageManager::convertImageToExtension($tmpfile, $imageExtension, $path.$filename.'.'.$imageExtension) && $regenerate) {
+                // Generate all image types for source image
+                ImageManager::generateImageTypesByEntity($entityType, $idEntity);
+            }
+
         } else {
             @unlink($origTmpfile);
 

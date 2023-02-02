@@ -410,10 +410,11 @@ class ProductControllerCore extends FrontController
                     return false;
                 }
                 /* Original file */
-                if (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName)) {
+                $imageExtension = ImageManager::getDefaultImageExtension();
+                if (!ImageManager::convertImageToExtension($tmpName, $imageExtension, _PS_UPLOAD_DIR_.$fileName)) {
                     $this->errors[] = Tools::displayError('An error occurred during the image upload process.');
                 } /* A smaller one */
-                elseif (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName.'_small', $productPictureWidth, $productPictureHeight)) {
+                elseif (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName.'_small', $productPictureWidth, $productPictureHeight, $imageExtension)) {
                     $this->errors[] = Tools::displayError('An error occurred during the image upload process.');
                 } elseif (!chmod(_PS_UPLOAD_DIR_.$fileName, 0777) || !chmod(_PS_UPLOAD_DIR_.$fileName.'_small', 0777)) {
                     $this->errors[] = Tools::displayError('An error occurred during the image upload process.');
@@ -756,7 +757,7 @@ class ProductControllerCore extends FrontController
                 $attributeId = (int)$row['id_attribute'];
 
                 // Color management
-                if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (file_exists(_PS_COL_IMG_DIR_.$attributeId.'.jpg'))) {
+                if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (ImageManager::getSourceImage(_PS_COL_IMG_DIR_, $attributeId))) {
                     $colors[$attributeId]['value'] = $row['attribute_color'];
                     $colors[$attributeId]['name'] = $row['attribute_name'];
                     if (!isset($colors[$attributeId]['attributes_quantity'])) {

@@ -46,7 +46,7 @@ class AdminCategoriesControllerCore extends AdminController
     public $remove_products = true;
 
     /**
-     * @var bool does the product have to be disable during the delete process
+     * @var bool does the product have to be disabled during the delete process
      */
     public $disable_products = false;
 
@@ -87,11 +87,6 @@ class AdminCategoriesControllerCore extends AdminController
         $this->allow_export = true;
 
         $this->context = Context::getContext();
-
-        $this->fieldImageSettings = [
-            'name' => 'image',
-            'dir'  => 'c',
-        ];
 
         $this->fields_list = [
             'id_category' => [
@@ -546,31 +541,8 @@ class AdminCategoriesControllerCore extends AdminController
         $image = _PS_CAT_IMG_DIR_.$obj->id.'.'.$this->imageType;
         $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true, true);
 
-        $imageSize = file_exists($image) ? filesize($image) / 1000 : false;
-        $imagesTypes = ImageType::getImagesTypes('categories');
-        $format = [];
-        $thumb = $thumbUrl = '';
-        $formattedCategory = ImageType::getFormatedName('category');
-        $formattedMedium = ImageType::getFormatedName('medium');
-        foreach ($imagesTypes as $imageType) {
-            if ($formattedCategory == $imageType['name']) {
-                $format['category'] = $imageType;
-            } elseif ($formattedMedium == $imageType['name']) {
-                $format['medium'] = $imageType;
-                $thumb = _PS_CAT_IMG_DIR_.$obj->id.'-'.$imageType['name'].'.'.$this->imageType;
-                if (is_file($thumb)) {
-                    $thumbUrl = ImageManager::thumbnail($thumb, $this->table.'_'.(int) $obj->id.'-thumb.'.$this->imageType, (int) $imageType['width'], $this->imageType, true, true);
-                }
-            }
-        }
-
-        if (!is_file($thumb)) {
-            $thumb = $image;
-            $thumbUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'-thumb.'.$this->imageType, 125, $this->imageType, true, true);
-            ImageManager::resize(_PS_TMP_IMG_DIR_.$this->table.'_'.(int) $obj->id.'-thumb.'.$this->imageType, _PS_TMP_IMG_DIR_.$this->table.'_'.(int) $obj->id.'-thumb.'.$this->imageType, (int) $imageType['width'], (int) $imageType['height']);
-        }
-
-        $thumbSize = file_exists($thumb) ? filesize($thumb) / 1000 : false;
+        $thumb = _PS_CAT_IMG_DIR_.'thumb/'.$obj->id.'.'.$this->imageType;
+        $thumbUrl = ImageManager::thumbnail($thumb, $this->table.'_'.(int) $obj->id.'_thumb.'.$this->imageType, 125, $this->imageType, true, true);
 
         $this->fields_form = [
             'tinymce' => true,
@@ -658,20 +630,19 @@ class AdminCategoriesControllerCore extends AdminController
                     'label'         => $this->l('Category Cover Image'),
                     'name'          => 'image',
                     'display_image' => true,
-                    'image'         => $imageUrl ? $imageUrl : false,
-                    'size'          => $imageSize,
-                    'delete_url'    => static::$currentIndex.'&'.$this->identifier.'='.$this->_category->id.'&token='.$this->token.'&deleteImage=1',
+                    'image'         => $imageUrl ?: false,
+                    'size'          => 350,
+                    'delete_url'    => true,
                     'hint'          => $this->l('This is the main image for your category, displayed in the category page. The category description will overlap this image and appear in its top-left corner.'),
-                    'format'        => $format['category'],
                 ],
                 [
                     'type'          => 'file',
                     'label'         => $this->l('Category thumbnail'),
                     'name'          => 'thumb',
                     'display_image' => true,
-                    'image'         => $thumbUrl ? $thumbUrl : false,
-                    'size'          => $thumbSize,
-                    'format'        => $format['medium'],
+                    'image'         => $thumbUrl ?: false,
+                    'size'          => 150,
+                    'delete_url'    => true,
                 ],
                 [
                     'type'    => 'text',
@@ -780,13 +751,13 @@ class AdminCategoriesControllerCore extends AdminController
             }
         }
 
-        $image = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true);
+        /* $image = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true);
 
         $this->fields_value = [
             'image' => $image ? $image : false,
             'thumb' => $thumb ? $thumb : false,
             'size'  => $image ? filesize(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType) / 1000 : false,
-        ];
+        ];*/
 
         // get selected groups
         $categoryGroupsIds = Validate::isLoadedObject($obj)
@@ -818,63 +789,8 @@ class AdminCategoriesControllerCore extends AdminController
         if (!in_array($this->display, ['edit', 'add'])) {
             $this->multishop_context_group = false;
         }
-        if (Tools::isSubmit('forcedeleteImage') || (isset($_FILES['image']) && $_FILES['image']['size'] > 0) || Tools::getValue('deleteImage')) {
-            $this->processForceDeleteImage();
-            $this->processForceDeleteThumb();
-            if (Tools::isSubmit('forcedeleteImage')) {
-                Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories').'&conf=7');
-            }
-        }
 
         return parent::postProcess();
-    }
-
-    /**
-     * @throws PrestaShopException
-     */
-    public function processForceDeleteImage()
-    {
-        $category = $this->loadObject(true);
-        if (Validate::isLoadedObject($category)) {
-            $category->deleteImage(true);
-        }
-    }
-
-    /**
-     * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function processForceDeleteThumb()
-    {
-        $category = $this->loadObject(true);
-
-        if (Validate::isLoadedObject($category)) {
-            if (file_exists(_PS_TMP_IMG_DIR_.$this->table.'_'.$category->id.'-thumb.'.$this->imageType)
-                && !unlink(_PS_TMP_IMG_DIR_.$this->table.'_'.$category->id.'-thumb.'.$this->imageType)
-            ) {
-                return false;
-            }
-            if (file_exists(_PS_CAT_IMG_DIR_.$category->id.'_thumb.'.$this->imageType)
-                && !unlink(_PS_CAT_IMG_DIR_.$category->id.'_thumb.'.$this->imageType)
-            ) {
-                return false;
-            }
-
-            $imagesTypes = ImageType::getImagesTypes('categories');
-            $formattedMedium = ImageType::getFormatedName('medium');
-            foreach ($imagesTypes as $imageType) {
-                if ($formattedMedium == $imageType['name'] &&
-                    file_exists(_PS_CAT_IMG_DIR_.$category->id.'-'.$imageType['name'].'.'.$this->imageType) &&
-                    !unlink(_PS_CAT_IMG_DIR_.$category->id.'-'.$imageType['name'].'.'.$this->imageType)
-                ) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -1126,153 +1042,6 @@ class AdminCategoriesControllerCore extends AdminController
                 }
             }
         }
-    }
-
-    /**
-     * @param int $id Category ID
-     *
-     * @return bool
-     *
-     * @throws PrestaShopException
-     */
-    protected function postImage($id)
-    {
-        $ret = parent::postImage($id);
-        if (($idCategory = Tools::getIntValue('id_category')) && $_FILES) {
-            $name = 'image';
-            if ($_FILES[$name]['name'] != null && file_exists(_PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType)) {
-                try {
-                    $imagesTypes = ImageType::getImagesTypes('categories');
-                } catch (PrestaShopException $e) {
-                    Logger::addLog("Error while generating category image: {$e->getMessage()}");
-
-                    return false;
-                }
-                foreach ($imagesTypes as $imageType) {
-                    $success = ImageManager::resize(
-                        _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
-                        _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
-                        (int) $imageType['width'],
-                        (int) $imageType['height']
-                    );
-                    if (ImageManager::generateWebpImages()) {
-                        $success = ImageManager::resize(
-                            _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
-                            _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
-                            (int) $imageType['width'],
-                            (int) $imageType['height'],
-                            'webp'
-                        ) && $success;
-                    }
-                    if (ImageManager::retinaSupport()) {
-                        $success = ImageManager::resize(
-                            _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
-                            _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.'.$this->imageType,
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2
-                        ) && $success;
-                        if (ImageManager::generateWebpImages()) {
-                            $success = ImageManager::resize(
-                                _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
-                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
-                                (int) $imageType['width'] * 2,
-                                (int) $imageType['height'] * 2,
-                                'webp'
-                            ) && $success;
-                        }
-                    }
-
-                    if (!$success) {
-                        $this->errors = Tools::displayError('An error occurred while uploading category image.');
-                    } else {
-                        if (Configuration::get('TB_IMAGE_LAST_UPD_CATEGORIES') < $idCategory) {
-                            Configuration::updateValue('TB_IMAGE_LAST_UPD_CATEGORIES', $idCategory);
-                        }
-                    }
-                }
-            }
-
-            $name = 'thumb';
-            if ($_FILES[$name]['name'] != null) {
-                if (!isset($imagesTypes)) {
-                    try {
-                        $imagesTypes = ImageType::getImagesTypes('categories');
-                    } catch (PrestaShopException $e) {
-                        Logger::addLog("Error while generating category image: {$e->getMessage()}");
-
-                        return false;
-                    }
-                }
-                try {
-                    $formattedMedium = ImageType::getFormatedName('medium');
-                } catch (PrestaShopException $e) {
-                    Logger::addLog("Error while generating category image: {$e->getMessage()}");
-
-                    return false;
-                }
-                foreach ($imagesTypes as $imageType) {
-                    if ($formattedMedium == $imageType['name']) {
-                        if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize())) {
-                            $this->errors[] = $error;
-                        } elseif (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES[$name]['tmp_name'], $tmpName)) {
-                            $ret = false;
-                        } else {
-                            $success = ImageManager::resize(
-                                $tmpName,
-                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
-                                (int) $imageType['width'],
-                                (int) $imageType['height']
-                            );
-
-                            if (ImageManager::generateWebpImages()) {
-                                ImageManager::resize(
-                                    $tmpName,
-                                    _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
-                                    (int) $imageType['width'],
-                                    (int) $imageType['height'],
-                                    'webp'
-                                );
-                            }
-                            if (ImageManager::retinaSupport()) {
-                                ImageManager::resize(
-                                    $tmpName,
-                                    _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.'.$this->imageType,
-                                    (int) $imageType['width'] * 2,
-                                    (int) $imageType['height'] * 2
-                                );
-
-                                if (ImageManager::generateWebpImages()) {
-                                    ImageManager::resize(
-                                        $tmpName,
-                                        _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
-                                        (int) $imageType['width'] * 2,
-                                        (int) $imageType['height'] * 2,
-                                        'webp'
-                                    );
-                                }
-                            }
-
-                            if (Configuration::get('TB_IMAGE_LAST_UPD_CATEGORIES') < $idCategory) {
-                                Configuration::updateValue('TB_IMAGE_LAST_UPD_CATEGORIES', $idCategory);
-                            }
-
-                            if (!$success)  {
-                                $this->errors = Tools::displayError('An error occurred while uploading thumbnail image.');
-                            }
-
-                            if (count($this->errors)) {
-                                $ret = false;
-                            } else {
-                                $ret = true;
-                            }
-                            unlink($tmpName);
-                        }
-                    }
-                }
-            }
-        }
-
-        return $ret;
     }
 
     /**

@@ -1093,6 +1093,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         $filename = basename($customerMessage->file_name);
+        $contentType = 'application/octet-stream';
+
+        // Todo: Once getFileInformations() is also defined for other types than image, the $extensions array can be emptied
         $extensions = [
             '.txt'  => 'text/plain',
             '.rtf'  => 'application/rtf',
@@ -1100,13 +1103,18 @@ class AdminCustomerThreadsControllerCore extends AdminController
             '.docx' => 'application/msword',
             '.pdf'  => 'application/pdf',
             '.zip'  => 'multipart/x-zip',
-            '.png'  => 'image/png',
-            '.jpeg' => 'image/jpeg',
-            '.gif'  => 'image/gif',
-            '.jpg'  => 'image/jpeg',
         ];
 
-        $contentType = 'application/octet-stream';
+        $fileInfos = Media::getFileInformations();
+
+        foreach ($fileInfos as $fileInfo) {
+            foreach ($fileInfo as $mainExtension => $fileExtensionInfo) {
+                if ($fileExtensionInfo['uploadFrontOffice']) {
+                    $extensions['.'.$mainExtension] = $fileExtensionInfo['mimeType'];
+                }
+            }
+        }
+
         foreach ($extensions as $key => $val) {
             if (substr(mb_strtolower($filename), -4) == $key || substr(mb_strtolower($filename), -5) == $key) {
                 $contentType = $val;

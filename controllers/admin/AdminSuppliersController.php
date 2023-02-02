@@ -71,8 +71,6 @@ class AdminSuppliersControllerCore extends AdminController
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'product_supplier` ps ON (a.`id_supplier` = ps.`id_supplier`)';
         $this->_group = 'GROUP BY a.`id_supplier`';
 
-        $this->fieldImageSettings = ['name' => 'logo', 'dir' => 'su'];
-
         $this->fields_list = [
             'id_supplier' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'logo'        => ['title' => $this->l('Logo'), 'align' => 'center', 'image' => 'su', 'orderby' => false, 'search' => false],
@@ -132,9 +130,10 @@ class AdminSuppliersControllerCore extends AdminController
             return '';
         }
 
-        $image = _PS_SUPP_IMG_DIR_.$obj->id.'.jpg';
-        $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true, true);
-        $imageSize = file_exists($image) ? filesize($image) / 1000 : false;
+        if ($image = ImageManager::getSourceImage(_PS_SUPP_IMG_DIR_, $obj->id)) {
+            $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true, true);
+            $imageSize = filesize($image) / 1000;
+        }
 
         $tmpAddr = new Address();
         $res = $tmpAddr->getFieldsRequiredDatabase();
@@ -261,8 +260,9 @@ class AdminSuppliersControllerCore extends AdminController
                     'label'         => $this->l('Logo'),
                     'name'          => 'logo',
                     'display_image' => true,
-                    'image'         => $imageUrl ? $imageUrl : false,
-                    'size'          => $imageSize,
+                    'delete_url'    => true,
+                    'image'         => $imageUrl ?? false,
+                    'size'          => $imageSize ?? false,
                     'hint'          => $this->l('Upload a supplier logo from your computer.'),
                 ],
                 [
@@ -536,67 +536,29 @@ class AdminSuppliersControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function afterImageUpload()
+    protected function postProcessDelete()
     {
-        $return = true;
+        if (!($obj = $this->loadObject(true))) {
+            return false;
+        } elseif (SupplyOrder::supplierHasPendingOrders($obj->id)) {
+            $this->errors[] = $this->l('It is not possible to delete a supplier if there are pending supplier orders.');
+        } else {
+            //delete all product_supplier linked to this supplier
+            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier` = '.(int) $obj->id);
 
-        /* Generate image with differents size */
-        if (($idSupplier = Tools::getIntValue('id_supplier')) &&
-            $_FILES &&
-            file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
-        ) {
-            $imagesTypes = ImageType::getImagesTypes('suppliers');
-            foreach ($imagesTypes as $imageType) {
-                $file = _PS_SUPP_IMG_DIR_.$idSupplier.'.jpg';
-                $return = ImageManager::resize(
-                    $file,
-                    _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.jpg',
-                    (int) $imageType['width'],
-                    (int) $imageType['height']
-                ) && $return;
-                if (ImageManager::generateWebpImages()) {
-                    $return = ImageManager::resize(
-                        $file,
-                        _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.webp',
-                        (int) $imageType['width'],
-                        (int) $imageType['height'],
-                        'webp'
-                    ) && $return;
-                }
-
-                if (ImageManager::retinaSupport()) {
-                    $return = ImageManager::resize(
-                        $file,
-                        _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.jpg',
-                        (int) $imageType['width'] * 2,
-                        (int) $imageType['height'] * 2
-                    ) && $return;
-                    if (ImageManager::generateWebpImages()) {
-                        $return = ImageManager::resize(
-                            $file,
-                            _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.webp',
-                            (int) $imageType['width'] * 2,
-                            (int) $imageType['height'] * 2,
-                            'webp'
-                        ) && $return;
-                    }
-                }
+            $idAddress = Address::getAddressIdBySupplierId($obj->id);
+            $address = new Address($idAddress);
+            if (Validate::isLoadedObject($address)) {
+                $address->deleted = 1;
+                $address->save();
             }
 
-            $currentLogoFile = _PS_TMP_IMG_DIR_.'supplier_mini_'.$idSupplier.'_'.$this->context->shop->id.'.jpg';
-
-            if (file_exists($currentLogoFile)) {
-                unlink($currentLogoFile);
-            }
+            /** @var Supplier|false $supplier */
+            $supplier = parent::processDelete();
+            return $supplier;
         }
 
-        if ($return) {
-            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_SUPPLIERS') < $idSupplier) {
-                Configuration::updateValue('TB_IMAGES_LAST_UPD_SUPPLIERS', $idSupplier);
-            }
-        }
-
-        return $return;
+        return false;
     }
 
     /**

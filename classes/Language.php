@@ -563,6 +563,7 @@ class LanguageCore extends ObjectModel
      */
     public static function checkAndAddLanguage($isoCode, $langPack = false, $onlyAdd = false, $paramsLang = null)
     {
+
         if (!Validate::isLanguageIsoCode($isoCode)) {
             return false;
         }
@@ -626,20 +627,8 @@ class LanguageCore extends ObjectModel
 
         Language::_copyNoneFlag((int) $lang->id);
 
-        $filesCopy = [
-            '/en.jpg',
-            '/en-default-'.ImageType::getFormatedName('thickbox').'.jpg',
-            '/en-default-'.ImageType::getFormatedName('home').'.jpg',
-            '/en-default-'.ImageType::getFormatedName('large').'.jpg',
-            '/en-default-'.ImageType::getFormatedName('medium').'.jpg',
-            '/en-default-'.ImageType::getFormatedName('small').'.jpg',
-            '/en-default-'.ImageType::getFormatedName('scene').'.jpg',
-        ];
-
-        foreach ([_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_] as $to) {
-            foreach ($filesCopy as $file) {
-                @copy(_PS_ROOT_DIR_.'/img/l'.$file, $to.str_replace('/en', '/'.$isoCode, $file));
-            }
+        if (Language::copyDefaultImage($lang->iso_code)) {
+            Language::regenerateDefaultImages($lang->iso_code);
         }
 
         return true;
@@ -838,29 +827,95 @@ class LanguageCore extends ObjectModel
      * @return bool
      *
      * @throws PrestaShopException
-     *
-     *        Accept an ID or ISO, ID has a higher priority
      */
     public static function _copyNoneFlag($id, $iso = null)
     {
         $id = (int)$id;
         if ($id) {
-            $target = _PS_LANG_IMG_DIR_ . $id . '.jpg';
+            $imageExtension = Configuration::get('TB_IMAGE_EXTENSION') ?: 'jpg';
+            $target = _PS_LANG_IMG_DIR_ . $id . '.' . $imageExtension;
             static::loadLanguages();
             $language = Language::getLanguage($id);
             if ($language) {
                 $languageCode = (string)$language['language_code'];
                 if (preg_match('/^[a-zA-Z]{2}-([a-zA-Z]{2})$/', $languageCode, $matches)) {
                     $countryCode = strtolower($matches[1]);
-                    $source = _PS_ROOT_DIR_ . '/img/flags/' . $countryCode . '.png';
+                    $source = ImageManager::getSourceImage(_PS_IMG_DIR_.'/flags/', strtolower($countryCode), 'png');
                     if (file_exists($source)) {
-                        return ImageManager::resize($source, $target, null, null, 'jpg', true);
+                        return ImageManager::convertImageToExtension($source, $imageExtension, $target);
                     }
                 }
                 return copy(_PS_LANG_IMG_DIR_ . 'none.jpg', $target);
             }
         }
         return false;
+    }
+
+    /**
+     * @param string $isoCode
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function copyDefaultImage($isoCode)
+    {
+
+        $imageExtension = ImageManager::getDefaultImageExtension();
+        $newImageDest = _PS_LANG_IMG_DIR_.$isoCode.'-default.'.$imageExtension;
+
+        // This is only relevant for installation
+        if (defined('_PS_INSTALL_LANGS_PATH_') && $sourceImage = ImageManager::getSourceImage(_PS_INSTALL_LANGS_PATH_.$isoCode.'/img/', $isoCode, 'jpg')) {
+            return ImageManager::convertImageToExtension($sourceImage, $imageExtension, $newImageDest);
+        }
+
+        // We haven't found the original default image of this language (it only works on installation)
+        // Now: we copy the default image of the default language
+        $id_lang = Configuration::get('PS_LANG_DEFAULT');
+
+        if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, Language::getIsoById($id_lang).'-default')) {
+            return ImageManager::convertImageToExtension($sourceImage, $imageExtension, $newImageDest);
+        }
+
+        // We still haven't found any default image (shouldn't happen often)
+        // Now: we try to find any default image
+        foreach (Language::getLanguages() as $language) {
+            if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, $language['iso_code'].'-default')) {
+                return ImageManager::convertImageToExtension($sourceImage, $imageExtension, $newImageDest);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Saves all default images in all types and resolutions in l folder
+     *
+     * @param string $iso_code
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function regenerateDefaultImages($iso_code)
+    {
+        $success = true;
+
+        if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, $iso_code.'-default')) {
+            $imageExtension = ImageManager::getDefaultImageExtension();
+            foreach (ImageType::getImagesTypes() as $imageType) {
+                $dstFile = _PS_LANG_IMG_DIR_.$iso_code.'-default-'.$imageType['name'].'.'.$imageExtension;
+                $success = ImageManager::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $imageExtension) && $success;
+                $dstFile = _PS_LANG_IMG_DIR_.$iso_code.'-default-'.$imageType['name'].'2x.'.$imageExtension;
+                $success = ImageManager::resize($sourceImage, $dstFile, $imageType['width']*2, $imageType['height']*2, $imageExtension) && $success;
+            }
+        }
+        else {
+            $success = false;
+        }
+
+        return $success;
     }
 
     /**
@@ -1220,23 +1275,23 @@ class LanguageCore extends ObjectModel
                 Tools::deleteDirectory(_PS_TRANSLATIONS_DIR_.$this->iso_code);
             }
 
-            $images = [
-                '.jpg',
-                '-default-'.ImageType::getFormatedName('thickbox').'.jpg',
-                '-default-'.ImageType::getFormatedName('home').'.jpg',
-                '-default-'.ImageType::getFormatedName('large').'.jpg',
-                '-default-'.ImageType::getFormatedName('medium').'.jpg',
-                '-default-'.ImageType::getFormatedName('small').'.jpg',
-            ];
-            $imagesDirectories = [_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_];
-            foreach ($imagesDirectories as $imageDirectory) {
-                foreach ($images as $image) {
-                    if (file_exists($imageDirectory.$this->iso_code.$image)) {
-                        unlink($imageDirectory.$this->iso_code.$image);
-                    }
-                    if (file_exists(_PS_ROOT_DIR_.'/img/l/'.$this->id.'.jpg')) {
-                        unlink(_PS_ROOT_DIR_.'/img/l/'.$this->id.'.jpg');
-                    }
+            $link = new Link();
+            $images = [];
+            foreach (ImageManager::getAllowedImageExtensions(true, true) as $imageExtension) {
+                $images[] = _PS_LANG_IMG_DIR_.$this->id.'.'.$imageExtension; // Flag
+
+                // Adding all possible default images
+                $images[] = _PS_LANG_IMG_DIR_.$this->iso_code.'-default.'.$imageExtension;
+                foreach (ImageType::getImagesTypes() as $imageType) {
+                    $images[] = $link->getDefaultImageUri($this->iso_code, $imageType['name'], false, $imageExtension, true);
+                    $images[] = $link->getDefaultImageUri($this->iso_code, $imageType['name'], true, $imageExtension, true);
+                }
+            }
+            $images = array_unique($images);
+
+            foreach ($images as $image) {
+                if (file_exists($image)) {
+                    unlink($image);
                 }
             }
         }

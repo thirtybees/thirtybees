@@ -83,7 +83,7 @@ abstract class AdminTabCore
     /** @var array Name and directory where class image are located */
     public $fieldImageSettings = [];
     /** @var string Image type */
-    public $imageType = 'jpg';
+    public $imageType;
     /** @var array Fields to display in list */
     public $fieldsDisplay = [];
     /**
@@ -233,6 +233,8 @@ abstract class AdminTabCore
         if (!Shop::isFeatureActive()) {
             $this->shopLinkType = '';
         }
+
+        $this->imageType = ImageManager::getDefaultImageExtension();
     }
 
     /**
@@ -2535,24 +2537,27 @@ abstract class AdminTabCore
      * @param bool $return define the return way : false for a display, true for a return
      * @param bool $use_vars_instead_of_ids use an js vars instead of ids seperate by "¤"
      *
-     *                                        @deprecated 1.0.0
+     * @return false|string|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function displayFlags($languages, $default_language, $ids, $id, $return = false, $use_vars_instead_of_ids = false)
     {
         if (count($languages) == 1) {
             return false;
         }
+        $imageExtension = ImageManager::getDefaultImageExtension();
         $output = '
 		<div class="displayed_flag">
-			<img src="../img/l/'.$default_language.'.jpg" class="pointer" id="language_current_'.$id.'" onclick="toggleLanguageFlags(this);" alt="" />
+			<img src="../img/l/'.$default_language.'.'.$imageExtension.'" class="pointer" id="language_current_'.$id.'" onclick="toggleLanguageFlags(this);" alt="" />
 		</div>
 		<div id="languages_'.$id.'" class="language_flags">
 			'.$this->l('Choose language:').'<br /><br />';
         foreach ($languages as $language) {
             if ($use_vars_instead_of_ids) {
-                $output .= '<img src="../img/l/'.(int) ($language['id_lang']).'.jpg" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', '.$ids.', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
+                $output .= '<img src="../img/l/'.(int) ($language['id_lang']).'.'.$imageExtension.'" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', '.$ids.', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
             } else {
-                $output .= '<img src="../img/l/'.(int) ($language['id_lang']).'.jpg" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', \''.$ids.'\', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
+                $output .= '<img src="../img/l/'.(int) ($language['id_lang']).'.'.$imageExtension.'" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', \''.$ids.'\', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
             }
         }
         $output .= '</div>';

@@ -79,6 +79,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 'category_name' => ['type' => ObjectModel::KEY, 'columns' => ['name']],
             ],
         ],
+        'images' => [
+            ImageEntity::ENTITY_TYPE_CATEGORIES => [
+                'inputName' => 'image',
+                'path' => _PS_CAT_IMG_DIR_,
+            ],
+            ImageEntity::ENTITY_TYPE_CATEGORIES_THUMB => [
+                'inputName' => 'thumb',
+                'path' => _PS_CAT_IMG_DIR_.'thumb/',
+            ],
+        ],
     ];
     /**
      * @var array
@@ -129,8 +139,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public $groupBox = null;
 
-    /** @var string id_image is the category ID when an image exists and 'default' otherwise */
-    public $id_image = 'default';
+    /** @var string id_image is the category ID when an image exists and false otherwise */
+    public $id_image = false;
 
     /**
      * @var array Webservice parameters
@@ -161,7 +171,9 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public function __construct($idCategory = null, $idLang = null, $idShop = null)
     {
         parent::__construct($idCategory, $idLang, $idShop);
-        $this->id_image = ($this->id && file_exists(_PS_CAT_IMG_DIR_.(int) $this->id.'.jpg')) ? (int) $this->id : false;
+        if ($this->id && ImageManager::getSourceImage(_PS_CAT_IMG_DIR_, $this->id)) {
+            $this->id_image = $this->id;
+        }
         $this->image_dir = _PS_CAT_IMG_DIR_;
     }
 
@@ -1648,7 +1660,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         );
 
         foreach ($result as &$row) {
-            $row['id_image'] = (file_exists(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'.jpg') || file_exists(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'_thumb.jpg')) ? (int) $row['id_category'] : Language::getIsoById($idLang).'-default';
+            $row['id_image'] = $row['id_category'];
             $row['legend'] = 'no picture';
         }
 
@@ -2576,5 +2588,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 cs.date_upd = c.date_upd
             WHERE IFNULL(cs.date_add, \'1970-01-01\') < \'1971-01-01\'
         ');
+
+        ImageEntity::rebuildImageEntities(static::class, self::$definition['images']);
     }
 }

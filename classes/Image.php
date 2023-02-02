@@ -49,7 +49,7 @@ class ImageCore extends ObjectModel
     /** @var string|string[] Legend */
     public $legend;
     /** @var string image extension */
-    public $image_format = 'jpg';
+    public $image_format;
     /** @var string path to index.php file to be copied to new image folders */
     public $source_index;
     /** @var string image folder */
@@ -100,6 +100,7 @@ class ImageCore extends ObjectModel
         parent::__construct($id, $idLang);
         $this->image_dir = _PS_PROD_IMG_DIR_;
         $this->source_index = _PS_PROD_IMG_DIR_.'index.php';
+        $this->image_format = ImageManager::getDefaultImageExtension();
     }
 
     /**
@@ -326,7 +327,8 @@ class ImageCore extends ObjectModel
      */
     public static function duplicateProductImages($idProductOld, $idProductNew, $combinationImages)
     {
-        $imageTypes = ImageType::getImagesTypes('products');
+        $imageTypes = ImageType::getImagesTypes(ImageEntity::ENTITY_TYPE_PRODUCTS);
+        $imageExtension = ImageManager::getDefaultImageExtension();
         $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_image`')
@@ -343,23 +345,23 @@ class ImageCore extends ObjectModel
             if ($imageNew->add()) {
                 $newPath = $imageNew->getPathForCreation();
                 foreach ($imageTypes as $imageType) {
-                    if (file_exists(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.jpg')) {
+                    if (file_exists(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.'.$imageExtension)) {
                         $imageNew->createImgFolder();
                         copy(
-                            _PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.jpg',
-                            $newPath.'-'.$imageType['name'].'.jpg'
+                            _PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'.'.$imageExtension,
+                            $newPath.'-'.$imageType['name'].'.'.$imageExtension
                         );
                         if (Configuration::get('WATERMARK_HASH')) {
-                            $oldImagePath = _PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.jpg';
+                            $oldImagePath = _PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$imageExtension;
                             if (file_exists($oldImagePath)) {
-                                copy($oldImagePath, $newPath.'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.jpg');
+                                copy($oldImagePath, $newPath.'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$imageExtension);
                             }
                         }
                     }
                 }
 
-                if (file_exists(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'.jpg')) {
-                    copy(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'.jpg', $newPath.'.jpg');
+                if ($sourceFile = ImageManager::getSourceImage(_PS_PROD_IMG_DIR_.$imageOld->getImgFolder(), $imageOld->id)) {
+                    copy($sourceFile, $newPath.'.'.$imageExtension);
                 }
 
                 static::replaceAttributeImageAssociationId($combinationImages, (int) $imageOld->id, (int) $imageNew->id);
@@ -574,8 +576,10 @@ class ImageCore extends ObjectModel
      */
     public static function clearTmpDir()
     {
+        $imageFormats = implode('|', ImageManager::getAllowedImageExtensions(false, true));
+
         foreach (scandir(_PS_TMP_IMG_DIR_) as $d) {
-            if (preg_match('/(.*)\.jpg$/', $d)) {
+            if (preg_match('/(.*)\.('.$imageFormats.')$/', $d)) {
                 unlink(_PS_TMP_IMG_DIR_.$d);
             }
         }
@@ -599,11 +603,8 @@ class ImageCore extends ObjectModel
 
         // normalize input variable $formats. It can either be null, string, or array
         if (is_null($formats)) {
-            // auto detect formats
-            $formats = ['jpg'];
-            if (ImageManager::generateWebpImages()) {
-                $formats[] = 'webp';
-            }
+            // all possible formats
+            $formats = ImageManager::getAllowedImageExtensions(false, true);
         } elseif (is_string($formats)) {
             // single format provided
             $formats = [ $formats ];
@@ -654,9 +655,10 @@ class ImageCore extends ObjectModel
         $startTime = time();
         $image = null;
         $tmpFolder = 'duplicates/';
+        $imageFormats = implode('|', ImageManager::getAllowedImageExtensions(false, true));
         foreach (scandir(_PS_PROD_IMG_DIR_) as $file) {
             // matches the base product image or the thumbnails
-            if (preg_match('/^([0-9]+\-)([0-9]+)(\-(.*))?\.jpg$/', $file, $matches)) {
+            if (preg_match('/^([0-9]+\-)([0-9]+)(\-(.*))?\.('.$imageFormats.')$/', $file, $matches)) {
                 // don't recreate an image object for each image type
                 if (!$image || $image->id !== (int) $matches[2]) {
                     $image = new Image((int) $matches[2]);
@@ -670,8 +672,7 @@ class ImageCore extends ObjectModel
 
                     // if there's already a file at the new image path, move it to a dump folder
                     // most likely the preexisting image is a demo image not linked to a product and it's ok to replace it
-                    $newPath = _PS_PROD_IMG_DIR_.$image->getImgPath().(isset($matches[3]) ? $matches[3] : '').'.jpg';
-                    if (file_exists($newPath)) {
+                    if ($newPath = ImageManager::getSourceImage(_PS_PROD_IMG_DIR_.$image->getImgFolder(), $image->id.(isset($matches[3]) ?? ''))) {
                         if (!file_exists(_PS_PROD_IMG_DIR_.$tmpFolder)) {
                             @mkdir(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                             @chmod(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
@@ -799,28 +800,24 @@ class ImageCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function deleteImage($forceDelete = false)
+    public function deleteImage($forceDelete = false, $path = '')
     {
         if (!$this->id) {
             return false;
         }
 
         $directory = $this->image_dir . $this->getImgFolder();
-        if (! is_dir($directory)) {
+        if (!is_dir($directory)) {
             return true;
         }
 
-        // delete jpg files
-        $result = $this->deleteImageFormat('jpg');
-
-        // delete webp files
-        if (ImageManager::generateWebpImages()) {
-            $result = $this->deleteImageFormat('webp') && $result;
-        }
-
-        // delete image_format, if not deleted already
-        if ($this->image_format && !in_array($this->image_format, ['jpg', 'webp'])) {
-            $result = $this->deleteImageFormat($this->image_format) && $result;
+        // delete all possible image formats
+        $imageExtensions = ImageManager::getAllowedImageExtensions(false, true);
+        $result = true;
+        foreach ($imageExtensions as $imageExtension) {
+            if (!$this->deleteImageFormat($imageExtension)) {
+                $result = false;
+            }
         }
 
         // delete image directory, if it's empty
@@ -836,18 +833,18 @@ class ImageCore extends ObjectModel
     /**
      * Delete the product images of given format from disk
      *
-     * @param string $format
+     * @param string $imageExtension
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function deleteImageFormat($format)
+    protected function deleteImageFormat($imageExtension)
     {
 
         // Delete base image
-        if (file_exists($this->image_dir.$this->getExistingImgPath().'.'.$format)) {
-            if (! @unlink($this->image_dir.$this->getExistingImgPath().'.'.$format)) {
+        if (file_exists($this->image_dir.$this->getExistingImgPath().'.'.$imageExtension)) {
+            if (! @unlink($this->image_dir.$this->getExistingImgPath().'.'.$imageExtension)) {
                 return false;
             }
         }
@@ -857,14 +854,14 @@ class ImageCore extends ObjectModel
         // Delete auto-generated images
         $imageTypes = ImageType::getImagesTypes();
         foreach ($imageTypes as $imageType) {
-            $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'.'.$format;
+            $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'.'.$imageExtension;
             if (Configuration::get('WATERMARK_HASH')) {
-                $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$format;
+                $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-'.$imageType['name'].'-'.Configuration::get('WATERMARK_HASH').'.'.$imageExtension;
             }
         }
 
         // Delete watermark image
-        $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-watermark.'.$format;
+        $filesToDelete[] = $this->image_dir.$this->getExistingImgPath().'-watermark.'.$imageExtension;
 
         // perform delete
         $result = true;
@@ -1050,4 +1047,5 @@ class ImageCore extends ObjectModel
             $table->reorderColumns(['id_product', 'id_image', 'id_shop']);
         }
     }
+
 }

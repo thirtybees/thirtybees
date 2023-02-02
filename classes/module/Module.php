@@ -2436,27 +2436,28 @@ abstract class ModuleCore
      * @param bool $return define the return way : false for a display, true for a return
      * @param bool $useVarsInsteadOfIds use an js vars instead of ids seperate by "¤"
      *
-     * @deprecated 2.0.0
-     *
      * @return bool|string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function displayFlags($languages, $defaultLanguage, $ids, $id, $return = false, $useVarsInsteadOfIds = false)
     {
         if (count($languages) == 1) {
             return false;
         }
-
+        $imageExtension = ImageManager::getDefaultImageExtension();
         $output = '
 		<div class="displayed_flag">
-			<img src="../img/l/'.$defaultLanguage.'.jpg" class="pointer" id="language_current_'.$id.'" onclick="toggleLanguageFlags(this);" alt="" />
+			<img src="../img/l/'.$defaultLanguage.'.'.$imageExtension.'" class="pointer" id="language_current_'.$id.'" onclick="toggleLanguageFlags(this);" alt="" />
 		</div>
 		<div id="languages_'.$id.'" class="language_flags">
 			'.$this->l('Choose language:').'<br /><br />';
         foreach ($languages as $language) {
             if ($useVarsInsteadOfIds) {
-                $output .= '<img src="../img/l/'.(int) $language['id_lang'].'.jpg" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', '.$ids.', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
+                $output .= '<img src="../img/l/'.(int) $language['id_lang'].'.'.$imageExtension.'" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', '.$ids.', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
             } else {
-                $output .= '<img src="../img/l/'.(int) $language['id_lang'].'.jpg" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', \''.$ids.'\', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
+                $output .= '<img src="../img/l/'.(int) $language['id_lang'].'.'.$imageExtension.'" class="pointer" alt="'.$language['name'].'" title="'.$language['name'].'" onclick="changeLanguage(\''.$id.'\', \''.$ids.'\', '.$language['id_lang'].', \''.$language['iso_code'].'\');" /> ';
             }
         }
         $output .= '</div>';

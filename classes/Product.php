@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * @deprecated 1.5.0.1
  */
@@ -41,7 +43,7 @@ define('_CUSTOMIZE_TEXTFIELD_', 1);
 /**
  * Class ProductCore
  */
-class ProductCore extends ObjectModel
+class ProductCore extends ObjectModel implements InitializationCallback
 {
     const CUSTOMIZE_FILE = 0;
     const CUSTOMIZE_TEXTFIELD = 1;
@@ -560,6 +562,14 @@ class ProductCore extends ObjectModel
                 'date_add'            => ['type' => ObjectModel::KEY, 'columns' => ['date_add', 'active', 'visibility']],
                 'id_category_default' => ['type' => ObjectModel::KEY, 'columns' => ['id_category_default']],
                 'indexed'             => ['type' => ObjectModel::KEY, 'columns' => ['indexed', 'active', 'id_product']],
+            ],
+        ],
+        'images' => [
+            ImageEntity::ENTITY_TYPE_PRODUCTS => [
+                'path' => _PS_PROD_IMG_DIR_,
+                'imageTypes' => [
+                    ['name' => 'backoffice_product_medium', 'width' => 150, 'height' => 150]
+                ]
             ],
         ],
     ];
@@ -2761,9 +2771,10 @@ class ProductCore extends ObjectModel
 
         $colors = [];
         foreach ($res as $row) {
+            $imageExtension = ImageManager::getDefaultImageExtension();
             $color = (string)$row['color'];
             $attributeId = (int)$row['id_attribute'];
-            $textureFile = _PS_COL_IMG_DIR_ . $attributeId . '.jpg';
+            $textureFile = _PS_COL_IMG_DIR_ . $attributeId . '.' . $imageExtension;
 
             if (!$color && !file_exists($textureFile)) {
                 continue;
@@ -6317,7 +6328,8 @@ class ProductCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function addFeaturesDisplayableToDb($featureValueId, $langId, $displayable) {
+    public function addFeaturesDisplayableToDb($featureValueId, $langId, $displayable)
+    {
 
         if (!$displayable = pSQL($displayable)) {
             return false;
@@ -8273,5 +8285,17 @@ class ProductCore extends ObjectModel
 
         // check controller type
         return in_array($context->controller->controller_type, ['front', 'modulefront']);
+    }
+
+    /**
+     * Database initialization callback
+     *
+     * @param Db $conn
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        ImageEntity::rebuildImageEntities('Product', self::$definition['images']);
     }
 }

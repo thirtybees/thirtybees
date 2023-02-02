@@ -667,27 +667,28 @@ class ThemeCore extends ObjectModel
              * Create/update image types.
              */
             if (isset($xml->images->image)) {
+                $imageEntities = ImageEntity::getAll();
+
                 foreach ($xml->images->image as $imageType) {
                     // It's installation time, name variants can get ignored.
-                    $type = ImageType::getInstanceByName(
-                        (string) $imageType['name'],
-                        $this->name
-                    );
 
-                    $type->width = (int) $imageType['width'];
-                    $type->height = (int) $imageType['height'];
-                    foreach ($type->def['fields'] as $name => $field) {
-                        if ($field['type'] == ObjectModel::TYPE_BOOL) {
-                            $type->{$name} = $imageType[$name] == 'true';
+                    // create/update ImageType
+                    $imageTypeObj = ImageType::getInstanceByName((string) $imageType['name'], $this->name);
+                    $imageTypeObj->width = (int) $imageType['width'];
+                    $imageTypeObj->height = (int) $imageType['height'];
+                    $imageTypeObj->save();
+
+                    // associate ImageType with ImageEnity
+                    foreach ($imageEntities as $imageEntity) {
+                        if ((string)$imageType[$imageEntity->name] === 'true') {
+                            $imageEntity->associateImageType((int)$imageTypeObj->id);
                         }
                     }
 
-                    $type->save();
-
                     $return['imageTypes'][] = [
-                        'name'   => $type->name,
-                        'width'  => $type->width,
-                        'height' => $type->height,
+                        'name'   => $imageTypeObj->name,
+                        'width'  => $imageTypeObj->width,
+                        'height' => $imageTypeObj->height,
                     ];
                 }
             }

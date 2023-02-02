@@ -166,7 +166,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     protected $image_dir = null;
 
     /** @var String file type of image files. */
-    protected $image_format = 'jpg';
+    protected $image_format;
 
     /**
      * @var array Contains object definition
@@ -272,6 +272,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, $this->id_shop, static::$cache_objects);
         }
+
+        $this->image_format = ImageManager::getDefaultImageExtension();
     }
 
     /**
@@ -1835,27 +1837,43 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         if ($forceDelete || !$this->hasMultishopEntries()) {
-            /* Deleting object images and thumbnails (cache) */
-            if ($this->image_dir) {
-                if (file_exists($this->image_dir.$this->id.'.'.$this->image_format)
-                    && !unlink($this->image_dir.$this->id.'.'.$this->image_format)) {
-                    return false;
-                }
-            }
-            if (file_exists(_PS_TMP_IMG_DIR_.$this->def['table'].'_'.$this->id.'.'.$this->image_format)
-                && !unlink(_PS_TMP_IMG_DIR_.$this->def['table'].'_'.$this->id.'.'.$this->image_format)) {
-                return false;
-            }
-            if (file_exists(_PS_TMP_IMG_DIR_.$this->def['table'].'_mini_'.$this->id.'.'.$this->image_format)
-                && !unlink(_PS_TMP_IMG_DIR_.$this->def['table'].'_mini_'.$this->id.'.'.$this->image_format)) {
-                return false;
-            }
 
-            $types = ImageType::getImagesTypes();
-            foreach ($types as $imageType) {
-                if (file_exists($this->image_dir.$this->id.'-'.stripslashes($imageType['name']).'.'.$this->image_format)
-                && !unlink($this->image_dir.$this->id.'-'.stripslashes($imageType['name']).'.'.$this->image_format)) {
-                    return false;
+            // To make sure we get all relevant image files, we need to loop through all supported image extensions
+            foreach (ImageManager::getAllowedImageExtensions(true, true) as $imageExtension) {
+
+                // Deleting tmp images
+                $ids_shop = Shop::getCompleteListOfShopsID();
+                $ids_shop[] = 0; // Making sure that none shop related image are deleted too
+                foreach ($ids_shop as $id_shop) {
+                    $shop_key = $id_shop ? '_'.$id_shop : '';
+                    if (file_exists(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '.' . $imageExtension)
+                        && !unlink(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '.' . $imageExtension)) {
+                        return false;
+                    }
+                    if (file_exists(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_mini_' . $this->id . $shop_key . '.' . $imageExtension)
+                        && !unlink(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_mini_' . $this->id . $shop_key . '.' . $imageExtension)) {
+                        return false;
+                    }
+                }
+
+                /* Deleting object images and thumbnails (cache) */
+                if ($this->image_dir) {
+                    if (file_exists($this->image_dir . $this->id . '.' . $imageExtension)
+                        && !unlink($this->image_dir . $this->id . '.' . $imageExtension)) {
+                        return false;
+                    }
+
+                    $types = ImageType::getImagesTypes();
+                    foreach ($types as $imageType) {
+                        if (file_exists($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '.' . $imageExtension)
+                            && !unlink($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '.' . $imageExtension)) {
+                            return false;
+                        }
+                        if (file_exists($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '2x.' . $imageExtension)
+                            && !unlink($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '2x.' . $imageExtension)) {
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -2511,4 +2529,5 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         return $success;
     }
+
 }

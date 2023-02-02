@@ -51,10 +51,14 @@ class AdminStatusesControllerCore extends AdminController
         $this->colorOnBackground = false;
         $this->bulk_actions = ['delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')]];
         $this->multishop_context = Shop::CONTEXT_ALL;
-        $this->imageType = 'gif';
+        $this->imageType = ImageManager::getDefaultImageExtension();
         $this->fieldImageSettings = [
-            'name' => 'icon',
-            'dir'  => 'os',
+            [
+                'name' => 'icon',
+                'dir'  => _PS_ORDER_STATE_IMG_DIR_,
+                'width' => 32,
+                'height' => 32,
+            ]
         ];
 
         parent::__construct();
@@ -883,26 +887,5 @@ class AdminStatusesControllerCore extends AdminController
         }
 
         return parent::filterToField($key, $filter);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function afterImageUpload()
-    {
-        parent::afterImageUpload();
-
-        if (($idOrderState = Tools::getIntValue('id_order_state')) &&
-            $_FILES &&
-            file_exists(_PS_ORDER_STATE_IMG_DIR_.$idOrderState.'.gif')
-        ) {
-            $currentFile = _PS_TMP_IMG_DIR_.'order_state_mini_'.$idOrderState.'_'.$this->context->shop->id.'.gif';
-
-            if (file_exists($currentFile)) {
-                unlink($currentFile);
-            }
-        }
-
-        return true;
     }
 }

@@ -1571,8 +1571,8 @@ class CartCore extends ObjectModel
                     }
                     $deliveryOptionList[$idAddress][$key]['carrier_list'][$idCarrier]['instance'] = $carrierCollection[$idCarrier];
 
-                    if (file_exists(_PS_SHIP_IMG_DIR_.$idCarrier.'.jpg')) {
-                        $deliveryOptionList[$idAddress][$key]['carrier_list'][$idCarrier]['logo'] = _THEME_SHIP_DIR_.$idCarrier.'.jpg';
+                    if ($sourceImage = ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $idCarrier)) {
+                        $deliveryOptionList[$idAddress][$key]['carrier_list'][$idCarrier]['logo'] = str_replace(_PS_SHIP_IMG_DIR_, _THEME_SHIP_DIR_, $sourceImage);
                     } else {
                         $deliveryOptionList[$idAddress][$key]['carrier_list'][$idCarrier]['logo'] = false;
                     }

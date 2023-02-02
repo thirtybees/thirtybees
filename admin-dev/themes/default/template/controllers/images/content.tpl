@@ -28,7 +28,7 @@
   {$content}
 {/if}
 
-{if isset($display_regenerate)}
+{if isset($display_regenerate) && $display_regenerate}
   <form class="form-horizontal" action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post">
     <div class="panel">
       <h3>
@@ -42,14 +42,14 @@
         {l s='Be careful! Manually uploaded thumbnails will be erased and replaced by automatically generated thumbnails.'}
       </div>
 
-      {foreach $types as $k => $type}
-        <div class="form-group second-select format_{$k|escape:'html':'UTF-8'}" style="display:none;">
+      {foreach $imageEntities as $imageEntity}
+        <div class="form-group second-select format_{$imageEntity.name|escape:'html':'UTF-8'}" style="display:none;">
           <label class="control-label col-lg-3">{l s='Select a format'}</label>
           <div class="col-lg-9 margin-form">
-            <select name="format_{$k|escape:'html':'UTF-8'}">
+            <select name="format_{$imageEntity.name|escape:'html':'UTF-8'}">
               <option value="all">{l s='All'}</option>
-              {foreach $formats[$k] AS $format}
-                <option value="{$format['id_image_type']|intval}">{$format['name']|escape:'html':'UTF-8'}</option>
+              {foreach $imageEntity.imageTypes AS $imageType}
+                <option value="{$imageType['id_image_type']|intval}">{$imageType['name']|escape:'html':'UTF-8'}</option>
               {/foreach}
             </select>
           </div>
@@ -75,6 +75,7 @@
                       id="regenerate{$entityType|ucfirst|escape:'htmlall':'UTF-8'}Images"
                       data-entity-type="{$entityType|escape:'htmlall':'UTF-8'}"
                       {if $status['total'] == 0}disabled="disabled"{/if}
+                      title="{$entityType|escape:'htmlall':'UTF-8'}"
               >
                 <i class="icon icon-play"></i> {l s='Regenerate %s' sprintf=[Translate::getAdminTranslation(ucfirst($entityType), 'AdminImages')]}
               </button>
@@ -104,15 +105,16 @@
     </div>
   </form>
   <script type="text/javascript">
+
     (function () {
-      var regenerating = window.regen = {
-        products: false,
-        categories: false,
-        suppliers: false,
-        manufacturers: false,
-        scenes: false,
-        stores: false,
-      };
+
+      var regenerating = {};
+
+      {foreach from=$imageEntities item=$imageEntity}
+        regenerating.{$imageEntity.name} = false;
+      {/foreach}
+
+      window.regen = regenerating;
 
       var pendingRequests = [];
       function removeRequest(request) {

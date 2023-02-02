@@ -394,15 +394,6 @@
     <configuration id="PS_OS_COD_VALIDATION" name="PS_OS_COD_VALIDATION">
       <value>14</value>
     </configuration>
-    <configuration id="PS_IMAGE_QUALITY" name="PS_IMAGE_QUALITY">
-      <value>jpg</value>
-    </configuration>
-    <configuration id="PS_PNG_QUALITY" name="PS_PNG_QUALITY">
-      <value>7</value>
-    </configuration>
-    <configuration id="PS_JPEG_QUALITY" name="PS_JPEG_QUALITY">
-      <value>90</value>
-    </configuration>
     <configuration id="PS_COOKIE_LIFETIME_FO" name="PS_COOKIE_LIFETIME_FO">
       <value>480</value>
     </configuration>
@@ -674,13 +665,7 @@
       <value>info/{rewrite}</value>
     </configuration>
     <configuration id="PS_SHOW_CONDITION" name="PS_SHOW_CONDITION">
-      <value>1</value>
-    </configuration>
-    <configuration id="TB_USE_WEBP" name="TB_USE_WEBP">
-      <value>0</value>
-    </configuration>
-    <configuration id="TB_WEBP_QUALITY" name="TB_WEBP_QUALITY">
-      <value>90</value>
+      <value>1</value>s
     </configuration>
     <configuration id="TB_SOURCE_FAVICON_CODE" name="TB_SOURCE_FAVICON_CODE">
       <value><![CDATA[<link rel="apple-touch-icon" sizes="57x57" href="{src size=57x57 type=png}">
@@ -716,6 +701,15 @@
     </configuration>
     <configuration id="TB_EMIT_SEO_FIELDS" name="TB_EMIT_SEO_FIELDS">
       <value>1</value>
+    </configuration>
+    <configuration id="TB_IMAGE_EXTENSION" name="TB_IMAGE_EXTENSION">
+      <value>jpg</value>
+    </configuration>
+    <configuration id="TB_IMAGE_QUALITY" name="TB_IMAGE_QUALITY">
+      <value>90</value>
+    </configuration>
+    <configuration id="TB_IMAGE_CONVERSION" name="TB_IMAGE_CONVERSION">
+      <value>0</value>
     </configuration>
   </entities>
 </entity_configuration>

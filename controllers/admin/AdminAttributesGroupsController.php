@@ -114,7 +114,12 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 'confirm' => $this->l('Delete selected items?'),
             ],
         ];
-        $this->fieldImageSettings = ['name' => 'texture', 'dir' => 'co'];
+        $this->fieldImageSettings = [
+            [
+                'name' => 'texture',
+                'dir' => _PS_COL_IMG_DIR_
+            ]
+        ];
 
         parent::__construct();
     }
@@ -475,12 +480,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $strAttributesGroups .= '"'.$attributeGroup['id_attribute_group'].'" : '.($attributeGroup['group_type'] == 'color' ? '1' : '0').', ';
         }
 
-        $image = '../img/'.$this->fieldImageSettings['dir'].'/'.(int) $obj->id.'.jpg';
+        $imageExtension = ImageManager::getDefaultImageExtension();
+        $image = '../img/'.$this->fieldImageSettings['path'].'/'.(int) $obj->id.'.'.$imageExtension;
 
         $this->tpl_form_vars = [
             'strAttributesGroups'      => $strAttributesGroups,
             'colorAttributeProperties' => Validate::isLoadedObject($obj) && $obj->isColorAttribute(),
-            'imageTextureExists'       => file_exists(_PS_IMG_DIR_.$this->fieldImageSettings['dir'].'/'.(int) $obj->id.'.jpg'),
+            'imageTextureExists'       => (bool)ImageManager::getSourceImage($this->fieldImageSettings['path'].'/', $obj->id),
             'imageTexture'             => $image,
             'imageTextureUrl'          => Tools::safeOutput($_SERVER['REQUEST_URI']).'&deleteImage=1',
         ];
@@ -765,8 +771,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
             }
 
             if (Tools::getIntValue('id_attribute') && Tools::isSubmit('submitAddattribute') && Tools::getValue('color') && !Tools::getValue('filename')) {
-                if (file_exists(_PS_IMG_DIR_.$this->fieldImageSettings['dir'].'/'.Tools::getIntValue('id_attribute').'.jpg')) {
-                    unlink(_PS_IMG_DIR_.$this->fieldImageSettings['dir'].'/'.Tools::getIntValue('id_attribute').'.jpg');
+                if ($sourceImage = ImageManager::getSourceImage($this->fieldImageSettings['path'].'/', (string)Tools::getIntValue('id_attribute'))) {
+                    unlink($sourceImage);
                 }
             }
         } else {
@@ -957,11 +963,11 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             foreach ($this->_list as &$list) {
                 $id = (int)$list['id_attribute'];
-                if (file_exists(_PS_IMG_DIR_.$this->fieldImageSettings['dir']."/$id.jpg")) {
+                if ($sourceImage = ImageManager::getSourceImage($this->fieldImageSettings['path'], $id)) {
                     if (!isset($list['color']) || !is_array($list['color'])) {
                         $list['color'] = [];
                     }
-                    $list['color']['texture'] = '../img/'.$this->fieldImageSettings['dir']."/$id.jpg";
+                    $list['color']['texture'] = str_replace(_PS_IMG_DIR_, '../img/', $sourceImage);
                 }
                 $list['products'] = $products[$id] ?? 0;
             }

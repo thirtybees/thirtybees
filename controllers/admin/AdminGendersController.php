@@ -61,8 +61,10 @@ class AdminGendersControllerCore extends AdminController
         ];
 
         $this->fieldImageSettings = [
-            'name' => 'image',
-            'dir' => 'genders'
+            [
+                'inputName' => 'image',
+                'path' => _PS_GENDERS_DIR_
+            ]
         ];
 
         $this->fields_list = [
@@ -223,7 +225,7 @@ class AdminGendersControllerCore extends AdminController
      */
     protected function postImage($id)
     {
-        if (isset($this->fieldImageSettings['name']) && isset($this->fieldImageSettings['dir'])) {
+        if (isset($this->fieldImageSettings[0]['inputName']) && isset($this->fieldImageSettings[0]['path'])) {
             if (!Validate::isInt(Tools::getValue('img_width')) || !Validate::isInt(Tools::getValue('img_height'))) {
                 $this->errors[] = Tools::displayError('Width and height must be numeric values.');
             } else {
@@ -234,30 +236,9 @@ class AdminGendersControllerCore extends AdminController
                     $width = null;
                     $height = null;
                 }
-                return $this->uploadImage($id, $this->fieldImageSettings['name'], $this->fieldImageSettings['dir'].'/', false, $width, $height);
+                return $this->uploadImage($id, $this->fieldImageSettings[0]['inputName'], $this->fieldImageSettings[0]['path'].'/', false, $width, $height);
             }
         }
         return !count($this->errors) ? true : false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function afterImageUpload()
-    {
-        parent::afterImageUpload();
-
-        if (($id_gender = Tools::getIntValue('id_gender')) &&
-            $_FILES &&
-            file_exists(_PS_GENDERS_DIR_.$id_gender.'.jpg')
-        ) {
-            $current_file = _PS_TMP_IMG_DIR_.'gender_mini_'.$id_gender.'_'.$this->context->shop->id.'.jpg';
-
-            if (file_exists($current_file)) {
-                unlink($current_file);
-            }
-        }
-
-        return true;
     }
 }

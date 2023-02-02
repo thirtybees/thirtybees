@@ -1069,6 +1069,20 @@ CREATE TABLE `PREFIX_image` (
   KEY `image_product` (`id_product`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_image_entity` (
+  `id_image_entity` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `classname` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_image_entity`),
+  KEY `image_entity_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_image_entity_type` (
+  `id_image_entity` int(11) unsigned NOT NULL,
+  `id_image_type` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id_image_entity`,`id_image_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_image_lang` (
   `id_image` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
@@ -1092,6 +1106,7 @@ CREATE TABLE `PREFIX_image_type` (
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `width` int(11) unsigned NOT NULL,
   `height` int(11) unsigned NOT NULL,
+  `id_image_type_parent` int(11) unsigned DEFAULT NULL,
   `products` tinyint(1) NOT NULL DEFAULT '1',
   `categories` tinyint(1) NOT NULL DEFAULT '1',
   `manufacturers` tinyint(1) NOT NULL DEFAULT '1',
