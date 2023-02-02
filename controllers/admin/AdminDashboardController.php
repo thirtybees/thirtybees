@@ -127,7 +127,7 @@ class AdminDashboardControllerCore extends AdminController
             $forms['carriers']['fields']['CONF_'.strtoupper($carrier['id_reference']).'_SHIP_FIXED'] = [
                 'title'        => $carrier['name'],
                 'desc'         => sprintf($this->l('Fixed Fee for the carrier on domestic delivery.'), $carrier['name']),
-                'validation'   => 'isPercentage',
+                'validation'   => 'isPrice',
                 'cast'         => 'floatval',
                 'type'         => 'text',
                 'defaultValue' => '0',
