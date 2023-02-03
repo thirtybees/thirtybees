@@ -146,13 +146,16 @@ abstract class CacheCore
     }
 
     /**
+     * @param bool $force
+     *
      * @return Cache
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getInstance()
+    public static function getInstance($force = false)
     {
-        if (!static::$instance) {
+        if (!static::$instance || $force) {
             $sql = new DbQuery();
             $sql->select('`value`');
             $sql->from('configuration');

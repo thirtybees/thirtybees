@@ -58,6 +58,17 @@ class CacheFsCore extends Cache
     }
 
     /**
+     * @return bool
+     */
+    public static function checkEnvironment()
+    {
+        if (! is_dir(_PS_CACHEFS_DIRECTORY_)) {
+            @mkdir(_PS_CACHEFS_DIRECTORY_, 0777, true);
+        }
+        return is_writable(_PS_CACHEFS_DIRECTORY_);
+    }
+
+    /**
      * Cache a data
      *
      * @param string $key

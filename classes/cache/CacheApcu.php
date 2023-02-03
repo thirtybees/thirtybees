@@ -44,11 +44,22 @@ class CacheApcuCore extends Cache
      */
     public function __construct()
     {
-        $this->enabled = extension_loaded('apcu') && apcu_enabled();
+        $this->enabled = static::checkEnvironment();
 
         if (! $this->enabled) {
             trigger_error('APCu cache has been enabled, but the APCu extension is not available', E_USER_WARNING);
         }
+    }
+
+    /**
+     * @return bool returns true, if server supports APCu
+     */
+    public static function checkEnvironment()
+    {
+        return (
+            extension_loaded('apcu') &&
+            apcu_enabled()
+        );
     }
 
     /***

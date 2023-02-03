@@ -66,6 +66,14 @@ class CacheRedisCore extends Cache
     }
 
     /**
+     * @return bool
+     */
+    public static function checkEnvironment()
+    {
+       return extension_loaded('redis');
+    }
+
+    /**
      * Connect to redis server or cluster
      *
      * @return bool
@@ -75,6 +83,9 @@ class CacheRedisCore extends Cache
      */
     public function connect()
     {
+        if (! static::checkEnvironment()) {
+            return false;
+        }
         try {
             $servers = static::getRedisServers();
 

@@ -40,6 +40,12 @@ class AdminPerformanceControllerCore extends AdminController
 
     const CUSTOM_DEFINES_FILE = _PS_ROOT_DIR_ . '/config/defines_custom.inc.php';
 
+    const CACHE_FS = 'CacheFs';
+    const CACHE_MEMCACHE = 'CacheMemcache';
+    const CACHE_MEMCACHED = 'CacheMemcached';
+    const CACHE_APCU = 'CacheApcu';
+    const CACHE_REDIS = 'CacheRedis';
+
     /**
      * AdminPerformanceControllerCore constructor.
      *
@@ -669,22 +675,6 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function initFieldsetCaching()
     {
-        $phpdocLangs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
-        $phpLang = in_array($this->context->language->iso_code, $phpdocLangs) ? $this->context->language->iso_code : 'en';
-        $warningMemcache = ' '.$this->l('(you must install the [a]Memcache PECL extension[/a])');
-        $warningMemcache = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/memcache.installation.php" target="_blank">', $warningMemcache);
-        $warningMemcache = str_replace('[/a]', '</a>', $warningMemcache);
-        $warningMemcached = ' '.$this->l('(you must install the [a]Memcached PECL extension[/a])');
-        $warningMemcached = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/memcached.installation.php" target="_blank">', $warningMemcached);
-        $warningMemcached = str_replace('[/a]', '</a>', $warningMemcached);
-        $warningApc = ' '.$this->l('(you must install the [a]APC PECL extension[/a])');
-        $warningApc = str_replace('[a]', '<a href="http://php.net/manual/'.substr($phpLang, 0, 2).'/apc.installation.php" target="_blank">', $warningApc);
-        $warningApc = str_replace('[/a]', '</a>', $warningApc);
-        $warningRedis = ' '.$this->l('(you must install the [a]redis extension[/a])');
-        $warningRedis = str_replace('[a]', '<a href="https://pecl.php.net/package/redis" target="_blank">', $warningRedis);
-        $warningRedis = str_replace('[/a]', '</a>', $warningRedis);
-
-        $warningFs = ' '.sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHEFS_DIRECTORY_));
         $this->fields_form[6]['form'] = [
             'legend'           => [
                 'title' => $this->l('Server Side Caching'),
@@ -720,29 +710,29 @@ class AdminPerformanceControllerCore extends AdminController
                     'hint'   => $this->l('The CacheFS system should be used only when the infrastructure contains one front-end server. If you are not sure, ask your hosting company.'),
                     'values' => [
                         [
-                            'id'    => 'CacheFs',
-                            'value' => 'CacheFs',
-                            'label' => $this->l('File System').(is_writable(_PS_CACHEFS_DIRECTORY_) ? '' : $warningFs),
+                            'id'    => static::CACHE_FS,
+                            'value' => static::CACHE_FS,
+                            'label' => $this->getCacheFsLabel(),
                         ],
                         [
-                            'id'    => 'CacheMemcache',
-                            'value' => 'CacheMemcache',
-                            'label' => $this->l('Memcache via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
+                            'id'    => static::CACHE_MEMCACHE,
+                            'value' => static::CACHE_MEMCACHE,
+                            'label' => $this->getCacheMemcacheLabel(),
                         ],
                         [
-                            'id'    => 'CacheMemcached',
-                            'value' => 'CacheMemcached',
-                            'label' => $this->l('Memcached via PHP::Memcached').(extension_loaded('memcached') ? '' : $warningMemcached),
+                            'id'    => static::CACHE_MEMCACHED,
+                            'value' => static::CACHE_MEMCACHED,
+                            'label' => $this->getCacheMemcachedLabel(),
                         ],
                         [
-                            'id'    => 'CacheApc',
-                            'value' => 'CacheApcu',
-                            'label' => $this->l('APC').(extension_loaded('apcu')? '' : $warningApc),
+                            'id'    => static::CACHE_APCU,
+                            'value' => static::CACHE_APCU,
+                            'label' => $this->getCacheAPCuLabel(),
                         ],
                         [
-                            'id'    => 'CacheRedis',
-                            'value' => 'CacheRedis',
-                            'label' => $this->l('Redis').(extension_loaded('redis') ? '' : $warningRedis),
+                            'id'    => static::CACHE_REDIS,
+                            'value' => static::CACHE_REDIS,
+                            'label' => $this->getCacheRedisLabel(),
                         ],
                     ],
                 ],
@@ -760,7 +750,7 @@ class AdminPerformanceControllerCore extends AdminController
         ];
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
         $this->fields_value['TB_CACHE_ENABLED'] = Cache::isEnabled();
-        $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM') ?: 'CacheFs';
+        $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM') ?: static::CACHE_FS;
         $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
@@ -777,7 +767,7 @@ class AdminPerformanceControllerCore extends AdminController
         $hookSettings = PageCache::getCachedHooks();
         $moduleSettings = [];
         foreach ($hooks as $hook) {
-            foreach ($hook as &$hookInfo) {
+            foreach ($hook as $hookInfo) {
                 $idModule = (int)$hookInfo['id_module'];
                 $idHook = (int)$hookInfo['id_hook'];
                 $moduleName = $hookInfo['name'];
@@ -974,7 +964,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         $redirectAdmin = false;
-        if ((bool) Tools::getValue('smarty_up')) {
+        if (Tools::getValue('smarty_up')) {
             if ($this->hasEditPermission()) {
                 Configuration::updateValue('PS_SMARTY_FORCE_COMPILE', Tools::getValue('smarty_force_compile', _PS_SMARTY_NO_COMPILE_));
 
@@ -1003,7 +993,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('features_detachables_up')) {
+        if (Tools::getValue('features_detachables_up')) {
             if ($this->hasEditPermission()) {
                 if (Tools::isSubmit('combination')) {
                     if ((!Tools::getValue('combination') && Combination::isCurrentlyUsed()) === false) {
@@ -1024,10 +1014,10 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('ccc_up')) {
+        if (Tools::getValue('ccc_up')) {
             if ($this->hasEditPermission()) {
                 $themeCacheDirectory = _PS_ALL_THEMES_DIR_.$this->context->shop->theme_directory.'/cache/';
-                if (((bool) Tools::getValue('PS_CSS_THEME_CACHE') || (bool) Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
+                if ((Tools::getValue('PS_CSS_THEME_CACHE') || Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
                     if (@file_exists($themeCacheDirectory) || !@mkdir($themeCacheDirectory, 0777, true)) {
                         $this->errors[] = sprintf(Tools::displayError('To use Smart Cache directory %s must be writable.'), realpath($themeCacheDirectory));
                     }
@@ -1074,7 +1064,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('media_server_up')) {
+        if (Tools::getValue('media_server_up')) {
             if ($this->hasEditPermission()) {
                 if (Tools::getValue('_MEDIA_SERVER_1_') != null && !Validate::isFileName(Tools::getValue('_MEDIA_SERVER_1_'))) {
                     $this->errors[] = Tools::displayError('Media server #1 is invalid');
@@ -1149,8 +1139,8 @@ class AdminPerformanceControllerCore extends AdminController
                 if (!count($this->errors)) {
                     // If there is not settings file modification or if the backup and replacement of the settings file worked
                     if ($newSettings == $prevSettings || (
-                            copy(_PS_ROOT_DIR_.'/config/settings.inc.php', _PS_ROOT_DIR_.'/config/settings.old.php')
-                            && (bool) file_put_contents(_PS_ROOT_DIR_.'/config/settings.inc.php', $newSettings)
+                            copy(_PS_ROOT_DIR_.'/config/settings.inc.php', _PS_ROOT_DIR_.'/config/settings.old.php') &&
+                            file_put_contents(_PS_ROOT_DIR_.'/config/settings.inc.php', $newSettings)
                         )
                     ) {
                         Configuration::updateValue('PS_CIPHER_ALGORITHM', $algo);
@@ -1172,48 +1162,17 @@ class AdminPerformanceControllerCore extends AdminController
                 }
                 Configuration::updateGlobalValue('TB_CACHE_ENABLED', $cacheActive);
                 if ($cacheActive) {
-                    if ($cachingSystem == 'CacheMemcache' && !extension_loaded('memcache')) {
-                        $this->errors[] = Tools::displayError('To use Memcached, you must install the Memcache PECL extension on your server.').'
-							<a href="http://www.php.net/manual/en/memcache.installation.php">http://www.php.net/manual/en/memcache.installation.php</a>';
-                    } elseif ($cachingSystem == 'CacheMemcached' && !extension_loaded('memcached')) {
-                        $this->errors[] = Tools::displayError('To use Memcached, you must install the Memcached PECL extension on your server.').'
-							<a href="http://www.php.net/manual/en/memcached.installation.php">http://www.php.net/manual/en/memcached.installation.php</a>';
-                    } elseif ($cachingSystem == 'CacheApc'  && !extension_loaded('apc') && !extension_loaded('apcu')) {
-                        $this->errors[] = Tools::displayError('To use APC cache, you must install the APC PECL extension on your server.').'
-							<a href="http://fr.php.net/manual/fr/apc.installation.php">http://fr.php.net/manual/fr/apc.installation.php</a>';
-                    } elseif ($cachingSystem == 'CacheXcache' && !extension_loaded('xcache')) {
-                        $this->errors[] = Tools::displayError('To use Xcache, you must install the Xcache extension on your server.').'
-							<a href="http://xcache.lighttpd.net">http://xcache.lighttpd.net</a>';
-                    } elseif ($cachingSystem == 'CacheRedis' && !extension_loaded('redis')) {
-                        $this->errors[] = Tools::displayError('To use Redis, you must install the Redis extension on your server.').'
-							<a href="https://pecl.php.net/package/redis">https://pecl.php.net/package/redis</a>';
-                    } elseif ($cachingSystem == 'CacheXcache' && !ini_get('xcache.var_size')) {
-                        $this->errors[] = Tools::displayError('To use Xcache, you must configure "xcache.var_size" for the Xcache extension (recommended value 16M to 64M).').'
-							<a href="http://xcache.lighttpd.net/wiki/XcacheIni">http://xcache.lighttpd.net/wiki/XcacheIni</a>';
-                    } elseif ($cachingSystem == 'CacheFs') {
-                        if (!is_dir(_PS_CACHEFS_DIRECTORY_)) {
-                            @mkdir(_PS_CACHEFS_DIRECTORY_, 0777, true);
-                        } elseif (!is_writable(_PS_CACHEFS_DIRECTORY_)) {
-                            $this->errors[] = sprintf(Tools::displayError('To use CacheFS, the directory %s must be writable.'), realpath(_PS_CACHEFS_DIRECTORY_));
-                        }
-                    }
-                    $cacheEnabled = Cache::isEnabled();
-                    $cacheSystem = Configuration::get('TB_CACHE_SYSTEM');
-                    if ($cachingSystem == 'CacheFs') {
+                    if ($cachingSystem == static::CACHE_FS) {
                         if (!($depth = Tools::getValue('ps_cache_fs_directory_depth'))) {
                             $this->errors[] = Tools::displayError('Please set a directory depth.');
                         }
                         if (!count($this->errors)) {
                             CacheFs::deleteCacheDirectory();
-                            CacheFs::createCacheDirectories((int) $depth);
-                            Configuration::updateValue('PS_CACHEFS_DIRECTORY_DEPTH', (int) $depth);
+                            CacheFs::createCacheDirectories((int)$depth);
+                            Configuration::updateValue('PS_CACHEFS_DIRECTORY_DEPTH', (int)$depth);
                         }
-                    } elseif ($cachingSystem == 'CacheMemcache' && !$cacheEnabled && $cacheSystem == 'CacheMemcache') {
-                        Cache::getInstance()->flush();
-                    } elseif ($cachingSystem == 'CacheMemcached' && !$cacheEnabled && $cachingSystem == 'CacheMemcached') {
-                        Cache::getInstance()->flush();
-                    } elseif ($cachingSystem == 'CacheRedis' && !$cacheEnabled && $cacheSystem == 'CacheRedis') {
-                        Cache::getInstance()->flush();
+                    } else {
+                        Cache::getInstance(true)->flush();
                     }
                 }
             } else {
@@ -1531,5 +1490,89 @@ class AdminPerformanceControllerCore extends AdminController
         $this->ajaxDie(json_encode([
             'success' => PageCache::setHookCacheStatus($idModule, $idHook, $status)
         ]));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheFsLabel(): string
+    {
+        return $this->getLabel(
+            $this->l('File System'),
+            CacheFs::checkEnvironment(),
+            sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHEFS_DIRECTORY_))
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheMemcacheLabel(): string
+    {
+        return $this->getLabel(
+            $this->l('Memcache via PHP::Memcache'),
+            CacheMemcache::checkEnvironment(),
+            $this->l('(you must install [1]memcache[/1] extension)'),
+            "https://www.php.net/manual/en/memcache.installation.php",
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheMemcachedLabel(): string
+    {
+        return $this->getLabel(
+            $this->l('Memcache via PHP::Memcached'),
+            CacheMemcached::checkEnvironment(),
+            $this->l('(you must install [1]memcached[/1] extension)'),
+            "https://www.php.net/manual/en/memcached.installation.php",
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheAPCuLabel(): string
+    {
+        return $this->getLabel(
+            $this->l('APCu'),
+            CacheApcu::checkEnvironment(),
+            $this->l('(you must install [1]apcu[/1] extension)'),
+            "https://www.php.net/manual/en/apcu.installation.php",
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheRedisLabel(): string
+    {
+        return $this->getLabel(
+            $this->l('Redis'),
+            CacheRedis::checkEnvironment(),
+            $this->l('(you must install [1]redis[/1] extension)'),
+            "https://pecl.php.net/package/redis",
+        );
+    }
+
+
+    /**
+     * @param string $label
+     * @param bool $checkEnv
+     * @param string $errorMsg
+     * @param string|null $helpUrl
+     *
+     * @return string
+     */
+    protected function getLabel($label, $checkEnv, $errorMsg, $helpUrl=null)
+    {
+        if (! $checkEnv) {
+            if ($helpUrl) {
+                $errorMsg = Translate::ppTags($errorMsg, ['<a href="'.$helpUrl.'" />']);
+            }
+            return $label. '&nbsp;' . $errorMsg;
+        }
+        return $label;
     }
 }
