@@ -156,6 +156,9 @@ class AdminPatternsControllerCore extends AdminController
             'type_free'          => '<p class="form-control-static">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc lacinia in enim iaculis malesuada. Quisque congue fermentum leo et porta. Pellentesque a quam dui. Pellentesque sed augue id sem aliquet faucibus eu vel odio. Nullam non libero volutpat, pulvinar turpis non, gravida mauris. Nullam tincidunt id est at euismod. Quisque euismod quam in pellentesque mollis. Nulla suscipit porttitor massa, nec eleifend risus egestas in. Aenean luctus porttitor tempus. Morbi dolor leo, dictum id interdum vel, semper ac est. Maecenas justo augue, accumsan in velit nec, consectetur fringilla orci. Nunc ut ante erat. Curabitur dolor augue, eleifend a luctus non, aliquet a mi. Curabitur ultricies lectus in rhoncus sodales. Maecenas quis dictum erat. Suspendisse blandit lacus sed felis facilisis, in interdum quam congue.<p>',
             'type_select_multiple_chosen[]' => [1, 2, 3],
             'type_select_chosen' => 1,
+            'price_3' => 100,
+            'price_4' => 121,
+            'price_4_tax' => 1,
         ];
 
         $this->fields_form = [
@@ -493,6 +496,30 @@ class AdminPatternsControllerCore extends AdminController
                     'type'  => 'datetime',
                     'label' => 'input date and time',
                     'name'  => 'type_datetime',
+                ],
+                [
+                    'type' => 'price',
+                    'label' => 'Price input field',
+                    'name' => 'price_1'
+                ],
+                [
+                    'type' => 'price',
+                    'label' => 'Price input field with custom prefix',
+                    'name' => 'price_2',
+                    'prefix' => 'EUR'
+                ],
+                [
+                    'type' => 'price',
+                    'label' => 'Price input field: with tax',
+                    'name' => 'price_3',
+                    'withTax' => true
+                ],
+                [
+                    'type' => 'price',
+                    'label' => 'Price input field: with tax selector',
+                    'hint' => 'when withTax is string, additional dropdown field is rendered',
+                    'name' => 'price_4',
+                    'withTax' => 'price_4_tax'
                 ],
                 [
                     'type'         => 'html',

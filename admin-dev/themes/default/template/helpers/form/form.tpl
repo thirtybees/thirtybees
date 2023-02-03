@@ -101,25 +101,51 @@
 								{if $input.type == 'text' || $input.type == 'tags'}
 									{include file='helpers/form/form_input.tpl'}
                                 {elseif $input.type == 'price'}
-                                    <div class="input-group fixed-width-lg">
-                                        <span class="input-group-addon">
-                                            {$currency_left_sign}{$currency_right_sign} {l s='(tax excl.)'}
-                                        </span>
-                                        <input type="text"
-                                            {if isset($input.id)}
-                                                id="{$input.id}"
-                                            {else}
-                                                id="{$input.name}"
-                                            {/if}
-                                            name="{$input.name}"
-                                            value="{displayPriceValue price=$fields_value[$input.name]}"
-                                            {if isset($input.disabled) && $input.disabled}
-                                                disabled="disabled"
-                                            {/if}
-                                            onkeyup="if (isArrowKey(event)) return;
-                                                     this.value = this.value.replace(/,/g, '.');"
-                                        />
-                                    </div>
+									<div class="row">
+										<div class="input-group col-lg-2" style="float:left">
+											<span class="input-group-addon">
+												{if isset($input.prefix)}
+													{$input.prefix}
+												{else}
+													{$currency_left_sign}{$currency_right_sign}
+													{if isset($input.withTax)}
+														{if is_bool($input.withTax)}
+															{if $input.withTax}
+																{l s='(tax incl.)'}
+															{else}
+																{l s='(tax excl.)'}
+															{/if}
+														{/if}
+													{else}
+														{l s='(tax excl.)'}
+													{/if}
+												{/if}
+											</span>
+											<input type="text"
+												{if isset($input.id)}
+													id="{$input.id}"
+												{else}
+													id="{$input.name}"
+												{/if}
+												name="{$input.name}"
+												value="{displayPriceValue price=$fields_value[$input.name]}"
+												{if isset($input.disabled) && $input.disabled}
+													disabled="disabled"
+												{/if}
+												onkeyup="if (isArrowKey(event)) return;
+														 this.value = this.value.replace(/,/g, '.');"
+											/>
+
+										</div>
+										<div class="col-lg-2">
+											{if isset($input.withTax) && is_string($input.withTax) && $input.withTax}
+												<select name="{$input.withTax}">
+													<option value="0" {if !$fields_value[$input.withTax]}selected="selected"{/if}>{l s='Tax excluded'}</option>
+													<option value="1" {if $fields_value[$input.withTax]}selected="selected"{/if}>{l s='Tax included'}</option>
+												</select>
+											{/if}
+										</div>
+									</div>
 								{elseif $input.type == 'textbutton'}
 									{assign var='value_text' value=$fields_value[$input.name]}
 									<div class="row">
