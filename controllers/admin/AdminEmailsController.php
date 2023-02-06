@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\Response\JSendErrorResponse;
+
 /**
  * Class AdminEmailsControllerCore
  */
@@ -164,9 +167,46 @@ class AdminEmailsControllerCore extends AdminController
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
-            ]
+            ],
+            'test'  => [
+                'title'                   => $this->l('Test your email configuration'),
+                'hide_multishop_checkbox' => true,
+                'fields'                  => [
+                    'TB_SEND_TEST_EMAIL' => [
+                        'title'                 => $this->l('Send a test email to'),
+                        'type'                  => 'text',
+                        'id'                    => 'testEmail',
+                        'defaultValue'          => Configuration::get('PS_SHOP_EMAIL'),
+                        'no_multishop_checkbox' => true,
+                    ],
+                ],
+                'bottom'                  => '<div class="row"><div class="col-lg-9 col-lg-offset-3">
+					<div class="alert" id="mailResultCheck" style="display:none;"></div>
+				</div></div>',
+                'buttons'                 => [
+                    [
+                        'title' => $this->l('Send a test email'),
+                        'icon'  => 'process-icon-envelope',
+                        'name'  => 'btEmailTest',
+                        'js'    => 'sendTestEmail()',
+                        'class' => 'btn btn-default pull-right',
+                    ],
+                ],
+            ],
+
         ];
     }
+
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setMedia()
+    {
+        parent::setMedia();
+        $this->addJS(_PS_JS_DIR_.'validate.js');
+    }
+
 
     /**
      * Process delete
@@ -290,6 +330,45 @@ class AdminEmailsControllerCore extends AdminController
             return '<span title="'.Tools::safeOutput($this->l('BCC recipient')).'"><i class="icon-eye-slash"></i>&nbsp;'.$recipient.'</span>';
         } else {
             return '<span title="'.Tools::safeOutput($this->l('Primary recipient')).'"><i class="icon-envelope-o"></i>&nbsp;'.$recipient.'</span>';
+        }
+    }
+
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function ajaxProcessSendTestEmail()
+    {
+        try {
+            $email = Tools::getValue('email');
+            if (! Validate::isEmail($email)) {
+                throw new PrestaShopException("Invalid email address");
+            }
+            Configuration::updateValue('TB_SEND_TEST_EMAIL', $email);
+            $languageId = (int)Context::getContext()->language->id;
+            if (Mail::Send(
+                $languageId,
+                'test',
+                Mail::l('Test email'),
+                [],
+                $email,
+                null,
+                null,
+                null,
+                null,
+                null,
+                _PS_MAIL_DIR_,
+                true
+            )) {
+                $this->ajaxDie(json_encode(['status' => 'success']));
+            } else {
+                throw new PrestaShopException("Failed to send email");
+            }
+        } catch (Throwable $throwable) {
+            $this->ajaxDie(json_encode([
+                'status' => 'error',
+                'message' => $throwable->getMessage()
+            ]));
         }
     }
 }

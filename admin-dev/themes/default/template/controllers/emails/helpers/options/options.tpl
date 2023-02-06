@@ -49,3 +49,56 @@
 		{$smarty.block.parent}
 	{/if}
 {/block}
+
+{block name="after"}
+	<script type="application/javascript">
+		function sendTestEmail()
+		{
+			document.getElementById('mailResultCheck').style.display = 'none';
+			const email = document.getElementById('testEmail').value;
+			if (validate_isEmail(email)) {
+				$.ajax({
+					type:"POST",
+					url: "{$link->getAdminLink('AdminEmails')}",
+					async: true,
+					dataType: "json",
+					data : {
+						ajax: "1",
+						action: "sendTestEmail",
+						email: email
+					},
+					success: function(data) {
+						if (data.status === 'success') {
+							sendTestEmailSuccess();
+						} else {
+							sendTestEmailFailure(data.message);
+						}
+					},
+					error: function() {
+						sendTestEmailFailure("Internal server error");
+					}
+				});
+			} else {
+				sendTestEmailFailure("Invalid email address");
+			}
+		}
+
+		function sendTestEmailFailure(msg)
+		{
+			const element = document.getElementById('mailResultCheck');
+			element.style.display = 'block';
+			element.classList.remove('alert-success');
+			element.classList.add('alert-danger');
+			element.innerText = msg;
+		}
+
+		function sendTestEmailSuccess()
+		{
+			const element = document.getElementById('mailResultCheck');
+			element.style.display = 'block';
+			element.classList.add('alert-success');
+			element.classList.remove('alert-danger');
+			element.innerText = "{l s="Email sent, please check your inbox"|escape:'javascript'}";
+		}
+	</script>
+{/block}
