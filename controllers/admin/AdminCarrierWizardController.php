@@ -882,6 +882,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $currency = $this->getActualCurrency();
 
         $template->assign('currency_sign', $currency->sign);
+        $template->assign('currency_decimals', $currency->decimals);
         $template->assign('PS_WEIGHT_UNIT', Configuration::get('PS_WEIGHT_UNIT'));
 
         $this->ajaxDie($template->fetch());
