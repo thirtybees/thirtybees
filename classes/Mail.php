@@ -327,7 +327,7 @@ class MailCore extends ObjectModel
         $bcc = static::toStringArray($bcc);
         foreach ($bcc as $address) {
             if (Validate::isEmail($address)) {
-                $addresses[] = $bcc;
+                $addresses[] = $address;
             } else {
                 throw new PrestaShopException(Tools::displayError('Parameter "bcc" is corrupted'));
             }
