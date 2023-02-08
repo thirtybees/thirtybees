@@ -20,6 +20,7 @@
 namespace Thirtybees\Core\Error\Response;
 
 use Thirtybees\Core\Error\ErrorDescription;
+use Thirtybees\Core\Error\ErrorUtils;
 
 /**
  * Class DebugErrorPageCore
@@ -91,5 +92,18 @@ class DebugErrorPageCore extends AbstractErrorPage
             return htmlentities($value);
         }
         return (string)$input;
+    }
+
+    /**
+     * @param string|null $filePath
+     *
+     * @return string
+     */
+    public function displayFilePath($filePath)
+    {
+        if ($filePath) {
+            $filePath = ErrorUtils::getRelativeFile($filePath);
+        }
+        return $this->displayString($filePath);
     }
 }

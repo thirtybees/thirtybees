@@ -47,7 +47,8 @@ class ErrorUtilsCore
         $line = $error['line'];
         $isTemplate = SmartyCustom::isCompiledTemplate($file);
         if ($isTemplate) {
-            $errorDescription->setRealSource($file, $line);
+            $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
+            $errorDescription->setRealSource($file, $line, $compiledContent);
             $file = array_pop($smartyTrace);
             $content = static::readFile($file, 0, -1);
             $errorDescription->setSource('smarty', $file, 0, $content);
@@ -87,12 +88,13 @@ class ErrorUtilsCore
 
         $smartyTrace = SmartyCustom::$trace;
         $file = $e->getFile();
+        $line = $e->getLine();
         if (SmartyCustom::isCompiledTemplate($file)) {
-            $errorDescription->setRealSource($file, $e->getLine());
+            $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
+            $errorDescription->setRealSource($file, $e->getLine(), $compiledContent);
             $file = array_pop($smartyTrace);
             $errorDescription->setSource('smarty', $file, 0, static::readFile($file, 0, -1));
         } else {
-            $line = $e->getLine();
             $errorDescription->setSource('php', $file, $line, static::readFile($file, $line, static::FILE_CONTEXT_LINES));
         }
 

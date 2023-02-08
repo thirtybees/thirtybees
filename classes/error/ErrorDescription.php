@@ -78,12 +78,17 @@ class ErrorDescriptionCore
     /**
      * @var string
      */
-    protected $realSourceFile;
+    protected $realSourceFile = '';
 
     /**
      * @var int
      */
-    protected $realSourceLine;
+    protected $realSourceLine = 0;
+
+    /**
+     * @var array
+     */
+    protected $realSourceContent = [];
 
     /**
      * @var array
@@ -160,12 +165,15 @@ class ErrorDescriptionCore
     /**
      * @param string $file
      * @param int $line
+     * @param array $content
+     *
      * @return void
      */
-    public function setRealSource(string $file, int $line)
+    public function setRealSource(string $file, int $line, array $content)
     {
         $this->realSourceFile = $file;
         $this->realSourceLine = $line;
+        $this->realSourceContent = $content;
     }
 
     /**
@@ -206,6 +214,22 @@ class ErrorDescriptionCore
     public function hasSourceFileContent(): bool
     {
         return !!$this->sourceFileContent;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRealSourceFileContent(): array
+    {
+        return $this->realSourceContent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRealSourceFileContent(): bool
+    {
+        return !!$this->realSourceContent;
     }
 
     /**
@@ -408,6 +432,7 @@ class ErrorDescriptionCore
         if ($this->realSourceFile) {
             $source['realFile'] = $this->realSourceFile;
             $source['realLine'] = $this->realSourceLine;
+            $source['realContent'] = $this->getRealSourceFileContent();
         }
         $data = [
             'phpVersion' => $this->getPhpVersion(),
@@ -481,6 +506,13 @@ class ErrorDescriptionCore
             (int)static::getProperty('line', $source),
             static::getProperty('content', $source)
         );
+        if (array_key_exists('realContent', $source)) {
+            $description->setRealSource(
+                static::getProperty('realFile', $source),
+                (int)static::getProperty('realLine', $source),
+                static::getProperty('realContent', $source)
+            );
+        }
         $description->setStackTrace(static::getProperty('stackTrace', $array));
         $description->setExtraSections(static::getProperty('extra', $array));
         $cause = static::getProperty('cause', $array, false);

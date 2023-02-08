@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Thirtybees\Core\Error\ErrorDescription $errorDescription
+ * @var \Thirtybees\Core\Error\Response\DebugErrorPage $helper
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -189,9 +195,13 @@
             <div class="subtype">
                 <?php
                     if ($errorDescription->getSourceType() === 'smarty') {
-                        echo "when rendering smarty template <b>" . $helper->displayString($errorDescription->getSourceFile()) . "</b>";
+                        echo "when rendering smarty template <b>" . $helper->displayFilePath($errorDescription->getSourceFile()) . "</b>";
+                        if ($errorDescription->getRealSourceFile() != $errorDescription->getSourceFile()) {
+                            echo "<br/>";
+                            echo "compiled file <b>".$helper->displayFilePath($errorDescription->getRealSourceFile())."</b> at line <b>".$errorDescription->getRealSourceLine()."</b>";
+                        }
                     } else {
-                        echo "in file <b>" . $helper->displayString($errorDescription->getSourceFile()) . "</b> at line <b>{$errorDescription->getSourceLine()}</b>";
+                        echo "in file <b>" . $helper->displayFilePath($errorDescription->getSourceFile()) . "</b> at line <b>{$errorDescription->getSourceLine()}</b>";
                     }
                 ?>
             </div>
@@ -208,12 +218,22 @@
 
         <?php if ($errorDescription->hasSourceFileContent()) { ?>
         <div class="panel">
-            <h2 data-toggle="main-source" class="opened">Source file: <?= $helper->displayString($errorDescription->getSourceFile()) ?></h2>
+            <h2 data-toggle="main-source" class="opened">Source file: <?= $helper->displayFilePath($errorDescription->getSourceFile()) ?></h2>
             <div id="main-source" class="collapsible">
                 <?= $helper->displayLines($errorDescription->getSourceFileContent()) ?>
             </div>
         </div>
         <?php } ?>
+
+        <?php if ($errorDescription->hasRealSourceFileContent()) { ?>
+            <div class="panel">
+                <h2 data-toggle="real-source" class="opened">Compiled file: <?= $helper->displayFilePath($errorDescription->getRealSourceFile()) ?></h2>
+                <div id="real-source" class="collapsible">
+                    <?= $helper->displayLines($errorDescription->getRealSourceFileContent()) ?>
+                </div>
+            </div>
+        <?php } ?>
+
 
         <div class="panel">
             <h2 data-toggle="stack-trace" class="closed">Stack trace</h2>
@@ -225,7 +245,7 @@
                         <span class="stacktrace-file">
                             <?php
                                 if (isset($trace['fileName']) && $trace['fileName']) {
-                                    echo $helper->displayString(dirname($trace['fileName'])) . '/';
+                                    echo $helper->displayFilePath(dirname($trace['fileName'])) . '/';
                                     echo '<b>' . $helper->displayString(basename($trace['fileName'])) . '</b>';
                                 }
                                 if (isset($trace['line']) && $trace['line']) {
@@ -294,9 +314,9 @@
                                 <i><?= $previous->getErrorName() ?></i>: <b><?= $helper->displayString($previous->getMessage()) ?></b>
                                 <?php
                                 if ($previous->getSourceType() === 'smarty') {
-                                    echo " when rendering smarty template <b>". $helper->displayString($previous->getSourceFile()) ."</b>";
+                                    echo " when rendering smarty template <b>". $helper->displayFilePath($previous->getSourceFile()) ."</b>";
                                 } else {
-                                    echo " in file <b>" . $helper->displayString($previous->getSourceFile()) ."</b> at line <b>{$previous->getSourceLine()}</b>";
+                                    echo " in file <b>" . $helper->displayFilePath($previous->getSourceFile()) ."</b> at line <b>{$previous->getSourceLine()}</b>";
                                 }
                                 ?>
                             </span>
