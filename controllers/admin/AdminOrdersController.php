@@ -895,13 +895,7 @@ class AdminOrdersControllerCore extends AdminController
                         }
                     }
 
-                    $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-                    if (Validate::isLoadedObject($orderCarrier)) {
-                        $orderCarrier->weight = (float) $order->getTotalWeight();
-                        if ($orderCarrier->update()) {
-                            $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
-                        }
-                    }
+                    $this->updateOrderCarrierWeight($order);
 
                     if ($amount >= 0) {
                         if (!OrderSlip::create(
@@ -1123,13 +1117,7 @@ class AdminOrdersControllerCore extends AdminController
                                     $this->errors[] = Tools::displayError('An error occurred while attempting to delete the product.').' <span class="bold">'.$orderDetail->product_name.'</span>';
                                 }
                                 // Update weight SUM
-                                $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-                                if (Validate::isLoadedObject($orderCarrier)) {
-                                    $orderCarrier->weight = (float) $order->getTotalWeight();
-                                    if ($orderCarrier->update()) {
-                                        $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
-                                    }
-                                }
+                                $this->updateOrderCarrierWeight($order);
 
                                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && StockAvailable::dependsOnStock($orderDetail->product_id)) {
                                     StockAvailable::synchronize($orderDetail->product_id);
@@ -2507,13 +2495,7 @@ class AdminOrdersControllerCore extends AdminController
         $order->update();
 
         // Update weight SUM
-        $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-        if (Validate::isLoadedObject($orderCarrier)) {
-            $orderCarrier->weight = (float) $order->getTotalWeight();
-            if ($orderCarrier->update()) {
-                $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
-            }
-        }
+        $this->updateOrderCarrierWeight($order);
 
         // Update Tax lines
         $orderDetail->updateTaxAmount($order);
@@ -2851,14 +2833,7 @@ class AdminOrdersControllerCore extends AdminController
         $res = $orderDetail->update() && $res;
 
         // Update weight SUM
-        $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-        if (Validate::isLoadedObject($orderCarrier)) {
-            $orderCarrier->weight = (float) $order->getTotalWeight();
-            $res = $orderCarrier->update() && $res;
-            if ($res) {
-                $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
-            }
-        }
+        $res = $this->updateOrderCarrierWeight($order) && $res;
 
         // Save order invoice
         if (isset($orderInvoice)) {
@@ -3018,14 +2993,7 @@ class AdminOrdersControllerCore extends AdminController
         $this->reinjectQuantity($orderDetail, $orderDetail->product_quantity, true);
 
         // Update weight SUM
-        $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-        if (Validate::isLoadedObject($orderCarrier)) {
-            $orderCarrier->weight = (float) $order->getTotalWeight();
-            $res = $orderCarrier->update() && $res;
-            if ($res) {
-                $order->weight = sprintf("%.3f ".Configuration::get('PS_WEIGHT_UNIT'), $orderCarrier->weight);
-            }
-        }
+        $res = $this->updateOrderCarrierWeight($order) && $res;
 
         if (!$res) {
             $this->ajaxDie(json_encode([
@@ -3401,5 +3369,31 @@ class AdminOrdersControllerCore extends AdminController
             }
         }
         return $customizedProductQuantity;
+    }
+
+    /**
+     * Updates order carrier weight, if exists
+     *
+     * @param Order $order
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function updateOrderCarrierWeight(Order $order)
+    {
+        $idOrderCarrier = (int)$order->getIdOrderCarrier();
+        if ($idOrderCarrier) {
+            $orderCarrier = new OrderCarrier($idOrderCarrier);
+            if (Validate::isLoadedObject($orderCarrier)) {
+                $weight = (float)$order->getTotalWeight();
+                if ((float)$orderCarrier->weight != $weight) {
+                    $orderCarrier->weight = $weight;
+                    return $orderCarrier->update();
+                }
+            }
+        }
+        return true;
     }
 }
