@@ -161,25 +161,20 @@ class OrderPaymentCore extends ObjectModel
      */
     public static function getByInvoiceId($idInvoice)
     {
-        $payments = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $payments = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('`id_order_payment`')
                 ->from('order_invoice_payment')
                 ->where('`id_order_invoice` = '.(int) $idInvoice)
         );
-        if (!$payments) {
-            return new PrestaShopCollection('OrderPayment');
+
+        $collection = new PrestaShopCollection('OrderPayment');
+        if (! $payments) {
+            return $collection->empty();
+        } else {
+            $paymentList = array_column($payments, 'id_order_payment');
+            return $collection->where('id_order_payment', 'IN', $paymentList);
         }
-
-        $paymentList = [];
-        foreach ($payments as $payment) {
-            $paymentList[] = $payment['id_order_payment'];
-        }
-
-        $payments = new PrestaShopCollection('OrderPayment');
-        $payments->where('id_order_payment', 'IN', $paymentList);
-
-        return $payments;
     }
 
     /**

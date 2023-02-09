@@ -650,6 +650,20 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     }
 
     /**
+     * Marks collection as empty. SQL query will not be executed, and empty results array will
+     * always be returned
+     *
+     * @return static
+     */
+    public function empty()
+    {
+        $this->is_hydrated = true;
+        $this->results = [];
+        $this->query->where("0 = 1");
+        return $this;
+    }
+
+    /**
      * @param string $table
      * @param string $alias
      * @param string $on
