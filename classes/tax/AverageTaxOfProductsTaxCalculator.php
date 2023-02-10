@@ -79,10 +79,7 @@ class AverageTaxOfProductsTaxCalculatorCore
     }
 
     /**
-     * @param float      $priceBeforeTax
-     * @param float|null $priceAfterTax
-     * @param int        $roundPrecision
-     * @param int|null   $roundMode
+     * @param float $priceBeforeTax
      *
      * @return array
      *
@@ -90,43 +87,26 @@ class AverageTaxOfProductsTaxCalculatorCore
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = _TB_PRICE_DATABASE_PRECISION_, $roundMode = null)
+    public function getTaxesAmount($priceBeforeTax)
     {
-        $amounts = [];
+        $taxBreakdown = [];
         $totalBase = 0;
-
         foreach ($this->getProductTaxes() as $row) {
-            if (!array_key_exists($row['id_tax'], $amounts)) {
-                $amounts[$row['id_tax']] = [
-                    'rate' => $row['rate'],
-                    'base' => 0,
-                ];
-            }
-
-            $amounts[$row['id_tax']]['base'] += $row['total_price_tax_excl'];
-            $totalBase += $row['total_price_tax_excl'];
+            $taxId = (int)$row['id_tax'];
+            $rate = (float)$row['rate'];
+            $base = (float)$row['total_price_tax_excl'];
+            $taxBreakdown[$taxId] = [
+                'rate' => $rate,
+                'base' => $base
+            ];
+            $totalBase += $base;
         }
 
-        $actualTax = 0;
-        foreach ($amounts as &$data) {
-            $data = Tools::ps_round(
-                $priceBeforeTax * ($data['base'] / $totalBase) * $data['rate'] / 100,
-                $roundPrecision,
-                $roundMode
-            );
-            $actualTax += $data;
+        $amounts = [];
+        foreach ($taxBreakdown as $taxId => $taxInfo) {
+            $value = $priceBeforeTax * ($taxInfo['base'] / $totalBase) * $taxInfo['rate'] / 100.0;
+            $amounts[$taxId] = Tools::ps_round($value, _TB_PRICE_DATABASE_PRECISION_);
         }
-        unset($data);
-
-        if ($priceAfterTax) {
-            Tools::spreadAmount(
-                $priceAfterTax - $priceBeforeTax - $actualTax,
-                $roundPrecision,
-                $amounts,
-                'id_tax'
-            );
-        }
-
         return $amounts;
     }
 
@@ -140,12 +120,13 @@ class AverageTaxOfProductsTaxCalculatorCore
     {
         return $this->db->select(
             (new DbQuery())
-                ->select('t.`id_tax`, t.rate, od.total_price_tax_excl')
+                ->select('t.`id_tax`, t.rate, SUM(od.total_price_tax_excl) as total_price_tax_excl')
                 ->from('orders', 'o')
                 ->innerJoin('order_detail', 'od', 'od.`id_order` = o.`id_order`')
                 ->innerJoin('order_detail_tax', 'odt', 'odt.`id_order_detail` = od.`id_order_detail`')
                 ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
                 ->where('o.`id_order` = '.(int) $this->id_order)
+                ->groupBy('t.id_tax, t.rate')
         );
     }
 }

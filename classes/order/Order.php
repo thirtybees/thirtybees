@@ -1772,22 +1772,8 @@ class OrderCore extends ObjectModel
         $orderInvoice->total_wrapping_tax_incl = $this->total_wrapping_tax_incl;
         $orderInvoice->save();
 
-        $orderInvoice->saveCarrierTaxCalculator(
-            $taxCalculator->getTaxesAmount(
-                $orderInvoice->total_shipping_tax_excl,
-                $orderInvoice->total_shipping_tax_incl,
-                _TB_PRICE_DATABASE_PRECISION_,
-                $this->round_mode
-            )
-        );
-        $orderInvoice->saveWrappingTaxCalculator(
-            $wrappingTaxCalculator->getTaxesAmount(
-                $orderInvoice->total_wrapping_tax_excl,
-                $orderInvoice->total_wrapping_tax_incl,
-                _TB_PRICE_DATABASE_PRECISION_,
-                $this->round_mode
-            )
-        );
+        $orderInvoice->saveCarrierTaxCalculator($taxCalculator->getTaxesAmount($orderInvoice->total_shipping_tax_excl));
+        $orderInvoice->saveWrappingTaxCalculator($wrappingTaxCalculator->getTaxesAmount($orderInvoice->total_wrapping_tax_excl));
     }
 
     /**
