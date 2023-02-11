@@ -117,7 +117,6 @@
 				{
 					$('a[id*="Pack"]').hide();
 					$('a[id*="Shipping"]').hide();
-					$('a[id*="Combinations"]').hide();
 				}
 				else
 				{
