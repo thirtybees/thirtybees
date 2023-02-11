@@ -55,7 +55,7 @@ class OrderCarrierCore extends ObjectModel
     /** @var float */
     public $shipping_cost_tax_incl;
 
-    /** @var int */
+    /** @var string */
     public $tracking_number;
 
     /** @var string Object creation date */

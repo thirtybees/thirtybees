@@ -597,18 +597,19 @@ class AdminOrdersControllerCore extends AdminController
         if (Tools::isSubmit('submitShippingNumber') && isset($order)) {
             if ($this->hasEditPermission()) {
                 $orderCarrier = new OrderCarrier(Tools::getValue('id_order_carrier'));
+                $trackingNumber = Tools::getValue('tracking_number');
                 if (!Validate::isLoadedObject($orderCarrier)) {
                     $this->errors[] = Tools::displayError('The order carrier ID is invalid.');
-                } elseif (!Validate::isTrackingNumber(Tools::getValue('tracking_number'))) {
+                } elseif (!Validate::isTrackingNumber($trackingNumber)) {
                     $this->errors[] = Tools::displayError('The tracking number is incorrect.');
                 } else {
                     // update shipping number
                     // Keep these two following lines for backward compatibility, remove on 1.6 version
-                    $order->shipping_number = Tools::getValue('tracking_number');
+                    $order->shipping_number = $trackingNumber;
                     $order->update();
 
                     // Update order_carrier
-                    $orderCarrier->tracking_number = pSQL(Tools::getValue('tracking_number'));
+                    $orderCarrier->tracking_number = pSQL($trackingNumber);
                     if ($orderCarrier->update()) {
                         // Send mail to customer
                         $customer = new Customer((int) $order->id_customer);
@@ -620,11 +621,11 @@ class AdminOrdersControllerCore extends AdminController
                             throw new PrestaShopException('Can\'t load Carrier object');
                         }
                         $templateVars = [
-                            '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
+                            '{followup}'         => str_replace('@', $trackingNumber, $carrier->url),
                             '{firstname}'        => $customer->firstname,
                             '{lastname}'         => $customer->lastname,
                             '{id_order}'         => $order->id,
-                            '{shipping_number}'  => $order->shipping_number,
+                            '{shipping_number}'  => $trackingNumber,
                             '{order_name}'       => $order->getUniqReference(),
                             '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
                             '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
