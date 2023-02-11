@@ -5334,59 +5334,45 @@ class AdminProductsControllerCore extends AdminController
             );
         } elseif (Validate::isLoadedObject($product)) {
             if ($this->product_exists_in_shop) {
-                if ($product->is_virtual) {
-                    $data->assign('product', $product);
-                    $this->displayWarning($this->l('A virtual product cannot have combinations.'));
-                } else {
-                    $attributeJs = [];
-                    $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
-                    foreach ($attributes as $k => $attribute) {
-                        $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
-                    }
-                    foreach ($attributeJs as $k => $ajs) {
-                        natsort($attributeJs[$k]);
-                    }
-
-                    $currency = $this->context->currency;
-
-                    $data->assign('attributeJs', $attributeJs);
-                    $data->assign('attributes_groups', AttributeGroup::getAttributesGroups($this->context->language->id));
-
-                    $data->assign('currency', $currency);
-
-                    $images = Image::getImages($this->context->language->id, $product->id);
-
-                    $data->assign('tax_exclude_option', Tax::excludeTaxeOption());
-                    $data->assign('ps_weight_unit', Configuration::get('PS_WEIGHT_UNIT'));
-
-                    $data->assign('ps_use_ecotax', Configuration::get('PS_USE_ECOTAX'));
-                    $data->assign('field_value_unity', $this->getFieldValue($product, 'unity'));
-
-                    $data->assign('reasons', $reasons = StockMvtReason::getStockMvtReasons($this->context->language->id));
-                    $data->assign('ps_stock_mvt_reason_default', $psStockMvtReasonDefault = Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
-                    $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
-                    $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
-                    $data->assign('imageType', ImageType::getFormatedName('small'));
-
-                    $i = 0;
-                    foreach ($images as $k => $image) {
-                        $images[$k]['obj'] = new Image($image['id_image']);
-                        ++$i;
-                    }
-                    $data->assign('images', $images);
-
-                    $data->assign($this->tpl_form_vars);
-                    $data->assign(
-                        [
-                            'list'               => $this->renderListAttributes($product, $currency),
-                            'product'            => $product,
-                            'defaultReference'   => Tools::nextAvailableReference($product->reference),
-                            'id_category'        => $product->getDefaultCategory(),
-                            'token_generator'    => Tools::getAdminTokenLite('AdminAttributeGenerator'),
-                            'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count(AttributeGroup::getAttributesGroups($this->context->language->id)) > 0 && $product->hasAttributes()),
-                        ]
-                    );
+                $attributeJs = [];
+                $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
+                foreach ($attributes as $k => $attribute) {
+                    $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
                 }
+                foreach ($attributeJs as $k => $ajs) {
+                    natsort($attributeJs[$k]);
+                }
+                $currency = $this->context->currency;
+                $data->assign('attributeJs', $attributeJs);
+                $data->assign('attributes_groups', AttributeGroup::getAttributesGroups($this->context->language->id));
+                $data->assign('currency', $currency);
+                $images = Image::getImages($this->context->language->id, $product->id);
+                $data->assign('tax_exclude_option', Tax::excludeTaxeOption());
+                $data->assign('ps_weight_unit', Configuration::get('PS_WEIGHT_UNIT'));
+                $data->assign('ps_use_ecotax', Configuration::get('PS_USE_ECOTAX'));
+                $data->assign('field_value_unity', $this->getFieldValue($product, 'unity'));
+                $data->assign('reasons', $reasons = StockMvtReason::getStockMvtReasons($this->context->language->id));
+                $data->assign('ps_stock_mvt_reason_default', $psStockMvtReasonDefault = Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
+                $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
+                $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
+                $data->assign('imageType', ImageType::getFormatedName('small'));
+                $i = 0;
+                foreach ($images as $k => $image) {
+                    $images[$k]['obj'] = new Image($image['id_image']);
+                    ++$i;
+                }
+                $data->assign('images', $images);
+                $data->assign($this->tpl_form_vars);
+                $data->assign(
+                    [
+                        'list'               => $this->renderListAttributes($product, $currency),
+                        'product'            => $product,
+                        'defaultReference'   => Tools::nextAvailableReference($product->reference),
+                        'id_category'        => $product->getDefaultCategory(),
+                        'token_generator'    => Tools::getAdminTokenLite('AdminAttributeGenerator'),
+                        'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count(AttributeGroup::getAttributesGroups($this->context->language->id)) > 0 && $product->hasAttributes()),
+                    ]
+                );
             } else {
                 $this->displayWarning($this->l('You must save the product in this shop before adding combinations.'));
             }

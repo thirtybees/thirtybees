@@ -1304,30 +1304,20 @@ window.product_tabs.Informations = new function () {
           // if pack is enabled, if you choose pack, automatically switch to pack page
         }
       } else if (window.product_type === window.product_type_virtual) {
-        if (window.has_combinations) {
-          $('#simple_product').attr('checked', true);
-          $('#warn_virtual_combinations').show();
-        } else {
           $('a[id*="VirtualProduct"]').show();
           $('#is_virtual').val(1);
-
           window.tabs_manager.onLoad('VirtualProduct', function() {
             $('#virtual_good').show();
           });
-
           window.tabs_manager.onLoad('Quantities', function() {
             $('.stockForVirtualProduct').hide();
           });
-
-          $('a[id*="Combinations"]').hide();
           $('a[id*="Shipping"]').hide();
-
           window.tabs_manager.onLoad('Informations', function() {
             $('#condition').attr('disabled', true);
             $('#condition option[value=refurbished]').removeAttr('selected');
             $('#condition option[value=used]').removeAttr('selected');
           });
-        }
       } else {
         // 3rd case : product_type is PTYPE_SIMPLE (0)
         $('a[id*="Combinations"]').show();

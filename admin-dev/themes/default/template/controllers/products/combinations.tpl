@@ -22,7 +22,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-{if isset($product->id) && !$product->is_virtual}
+{if isset($product->id)}
 <div id="product-combinations" class="panel product-tab">
 	<script type="text/javascript">
 		var msg_combination_1 = '{l s='Please choose an attribute.'}';
