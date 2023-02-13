@@ -34,6 +34,9 @@
  */
 class AdminStatsControllerCore extends AdminStatsTabController
 {
+    const ORDER_DATE_COLUMN_DATE = 'order_date';
+    const ORDER_DATE_COLUMN_INVOICE = 'invoice_date';
+
     /**
      * Display ajax get KPI
      *
@@ -406,57 +409,54 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateTo
      * @param bool $granularity
      *
-     * @return array|false|null|string
+     * @return array|int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrders($dateFrom, $dateTo, $granularity = false)
     {
+        $dateColumn = static::getOrderDateColumn('o');
         if ($granularity == 'day') {
             $orders = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
-			SELECT LEFT(`invoice_date`, 10) as date, COUNT(*) as orders
+			SELECT LEFT('.$dateColumn.', 10) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o').'
-			GROUP BY LEFT(`invoice_date`, 10)'
+			GROUP BY LEFT('.$dateColumn.', 10)'
             );
             foreach ($result as $row) {
                 $orders[strtotime($row['date'])] = $row['orders'];
             }
-
             return $orders;
         } elseif ($granularity == 'month') {
             $orders = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
-			SELECT LEFT(`invoice_date`, 7) as date, COUNT(*) as orders
+			SELECT LEFT('.$dateColumn.', 7) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o').'
-			GROUP BY LEFT(`invoice_date`, 7)'
+			GROUP BY LEFT('.$dateColumn.', 7)'
             );
             foreach ($result as $row) {
                 $orders[strtotime($row['date'].'-01')] = $row['orders'];
             }
-
             return $orders;
         } else {
-            $orders = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o')
             );
         }
-
-        return $orders;
     }
 
     /**
@@ -894,22 +894,23 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateTo
      * @param bool $granularity
      *
-     * @return array|false|null|string
+     * @return array|float
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getTotalSales($dateFrom, $dateTo, $granularity = false)
     {
+        $dateColumn = static::getOrderDateColumn('o');
         if ($granularity == 'day') {
             $sales = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
-			SELECT LEFT(`invoice_date`, 10) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
+			SELECT LEFT('.$dateColumn.', 10) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o').'
-			GROUP BY LEFT(`invoice_date`, 10)'
+			GROUP BY LEFT('.$dateColumn.', 10)'
             );
             foreach ($result as $row) {
                 $sales[strtotime($row['date'])] = $row['sales'];
@@ -918,14 +919,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
             return $sales;
         } elseif ($granularity == 'month') {
             $sales = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
-			SELECT LEFT(`invoice_date`, 7) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
+			SELECT LEFT('.$dateColumn.', 7) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o').'
-			GROUP BY LEFT(`invoice_date`, 7)'
+			GROUP BY LEFT('.$dateColumn.', 7)'
             );
             foreach ($result as $row) {
                 $sales[strtotime($row['date'].'-01')] = $row['sales'];
@@ -933,12 +934,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
             return $sales;
         } else {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (float)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT SUM(total_paid_tax_excl / o.conversion_rate)
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o')
             );
         }
@@ -951,19 +952,20 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateTo
      * @param bool $granularity
      *
-     * @return array|int|string
+     * @return array|float
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getExpenses($dateFrom, $dateTo, $granularity = false)
     {
-        $expenses = ($granularity == 'day' ? [] : 0);
+        $dateColumn = static::getOrderDateColumn('o');
+        $expenses = $granularity == 'day' ? [] : 0.0;
 
-        $orders = Db::getInstance()->ExecuteS(
+        $orders = Db::getInstance()->getArray(
             '
 		SELECT
-			LEFT(`invoice_date`, 10) as date,
+			LEFT('.$dateColumn.', 10) as date,
 			total_paid_tax_incl / o.conversion_rate as total_paid_tax_incl,
 			total_shipping_tax_excl / o.conversion_rate as total_shipping_tax_excl,
 			o.module,
@@ -974,7 +976,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		LEFT JOIN `'._DB_PREFIX_.'address` a ON o.id_address_delivery = a.id_address
 		LEFT JOIN `'._DB_PREFIX_.'carrier` c ON o.id_carrier = c.id_carrier
 		LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-		WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+		WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 		'.Shop::addSqlRestriction(false, 'o')
         );
         foreach ($orders as $order) {
@@ -1020,19 +1022,20 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateTo
      * @param bool $granularity
      *
-     * @return array|false|null|string
+     * @return array|float
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getPurchases($dateFrom, $dateTo, $granularity = false)
     {
+        $dateColumn = static::getOrderDateColumn('o');
         if ($granularity == 'day') {
             $purchases = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
 			SELECT
-				LEFT(`invoice_date`, 10) as date,
+				LEFT('.$dateColumn.', 10) as date,
 				SUM(od.`product_quantity` * IF(
 					od.`purchase_supplier_price` > 0,
 					od.`purchase_supplier_price` / `conversion_rate`,
@@ -1041,9 +1044,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o').'
-			GROUP BY LEFT(`invoice_date`, 10)'
+			GROUP BY LEFT('.$dateColumn.', 10)'
             );
             foreach ($result as $row) {
                 $purchases[strtotime($row['date'])] = $row['total_purchase_price'];
@@ -1051,7 +1054,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
             return $purchases;
         } else {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (float)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT SUM(od.`product_quantity` * IF(
 				od.`purchase_supplier_price` > 0,
@@ -1061,7 +1064,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
 			LEFT JOIN `'._DB_PREFIX_.'order_state` os ON o.current_state = os.id_order_state
-			WHERE `invoice_date` BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
+			WHERE '.$dateColumn.' BETWEEN "'.pSQL($dateFrom).' 00:00:00" AND "'.pSQL($dateTo).' 23:59:59" AND os.logable = 1
 			'.Shop::addSqlRestriction(false, 'o')
             );
         }
@@ -1138,5 +1141,23 @@ class AdminStatsControllerCore extends AdminStatsTabController
             __PS_BASE_URI__.$adminWebpath.'/themes/'.$this->context->employee->bo_theme.'/js/vendor/nv.d3.min.js',
         ]);
         $this->addCSS(__PS_BASE_URI__.$adminWebpath.'/themes/'.$this->context->employee->bo_theme.'/css/vendor/nv.d3.css');
+    }
+
+    /**
+     * @param string $tableAlias
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getOrderDateColumn($tableAlias)
+    {
+        $dateColumn = Configuration::get('ORDER_STATS_DATE_COLUMN');
+
+        if ($dateColumn === static::ORDER_DATE_COLUMN_DATE) {
+            return $tableAlias.'.`date_add`';
+        } else {
+            return $tableAlias.'.`invoice_date`';
+        }
     }
 }

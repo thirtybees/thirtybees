@@ -166,6 +166,24 @@ class AdminDashboardControllerCore extends AdminController
             'suffix'       => $currency->iso_code,
         ];
 
+        $forms['other']['fields']['ORDER_STATS_DATE_COLUMN'] = [
+            'title'        => $this->l('Include orders by'),
+            'desc'         => $this->l('Choose if orders should be counted by order invoice date, or order creation date'),
+            'type'         => 'select',
+            'defaultValue' => AdminStatsController::ORDER_DATE_COLUMN_INVOICE,
+            'identifier'   => 'id',
+            'list' => [
+                [
+                    'id' => AdminStatsController::ORDER_DATE_COLUMN_INVOICE,
+                    'name' => $this->l('Order invoice date')
+                ],
+                [
+                    'id' => AdminStatsController::ORDER_DATE_COLUMN_DATE,
+                    'name' => $this->l('Order creation date'),
+                ],
+            ]
+        ];
+
         Media::addJsDef(
             [
                 'dashboard_ajax_url' => $this->context->link->getAdminLink('AdminDashboard'),
