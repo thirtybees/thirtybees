@@ -106,7 +106,7 @@ class InstallModelInstall extends InstallAbstractModel
             '_MYSQL_ENGINE_'      => 'InnoDB',
             '_PS_CACHING_SYSTEM_' => 'CacheMemcache',
             '_COOKIE_KEY_'        => Tools::passwdGen(56),
-            '_COOKIE_IV_'         => Tools::passwdGen(8),
+            '_COOKIE_IV_'         => Tools::passwdGen(32),
             '_PS_CREATION_DATE_'  => date('Y-m-d'),
             '_TB_VERSION_'        => _TB_INSTALL_VERSION_,
             '_TB_REVISION_'       => _TB_INSTALL_REVISION_,

@@ -41,6 +41,8 @@
  */
 class CookieCore
 {
+    const FIELDS_SEPARATOR = '¤';
+    const VALUE_SEPARATOR = '|';
     /**
      * @var array Contain cookie content in a key => value format
      */
@@ -125,7 +127,9 @@ class CookieCore
         $this->_domain = $this->getDomain($sharedUrls);
         $this->_name = static::getCookieNamePrefix().'-'.md5($name.$this->_domain);
         $this->_allow_writing = true;
-        $this->_salt = $this->_standalone ? str_pad('', 8, md5('ps'.__FILE__)) : _COOKIE_IV_;
+        $this->_salt = $this->_standalone
+            ? str_pad('', 32, md5('ps'.__FILE__))
+            : _COOKIE_IV_;
         $this->_secure = (bool) $secure;
 
         $this->update();
@@ -185,37 +189,35 @@ class CookieCore
     {
         if (isset($_COOKIE[$this->_name])) {
             /* Decrypt cookie content */
-            $content = $this->getCipherTool()->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
-            if ($content) {
-                /* Get cookie checksum */
-                $tmpTab = explode('¤', $content);
-                array_pop($tmpTab);
-                $contentForChecksum = implode('¤', $tmpTab) . '¤';
-                $checksum = crc32($this->_salt . $contentForChecksum);
+            $rawContent = $this->getCipherTool()->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
+            if ($rawContent && strlen($rawContent) >= 64) {
 
-                /* Unserialize cookie content */
-                $tmpTab = explode('¤', $content);
-                foreach ($tmpTab as $keyAndValue) {
-                    $tmpTab2 = explode('|', $keyAndValue);
-                    if (count($tmpTab2) == 2) {
-                        $this->_content[$tmpTab2[0]] = $tmpTab2[1];
+                // Verify checksum
+                $storedChecksum = substr($rawContent, 0, 64);
+                $data = substr($rawContent, 64);
+                $calculatedChecksum = hash('sha256', $this->_salt . $data);
+
+                if ($storedChecksum === $calculatedChecksum) {
+                    if ($data) {
+                        /* Unserialize cookie content */
+                        $tmpTab = explode(static::FIELDS_SEPARATOR, $data);
+                        foreach ($tmpTab as $keyAndValue) {
+                            $tmpTab2 = explode(static::VALUE_SEPARATOR, $keyAndValue);
+                            if (count($tmpTab2) == 2) {
+                                $this->_content[$tmpTab2[0]] = $tmpTab2[1];
+                            }
+                        }
                     }
+                } else {
+                    $this->delete();
                 }
-                /* Blowfish fix */
-                if (isset($this->_content['checksum'])) {
-                    $this->_content['checksum'] = (int)($this->_content['checksum']);
-                }
-            }
-
-            /* Check if cookie has not been modified */
-            if (!isset($this->_content['checksum']) || $this->_content['checksum'] != $checksum) {
+            } else {
                 $this->delete();
             }
+        }
 
-            if (!isset($this->_content['date_add'])) {
-                $this->_content['date_add'] = date('Y-m-d H:i:s');
-            }
-        } else {
+        // set creation date
+        if (!isset($this->_content['date_add'])) {
             $this->_content['date_add'] = date('Y-m-d H:i:s');
         }
 
@@ -330,7 +332,11 @@ class CookieCore
         if (is_array($value)) {
             throw new RuntimeException("Value can't be array");
         }
-        if (preg_match('/¤|\|/', $key.$value)) {
+        $test = $key . $value;
+        if (strpos($test, static::FIELDS_SEPARATOR) !== false) {
+            throw new RuntimeException('Forbidden chars in cookie');
+        }
+        if (strpos($test, static::VALUE_SEPARATOR) !== false) {
             throw new RuntimeException('Forbidden chars in cookie');
         }
         if (!$this->_modified && (!isset($this->_content[$key]) || (isset($this->_content[$key]) && $this->_content[$key] != $value))) {
@@ -468,22 +474,19 @@ class CookieCore
             return false;
         }
 
-        $cookie = '';
-
         /* Serialize cookie content */
-        if (isset($this->_content['checksum'])) {
-            unset($this->_content['checksum']);
-        }
+        $data = [];
         foreach ($this->_content as $key => $value) {
-            $cookie .= $key.'|'.$value.'¤';
+            $data[] = $key. static::VALUE_SEPARATOR .$value;
         }
+        $content = implode(static::FIELDS_SEPARATOR, $data);
 
-        /* Add checksum to cookie */
-        $cookie .= 'checksum|'.crc32($this->_salt.$cookie);
+        /* Calculate checksum and add it to cookie */
+        $checksum = hash('sha256', $this->_salt . $content);
+        $cookie = $checksum . $content;
         $this->_modified = false;
 
         /* Cookies are encrypted for evident security reasons */
-
         return $this->_setcookie($cookie);
     }
 
