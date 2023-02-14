@@ -4311,6 +4311,12 @@ class AdminControllerCore extends Controller
 
             // Cast and validate fields.
             foreach ($fields as $field => $values) {
+
+                // ignore doNotProcess fields
+                if (isset($options['doNotProcess']) && $options['doNotProcess']) {
+                    continue;
+                }
+
                 // We don't validate fields with no visibility
                 if (!$hideMultishopCheckbox && Shop::isFeatureActive() && isset($values['visibility']) && $values['visibility'] > Shop::getContext()) {
                     continue;
@@ -4375,6 +4381,12 @@ class AdminControllerCore extends Controller
 
             if (!count($this->errors)) {
                 foreach ($fields as $key => $options) {
+
+                    // ignore doNotProcess fields
+                    if (isset($options['doNotProcess']) && $options['doNotProcess']) {
+                        continue;
+                    }
+
                     if (Shop::isFeatureActive() && isset($options['visibility']) && $options['visibility'] > Shop::getContext()) {
                         continue;
                     }
