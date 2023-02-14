@@ -189,7 +189,7 @@ class CookieCore
     {
         if (isset($_COOKIE[$this->_name])) {
             /* Decrypt cookie content */
-            $rawContent = $this->getCipherTool()->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
+            $rawContent = $this->getCipherTool()->decrypt($_COOKIE[$this->_name]);
             if ($rawContent && strlen($rawContent) >= 64) {
 
                 // Verify checksum
@@ -280,11 +280,11 @@ class CookieCore
             $content = $this->getCipherTool()->encrypt($cookie);
             $time = $this->_expire;
         } else {
-            $content = 0;
+            $content = '';
             $time = 1;
         }
 
-        return setrawcookie($this->_name, Tools::base64UrlEncode($content), $time, $this->_path, $this->_domain, $this->_secure, true);
+        return setrawcookie($this->_name, $content, $time, $this->_path, $this->_domain, $this->_secure, true);
     }
 
     /**
