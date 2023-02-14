@@ -112,10 +112,12 @@ class AdminLogsControllerCore extends AdminController
                 'fields' => [
                     'encrypted_exception' => [
                         'type' => 'hidden',
+                        'doNotProcess' => true,
                         'value' => true
                     ],
                     'filename' => [
                         'type' => 'file',
+                        'doNotProcess' => true,
                         'name' => 'exception',
                         'title' => $this->l('Decrypt an exception message'),
                         'label'  => $this->l('Upload encrypted exception message to see the actual message.'),
@@ -143,6 +145,7 @@ class AdminLogsControllerCore extends AdminController
                             'fields' => [
                                 'decrypted_exception'    => [
                                     'type' => 'iframe',
+                                    'doNotProcess' => true,
                                     'srcdoc' => $debugErrorPage->getPageContent($errorDescription)
                                 ],
                             ],
