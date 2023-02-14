@@ -432,7 +432,10 @@ class AdminDashboardControllerCore extends AdminController
      */
     public function ajaxProcessSaveDashConfig()
     {
-        $return = ['has_errors' => false, 'errors' => []];
+        $return = [
+            'has_errors' => false,
+            'errors' => []
+        ];
         $module = Tools::getValue('module');
         $hook = Tools::getValue('hook');
         $configs = Tools::getValue('configs');
@@ -453,12 +456,9 @@ class AdminDashboardControllerCore extends AdminController
                 if (!count($return['errors'])) {
                     if (method_exists($moduleObj, 'saveDashConfig')) {
                         $return['has_errors'] = $moduleObj->saveDashConfig($configs);
-                    } elseif (is_array($configs) && count($configs)) {
-                        foreach ($configs as $name => $value) {
-                            if (Validate::isConfigName($name)) {
-                                Configuration::updateValue($name, $value);
-                            }
-                        }
+                    } else {
+                        $return['errors'][] = sprintf(Tools::displayError('Module %s does not implement saveDashConfig method!'), $module);
+                        $return['has_errors'] = true;
                     }
                 } else {
                     $return['has_errors'] = true;
