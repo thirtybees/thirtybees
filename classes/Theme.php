@@ -558,6 +558,10 @@ class ThemeCore extends ObjectModel
      */
     public static function installFromDir($themeDir)
     {
+        if (! file_exists($themeDir)) {
+            return sprintf( Tools::displayError('Theme directory not found: "%s"'), $themeDir);
+        }
+
         $xml = static::loadDefaultConfig($themeDir);
         if ( ! $xml) {
             return sprintf(Tools::displayError(
