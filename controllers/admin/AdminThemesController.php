@@ -2016,7 +2016,11 @@ class AdminThemesControllerCore extends AdminController
             && ($this->context->mode != Context::MODE_HOST)
         ) {
             $themeDir = Tools::getValue('theme_dir');
-            $this->installTheme($themeDir);
+            if (Validate::isDirName($themeDir)) {
+                $this->installTheme($themeDir);
+            } else {
+                $this->errors[] = Tools::displayError('Invalid theme directory');
+            }
         }
 
         Configuration::updateValue('PS_IMG_UPDATE_TIME', time());
