@@ -3317,10 +3317,6 @@ class AdminControllerCore extends Controller
         if ((Tools::getValue('module_name') == $module->name || in_array($module->name, explode('|', Tools::getValue('modules_list')))) && (int) Tools::getValue('conf') > 0) {
             $module->message = $this->_conf[(int) Tools::getValue('conf')];
         }
-
-        if ((Tools::getValue('module_name') == $module->name || in_array($module->name, explode('|', Tools::getValue('modules_list')))) && (int) Tools::getValue('conf') > 0) {
-            unset($obj);
-        }
     }
 
     /**
