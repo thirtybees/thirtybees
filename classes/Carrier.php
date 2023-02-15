@@ -143,7 +143,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             'id_reference'         => ['type' => self::TYPE_INT, 'dbNullable' => false],
             'id_tax_rules_group'   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0', 'dbNullable' => true],
             'name'                 => ['type' => self::TYPE_STRING, 'validate' => 'isCarrierName', 'required' => true, 'size' => 64],
-            'url'                  => ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'],
+            'url'                  => ['type' => self::TYPE_STRING, 'validate' => 'isString'],
             'active'               => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
             'deleted'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'shipping_handling'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
