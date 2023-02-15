@@ -74,11 +74,33 @@ class AdminCmsControllerCore extends AdminController
             ],
         ];
         $this->fields_list = [
-            'id_cms'       => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'link_rewrite' => ['title' => $this->l('URL')],
-            'meta_title'   => ['title' => $this->l('Title'), 'filter_key' => 'b!meta_title'],
-            'position'     => ['title' => $this->l('Position'), 'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
-            'active'       => ['title' => $this->l('Displayed'), 'align' => 'center', 'active' => 'status', 'class' => 'fixed-width-sm', 'type' => 'bool', 'orderby' => false],
+            'id_cms' => [
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs'
+            ],
+            'link_rewrite' => [
+                'title' => $this->l('URL')
+            ],
+            'meta_title' => [
+                'title' => $this->l('Title'),
+                'filter_key' => 'b!meta_title'
+            ],
+            'position' => [
+                'title' => $this->l('Position'),
+                'filter_key' => 'a!position',
+                'align' => 'center',
+                'class' => 'fixed-width-sm',
+                'position' => 'position'
+            ],
+            'active' => [
+                'title' => $this->l('Displayed'),
+                'align' => 'center',
+                'active' => 'status',
+                'class' => 'fixed-width-sm',
+                'type' => 'bool',
+                'orderby' => false
+            ],
         ];
 
         // The controller can't be call directly
