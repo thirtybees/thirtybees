@@ -384,23 +384,15 @@ class OrderInvoiceCore extends ObjectModel
             $row['id_address_delivery'] = $order->id_address_delivery;
 
             /* Ecotax */
-            $row['ecotax_tax_excl'] = round(
-                $row['ecotax'],
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-            $row['ecotax_tax_incl'] = round(
-                $row['ecotax'] * (1 + $row['ecotax_tax_rate'] / 100),
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-            $row['ecotax_tax']
-                = $row['ecotax_tax_incl'] - $row['ecotax_tax_excl'];
+            $ecotax = (float)$row['ecotax'];
+            $ecotaxRate = (float)$row['ecotax_tax_rate'];
+            $row['ecotax_tax_excl'] = Tools::roundPrice($ecotax);
+            $row['ecotax_tax_incl'] = Tools::roundPrice($ecotax * (1 + $ecotaxRate / 100));
+            $row['ecotax_tax'] = $row['ecotax_tax_incl'] - $row['ecotax_tax_excl'];
 
-            $row['total_ecotax_tax_excl']
-                = $row['ecotax_tax_excl'] * $row['product_quantity'];
-            $row['total_ecotax_tax_incl']
-                = $row['ecotax_tax_incl'] * $row['product_quantity'];
-            $row['total_ecotax_tax']
-                = $row['total_ecotax_tax_incl'] - $row['total_ecotax_tax_excl'];
+            $row['total_ecotax_tax_excl'] = $row['ecotax_tax_excl'] * $row['product_quantity'];
+            $row['total_ecotax_tax_incl'] = $row['ecotax_tax_incl'] * $row['product_quantity'];
+            $row['total_ecotax_tax'] = $row['total_ecotax_tax_incl'] - $row['total_ecotax_tax_excl'];
 
             // Aliases
             $row['unit_price_tax_excl_including_ecotax'] = $row['unit_price_tax_excl'];
@@ -420,14 +412,14 @@ class OrderInvoiceCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getProductsDetail()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail', 'od')
