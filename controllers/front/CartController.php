@@ -113,10 +113,11 @@ class CartControllerCore extends FrontController
                 }
 
                 // Redirect to previous page
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    preg_match('!http(s?)://(.*)/(.*)!', $_SERVER['HTTP_REFERER'], $regs);
+                $referer = Tools::getHttpReferer();
+                if ($referer) {
+                    preg_match('!http(s?)://(.*)/(.*)!', $referer, $regs);
                     if (isset($regs[3]) && !Configuration::get('PS_CART_REDIRECT')) {
-                        $url = preg_replace('/(\?)+content_only=1/', '', $_SERVER['HTTP_REFERER']);
+                        $url = preg_replace('/(\?)+content_only=1/', '', $referer);
                         Tools::redirect($url);
                     }
                 }

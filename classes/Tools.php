@@ -5433,6 +5433,18 @@ FileETag none
                 return sprintf(static::displayError('Error while uploading image; please change your server\'s settings. (Error code: %s)'), $error);
         }
     }
+
+    /**
+     * Returns HTTP_REFERER server information
+     * @return string
+     */
+    public static function getHttpReferer(): string
+    {
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            return (string)$_SERVER['HTTP_REFERER'];
+        }
+        return '';
+    }
 }
 
 /**

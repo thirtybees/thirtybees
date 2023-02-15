@@ -157,8 +157,10 @@ class ProductControllerCore extends FrontController
             } else {
                 // Load category
                 $idCategory = false;
-                if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] == Tools::secureReferrer($_SERVER['HTTP_REFERER']) // Assure us the previous page was one of the shop
-                    && preg_match('~^.*(?<!\/content)\/([0-9]+)\-(.*[^\.])|(.*)id_(category|product)=([0-9]+)(.*)$~', $_SERVER['HTTP_REFERER'], $regs)
+                $referer = Tools::getHttpReferer();
+                if ($referer &&
+                    $referer == Tools::secureReferrer($referer) && // Assure us the previous page was one of the shop
+                    preg_match('~^.*(?<!\/content)\/([0-9]+)\-(.*[^\.])|(.*)id_(category|product)=([0-9]+)(.*)$~', $referer, $regs)
                 ) {
                     // If the previous page was a category and is a parent category of the product use this category as parent category
                     $idObject = false;
@@ -168,7 +170,7 @@ class ProductControllerCore extends FrontController
                         $idObject = (int) $regs[5];
                     }
                     if ($idObject) {
-                        $referers = [$_SERVER['HTTP_REFERER'], urldecode($_SERVER['HTTP_REFERER'])];
+                        $referers = [$referer, urldecode($referer)];
                         if (in_array($this->context->link->getCategoryLink($idObject), $referers)) {
                             $idCategory = (int) $idObject;
                         } elseif (isset($this->context->cookie->last_visited_category) && (int) $this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($idObject), $referers)) {

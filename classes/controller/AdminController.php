@@ -1788,10 +1788,11 @@ class AdminControllerCore extends Controller
                     (int) $this->context->employee->id
                 );
                 $matches = [];
-                if (preg_match('/[\?|&]controller=([^&]*)/', (string) $_SERVER['HTTP_REFERER'], $matches) !== false
-                    && strtolower($matches[1]) != strtolower(preg_replace('/controller/i', '', get_class($this)))
+                $referer = Tools::getHttpReferer();
+                if (preg_match('/[\?|&]controller=([^&]*)/', $referer, $matches) !== false &&
+                    strtolower($matches[1]) != strtolower(preg_replace('/controller/i', '', get_class($this)))
                 ) {
-                    $this->redirect_after = preg_replace('/[\?|&]conf=([^&]*)/i', '', (string) $_SERVER['HTTP_REFERER']);
+                    $this->redirect_after = preg_replace('/[\?|&]conf=([^&]*)/i', '', $referer);
                 } else {
                     $this->redirect_after = static::$currentIndex.'&token='.$this->token;
                 }

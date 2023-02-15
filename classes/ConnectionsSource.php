@@ -103,20 +103,21 @@ class ConnectionsSourceCore extends ObjectModel
         }
 
         // If the referrer is not correct, we drop the connection
-        if (isset($_SERVER['HTTP_REFERER']) && !Validate::isAbsoluteUrl($_SERVER['HTTP_REFERER'])) {
+        $referer = Tools::getHttpReferer();
+        if ($referer && !Validate::isAbsoluteUrl($referer)) {
             return false;
         }
         // If there is no referrer and we do not want to save direct traffic (as opposed to referral traffic), we drop the connection
-        if (!isset($_SERVER['HTTP_REFERER']) && !Configuration::get('TRACKING_DIRECT_TRAFFIC')) {
+        if (!$referer && !Configuration::get('TRACKING_DIRECT_TRAFFIC')) {
             return false;
         }
 
         $source = new ConnectionsSource();
 
         // There are a few more operations if there is a referrer
-        if (isset($_SERVER['HTTP_REFERER'])) {
+        if ($referer) {
             // If the referrer is internal (i.e. from your own website), then we drop the connection
-            $parsed = parse_url($_SERVER['HTTP_REFERER']);
+            $parsed = parse_url($referer);
             $parsedHost = parse_url(Tools::getProtocol().Tools::getHttpHost(false, false).__PS_BASE_URI__);
 
             if (!isset($parsed['host']) || (!isset($parsed['path']) || !isset($parsedHost['path']))) {
@@ -127,8 +128,8 @@ class ConnectionsSourceCore extends ObjectModel
                 return false;
             }
 
-            $source->http_referer = substr($_SERVER['HTTP_REFERER'], 0, ConnectionsSource::$uri_max_size);
-            $source->keywords = substr(trim(SearchEngine::getKeywords($_SERVER['HTTP_REFERER'])), 0, ConnectionsSource::$uri_max_size);
+            $source->http_referer = substr($referer, 0, ConnectionsSource::$uri_max_size);
+            $source->keywords = substr(trim(SearchEngine::getKeywords($referer)), 0, ConnectionsSource::$uri_max_size);
         }
 
         $source->id_connections = (int) $cookie->id_connections;

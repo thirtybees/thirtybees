@@ -88,7 +88,7 @@ class ConnectionCore extends ObjectModel
     {
         $idPage = false;
         // The connection is created if it does not exist yet and we get the current page id
-        if (!isset($cookie->id_connections) || !strstr(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '', Tools::getHttpHost(false, false))) {
+        if (!isset($cookie->id_connections) || !strstr(Tools::getHttpReferer(), Tools::getHttpHost(false, false))) {
             $idPage = Connection::setNewConnection($cookie);
         }
         // If we do not track the pages, no need to get the page id
@@ -154,7 +154,7 @@ class ConnectionCore extends ObjectModel
                 // The old connections details are removed from the database in order to spare some memory
                 Connection::cleanConnectionsPages();
 
-                $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+                $referer = Tools::getHttpReferer();
                 $arrayUrl = parse_url($referer);
                 if (!isset($arrayUrl['host']) || preg_replace('/^www./', '', $arrayUrl['host']) == preg_replace('/^www./', '', Tools::getHttpHost(false, false))) {
                     $referer = '';

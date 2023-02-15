@@ -1523,11 +1523,10 @@ class FrontControllerCore extends Controller
 
         if (isset($_GET['logout']) || ($this->context->customer->logged && Customer::isBanned($this->context->customer->id))) {
             $this->context->customer->logout();
-
-            Tools::redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+            Tools::redirect(Tools::secureReferrer(Tools::getHttpReferer()));
         } elseif (isset($_GET['mylogout'])) {
             $this->context->customer->mylogout();
-            Tools::redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+            Tools::redirect(Tools::secureReferrer(Tools::getHttpReferer()));
         }
 
         /* Cart already exists */
