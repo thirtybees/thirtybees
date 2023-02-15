@@ -141,7 +141,7 @@ class LinkCore
     }
 
     /**
-     * @param int|ProductCore $product
+     * @param int|array|Product $productIdentifier
      * @param string|null $alias
      * @param int|null $category
      * @param string|null $ean13
@@ -156,7 +156,7 @@ class LinkCore
      * @return string
      * @throws PrestaShopException
      */
-    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
+    public function getProductLink($productIdentifier, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
     {
         $dispatcher = Dispatcher::getInstance();
 
@@ -166,15 +166,7 @@ class LinkCore
 
         $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
 
-        if (!is_object($product)) {
-            if (is_array($product) && isset($product['id_product'])) {
-                $product = new Product($product['id_product'], false, $idLang, $idShop);
-            } elseif ((int) $product) {
-                $product = new Product((int) $product, false, $idLang, $idShop);
-            } else {
-                throw new PrestaShopException('Invalid product vars');
-            }
-        }
+        $product = $this->getProductObject($productIdentifier, $idLang, $idShop);
 
         // Set available keywords
         $params = [];
@@ -1240,5 +1232,33 @@ class LinkCore
             }
         }
         return $default;
+    }
+
+    /**
+     * Returns Product object from identifier. Object might not exists
+     *
+     * @param int|array|Product $identifier
+     * @param int|null $idLang
+     * @param int|null $idShop
+     *
+     * @return Product
+     *
+     * @throws PrestaShopException
+     */
+    protected function getProductObject($identifier, $idLang, $idShop): Product
+    {
+        if ($identifier instanceof Product) {
+            return $identifier;
+        }
+        if (is_int($identifier)) {
+            return new Product((int)$identifier, false, $idLang, $idShop);
+        }
+        if (is_array($identifier) && isset($identifier['id_product'])) {
+            return new Product((int)$identifier['id_product'], false, $idLang, $idShop);
+        }
+        if (is_object($identifier) && property_exists($identifier, 'id')) {
+            return new Product((int)$identifier->id, false, $idLang, $idShop);
+        }
+        return new Product((int)$identifier, false, $idLang, $idShop);
     }
 }
