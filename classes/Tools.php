@@ -160,7 +160,7 @@ class ToolsCore
     /**
      * Redirect user to another page
      *
-     * @param string $url Desired URL
+     * @param string|null $url Desired URL
      * @param false|string $baseUri Base URI (optional)
      * @param Link|null $link
      * @param string|string[]|null $headers A list of headers to send before redirection
@@ -169,6 +169,8 @@ class ToolsCore
      */
     public static function redirect($url, $baseUri = __PS_BASE_URI__, Link $link = null, $headers = null)
     {
+        $url = (string)$url;
+
         if (!$link) {
             $link = Context::getContext()->link;
         }
@@ -185,10 +187,7 @@ class ToolsCore
             }
 
             $explode = explode('?', $url);
-            // don't use ssl if url is home page
-            // used when logout for example
-            $useSsl = !empty($url);
-            $url = $link->getPageLink($explode[0], $useSsl);
+            $url = $link->getPageLink($explode[0]);
             if (isset($explode[1])) {
                 $url .= '?'.$explode[1];
             }
