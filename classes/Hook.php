@@ -771,7 +771,7 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @param string $display
+     * @param string|null $display
      * @param Module $moduleInstance
      * @param int $idHook
      *
@@ -779,6 +779,7 @@ class HookCore extends ObjectModel
      */
     public static function wrapLiveEdit($display, $moduleInstance, $idHook)
     {
+        $display = (string)$display;
         return '<script type="text/javascript"> modules_list.push(\''.Tools::safeOutput($moduleInstance->name).'\');</script>
 				<div id="hook_'.(int) $idHook.'_module_'.(int) $moduleInstance->id.'_moduleName_'.str_replace('_', '-', Tools::safeOutput($moduleInstance->name)).'"
 				class="dndModule" style="border: 1px dotted red;'.(!strlen($display) ? 'height:50px;' : '').'">
