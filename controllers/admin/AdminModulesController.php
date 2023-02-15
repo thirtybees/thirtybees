@@ -1503,6 +1503,7 @@ class AdminModulesControllerCore extends AdminController
                 if (!is_array($modules)) {
                     $modules = (array) $modules;
                 }
+                $modules = array_filter($modules, [Validate::class, 'isModuleName']);
             } elseif ($key == 'updateAll') {
                 $allModules = Module::getModulesOnDisk(true, false, $this->context->employee->id);
                 $modules = [];
