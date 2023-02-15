@@ -699,10 +699,9 @@ class CMSCategoryCore extends ObjectModel
 
         // Delete CMS Category and its child from database
         $list = count($toDelete) > 1 ? implode(',', $toDelete) : (int) $this->id;
-        $idShopList = Shop::getContextListShopID();
-        if (count($this->id_shop_list)) {
-            $idShopList = $this->id_shop_list;
-        }
+        $idShopList = $this->id_shop_list
+            ? $this->id_shop_list
+            : Shop::getContextListShopID();
 
         Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'` IN ('.$list.') AND id_shop IN ('.implode(', ', $idShopList).')');
 
