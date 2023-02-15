@@ -35,11 +35,6 @@
 class AdminCmsCategoriesControllerCore extends AdminController
 {
     /**
-     * @var CMSCategory instance for navigation
-     */
-    protected $cms_category;
-
-    /**
      * @var string
      */
     protected $position_identifier = 'id_cms_category_to_move';
@@ -82,15 +77,13 @@ class AdminCmsCategoriesControllerCore extends AdminController
             ],
         ];
 
-        // The controller can't be call directly
-        // In this case, AdminCmsContentController::getCurrentCMSCategory() is null
-        if (!AdminCmsContentController::getCurrentCMSCategory()) {
+        $category = AdminCmsContentController::getCurrentCMSCategory();
+        if (! Validate::isLoadedObject($category)) {
             $this->redirect_after = '?controller=AdminCmsContent&token='.Tools::getAdminTokenLite('AdminCmsContent');
             $this->redirect();
         }
 
-        $this->cms_category = AdminCmsContentController::getCurrentCMSCategory();
-        $this->_where = ' AND `id_parent` = '.(int) $this->cms_category->id;
+        $this->_where = ' AND `id_parent` = '.(int) $category->id;
         $this->_select = 'position ';
 
         parent::__construct();

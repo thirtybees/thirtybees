@@ -34,11 +34,14 @@
  */
 class AdminCmsContentControllerCore extends AdminController
 {
-    /** @var CMSCategory Cms category instance for navigation */
-    protected static $category = null;
-    /** @var AdminCmsCategoriesController $admin_cms_categories */
+    /**
+     * @var AdminCmsCategoriesController $admin_cms_categories
+     */
     protected $admin_cms_categories;
-    /** @var object adminCMS() instance */
+
+    /**
+     * @var object adminCMS() instance
+     */
     protected $admin_cms;
 
     /**
@@ -49,12 +52,7 @@ class AdminCmsContentControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        /* Get current category */
-        $idCmsCategory = (int) Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
-        static::$category = new CMSCategory($idCmsCategory);
-        if (!Validate::isLoadedObject(static::$category)) {
-            throw new PrestaShopException(Tools::displayError('Category cannot be loaded'));
-        }
+
 
         $this->table = 'cms';
         $this->className = 'CMS';
@@ -77,10 +75,14 @@ class AdminCmsContentControllerCore extends AdminController
      * Return current category
      *
      * @return CMSCategory
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCurrentCMSCategory()
     {
-        return static::$category;
+        $idCmsCategory = (int)Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
+        return new CMSCategory($idCmsCategory);
     }
 
     /**

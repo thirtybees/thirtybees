@@ -103,14 +103,12 @@ class AdminCmsControllerCore extends AdminController
             ],
         ];
 
-        // The controller can't be call directly
-        // In this case, AdminCmsContentController::getCurrentCMSCategory() is null
-        if (!AdminCmsContentController::getCurrentCMSCategory()) {
+        $category = AdminCmsContentController::getCurrentCMSCategory();
+        if (! Validate::isLoadedObject($category)) {
             $this->redirect_after = '?controller=AdminCmsContent&token='.Tools::getAdminTokenLite('AdminCmsContent');
             $this->redirect();
         }
 
-        $category = AdminCmsContentController::getCurrentCMSCategory();
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = sprintf(
             $this->l('Pages in category "%s"'),
