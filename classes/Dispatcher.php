@@ -766,20 +766,22 @@ class DispatcherCore
 
             // Dispatch module controller for front office and ajax
             case static::FC_MODULE:
-                $moduleName = Validate::isModuleName(Tools::getValue('module')) ? Tools::getValue('module') : '';
-                $module = Module::getInstanceByName($moduleName);
                 $controllerClass = 'PageNotFoundController';
-                if (Validate::isLoadedObject($module) && $module->active) {
-                    $controllers = Dispatcher::getControllers(_PS_MODULE_DIR_.$moduleName.'/controllers/front/');
-                    if (isset($controllers[strtolower($this->controller)])) {
-                        include_once(_PS_MODULE_DIR_.$moduleName.'/controllers/front/'.$this->controller.'.php');
-                        $controllerClass = $moduleName.$this->controller.'ModuleFrontController';
-                    }
+                $moduleName = Tools::getValue('module');
+                if (Validate::isModuleName($moduleName)) {
+                    $module = Module::getInstanceByName($moduleName);
+                    if (Validate::isLoadedObject($module) && $module->active) {
+                        $controllers = Dispatcher::getControllers(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/');
+                        if (isset($controllers[strtolower($this->controller)])) {
+                            include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/' . $this->controller . '.php');
+                            $controllerClass = $moduleName . $this->controller . 'ModuleFrontController';
+                        }
 
-                    $ajaxControllers = Dispatcher::getControllers(_PS_MODULE_DIR_.$moduleName.'/controllers/ajax/');
-                    if (isset($ajaxControllers[strtolower($this->controller)])) {
-                        include_once(_PS_MODULE_DIR_.$moduleName.'/controllers/ajax/'.$this->controller.'.php');
-                        $controllerClass = $moduleName.$this->controller.'ModuleAjaxController';
+                        $ajaxControllers = Dispatcher::getControllers(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/');
+                        if (isset($ajaxControllers[strtolower($this->controller)])) {
+                            include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/' . $this->controller . '.php');
+                            $controllerClass = $moduleName . $this->controller . 'ModuleAjaxController';
+                        }
                     }
                 }
                 $paramsHookActionDispatcher = ['controller_type' => static::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 1];
