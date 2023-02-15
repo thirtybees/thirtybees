@@ -459,7 +459,7 @@ class AdminTranslationsControllerCore extends AdminController
             $isoCode = Tools::getValue('lang') ? Tools::getValue('lang') : Tools::getValue('iso_code');
 
             if (!Validate::isLangIsoCode($isoCode) || !in_array($isoCode, $this->all_iso_lang)) {
-                throw new PrestaShopException(sprintf(Tools::displayError('Invalid iso code "%s"'), Tools::safeOutput($isoCode)));
+                $isoCode = 'en';
             }
 
             $this->lang_selected = new Language((int) Language::getIdByIso($isoCode));
