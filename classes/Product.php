@@ -4708,7 +4708,7 @@ class ProductCore extends ObjectModel
         $collectionDownload->where('id_product', '=', $this->id);
         foreach ($collectionDownload as $productDownload) {
             /** @var ProductDownload $productDownload */
-            $result = $productDownload->delete($productDownload->checkFile()) && $result;
+            $result = $productDownload->delete() && $result;
         }
 
         return $result;
