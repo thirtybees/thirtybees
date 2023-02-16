@@ -258,7 +258,6 @@ class AdminModulesPositionsControllerCore extends AdminController
      */
     public function initContent()
     {
-        $this->initTabModuleList();
         $this->addjqueryPlugin('sortable');
         $this->initPageHeaderToolbar();
 

@@ -65,9 +65,7 @@
 		var choose_language_translate = '{l s='Choose language' js=1}';
 		var default_language = '{$default_language|intval}';
 		var admin_modules_link = '{$link->getAdminLink("AdminModules")|addslashes}';
-		var tab_modules_list = '{if isset($tab_modules_list) && $tab_modules_list}{$tab_modules_list|addslashes}{/if}';
 		var update_success_msg = '{l s='Update successful' js=1}';
-		var errorLogin = '{l s='thirty bees was unable to log in to Addons. Please check your credentials and your Internet connection.' js=1}';
 		var search_product_msg = '{l s='Search for a product' js=1}';
 	</script>
 {/if}
@@ -299,7 +297,6 @@
 
 		<div id="content" class="{if !$bootstrap}nobootstrap{else}bootstrap{/if}">
 			{if isset($page_header_toolbar)}{$page_header_toolbar}{/if}
-			{if isset($modal_module_list)}{$modal_module_list}{/if}
 
 {if $install_dir_exists}
 			<div class="alert alert-warning">

@@ -141,13 +141,9 @@ class AdminPaymentControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * @throws SmartyException
      */
     public function postProcess()
     {
-        if (Tools::getValue('action') == 'GetModuleQuickView' && Tools::getValue('ajax') == '1') {
-            $this->ajaxProcessGetModuleQuickView();
-        }
         if ($this->action) {
             $this->saveRestrictions($this->action);
         }
@@ -356,7 +352,6 @@ class AdminPaymentControllerCore extends AdminController
         }
 
         $this->tpl_view_vars = [
-            'modules_list'         => $this->renderModulesList(),
             'display_restrictions' => $displayRestrictions,
             'lists'                => $lists,
             'ps_base_uri'          => __PS_BASE_URI__,
@@ -369,48 +364,9 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
-     * @return string|void
-     *
-     * @throws PrestaShopException
-     * @throws SmartyException
+     * @return void
      */
     public function renderModulesList()
     {
-        if ($this->getModulesList($this->filter_modules_list)) {
-            $activeList = [];
-            $unactiveList = [];
-            foreach ($this->modules_list as $key => $module) {
-                if (in_array($module->name, $this->list_partners_modules)) {
-                    $this->modules_list[$key]->type = 'addonsPartner';
-                }
-                if (isset($module->description_full) && trim($module->description_full) != '') {
-                    $module->show_quick_view = true;
-                }
-
-                if ($module->active) {
-                    $activeList[] = $module;
-                } else {
-                    $unactiveList[] = $module;
-                }
-            }
-
-            $helper = new Helper();
-            $fetch = '';
-
-            if (isset($activeList)) {
-                $this->context->smarty->assign('panel_title', $this->l('Active payment'));
-                $fetch = $helper->renderModulesList($activeList);
-            }
-
-            $this->context->smarty->assign(
-                [
-                    'panel_title' => $this->l('Recommended payment gateways'),
-                    'view_all'    => true,
-                ]
-            );
-            $fetch .= $helper->renderModulesList($unactiveList);
-
-            return $fetch;
-        }
     }
 }

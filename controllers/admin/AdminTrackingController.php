@@ -102,7 +102,6 @@ class AdminTrackingControllerCore extends AdminController
      */
     public function initContent()
     {
-        $this->initTabModuleList();
         $this->initPageHeaderToolbar();
 
         if (($idCategory = (int)Tools::getValue('id_category')) && Tools::getIsset('viewcategory')) {

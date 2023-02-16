@@ -86,12 +86,6 @@ class ToolsCore
     protected static $_cache_nb_media_servers = null;
 
     /**
-     * @var bool
-     * @deprecated 1.0.0
-     */
-    protected static $is_addons_up = true;
-
-    /**
      * Random password generator
      *
      * @param int $length Desired length (optional)
@@ -4109,6 +4103,7 @@ FileETag none
      */
     public static function addonsRequest($request, $params = [])
     {
+        static::displayAsDeprecated();
         return false;
     }
 

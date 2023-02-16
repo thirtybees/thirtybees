@@ -736,7 +736,6 @@ class AdminImportControllerCore extends AdminController
      */
     public function initContent()
     {
-        $this->initTabModuleList();
         $this->initToolbar();
         $this->initPageHeaderToolbar();
         if ($this->display == 'import') {

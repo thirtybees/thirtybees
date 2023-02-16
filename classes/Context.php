@@ -83,7 +83,7 @@ class ContextCore
     /** @var MobileDetect */
     public $mobile_detect;
     /** @var int */
-    public $mode;
+    public $mode = self::MODE_STD;
     /**
      * Mobile device of the customer
      *

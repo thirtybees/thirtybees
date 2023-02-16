@@ -1110,12 +1110,8 @@ abstract class ModuleCore
     }
 
     /**
-     * Return if the module is provided by addons.prestashop.com or not
-     *
      * @param string $moduleName
-     *
      * @return bool
-     *
      * @deprecated 1.0.0
      */
     final public static function isModuleTrusted($moduleName)
@@ -1234,7 +1230,6 @@ abstract class ModuleCore
     final public static function generateTrustedXml()
     {
         Tools::displayAsDeprecated();
-
         return true;
     }
 
@@ -1249,6 +1244,7 @@ abstract class ModuleCore
      */
     final public static function checkModuleFromAddonsApi($moduleName)
     {
+        Tools::displayAsDeprecated();
         return false;
     }
 

@@ -321,7 +321,6 @@ class AdminRequestSqlControllerCore extends AdminController
      */
     public function initContent()
     {
-        $this->initTabModuleList();
         // toolbar (save, cancel, new, ..)
         $this->initToolbar();
         $this->initPageHeaderToolbar();

@@ -747,10 +747,6 @@ $(document).ready(function () {
     clearTimeout(ajax_running_timeout);
   });
 
-  bindTabModuleListAction();
-
-  bindAddonsButtons();
-
   //Check filters value on submit filter
   $("[name='submitFilter']").click(function (event) {
     var list_id = $(this).data('list-id');
@@ -806,41 +802,6 @@ $(document).ready(function () {
       }
     });
   }); // end bind
-
-  $(document).on('click', '.untrustedaddon', function (e) {
-    e.preventDefault();
-    var moduleName = $(this).data('module-name');
-    var moduleDisplayName = $(this).data('module-display-name');
-    var moduleImage = $(this).data('module-image');
-    var authorName = $(this).data('author-name');
-    var moduleLink = $(this).data('link');
-    var authorUri = $(this).data('author-uri');
-    var isValidUri = /(https?):\/\/([a-z0-9\.]*)?(prestashop.com).*/gi;
-    var addonsSearchLink = 'http://addons.prestashop.com/en/search?search_query=' + encodeURIComponent(moduleDisplayName) + '&utm_source=back-office&utm_medium=addons-certified&utm_campaign=back-office-' + iso_user.toUpperCase();
-
-    $('.modal #untrusted-module-logo').attr('src', moduleImage);
-    $('.modal .module-display-name-placeholder').text(moduleDisplayName);
-    $('.modal .author-name-placeholder').text(authorName);
-
-    if (isValidUri.test(authorUri)) {
-      $('.modal .author-name-placeholder').wrap('<a href="' + authorUri + '" onclick="window.open(this.href);return false;"></a>');
-    }
-
-    $('.modal #proceed-install-anyway').attr('href', moduleLink);
-    $('.modal .catalog-link').attr('href', addonsSearchLink);
-    $('.modal .catalog-link').attr('onclick', 'window.open(this.href);return false;');
-  });
-
-  $(document).on('click', '#untrusted-show-risk', function (e) {
-    e.preventDefault();
-    $('.untrusted-content-action').hide();
-    $('.untrusted-content-more-info').show();
-  });
-  $(document).on('click', '#untrusted-show-action', function (e) {
-    e.preventDefault();
-    $('.untrusted-content-more-info').hide();
-    $('.untrusted-content-action').show();
-  });
 
   // if count errors
   $('#hideError').on('click', function (e) {
@@ -904,24 +865,6 @@ function bindSwapButton(prefix_button, prefix_select_remove, prefix_select_add) 
       $(this).remove();
     });
     $('#selectedSwap option').prop('selected', true);
-  });
-}
-
-function bindTabModuleListAction() {
-  $('.action_tab_module').each(function () {
-    $(this).click(function () {
-      option = $('#' + $(this).data('option') + ' :selected');
-      if ($(option).data('onclick') != '') {
-        var f = eval("(function(){ " + $(option).data('onclick') + "})");
-        if (f.call()) {
-          window.location.href = $(option).data('href');
-        }
-      }
-      else {
-        window.location.href = $(option).data('href');
-      }
-      return false;
-    });
   });
 }
 
@@ -1135,36 +1078,6 @@ function sendBulkAction(form, action) {
 
   $(form).submit();
 }
-
-function openModulesList() {
-  if (!modules_list_loaded) {
-    $.ajax({
-      type: "POST",
-      url: admin_modules_link,
-      async: true,
-      data: {
-        ajax: "1",
-        controller: "AdminModules",
-        action: "getTabModulesList",
-        tab_modules_list: tab_modules_list,
-        back_tab_modules_list: window.location.href
-      },
-      success: function (data) {
-        $('#modules_list_container_tab_modal').html(data).slideDown();
-        $('#modules_list_loader').hide();
-        modules_list_loaded = true;
-        $('.help-tooltip').tooltip();
-      }
-    });
-  }
-  else {
-    $('#modules_list_container_tab_modal').slideDown();
-    $('#modules_list_loader').hide();
-  }
-  return false;
-}
-
-function bindAddonsButtons() {}
 
 function ajaxStates(id_state_selected) {
   $.ajax({

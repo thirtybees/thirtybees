@@ -58,7 +58,7 @@
 					</li>
 				{/if}
             {/if}
-			{if $add_permission eq '1' && ($context_mode != Context::MODE_HOST)}
+			{if $add_permission}
 			<li>
 				<a id="desc-module-new" class="toolbar_btn anchor" href="#" onclick="$('#module_install').slideToggle();" title="{l s='Add a new module'}">
 					<i class="process-icon-new"></i>

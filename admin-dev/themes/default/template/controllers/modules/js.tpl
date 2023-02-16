@@ -153,7 +153,6 @@
 			return false;
 		});
 
-		// Method to get modules_list.xml from prestashop.com and default_country_modules_list.xml from addons.prestashop.com
 		try
 		{
 			resAjax = $.ajax({

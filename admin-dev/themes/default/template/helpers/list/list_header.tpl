@@ -133,7 +133,7 @@
 				<span class="badge">{$list_total}</span>
 				<span class="panel-heading-action">
 				{foreach from=$toolbar_btn item=btn key=k}
-					{if $k != 'modules-list' && $k != 'back'}
+					{if $k != 'back'}
 						<a id="desc-{$table}-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}" class="list-toolbar-btn{if isset($btn.target) && $btn.target} _blank{/if}"{if isset($btn.href)} href="{$btn.href|escape:'html':'UTF-8'}"{/if}{if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>
 							<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s=$btn.desc}" data-html="true" data-placement="top">
 								<i class="process-icon-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}{if isset($btn.class)} {$btn.class}{/if}"></i>

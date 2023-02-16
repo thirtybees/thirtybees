@@ -37,7 +37,7 @@
 				{capture name="moduleStatutClass"}{if isset($module->id) && $module->id gt 0 && $module->active == 1}module_active{else}module_inactive{/if}{/capture}
 				<tr>
 					<td class="{{$smarty.capture.moduleStatutClass}} text-center" style="width: 1%;">
-						{if (isset($module->id) && $module->id > 0) || !isset($module->type) || $module->type != 'addonsMustHave'}
+						{if (isset($module->id) && $module->id > 0)}
 						<input type="checkbox" name="modules" value="{$module->name|escape:'html':'UTF-8'}" class="noborder" title="{l s='Module %1s '|sprintf:$module->name}"{if empty($module->confirmUninstall)} data-rel="false"{else} data-rel="{$module->confirmUninstall|addslashes}"{/if}/>
 						{/if}
 					</td>
@@ -53,13 +53,7 @@
 								<span style="display:none">{$module->name|escape:'html':'UTF-8'}</span>
 								{$module->displayName|escape:'html':'UTF-8'}
 								<small class="text-muted">v{$module->version} - {l s='by'} {$module->author}</small>
-								{if isset($module->type) && $module->type == 'addonsBought'}
-								- <span class="module-badge-bought help-tooltip text-warning" data-title="{l s="You bought this module on thirty bees Addons. Thank You."}"><i class="icon-pushpin"></i> <small>{l s="Bought"}</small></span>
-								{elseif isset($module->type) && $module->type == 'addonsMustHave'}
-									- <span class="module-badge-popular help-tooltip text-primary" data-title="{l s="This module is available on thirty bees Addons"}"><i class="icon-group"></i> <small>{l s="Popular"}</small></span>
-								{elseif isset($module->type) && $module->type == 'addonsPartner'}
-									- <span class="module-badge-partner help-tooltip text-warning" data-title="{l s="Official, thirty bees certified module. Free, secure and includes updates!"}"><i class="icon-pushpin"></i> <small>{l s="Official"}</small></span>
-								{elseif isset($module->id) && $module->id gt 0}
+								{if isset($module->id) && $module->id > 0}
 									{if isset($module->version_addons) && $module->version_addons}
 										<span class="label label-warning">{l s='Need update'}</span>
 									{/if}
@@ -69,21 +63,18 @@
 								{if isset($module->description) && $module->description ne ''}
 									{$module->description}
 								{/if}
-								{if isset($module->show_quick_view) &&  $module->show_quick_view}
-									<br><a href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;ajax=1&amp;action=GetModuleQuickView&amp;module={$module->name|urlencode}" class="fancybox-quick-view"><i class="icon-search"></i> {l s='Read more'}</a>
-								{/if}
 							</p>
-							{if isset($module->message) && (empty($module->name) !== false) && (!isset($module->type) || ($module->type != 'addonsMustHave' || $module->type !== 'addonsNative'))}<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>{$module->message}</div>{/if}
+							{if isset($module->message) && (empty($module->name) !== false)}
+								<div class="alert alert-success">
+									<button type="button" class="close" data-dismiss="alert">&times;</button>
+									{$module->message}
+								</div>
+							{/if}
 						</div>
 					</td>
 					<td class="actions">
 						<div class="btn-group-action">
 							<div class="btn-group pull-right">
-								{if isset($module->type) && $module->type == 'addonsMustHave'}
-									<a class="btn btn-default _blank" href="{$module->addons_buy_url|replace:' ':'+'|escape:'html':'UTF-8'}">
-										<i class="icon-shopping-cart"></i> &nbsp;{if isset($module->price)}{if $module->price|floatval == 0}{l s='Free'}{elseif isset($module->id_currency)}{displayPrice price=$module->price currency=$module->id_currency}{/if}{/if}
-									</a>
-								{else}
 									{if isset($module->id) && $module->id gt 0}
 										{if isset($module->version_addons) && $module->version_addons}
 											<a class="btn btn-warning" href="{$module->options.update_url|escape:'html':'UTF-8'}">
@@ -161,10 +152,7 @@
 												</li>
 											{/if}
 										</ul>
-									{else}
-										&nbsp;
 									{/if}
-								{/if}
 							</div>
 						</div>
 					</td>

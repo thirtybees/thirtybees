@@ -38,9 +38,6 @@
 		@extend .text-muted
 		@include padding(3px, 0, 0, 3px)
 
-.modules_list_container_tab
-	img
-		max-width: 66px
 .module_list
 	.module_list_item
 		display: table
@@ -101,15 +98,6 @@ td.module_active
 	background-color: lighten($brand-success,10%)!important
 td.module_inactive
 	background-color: lighten($gray,50%)!important
-.module-badge-popular, .module-badge-partner, .module-badge-bought
-	@extend .badge
-	font-size: 12px
-.module-badge-popular
-	background-color: $brand-addons
-.module-badge-partner
-	background-color: $brand-primary
-.module-badge-bought
-	background-color: $greenPrestashop
 
 .categoriesTitle
 	.list-group
@@ -124,13 +112,6 @@ td.module_inactive
 			.badge
 				position: absolute
 				@include right(5px)
-
-.quickview-badge
-	margin-top: 30px
-.quickview-price
-	color: #666
-	font-size: 1.8em
-	@include float(right)
 
 //stars
 .rating
@@ -148,19 +129,3 @@ td.module_inactive
 		&.active~span.star:before
 			content: "\f005"
 			color: #F5AB35
-
-#modules_list_container_tab_modal
-	.img-thumbnail
-		max-width: 60px
-		max-height: 60px
-
-.modules-addons-info
-	text-align: center
-	h4
-		margin-bottom: 0px !important
-
-.modules-addons-buttons
-	text-align: center
-	a
-		margin-right: 10px
-		text-transform: uppercase

@@ -51,10 +51,6 @@ class AdminModulesControllerCore extends AdminController
     ];
     /** @var array $list_modules_categories */
     protected $list_modules_categories = [];
-    /** @var array $list_partners_modules */
-    protected $list_partners_modules = [];
-    /** @var array $list_natives_modules */
-    protected $list_natives_modules = [];
     /** @var int $nb_modules_total */
     protected $nb_modules_total = 0;
     /** @var int $nb_modules_installed */
@@ -133,7 +129,6 @@ class AdminModulesControllerCore extends AdminController
         $this->filter_configuration = Configuration::getMultiple(
             [
                 'PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee,
-                'PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee,
                 'PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee,
                 'PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee
             ]
@@ -232,10 +227,7 @@ class AdminModulesControllerCore extends AdminController
      */
     public function ajaxProcessLogOutAddonsWebservices()
     {
-        $this->context->cookie->username_addons = '';
-        $this->context->cookie->password_addons = '';
-        $this->context->cookie->is_contributor = 0;
-        $this->context->cookie->write();
+        Tools::displayAsDeprecated();
         $this->ajaxDie('OK');
     }
 
@@ -269,14 +261,6 @@ class AdminModulesControllerCore extends AdminController
      */
     public function initContent()
     {
-        if (Tools::isSubmit('addnewmodule') && $this->context->mode == Context::MODE_HOST) {
-            $this->display = 'add';
-            $this->context->smarty->assign(['iso_code' => $this->context->language->iso_code]);
-            parent::initContent();
-
-            return;
-        }
-
         // If we are on a module configuration, no need to load all modules
         if (Tools::getValue('configure') != '') {
             $this->context->smarty->assign(['maintenance_mode' => !(bool) Configuration::Get('PS_SHOP_ENABLE')]);
@@ -319,7 +303,7 @@ class AdminModulesControllerCore extends AdminController
         }
 
         // Retrieve Modules List
-        $modules = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
+        $modules = Module::getModulesOnDisk(true, false, $this->id_employee);
         $this->initModulesList($modules);
         $this->nb_modules_total = count($modules);
         $moduleErrors = [];
@@ -439,15 +423,11 @@ class AdminModulesControllerCore extends AdminController
             }
             unset($object);
             if ($module->installed && isset($module->version_addons) && $module->version_addons) {
-                $upgradeAvailable[] = ['anchor' => ucfirst($module->name), 'name' => $module->name, 'displayName' => $module->displayName];
-            }
-
-            if (in_array($module->name, $this->list_partners_modules)) {
-                $module->type = 'addonsPartner';
-            }
-
-            if (isset($module->description_full) && trim($module->description_full) != '') {
-                $module->show_quick_view = true;
+                $upgradeAvailable[] = [
+                    'anchor' => ucfirst($module->name),
+                    'name' => $module->name,
+                    'displayName' => $module->displayName
+                ];
             }
         }
 
@@ -489,7 +469,6 @@ class AdminModulesControllerCore extends AdminController
             'ajaxCurrentIndex'          => str_replace('index', 'ajax-tab', static::$currentIndex),
             'autocompleteList'          => rtrim($autocompleteList, ' ,').'];',
             'showTypeModules'           => $this->filter_configuration['PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee],
-            'showCountryModules'        => $this->filter_configuration['PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee],
             'showInstalledModules'      => $this->filter_configuration['PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee],
             'showEnabledModules'        => $this->filter_configuration['PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee],
             'nameCountryDefault'        => Country::getNameById($this->context->language->id, Configuration::get('PS_COUNTRY_DEFAULT')),
@@ -511,7 +490,6 @@ class AdminModulesControllerCore extends AdminController
             'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
             'modules_uri'               => __PS_BASE_URI__.basename(_PS_MODULE_DIR_),
             'dont_filter'               => $dontFilter,
-            'is_contributor'            => (int) $this->context->cookie->is_contributor,
             'maintenance_mode'          => !(bool) Configuration::Get('PS_SHOP_ENABLE'),
         ];
 
@@ -529,7 +507,7 @@ class AdminModulesControllerCore extends AdminController
     {
         foreach ($modules as $k => $module) {
             // Check add permissions, if add permissions not set, addons modules and uninstalled modules will not be displayed
-            if (!$this->hasAddPermission() && isset($module->type) && ($module->type != 'addonsNative' || $module->type != 'addonsBought')) {
+            if (!$this->hasAddPermission()) {
                 unset($modules[$k]);
             } elseif (!$this->hasAddPermission() && (!isset($module->id) || $module->id < 1)) {
                 unset($modules[$k]);
@@ -537,9 +515,7 @@ class AdminModulesControllerCore extends AdminController
                 unset($modules[$k]);
             } else {
                 // Init serial and modules author list
-                if (!in_array($module->name, $this->list_natives_modules)) {
-                    $this->serial_modules .= $module->name.' '.$module->version.'-'.($module->active ? 'a' : 'i')."\n";
-                }
+                $this->serial_modules .= $module->name.' '.$module->version.'-'.($module->active ? 'a' : 'i')."\n";
                 $moduleAuthor = $module->author;
                 if (!empty($moduleAuthor) && ($moduleAuthor != '')) {
                     $this->modules_authors[strtolower($moduleAuthor)] = 'notselected';
@@ -645,17 +621,7 @@ class AdminModulesControllerCore extends AdminController
 
         // Filter on module type and author
         $showTypeModules = $this->filter_configuration['PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee];
-        if ($showTypeModules == 'nativeModules' && !in_array($module->name, $this->list_natives_modules)) {
-            return true;
-        } elseif ($showTypeModules == 'partnerModules' && !in_array($module->name, $this->list_partners_modules)) {
-            return true;
-        } elseif ($showTypeModules == 'addonsModules' && (!isset($module->type) || $module->type != 'addonsBought')) {
-            return true;
-        } elseif ($showTypeModules == 'mustHaveModules' && (!isset($module->type) || $module->type != 'addonsMustHave')) {
-            return true;
-        } elseif ($showTypeModules == 'otherModules' && (in_array($module->name, $this->list_partners_modules) || in_array($module->name, $this->list_natives_modules))) {
-            return true;
-        } elseif (strpos($showTypeModules, 'authorModules[') !== false) {
+        if (strpos($showTypeModules, 'authorModules[') !== false) {
             // setting selected author in authors set
             $authorSelected = substr(str_replace(['authorModules[', "\'"], ['', "'"], $showTypeModules), 0, -1);
             $this->modules_authors[$authorSelected] = 'selected';
@@ -679,16 +645,6 @@ class AdminModulesControllerCore extends AdminController
             return true;
         }
         if ($showEnabledModules == 'disabled' && $module->active) {
-            return true;
-        }
-
-        // Filter on country
-        $showCountryModules = $this->filter_configuration['PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee];
-        if ($showCountryModules && (isset($module->limited_countries) && !empty($module->limited_countries)
-                && ((is_array($module->limited_countries) && count($module->limited_countries)
-                        && !in_array(strtolower($this->iso_default_country), $module->limited_countries))
-                    || (!is_array($module->limited_countries) && strtolower($this->iso_default_country) != strval($module->limited_countries))))
-        ) {
             return true;
         }
 
@@ -790,54 +746,10 @@ class AdminModulesControllerCore extends AdminController
      * Ajax process get tab modules list
      *
      * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
      */
     public function ajaxProcessGetTabModulesList()
     {
-        $tabModulesList = Tools::getValue('tab_modules_list');
-        if ($tabModulesList) {
-            $tabModulesList = explode(',', $tabModulesList);
-            $modulesListUnsort = $this->getModulesByInstallation($tabModulesList);
-        }
-
-        $installed = $uninstalled = [];
-        if (isset($modulesListUnsort)) {
-            foreach ($tabModulesList as $key => $value) {
-                $continue = 0;
-                foreach ($modulesListUnsort['installed'] as $modIn) {
-                    if ($modIn->name == $value) {
-                        $continue = 1;
-                        $installed[] = $modIn;
-                    }
-                }
-                if ($continue) {
-                    continue;
-                }
-                foreach ($modulesListUnsort['not_installed'] as $modIn) {
-                    if ($modIn->name == $value) {
-                        $uninstalled[] = $modIn;
-                    }
-                }
-            }
-        }
-
-        $modulesListSort = [
-            'installed'     => $installed,
-            'not_installed' => $uninstalled,
-        ];
-
-        $this->context->smarty->assign(
-            [
-                'tab_modules_list'            => $modulesListSort,
-                'admin_module_favorites_view' => $this->context->link->getAdminLink('AdminModules').'&select=favorites',
-                'lang_iso'                    => $this->context->language->iso_code,
-            ]
-        );
-
-        $this->smartyOutputContent('controllers/modules/tab_modules_list.tpl');
+        Tools::displayAsDeprecated();
         exit;
     }
 
@@ -873,10 +785,6 @@ class AdminModulesControllerCore extends AdminController
                     $perm = $this->hasEditPermission();
                 }
 
-                if (in_array($module->name, $this->list_partners_modules)) {
-                    $module->type = 'addonsPartner';
-                }
-
                 if ($perm) {
                     $this->fillModuleData($module, 'array');
                     if ($module->id) {
@@ -900,7 +808,12 @@ class AdminModulesControllerCore extends AdminController
      */
     public function ajaxProcessSetFilter()
     {
-        $this->setFilterModules(Tools::getValue('module_type'), Tools::getValue('country_module_value'), Tools::getValue('module_install'), Tools::getValue('module_status'));
+        $this->setFilterModules(
+            Tools::getValue('module_type'),
+            '',
+            Tools::getValue('module_install'),
+            Tools::getValue('module_status')
+        );
         $this->ajaxDie('OK');
     }
 
@@ -917,7 +830,6 @@ class AdminModulesControllerCore extends AdminController
     protected function setFilterModules($moduleType, $countryModuleValue, $moduleInstall, $moduleStatus)
     {
         Configuration::updateValue('PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee, $moduleType);
-        Configuration::updateValue('PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee, $countryModuleValue);
         Configuration::updateValue('PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee, $moduleInstall);
         Configuration::updateValue('PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee, $moduleStatus);
     }
@@ -972,7 +884,12 @@ class AdminModulesControllerCore extends AdminController
      */
     public function postProcessFilterModules()
     {
-        $this->setFilterModules(Tools::getValue('module_type'), Tools::getValue('country_module_value'), Tools::getValue('module_install'), Tools::getValue('module_status'));
+        $this->setFilterModules(
+            Tools::getValue('module_type'),
+            '',
+            Tools::getValue('module_install'),
+            Tools::getValue('module_status')
+        );
         Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
@@ -999,7 +916,6 @@ class AdminModulesControllerCore extends AdminController
     protected function resetFilterModules()
     {
         Configuration::updateValue('PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee, 'allModules');
-        Configuration::updateValue('PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee, 0);
         Configuration::updateValue('PS_SHOW_INSTALLED_MODULES_'.(int) $this->id_employee, 'installedUninstalled');
         Configuration::updateValue('PS_SHOW_ENABLED_MODULES_'.(int) $this->id_employee, 'enabledDisabled');
         $this->setCategoryFilter(static::CATEGORY_ALL);
@@ -1090,7 +1006,7 @@ class AdminModulesControllerCore extends AdminController
     public function postProcessDownload()
     {
         /* PrestaShop demo mode */
-        if (_PS_MODE_DEMO_ || ($this->context->mode == Context::MODE_HOST)) {
+        if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
             return;
@@ -1749,49 +1665,6 @@ class AdminModulesControllerCore extends AdminController
             'modal_title'   => $this->l('Translate this module'),
             'modal_content' => $modalContent,
         ];
-    }
-
-    /**
-     * Ajax process get module quick view
-     *
-     * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
-     */
-    public function ajaxProcessGetModuleQuickView()
-    {
-        $modules = Module::getModulesOnDisk();
-
-        foreach ($modules as $module) {
-            if ($module->name == Tools::getValue('module')) {
-                break;
-            }
-        }
-
-        $url = $module->url;
-
-        if (isset($module->type) && ($module->type == 'addonsPartner' || $module->type == 'addonsNative')) {
-            $url = $this->context->link->getAdminLink('AdminModules').'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
-        }
-
-        $this->context->smarty->assign(
-            [
-                'displayName'            => $module->displayName,
-                'image'                  => $module->image,
-                'nb_rates'               => (int) $module->nb_rates[0],
-                'avg_rate'               => (int) $module->avg_rate[0],
-                'badges'                 => $module->badges,
-                'compatibility'          => $module->compatibility,
-                'description_full'       => $module->description_full,
-                'additional_description' => $module->additional_description,
-                'is_addons_partner'      => (isset($module->type) && ($module->type == 'addonsPartner' || $module->type == 'addonsNative')),
-                'url'                    => $url,
-                'price'                  => $module->price,
-            ]
-        );
-        $this->smartyOutputContent('controllers/modules/quickview.tpl');
     }
 
     /**

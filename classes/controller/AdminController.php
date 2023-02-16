@@ -291,8 +291,6 @@ class AdminControllerCore extends Controller
     protected $list_natives_modules = [];
     /** @var array */
     protected $list_partners_modules = [];
-    /** @var bool */
-    protected $logged_on_addons = false;
     /** @var bool if logged employee has access to AdminImport */
     protected $can_import = false;
     /** @var array */
@@ -429,28 +427,8 @@ class AdminControllerCore extends Controller
         $this->admin_webpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
         $this->admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $this->admin_webpath);
 
-        // Check if logged on Addons
-        $this->logged_on_addons = false;
-        if (isset($this->context->cookie->username_addons) && isset($this->context->cookie->password_addons) && !empty($this->context->cookie->username_addons) && !empty($this->context->cookie->password_addons)) {
-            $this->logged_on_addons = true;
-        }
-
-        // Set context mode
-        if (isset($this->context->cookie->is_contributor) && (int) $this->context->cookie->is_contributor === 1) {
-            $this->context->mode = Context::MODE_STD_CONTRIB;
-        } else {
-            $this->context->mode = Context::MODE_STD;
-        }
-
         $this->can_import = $this->context->employee->hasAccess(AdminImportController::class, Profile::PERMISSION_VIEW);
-
-        $this->context->smarty->assign(
-            [
-                'context_mode'     => $this->context->mode,
-                'logged_on_addons' => $this->logged_on_addons,
-                'can_import'       => $this->can_import,
-            ]
-        );
+        $this->context->smarty->assign('can_import', $this->can_import);
     }
 
     /**
@@ -1996,12 +1974,10 @@ class AdminControllerCore extends Controller
 
         // Check if header/footer have been overriden
         $dir = $this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.trim($this->override_folder, '\\/').DIRECTORY_SEPARATOR;
-        $moduleListDir = $this->context->smarty->getTemplateDir(0).'helpers'.DIRECTORY_SEPARATOR.'modules_list'.DIRECTORY_SEPARATOR;
 
         $headerTpl = file_exists($dir.'header.tpl') ? $dir.'header.tpl' : 'header.tpl';
         $pageHeaderToolbar = file_exists($dir.'page_header_toolbar.tpl') ? $dir.'page_header_toolbar.tpl' : 'page_header_toolbar.tpl';
         $footerTpl = file_exists($dir.'footer.tpl') ? $dir.'footer.tpl' : 'footer.tpl';
-        $modalModuleList = file_exists($moduleListDir.'modal.tpl') ? $moduleListDir.'modal.tpl' : 'modal.tpl';
         $tplAction = $this->tpl_folder.$this->display.'.tpl';
 
         // Check if action template has been overriden
@@ -2037,7 +2013,6 @@ class AdminControllerCore extends Controller
             $this->context->smarty->assign(
                 [
                     'page_header_toolbar' => $this->context->smarty->fetch($pageHeaderToolbar),
-                    'modal_module_list'   => $this->context->smarty->fetch($modalModuleList),
                 ]
             );
         }
@@ -2279,7 +2254,6 @@ class AdminControllerCore extends Controller
                 'maintenance_mode'          => !(bool) Configuration::get('PS_SHOP_ENABLE'),
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
-                'display_addons_connection' => Tab::checkTabRights(Tab::getIdFromClassName('AdminModulesController')),
             ]
         );
 
@@ -2343,7 +2317,6 @@ class AdminControllerCore extends Controller
 
         $this->getLanguages();
         $this->initToolbar();
-        $this->initTabModuleList();
         $this->initPageHeaderToolbar();
 
         if ($this->display == 'edit' || $this->display == 'add') {
@@ -2363,7 +2336,6 @@ class AdminControllerCore extends Controller
         } elseif ($this->display == 'details') {
             $this->content .= $this->renderDetails();
         } elseif (!$this->ajax) {
-            $this->content .= $this->renderModulesList();
             $this->content .= $this->renderKpis();
             $this->content .= $this->renderList();
             $this->content .= $this->renderOptions();
@@ -2468,7 +2440,6 @@ class AdminControllerCore extends Controller
                     ];
                 }
         }
-        $this->addToolBarModulesListButton();
     }
 
     /**
@@ -2476,14 +2447,6 @@ class AdminControllerCore extends Controller
      */
     protected function addToolBarModulesListButton()
     {
-        $this->filterTabModuleList();
-
-        if (is_array($this->tab_modules_list['slider_list']) && count($this->tab_modules_list['slider_list'])) {
-            $this->toolbar_btn['modules-list'] = [
-                'href' => '#',
-                'desc' => $this->l('Recommended Modules and Services'),
-            ];
-        }
     }
 
     /**
@@ -2491,46 +2454,15 @@ class AdminControllerCore extends Controller
      */
     protected function filterTabModuleList()
     {
-        static $listIsFiltered = null;
-
-        if ($listIsFiltered !== null) {
-            return;
-        }
-
-        libxml_use_internal_errors(true);
-
-        $allModuleList = [];
-
-        libxml_clear_errors();
-
-        $this->tab_modules_list['slider_list'] = array_intersect($this->tab_modules_list['slider_list'], $allModuleList);
-
-        $listIsFiltered = true;
     }
 
     /**
      * Init tab modules list and add button in toolbar
      *
-     * @throws PrestaShopException
+     * @deprecated 1.5.0
      */
     protected function initTabModuleList()
     {
-        $this->tab_modules_list = Tab::getTabModulesList($this->id);
-
-        if (is_array($this->tab_modules_list['default_list']) && count($this->tab_modules_list['default_list'])) {
-            $this->filter_modules_list = $this->tab_modules_list['default_list'];
-        } elseif (is_array($this->tab_modules_list['slider_list']) && count($this->tab_modules_list['slider_list'])) {
-            $this->addToolBarModulesListButton();
-            $this->addPageHeaderToolBarModulesListButton();
-            $this->context->smarty->assign(
-                [
-                    'tab_modules_list'      => implode(',', $this->tab_modules_list['slider_list']),
-                    'admin_module_ajax_url' => $this->context->link->getAdminLink('AdminModules'),
-                    'back_tab_modules_list' => $this->context->link->getAdminLink(Tools::getValue('controller')),
-                    'tab_modules_open'      => (int) Tools::getValue('tab_modules_open'),
-                ]
-            );
-        }
     }
 
     /**
@@ -2554,14 +2486,6 @@ class AdminControllerCore extends Controller
      */
     protected function addPageHeaderToolBarModulesListButton()
     {
-        $this->filterTabModuleList();
-
-        if (is_array($this->tab_modules_list['slider_list']) && count($this->tab_modules_list['slider_list'])) {
-            $this->page_header_toolbar_btn['modules-list'] = [
-                'href' => '#',
-                'desc' => $this->l('Recommended Modules and Services'),
-            ];
-        }
     }
 
     /**
@@ -2615,8 +2539,6 @@ class AdminControllerCore extends Controller
         if (empty($this->page_header_toolbar_title)) {
             $this->page_header_toolbar_title = $this->toolbar_title[count($this->toolbar_title) - 1];
         }
-
-        $this->addPageHeaderToolBarModulesListButton();
 
         $this->context->smarty->assign('help_link', '');
     }
@@ -3165,56 +3087,10 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @return string
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
+     * @return void
      */
     public function renderModulesList()
     {
-        // Load cached modules (from the `tbupdater` module)
-        $jsonModules = false;
-        $updater = Module::getInstanceByName('tbupdater');
-        if (Validate::isLoadedObject($updater)) {
-            /** @var TbUpdater $updater */
-            $jsonModules = $updater->getCachedModulesInfo();
-        }
-
-        if ($jsonModules) {
-            foreach ($jsonModules as $moduleName => $jsonModule) {
-                /** @var array $jsonModules */
-                if (isset($jsonModule['type']) && $jsonModule['type'] === 'partner') {
-                    $this->list_partners_modules = $moduleName;
-                } else {
-                    $this->list_natives_modules = $moduleName;
-                }
-            }
-        }
-
-        if ($this->getModulesList($this->filter_modules_list)) {
-            $tmp = [];
-            foreach ($this->modules_list as $key => $module) {
-                if ($module->active) {
-                    $tmp[] = $module;
-                    unset($this->modules_list[$key]);
-                }
-            }
-
-            $this->modules_list = array_merge($tmp, $this->modules_list);
-
-            foreach ($this->modules_list as $key => $module) {
-                if (in_array($module->name, $this->list_partners_modules)) {
-                    $this->modules_list[$key]->type = 'addonsPartner';
-                }
-                if (isset($module->description_full) && trim($module->description_full) != '') {
-                    $module->show_quick_view = true;
-                }
-            }
-            $helper = new Helper();
-
-            return $helper->renderModulesList($this->modules_list);
-        }
     }
 
     /**
@@ -4165,18 +4041,6 @@ class AdminControllerCore extends Controller
      */
     public function initModal()
     {
-        if ($this->logged_on_addons) {
-            $this->context->smarty->assign(
-                [
-                    'logged_on_addons' => 1,
-                    'username_addons'  => $this->context->cookie->username_addons,
-                ]
-            );
-        }
-
-        // Iso needed to generate Addons login
-        $iso_code_caps = strtoupper($this->context->language->iso_code);
-
         $this->context->smarty->assign(
             [
                 'check_url_fopen'             => (ini_get('allow_url_fopen') ? 'ok' : 'ko'),
@@ -4184,12 +4048,6 @@ class AdminControllerCore extends Controller
                 'add_permission'              => 1,
             ]
         );
-
-        //Force override translation key
-        $this->context->override_controller_name_for_translations = 'AdminModules';
-
-        //After override translation, remove it
-        $this->context->override_controller_name_for_translations = null;
     }
 
     /**
@@ -4230,46 +4088,11 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
+     * @deprecated 1.5.0
      */
     public function ajaxProcessGetModuleQuickView()
     {
-        $modules = Module::getModulesOnDisk();
-
-        foreach ($modules as $module) {
-            if ($module->name == Tools::getValue('module')) {
-                break;
-            }
-        }
-
-        $url = $module->url;
-
-        if (isset($module->type) && ($module->type == 'addonsPartner' || $module->type == 'addonsNative')) {
-            $url = $this->context->link->getAdminLink('AdminModules').'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
-        }
-
-        $this->context->smarty->assign(
-            [
-                'displayName'            => $module->displayName,
-                'image'                  => $module->image,
-                'nb_rates'               => (int) $module->nb_rates[0],
-                'avg_rate'               => (int) $module->avg_rate[0],
-                'badges'                 => $module->badges,
-                'compatibility'          => $module->compatibility,
-                'description_full'       => $module->description_full,
-                'additional_description' => $module->additional_description,
-                'is_addons_partner'      => (isset($module->type) && ($module->type == 'addonsPartner' || $module->type == 'addonsNative')),
-                'url'                    => $url,
-                'price'                  => $module->price,
-
-            ]
-        );
-        // Fetch the translations in the right place - they are not defined by our current controller!
-        $this->context->override_controller_name_for_translations = 'AdminModules';
-        $this->smartyOutputContent('controllers/modules/quickview.tpl');
-        $this->ajaxDie(1);
+        Tools::displayAsDeprecated();
     }
 
     /**

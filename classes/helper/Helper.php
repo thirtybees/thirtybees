@@ -452,27 +452,12 @@ class HelperCore
     /**
      * @param array $modulesList
      *
-     * @return string|false
-     *
-     * @throws PrestaShopException
-     * @throws SmartyException
+     * @return string
      */
     public function renderModulesList($modulesList)
     {
-        $this->tpl_vars = [
-            'modules_list' => $modulesList,
-            'modules_uri'  => __PS_BASE_URI__.basename(_PS_MODULE_DIR_),
-        ];
-        // The translations for this are defined by AdminModules, so override the context for the translations
-        $overrideControllerNameForTranslations = Context::getContext()->override_controller_name_for_translations;
-        Context::getContext()->override_controller_name_for_translations = 'AdminModules';
-        $tpl = $this->createTemplate('helpers/modules_list/list.tpl');
-        $tpl->assign($this->tpl_vars);
-        $html = $tpl->fetch();
-        // Restore the previous context
-        Context::getContext()->override_controller_name_for_translations = $overrideControllerNameForTranslations;
-
-        return $html;
+        Tools::displayAsDeprecated();
+        return '';
     }
 
     /**

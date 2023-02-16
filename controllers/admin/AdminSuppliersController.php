@@ -370,7 +370,6 @@ class AdminSuppliersControllerCore extends AdminController
     public function initToolbar()
     {
         parent::initToolbar();
-        $this->addPageHeaderToolBarModulesListButton();
 
         if (empty($this->display) && $this->can_import) {
             $this->toolbar_btn['import'] = [
@@ -391,7 +390,6 @@ class AdminSuppliersControllerCore extends AdminController
      */
     public function renderView()
     {
-        $this->initTabModuleList();
         $this->toolbar_title = $this->object->name;
         $products = $this->object->getProductsLite($this->context->language->id);
         $totalProduct = count($products);

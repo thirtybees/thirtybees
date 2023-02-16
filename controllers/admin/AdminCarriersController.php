@@ -516,14 +516,9 @@ class AdminCarriersControllerCore extends AdminController
      * @return void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @throws SmartyException
      */
     public function postProcess()
     {
-        if (Tools::getValue('action') == 'GetModuleQuickView' && Tools::getValue('ajax') == '1') {
-            $this->ajaxProcessGetModuleQuickView();
-        }
-
         if (Tools::getValue('submitAdd'.$this->table)) {
             /* Checking fields validity */
             $this->validateRules();

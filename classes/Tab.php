@@ -460,45 +460,10 @@ class TabCore extends ObjectModel
      * @param int $idTab
      *
      * @return array
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     public static function getTabModulesList($idTab)
     {
-        $modulesList = ['default_list' => [], 'slider_list' => []];
-        $xmlTabModulesList = false;
-
-        if (file_exists(_PS_ROOT_DIR_.Module::CACHE_FILE_TAB_MODULES_LIST)) {
-            $xmlTabModulesList = @simplexml_load_file(_PS_ROOT_DIR_.Module::CACHE_FILE_TAB_MODULES_LIST);
-        }
-
-        $className = null;
-        $displayType = 'default_list';
-        if ($xmlTabModulesList) {
-            foreach ($xmlTabModulesList->tab as $tab) {
-                foreach ($tab->attributes() as $key => $value) {
-                    if ($key == 'class_name') {
-                        $className = (string) $value;
-                    }
-                }
-
-                if (Tab::getIdFromClassName((string) $className) == $idTab) {
-                    foreach ($tab->attributes() as $key => $value) {
-                        if ($key == 'display_type') {
-                            $displayType = (string) $value;
-                        }
-                    }
-
-                    foreach ($tab->children() as $module) {
-                        $modulesList[$displayType][(int) $module['position']] = (string) $module['name'];
-                    }
-                    ksort($modulesList[$displayType]);
-                }
-            }
-        }
-
-        return $modulesList;
+        return ['default_list' => [], 'slider_list' => []];
     }
 
     /**
