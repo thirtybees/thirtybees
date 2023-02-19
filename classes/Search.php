@@ -1007,6 +1007,7 @@ class SearchCore
 				LEFT JOIN `'._DB_PREFIX_.'category_shop` cs ON (cp.`id_category` = cs.`id_category` AND cs.`id_shop` = '.(int) $idShop.')
 				'.Product::sqlStock('p', 0).'
 				WHERE product_shop.`active` = 1
+					AND p.visibility IN (\'both\', \'search\')
 					AND cs.`id_shop` = '.(int) Context::getContext()->shop->id.'
 					'.$sqlGroups.'
 					AND t.`name` LIKE \'%'.pSQL($tag).'%\'
