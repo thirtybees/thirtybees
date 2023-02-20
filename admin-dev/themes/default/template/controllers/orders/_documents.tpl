@@ -42,10 +42,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			{foreach from=$order->getDocuments() item=document}
+			{foreach from=$orderDocuments item=document}
 
 				{if get_class($document) eq 'OrderInvoice'}
-					{if isset($document->is_delivery)}
+					{if $document->delivery_number}
 					<tr id="delivery_{$document->id}">
 					{else}
 					<tr id="invoice_{$document->id}">
@@ -57,7 +57,7 @@
 						<td>{dateFormat date=$document->date_add}</td>
 						<td>
 							{if get_class($document) eq 'OrderInvoice'}
-								{if isset($document->is_delivery)}
+								{if $document->delivery_number}
 									{l s='Delivery slip'}
 								{else}
 									{l s='Invoice'}
@@ -68,7 +68,7 @@
 						</td>
 						<td>
 							{if get_class($document) eq 'OrderInvoice'}
-								{if isset($document->is_delivery)}
+								{if $document->delivery_number}
 									<a class="_blank" title="{l s='See the document'}" href="{$link->getAdminLink('AdminPdf')|escape:'html':'UTF-8'}&amp;submitAction=generateDeliverySlipPDF&amp;id_order_invoice={$document->id}">
 								{else}
 									<a class="_blank" title="{l s='See the document'}" href="{$link->getAdminLink('AdminPdf')|escape:'html':'UTF-8'}&amp;submitAction=generateInvoicePDF&amp;id_order_invoice={$document->id}">
@@ -77,7 +77,7 @@
 								<a class="_blank" title="{l s='See the document'}" href="{$link->getAdminLink('AdminPdf')|escape:'html':'UTF-8'}&amp;submitAction=generateOrderSlipPDF&amp;id_order_slip={$document->id}">
 							{/if}
 							{if get_class($document) eq 'OrderInvoice'}
-								{if isset($document->is_delivery)}
+								{if $document->delivery_number}
 									{Configuration::get('PS_DELIVERY_PREFIX', $current_id_lang, null, $order->id_shop)}{'%06d'|sprintf:$document->delivery_number}
 								{else}
 									{$document->getInvoiceNumberFormatted($current_id_lang, $order->id_shop)}
@@ -89,7 +89,7 @@
 						</td>
 						<td>
 						{if get_class($document) eq 'OrderInvoice'}
-							{if isset($document->is_delivery)}
+							{if $document->delivery_number}
 								--
 							{else}
 								{displayPrice price=$document->total_paid_tax_incl currency=$currency->id}&nbsp;
@@ -109,7 +109,7 @@
 						</td>
 						<td class="text-right document_action">
 						{if get_class($document) eq 'OrderInvoice'}
-							{if !isset($document->is_delivery)}
+							{if !$document->delivery_number}
 
 								{if $document->getRestPaid()}
 									<a href="#formAddPaymentPanel" class="js-set-payment btn btn-default anchor" data-amount="{$document->getRestPaid()}" data-id-invoice="{$document->id}" title="{l s='Set payment form'}">
@@ -133,7 +133,7 @@
 						</td>
 					</tr>
 				{if get_class($document) eq 'OrderInvoice'}
-					{if !isset($document->is_delivery)}
+					{if !$document->delivery_number}
 					<tr id="invoiceNote{$document->id}" style="display:none">
 						<td colspan="5">
 							<form action="{$current_index}&amp;viewOrder&amp;id_order={$order->id}{if isset($smarty.get.token)}&amp;token={$smarty.get.token|escape:'html':'UTF-8'}{/if}" method="post">

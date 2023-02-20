@@ -2182,31 +2182,36 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * Returns the correct product taxes breakdown.
-     *
      * Get all documents linked to the current order
      *
-     * @return array
+     * @return OrderInvoice[]|OrderSlip[]
      *
      * @throws PrestaShopException
      */
     public function getDocuments()
     {
+        /** @var OrderInvoice[] $invoices */
         $invoices = $this->getInvoicesCollection()->getResults();
         foreach ($invoices as $key => $invoice) {
-            if (!$invoice->number) {
+            if ($invoice->number) {
+                $invoice->delivery_number = 0;
+            } else {
                 unset($invoices[$key]);
             }
         }
+
+        /** @var OrderInvoice[] $delivery_slips */
         $delivery_slips = $this->getDeliverySlipsCollection()->getResults();
-        // @TODO review
         foreach ($delivery_slips as $key => $delivery) {
-            $delivery->is_delivery = true;
-            $delivery->date_add = $delivery->delivery_date;
-            if (!$invoice->delivery_number) {
+            if ($delivery->delivery_number) {
+                $delivery->date_add = $delivery->delivery_date;
+                $delivery->number = 0;
+            } else {
                 unset($delivery_slips[$key]);
             }
         }
+
+        /** @var OrderSlip[] $order_slips */
         $order_slips = $this->getOrderSlipsCollection()->getResults();
 
         $documents = array_merge($invoices, $order_slips, $delivery_slips);

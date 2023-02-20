@@ -1989,6 +1989,7 @@ class AdminOrdersControllerCore extends AdminController
             'returns'                      => OrderReturn::getOrdersReturn($order->id_customer, $order->id),
             'customer_thread_message'      => CustomerThread::getCustomerMessages($order->id_customer, null, $order->id),
             'orderMessages'                => OrderMessage::getOrderMessages($order->id_lang),
+            'orderDocuments'               => $order->getDocuments(),
             'messages'                     => CustomerMessage::getMessagesByOrderId($order->id, false),
             'carrier'                      => new Carrier($order->id_carrier),
             'history'                      => $history,
@@ -2601,7 +2602,7 @@ class AdminOrdersControllerCore extends AdminController
                     'can_edit'           => $this->hasAddPermission(),
                     'order'              => $order,
                     'invoices'           => $invoiceArray,
-                    'documents_html'     => $this->createTemplate('_documents.tpl')->fetch(),
+                    'documents_html'     => $this->renderDocuments($order),
                     'shipping_html'      => $this->createTemplate('_shipping.tpl')->fetch(),
                     'discount_form_html' => $this->createTemplate('_discount_form.tpl')->fetch(),
                     'refresh'            => $refresh,
@@ -2920,7 +2921,7 @@ class AdminOrdersControllerCore extends AdminController
             'invoices_collection' => $invoiceCollection,
             'order'               => $order,
             'invoices'            => $invoiceArray,
-            'documents_html'      => $this->createTemplate('_documents.tpl')->fetch(),
+            'documents_html'      => $this->renderDocuments($order),
             'shipping_html'       => $this->createTemplate('_shipping.tpl')->fetch(),
             'customized_product'  => is_array(Tools::getValue('product_quantity')),
         ]));
@@ -3029,7 +3030,7 @@ class AdminOrdersControllerCore extends AdminController
             'result'         => $res,
             'order'          => $order,
             'invoices'       => $invoiceArray,
-            'documents_html' => $this->createTemplate('_documents.tpl')->fetch(),
+            'documents_html' => $this->renderDocuments($order),
             'shipping_html'  => $this->createTemplate('_shipping.tpl')->fetch(),
         ]));
     }
@@ -3396,5 +3397,19 @@ class AdminOrdersControllerCore extends AdminController
             }
         }
         return true;
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    protected function renderDocuments(Order $order)
+    {
+        $template = $this->createTemplate('_documents.tpl');
+        $template->assign('orderDocuments', $order->getDocuments());
+        return $template->fetch();
     }
 }
