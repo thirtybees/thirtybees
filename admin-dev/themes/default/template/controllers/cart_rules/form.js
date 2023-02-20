@@ -154,6 +154,7 @@ function toggleApplyDiscount(percent, amount, apply_to)
 	{
 		$('#apply_discount_percent_div').hide(200);
 		$('#reduction_percent').val('0');
+		$('#reduction_max').val('0');
 	}
 
 	if (amount)

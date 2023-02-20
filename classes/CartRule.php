@@ -49,90 +49,190 @@ class CartRuleCore extends ObjectModel
      * @var array
      */
     protected static $onlyOneGift = [];
-    /** @var int $id */
-    public $id;
-    /** @var string $name */
-    public $name;
-    /** @var int $id_customer */
-    public $id_customer;
-    /** @var string $date_from */
-    public $date_from;
-    /** @var string $date_to */
-    public $date_to;
+
     /**
-     * @FIXME: with 1.0.x the cart rule cannot register the calculated
-     *       cheapest product in case it is converted into an order.
-     *       The copied cart rule is then injected with this information
-     *       in the `description` field and looks like this:
-     *       {
-     *         "type": "cheapest_product",
-     *         "id_product": "7",
-     *         "id_product_attribute": "0"
-     *       }
-     *
-     *       In the AdminCartRulesController, the field is then disabled to prevent the user from changing it
-     *
-     *       When making an update script for 1.1.x, don't forget to clean this field up and convert it to
-     *       a proper database table.
-     *
+     * @var int $id
+     */
+    public $id;
+
+    /**
+     * @var string $name
+     */
+    public $name;
+
+    /**
+     * @var int $id_customer
+     */
+    public $id_customer;
+
+    /**
+     * @var string $date_from
+     */
+    public $date_from;
+
+    /**
+     * @var string $date_to
+     */
+    public $date_to;
+
+    /**
      * @var string $description
      */
     public $description;
-    /** @var int $quantity */
+
+    /**
+     * @var int $quantity
+     */
     public $quantity = 1;
-    /** @var int $quantity_per_user */
+
+    /**
+     * @var int $quantity_per_user
+     */
     public $quantity_per_user = 1;
-    /** @var int $priority */
+
+    /**
+     * @var int $priority
+     */
     public $priority = 1;
-    /** @var int $partial_use */
+
+    /**
+     * @var int $partial_use
+     */
     public $partial_use = 1;
-    /** @var string $code */
+
+    /**
+     * @var string $code
+     */
     public $code;
-    /** @var float $minimum_amount */
+
+    /**
+     * @var float $minimum_amount
+     */
     public $minimum_amount;
-    /** @var bool $minimum_amount_tax */
+
+    /**
+     * @var bool $minimum_amount_tax
+     */
     public $minimum_amount_tax;
-    /** @var int $minimum_amount_currency */
+
+    /**
+     * @var int $minimum_amount_currency
+     */
     public $minimum_amount_currency;
-    /** @var bool $minimum_amount_shipping */
+
+    /**
+     * @var bool $minimum_amount_shipping
+     */
     public $minimum_amount_shipping;
-    /** @var bool $country_restriction */
+
+    /**
+     * @var bool $country_restriction
+     */
     public $country_restriction;
-    /** @var bool $carrier_restriction */
+
+    /**
+     * @var bool $carrier_restriction
+     */
     public $carrier_restriction;
-    /** @var bool $group_restriction */
+
+    /**
+     * @var bool $group_restriction
+     */
     public $group_restriction;
-    /** @var bool $cart_rule_restriction */
+
+    /**
+     * @var bool $cart_rule_restriction
+     */
     public $cart_rule_restriction;
-    /** @var bool $product_restriction */
+
+    /**
+     * @var bool $product_restriction
+     */
     public $product_restriction;
-    /** @var bool minimum_amount_product_restriction */
+
+    /**
+     * @var bool minimum_amount_product_restriction
+     */
     public $minimum_amount_product_restriction;
-    /** @var bool $shop_restriction */
+
+    /**
+     * @var bool $shop_restriction
+     */
     public $shop_restriction;
-    /** @var bool $free_shipping */
+
+    /**
+     * @var bool $free_shipping
+     */
     public $free_shipping;
-    /** @var float $reduction_percent */
+
+    /**
+     * @var float $reduction_percent
+     */
     public $reduction_percent;
-    /** @var float $reduction_amount */
+
+    /**
+     * @var float
+     */
+    public $reduction_max;
+
+    /**
+     * @var bool
+     */
+    public $reduction_max_tax;
+
+    /**
+     * @var int
+     */
+    public $reduction_max_currency;
+
+    /**
+     * @var float $reduction_amount
+     */
     public $reduction_amount;
-    /** @var bool $reduction_tax */
+
+    /**
+     * @var bool $reduction_tax
+     */
     public $reduction_tax;
-    /** @var bool $reduction_currency */
+
+    /**
+     * @var bool $reduction_currency
+     */
     public $reduction_currency;
-    /** @var int $reduction_product */
+
+    /**
+     * @var int $reduction_product
+     */
     public $reduction_product;
-    /** @var int $gift_product */
+
+    /**
+     * @var int $gift_product
+     */
     public $gift_product;
-    /** @var int $gift_product_attribute */
+
+    /**
+     * @var int $gift_product_attribute
+     */
     public $gift_product_attribute;
-    /** @var bool $highlight */
+
+    /**
+     * @var bool $highlight
+     */
     public $highlight;
-    /** @var int $active */
+
+    /**
+     * @var int $active
+     */
     public $active = 1;
-    /** @var string $date_add */
+
+    /**
+     * @var string $date_add
+     */
     public $date_add;
-    /** @var string $date_upd */
+
+    /**
+     * @var string $date_upd
+     */
     public $date_upd;
 
     /**
@@ -165,6 +265,9 @@ class CartRuleCore extends ObjectModel
             'shop_restriction'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'free_shipping'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'reduction_percent'       => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage', 'size' => 5, 'decimals' => 2, 'dbDefault' => '0.00'],
+            'reduction_max'           => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'reduction_max_tax'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'reduction_max_currency'  => ['type' => self::TYPE_INT,    'validate' => 'isInt', 'size' => 10, 'dbDefault' => '0'],
             'reduction_amount'        => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'reduction_tax'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'reduction_currency'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'dbDefault' => '0'],
@@ -1650,6 +1753,28 @@ class CartRuleCore extends ObjectModel
 
                     $reductionValue = min($reductionValue, $currentCartAmount);
                 }
+            }
+
+            $maxReduction = (float)$this->reduction_max;
+            if ($maxReduction > 0) {
+                // convert max reduction amount to cart currency.
+                $maxReducitonCurrency = new Currency($this->reduction_max_currency);
+                // First we convert the voucher value to the default currency.
+                $maxReduction = Tools::convertPrice($maxReduction, $maxReducitonCurrency, false);
+                // Then we convert the voucher value to the cart currency.
+                $maxReduction = Tools::convertPrice($maxReduction, $context->currency, true);
+
+                if ($this->reduction_max_tax && !$useTax) {
+                    // max reduction amount includes tax, but need to calculate amount without tax
+                    $cartAverageVatRate = $context->cart->getAverageProductsTaxRate();
+                    $maxReduction = Tools::roundPrice($maxReduction / (1 + $cartAverageVatRate));
+                } elseif (!$this->reduction_max_tax && $useTax) {
+                    // max reduction amount is without tax tax, but need to calculate amount with tax
+                    $cartAverageVatRate = $context->cart->getAverageProductsTaxRate();
+                    $maxReduction = Tools::roundPrice($maxReduction * (1 + $cartAverageVatRate));
+                }
+
+                $reductionValue = min($reductionValue, $maxReduction);
             }
 
             if ($roundType === Order::ROUND_LINE) {

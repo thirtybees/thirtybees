@@ -48,6 +48,32 @@
 		</div>
 		<span class="help-block"><i class="icon-warning-sign"></i> {l s='Does not apply to the shipping costs'}</span>
 	</div>
+
+	<label class="control-label col-lg-3">
+		<span class="label-tooltip" data-toggle="tooltip" title="{l s='Percentage discount will be capped at this value. Enter zero to disabled this functionality'}">
+			{l s='Max discount value'}
+		</span>
+	</label>
+	<div class="col-lg-7">
+		<div class="row">
+			<div class="col-lg-4">
+				<input type="text" id="reduction_max" name="reduction_max" value="{$currentTab->getFieldValue($currentObject, 'reduction_max')|floatval}" onchange="this.value = this.value.replace(/,/g, '.');" />
+			</div>
+			<div class="col-lg-4">
+				<select name="reduction_max_currency" >
+					{foreach from=$currencies item='currency'}
+						<option value="{$currency.id_currency|intval}" {if $currentTab->getFieldValue($currentObject, 'reduction_max_currency') == $currency.id_currency || (!$currentTab->getFieldValue($currentObject, 'reduction_max_currency') && $currency.id_currency == $defaultCurrency)}selected="selected"{/if}>{$currency.iso_code}</option>
+					{/foreach}
+				</select>
+			</div>
+			<div class="col-lg-4">
+				<select name="reduction_max_tax" >
+					<option value="0" {if $currentTab->getFieldValue($currentObject, 'reduction_max_tax') == 0}selected="selected"{/if}>{l s='Tax excluded'}</option>
+					<option value="1" {if $currentTab->getFieldValue($currentObject, 'reduction_max_tax') == 1}selected="selected"{/if}>{l s='Tax included'}</option>
+				</select>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div id="apply_discount_amount_div" class="form-group">

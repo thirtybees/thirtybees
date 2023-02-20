@@ -247,6 +247,9 @@ class AdminCartRulesControllerCore extends AdminController
             if ((int) Tools::getValue('reduction_amount') < 0) {
                 $this->errors[] = Tools::displayError('Reduction amount cannot be lower than zero.');
             }
+            if ((int) Tools::getValue('reduction_percent_max') < 0) {
+                $this->errors[] = Tools::displayError('Reduction max amount cannot be lower than zero.');
+            }
             if (Tools::getValue('code') && ($sameCode = (int) CartRule::getIdByCode(Tools::getValue('code'))) && $sameCode != Tools::getValue('id_cart_rule')) {
                 $this->errors[] = sprintf(Tools::displayError('This cart rule code is already used (conflict with cart rule %d)'), $sameCode);
             }
@@ -256,6 +259,7 @@ class AdminCartRulesControllerCore extends AdminController
 
             $_POST['minimum_amount'] = Tools::getNumberValue('minimum_amount');
             $_POST['reduction_amount'] = Tools::getNumberValue('reduction_amount');
+            $_POST['reduction_percent_max'] = Tools::getNumberValue('reduction_percent_max');
         }
 
         return parent::postProcess();
