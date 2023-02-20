@@ -457,20 +457,29 @@ class ShopCore extends ObjectModel
      */
     public function getAddress()
     {
-        if (!isset($this->address)) {
-            $address = new Address();
-            $address->company = Configuration::get('PS_SHOP_NAME');
-            $address->id_country = Configuration::get('PS_SHOP_COUNTRY_ID') ? Configuration::get('PS_SHOP_COUNTRY_ID') : Configuration::get('PS_COUNTRY_DEFAULT');
-            $address->id_state = Configuration::get('PS_SHOP_STATE_ID');
-            $address->address1 = Configuration::get('PS_SHOP_ADDR1');
-            $address->address2 = Configuration::get('PS_SHOP_ADDR2');
-            $address->postcode = Configuration::get('PS_SHOP_CODE');
-            $address->city = Configuration::get('PS_SHOP_CITY');
+        return static::getAddressForShop($this->id);
+    }
 
-            $this->address = $address;
-        }
-
-        return $this->address;
+    /**
+     * @param int|null $shopId
+     *
+     * @return Address
+     *
+     * @throws PrestaShopException
+     */
+    public static function getAddressForShop($shopId)
+    {
+        $address = new Address();
+        $address->company = Configuration::get('PS_SHOP_NAME', null, null, $shopId);
+        $address->id_country = Configuration::get('PS_SHOP_COUNTRY_ID', null, null, $shopId)
+            ? Configuration::get('PS_SHOP_COUNTRY_ID', null, null, $shopId)
+            : Configuration::get('PS_COUNTRY_DEFAULT', null, null, $shopId);
+        $address->id_state = Configuration::get('PS_SHOP_STATE_ID', null, null, $shopId);
+        $address->address1 = Configuration::get('PS_SHOP_ADDR1', null, null, $shopId);
+        $address->address2 = Configuration::get('PS_SHOP_ADDR2', null, null, $shopId);
+        $address->postcode = Configuration::get('PS_SHOP_CODE', null, null, $shopId);
+        $address->city = Configuration::get('PS_SHOP_CITY', null, null, $shopId);
+        return $address;
     }
 
     /**

@@ -100,14 +100,7 @@ abstract class HTMLTemplateCore
      */
     protected function getShopAddress()
     {
-        $shopAddress = '';
-
-        $shopAddressObj = $this->shop->getAddress();
-        if (isset($shopAddressObj) && $shopAddressObj instanceof Address) {
-            $shopAddress = AddressFormat::generateAddress($shopAddressObj, [], ' - ', ' ');
-        }
-
-        return $shopAddress;
+        return AddressFormat::generateAddress($this->shop->getAddress(), [], ' - ', ' ');
     }
 
     /**
