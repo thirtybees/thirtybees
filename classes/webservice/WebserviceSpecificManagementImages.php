@@ -1057,7 +1057,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                     $productPictureWidth = (int) Configuration::get('PS_PRODUCT_PICTURE_WIDTH');
                     $productPictureHeight = (int) Configuration::get('PS_PRODUCT_PICTURE_HEIGHT');
                     if (!ImageManager::resize($newPath, $newPath.'_small', $productPictureWidth, $productPictureHeight)) {
-                        $this->errors[] = Tools::displayError('An error occurred during the image upload process.');
+                        throw new WebserviceException(Tools::displayError('An error occurred during the image upload process.'), [70, 500]);
                     }
                 }
                 break;
@@ -1213,7 +1213,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                             $imagesTypes = ImageType::getImagesTypes('products');
                             foreach ($imagesTypes as $imageType) {
                                 if (!ImageManager::resize($tmpName, _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
-                                    $this->_errors[] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
+                                    throw new WebserviceException(Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']), [76, 400]);
                                 }
                             }
                         }
@@ -1232,7 +1232,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                         $imagesTypes = ImageType::getImagesTypes($this->imageType);
                         foreach ($imagesTypes as $imageType) {
                             if (!ImageManager::resize($tmpName, $parentPath.$this->wsObject->urlSegment[2].'-'.stripslashes($imageType['name']).'.jpg', $imageType['width'], $imageType['height'])) {
-                                $this->_errors[] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
+                                throw new WebserviceException(Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']), [76, 400]);
                             }
                         }
                         @unlink(_PS_TMP_IMG_DIR_.$tmpName);

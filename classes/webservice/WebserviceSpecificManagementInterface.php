@@ -60,6 +60,9 @@ interface WebserviceSpecificManagementInterface
      * WebserviceRequestCore
      * 
      * @return void
+     *
+     * @throws PrestaShopException
+     * @throws WebserviceException
      */
     public function manage();
 
