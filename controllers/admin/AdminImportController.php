@@ -1054,8 +1054,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $multipleValueSeparatorSelected = $this->multiple_value_separator;
-        if (isset($this->context->cookie->multiple_value_separator_selected) && $this->context->cookie->multiple_value_separator_selected) {
-            $multipleValueSeparatorSelected = urldecode($this->context->cookie->multiple_value_separator_selected);
+        if (isset($this->context->cookie->multipleValueSeparatorSelected) && $this->context->cookie->multipleValueSeparatorSelected) {
+            $multipleValueSeparatorSelected = urldecode($this->context->cookie->multipleValueSeparatorSelected);
         }
 
         $importers = [];
