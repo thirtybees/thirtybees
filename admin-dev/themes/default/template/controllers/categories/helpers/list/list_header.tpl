@@ -63,26 +63,25 @@
 			{if $need_delete_mode}
 				<div class="radio">
 					<label for="deleteMode_linkanddisable">
-						<input type="radio" name="deleteMode" value="linkanddisable" id="deleteMode_linkanddisable" checked="checked" />
+						<input type="radio" name="deleteMode" value="{AdminCategoriesController::DELETE_MODE_LINK_AND_DISABLE}" id="deleteMode_linkanddisable" checked="checked" />
 						{l s='I want to associate the products without other categories to the parent category, then disable these products for now. I re-enable them when they are moved in their new category.'} <strong>{l s='(Recommended)'}</strong>
 					</label>
 				</div>
 				<div class="radio">
 					<label for="deleteMode_link">
-						<input type="radio" name="deleteMode" value="link" id="deleteMode_link" />
+						<input type="radio" name="deleteMode" value="{AdminCategoriesController::DELETE_MODE_LINK}" id="deleteMode_link" />
 						{l s='I want to associate the products without other categories to the parent category, and keep them enabled.'}
 					</label>
 				</div>
 				<div class="radio">
 					<label for="deleteMode_delete">
-						<input type="radio" name="deleteMode" value="delete" id="deleteMode_delete" />
+						<input type="radio" name="deleteMode" value="{AdminCategoriesController::DELETE_MODE_DELETE}" id="deleteMode_delete" />
 						{l s='I want to remove the products which are listed only within this category and no others.'}
 					</label>
 				</div>
 			{else}
 				<div class="alert alert-warning">{l s='Deleting this category will remove products linked only within this category and no others. Are you sure you want to continue?'}</div>
-				<input type="hidden" name="deleteMode" value="delete" id="deleteMode_delete" />
-
+				<input type="hidden" name="deleteMode" value="{AdminCategoriesController::DELETE_MODE_DELETE}" id="deleteMode_delete" />
 			{/if}
 			{foreach $POST as $key => $value}
 				{if $key != 'deleteMode'}

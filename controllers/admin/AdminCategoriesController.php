@@ -34,6 +34,10 @@
  */
 class AdminCategoriesControllerCore extends AdminController
 {
+    const DELETE_MODE_DELETE = 'delete';
+    const DELETE_MODE_LINK = 'link';
+    const DELETE_MODE_LINK_AND_DISABLE = 'linkanddisable';
+
     /**
      * @var bool does the product have to be removed during the delete process
      */
@@ -58,6 +62,11 @@ class AdminCategoriesControllerCore extends AdminController
      * @var string
      */
     protected $original_filter = '';
+
+    /**
+     * @var string
+     */
+    protected $delete_mode;
 
     /**
      * AdminCategoriesControllerCore constructor.
@@ -424,10 +433,11 @@ class AdminCategoriesControllerCore extends AdminController
         parent::initProcess();
 
         if ($this->action == 'delete' || $this->action == 'bulkdelete') {
+            $deleteMode = Tools::getValue('deleteMode');
             if (Tools::getIsset('cancel')) {
                 Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories'));
-            } elseif (Tools::getValue('deleteMode') == 'link' || Tools::getValue('deleteMode') == 'linkanddisable' || Tools::getValue('deleteMode') == 'delete') {
-                $this->delete_mode = Tools::getValue('deleteMode');
+            } elseif ($deleteMode === static::DELETE_MODE_LINK || $deleteMode === static::DELETE_MODE_LINK_AND_DISABLE || $deleteMode === static::DELETE_MODE_DELETE) {
+                $this->delete_mode = $deleteMode;
             } else {
                 $this->action = 'select_delete';
             }
@@ -1035,12 +1045,12 @@ class AdminCategoriesControllerCore extends AdminController
      */
     protected function setDeleteMode()
     {
-        if ($this->delete_mode == 'link' || $this->delete_mode == 'linkanddisable') {
+        if ($this->delete_mode === static::DELETE_MODE_LINK || $this->delete_mode === static::DELETE_MODE_LINK_AND_DISABLE) {
             $this->remove_products = false;
-            if ($this->delete_mode == 'linkanddisable') {
+            if ($this->delete_mode === static::DELETE_MODE_LINK_AND_DISABLE) {
                 $this->disable_products = true;
             }
-        } elseif ($this->delete_mode != 'delete') {
+        } elseif ($this->delete_mode !== static::DELETE_MODE_DELETE) {
             $this->errors[] = Tools::displayError('Unknown delete mode:'.' '.$this->deleted);
         }
     }
