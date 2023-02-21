@@ -1050,9 +1050,7 @@ class AdminCustomersControllerCore extends AdminController
         } elseif ($this->delete_mode == 'deleted') {
             $this->deleted = true;
         } else {
-            $this->errors[] = Tools::displayError('Unknown delete mode:').' '.$this->deleted;
-
-            return;
+            $this->errors[] = sprintf(Tools::displayError('Unknown delete mode: %s'), $this->delete_mode);
         }
     }
 

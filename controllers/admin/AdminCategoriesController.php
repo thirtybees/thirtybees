@@ -1051,7 +1051,7 @@ class AdminCategoriesControllerCore extends AdminController
                 $this->disable_products = true;
             }
         } elseif ($this->delete_mode !== static::DELETE_MODE_DELETE) {
-            $this->errors[] = Tools::displayError('Unknown delete mode:'.' '.$this->deleted);
+            $this->errors[] = sprintf(Tools::displayError('Unknown delete mode: %s'), $this->delete_mode);
         }
     }
 
