@@ -941,10 +941,7 @@ abstract class PaymentModuleCore extends Module
                         $customerMessage->id_employee = 0;
                         $customerMessage->message = $updateMessage->message;
                         $customerMessage->private = 1;
-
-                        if (!$customerMessage->add()) {
-                            $this->errors[] = Tools::displayError('An error occurred while saving message');
-                        }
+                        $customerMessage->add();
                     }
 
                     // Hook validate order
