@@ -72,6 +72,11 @@ abstract class ControllerCore
     protected $redirect_after = null;
 
     /**
+     * @var array errors array
+     */
+    public $errors = [];
+
+    /**
      * ControllerCore constructor.
      */
     public function __construct()

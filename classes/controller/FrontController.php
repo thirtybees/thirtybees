@@ -69,8 +69,7 @@ class FrontControllerCore extends Controller
      * @var int[] Holds current customer's groups.
      */
     protected static $currentCustomerGroups;
-    /** @var array errors array */
-    public $errors = [];
+
     /** @var string Language ISO code */
     public $iso;
     /** @var string ORDER BY field */

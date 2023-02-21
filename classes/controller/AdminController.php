@@ -110,8 +110,6 @@ class AdminControllerCore extends Controller
     public $multiple_fieldsets = false;
     /** @var array */
     public $fields_value = [];
-    /** @var array Errors displayed after post processing */
-    public $errors = [];
     /** @var bool Automatically join language table if true */
     public $lang = false;
     /** @var array Required_fields to display in the Required Fields form */
