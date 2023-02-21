@@ -50,6 +50,11 @@ class AdminSupplyOrdersControllerCore extends AdminController
     protected $is_editing_order;
 
     /**
+     * @var array
+     */
+    protected $order_products_errors = [];
+
+    /**
      * AdminSupplyOrdersControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -1130,7 +1135,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 $products = $supplyOrder->getEntries();
                 $productIds = [];
 
-                if (isset($this->order_products_errors) && is_array($this->order_products_errors)) {
+                if ($this->order_products_errors) {
                     //for each product in error array, check if it is in products array, and remove it to conserve last user values
                     foreach ($this->order_products_errors as $pe) {
                         foreach ($products as $indexP => $p) {
@@ -1537,9 +1542,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         $entry->id_currency = $currency->id;
                         $entry->id_supply_order = $supplyOrder->id;
 
-                        //get the product name displayed in the backoffice according to the employee language
-                        $entry->name_displayed = Tools::getValue('input_name_displayed_'.$id, '');
-
                         // validation
                         $errors = [];
                         if ($entry->quantity_expected <= 0) {
@@ -1566,7 +1568,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                                 'discount_rate'        => $entry->discount_rate,
                                 'tax_rate'             => $entry->tax_rate,
                                 'name'                 => $entry->name,
-                                'name_displayed'       => $entry->name_displayed,
+                                'name_displayed'       => Tools::getValue('input_name_displayed_'.$id, ''),
                                 'reference'            => $entry->reference,
                                 'supplier_reference'   => $entry->supplier_reference,
                                 'ean13'                => $entry->ean13,
