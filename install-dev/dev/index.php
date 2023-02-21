@@ -79,7 +79,6 @@ class SynchronizeController extends InstallControllerHttp
      */
     public function init()
     {
-        $this->type = Tools::getValue('type');
         $this->loader = new InstallXmlLoader();
         $languages = [];
         foreach (Language::getLanguages(false) as $language) {
@@ -93,7 +92,7 @@ class SynchronizeController extends InstallControllerHttp
             $this->synchronizeEntities();
         }
 
-        if ($this->type == 'demo') {
+        if (Tools::getValue('type') == 'demo') {
             $this->loader->setFixturesPath();
         } else {
             $this->loader->setDefaultPath();
@@ -107,7 +106,7 @@ class SynchronizeController extends InstallControllerHttp
      */
     public function generateSchemas()
     {
-        if ($this->type == 'demo') {
+        if (Tools::getValue('type') == 'demo') {
             $this->loader->setFixturesPath();
         }
 
