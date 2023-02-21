@@ -54,9 +54,10 @@ class PrestaShopAutoload
      */
     protected static $class_aliases = [
         'collection' => 'PrestaShopCollection',
-        'autoload'   => 'PrestaShopAutoload',
-        'backup'     => 'PrestaShopBackup',
-        'logger'     => 'PrestaShopLogger',
+        'autoload' => 'PrestaShopAutoload',
+        'backup' => 'PrestaShopBackup',
+        'logger' => 'PrestaShopLogger',
+        'attributecore' => 'ProductAttributeCore',
     ];
 
     /**
@@ -220,17 +221,17 @@ class PrestaShopAutoload
     /**
      * Retrieve informations about a class in classes index and load it
      *
-     * @param string $className
+     * @param string $requestClassName
      *
      * @return mixed
      */
-    public function load($className)
+    public function load($requestClassName)
     {
-        $className = strtolower($className);
+        $className = strtolower($requestClassName);
 
         // Retrocompatibility
         if (isset(PrestaShopAutoload::$class_aliases[$className]) && !interface_exists($className, false) && !class_exists($className, false)) {
-            return eval('class '.$className.' extends '.PrestaShopAutoload::$class_aliases[$className].' {}');
+            return eval('class '.$requestClassName.' extends '.PrestaShopAutoload::$class_aliases[$className].' {}');
         }
 
         // regenerate the class index if the requested file doesn't exists
