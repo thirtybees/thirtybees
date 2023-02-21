@@ -35,9 +35,47 @@
  *
  * Known properties set up by core:
  *
+ * @property int $account_created
+ * @property bool $check_cgv
+ * @property bool $checkedTOS
+ * @property bool $collapse_menu
+ * @property string $customer_firstname
+ * @property string $customer_lastname
+ * @property bool $detect_language
+ * @property string $email
+ * @property int $employee_form_lang
+ * @property string $entitySelected
+ * @property string $fileSelected
+ * @property int $id_cart
+ * @property int $id_category_products_filter
+ * @property int $id_compare
+ * @property int $id_connections
+ * @property int $id_country
+ * @property int $id_currency
  * @property int $id_customer
+ * @property int $id_employee
  * @property int $id_guest
+ * @property int $id_lang
+ * @property int $id_state
+ * @property int $id_wishlist
+ * @property bool $is_guest
+ * @property string $isoLangSelected
+ * @property string $iso_code_country
+ * @property int $last_activity,
+ * @property int $last_visited_category
+ * @property bool $logged
+ * @property string $multipleValueSeparatorSelected,
+ * @property int $nb_item_per_page
  * @property bool $no_mobile
+ * @property string $passwd
+ * @property int $profile,
+ * @property string $remote_addr,
+ * @property string $separatorSelected,
+ * @property string $shopContext,
+ * @property int $stats_date_update,
+ * @property string $stats_day
+ * @property string $stats_month
+ * @property string $stats_year
  */
 class CookieCore
 {
