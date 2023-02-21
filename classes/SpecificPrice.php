@@ -244,7 +244,13 @@ class SpecificPriceCore extends ObjectModel
                     ->where('`id_country` '.static::formatIntInQuery(0, $idCountry))
                     ->where('`id_group` '.static::formatIntInQuery(0, $idGroup).' '.$queryExtra)
                     ->where('IF(`from_quantity` > 1, `from_quantity`, 0) <= '.(int) $fromQuantity)
-                    ->orderBy('`id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC, `score` DESC, `to` DESC, `from` DESC')
+                    ->orderBy('`id_cart` DESC')
+                    ->orderBy('`id_product_attribute` DESC')
+                    ->orderBy('`from_quantity` DESC')
+                    ->orderBy('`id_specific_price_rule` ASC')
+                    ->orderBy('`score` DESC')
+                    ->orderBy('`to` DESC')
+                    ->orderBy('`from` DESC')
             );
         }
 
@@ -303,17 +309,13 @@ class SpecificPriceCore extends ObjectModel
             $queryExtra .= static::filterOutField('id_product', $idProduct);
         }
 
-        if ($idCustomer !== null) {
-            $queryExtra .= static::filterOutField('id_customer', $idCustomer);
-        }
+        $queryExtra .= static::filterOutField('id_customer', $idCustomer);
 
         if ($idProductAttribute !== null) {
             $queryExtra .= static::filterOutField('id_product_attribute', $idProductAttribute);
         }
 
-        if ($idCart !== null) {
-            $queryExtra .= static::filterOutField('id_cart', $idCart);
-        }
+        $queryExtra .= static::filterOutField('id_cart', $idCart);
 
         if ($ending == $now && $beginning == $now) {
             $key = __FUNCTION__.'-'.$firstDate.'-'.$lastDate;
