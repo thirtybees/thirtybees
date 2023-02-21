@@ -2725,7 +2725,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return int|string
+     * @return string|null
      *
      * @throws PrestaShopException
      */

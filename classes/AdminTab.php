@@ -1447,9 +1447,13 @@ abstract class AdminTabCore
     /**
      * Manage page processing
      *
-     * @deprecated 1.0.0
-     * @throws PrestaShopException
+     * @return false|void
+     *
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     *
+     * @deprecated 1.0.0
      */
     public function postProcess()
     {
@@ -1778,6 +1782,7 @@ abstract class AdminTabCore
      *
      * @return object
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function loadObject($opt = false)
     {
@@ -1803,7 +1808,9 @@ abstract class AdminTabCore
 
     /**
      * Display errors
+     *
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayErrors()
     {
@@ -2051,6 +2058,8 @@ abstract class AdminTabCore
      * @return bool
      *
      * @throws PrestaShopException
+     * @throws SmartyException
+     *
      * @deprecated 1.0.0
      */
     protected function postImage($id)
@@ -2072,11 +2081,14 @@ abstract class AdminTabCore
      * @param int $id
      * @param string $name
      * @param string $dir
-     * @param string $ext
+     * @param bool $ext
      * @param int|null $width
      * @param int|null $height
+     *
      * @return bool
+     *
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function uploadImage($id, $name, $dir, $ext = false, $width = null, $height = null)
     {

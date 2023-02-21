@@ -141,7 +141,7 @@ class LinkCore
     }
 
     /**
-     * @param int|array|Product $productIdentifier
+     * @param int|array|ProductCore $productIdentifier
      * @param string|null $alias
      * @param int|null $category
      * @param string|null $ean13
