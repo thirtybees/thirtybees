@@ -1044,8 +1044,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $idLangSelected = '';
-        if (isset($this->context->cookie->iso_lang_selected) && $this->context->cookie->iso_lang_selected) {
-            $idLangSelected = (int) Language::getIdByIso(urldecode($this->context->cookie->iso_lang_selected));
+        if (isset($this->context->cookie->isoLangSelected) && $this->context->cookie->isoLangSelected) {
+            $idLangSelected = (int) Language::getIdByIso(urldecode($this->context->cookie->isoLangSelected));
         }
 
         $separatorSelected = $this->separator;
