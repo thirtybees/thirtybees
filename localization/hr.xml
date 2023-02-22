@@ -19,7 +19,7 @@
     <tax id="91" name="ALV FI 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="92" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="93" name="VAT UK 20%" rate="20.0" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="94" name="&#x3A6;&#x3A0;&#x391; GR 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="94" name="&#x3A6;&#x3A0;&#x391; GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="95" name="&#xC1;FA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="96" name="VAT IE 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="97" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
