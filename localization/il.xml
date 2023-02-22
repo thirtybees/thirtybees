@@ -1,40 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Israel" version="1.0">
   <currencies>
-    <currency name="Shekel"
-              iso_code="ILS"
-              iso_code_num="376"
-              sign="₪‎"
-              blank="0"
-              conversion_rate="4.97713"
-              format="2"
-              decimals="1" />
+    <currency name="Shekel" iso_code="ILS" iso_code_num="376" sign="₪‎" blank="0" conversion_rate="4.97713" format="2" decimals="1"/>
   </currencies>
   <languages>
-    <language name="اللغة العربية (Arabic)"
-              iso_code="ar"
-              language_code="ar-sa"
-              date_format_lite="d-m-Y"
-              date_format_full="d-m-Y H:i:s"
-              is_rtl="1" />
-    <language name="עברית (Hebrew)"
-              iso_code="he"
-              language_code="he-il"
-              date_format_lite="d-m-Y"
-              date_format_full="d-m-Y H:i:s"
-              is_rtl="1" />
+    <language name="اللغة العربية (Arabic)" iso_code="ar" language_code="ar-sa" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>
+    <language name="עברית (Hebrew)" iso_code="he" language_code="he-il" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>
   </languages>
   <taxes>
-    <tax id="1" name="Ma'am IL 17%" rate="17" />
+    <tax id="1" name="Ma'am IL 17%" rate="17"/>
     <taxRulesGroup name="IL Standard Rate (17%)">
-      <taxRule iso_code_country="il" id_tax="1" />
+      <taxRule iso_code_country="il" id_tax="1"/>
     </taxRulesGroup>
   </taxes>
   <units>
-    <unit type="weight" value="kg" />
-    <unit type="volume" value="L" />
-    <unit type="short_distance" value="cm" />
-    <unit type="base_distance" value="m" />
-    <unit type="long_distance" value="km" />
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
   </units>
 </localizationPack>

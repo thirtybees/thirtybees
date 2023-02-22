@@ -1,306 +1,294 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="United Kingdom" version="1.0">
   <currencies>
-    <currency name="Pound"
-              iso_code="GBP"
-              iso_code_num="826"
-              sign="£"
-              blank="1"
-              conversion_rate="0.8633100"
-              format="1"
-              decimals="1" />
+    <currency name="Pound" iso_code="GBP" iso_code_num="826" sign="£" blank="1" conversion_rate="0.8633100" format="1" decimals="1"/>
   </currencies>
   <languages>
-    <language name="English GB (English)"
-              iso_code="gb"
-              language_code="en-gb"
-              date_format_lite="Y-m-d"
-              date_format_full="Y-m-d H:i:s"
-              is_rtl="0" />
+    <language name="English GB (English)" iso_code="gb" language_code="en-gb" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
-    <tax id="1" name="VAT UK 20%" rate="20.0" eu-tax-group="virtual" />
-    <tax id="2" name="VAT UK 5%" rate="5" />
-    <tax id="3" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="4" name="TVA BE 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="5" name="ДДС BG 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="6" name="ΦΠΑ CY 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="7" name="DPH CZ 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="8" name="MwSt. DE 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="9" name="moms DK 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="10" name="km EE 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="11" name="IVA ES 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="12" name="ALV FI 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="13" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="14" name="ΦΠΑ GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="15" name="Croatia PDV 25%" rate="25.000" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="16" name="ÁFA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="17" name="VAT IE 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="18" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="19" name="PVM LT 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="20" name="TVA LU 17%" rate="17" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="21" name="PVN LV 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="22" name="VAT MT 18%" rate="18" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="23" name="BTW NL 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="24" name="PTU PL 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="25" name="IVA PT 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual" />
+    <tax id="1" name="VAT UK 20%" rate="20.0" eu-tax-group="virtual"/>
+    <tax id="2" name="VAT UK 5%" rate="5"/>
+    <tax id="3" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="4" name="TVA BE 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="5" name="ДДС BG 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="6" name="ΦΠΑ CY 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="7" name="DPH CZ 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="8" name="MwSt. DE 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="9" name="moms DK 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="10" name="km EE 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="11" name="IVA ES 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="12" name="ALV FI 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="13" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="14" name="ΦΠΑ GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="15" name="Croatia PDV 25%" rate="25.000" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="16" name="ÁFA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="17" name="VAT IE 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="18" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="19" name="PVM LT 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="20" name="TVA LU 17%" rate="17" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="21" name="PVN LV 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="22" name="VAT MT 18%" rate="18" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="23" name="BTW NL 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="24" name="PTU PL 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="25" name="IVA PT 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="26" name="TVA RO 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="27" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="28" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual" />
-    <tax id="29" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
+    <tax id="27" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="28" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="29" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <taxRulesGroup name="UK Standard Rate (20%)">
-      <taxRule iso_code_country="be" id_tax="1" />
-      <taxRule iso_code_country="bg" id_tax="1" />
-      <taxRule iso_code_country="cz" id_tax="1" />
-      <taxRule iso_code_country="dk" id_tax="1" />
-      <taxRule iso_code_country="de" id_tax="1" />
-      <taxRule iso_code_country="ee" id_tax="1" />
-      <taxRule iso_code_country="gr" id_tax="1" />
-      <taxRule iso_code_country="es" id_tax="1" />
-      <taxRule iso_code_country="fr" id_tax="1" />
-      <taxRule iso_code_country="ie" id_tax="1" />
-      <taxRule iso_code_country="it" id_tax="1" />
-      <taxRule iso_code_country="cy" id_tax="1" />
-      <taxRule iso_code_country="lv" id_tax="1" />
-      <taxRule iso_code_country="lt" id_tax="1" />
-      <taxRule iso_code_country="lu" id_tax="1" />
-      <taxRule iso_code_country="hu" id_tax="1" />
-      <taxRule iso_code_country="mt" id_tax="1" />
-      <taxRule iso_code_country="nl" id_tax="1" />
-      <taxRule iso_code_country="at" id_tax="1" />
-      <taxRule iso_code_country="pl" id_tax="1" />
-      <taxRule iso_code_country="pt" id_tax="1" />
-      <taxRule iso_code_country="ro" id_tax="1" />
-      <taxRule iso_code_country="si" id_tax="1" />
-      <taxRule iso_code_country="sk" id_tax="1" />
-      <taxRule iso_code_country="fi" id_tax="1" />
-      <taxRule iso_code_country="se" id_tax="1" />
-      <taxRule iso_code_country="gb" id_tax="1" />
-      <taxRule iso_code_country="hr" id_tax="1" />
+      <taxRule iso_code_country="be" id_tax="1"/>
+      <taxRule iso_code_country="bg" id_tax="1"/>
+      <taxRule iso_code_country="cz" id_tax="1"/>
+      <taxRule iso_code_country="dk" id_tax="1"/>
+      <taxRule iso_code_country="de" id_tax="1"/>
+      <taxRule iso_code_country="ee" id_tax="1"/>
+      <taxRule iso_code_country="gr" id_tax="1"/>
+      <taxRule iso_code_country="es" id_tax="1"/>
+      <taxRule iso_code_country="fr" id_tax="1"/>
+      <taxRule iso_code_country="ie" id_tax="1"/>
+      <taxRule iso_code_country="it" id_tax="1"/>
+      <taxRule iso_code_country="cy" id_tax="1"/>
+      <taxRule iso_code_country="lv" id_tax="1"/>
+      <taxRule iso_code_country="lt" id_tax="1"/>
+      <taxRule iso_code_country="lu" id_tax="1"/>
+      <taxRule iso_code_country="hu" id_tax="1"/>
+      <taxRule iso_code_country="mt" id_tax="1"/>
+      <taxRule iso_code_country="nl" id_tax="1"/>
+      <taxRule iso_code_country="at" id_tax="1"/>
+      <taxRule iso_code_country="pl" id_tax="1"/>
+      <taxRule iso_code_country="pt" id_tax="1"/>
+      <taxRule iso_code_country="ro" id_tax="1"/>
+      <taxRule iso_code_country="si" id_tax="1"/>
+      <taxRule iso_code_country="sk" id_tax="1"/>
+      <taxRule iso_code_country="fi" id_tax="1"/>
+      <taxRule iso_code_country="se" id_tax="1"/>
+      <taxRule iso_code_country="gb" id_tax="1"/>
+      <taxRule iso_code_country="hr" id_tax="1"/>
     </taxRulesGroup>
     <taxRulesGroup name="UK Reduced Rate (5%)">
-      <taxRule iso_code_country="be" id_tax="2" />
-      <taxRule iso_code_country="bg" id_tax="2" />
-      <taxRule iso_code_country="cz" id_tax="2" />
-      <taxRule iso_code_country="dk" id_tax="2" />
-      <taxRule iso_code_country="de" id_tax="2" />
-      <taxRule iso_code_country="ee" id_tax="2" />
-      <taxRule iso_code_country="gr" id_tax="2" />
-      <taxRule iso_code_country="es" id_tax="2" />
-      <taxRule iso_code_country="fr" id_tax="2" />
-      <taxRule iso_code_country="ie" id_tax="2" />
-      <taxRule iso_code_country="it" id_tax="2" />
-      <taxRule iso_code_country="cy" id_tax="2" />
-      <taxRule iso_code_country="lv" id_tax="2" />
-      <taxRule iso_code_country="lt" id_tax="2" />
-      <taxRule iso_code_country="lu" id_tax="2" />
-      <taxRule iso_code_country="hu" id_tax="2" />
-      <taxRule iso_code_country="mt" id_tax="2" />
-      <taxRule iso_code_country="nl" id_tax="2" />
-      <taxRule iso_code_country="at" id_tax="2" />
-      <taxRule iso_code_country="pl" id_tax="2" />
-      <taxRule iso_code_country="pt" id_tax="2" />
-      <taxRule iso_code_country="ro" id_tax="2" />
-      <taxRule iso_code_country="si" id_tax="2" />
-      <taxRule iso_code_country="sk" id_tax="2" />
-      <taxRule iso_code_country="fi" id_tax="2" />
-      <taxRule iso_code_country="se" id_tax="2" />
-      <taxRule iso_code_country="gb" id_tax="2" />
-      <taxRule iso_code_country="hr" id_tax="2" />
+      <taxRule iso_code_country="be" id_tax="2"/>
+      <taxRule iso_code_country="bg" id_tax="2"/>
+      <taxRule iso_code_country="cz" id_tax="2"/>
+      <taxRule iso_code_country="dk" id_tax="2"/>
+      <taxRule iso_code_country="de" id_tax="2"/>
+      <taxRule iso_code_country="ee" id_tax="2"/>
+      <taxRule iso_code_country="gr" id_tax="2"/>
+      <taxRule iso_code_country="es" id_tax="2"/>
+      <taxRule iso_code_country="fr" id_tax="2"/>
+      <taxRule iso_code_country="ie" id_tax="2"/>
+      <taxRule iso_code_country="it" id_tax="2"/>
+      <taxRule iso_code_country="cy" id_tax="2"/>
+      <taxRule iso_code_country="lv" id_tax="2"/>
+      <taxRule iso_code_country="lt" id_tax="2"/>
+      <taxRule iso_code_country="lu" id_tax="2"/>
+      <taxRule iso_code_country="hu" id_tax="2"/>
+      <taxRule iso_code_country="mt" id_tax="2"/>
+      <taxRule iso_code_country="nl" id_tax="2"/>
+      <taxRule iso_code_country="at" id_tax="2"/>
+      <taxRule iso_code_country="pl" id_tax="2"/>
+      <taxRule iso_code_country="pt" id_tax="2"/>
+      <taxRule iso_code_country="ro" id_tax="2"/>
+      <taxRule iso_code_country="si" id_tax="2"/>
+      <taxRule iso_code_country="sk" id_tax="2"/>
+      <taxRule iso_code_country="fi" id_tax="2"/>
+      <taxRule iso_code_country="se" id_tax="2"/>
+      <taxRule iso_code_country="gb" id_tax="2"/>
+      <taxRule iso_code_country="hr" id_tax="2"/>
     </taxRulesGroup>
     <taxRulesGroup name="EU VAT For Virtual Products" auto-generated="1" eu-tax-group="virtual">
-      <taxRule iso_code_country="gb" id_tax="1" />
-      <taxRule iso_code_country="at" id_tax="3" />
-      <taxRule iso_code_country="be" id_tax="4" />
-      <taxRule iso_code_country="bg" id_tax="5" />
-      <taxRule iso_code_country="cy" id_tax="6" />
-      <taxRule iso_code_country="cz" id_tax="7" />
-      <taxRule iso_code_country="de" id_tax="8" />
-      <taxRule iso_code_country="dk" id_tax="9" />
-      <taxRule iso_code_country="ee" id_tax="10" />
-      <taxRule iso_code_country="es" id_tax="11" />
-      <taxRule iso_code_country="fi" id_tax="12" />
-      <taxRule iso_code_country="fr" id_tax="13" />
-      <taxRule iso_code_country="gr" id_tax="14" />
-      <taxRule iso_code_country="hr" id_tax="15" />
-      <taxRule iso_code_country="hu" id_tax="16" />
-      <taxRule iso_code_country="ie" id_tax="17" />
-      <taxRule iso_code_country="it" id_tax="18" />
-      <taxRule iso_code_country="lt" id_tax="19" />
-      <taxRule iso_code_country="lu" id_tax="20" />
-      <taxRule iso_code_country="lv" id_tax="21" />
-      <taxRule iso_code_country="mt" id_tax="22" />
-      <taxRule iso_code_country="nl" id_tax="23" />
-      <taxRule iso_code_country="pl" id_tax="24" />
-      <taxRule iso_code_country="pt" id_tax="25" />
-      <taxRule iso_code_country="ro" id_tax="26" />
-      <taxRule iso_code_country="se" id_tax="27" />
-      <taxRule iso_code_country="si" id_tax="28" />
-      <taxRule iso_code_country="sk" id_tax="29" />
+      <taxRule iso_code_country="gb" id_tax="1"/>
+      <taxRule iso_code_country="at" id_tax="3"/>
+      <taxRule iso_code_country="be" id_tax="4"/>
+      <taxRule iso_code_country="bg" id_tax="5"/>
+      <taxRule iso_code_country="cy" id_tax="6"/>
+      <taxRule iso_code_country="cz" id_tax="7"/>
+      <taxRule iso_code_country="de" id_tax="8"/>
+      <taxRule iso_code_country="dk" id_tax="9"/>
+      <taxRule iso_code_country="ee" id_tax="10"/>
+      <taxRule iso_code_country="es" id_tax="11"/>
+      <taxRule iso_code_country="fi" id_tax="12"/>
+      <taxRule iso_code_country="fr" id_tax="13"/>
+      <taxRule iso_code_country="gr" id_tax="14"/>
+      <taxRule iso_code_country="hr" id_tax="15"/>
+      <taxRule iso_code_country="hu" id_tax="16"/>
+      <taxRule iso_code_country="ie" id_tax="17"/>
+      <taxRule iso_code_country="it" id_tax="18"/>
+      <taxRule iso_code_country="lt" id_tax="19"/>
+      <taxRule iso_code_country="lu" id_tax="20"/>
+      <taxRule iso_code_country="lv" id_tax="21"/>
+      <taxRule iso_code_country="mt" id_tax="22"/>
+      <taxRule iso_code_country="nl" id_tax="23"/>
+      <taxRule iso_code_country="pl" id_tax="24"/>
+      <taxRule iso_code_country="pt" id_tax="25"/>
+      <taxRule iso_code_country="ro" id_tax="26"/>
+      <taxRule iso_code_country="se" id_tax="27"/>
+      <taxRule iso_code_country="si" id_tax="28"/>
+      <taxRule iso_code_country="sk" id_tax="29"/>
     </taxRulesGroup>
   </taxes>
   <states>
-    <state name="Aberdeenshire" iso_code="ABD" country="GB" zone="Europe" />
-    <state name="Anglesey" iso_code="AGY" country="GB" zone="Europe" />
-    <state name="Alderney" iso_code="ALD" country="GB" zone="Europe" />
-    <state name="Angus" iso_code="ANS" country="GB" zone="Europe" />
-    <state name="Co. Antrim" iso_code="ANT" country="GB" zone="Europe" />
-    <state name="Argyllshire" iso_code="ARL" country="GB" zone="Europe" />
-    <state name="Co. Armagh" iso_code="ARM" country="GB" zone="Europe" />
-    <state name="Avon" iso_code="AVN" country="GB" zone="Europe" />
-    <state name="Ayrshire" iso_code="AYR" country="GB" zone="Europe" />
-    <state name="Banffshire" iso_code="BAN" country="GB" zone="Europe" />
-    <state name="Bedfordshire" iso_code="BDF" country="GB" zone="Europe" />
-    <state name="Berwickshire" iso_code="BEW" country="GB" zone="Europe" />
-    <state name="Buckinghamshire" iso_code="BKM" country="GB" zone="Europe" />
-    <state name="Borders" iso_code="BOR" country="GB" zone="Europe" />
-    <state name="Breconshire" iso_code="BRE" country="GB" zone="Europe" />
-    <state name="Berkshire" iso_code="BRK" country="GB" zone="Europe" />
-    <state name="Bute" iso_code="BUT" country="GB" zone="Europe" />
-    <state name="Caernarvonshire" iso_code="CAE" country="GB" zone="Europe" />
-    <state name="Caithness" iso_code="CAI" country="GB" zone="Europe" />
-    <state name="Cambridgeshire" iso_code="CAM" country="GB" zone="Europe" />
-    <state name="Co. Carlow" iso_code="CAR" country="GB" zone="Europe" />
-    <state name="Co. Cavan" iso_code="CAV" country="GB" zone="Europe" />
-    <state name="Central" iso_code="CEN" country="GB" zone="Europe" />
-    <state name="Cardiganshire" iso_code="CGN" country="GB" zone="Europe" />
-    <state name="Cheshire" iso_code="CHS" country="GB" zone="Europe" />
-    <state name="Co. Clare" iso_code="CLA" country="GB" zone="Europe" />
-    <state name="Clackmannanshire" iso_code="CLK" country="GB" zone="Europe" />
-    <state name="Cleveland" iso_code="CLV" country="GB" zone="Europe" />
-    <state name="Cumbria" iso_code="CMA" country="GB" zone="Europe" />
-    <state name="Carmarthenshire" iso_code="CMN" country="GB" zone="Europe" />
-    <state name="Cornwall" iso_code="CON" country="GB" zone="Europe" />
-    <state name="Co. Cork" iso_code="COR" country="GB" zone="Europe" />
-    <state name="Cumberland" iso_code="CUL" country="GB" zone="Europe" />
-    <state name="Clwyd" iso_code="CWD" country="GB" zone="Europe" />
-    <state name="Derbyshire" iso_code="DBY" country="GB" zone="Europe" />
-    <state name="Denbighshire" iso_code="DEN" country="GB" zone="Europe" />
-    <state name="Devon" iso_code="DEV" country="GB" zone="Europe" />
-    <state name="Dyfed" iso_code="DFD" country="GB" zone="Europe" />
-    <state name="Dumfries-shire" iso_code="DFS" country="GB" zone="Europe" />
-    <state name="Dumfries and Galloway" iso_code="DGY" country="GB" zone="Europe" />
-    <state name="Dunbartonshire" iso_code="DNB" country="GB" zone="Europe" />
-    <state name="Co. Donegal" iso_code="DON" country="GB" zone="Europe" />
-    <state name="Dorset" iso_code="DOR" country="GB" zone="Europe" />
-    <state name="Co. Down" iso_code="DOW" country="GB" zone="Europe" />
-    <state name="Co. Dublin" iso_code="DUB" country="GB" zone="Europe" />
-    <state name="Co. Durham" iso_code="DUR" country="GB" zone="Europe" />
-    <state name="East Lothian" iso_code="ELN" country="GB" zone="Europe" />
-    <state name="East Riding of Yorkshire" iso_code="ERY" country="GB" zone="Europe" />
-    <state name="Essex" iso_code="ESS" country="GB" zone="Europe" />
-    <state name="Co. Fermanagh" iso_code="FER" country="GB" zone="Europe" />
-    <state name="Fife" iso_code="FIF" country="GB" zone="Europe" />
-    <state name="Flintshire" iso_code="FLN" country="GB" zone="Europe" />
-    <state name="Co. Galway" iso_code="GAL" country="GB" zone="Europe" />
-    <state name="Glamorgan" iso_code="GLA" country="GB" zone="Europe" />
-    <state name="Gloucestershire" iso_code="GLS" country="GB" zone="Europe" />
-    <state name="Grampian" iso_code="GMP" country="GB" zone="Europe" />
-    <state name="Gwent" iso_code="GNT" country="GB" zone="Europe" />
-    <state name="Guernsey" iso_code="GSY" country="GB" zone="Europe" />
-    <state name="Greater Manchester" iso_code="GTM" country="GB" zone="Europe" />
-    <state name="Gwynedd" iso_code="GWN" country="GB" zone="Europe" />
-    <state name="Hampshire" iso_code="HAM" country="GB" zone="Europe" />
-    <state name="Herefordshire" iso_code="HEF" country="GB" zone="Europe" />
-    <state name="Highland" iso_code="HLD" country="GB" zone="Europe" />
-    <state name="Hertfordshire" iso_code="HRT" country="GB" zone="Europe" />
-    <state name="Humberside" iso_code="HUM" country="GB" zone="Europe" />
-    <state name="Huntingdonshire" iso_code="HUN" country="GB" zone="Europe" />
-    <state name="Hereford and Worcester" iso_code="HWR" country="GB" zone="Europe" />
-    <state name="Inverness-shire" iso_code="INV" country="GB" zone="Europe" />
-    <state name="Isle of Wight" iso_code="IOW" country="GB" zone="Europe" />
-    <state name="Jersey" iso_code="JSY" country="GB" zone="Europe" />
-    <state name="Kincardineshire" iso_code="KCD" country="GB" zone="Europe" />
-    <state name="Kent" iso_code="KEN" country="GB" zone="Europe" />
-    <state name="Co. Kerry" iso_code="KER" country="GB" zone="Europe" />
-    <state name="Co. Kildare" iso_code="KID" country="GB" zone="Europe" />
-    <state name="Co. Kilkenny" iso_code="KIK" country="GB" zone="Europe" />
-    <state name="Kirkcudbrightshire" iso_code="KKD" country="GB" zone="Europe" />
-    <state name="Kinross-shire" iso_code="KRS" country="GB" zone="Europe" />
-    <state name="Lancashire" iso_code="LAN" country="GB" zone="Europe" />
-    <state name="Co. Londonderry" iso_code="LDY" country="GB" zone="Europe" />
-    <state name="Leicestershire" iso_code="LEI" country="GB" zone="Europe" />
-    <state name="Co. Leitrim" iso_code="LET" country="GB" zone="Europe" />
-    <state name="Co. Laois" iso_code="LEX" country="GB" zone="Europe" />
-    <state name="Co. Limerick" iso_code="LIM" country="GB" zone="Europe" />
-    <state name="Lincolnshire" iso_code="LIN" country="GB" zone="Europe" />
-    <state name="Lanarkshire" iso_code="LKS" country="GB" zone="Europe" />
-    <state name="Co. Longford" iso_code="LOG" country="GB" zone="Europe" />
-    <state name="Co. Louth" iso_code="LOU" country="GB" zone="Europe" />
-    <state name="Lothian" iso_code="LTN" country="GB" zone="Europe" />
-    <state name="Co. Mayo" iso_code="MAY" country="GB" zone="Europe" />
-    <state name="Co. Meath" iso_code="MEA" country="GB" zone="Europe" />
-    <state name="Merionethshire" iso_code="MER" country="GB" zone="Europe" />
-    <state name="Mid Glamorgan" iso_code="MGM" country="GB" zone="Europe" />
-    <state name="Montgomeryshire" iso_code="MGY" country="GB" zone="Europe" />
-    <state name="Midlothian" iso_code="MLN" country="GB" zone="Europe" />
-    <state name="Co. Monaghan" iso_code="MOG" country="GB" zone="Europe" />
-    <state name="Monmouthshire" iso_code="MON" country="GB" zone="Europe" />
-    <state name="Morayshire" iso_code="MOR" country="GB" zone="Europe" />
-    <state name="Merseyside" iso_code="MSY" country="GB" zone="Europe" />
-    <state name="Nairn" iso_code="NAI" country="GB" zone="Europe" />
-    <state name="Northumberland" iso_code="NBL" country="GB" zone="Europe" />
-    <state name="Norfolk" iso_code="NFK" country="GB" zone="Europe" />
-    <state name="North Riding of Yorkshire" iso_code="NRY" country="GB" zone="Europe" />
-    <state name="Northamptonshire" iso_code="NTH" country="GB" zone="Europe" />
-    <state name="Nottinghamshire" iso_code="NTT" country="GB" zone="Europe" />
-    <state name="North Yorkshire" iso_code="NYK" country="GB" zone="Europe" />
-    <state name="Co. Offaly" iso_code="OFF" country="GB" zone="Europe" />
-    <state name="Orkney" iso_code="OKI" country="GB" zone="Europe" />
-    <state name="Oxfordshire" iso_code="OXF" country="GB" zone="Europe" />
-    <state name="Peebles-shire" iso_code="PEE" country="GB" zone="Europe" />
-    <state name="Pembrokeshire" iso_code="PEM" country="GB" zone="Europe" />
-    <state name="Perth" iso_code="PER" country="GB" zone="Europe" />
-    <state name="Powys" iso_code="POW" country="GB" zone="Europe" />
-    <state name="Radnorshire" iso_code="RAD" country="GB" zone="Europe" />
-    <state name="Renfrewshire" iso_code="RFW" country="GB" zone="Europe" />
-    <state name="Ross and Cromarty" iso_code="ROC" country="GB" zone="Europe" />
-    <state name="Co. Roscommon" iso_code="ROS" country="GB" zone="Europe" />
-    <state name="Roxburghshire" iso_code="ROX" country="GB" zone="Europe" />
-    <state name="Rutland" iso_code="RUT" country="GB" zone="Europe" />
-    <state name="Shropshire" iso_code="SAL" country="GB" zone="Europe" />
-    <state name="Selkirkshire" iso_code="SEL" country="GB" zone="Europe" />
-    <state name="Suffolk" iso_code="SFK" country="GB" zone="Europe" />
-    <state name="South Glamorgan" iso_code="SGM" country="GB" zone="Europe" />
-    <state name="Shetland" iso_code="SHI" country="GB" zone="Europe" />
-    <state name="Co. Sligo" iso_code="SLI" country="GB" zone="Europe" />
-    <state name="Somerset" iso_code="SOM" country="GB" zone="Europe" />
-    <state name="Sark" iso_code="SRK" country="GB" zone="Europe" />
-    <state name="Surrey" iso_code="SRY" country="GB" zone="Europe" />
-    <state name="Sussex" iso_code="SSX" country="GB" zone="Europe" />
-    <state name="Strathclyde" iso_code="STD" country="GB" zone="Europe" />
-    <state name="Stirlingshire" iso_code="STI" country="GB" zone="Europe" />
-    <state name="Staffordshire" iso_code="STS" country="GB" zone="Europe" />
-    <state name="Sutherland" iso_code="SUT" country="GB" zone="Europe" />
-    <state name="East Sussex" iso_code="SXE" country="GB" zone="Europe" />
-    <state name="West Sussex" iso_code="SXW" country="GB" zone="Europe" />
-    <state name="South Yorkshire" iso_code="SYK" country="GB" zone="Europe" />
-    <state name="Tayside" iso_code="TAY" country="GB" zone="Europe" />
-    <state name="Co. Tipperary" iso_code="TIP" country="GB" zone="Europe" />
-    <state name="Tyne and Wear" iso_code="TWR" country="GB" zone="Europe" />
-    <state name="Co. Tyrone" iso_code="TYR" country="GB" zone="Europe" />
-    <state name="Warwickshire" iso_code="WAR" country="GB" zone="Europe" />
-    <state name="Co. Waterford" iso_code="WAT" country="GB" zone="Europe" />
-    <state name="Co. Westmeath" iso_code="WEM" country="GB" zone="Europe" />
-    <state name="Westmorland" iso_code="WES" country="GB" zone="Europe" />
-    <state name="Co. Wexford" iso_code="WEX" country="GB" zone="Europe" />
-    <state name="West Glamorgan" iso_code="WGM" country="GB" zone="Europe" />
-    <state name="Co. Wicklow" iso_code="WIC" country="GB" zone="Europe" />
-    <state name="Wigtownshire" iso_code="WIG" country="GB" zone="Europe" />
-    <state name="Wiltshire" iso_code="WIL" country="GB" zone="Europe" />
-    <state name="Western Isles" iso_code="WIS" country="GB" zone="Europe" />
-    <state name="West Lothian" iso_code="WLN" country="GB" zone="Europe" />
-    <state name="West Midlands" iso_code="WMD" country="GB" zone="Europe" />
-    <state name="Worcestershire" iso_code="WOR" country="GB" zone="Europe" />
-    <state name="West Riding of Yorkshire" iso_code="WRY" country="GB" zone="Europe" />
-    <state name="West Yorkshire" iso_code="WYK" country="GB" zone="Europe" />
-    <state name="Yorkshire" iso_code="YKS" country="GB" zone="Europe" />
+    <state name="Aberdeenshire" iso_code="ABD" country="GB" zone="Europe"/>
+    <state name="Anglesey" iso_code="AGY" country="GB" zone="Europe"/>
+    <state name="Alderney" iso_code="ALD" country="GB" zone="Europe"/>
+    <state name="Angus" iso_code="ANS" country="GB" zone="Europe"/>
+    <state name="Co. Antrim" iso_code="ANT" country="GB" zone="Europe"/>
+    <state name="Argyllshire" iso_code="ARL" country="GB" zone="Europe"/>
+    <state name="Co. Armagh" iso_code="ARM" country="GB" zone="Europe"/>
+    <state name="Avon" iso_code="AVN" country="GB" zone="Europe"/>
+    <state name="Ayrshire" iso_code="AYR" country="GB" zone="Europe"/>
+    <state name="Banffshire" iso_code="BAN" country="GB" zone="Europe"/>
+    <state name="Bedfordshire" iso_code="BDF" country="GB" zone="Europe"/>
+    <state name="Berwickshire" iso_code="BEW" country="GB" zone="Europe"/>
+    <state name="Buckinghamshire" iso_code="BKM" country="GB" zone="Europe"/>
+    <state name="Borders" iso_code="BOR" country="GB" zone="Europe"/>
+    <state name="Breconshire" iso_code="BRE" country="GB" zone="Europe"/>
+    <state name="Berkshire" iso_code="BRK" country="GB" zone="Europe"/>
+    <state name="Bute" iso_code="BUT" country="GB" zone="Europe"/>
+    <state name="Caernarvonshire" iso_code="CAE" country="GB" zone="Europe"/>
+    <state name="Caithness" iso_code="CAI" country="GB" zone="Europe"/>
+    <state name="Cambridgeshire" iso_code="CAM" country="GB" zone="Europe"/>
+    <state name="Co. Carlow" iso_code="CAR" country="GB" zone="Europe"/>
+    <state name="Co. Cavan" iso_code="CAV" country="GB" zone="Europe"/>
+    <state name="Central" iso_code="CEN" country="GB" zone="Europe"/>
+    <state name="Cardiganshire" iso_code="CGN" country="GB" zone="Europe"/>
+    <state name="Cheshire" iso_code="CHS" country="GB" zone="Europe"/>
+    <state name="Co. Clare" iso_code="CLA" country="GB" zone="Europe"/>
+    <state name="Clackmannanshire" iso_code="CLK" country="GB" zone="Europe"/>
+    <state name="Cleveland" iso_code="CLV" country="GB" zone="Europe"/>
+    <state name="Cumbria" iso_code="CMA" country="GB" zone="Europe"/>
+    <state name="Carmarthenshire" iso_code="CMN" country="GB" zone="Europe"/>
+    <state name="Cornwall" iso_code="CON" country="GB" zone="Europe"/>
+    <state name="Co. Cork" iso_code="COR" country="GB" zone="Europe"/>
+    <state name="Cumberland" iso_code="CUL" country="GB" zone="Europe"/>
+    <state name="Clwyd" iso_code="CWD" country="GB" zone="Europe"/>
+    <state name="Derbyshire" iso_code="DBY" country="GB" zone="Europe"/>
+    <state name="Denbighshire" iso_code="DEN" country="GB" zone="Europe"/>
+    <state name="Devon" iso_code="DEV" country="GB" zone="Europe"/>
+    <state name="Dyfed" iso_code="DFD" country="GB" zone="Europe"/>
+    <state name="Dumfries-shire" iso_code="DFS" country="GB" zone="Europe"/>
+    <state name="Dumfries and Galloway" iso_code="DGY" country="GB" zone="Europe"/>
+    <state name="Dunbartonshire" iso_code="DNB" country="GB" zone="Europe"/>
+    <state name="Co. Donegal" iso_code="DON" country="GB" zone="Europe"/>
+    <state name="Dorset" iso_code="DOR" country="GB" zone="Europe"/>
+    <state name="Co. Down" iso_code="DOW" country="GB" zone="Europe"/>
+    <state name="Co. Dublin" iso_code="DUB" country="GB" zone="Europe"/>
+    <state name="Co. Durham" iso_code="DUR" country="GB" zone="Europe"/>
+    <state name="East Lothian" iso_code="ELN" country="GB" zone="Europe"/>
+    <state name="East Riding of Yorkshire" iso_code="ERY" country="GB" zone="Europe"/>
+    <state name="Essex" iso_code="ESS" country="GB" zone="Europe"/>
+    <state name="Co. Fermanagh" iso_code="FER" country="GB" zone="Europe"/>
+    <state name="Fife" iso_code="FIF" country="GB" zone="Europe"/>
+    <state name="Flintshire" iso_code="FLN" country="GB" zone="Europe"/>
+    <state name="Co. Galway" iso_code="GAL" country="GB" zone="Europe"/>
+    <state name="Glamorgan" iso_code="GLA" country="GB" zone="Europe"/>
+    <state name="Gloucestershire" iso_code="GLS" country="GB" zone="Europe"/>
+    <state name="Grampian" iso_code="GMP" country="GB" zone="Europe"/>
+    <state name="Gwent" iso_code="GNT" country="GB" zone="Europe"/>
+    <state name="Guernsey" iso_code="GSY" country="GB" zone="Europe"/>
+    <state name="Greater Manchester" iso_code="GTM" country="GB" zone="Europe"/>
+    <state name="Gwynedd" iso_code="GWN" country="GB" zone="Europe"/>
+    <state name="Hampshire" iso_code="HAM" country="GB" zone="Europe"/>
+    <state name="Herefordshire" iso_code="HEF" country="GB" zone="Europe"/>
+    <state name="Highland" iso_code="HLD" country="GB" zone="Europe"/>
+    <state name="Hertfordshire" iso_code="HRT" country="GB" zone="Europe"/>
+    <state name="Humberside" iso_code="HUM" country="GB" zone="Europe"/>
+    <state name="Huntingdonshire" iso_code="HUN" country="GB" zone="Europe"/>
+    <state name="Hereford and Worcester" iso_code="HWR" country="GB" zone="Europe"/>
+    <state name="Inverness-shire" iso_code="INV" country="GB" zone="Europe"/>
+    <state name="Isle of Wight" iso_code="IOW" country="GB" zone="Europe"/>
+    <state name="Jersey" iso_code="JSY" country="GB" zone="Europe"/>
+    <state name="Kincardineshire" iso_code="KCD" country="GB" zone="Europe"/>
+    <state name="Kent" iso_code="KEN" country="GB" zone="Europe"/>
+    <state name="Co. Kerry" iso_code="KER" country="GB" zone="Europe"/>
+    <state name="Co. Kildare" iso_code="KID" country="GB" zone="Europe"/>
+    <state name="Co. Kilkenny" iso_code="KIK" country="GB" zone="Europe"/>
+    <state name="Kirkcudbrightshire" iso_code="KKD" country="GB" zone="Europe"/>
+    <state name="Kinross-shire" iso_code="KRS" country="GB" zone="Europe"/>
+    <state name="Lancashire" iso_code="LAN" country="GB" zone="Europe"/>
+    <state name="Co. Londonderry" iso_code="LDY" country="GB" zone="Europe"/>
+    <state name="Leicestershire" iso_code="LEI" country="GB" zone="Europe"/>
+    <state name="Co. Leitrim" iso_code="LET" country="GB" zone="Europe"/>
+    <state name="Co. Laois" iso_code="LEX" country="GB" zone="Europe"/>
+    <state name="Co. Limerick" iso_code="LIM" country="GB" zone="Europe"/>
+    <state name="Lincolnshire" iso_code="LIN" country="GB" zone="Europe"/>
+    <state name="Lanarkshire" iso_code="LKS" country="GB" zone="Europe"/>
+    <state name="Co. Longford" iso_code="LOG" country="GB" zone="Europe"/>
+    <state name="Co. Louth" iso_code="LOU" country="GB" zone="Europe"/>
+    <state name="Lothian" iso_code="LTN" country="GB" zone="Europe"/>
+    <state name="Co. Mayo" iso_code="MAY" country="GB" zone="Europe"/>
+    <state name="Co. Meath" iso_code="MEA" country="GB" zone="Europe"/>
+    <state name="Merionethshire" iso_code="MER" country="GB" zone="Europe"/>
+    <state name="Mid Glamorgan" iso_code="MGM" country="GB" zone="Europe"/>
+    <state name="Montgomeryshire" iso_code="MGY" country="GB" zone="Europe"/>
+    <state name="Midlothian" iso_code="MLN" country="GB" zone="Europe"/>
+    <state name="Co. Monaghan" iso_code="MOG" country="GB" zone="Europe"/>
+    <state name="Monmouthshire" iso_code="MON" country="GB" zone="Europe"/>
+    <state name="Morayshire" iso_code="MOR" country="GB" zone="Europe"/>
+    <state name="Merseyside" iso_code="MSY" country="GB" zone="Europe"/>
+    <state name="Nairn" iso_code="NAI" country="GB" zone="Europe"/>
+    <state name="Northumberland" iso_code="NBL" country="GB" zone="Europe"/>
+    <state name="Norfolk" iso_code="NFK" country="GB" zone="Europe"/>
+    <state name="North Riding of Yorkshire" iso_code="NRY" country="GB" zone="Europe"/>
+    <state name="Northamptonshire" iso_code="NTH" country="GB" zone="Europe"/>
+    <state name="Nottinghamshire" iso_code="NTT" country="GB" zone="Europe"/>
+    <state name="North Yorkshire" iso_code="NYK" country="GB" zone="Europe"/>
+    <state name="Co. Offaly" iso_code="OFF" country="GB" zone="Europe"/>
+    <state name="Orkney" iso_code="OKI" country="GB" zone="Europe"/>
+    <state name="Oxfordshire" iso_code="OXF" country="GB" zone="Europe"/>
+    <state name="Peebles-shire" iso_code="PEE" country="GB" zone="Europe"/>
+    <state name="Pembrokeshire" iso_code="PEM" country="GB" zone="Europe"/>
+    <state name="Perth" iso_code="PER" country="GB" zone="Europe"/>
+    <state name="Powys" iso_code="POW" country="GB" zone="Europe"/>
+    <state name="Radnorshire" iso_code="RAD" country="GB" zone="Europe"/>
+    <state name="Renfrewshire" iso_code="RFW" country="GB" zone="Europe"/>
+    <state name="Ross and Cromarty" iso_code="ROC" country="GB" zone="Europe"/>
+    <state name="Co. Roscommon" iso_code="ROS" country="GB" zone="Europe"/>
+    <state name="Roxburghshire" iso_code="ROX" country="GB" zone="Europe"/>
+    <state name="Rutland" iso_code="RUT" country="GB" zone="Europe"/>
+    <state name="Shropshire" iso_code="SAL" country="GB" zone="Europe"/>
+    <state name="Selkirkshire" iso_code="SEL" country="GB" zone="Europe"/>
+    <state name="Suffolk" iso_code="SFK" country="GB" zone="Europe"/>
+    <state name="South Glamorgan" iso_code="SGM" country="GB" zone="Europe"/>
+    <state name="Shetland" iso_code="SHI" country="GB" zone="Europe"/>
+    <state name="Co. Sligo" iso_code="SLI" country="GB" zone="Europe"/>
+    <state name="Somerset" iso_code="SOM" country="GB" zone="Europe"/>
+    <state name="Sark" iso_code="SRK" country="GB" zone="Europe"/>
+    <state name="Surrey" iso_code="SRY" country="GB" zone="Europe"/>
+    <state name="Sussex" iso_code="SSX" country="GB" zone="Europe"/>
+    <state name="Strathclyde" iso_code="STD" country="GB" zone="Europe"/>
+    <state name="Stirlingshire" iso_code="STI" country="GB" zone="Europe"/>
+    <state name="Staffordshire" iso_code="STS" country="GB" zone="Europe"/>
+    <state name="Sutherland" iso_code="SUT" country="GB" zone="Europe"/>
+    <state name="East Sussex" iso_code="SXE" country="GB" zone="Europe"/>
+    <state name="West Sussex" iso_code="SXW" country="GB" zone="Europe"/>
+    <state name="South Yorkshire" iso_code="SYK" country="GB" zone="Europe"/>
+    <state name="Tayside" iso_code="TAY" country="GB" zone="Europe"/>
+    <state name="Co. Tipperary" iso_code="TIP" country="GB" zone="Europe"/>
+    <state name="Tyne and Wear" iso_code="TWR" country="GB" zone="Europe"/>
+    <state name="Co. Tyrone" iso_code="TYR" country="GB" zone="Europe"/>
+    <state name="Warwickshire" iso_code="WAR" country="GB" zone="Europe"/>
+    <state name="Co. Waterford" iso_code="WAT" country="GB" zone="Europe"/>
+    <state name="Co. Westmeath" iso_code="WEM" country="GB" zone="Europe"/>
+    <state name="Westmorland" iso_code="WES" country="GB" zone="Europe"/>
+    <state name="Co. Wexford" iso_code="WEX" country="GB" zone="Europe"/>
+    <state name="West Glamorgan" iso_code="WGM" country="GB" zone="Europe"/>
+    <state name="Co. Wicklow" iso_code="WIC" country="GB" zone="Europe"/>
+    <state name="Wigtownshire" iso_code="WIG" country="GB" zone="Europe"/>
+    <state name="Wiltshire" iso_code="WIL" country="GB" zone="Europe"/>
+    <state name="Western Isles" iso_code="WIS" country="GB" zone="Europe"/>
+    <state name="West Lothian" iso_code="WLN" country="GB" zone="Europe"/>
+    <state name="West Midlands" iso_code="WMD" country="GB" zone="Europe"/>
+    <state name="Worcestershire" iso_code="WOR" country="GB" zone="Europe"/>
+    <state name="West Riding of Yorkshire" iso_code="WRY" country="GB" zone="Europe"/>
+    <state name="West Yorkshire" iso_code="WYK" country="GB" zone="Europe"/>
+    <state name="Yorkshire" iso_code="YKS" country="GB" zone="Europe"/>
   </states>
   <units>
-    <unit type="weight" value="Kg" />
-    <unit type="volume" value="L" />
-    <unit type="short_distance" value="cm" />
-    <unit type="base_distance" value="m" />
-    <unit type="long_distance" value="mi" />
+    <unit type="weight" value="Kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="mi"/>
   </units>
 </localizationPack>
