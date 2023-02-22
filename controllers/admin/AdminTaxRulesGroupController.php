@@ -405,6 +405,9 @@ class AdminTaxRulesGroupControllerCore extends AdminController
                 'title' => $this->l('Tax'),
                 'class' => 'fixed-width-sm',
             ],
+            'tax_name'     => [
+                'title' => $this->l('Tax name'),
+            ],
             'description'  => [
                 'title' => $this->l('Description'),
             ],
@@ -416,12 +419,15 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $this->_select = '
 			c.`name` AS country_name,
 			s.`name` AS state_name,
+			tl.`name` AS tax_name,
 			CONCAT_WS(" - ", a.`zipcode_from`, a.`zipcode_to`) AS zipcode,
 			t.rate';
 
         $this->_join = '
 			LEFT JOIN `'._DB_PREFIX_.'country_lang` c
 				ON (a.`id_country` = c.`id_country` AND id_lang = '.(int) $this->context->language->id.')
+           		LEFT JOIN `'._DB_PREFIX_.'tax_lang` tl
+                		ON (a.`id_tax` = tl.`id_tax` AND tl.`id_lang` = '.(int) $this->context->language->id.')
 			LEFT JOIN `'._DB_PREFIX_.'state` s
 				ON (a.`id_state` = s.`id_state`)
 			LEFT JOIN `'._DB_PREFIX_.'tax` t
