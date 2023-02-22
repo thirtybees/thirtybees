@@ -427,6 +427,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 			LEFT JOIN `'._DB_PREFIX_.'tax` t
 				ON (a.`id_tax` = t.`id_tax`)';
         $this->_where = 'AND `id_tax_rules_group` = '.(int) $idGroup;
+        $this->_orderBy = 'c!name';
         $this->_use_found_rows = false;
 
         $this->show_toolbar = false;
