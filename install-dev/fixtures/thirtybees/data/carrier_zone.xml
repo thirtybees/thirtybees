@@ -5,7 +5,7 @@
     <field name="id_zone" relation="zone"/>
   </fields>
   <entities>
-    <carrier_zone id="carrier_zone_2_1" id_carrier="My_carrier" id_zone="Europe"/>
+    <carrier_zone id="carrier_zone_2_1" id_carrier="My_carrier" id_zone="Europe_EU"/>
     <carrier_zone id="carrier_zone_2_2" id_carrier="My_carrier" id_zone="North_America"/>
   </entities>
 </entity_carrier_zone>

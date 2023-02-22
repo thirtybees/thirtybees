@@ -5,8 +5,8 @@
     <field name="active"/>
   </fields>
   <entities>
-    <zone id="Europe" active="1">
-      <name>Europe</name>
+    <zone id="Europe_EU" active="1">
+      <name>Europe (EU)</name>
     </zone>
     <zone id="North_America" active="1">
       <name>North America</name>
@@ -23,7 +23,7 @@
     <zone id="South_America" active="1">
       <name>South America</name>
     </zone>
-    <zone id="Europe_out_E_U" active="1">
+    <zone id="Europe_non_EU" active="1">
       <name>Europe (non-EU)</name>
     </zone>
     <zone id="Central_America_Antilla" active="1">

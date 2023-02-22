@@ -375,334 +375,334 @@
     <state id="T" id_country="AR" id_zone="South_America" iso_code="T" tax_behavior="0" active="1">
       <name>Tucumán</name>
     </state>
-    <state id="AG" id_country="IT" id_zone="Europe" iso_code="AG" tax_behavior="0" active="1">
+    <state id="AG" id_country="IT" id_zone="Europe_EU" iso_code="AG" tax_behavior="0" active="1">
       <name>Agrigento</name>
     </state>
-    <state id="AL_1" id_country="IT" id_zone="Europe" iso_code="AL" tax_behavior="0" active="1">
+    <state id="AL_1" id_country="IT" id_zone="Europe_EU" iso_code="AL" tax_behavior="0" active="1">
       <name>Alessandria</name>
     </state>
-    <state id="AN" id_country="IT" id_zone="Europe" iso_code="AN" tax_behavior="0" active="1">
+    <state id="AN" id_country="IT" id_zone="Europe_EU" iso_code="AN" tax_behavior="0" active="1">
       <name>Ancona</name>
     </state>
-    <state id="AO" id_country="IT" id_zone="Europe" iso_code="AO" tax_behavior="0" active="1">
+    <state id="AO" id_country="IT" id_zone="Europe_EU" iso_code="AO" tax_behavior="0" active="1">
       <name>Aosta</name>
     </state>
-    <state id="AR_1" id_country="IT" id_zone="Europe" iso_code="AR" tax_behavior="0" active="1">
+    <state id="AR_1" id_country="IT" id_zone="Europe_EU" iso_code="AR" tax_behavior="0" active="1">
       <name>Arezzo</name>
     </state>
-    <state id="AP" id_country="IT" id_zone="Europe" iso_code="AP" tax_behavior="0" active="1">
+    <state id="AP" id_country="IT" id_zone="Europe_EU" iso_code="AP" tax_behavior="0" active="1">
       <name>Ascoli Piceno</name>
     </state>
-    <state id="AT" id_country="IT" id_zone="Europe" iso_code="AT" tax_behavior="0" active="1">
+    <state id="AT" id_country="IT" id_zone="Europe_EU" iso_code="AT" tax_behavior="0" active="1">
       <name>Asti</name>
     </state>
-    <state id="AV" id_country="IT" id_zone="Europe" iso_code="AV" tax_behavior="0" active="1">
+    <state id="AV" id_country="IT" id_zone="Europe_EU" iso_code="AV" tax_behavior="0" active="1">
       <name>Avellino</name>
     </state>
-    <state id="BA" id_country="IT" id_zone="Europe" iso_code="BA" tax_behavior="0" active="1">
+    <state id="BA" id_country="IT" id_zone="Europe_EU" iso_code="BA" tax_behavior="0" active="1">
       <name>Bari</name>
     </state>
-    <state id="BT" id_country="IT" id_zone="Europe" iso_code="BT" tax_behavior="0" active="1">
+    <state id="BT" id_country="IT" id_zone="Europe_EU" iso_code="BT" tax_behavior="0" active="1">
       <name>Barletta-Andria-Trani</name>
     </state>
-    <state id="BL" id_country="IT" id_zone="Europe" iso_code="BL" tax_behavior="0" active="1">
+    <state id="BL" id_country="IT" id_zone="Europe_EU" iso_code="BL" tax_behavior="0" active="1">
       <name>Belluno</name>
     </state>
-    <state id="BN" id_country="IT" id_zone="Europe" iso_code="BN" tax_behavior="0" active="1">
+    <state id="BN" id_country="IT" id_zone="Europe_EU" iso_code="BN" tax_behavior="0" active="1">
       <name>Benevento</name>
     </state>
-    <state id="BG" id_country="IT" id_zone="Europe" iso_code="BG" tax_behavior="0" active="1">
+    <state id="BG" id_country="IT" id_zone="Europe_EU" iso_code="BG" tax_behavior="0" active="1">
       <name>Bergamo</name>
     </state>
-    <state id="BI" id_country="IT" id_zone="Europe" iso_code="BI" tax_behavior="0" active="1">
+    <state id="BI" id_country="IT" id_zone="Europe_EU" iso_code="BI" tax_behavior="0" active="1">
       <name>Biella</name>
     </state>
-    <state id="BO" id_country="IT" id_zone="Europe" iso_code="BO" tax_behavior="0" active="1">
+    <state id="BO" id_country="IT" id_zone="Europe_EU" iso_code="BO" tax_behavior="0" active="1">
       <name>Bologna</name>
     </state>
-    <state id="BZ" id_country="IT" id_zone="Europe" iso_code="BZ" tax_behavior="0" active="1">
+    <state id="BZ" id_country="IT" id_zone="Europe_EU" iso_code="BZ" tax_behavior="0" active="1">
       <name>Bolzano</name>
     </state>
-    <state id="BS" id_country="IT" id_zone="Europe" iso_code="BS" tax_behavior="0" active="1">
+    <state id="BS" id_country="IT" id_zone="Europe_EU" iso_code="BS" tax_behavior="0" active="1">
       <name>Brescia</name>
     </state>
-    <state id="BR" id_country="IT" id_zone="Europe" iso_code="BR" tax_behavior="0" active="1">
+    <state id="BR" id_country="IT" id_zone="Europe_EU" iso_code="BR" tax_behavior="0" active="1">
       <name>Brindisi</name>
     </state>
-    <state id="CA_1" id_country="IT" id_zone="Europe" iso_code="CA" tax_behavior="0" active="1">
+    <state id="CA_1" id_country="IT" id_zone="Europe_EU" iso_code="CA" tax_behavior="0" active="1">
       <name>Cagliari</name>
     </state>
-    <state id="CL" id_country="IT" id_zone="Europe" iso_code="CL" tax_behavior="0" active="1">
+    <state id="CL" id_country="IT" id_zone="Europe_EU" iso_code="CL" tax_behavior="0" active="1">
       <name>Caltanissetta</name>
     </state>
-    <state id="CB" id_country="IT" id_zone="Europe" iso_code="CB" tax_behavior="0" active="1">
+    <state id="CB" id_country="IT" id_zone="Europe_EU" iso_code="CB" tax_behavior="0" active="1">
       <name>Campobasso</name>
     </state>
-    <state id="CI" id_country="IT" id_zone="Europe" iso_code="CI" tax_behavior="0" active="1">
+    <state id="CI" id_country="IT" id_zone="Europe_EU" iso_code="CI" tax_behavior="0" active="1">
       <name>Carbonia-Iglesias</name>
     </state>
-    <state id="CE" id_country="IT" id_zone="Europe" iso_code="CE" tax_behavior="0" active="1">
+    <state id="CE" id_country="IT" id_zone="Europe_EU" iso_code="CE" tax_behavior="0" active="1">
       <name>Caserta</name>
     </state>
-    <state id="CT_1" id_country="IT" id_zone="Europe" iso_code="CT" tax_behavior="0" active="1">
+    <state id="CT_1" id_country="IT" id_zone="Europe_EU" iso_code="CT" tax_behavior="0" active="1">
       <name>Catania</name>
     </state>
-    <state id="CZ" id_country="IT" id_zone="Europe" iso_code="CZ" tax_behavior="0" active="1">
+    <state id="CZ" id_country="IT" id_zone="Europe_EU" iso_code="CZ" tax_behavior="0" active="1">
       <name>Catanzaro</name>
     </state>
-    <state id="CH" id_country="IT" id_zone="Europe" iso_code="CH" tax_behavior="0" active="1">
+    <state id="CH" id_country="IT" id_zone="Europe_EU" iso_code="CH" tax_behavior="0" active="1">
       <name>Chieti</name>
     </state>
-    <state id="CO_1" id_country="IT" id_zone="Europe" iso_code="CO" tax_behavior="0" active="1">
+    <state id="CO_1" id_country="IT" id_zone="Europe_EU" iso_code="CO" tax_behavior="0" active="1">
       <name>Como</name>
     </state>
-    <state id="CS" id_country="IT" id_zone="Europe" iso_code="CS" tax_behavior="0" active="1">
+    <state id="CS" id_country="IT" id_zone="Europe_EU" iso_code="CS" tax_behavior="0" active="1">
       <name>Cosenza</name>
     </state>
-    <state id="CR" id_country="IT" id_zone="Europe" iso_code="CR" tax_behavior="0" active="1">
+    <state id="CR" id_country="IT" id_zone="Europe_EU" iso_code="CR" tax_behavior="0" active="1">
       <name>Cremona</name>
     </state>
-    <state id="KR" id_country="IT" id_zone="Europe" iso_code="KR" tax_behavior="0" active="1">
+    <state id="KR" id_country="IT" id_zone="Europe_EU" iso_code="KR" tax_behavior="0" active="1">
       <name>Crotone</name>
     </state>
-    <state id="CN" id_country="IT" id_zone="Europe" iso_code="CN" tax_behavior="0" active="1">
+    <state id="CN" id_country="IT" id_zone="Europe_EU" iso_code="CN" tax_behavior="0" active="1">
       <name>Cuneo</name>
     </state>
-    <state id="EN" id_country="IT" id_zone="Europe" iso_code="EN" tax_behavior="0" active="1">
+    <state id="EN" id_country="IT" id_zone="Europe_EU" iso_code="EN" tax_behavior="0" active="1">
       <name>Enna</name>
     </state>
-    <state id="FM" id_country="IT" id_zone="Europe" iso_code="FM" tax_behavior="0" active="1">
+    <state id="FM" id_country="IT" id_zone="Europe_EU" iso_code="FM" tax_behavior="0" active="1">
       <name>Fermo</name>
     </state>
-    <state id="FE" id_country="IT" id_zone="Europe" iso_code="FE" tax_behavior="0" active="1">
+    <state id="FE" id_country="IT" id_zone="Europe_EU" iso_code="FE" tax_behavior="0" active="1">
       <name>Ferrara</name>
     </state>
-    <state id="FI" id_country="IT" id_zone="Europe" iso_code="FI" tax_behavior="0" active="1">
+    <state id="FI" id_country="IT" id_zone="Europe_EU" iso_code="FI" tax_behavior="0" active="1">
       <name>Firenze</name>
     </state>
-    <state id="FG" id_country="IT" id_zone="Europe" iso_code="FG" tax_behavior="0" active="1">
+    <state id="FG" id_country="IT" id_zone="Europe_EU" iso_code="FG" tax_behavior="0" active="1">
       <name>Foggia</name>
     </state>
-    <state id="FC" id_country="IT" id_zone="Europe" iso_code="FC" tax_behavior="0" active="1">
+    <state id="FC" id_country="IT" id_zone="Europe_EU" iso_code="FC" tax_behavior="0" active="1">
       <name>Forlì-Cesena</name>
     </state>
-    <state id="FR" id_country="IT" id_zone="Europe" iso_code="FR" tax_behavior="0" active="1">
+    <state id="FR" id_country="IT" id_zone="Europe_EU" iso_code="FR" tax_behavior="0" active="1">
       <name>Frosinone</name>
     </state>
-    <state id="GE" id_country="IT" id_zone="Europe" iso_code="GE" tax_behavior="0" active="1">
+    <state id="GE" id_country="IT" id_zone="Europe_EU" iso_code="GE" tax_behavior="0" active="1">
       <name>Genova</name>
     </state>
-    <state id="GO" id_country="IT" id_zone="Europe" iso_code="GO" tax_behavior="0" active="1">
+    <state id="GO" id_country="IT" id_zone="Europe_EU" iso_code="GO" tax_behavior="0" active="1">
       <name>Gorizia</name>
     </state>
-    <state id="GR" id_country="IT" id_zone="Europe" iso_code="GR" tax_behavior="0" active="1">
+    <state id="GR" id_country="IT" id_zone="Europe_EU" iso_code="GR" tax_behavior="0" active="1">
       <name>Grosseto</name>
     </state>
-    <state id="IM" id_country="IT" id_zone="Europe" iso_code="IM" tax_behavior="0" active="1">
+    <state id="IM" id_country="IT" id_zone="Europe_EU" iso_code="IM" tax_behavior="0" active="1">
       <name>Imperia</name>
     </state>
-    <state id="IS" id_country="IT" id_zone="Europe" iso_code="IS" tax_behavior="0" active="1">
+    <state id="IS" id_country="IT" id_zone="Europe_EU" iso_code="IS" tax_behavior="0" active="1">
       <name>Isernia</name>
     </state>
-    <state id="AQ" id_country="IT" id_zone="Europe" iso_code="AQ" tax_behavior="0" active="1">
+    <state id="AQ" id_country="IT" id_zone="Europe_EU" iso_code="AQ" tax_behavior="0" active="1">
       <name>L'Aquila</name>
     </state>
-    <state id="SP" id_country="IT" id_zone="Europe" iso_code="SP" tax_behavior="0" active="1">
+    <state id="SP" id_country="IT" id_zone="Europe_EU" iso_code="SP" tax_behavior="0" active="1">
       <name>La Spezia</name>
     </state>
-    <state id="LT" id_country="IT" id_zone="Europe" iso_code="LT" tax_behavior="0" active="1">
+    <state id="LT" id_country="IT" id_zone="Europe_EU" iso_code="LT" tax_behavior="0" active="1">
       <name>Latina</name>
     </state>
-    <state id="LE" id_country="IT" id_zone="Europe" iso_code="LE" tax_behavior="0" active="1">
+    <state id="LE" id_country="IT" id_zone="Europe_EU" iso_code="LE" tax_behavior="0" active="1">
       <name>Lecce</name>
     </state>
-    <state id="LC" id_country="IT" id_zone="Europe" iso_code="LC" tax_behavior="0" active="1">
+    <state id="LC" id_country="IT" id_zone="Europe_EU" iso_code="LC" tax_behavior="0" active="1">
       <name>Lecco</name>
     </state>
-    <state id="LI" id_country="IT" id_zone="Europe" iso_code="LI" tax_behavior="0" active="1">
+    <state id="LI" id_country="IT" id_zone="Europe_EU" iso_code="LI" tax_behavior="0" active="1">
       <name>Livorno</name>
     </state>
-    <state id="LO" id_country="IT" id_zone="Europe" iso_code="LO" tax_behavior="0" active="1">
+    <state id="LO" id_country="IT" id_zone="Europe_EU" iso_code="LO" tax_behavior="0" active="1">
       <name>Lodi</name>
     </state>
-    <state id="LU" id_country="IT" id_zone="Europe" iso_code="LU" tax_behavior="0" active="1">
+    <state id="LU" id_country="IT" id_zone="Europe_EU" iso_code="LU" tax_behavior="0" active="1">
       <name>Lucca</name>
     </state>
-    <state id="MC" id_country="IT" id_zone="Europe" iso_code="MC" tax_behavior="0" active="1">
+    <state id="MC" id_country="IT" id_zone="Europe_EU" iso_code="MC" tax_behavior="0" active="1">
       <name>Macerata</name>
     </state>
-    <state id="MN_1" id_country="IT" id_zone="Europe" iso_code="MN" tax_behavior="0" active="1">
+    <state id="MN_1" id_country="IT" id_zone="Europe_EU" iso_code="MN" tax_behavior="0" active="1">
       <name>Mantova</name>
     </state>
-    <state id="MS_1" id_country="IT" id_zone="Europe" iso_code="MS" tax_behavior="0" active="1">
+    <state id="MS_1" id_country="IT" id_zone="Europe_EU" iso_code="MS" tax_behavior="0" active="1">
       <name>Massa</name>
     </state>
-    <state id="MT_1" id_country="IT" id_zone="Europe" iso_code="MT" tax_behavior="0" active="1">
+    <state id="MT_1" id_country="IT" id_zone="Europe_EU" iso_code="MT" tax_behavior="0" active="1">
       <name>Matera</name>
     </state>
-    <state id="VS" id_country="IT" id_zone="Europe" iso_code="VS" tax_behavior="0" active="1">
+    <state id="VS" id_country="IT" id_zone="Europe_EU" iso_code="VS" tax_behavior="0" active="1">
       <name>Medio Campidano</name>
     </state>
-    <state id="ME_1" id_country="IT" id_zone="Europe" iso_code="ME" tax_behavior="0" active="1">
+    <state id="ME_1" id_country="IT" id_zone="Europe_EU" iso_code="ME" tax_behavior="0" active="1">
       <name>Messina</name>
     </state>
-    <state id="MI_1" id_country="IT" id_zone="Europe" iso_code="MI" tax_behavior="0" active="1">
+    <state id="MI_1" id_country="IT" id_zone="Europe_EU" iso_code="MI" tax_behavior="0" active="1">
       <name>Milano</name>
     </state>
-    <state id="MO_1" id_country="IT" id_zone="Europe" iso_code="MO" tax_behavior="0" active="1">
+    <state id="MO_1" id_country="IT" id_zone="Europe_EU" iso_code="MO" tax_behavior="0" active="1">
       <name>Modena</name>
     </state>
-    <state id="MB_1" id_country="IT" id_zone="Europe" iso_code="MB" tax_behavior="0" active="1">
+    <state id="MB_1" id_country="IT" id_zone="Europe_EU" iso_code="MB" tax_behavior="0" active="1">
       <name>Monza e della Brianza</name>
     </state>
-    <state id="NA" id_country="IT" id_zone="Europe" iso_code="NA" tax_behavior="0" active="1">
+    <state id="NA" id_country="IT" id_zone="Europe_EU" iso_code="NA" tax_behavior="0" active="1">
       <name>Napoli</name>
     </state>
-    <state id="NO" id_country="IT" id_zone="Europe" iso_code="NO" tax_behavior="0" active="1">
+    <state id="NO" id_country="IT" id_zone="Europe_EU" iso_code="NO" tax_behavior="0" active="1">
       <name>Novara</name>
     </state>
-    <state id="NU_1" id_country="IT" id_zone="Europe" iso_code="NU" tax_behavior="0" active="1">
+    <state id="NU_1" id_country="IT" id_zone="Europe_EU" iso_code="NU" tax_behavior="0" active="1">
       <name>Nuoro</name>
     </state>
-    <state id="OG" id_country="IT" id_zone="Europe" iso_code="OG" tax_behavior="0" active="1">
+    <state id="OG" id_country="IT" id_zone="Europe_EU" iso_code="OG" tax_behavior="0" active="1">
       <name>Ogliastra</name>
     </state>
-    <state id="OT" id_country="IT" id_zone="Europe" iso_code="OT" tax_behavior="0" active="1">
+    <state id="OT" id_country="IT" id_zone="Europe_EU" iso_code="OT" tax_behavior="0" active="1">
       <name>Olbia-Tempio</name>
     </state>
-    <state id="OR_1" id_country="IT" id_zone="Europe" iso_code="OR" tax_behavior="0" active="1">
+    <state id="OR_1" id_country="IT" id_zone="Europe_EU" iso_code="OR" tax_behavior="0" active="1">
       <name>Oristano</name>
     </state>
-    <state id="PD" id_country="IT" id_zone="Europe" iso_code="PD" tax_behavior="0" active="1">
+    <state id="PD" id_country="IT" id_zone="Europe_EU" iso_code="PD" tax_behavior="0" active="1">
       <name>Padova</name>
     </state>
-    <state id="PA_1" id_country="IT" id_zone="Europe" iso_code="PA" tax_behavior="0" active="1">
+    <state id="PA_1" id_country="IT" id_zone="Europe_EU" iso_code="PA" tax_behavior="0" active="1">
       <name>Palermo</name>
     </state>
-    <state id="PR_1" id_country="IT" id_zone="Europe" iso_code="PR" tax_behavior="0" active="1">
+    <state id="PR_1" id_country="IT" id_zone="Europe_EU" iso_code="PR" tax_behavior="0" active="1">
       <name>Parma</name>
     </state>
-    <state id="PV" id_country="IT" id_zone="Europe" iso_code="PV" tax_behavior="0" active="1">
+    <state id="PV" id_country="IT" id_zone="Europe_EU" iso_code="PV" tax_behavior="0" active="1">
       <name>Pavia</name>
     </state>
-    <state id="PG" id_country="IT" id_zone="Europe" iso_code="PG" tax_behavior="0" active="1">
+    <state id="PG" id_country="IT" id_zone="Europe_EU" iso_code="PG" tax_behavior="0" active="1">
       <name>Perugia</name>
     </state>
-    <state id="PU" id_country="IT" id_zone="Europe" iso_code="PU" tax_behavior="0" active="1">
+    <state id="PU" id_country="IT" id_zone="Europe_EU" iso_code="PU" tax_behavior="0" active="1">
       <name>Pesaro-Urbino</name>
     </state>
-    <state id="PE_1" id_country="IT" id_zone="Europe" iso_code="PE" tax_behavior="0" active="1">
+    <state id="PE_1" id_country="IT" id_zone="Europe_EU" iso_code="PE" tax_behavior="0" active="1">
       <name>Pescara</name>
     </state>
-    <state id="PC" id_country="IT" id_zone="Europe" iso_code="PC" tax_behavior="0" active="1">
+    <state id="PC" id_country="IT" id_zone="Europe_EU" iso_code="PC" tax_behavior="0" active="1">
       <name>Piacenza</name>
     </state>
-    <state id="PI" id_country="IT" id_zone="Europe" iso_code="PI" tax_behavior="0" active="1">
+    <state id="PI" id_country="IT" id_zone="Europe_EU" iso_code="PI" tax_behavior="0" active="1">
       <name>Pisa</name>
     </state>
-    <state id="PT" id_country="IT" id_zone="Europe" iso_code="PT" tax_behavior="0" active="1">
+    <state id="PT" id_country="IT" id_zone="Europe_EU" iso_code="PT" tax_behavior="0" active="1">
       <name>Pistoia</name>
     </state>
-    <state id="PN" id_country="IT" id_zone="Europe" iso_code="PN" tax_behavior="0" active="1">
+    <state id="PN" id_country="IT" id_zone="Europe_EU" iso_code="PN" tax_behavior="0" active="1">
       <name>Pordenone</name>
     </state>
-    <state id="PZ" id_country="IT" id_zone="Europe" iso_code="PZ" tax_behavior="0" active="1">
+    <state id="PZ" id_country="IT" id_zone="Europe_EU" iso_code="PZ" tax_behavior="0" active="1">
       <name>Potenza</name>
     </state>
-    <state id="PO" id_country="IT" id_zone="Europe" iso_code="PO" tax_behavior="0" active="1">
+    <state id="PO" id_country="IT" id_zone="Europe_EU" iso_code="PO" tax_behavior="0" active="1">
       <name>Prato</name>
     </state>
-    <state id="RG" id_country="IT" id_zone="Europe" iso_code="RG" tax_behavior="0" active="1">
+    <state id="RG" id_country="IT" id_zone="Europe_EU" iso_code="RG" tax_behavior="0" active="1">
       <name>Ragusa</name>
     </state>
-    <state id="RA" id_country="IT" id_zone="Europe" iso_code="RA" tax_behavior="0" active="1">
+    <state id="RA" id_country="IT" id_zone="Europe_EU" iso_code="RA" tax_behavior="0" active="1">
       <name>Ravenna</name>
     </state>
-    <state id="RC" id_country="IT" id_zone="Europe" iso_code="RC" tax_behavior="0" active="1">
+    <state id="RC" id_country="IT" id_zone="Europe_EU" iso_code="RC" tax_behavior="0" active="1">
       <name>Reggio Calabria</name>
     </state>
-    <state id="RE" id_country="IT" id_zone="Europe" iso_code="RE" tax_behavior="0" active="1">
+    <state id="RE" id_country="IT" id_zone="Europe_EU" iso_code="RE" tax_behavior="0" active="1">
       <name>Reggio Emilia</name>
     </state>
-    <state id="RI_1" id_country="IT" id_zone="Europe" iso_code="RI" tax_behavior="0" active="1">
+    <state id="RI_1" id_country="IT" id_zone="Europe_EU" iso_code="RI" tax_behavior="0" active="1">
       <name>Rieti</name>
     </state>
-    <state id="RN" id_country="IT" id_zone="Europe" iso_code="RN" tax_behavior="0" active="1">
+    <state id="RN" id_country="IT" id_zone="Europe_EU" iso_code="RN" tax_behavior="0" active="1">
       <name>Rimini</name>
     </state>
-    <state id="RM" id_country="IT" id_zone="Europe" iso_code="RM" tax_behavior="0" active="1">
+    <state id="RM" id_country="IT" id_zone="Europe_EU" iso_code="RM" tax_behavior="0" active="1">
       <name>Roma</name>
     </state>
-    <state id="RO" id_country="IT" id_zone="Europe" iso_code="RO" tax_behavior="0" active="1">
+    <state id="RO" id_country="IT" id_zone="Europe_EU" iso_code="RO" tax_behavior="0" active="1">
       <name>Rovigo</name>
     </state>
-    <state id="SA" id_country="IT" id_zone="Europe" iso_code="SA" tax_behavior="0" active="1">
+    <state id="SA" id_country="IT" id_zone="Europe_EU" iso_code="SA" tax_behavior="0" active="1">
       <name>Salerno</name>
     </state>
-    <state id="SS" id_country="IT" id_zone="Europe" iso_code="SS" tax_behavior="0" active="1">
+    <state id="SS" id_country="IT" id_zone="Europe_EU" iso_code="SS" tax_behavior="0" active="1">
       <name>Sassari</name>
     </state>
-    <state id="SV" id_country="IT" id_zone="Europe" iso_code="SV" tax_behavior="0" active="1">
+    <state id="SV" id_country="IT" id_zone="Europe_EU" iso_code="SV" tax_behavior="0" active="1">
       <name>Savona</name>
     </state>
-    <state id="SI" id_country="IT" id_zone="Europe" iso_code="SI" tax_behavior="0" active="1">
+    <state id="SI" id_country="IT" id_zone="Europe_EU" iso_code="SI" tax_behavior="0" active="1">
       <name>Siena</name>
     </state>
-    <state id="SR" id_country="IT" id_zone="Europe" iso_code="SR" tax_behavior="0" active="1">
+    <state id="SR" id_country="IT" id_zone="Europe_EU" iso_code="SR" tax_behavior="0" active="1">
       <name>Siracusa</name>
     </state>
-    <state id="SO" id_country="IT" id_zone="Europe" iso_code="SO" tax_behavior="0" active="1">
+    <state id="SO" id_country="IT" id_zone="Europe_EU" iso_code="SO" tax_behavior="0" active="1">
       <name>Sondrio</name>
     </state>
-    <state id="TA" id_country="IT" id_zone="Europe" iso_code="TA" tax_behavior="0" active="1">
+    <state id="TA" id_country="IT" id_zone="Europe_EU" iso_code="TA" tax_behavior="0" active="1">
       <name>Taranto</name>
     </state>
-    <state id="TE" id_country="IT" id_zone="Europe" iso_code="TE" tax_behavior="0" active="1">
+    <state id="TE" id_country="IT" id_zone="Europe_EU" iso_code="TE" tax_behavior="0" active="1">
       <name>Teramo</name>
     </state>
-    <state id="TR" id_country="IT" id_zone="Europe" iso_code="TR" tax_behavior="0" active="1">
+    <state id="TR" id_country="IT" id_zone="Europe_EU" iso_code="TR" tax_behavior="0" active="1">
       <name>Terni</name>
     </state>
-    <state id="TO" id_country="IT" id_zone="Europe" iso_code="TO" tax_behavior="0" active="1">
+    <state id="TO" id_country="IT" id_zone="Europe_EU" iso_code="TO" tax_behavior="0" active="1">
       <name>Torino</name>
     </state>
-    <state id="TP" id_country="IT" id_zone="Europe" iso_code="TP" tax_behavior="0" active="1">
+    <state id="TP" id_country="IT" id_zone="Europe_EU" iso_code="TP" tax_behavior="0" active="1">
       <name>Trapani</name>
     </state>
-    <state id="TN_1" id_country="IT" id_zone="Europe" iso_code="TN" tax_behavior="0" active="1">
+    <state id="TN_1" id_country="IT" id_zone="Europe_EU" iso_code="TN" tax_behavior="0" active="1">
       <name>Trento</name>
     </state>
-    <state id="TV" id_country="IT" id_zone="Europe" iso_code="TV" tax_behavior="0" active="1">
+    <state id="TV" id_country="IT" id_zone="Europe_EU" iso_code="TV" tax_behavior="0" active="1">
       <name>Treviso</name>
     </state>
-    <state id="TS" id_country="IT" id_zone="Europe" iso_code="TS" tax_behavior="0" active="1">
+    <state id="TS" id_country="IT" id_zone="Europe_EU" iso_code="TS" tax_behavior="0" active="1">
       <name>Trieste</name>
     </state>
-    <state id="UD" id_country="IT" id_zone="Europe" iso_code="UD" tax_behavior="0" active="1">
+    <state id="UD" id_country="IT" id_zone="Europe_EU" iso_code="UD" tax_behavior="0" active="1">
       <name>Udine</name>
     </state>
-    <state id="VA_1" id_country="IT" id_zone="Europe" iso_code="VA" tax_behavior="0" active="1">
+    <state id="VA_1" id_country="IT" id_zone="Europe_EU" iso_code="VA" tax_behavior="0" active="1">
       <name>Varese</name>
     </state>
-    <state id="VE" id_country="IT" id_zone="Europe" iso_code="VE" tax_behavior="0" active="1">
+    <state id="VE" id_country="IT" id_zone="Europe_EU" iso_code="VE" tax_behavior="0" active="1">
       <name>Venezia</name>
     </state>
-    <state id="VB" id_country="IT" id_zone="Europe" iso_code="VB" tax_behavior="0" active="1">
+    <state id="VB" id_country="IT" id_zone="Europe_EU" iso_code="VB" tax_behavior="0" active="1">
       <name>Verbano-Cusio-Ossola</name>
     </state>
-    <state id="VC" id_country="IT" id_zone="Europe" iso_code="VC" tax_behavior="0" active="1">
+    <state id="VC" id_country="IT" id_zone="Europe_EU" iso_code="VC" tax_behavior="0" active="1">
       <name>Vercelli</name>
     </state>
-    <state id="VR" id_country="IT" id_zone="Europe" iso_code="VR" tax_behavior="0" active="1">
+    <state id="VR" id_country="IT" id_zone="Europe_EU" iso_code="VR" tax_behavior="0" active="1">
       <name>Verona</name>
     </state>
-    <state id="VV" id_country="IT" id_zone="Europe" iso_code="VV" tax_behavior="0" active="1">
+    <state id="VV" id_country="IT" id_zone="Europe_EU" iso_code="VV" tax_behavior="0" active="1">
       <name>Vibo Valentia</name>
     </state>
-    <state id="VI_1" id_country="IT" id_zone="Europe" iso_code="VI" tax_behavior="0" active="1">
+    <state id="VI_1" id_country="IT" id_zone="Europe_EU" iso_code="VI" tax_behavior="0" active="1">
       <name>Vicenza</name>
     </state>
-    <state id="VT_1" id_country="IT" id_zone="Europe" iso_code="VT" tax_behavior="0" active="1">
+    <state id="VT_1" id_country="IT" id_zone="Europe_EU" iso_code="VT" tax_behavior="0" active="1">
       <name>Viterbo</name>
     </state>
     <state id="AC" id_country="ID" id_zone="Asia" iso_code="AC" tax_behavior="0" active="1">
