@@ -8,10 +8,10 @@
   </languages>
   <taxes>
     <tax id="1" name="ΦΠΑ GR 24%" rate="24" eu-tax-group="virtual"/>
-    <tax id="2" name="ΦΠΑ GR 24%" rate="24"/>
-    <tax id="3" name="ΦΠΑ GR 6.5%" rate="6.5"/>
-    <tax id="4" name="ΦΠΑ GR 24%" rate="24"/>
-    <tax id="5" name="ΦΠΑ GR 8%" rate="8"/>
+    <tax id="2" name="ΦΠΑ GR 13%" rate="13"/>
+    <tax id="3" name="ΦΠΑ GR 6%" rate="6"/>
+    <tax id="4" name="ΦΠΑ GR 17%" rate="17"/>
+    <tax id="5" name="ΦΠΑ GR 9%" rate="9"/>
     <tax id="6" name="ΦΠΑ GR 4%" rate="4"/>
     <tax id="7" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="8" name="TVA BE 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
@@ -39,7 +39,7 @@
     <tax id="30" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="31" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="32" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
-    <taxRulesGroup name="GR Standard Rate (23%)">
+    <taxRulesGroup name="GR Standard Rate (24%)">
       <taxRule iso_code_country="be" id_tax="1"/>
       <taxRule iso_code_country="bg" id_tax="1"/>
       <taxRule iso_code_country="cz" id_tax="1"/>
@@ -97,7 +97,7 @@
       <taxRule iso_code_country="se" id_tax="2"/>
       <taxRule iso_code_country="hr" id_tax="2"/>
     </taxRulesGroup>
-    <taxRulesGroup name="GR Super Reduced Rate (6.5%)">
+    <taxRulesGroup name="GR Super Reduced Rate (6%)">
       <taxRule iso_code_country="be" id_tax="3"/>
       <taxRule iso_code_country="bg" id_tax="3"/>
       <taxRule iso_code_country="cz" id_tax="3"/>
@@ -126,7 +126,7 @@
       <taxRule iso_code_country="se" id_tax="3"/>
       <taxRule iso_code_country="hr" id_tax="3"/>
     </taxRulesGroup>
-    <taxRulesGroup name="GR islands Standard Rate (16%)">
+    <taxRulesGroup name="GR islands Standard Rate (17%)">
       <taxRule iso_code_country="be" id_tax="4"/>
       <taxRule iso_code_country="bg" id_tax="4"/>
       <taxRule iso_code_country="cz" id_tax="4"/>
@@ -155,7 +155,7 @@
       <taxRule iso_code_country="se" id_tax="4"/>
       <taxRule iso_code_country="hr" id_tax="4"/>
     </taxRulesGroup>
-    <taxRulesGroup name="GR islands Reduced Rate (8%)">
+    <taxRulesGroup name="GR islands Reduced Rate (9%)">
       <taxRule iso_code_country="be" id_tax="5"/>
       <taxRule iso_code_country="bg" id_tax="5"/>
       <taxRule iso_code_country="cz" id_tax="5"/>
