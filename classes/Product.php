@@ -466,11 +466,6 @@ class ProductCore extends ObjectModel
     public $packItems;
 
     /**
-     * @var ProductDownload|null
-     */
-    public $productDownload;
-
-    /**
      * @var array
      */
     public static $definition = [

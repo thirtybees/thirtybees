@@ -25,41 +25,41 @@
 
 <div id="product-virtualproduct" class="panel product-tab">
 	<input type="hidden" name="submitted_tabs[]" value="VirtualProduct" />
-	<input type="hidden" id="virtual_product_filename" name="virtual_product_filename" value="{$product->productDownload->filename}" />
+	<input type="hidden" id="virtual_product_filename" name="virtual_product_filename" value="{$productDownload->filename}" />
 	<h3>{l s='Virtual Product (services, booking or downloadable products)'}</h3>
 	<div id="virtual_good" class="form-group">
 		<div class="form-group">
 			<label class="control-label col-lg-3">{l s='Does this product have an associated file?'}</label>
 			<div class="col-lg-2">
 				<span class="switch prestashop-switch fixed-width-lg">
-					<input type="radio" name="is_virtual_file" id="is_virtual_file_on" value="1" {if $product->productDownload->id} checked="checked"{/if} />
+					<input type="radio" name="is_virtual_file" id="is_virtual_file_on" value="1" {if $productDownload->id} checked="checked"{/if} />
 					<label for="is_virtual_file_on">{l s='Yes'}</label>
-					<input type="radio" name="is_virtual_file" id="is_virtual_file_off" value="0" {if !$product->productDownload->id} checked="checked"{/if} />
+					<input type="radio" name="is_virtual_file" id="is_virtual_file_off" value="0" {if !$productDownload->id} checked="checked"{/if} />
 					<label for="is_virtual_file_off">{l s='No'}</label>
 					<a class="slide-button btn"></a>
 				</span>
-                {if $product->productDownload->id}
+                {if $productDownload->id}
                     <p class="help-block">{l s='Turning this off also removes related data and the downloadable file.'}</p>
                 {/if}
 			</div>
 		</div>
-		<div id="is_virtual_file_product"{if !$product->productDownload->id} style="display:none;"{/if}>
+		<div id="is_virtual_file_product"{if !$productDownload->id} style="display:none;"{/if}>
             <hr>
             <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Is this file active?'}</label>
                 <div class="col-lg-2">
                     <span class="switch prestashop-switch fixed-width-lg">
-                        <input type="radio" name="virtual_product_active" id="virtual_product_active_on" value="1" {if $product->productDownload->active} checked="checked"{/if} />
+                        <input type="radio" name="virtual_product_active" id="virtual_product_active_on" value="1" {if $productDownload->active} checked="checked"{/if} />
                         <label for="virtual_product_active_on">{l s='Yes'}</label>
-                        <input type="radio" name="virtual_product_active" id="virtual_product_active_off" value="0" {if !$product->productDownload->active} checked="checked"{/if} />
+                        <input type="radio" name="virtual_product_active" id="virtual_product_active_off" value="0" {if !$productDownload->active} checked="checked"{/if} />
                         <label for="virtual_product_active_off">{l s='No'}</label>
                         <a class="slide-button btn"></a>
                     </span>
                     <p class="help-block">{l s='Deactivating the download makes it inaccessible to customers, but keeps related data and the file on disk.'}</p>
                 </div>
             </div>
-            {if $product->productDownload->id}
-                <input type="hidden" id="virtual_product_id" name="virtual_product_id" value="{$product->productDownload->id}">
+            {if $productDownload->id}
+                <input type="hidden" id="virtual_product_id" name="virtual_product_id" value="{$productDownload->id}">
             {/if}
             <div class="form-group"{if $is_file} style="display:none"{/if}>
                 <label id="virtual_product_file_label" for="virtual_product_file" class="control-label col-lg-3">
@@ -76,7 +76,7 @@
             <div class="form-group">
                 <label class="control-label col-lg-3 required">{l s='Filename'}</label>
                 <div class="col-lg-5">
-                    <input type="text" id="virtual_product_name" name="virtual_product_name" value="{$product->productDownload->display_filename|escape:'html':'UTF-8'}">
+                    <input type="text" id="virtual_product_name" name="virtual_product_name" value="{$productDownload->display_filename|escape:'html':'UTF-8'}">
                     <p class="help-block">{l s='The full filename with its extension (e.g. Book.pdf)'}</p>
                 </div>
             </div>
@@ -84,7 +84,7 @@
             <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Link to the file:'}</label>
                 <div class="col-lg-5">
-                    <a href="{$product->productDownload->getTextLink(true)}" class="btn btn-default"><i class="icon-download"></i> {l s='Download file'}</a>
+                    <a href="{$productDownload->getTextLink(true)}" class="btn btn-default"><i class="icon-download"></i> {l s='Download file'}</a>
                     <a href="{$currentIndex|escape:'html':'UTF-8'}&amp;deleteVirtualProduct=true&amp;updateproduct&amp;token={$token|escape:'html':'UTF-8'}&amp;id_product={$product->id}" class="btn btn-default" onclick="return confirm('{l s='Do you really want to delete this file?' js=1}');"><i class="icon-trash"></i> {l s='Delete this file'}</a>
                 </div>
             </div>
@@ -92,21 +92,21 @@
             <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Number of allowed downloads'}</label>
                 <div class="col-lg-3">
-                    <input type="text" id="virtual_product_nb_downloable" name="virtual_product_nb_downloable" value="{$product->productDownload->nb_downloadable|htmlentities}" class="" size="6">
+                    <input type="text" id="virtual_product_nb_downloable" name="virtual_product_nb_downloable" value="{$productDownload->nb_downloadable|htmlentities}" class="" size="6">
                     <p class="help-block">{l s='Number of downloads allowed per customer. Set to 0 for unlimited downloads.'}</p>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Expiration date'}</label>
                 <div class="col-lg-5">
-                    <input class="datepicker" type="text" id="virtual_product_expiration_date" name="virtual_product_expiration_date" value="{$product->productDownload->date_expiration}" size="11" maxlength="10" autocomplete="off">
+                    <input class="datepicker" type="text" id="virtual_product_expiration_date" name="virtual_product_expiration_date" value="{$productDownload->date_expiration}" size="11" maxlength="10" autocomplete="off">
                     <p class="help-block">{l s='If set, the file will not be downloadable after this date. Leave blank if you do not wish to attach an expiration date.'}</p>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-3 required">{l s='Number of days'}</label>
                 <div class="col-lg-3">
-                    <input type="text" id="virtual_product_nb_days" name="virtual_product_nb_days" value="{if !$product->productDownload->nb_days_accessible}0{else}{$product->productDownload->nb_days_accessible|htmlentities}{/if}" class="" size="4">
+                    <input type="text" id="virtual_product_nb_days" name="virtual_product_nb_days" value="{if !$productDownload->nb_days_accessible}0{else}{$productDownload->nb_days_accessible|htmlentities}{/if}" class="" size="4">
                     <p class="help-block">{l s='Number of days this file can be accessed by customers. Set to zero for unlimited access.'}</p>
                 </div>
             </div>

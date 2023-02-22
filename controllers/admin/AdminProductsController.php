@@ -4597,8 +4597,6 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
-        $product->productDownload = $productDownload;
-
         $virtualProductFileUploader = new HelperUploader('virtual_product_file_uploader');
         $virtualProductFileUploader->setMultiple(false)->setUrl(
             $this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $product->id
@@ -4618,7 +4616,8 @@ class AdminProductsControllerCore extends AdminController
                 'token'                         => $this->token,
                 'currency'                      => $currency,
                 'link'                          => $this->context->link,
-                'is_file'                       => $product->productDownload->checkFile(),
+                'is_file'                       => $productDownload->checkFile(),
+                'productDownload'               => $productDownload,
                 'virtual_product_file_uploader' => $virtualProductFileUploader->render(),
             ]
         );
@@ -4862,15 +4861,6 @@ class AdminProductsControllerCore extends AdminController
         $this->object = $product;
         //$this->display = 'edit';
         $data->assign('product_name_redirected', Product::getProductName((int) $product->id_product_redirected, null, (int) $this->context->language->id));
-        /*
-        * Form for adding a virtual product like software, mp3, etc...
-        */
-        $productDownload = new ProductDownload();
-        if ($idProductDownload = $productDownload->getIdFromIdProduct($this->getFieldValue($product, 'id'))) {
-            $productDownload = new ProductDownload($idProductDownload);
-        }
-
-        $product->{'productDownload'} = $productDownload;
 
         $productProps = [];
         // global informations
