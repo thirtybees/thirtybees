@@ -949,7 +949,7 @@ class ShopCore extends ObjectModel
      *
      * @param bool|string $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      *
-     * @return array
+     * @return int[]
      *
      * @throws PrestaShopException
      */

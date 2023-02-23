@@ -593,10 +593,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             } else {
                 $idShopList = Shop::getContextListShopID();
             }
-        }
 
-        if (Shop::checkIdShopDefault($this->def['table'])) {
-            $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
+            if (Shop::checkIdShopDefault($this->def['table']) && property_exists($this, 'id_shop_default')) {
+                $defaultShopId = (int)Configuration::get('PS_SHOP_DEFAULT');
+                $this->id_shop_default = in_array($defaultShopId, $idShopList) ? $defaultShopId : min($idShopList);
+            }
         }
 
         // Database insertion
@@ -765,8 +766,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $idShopList = Shop::getContextListShopID();
         }
 
-        if (Shop::checkIdShopDefault($this->def['table']) && !$this->id_shop_default) {
-            $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
+        if (Shop::checkIdShopDefault($this->def['table']) && property_exists($this, 'id_shop_default') && !$this->id_shop_default) {
+            $defaultShopId = (int)Configuration::get('PS_SHOP_DEFAULT');
+            $this->id_shop_default = in_array($defaultShopId, $idShopList) ? $defaultShopId : min($idShopList);
         }
 
         // Database update
