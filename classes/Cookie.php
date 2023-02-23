@@ -41,6 +41,7 @@
  * @property bool $collapse_menu
  * @property string $customer_firstname
  * @property string $customer_lastname
+ * @property string $date_add
  * @property bool $detect_language
  * @property string $email
  * @property int $employee_form_lang
