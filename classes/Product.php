@@ -7375,7 +7375,7 @@ class ProductCore extends ObjectModel
      */
     public function getCoverWs()
     {
-        $result = $this->getCover($this->id);
+        $result = static::getCover($this->id);
 
         return isset($result['id_image']) ? $result['id_image'] : null;
     }
