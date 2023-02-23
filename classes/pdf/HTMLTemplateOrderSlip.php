@@ -34,10 +34,19 @@
  */
 class HTMLTemplateOrderSlipCore extends HTMLTemplate
 {
-    /** @var Order $order */
+    /**
+     * @var Order $order
+     */
     public $order;
 
-    /** @var OrderSlipCore $order_slip */
+    /**
+     * @var array[]
+     */
+    public $products;
+
+    /**
+     * @var OrderSlipCore $order_slip
+     */
     public $order_slip;
 
     /**
@@ -55,7 +64,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
         $customizedDatas = Product::getAllCustomizedDatas((int) $this->order->id_cart);
         Product::addCustomizationPrice($products, $customizedDatas);
 
-        $this->order->products = $products;
+        $this->products = $products;
         $this->smarty = $smarty;
 
         // header informations
@@ -110,7 +119,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
         $this->order->total_paid_tax_excl = $this->order->total_paid_tax_incl = $this->order->total_products = $this->order->total_products_wt = 0;
 
         if ($this->order_slip->amount > 0) {
-            foreach ($this->order->products as &$product) {
+            foreach ($this->products as &$product) {
                 $product['total_price_tax_excl'] = $product['unit_price_tax_excl'] * $product['product_quantity'];
                 $product['total_price_tax_incl'] = $product['unit_price_tax_incl'] * $product['product_quantity'];
 
@@ -133,7 +142,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
                 $this->order->total_paid_tax_incl = $this->order->total_products_wt;
             }
         } else {
-            $this->order->products = null;
+            $this->products = [];
         }
 
         unset($product); // remove reference
@@ -169,9 +178,9 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
             [
                 'order'                => $this->order,
                 'order_slip'           => $this->order_slip,
-                'order_details'        => $this->order->products,
+                'order_details'        => $this->products,
                 'cart_rules'           => $this->order_slip->order_slip_type == 1 ? $this->order->getCartRules() : false,
-                'amount_choosen'       => $this->order_slip->order_slip_type == 2 ? true : false,
+                'amount_choosen'       => $this->order_slip->order_slip_type == 2,
                 'delivery_address'     => $formattedDeliveryAddress,
                 'invoice_address'      => $formattedInvoiceAddress,
                 'addresses'            => ['invoice' => $invoiceAddress, 'delivery' => $deliveryAddress],
@@ -261,7 +270,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
     public function getProductTaxesBreakdown()
     {
 
-        if (! $this->order->products) {
+        if (! $this->products) {
             return [];
         }
 
@@ -270,7 +279,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
         // 	- 'total_amount'
         $breakdown = [];
 
-        $details = $this->order->getProductTaxesDetails($this->order->products);
+        $details = $this->order->getProductTaxesDetails($this->products);
 
         foreach ($details as $row) {
             $rate = sprintf('%.3f', $row['tax_rate']);
