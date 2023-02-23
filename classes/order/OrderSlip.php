@@ -241,20 +241,22 @@ class OrderSlipCore extends ObjectModel
      * @deprecated 1.0.0 use OrderSlip::create() instead
      *
      * @param Order $order
-     * @param array $productList
-     * @param array $qtyList
-     * @param bool $shippingCost
+     * @param int[] $selectedOrderLines list of order details line IDs selected for refund
+     * @param int[] $qtyList refund quantities associative array
+     * @param float|bool $shippingCost Shipping costs to be refunded. Explicit shipping costs amount can be passed,
+     *                                 or boolean value to indicate if total shipping costs should be refunded
+     *
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function createOrderSlip($order, $productList, $qtyList, $shippingCost = false)
+    public static function createOrderSlip($order, $selectedOrderLines, $qtyList, $shippingCost = false)
     {
         Tools::displayAsDeprecated();
 
         $newProductList = [];
-        foreach ($productList as $idOrderDetail) {
+        foreach ($selectedOrderLines as $idOrderDetail) {
             $orderDetail = new OrderDetail((int) $idOrderDetail);
             $newProductList[$idOrderDetail] = [
                 'id_order_detail' => $idOrderDetail,
@@ -262,9 +264,7 @@ class OrderSlipCore extends ObjectModel
                 'unit_price'      => $orderDetail->unit_price_tax_excl,
                 'amount'          => $orderDetail->unit_price_tax_incl * $qtyList[$idOrderDetail],
             ];
-
         }
-
         return static::create($order, $newProductList, $shippingCost);
     }
 
