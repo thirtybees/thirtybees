@@ -423,7 +423,7 @@ class TranslateCore
             $params['sprintf'] = null;
         }
 
-        $filename = ((!isset($smarty->compiler_object) || !is_object($smarty->compiler_object->template)) ? $smarty->template_resource : $smarty->compiler_object->template->getTemplateFilepath());
+        $filename = $smarty->template_resource;
         $basename = basename($filename, '.tpl');
 
         if ($params['mod']) {
@@ -458,7 +458,7 @@ class TranslateCore
             return static::postProcessTranslation(Translate::getPdfTranslation($params['s'], $sprintf), $params);
         }
 
-        $filename = ((!isset($smarty->compiler_object) || !is_object($smarty->compiler_object->template)) ? $smarty->template_resource : $smarty->compiler_object->template->getTemplateFilepath());
+        $filename = $smarty->template_resource;
 
         // If the template is part of a module
         if (!empty($params['mod'])) {
