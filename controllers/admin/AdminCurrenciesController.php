@@ -311,6 +311,7 @@ class AdminCurrenciesControllerCore extends AdminController
      */
     public function processStatus()
     {
+        /** @var Currency $object */
         $object = $this->loadObject();
         if (!$this->checkDisableStatus($object)) {
             return false;
@@ -320,7 +321,7 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @param ObjectModel $object
+     * @param Currency $object
      *
      * @return bool
      *
