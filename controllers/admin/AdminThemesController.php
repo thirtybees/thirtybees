@@ -815,7 +815,7 @@ class AdminThemesControllerCore extends AdminController
             );
 
             // Select the list of module for this shop
-            $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 (new DbQuery())
                     ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
                     ->from('module', 'm')
@@ -824,7 +824,7 @@ class AdminThemesControllerCore extends AdminController
             );
 
             // Select the list of hook for this shop
-            $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 (new DbQuery())
                     ->select('h.`id_hook`, h.`name` AS `name_hook`, hm.`position`, hm.`id_module`, m.`name` AS `name_module`, GROUP_CONCAT(hme.`file_name`, ",") AS `exceptions`')
                     ->from('hook', 'h')
@@ -842,11 +842,12 @@ class AdminThemesControllerCore extends AdminController
             });
 
             foreach ($this->hook_list as &$row) {
-                $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
+                $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', (string)$row['exceptions']), ',');
             }
 
             // Get a list of modules available on the module update server. As
             // these are always available, there's no need to package them.
+            /** @var TbUpdater $moduleUpdater */
             $moduleUpdater = Module::getInstanceByName('tbupdater');
             if ( ! Validate::isLoadedObject($moduleUpdater)) {
                 $this->errors[] = $this->l('Module \'tbupdater\' must be installed to allow exporting a theme.');
@@ -1220,13 +1221,12 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     *                of the current theme.
      */
     protected function renderExportTheme()
     {
         $toInstall = [];
 
-        $moduleList = Db::getInstance()->executeS(
+        $moduleList = Db::getInstance()->getArray(
             '
 			SELECT m.`id_module`, m.`name`, m.`active`, ms.`id_shop`
 			FROM `'._DB_PREFIX_.'module` m
@@ -1236,7 +1236,7 @@ class AdminThemesControllerCore extends AdminController
         );
 
         // Select the list of hook for this shop
-        $hookList = Db::getInstance()->executeS(
+        $hookList = Db::getInstance()->getArray(
             '
 			SELECT h.`id_hook`, h.`name` as name_hook, hm.`position`, hm.`id_module`, m.`name` as name_module, GROUP_CONCAT(hme.`file_name`, ",") as exceptions
 			FROM `'._DB_PREFIX_.'hook` h
@@ -1250,16 +1250,16 @@ class AdminThemesControllerCore extends AdminController
         );
 
         foreach ($hookList as &$row) {
-            $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
+            $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', (string)$row['exceptions']), ',');
         }
 
         // Get a list of modules available on the module update server. As
         // these are always available, there's no need to package them.
+        /** @var TbUpdater $moduleUpdater */
         $moduleUpdater = Module::getInstanceByName('tbupdater');
         if ( ! Validate::isLoadedObject($moduleUpdater)) {
             $this->errors[] = $this->l('Module \'tbupdater\' must be installed to allow exporting a theme.');
-
-            return;
+            return '';
         }
         $thirtybeesModules = array_keys($moduleUpdater->getCachedModulesInfo());
 
