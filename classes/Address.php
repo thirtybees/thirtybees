@@ -507,7 +507,7 @@ class AddressCore extends ObjectModel
      * default shop configuration
      *
      * @param int $idAddress
-     * @param bool $withGeoLocation
+     * @param bool $withGeoLocation Unused
      *
      * @return Address address
      *
@@ -516,13 +516,9 @@ class AddressCore extends ObjectModel
     public static function initialize($idAddress = null, $withGeoLocation = false)
     {
         $context = Context::getContext();
-        $exists = (int) $idAddress && (bool) Address::addressExists($idAddress);
+        $exists = (int) $idAddress && Address::addressExists($idAddress);
         if ($exists) {
             $contextHash = (int) $idAddress;
-        } elseif ($withGeoLocation && isset($context->customer->geoloc_id_country)) {
-            $contextHash = md5(
-                (int) $context->customer->geoloc_id_country.'-'.(int) $context->customer->id_state.'-'.$context->customer->postcode
-            );
         } else {
             $contextHash = md5((int) $context->country->id);
         }
@@ -537,11 +533,6 @@ class AddressCore extends ObjectModel
                 if (!Validate::isLoadedObject($address)) {
                     throw new PrestaShopException('Invalid address #'.(int) $idAddress);
                 }
-            } elseif ($withGeoLocation && isset($context->customer->geoloc_id_country)) {
-                $address = new Address();
-                $address->id_country = (int) $context->customer->geoloc_id_country;
-                $address->id_state = (int) $context->customer->id_state;
-                $address->postcode = $context->customer->postcode;
             } else {
                 // set the default address
                 $address = new Address();

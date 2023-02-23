@@ -933,10 +933,6 @@ class ProductCore extends ObjectModel
                 $idState = (int) $addressInfos['id_state'];
                 $zipcode = $addressInfos['postcode'];
             }
-        } elseif (isset($context->customer->geoloc_id_country)) {
-            $idCountry = (int) $context->customer->geoloc_id_country;
-            $idState = (int) $context->customer->id_state;
-            $zipcode = $context->customer->postcode;
         }
 
         if (Tax::excludeTaxeOption()) {

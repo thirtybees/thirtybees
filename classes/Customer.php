@@ -190,15 +190,15 @@ class CustomerCore extends ObjectModel
      * @var int
      */
     public $months;
-    /** @var int customer id_country as determined by geolocation */
-    public $geoloc_id_country;
-    /** @var int customer id_state as determined by geolocation */
-    public $geoloc_id_state;
-    /** @var string customer postcode as determined by geolocation */
-    public $geoloc_postcode;
-    /** @var bool is the customer logged in */
+
+    /**
+     * @var bool is the customer logged in
+     */
     public $logged = 0;
-    /** @var int id_guest meaning the guest table, not the guest customer */
+
+    /**
+     * @var int id_guest meaning the guest table, not the guest customer
+     */
     public $id_guest;
 
     /**

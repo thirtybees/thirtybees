@@ -102,7 +102,6 @@ class AddressFormatCore extends ObjectModel
         'show_public_prices',
         'max_payment',
         'max_payment_days',
-        'geoloc_postcode',
         'logged',
         'account_number',
         'groupBox',
