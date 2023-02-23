@@ -65,6 +65,11 @@ class PdfInvoiceControllerCore extends FrontController
     protected $template;
 
     /**
+     * @var Order|null
+     */
+    protected $order;
+
+    /**
      * Post processing
      *
      * @return void
