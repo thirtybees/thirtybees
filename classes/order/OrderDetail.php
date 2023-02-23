@@ -485,6 +485,11 @@ class OrderDetailCore extends ObjectModel
     /**
      * Create a list of order detail for a specified id_order using cart
      *
+     * After method returns, property outOfStock contains information if any product is out of stock.
+     * Transient properties $vat_address and $customer are also populated during the method call.
+     *
+     * This is an excellent example of how NOT TO WRITE a code.
+     *
      * @param object|Order $order
      * @param Cart|object $cart
      * @param int $idOrderState
@@ -509,7 +514,6 @@ class OrderDetailCore extends ObjectModel
         }
 
         unset($this->vat_address);
-        unset($products);
         unset($this->customer);
     }
 

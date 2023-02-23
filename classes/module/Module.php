@@ -392,7 +392,7 @@ abstract class ModuleCore
      *
      * @param string $moduleName Module name
      *
-     * @return Module|bool
+     * @return Module|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

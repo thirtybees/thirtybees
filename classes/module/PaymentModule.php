@@ -151,7 +151,7 @@ abstract class PaymentModuleCore extends Module
 
         if (($moduleInstance = Module::getInstanceByName($moduleName))) {
             /** @var PaymentModule $moduleInstance */
-            if (!$moduleInstance->currencies || ($moduleInstance->currencies && count(Currency::checkPaymentCurrencies($moduleInstance->id)))) {
+            if (!$moduleInstance->currencies || count(Currency::checkPaymentCurrencies($moduleInstance->id))) {
                 return true;
             }
         }
@@ -290,11 +290,6 @@ abstract class PaymentModuleCore extends Module
     public function addCheckboxCountryRestrictionsForModule(array $shops = [])
     {
         $countries = Country::getCountries((int) Context::getContext()->language->id, true); //get only active country
-        $countryIds = [];
-        foreach ($countries as $country) {
-            $countryIds[] = $country['id_country'];
-        }
-
         return Country::addModuleRestrictions($shops, $countries, [['id_module' => (int) $this->id]]);
     }
 
@@ -449,16 +444,12 @@ abstract class PaymentModuleCore extends Module
                 }
             }
 
-            $orderList = [];
-            $orderDetailList = [];
-
             do {
                 $reference = Order::generateReference();
             } while (Order::getByReference($reference)->count());
 
             $this->currentOrderReference = $reference;
 
-            $orderCreationFailed = false;
             $cartTotalPaid = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
             foreach ($cartDeliveryOption as $idAddress => $keyCarriers) {
@@ -473,8 +464,10 @@ abstract class PaymentModuleCore extends Module
             // Make sure CartRule caches are empty
             CartRule::cleanCache();
             $cartRules = $this->context->cart->getCartRules();
-            foreach ($cartRules as $cartRule) {
-                if (($rule = new CartRule((int) $cartRule['obj']->id)) && Validate::isLoadedObject($rule)) {
+            foreach ($cartRules as $cartRuleEntry) {
+                /** @var CartRule $cartRule */
+                $cartRule = $cartRuleEntry['obj'];
+                if (($rule = new CartRule((int) $cartRule->id)) && Validate::isLoadedObject($rule)) {
                     if ($error = $rule->checkValidity($this->context, true, true)) {
                         $this->context->cart->removeCartRule((int) $rule->id);
                         if (isset($this->context->cookie) && isset($this->context->cookie->id_customer) && $this->context->cookie->id_customer && !empty($rule->code)) {
@@ -484,18 +477,18 @@ abstract class PaymentModuleCore extends Module
                             Tools::redirect('index.php?controller=order&submitAddDiscount=1&discount_name='.urlencode($rule->code));
                         } else {
                             $ruleName = isset($rule->name[(int) $this->context->cart->id_lang]) ? $rule->name[(int) $this->context->cart->id_lang] : $rule->code;
-                            $error = sprintf(Tools::displayError('CartRule ID %1s (%2s) used in this cart is not valid and has been withdrawn from cart'), (int) $rule->id, $ruleName);
+                            $error = sprintf(Tools::displayError('CartRule ID %1s (%2s) used in this cart is not valid and has been withdrawn from cart. Reason: '.$error), (int) $rule->id, $ruleName);
                             Logger::addLog($error, 3, '0000002', 'Cart', (int) $this->context->cart->id);
                         }
                     }
                 }
             }
 
+            $orders = [];
             foreach ($packageList as $idAddress => $packageByAddress) {
-                foreach ($packageByAddress as $idPackage => $package) {
-                    /** @var Order $order */
+                foreach ($packageByAddress as $package) {
                     $order = new Order();
-                    $order->product_list = $package['product_list'];
+                    $productList = $package['product_list'];
 
                     if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_delivery') {
                         $address = new Address((int) $idAddress);
@@ -541,26 +534,26 @@ abstract class PaymentModuleCore extends Module
                     }
                     $amountPaid = $dontTouchAmount ? $amountPaid : Tools::ps_round($amountPaid, $displayDecimals);
 
-                    $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
-                    $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
-                    $order->total_discounts_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS, $order->product_list, $idCarrier));
-                    $order->total_discounts_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS, $order->product_list, $idCarrier));
+                    $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $productList, $idCarrier);
+                    $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $productList, $idCarrier);
+                    $order->total_discounts_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS, $productList, $idCarrier));
+                    $order->total_discounts_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS, $productList, $idCarrier));
                     $order->total_discounts = $order->total_discounts_tax_incl;
 
-                    $order->total_shipping_tax_excl = (float) $this->context->cart->getPackageShippingCost((int) $idCarrier, false, null, $order->product_list);
-                    $order->total_shipping_tax_incl = (float) $this->context->cart->getPackageShippingCost((int) $idCarrier, true, null, $order->product_list);
+                    $order->total_shipping_tax_excl = (float) $this->context->cart->getPackageShippingCost((int) $idCarrier, false, null, $productList);
+                    $order->total_shipping_tax_incl = (float) $this->context->cart->getPackageShippingCost((int) $idCarrier, true, null, $productList);
                     $order->total_shipping = $order->total_shipping_tax_incl;
 
                     if (!is_null($carrier) && Validate::isLoadedObject($carrier)) {
                         $order->carrier_tax_rate = $carrier->getTaxesRate(new Address((int) $this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
                     }
 
-                    $order->total_wrapping_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_WRAPPING, $order->product_list, $idCarrier));
-                    $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING, $order->product_list, $idCarrier));
+                    $order->total_wrapping_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_WRAPPING, $productList, $idCarrier));
+                    $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING, $productList, $idCarrier));
                     $order->total_wrapping = $order->total_wrapping_tax_incl;
 
-                    $order->total_paid_tax_excl = (float) (float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $idCarrier);
-                    $order->total_paid_tax_incl = (float) (float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $idCarrier);
+                    $order->total_paid_tax_excl = (float) (float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $productList, $idCarrier);
+                    $order->total_paid_tax_incl = (float) (float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $productList, $idCarrier);
                     $order->total_paid = $order->total_paid_tax_incl;
                     $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
                     $order->round_type = (int) Configuration::get('PS_ROUND_TYPE');
@@ -581,15 +574,15 @@ abstract class PaymentModuleCore extends Module
                         $idOrderState = Configuration::get('PS_OS_ERROR');
                     }
 
-                    $orderList[] = $order;
-
                     // Insert new Order detail list using cart for the current order
+                    // Method createList uses $orderDetail as a template to create multiple order lines.
+                    // Afterwards, property $orderDetail->outOfStock contains information if *any* order line out of stock
                     $orderDetail = new OrderDetail(null, null, $this->context);
-                    $orderDetail->createList($order, $this->context->cart, $idOrderState, $order->product_list, 0, true, $packageList[$idAddress][$idPackage]['id_warehouse']);
-                    $orderDetailList[] = $orderDetail;
+                    $orderDetail->createList($order, $this->context->cart, $idOrderState, $productList, 0, true, $package['id_warehouse']);
+                    $outOfStock = $orderDetail->getStockState();
 
                     // Adding an entry in order_carrier table
-                    if (!is_null($carrier)) {
+                    if (! is_null($carrier)) {
                         $orderCarrier = new OrderCarrier();
                         $orderCarrier->id_order = (int) $order->id;
                         $orderCarrier->id_carrier = (int) $idCarrier;
@@ -598,11 +591,19 @@ abstract class PaymentModuleCore extends Module
                         $orderCarrier->shipping_cost_tax_incl = (float) $order->total_shipping_tax_incl;
                         $orderCarrier->add();
                     }
+
+                    // save information about created order for further processing
+                    $orders[] = [
+                        'order' => $order,
+                        'productList' => $productList,
+                        'outOfStock' => $outOfStock,
+                        'carrierName' => $carrier ? $carrier->getName() : Tools::displayError('No carrier')
+                    ];
                 }
             }
 
             // The country can only change if the address used for the calculation is the delivery address, and if multi-shipping is activated
-            if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_delivery') {
+            if (isset($contextCountry) && Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_delivery') {
                 $this->context->country = $contextCountry;
             }
 
@@ -629,158 +630,230 @@ abstract class PaymentModuleCore extends Module
             }
 
             // Next !
-            $onlyOneGift = false;
             $cartRuleUsed = [];
-            $products = $this->context->cart->getProducts();
 
             // Make sure CartRule caches are empty
             CartRule::cleanCache();
-            foreach ($orderDetailList as $key => $orderDetail) {
-                /** @var OrderDetail $orderDetail */
 
-                $order = $orderList[$key];
-                if (!$orderCreationFailed && isset($order->id)) {
-                    if (!$secureKey) {
-                        $message .= '<br />'.Tools::displayError('Warning: the secure key is empty, check your payment account before validation');
+            $singleOrder = count($orders) === 1;
+
+            foreach ($orders as $entry) {
+                /** @var Order $order */
+                $order = $entry['order'];
+                /** @var array[] $productList */
+                $productList = $entry['productList'];
+                $outOfStock = (bool)$entry['outOfStock'];
+                $carrierName = $entry['carrierName'];
+
+                if (!$secureKey) {
+                    $message .= '<br />'.Tools::displayError('Warning: the secure key is empty, check your payment account before validation');
+                }
+
+                // Optional message to attach to this order
+                if (isset($message) & !empty($message)) {
+                    $msg = new Message();
+                    $message = strip_tags($message, '<br>');
+                    if (Validate::isCleanHtml($message)) {
+                        $msg->message = $message;
+                        $msg->id_cart = (int) $idCart;
+                        $msg->id_customer = (int) ($order->id_customer);
+                        $msg->id_order = (int) $order->id;
+                        $msg->private = 1;
+                        $msg->add();
                     }
-                    // Optional message to attach to this order
-                    if (isset($message) & !empty($message)) {
-                        $msg = new Message();
-                        $message = strip_tags($message, '<br>');
-                        if (Validate::isCleanHtml($message)) {
-                            $msg->message = $message;
-                            $msg->id_cart = (int) $idCart;
-                            $msg->id_customer = (int) ($order->id_customer);
-                            $msg->id_order = (int) $order->id;
-                            $msg->private = 1;
-                            $msg->add();
+                }
+
+                $productVarTplList = [];
+                foreach ($productList as $product) {
+                    $price = Product::getPriceStatic(
+                        (int) $product['id_product'],
+                        false,
+                        $product['id_product_attribute'] ?
+                            (int) $product['id_product_attribute'] :
+                            null,
+                        _TB_PRICE_DATABASE_PRECISION_,
+                        null,
+                        false,
+                        true,
+                        $product['cart_quantity'],
+                        false,
+                        (int) $order->id_customer,
+                        (int) $order->id_cart,
+                        (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
+                    );
+                    $priceTaxIncluded = Product::getPriceStatic(
+                        (int) $product['id_product'],
+                        true,
+                        $product['id_product_attribute'] ?
+                            (int) $product['id_product_attribute'] :
+                            null,
+                        _TB_PRICE_DATABASE_PRECISION_,
+                        null,
+                        false,
+                        true,
+                        $product['cart_quantity'],
+                        false,
+                        (int) $order->id_customer,
+                        (int) $order->id_cart,
+                        (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
+                    );
+
+                    $productPrice
+                        = Product::getTaxCalculationMethod() == PS_TAX_EXC ?
+                            $price : $priceTaxIncluded;
+
+                    $productVarTpl = [
+                        'reference'            => $product['reference'],
+                        'name'                 => $product['name'].(isset($product['attributes']) ? ' - '.$product['attributes'] : ''),
+                        'unit_price'           => Tools::displayPrice($productPrice, $this->context->currency, false),
+                        'price'                => Tools::displayPrice($productPrice * $product['quantity'], $this->context->currency, false),
+                        'quantity'             => $product['quantity'],
+                        'customization'        => [],
+                        'id_product'           => (int)$product['id_product'],
+                        'id_product_attribute' => $product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null,
+                        'id_image'             => $product['id_image'],
+                        'link_rewrite'         => $product['link_rewrite'],
+                    ];
+
+                    $customizedDatas = Product::getAllCustomizedDatas((int) $order->id_cart);
+                    if (isset($customizedDatas[$product['id_product']][$product['id_product_attribute']])) {
+                        $productVarTpl['customization'] = [];
+                        foreach ($customizedDatas[$product['id_product']][$product['id_product_attribute']][$order->id_address_delivery] as $customization) {
+                            $customizationText = '';
+                            if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
+                                foreach ($customization['datas'][Product::CUSTOMIZE_TEXTFIELD] as $text) {
+                                    $customizationText .= $text['name'].': '.$text['value'].'<br />';
+                                }
+                            }
+
+                            if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
+                                $customizationText .= sprintf(Tools::displayError('%d image(s)'), count($customization['datas'][Product::CUSTOMIZE_FILE])).'<br />';
+                            }
+
+                            $customizationQuantity = (int) $product['customization_quantity'];
+
+                            $productVarTpl['customization'][] = [
+                                'customization_text'     => $customizationText,
+                                'customization_quantity' => $customizationQuantity,
+                                'quantity'               => Tools::displayPrice($customizationQuantity * $productPrice, $this->context->currency, false),
+                            ];
                         }
                     }
 
-                    // Insert new Order detail list using cart for the current order
-                    //$orderDetail = new OrderDetail(null, null, $this->context);
-                    //$orderDetail->createList($order, $this->context->cart, $id_order_state);
+                    $productVarTplList[] = $productVarTpl;
+                }
 
-                    // Construct order detail table for the email
-                    $productsList = '';
-                    $virtualProduct = true;
+                $productListTxt = '';
+                $productListHtml = '';
+                if (count($productVarTplList) > 0) {
+                    $productListTxt = $this->getEmailTemplateContent('order_conf_product_list.txt', Mail::TYPE_TEXT, $productVarTplList);
+                    $productListHtml = $this->getEmailTemplateContent('order_conf_product_list.tpl', Mail::TYPE_HTML, $productVarTplList);
+                }
 
-                    $productVarTplList = [];
-                    foreach ($order->product_list as $product) {
-                        $price = Product::getPriceStatic(
-                            (int) $product['id_product'],
-                            false,
-                            $product['id_product_attribute'] ?
-                                (int) $product['id_product_attribute'] :
-                                null,
-                            _TB_PRICE_DATABASE_PRECISION_,
-                            null,
-                            false,
-                            true,
-                            $product['cart_quantity'],
-                            false,
-                            (int) $order->id_customer,
-                            (int) $order->id_cart,
-                            (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
-                        );
-                        $priceTaxIncluded = Product::getPriceStatic(
-                            (int) $product['id_product'],
-                            true,
-                            $product['id_product_attribute'] ?
-                                (int) $product['id_product_attribute'] :
-                                null,
-                            _TB_PRICE_DATABASE_PRECISION_,
-                            null,
-                            false,
-                            true,
-                            $product['cart_quantity'],
-                            false,
-                            (int) $order->id_customer,
-                            (int) $order->id_cart,
-                            (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
-                        );
+                $cartRulesList = [];
+                $totalReductionValueTaxIncluded = 0;
+                $totalReductionValueTaxExcluded = 0;
+                foreach ($cartRules as $cartRuleEntry) {
+                    /** @var CartRule $cartRule */
+                    $cartRule = $cartRuleEntry['obj'];
+                    $package = ['id_carrier' => $order->id_carrier, 'id_address' => $order->id_address_delivery, 'products' => $productList];
+                    $values = [
+                        'tax_incl' => $cartRule->getContextualValue(true, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
+                        'tax_excl' => $cartRule->getContextualValue(false, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
+                    ];
 
-                        $productPrice
-                            = Product::getTaxCalculationMethod() == PS_TAX_EXC ?
-                                $price : $priceTaxIncluded;
+                    // If the reduction is not applicable to this order, then continue with the next one
+                    if (!$values['tax_excl'] && !$values['tax_incl']) {
+                        continue;
+                    }
 
-                        $productVarTpl = [
-                            'reference'            => $product['reference'],
-                            'name'                 => $product['name'].(isset($product['attributes']) ? ' - '.$product['attributes'] : ''),
-                            'unit_price'           => Tools::displayPrice($productPrice, $this->context->currency, false),
-                            'price'                => Tools::displayPrice($productPrice * $product['quantity'], $this->context->currency, false),
-                            'quantity'             => $product['quantity'],
-                            'customization'        => [],
-                            'id_product'           => (int)$product['id_product'],
-                            'id_product_attribute' => $product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null,
-                            'id_image'             => $product['id_image'],
-                            'link_rewrite'         => $product['link_rewrite'],
-                        ];
+                    // IF
+                    //	This is not multi-shipping
+                    //	The value of the voucher is greater than the total of the order
+                    //	Partial use is allowed
+                    //	This is an "amount" reduction, not a reduction in % or a gift
+                    // THEN
+                    //	The voucher is cloned with a new value corresponding to the remainder
+                    if ($singleOrder && $values['tax_incl'] > ($order->total_products_wt - $totalReductionValueTaxIncluded) && $cartRule['obj']->partial_use == 1 && $cartRule['obj']->reduction_amount > 0) {
+                        // Create a new voucher from the original
+                        $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                        unset($voucher->id);
 
-                        $customizedDatas = Product::getAllCustomizedDatas((int) $order->id_cart);
-                        if (isset($customizedDatas[$product['id_product']][$product['id_product_attribute']])) {
-                            $productVarTpl['customization'] = [];
-                            foreach ($customizedDatas[$product['id_product']][$product['id_product_attribute']][$order->id_address_delivery] as $customization) {
-                                $customizationText = '';
-                                if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
-                                    foreach ($customization['datas'][Product::CUSTOMIZE_TEXTFIELD] as $text) {
-                                        $customizationText .= $text['name'].': '.$text['value'].'<br />';
-                                    }
-                                }
+                        // Set a new voucher code
+                        $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule['obj']->id), 0, 16) : $voucher->code.'-2';
+                        if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2]) {
+                            $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
+                        }
 
-                                if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                                    $customizationText .= sprintf(Tools::displayError('%d image(s)'), count($customization['datas'][Product::CUSTOMIZE_FILE])).'<br />';
-                                }
+                        // Set the new voucher value
+                        if ($voucher->reduction_tax) {
+                            $voucher->reduction_amount = ($totalReductionValueTaxIncluded + $values['tax_incl']) - $order->total_products_wt;
 
-                                $customizationQuantity = (int) $product['customization_quantity'];
+                            // Add total shipping amout only if reduction amount > total shipping
+                            if ($voucher->free_shipping == 1 && $voucher->reduction_amount >= $order->total_shipping_tax_incl) {
+                                $voucher->reduction_amount -= $order->total_shipping_tax_incl;
+                            }
+                        } else {
+                            $voucher->reduction_amount = ($totalReductionValueTaxExcluded + $values['tax_excl']) - $order->total_products;
 
-                                $productVarTpl['customization'][] = [
-                                    'customization_text'     => $customizationText,
-                                    'customization_quantity' => $customizationQuantity,
-                                    'quantity'               => Tools::displayPrice($customizationQuantity * $productPrice, $this->context->currency, false),
-                                ];
+                            // Add total shipping amout only if reduction amount > total shipping
+                            if ($voucher->free_shipping == 1 && $voucher->reduction_amount >= $order->total_shipping_tax_excl) {
+                                $voucher->reduction_amount -= $order->total_shipping_tax_excl;
                             }
                         }
-
-                        $productVarTplList[] = $productVarTpl;
-                        // Check if is not a virutal product for the displaying of shipping
-                        if (!$product['is_virtual']) {
-                            $virtualProduct = false;
-                        }
-                    } // end foreach ($products)
-
-                    $productListTxt = '';
-                    $productListHtml = '';
-                    if (count($productVarTplList) > 0) {
-                        $productListTxt = $this->getEmailTemplateContent('order_conf_product_list.txt', Mail::TYPE_TEXT, $productVarTplList);
-                        $productListHtml = $this->getEmailTemplateContent('order_conf_product_list.tpl', Mail::TYPE_HTML, $productVarTplList);
-                    }
-
-                    $cartRulesList = [];
-                    $totalReductionValueTaxIncluded = 0;
-                    $totalReductionValueTaxExcluded = 0;
-                    foreach ($cartRules as $cartRule) {
-                        $package = ['id_carrier' => $order->id_carrier, 'id_address' => $order->id_address_delivery, 'products' => $order->product_list];
-                        $values = [
-                            'tax_incl' => $cartRule['obj']->getContextualValue(true, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
-                            'tax_excl' => $cartRule['obj']->getContextualValue(false, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
-                        ];
-
-                        // If the reduction is not applicable to this order, then continue with the next one
-                        if (!$values['tax_excl'] && !$values['tax_incl']) {
+                        if ($voucher->reduction_amount <= 0) {
                             continue;
                         }
 
-                        // IF
-                        //	This is not multi-shipping
-                        //	The value of the voucher is greater than the total of the order
-                        //	Partial use is allowed
-                        //	This is an "amount" reduction, not a reduction in % or a gift
-                        // THEN
-                        //	The voucher is cloned with a new value corresponding to the remainder
-                        if (count($orderList) == 1 && $values['tax_incl'] > ($order->total_products_wt - $totalReductionValueTaxIncluded) && $cartRule['obj']->partial_use == 1 && $cartRule['obj']->reduction_amount > 0) {
-                            // Create a new voucher from the original
-                            $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                        if ($this->context->customer->isGuest()) {
+                            $voucher->id_customer = 0;
+                        } else {
+                            $voucher->id_customer = $order->id_customer;
+                        }
+
+                        $voucher->quantity = 1;
+                        $voucher->reduction_currency = $order->id_currency;
+                        $voucher->quantity_per_user = 1;
+                        $voucher->free_shipping = 0;
+                        if ($voucher->add()) {
+                            // If the voucher has conditions, they are now copied to the new voucher
+                            CartRule::copyConditions($cartRule['obj']->id, $voucher->id);
+
+                            $params = [
+                                '{voucher_amount}' => Tools::displayPrice($voucher->reduction_amount, $this->context->currency, false),
+                                '{voucher_num}'    => $voucher->code,
+                                '{firstname}'      => $this->context->customer->firstname,
+                                '{lastname}'       => $this->context->customer->lastname,
+                                '{id_order}'       => $order->reference,
+                                '{order_name}'     => $order->getUniqReference(),
+                            ];
+                            Mail::Send(
+                                (int) $order->id_lang,
+                                'voucher',
+                                sprintf(Mail::l('New voucher for your order %s', (int) $order->id_lang), $order->reference),
+                                $params,
+                                $this->context->customer->email,
+                                $this->context->customer->firstname.' '.$this->context->customer->lastname,
+                                null,
+                                null,
+                                null,
+                                null,
+                                _PS_MAIL_DIR_,
+                                false,
+                                (int) $order->id_shop
+                            );
+                        }
+
+                        $values['tax_incl'] = $order->total_products_wt - $totalReductionValueTaxIncluded;
+                        $values['tax_excl'] = $order->total_products - $totalReductionValueTaxExcluded;
+                    }
+
+                    // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
+                    // The copied cart rule is converted into a product specific cart rule
+                    if ($cartRule['obj']->product_restriction) {
+                        // Create a new voucher from the original
+                        $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                        if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
                             unset($voucher->id);
 
                             // Set a new voucher code
@@ -789,317 +862,234 @@ abstract class PaymentModuleCore extends Module
                                 $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
                             }
 
-                            // Set the new voucher value
-                            if ($voucher->reduction_tax) {
-                                $voucher->reduction_amount = ($totalReductionValueTaxIncluded + $values['tax_incl']) - $order->total_products_wt;
-
-                                // Add total shipping amout only if reduction amount > total shipping
-                                if ($voucher->free_shipping == 1 && $voucher->reduction_amount >= $order->total_shipping_tax_incl) {
-                                    $voucher->reduction_amount -= $order->total_shipping_tax_incl;
-                                }
-                            } else {
-                                $voucher->reduction_amount = ($totalReductionValueTaxExcluded + $values['tax_excl']) - $order->total_products;
-
-                                // Add total shipping amout only if reduction amount > total shipping
-                                if ($voucher->free_shipping == 1 && $voucher->reduction_amount >= $order->total_shipping_tax_excl) {
-                                    $voucher->reduction_amount -= $order->total_shipping_tax_excl;
-                                }
-                            }
-                            if ($voucher->reduction_amount <= 0) {
-                                continue;
-                            }
-
                             if ($this->context->customer->isGuest()) {
                                 $voucher->id_customer = 0;
                             } else {
                                 $voucher->id_customer = $order->id_customer;
                             }
 
-                            $voucher->quantity = 1;
+                            $cheapestProduct = explode('-', $cheapestProduct);
                             $voucher->reduction_currency = $order->id_currency;
-                            $voucher->quantity_per_user = 1;
-                            $voucher->free_shipping = 0;
-                            if ($voucher->add()) {
-                                // If the voucher has conditions, they are now copied to the new voucher
-                                CartRule::copyConditions($cartRule['obj']->id, $voucher->id);
+                            $voucher->quantity = 0;
+                            $voucher->quantity_per_user = 0;
+                            $voucher->active = 0;
+                            $voucher->product_restriction = 1;
+                            $voucher->reduction_product = 0;
+                            $voucher->description = json_encode([
+                                'id_product'           => $cheapestProduct[0],
+                                'id_product_attribute' => $cheapestProduct[1],
+                                'type'                 => 'cheapest_product',
+                            ]);
+                            $voucher->add();
 
-                                $params = [
-                                    '{voucher_amount}' => Tools::displayPrice($voucher->reduction_amount, $this->context->currency, false),
-                                    '{voucher_num}'    => $voucher->code,
-                                    '{firstname}'      => $this->context->customer->firstname,
-                                    '{lastname}'       => $this->context->customer->lastname,
-                                    '{id_order}'       => $order->reference,
-                                    '{order_name}'     => $order->getUniqReference(),
-                                ];
-                                Mail::Send(
-                                    (int) $order->id_lang,
-                                    'voucher',
-                                    sprintf(Mail::l('New voucher for your order %s', (int) $order->id_lang), $order->reference),
-                                    $params,
-                                    $this->context->customer->email,
-                                    $this->context->customer->firstname.' '.$this->context->customer->lastname,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    _PS_MAIL_DIR_,
-                                    false,
-                                    (int) $order->id_shop
-                                );
-                            }
-
-                            $values['tax_incl'] = $order->total_products_wt - $totalReductionValueTaxIncluded;
-                            $values['tax_excl'] = $order->total_products - $totalReductionValueTaxExcluded;
-                        }
-
-                        // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
-                        // The copied cart rule is converted into a product specific cart rule
-                        if ($cartRule['obj']->product_restriction) {
-                            // Create a new voucher from the original
-                            $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
-                            if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
-                                unset($voucher->id);
-
-                                // Set a new voucher code
-                                $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule['obj']->id), 0, 16) : $voucher->code.'-2';
-                                if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2]) {
-                                    $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
-                                }
-
-                                if ($this->context->customer->isGuest()) {
-                                    $voucher->id_customer = 0;
-                                } else {
-                                    $voucher->id_customer = $order->id_customer;
-                                }
-
-                                $cheapestProduct = explode('-', $cheapestProduct);
-                                $voucher->reduction_currency = $order->id_currency;
-                                $voucher->quantity = 0;
-                                $voucher->quantity_per_user = 0;
-                                $voucher->active = 0;
-                                $voucher->product_restriction = 1;
-                                $voucher->reduction_product = 0;
-                                $voucher->description = json_encode([
-                                    'id_product'           => $cheapestProduct[0],
-                                    'id_product_attribute' => $cheapestProduct[1],
-                                    'type'                 => 'cheapest_product',
-                                ]);
-                                $voucher->add();
-
-                                $cartRule['obj'] = $voucher;
-                            }
-                        }
-
-                        $totalReductionValueTaxIncluded += $values['tax_incl'];
-                        $totalReductionValueTaxExcluded += $values['tax_excl'];
-
-                        $order->addCartRule($cartRule['obj']->id, $cartRule['obj']->name, $values, 0, $cartRule['obj']->free_shipping);
-
-                        if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule['obj']->id, $cartRuleUsed)) {
-                            $cartRuleUsed[] = $cartRule['obj']->id;
-
-                            // Create a new instance of Cart Rule without id_lang, in order to update its quantity
-                            $cartRuleToUpdate = new CartRule((int) $cartRule['obj']->id);
-                            $cartRuleToUpdate->quantity = max(0, $cartRuleToUpdate->quantity - 1);
-                            $cartRuleToUpdate->update();
-                        }
-
-                        $cartRulesList[] = [
-                            'voucher_name'      => $cartRule['obj']->name,
-                            'voucher_reduction' => ($values['tax_incl'] != 0.00 ? '-' : '').Tools::displayPrice($values['tax_incl'], $this->context->currency, false),
-                        ];
-                    }
-
-                    $cartRulesListTxt = '';
-                    $cartRulesListHtml = '';
-                    if (count($cartRulesList) > 0) {
-                        $cartRulesListTxt = $this->getEmailTemplateContent('order_conf_cart_rules.txt', Mail::TYPE_TEXT, $cartRulesList);
-                        $cartRulesListHtml = $this->getEmailTemplateContent('order_conf_cart_rules.tpl', Mail::TYPE_HTML, $cartRulesList);
-                    }
-
-                    // Specify order id for message
-                    $oldMessage = Message::getMessageByCartId((int) $this->context->cart->id);
-                    if ($oldMessage && !$oldMessage['private']) {
-                        $updateMessage = new Message((int) $oldMessage['id_message']);
-                        $updateMessage->id_order = (int) $order->id;
-                        $updateMessage->update();
-
-                        // Add this message in the customer thread
-                        $customerThread = new CustomerThread();
-                        $customerThread->id_contact = 0;
-                        $customerThread->id_customer = (int) $order->id_customer;
-                        $customerThread->id_shop = (int) $this->context->shop->id;
-                        $customerThread->id_order = (int) $order->id;
-                        $customerThread->id_lang = (int) $this->context->language->id;
-                        $customerThread->email = $this->context->customer->email;
-                        $customerThread->status = 'open';
-                        $customerThread->token = Tools::passwdGen(12);
-                        $customerThread->add();
-
-                        $customerMessage = new CustomerMessage();
-                        $customerMessage->id_customer_thread = $customerThread->id;
-                        $customerMessage->id_employee = 0;
-                        $customerMessage->message = $updateMessage->message;
-                        $customerMessage->private = 1;
-                        $customerMessage->add();
-                    }
-
-                    // Hook validate order
-                    Hook::exec(
-                        'actionValidateOrder',
-                        [
-                            'cart'        => $this->context->cart,
-                            'order'       => $order,
-                            'customer'    => $this->context->customer,
-                            'currency'    => $this->context->currency,
-                            'orderStatus' => $orderStatus,
-                        ]
-                    );
-
-                    foreach ($this->context->cart->getProducts() as $product) {
-                        if ($orderStatus->logable) {
-                            ProductSale::addProductSale((int) $product['id_product'], (int) $product['cart_quantity']);
+                            $cartRule['obj'] = $voucher;
                         }
                     }
 
-                    // Set the order status
-                    $newHistory = new OrderHistory();
-                    $newHistory->id_order = (int) $order->id;
-                    $newHistory->changeIdOrderState((int) $idOrderState, $order, true);
-                    $newHistory->addWithemail(true, $extraVars);
+                    $totalReductionValueTaxIncluded += $values['tax_incl'];
+                    $totalReductionValueTaxExcluded += $values['tax_excl'];
 
-                    // Switch to back order if needed
-                    if (Configuration::get('PS_STOCK_MANAGEMENT') && ($orderDetail->getStockState() || $orderDetail->product_quantity_in_stock <= 0)) {
-                        $history = new OrderHistory();
-                        $history->id_order = (int) $order->id;
-                        $history->changeIdOrderState(Configuration::get($order->valid ? 'PS_OS_OUTOFSTOCK_PAID' : 'PS_OS_OUTOFSTOCK_UNPAID'), $order, true);
-                        $history->addWithemail();
+                    $order->addCartRule($cartRule['obj']->id, $cartRule['obj']->name, $values, 0, $cartRule['obj']->free_shipping);
+
+                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule['obj']->id, $cartRuleUsed)) {
+                        $cartRuleUsed[] = $cartRule['obj']->id;
+
+                        // Create a new instance of Cart Rule without id_lang, in order to update its quantity
+                        $cartRuleToUpdate = new CartRule((int) $cartRule['obj']->id);
+                        $cartRuleToUpdate->quantity = max(0, $cartRuleToUpdate->quantity - 1);
+                        $cartRuleToUpdate->update();
                     }
 
-                    unset($orderDetail);
-
-                    // Order is reloaded because the status just changed
-                    $order = new Order((int) $order->id);
-
-                    // Send an e-mail to customer (one order = one email)
-                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && $this->context->customer->id) {
-                        $invoice = new Address((int) $order->id_address_invoice);
-                        $delivery = new Address((int) $order->id_address_delivery);
-                        $deliveryState = $delivery->id_state ? new State((int) $delivery->id_state) : false;
-                        $invoiceState = $invoice->id_state ? new State((int) $invoice->id_state) : false;
-
-                        $data = [
-                            '{firstname}'            => $this->context->customer->firstname,
-                            '{lastname}'             => $this->context->customer->lastname,
-                            '{email}'                => $this->context->customer->email,
-                            '{delivery_block_txt}'   => $this->_getFormatedAddress($delivery, "\n"),
-                            '{invoice_block_txt}'    => $this->_getFormatedAddress($invoice, "\n"),
-                            '{delivery_block_html}'  => $this->_getFormatedAddress(
-                                $delivery, '<br />', [
-                                    'firstname' => '<span style="font-weight:bold;">%s</span>',
-                                    'lastname'  => '<span style="font-weight:bold;">%s</span>',
-                                ]
-                            ),
-                            '{invoice_block_html}'   => $this->_getFormatedAddress(
-                                $invoice, '<br />', [
-                                    'firstname' => '<span style="font-weight:bold;">%s</span>',
-                                    'lastname'  => '<span style="font-weight:bold;">%s</span>',
-                                ]
-                            ),
-                            '{delivery_company}'     => $delivery->company,
-                            '{delivery_firstname}'   => $delivery->firstname,
-                            '{delivery_lastname}'    => $delivery->lastname,
-                            '{delivery_address1}'    => $delivery->address1,
-                            '{delivery_address2}'    => $delivery->address2,
-                            '{delivery_city}'        => $delivery->city,
-                            '{delivery_postal_code}' => $delivery->postcode,
-                            '{delivery_country}'     => $delivery->country,
-                            '{delivery_state}'       => $delivery->id_state ? $deliveryState->name : '',
-                            '{delivery_phone}'       => ($delivery->phone) ? $delivery->phone : $delivery->phone_mobile,
-                            '{delivery_other}'       => $delivery->other,
-                            '{invoice_company}'      => $invoice->company,
-                            '{invoice_vat_number}'   => $invoice->vat_number,
-                            '{invoice_firstname}'    => $invoice->firstname,
-                            '{invoice_lastname}'     => $invoice->lastname,
-                            '{invoice_address2}'     => $invoice->address2,
-                            '{invoice_address1}'     => $invoice->address1,
-                            '{invoice_city}'         => $invoice->city,
-                            '{invoice_postal_code}'  => $invoice->postcode,
-                            '{invoice_country}'      => $invoice->country,
-                            '{invoice_state}'        => $invoice->id_state ? $invoiceState->name : '',
-                            '{invoice_phone}'        => ($invoice->phone) ? $invoice->phone : $invoice->phone_mobile,
-                            '{invoice_other}'        => $invoice->other,
-                            '{order_name}'           => $order->getUniqReference(),
-                            '{order_id}'             => $order->id,
-                            '{date}'                 => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
-                            '{carrier}'              => $virtualProduct ? Tools::displayError('No carrier') : $carrier->getName(),
-                            '{payment}'              => mb_substr($order->payment, 0, 32),
-                            '{products}'             => $productListHtml,
-                            '{products_txt}'         => $productListTxt,
-                            '{discounts}'            => $cartRulesListHtml,
-                            '{discounts_txt}'        => $cartRulesListTxt,
-                            '{total_paid}'           => Tools::displayPrice($order->total_paid, $this->context->currency, false),
-                            '{total_products}'       => Tools::displayPrice(Product::getTaxCalculationMethod() == PS_TAX_EXC ? $order->total_products : $order->total_products_wt, $this->context->currency, false),
-                            '{total_discounts}'      => Tools::displayPrice($order->total_discounts, $this->context->currency, false),
-                            '{total_shipping}'       => Tools::displayPrice($order->total_shipping, $this->context->currency, false),
-                            '{total_wrapping}'       => Tools::displayPrice($order->total_wrapping, $this->context->currency, false),
-                            '{total_tax_paid}'       => Tools::displayPrice(($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl), $this->context->currency, false),
-                        ];
-
-                        if (is_array($extraVars)) {
-                            $data = array_merge($data, $extraVars);
-                        }
-
-                        // Join PDF invoice
-                        if ((int) Configuration::get('PS_INVOICE') && $orderStatus->invoice && $order->invoice_number) {
-                            $orderInvoiceList = $order->getInvoicesCollection();
-                            Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
-                            $pdf = new PDF($orderInvoiceList, PDF::TEMPLATE_INVOICE, $this->context->smarty);
-                            $fileAttachment['content'] = $pdf->render(false);
-                            $fileAttachment['name'] = Configuration::get('PS_INVOICE_PREFIX', (int) $order->id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';
-                            $fileAttachment['mime'] = 'application/pdf';
-                        } else {
-                            $fileAttachment = null;
-                        }
-
-                        if (Validate::isEmail($this->context->customer->email)) {
-                            Mail::Send(
-                                (int) $order->id_lang,
-                                'order_conf',
-                                Mail::l('Order confirmation', (int) $order->id_lang),
-                                $data,
-                                $this->context->customer->email,
-                                $this->context->customer->firstname.' '.$this->context->customer->lastname,
-                                null,
-                                null,
-                                $fileAttachment,
-                                null,
-                                _PS_MAIL_DIR_,
-                                false,
-                                (int) $order->id_shop
-                            );
-                        }
-                    }
-
-                    // updates stock in shops
-                    if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                        $productList = $order->getProducts();
-                        foreach ($productList as $product) {
-                            // if the available quantities depends on the physical stock
-                            if (StockAvailable::dependsOnStock($product['product_id'])) {
-                                // synchronizes
-                                StockAvailable::synchronize($product['product_id'], $order->id_shop);
-                            }
-                        }
-                    }
-
-                    $order->updateOrderDetailTax();
-                } else {
-                    $error = Tools::displayError('Order creation failed');
-                    Logger::addLog($error, 4, '0000002', 'Cart', intval($order->id_cart));
-                    throw new PrestaShopException($error);
+                    $cartRulesList[] = [
+                        'voucher_name'      => $cartRule['obj']->name,
+                        'voucher_reduction' => ($values['tax_incl'] != 0.00 ? '-' : '').Tools::displayPrice($values['tax_incl'], $this->context->currency, false),
+                    ];
                 }
-            } // End foreach $order_detail_list
+
+                $cartRulesListTxt = '';
+                $cartRulesListHtml = '';
+                if (count($cartRulesList) > 0) {
+                    $cartRulesListTxt = $this->getEmailTemplateContent('order_conf_cart_rules.txt', Mail::TYPE_TEXT, $cartRulesList);
+                    $cartRulesListHtml = $this->getEmailTemplateContent('order_conf_cart_rules.tpl', Mail::TYPE_HTML, $cartRulesList);
+                }
+
+                // Specify order id for message
+                $oldMessage = Message::getMessageByCartId((int) $this->context->cart->id);
+                if ($oldMessage && !$oldMessage['private']) {
+                    $updateMessage = new Message((int) $oldMessage['id_message']);
+                    $updateMessage->id_order = (int) $order->id;
+                    $updateMessage->update();
+
+                    // Add this message in the customer thread
+                    $customerThread = new CustomerThread();
+                    $customerThread->id_contact = 0;
+                    $customerThread->id_customer = (int) $order->id_customer;
+                    $customerThread->id_shop = (int) $this->context->shop->id;
+                    $customerThread->id_order = (int) $order->id;
+                    $customerThread->id_lang = (int) $this->context->language->id;
+                    $customerThread->email = $this->context->customer->email;
+                    $customerThread->status = 'open';
+                    $customerThread->token = Tools::passwdGen(12);
+                    $customerThread->add();
+
+                    $customerMessage = new CustomerMessage();
+                    $customerMessage->id_customer_thread = $customerThread->id;
+                    $customerMessage->id_employee = 0;
+                    $customerMessage->message = $updateMessage->message;
+                    $customerMessage->private = 1;
+                    $customerMessage->add();
+                }
+
+                // Hook validate order
+                Hook::exec(
+                    'actionValidateOrder',
+                    [
+                        'cart'        => $this->context->cart,
+                        'order'       => $order,
+                        'customer'    => $this->context->customer,
+                        'currency'    => $this->context->currency,
+                        'orderStatus' => $orderStatus,
+                    ]
+                );
+
+                // Log sales statistics
+                if ($orderStatus->logable) {
+                    foreach ($productList as $product) {
+                        ProductSale::addProductSale((int) $product['id_product'], (int) $product['cart_quantity']);
+                    }
+                }
+
+                // Set the order status
+                $newHistory = new OrderHistory();
+                $newHistory->id_order = (int) $order->id;
+                $newHistory->changeIdOrderState((int) $idOrderState, $order, true);
+                $newHistory->addWithemail(true, $extraVars);
+
+                // Switch to back order if needed
+                if (Configuration::get('PS_STOCK_MANAGEMENT') && $outOfStock) {
+                    $history = new OrderHistory();
+                    $history->id_order = (int) $order->id;
+                    $history->changeIdOrderState(Configuration::get($order->valid ? 'PS_OS_OUTOFSTOCK_PAID' : 'PS_OS_OUTOFSTOCK_UNPAID'), $order, true);
+                    $history->addWithemail();
+                }
+
+                // Order is reloaded because the status just changed
+                $order = new Order((int) $order->id);
+
+                // Send an e-mail to customer (one order = one email)
+                if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && $this->context->customer->id) {
+                    $invoice = new Address((int) $order->id_address_invoice);
+                    $delivery = new Address((int) $order->id_address_delivery);
+                    $deliveryState = $delivery->id_state ? new State((int) $delivery->id_state) : false;
+                    $invoiceState = $invoice->id_state ? new State((int) $invoice->id_state) : false;
+
+                    $data = [
+                        '{firstname}'            => $this->context->customer->firstname,
+                        '{lastname}'             => $this->context->customer->lastname,
+                        '{email}'                => $this->context->customer->email,
+                        '{delivery_block_txt}'   => $this->_getFormatedAddress($delivery, "\n"),
+                        '{invoice_block_txt}'    => $this->_getFormatedAddress($invoice, "\n"),
+                        '{delivery_block_html}'  => $this->_getFormatedAddress(
+                            $delivery, '<br />', [
+                                'firstname' => '<span style="font-weight:bold;">%s</span>',
+                                'lastname'  => '<span style="font-weight:bold;">%s</span>',
+                            ]
+                        ),
+                        '{invoice_block_html}'   => $this->_getFormatedAddress(
+                            $invoice, '<br />', [
+                                'firstname' => '<span style="font-weight:bold;">%s</span>',
+                                'lastname'  => '<span style="font-weight:bold;">%s</span>',
+                            ]
+                        ),
+                        '{delivery_company}'     => $delivery->company,
+                        '{delivery_firstname}'   => $delivery->firstname,
+                        '{delivery_lastname}'    => $delivery->lastname,
+                        '{delivery_address1}'    => $delivery->address1,
+                        '{delivery_address2}'    => $delivery->address2,
+                        '{delivery_city}'        => $delivery->city,
+                        '{delivery_postal_code}' => $delivery->postcode,
+                        '{delivery_country}'     => $delivery->country,
+                        '{delivery_state}'       => $delivery->id_state ? $deliveryState->name : '',
+                        '{delivery_phone}'       => ($delivery->phone) ? $delivery->phone : $delivery->phone_mobile,
+                        '{delivery_other}'       => $delivery->other,
+                        '{invoice_company}'      => $invoice->company,
+                        '{invoice_vat_number}'   => $invoice->vat_number,
+                        '{invoice_firstname}'    => $invoice->firstname,
+                        '{invoice_lastname}'     => $invoice->lastname,
+                        '{invoice_address2}'     => $invoice->address2,
+                        '{invoice_address1}'     => $invoice->address1,
+                        '{invoice_city}'         => $invoice->city,
+                        '{invoice_postal_code}'  => $invoice->postcode,
+                        '{invoice_country}'      => $invoice->country,
+                        '{invoice_state}'        => $invoice->id_state ? $invoiceState->name : '',
+                        '{invoice_phone}'        => ($invoice->phone) ? $invoice->phone : $invoice->phone_mobile,
+                        '{invoice_other}'        => $invoice->other,
+                        '{order_name}'           => $order->getUniqReference(),
+                        '{order_id}'             => $order->id,
+                        '{date}'                 => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
+                        '{carrier}'              => $carrierName,
+                        '{payment}'              => mb_substr($order->payment, 0, 32),
+                        '{products}'             => $productListHtml,
+                        '{products_txt}'         => $productListTxt,
+                        '{discounts}'            => $cartRulesListHtml,
+                        '{discounts_txt}'        => $cartRulesListTxt,
+                        '{total_paid}'           => Tools::displayPrice($order->total_paid, $this->context->currency, false),
+                        '{total_products}'       => Tools::displayPrice(Product::getTaxCalculationMethod() == PS_TAX_EXC ? $order->total_products : $order->total_products_wt, $this->context->currency, false),
+                        '{total_discounts}'      => Tools::displayPrice($order->total_discounts, $this->context->currency, false),
+                        '{total_shipping}'       => Tools::displayPrice($order->total_shipping, $this->context->currency, false),
+                        '{total_wrapping}'       => Tools::displayPrice($order->total_wrapping, $this->context->currency, false),
+                        '{total_tax_paid}'       => Tools::displayPrice(($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl), $this->context->currency, false),
+                    ];
+
+                    if (is_array($extraVars)) {
+                        $data = array_merge($data, $extraVars);
+                    }
+
+                    // Join PDF invoice
+                    if ((int) Configuration::get('PS_INVOICE') && $orderStatus->invoice && $order->invoice_number) {
+                        $orderInvoiceList = $order->getInvoicesCollection();
+                        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
+                        $pdf = new PDF($orderInvoiceList, PDF::TEMPLATE_INVOICE, $this->context->smarty);
+                        $fileAttachment['content'] = $pdf->render(false);
+                        $fileAttachment['name'] = Configuration::get('PS_INVOICE_PREFIX', (int) $order->id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';
+                        $fileAttachment['mime'] = 'application/pdf';
+                    } else {
+                        $fileAttachment = null;
+                    }
+
+                    if (Validate::isEmail($this->context->customer->email)) {
+                        Mail::Send(
+                            (int) $order->id_lang,
+                            'order_conf',
+                            Mail::l('Order confirmation', (int) $order->id_lang),
+                            $data,
+                            $this->context->customer->email,
+                            $this->context->customer->firstname.' '.$this->context->customer->lastname,
+                            null,
+                            null,
+                            $fileAttachment,
+                            null,
+                            _PS_MAIL_DIR_,
+                            false,
+                            (int) $order->id_shop
+                        );
+                    }
+                }
+
+                // updates stock in shops
+                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                    $productList = $order->getProducts();
+                    foreach ($productList as $product) {
+                        // if the available quantities depends on the physical stock
+                        if (StockAvailable::dependsOnStock($product['product_id'])) {
+                            // synchronizes
+                            StockAvailable::synchronize($product['product_id'], $order->id_shop);
+                        }
+                    }
+                }
+
+                $order->updateOrderDetailTax();
+            }
 
             // Use the last order as currentOrder
             if (isset($order) && $order->id) {
@@ -1205,7 +1195,7 @@ abstract class PaymentModuleCore extends Module
                 $idCurrency = $currency;
             }
         }
-        if (!isset($idCurrency) || empty($idCurrency)) {
+        if (empty($idCurrency)) {
             return false;
         }
         $currency = new Currency((int) $idCurrency);
