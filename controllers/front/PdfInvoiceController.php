@@ -34,17 +34,34 @@
  */
 class PdfInvoiceControllerCore extends FrontController
 {
-    /** @var string $php_self */
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'pdf-invoice';
-    /** @var bool $content_only */
+
+    /**
+     * @var bool $content_only
+     */
     public $content_only = true;
-    /** @var string $filename */
+
+    /**
+     * @var string $filename
+     */
     public $filename;
-    /** @var bool $display_header */
+
+    /**
+     * @var bool $display_header
+     */
     protected $display_header = false;
-    /** @var bool $display_footer */
+
+    /**
+     * @var bool $display_footer
+     */
     protected $display_footer = false;
-    /** @var string $template */
+
+    /**
+     * @var string $template
+     */
     protected $template;
 
     /**
@@ -56,30 +73,31 @@ class PdfInvoiceControllerCore extends FrontController
      */
     public function postProcess()
     {
+        $link = $this->context->link;
+
         if (!(int) Configuration::get('PS_INVOICE')) {
-            throw new PrestaShopException(Tools::displayError('Invoices are disabled in this shop.'));
+            Tools::redirect($link->getPageLink('pagenotfound'));
         }
 
         $idOrder = (int) Tools::getValue('id_order');
+
         if (!$this->context->customer->isLogged() && !Tools::getValue('secure_key')) {
-            $backLink = $this->context->link->getPageLink('pdf-invoice', null, $this->context->language->id, 'id_order=' . $idOrder);
+            $backLink = $link->getPageLink('pdf-invoice', null, $this->context->language->id, 'id_order=' . $idOrder);
             Tools::redirect('index.php?controller=authentication&back='.urlencode($backLink));
         }
 
-        if (Validate::isUnsignedId($idOrder)) {
-            $order = new Order((int) $idOrder);
-        }
+        $order = new Order((int) $idOrder);
 
-        if (!isset($order) || !Validate::isLoadedObject($order)) {
-            throw new PrestaShopException(Tools::displayError('The invoice was not found.'));
+        if (!Validate::isLoadedObject($order)) {
+            Tools::redirect($link->getPageLink('pagenotfound'));
         }
 
         if ((isset($this->context->customer->id) && $order->id_customer != $this->context->customer->id) || (Tools::isSubmit('secure_key') && $order->secure_key != Tools::getValue('secure_key'))) {
-            throw new PrestaShopException(Tools::displayError('The invoice was not found.'));
+            Tools::redirect($link->getPageLink('pagenotfound'));
         }
 
         if (!OrderState::invoiceAvailable($order->getCurrentState()) && !$order->invoice_number) {
-            throw new PrestaShopException(Tools::displayError('No invoice is available.'));
+            Tools::redirect($link->getPageLink('pagenotfound'));
         }
 
         $this->order = $order;
