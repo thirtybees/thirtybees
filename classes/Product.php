@@ -2645,7 +2645,7 @@ class ProductCore extends ObjectModel
      * Display price with right format and currency
      *
      * @param array $params Params
-     * @param Smarty $smarty Smarty object
+     * @param Smarty_Internal_Template $smarty Smarty object
      *
      * @return string Price with right format and currency
      *
@@ -2660,7 +2660,7 @@ class ProductCore extends ObjectModel
      * Convert price with currency
      *
      * @param array $params
-     * @param Smarty $smarty DEPRECATED
+     * @param Smarty_Internal_Template $smarty
      *
      * @return string
      *
@@ -2673,7 +2673,7 @@ class ProductCore extends ObjectModel
 
     /**
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      *
      * @return string
      *
@@ -2688,7 +2688,7 @@ class ProductCore extends ObjectModel
      * Display WT price with currency
      *
      * @param array $params
-     * @param Smarty $smarty DEPRECATED
+     * @param Smarty_Internal_Template $smarty
      *
      * @return string
      *

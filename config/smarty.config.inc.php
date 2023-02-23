@@ -122,7 +122,7 @@ if (defined('_PS_ADMIN_DIR_')) {
 
 /**
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return mixed
  */
 function smartyDieObject($params, $smarty)
@@ -132,7 +132,7 @@ function smartyDieObject($params, $smarty)
 
 /**
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return mixed|void
  */
 function smartyShowObject($params, $smarty)
@@ -142,7 +142,7 @@ function smartyShowObject($params, $smarty)
 
 /**
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return string
  */
 function smartyMaxWords($params, $smarty)
@@ -174,7 +174,7 @@ function smartyEndModifier($array)
 
 /**
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return string
  */
 function smartyTruncate($params, $smarty)
@@ -237,7 +237,7 @@ function smarty_modifier_htmlentitiesUTF8($string)
 
 /**
  * @param string $tplOutput
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return string
  */
 function smartyMinifyHTML($tplOutput, $smarty)
@@ -251,7 +251,7 @@ function smartyMinifyHTML($tplOutput, $smarty)
 
 /**
  * @param string $tplOutput
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return string
  */
 function smartyPackJSinHTML($tplOutput, $smarty)
@@ -293,7 +293,7 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
 
 /**
  * @param mixed $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return string|null
  * @throws PrestaShopDatabaseException
  * @throws PrestaShopException
@@ -335,7 +335,7 @@ function smartyCleanHtml($data)
 /**
  * Helper method
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  * @return float
  * @throws PrestaShopException
  */
@@ -354,7 +354,7 @@ function toolsConvertPrice($params, $smarty)
  * Which means: don't forget to transport any changes made here to there.
  *
  * @param float|string $params['price'] Raw price in context currency.
- * @param float|string $smarty Unused.
+ * @param Smarty_Internal_Template $smarty Unused.
  *
  * @return string Price prettified, without currency sign.
  *
@@ -386,7 +386,7 @@ function displayPriceValue($params, $smarty)
  * it exists for backwards compatibility reasons only
  *
  * @param array $params
- * @param Smarty $smarty
+ * @param Smarty_Internal_Template $smarty
  */
 function smartyTranslate($params, $smarty)
 {

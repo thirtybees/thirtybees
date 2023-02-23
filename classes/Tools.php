@@ -688,7 +688,7 @@ class ToolsCore
 
     /**
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      *
      * @return string
      *
@@ -1062,7 +1062,7 @@ class ToolsCore
      * Display date regarding to language preferences
      *
      * @param array $params Date, format...
-     * @param Smarty $smarty Smarty object for language preferences
+     * @param Smarty_Internal_Template $smarty Smarty object for language preferences
      *
      * @return string Date
      *
@@ -1557,7 +1557,7 @@ class ToolsCore
 
     /**
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      *
      * @return bool|string
      *

@@ -405,7 +405,7 @@ class TranslateCore
      * This method is called when {l s='xxx'} is used in front office templates
      *
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public static function smartyFrontTranslate($params, $smarty)
@@ -444,7 +444,7 @@ class TranslateCore
      * This method is called when {l s='xxx'} is used in back office templates
      *
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public static function smartyAdminTranslate($params, $smarty)

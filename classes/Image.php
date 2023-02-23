@@ -512,7 +512,7 @@ class ImageCore extends ObjectModel
 
     /**
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      *
      * @return int
      *
@@ -552,7 +552,7 @@ class ImageCore extends ObjectModel
 
     /**
      * @param array $params
-     * @param Smarty $smarty
+     * @param Smarty_Internal_Template $smarty
      *
      * @return int
      *
