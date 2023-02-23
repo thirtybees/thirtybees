@@ -1217,8 +1217,10 @@ class AdminThemesControllerCore extends AdminController
                     $this->archiveThisFile($obj, $row, $serverPath.$file.'/', $archivePath.$file.'/');
                 }
             }
-        } elseif (!$obj->addFile($serverPath.$file, $archivePath.$file)) {
-            $this->error = true;
+        } else {
+            if (!$obj->addFile($serverPath.$file, $archivePath.$file)) {
+                $this->errors[] = sprintf(Tools::displayError('Failed to file %s to zip archive'), $serverPath.$file);
+            }
         }
     }
 
