@@ -55,6 +55,7 @@
  * @property string adminFirstname
  * @property string adminLastname
  * @property string adminPassword
+ * @property string adminPasswordConfirm
  * @property string adminEmail
  *
  * @property boolean sendInformations
