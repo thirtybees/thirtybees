@@ -1753,7 +1753,7 @@ class AdminControllerCore extends Controller
     {
         /** @var ObjectModel $object */
         if (Validate::isLoadedObject($object = $this->loadObject())) {
-            if ($object->toggleStatus()) {
+            if (property_exists($object, 'active') && $object->toggleStatus()) {
                 Logger::addLog(
                     sprintf($this->l('%s status switched to %s', 'AdminTab', false, false), $this->className, $object->active ? 'enable' : 'disable'),
                     1,
@@ -4430,9 +4430,13 @@ class AdminControllerCore extends Controller
             foreach ($this->boxes as $id) {
                 /** @var ObjectModel $object */
                 $object = new $this->className((int) $id);
-                $object->setFieldsToUpdate(['active' => true]);
-                $object->active = (int) $status;
-                $result = $object->update() && $result;
+                if (property_exists($object, 'active')) {
+                    $object->setFieldsToUpdate(['active' => true]);
+                    $object->active = (int)$status;
+                    $result = $object->update() && $result;
+                } else {
+                    throw new PrestaShopException('property "active" is missing in object '.$this->className);
+                }
             }
         }
 
