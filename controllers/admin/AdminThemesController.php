@@ -904,8 +904,8 @@ class AdminThemesControllerCore extends AdminController
             $themeToExport = new Theme($this->context->shop->id_theme);
             $metas = $themeToExport->getMetas();
 
-            $this->generateXML($themeToExport, $metas);
-            $this->generateArchive();
+            $xml = $this->generateXML($themeToExport, $metas);
+            $this->generateArchive($xml);
         } else {
             $this->display = 'exporttheme';
         }
@@ -1019,6 +1019,8 @@ class AdminThemesControllerCore extends AdminController
      * @param Theme $themeToExport
      * @param array $metas
      *
+     * @return string
+     *
      * @throws PrestaShopException
      */
     protected function generateXML($themeToExport, $metas)
@@ -1113,15 +1115,22 @@ class AdminThemesControllerCore extends AdminController
             $image->addAttribute('suppliers', $array[6]);
             $image->addAttribute('scenes', $array[7]);
         }
-        $this->xml_file = $theme->asXML();
+
+        $xml = $theme->asXML();
+        if ($xml === false) {
+            throw new PrestaShopException("Failed to generate config.xml file");
+        }
+        return (string)$xml;
     }
 
     /**
+     * @param string $xmlContent
+     *
      * Generate archive
      *
      * @return void
      */
-    protected function generateArchive()
+    protected function generateArchive($xmlContent)
     {
         $zip = new ZipArchive();
         $zipFileName = md5(time()).'.zip';
@@ -1130,7 +1139,7 @@ class AdminThemesControllerCore extends AdminController
             $dom = new DOMDocument();
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = true;
-            $dom->loadXML($this->xml_file);
+            $dom->loadXML($xmlContent);
             if (!$zip->addFromString('config.xml', $dom->saveXML())) {
                 $this->errors[] = $this->l('Cannot create config file.');
             }
