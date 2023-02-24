@@ -390,48 +390,31 @@ class AdminSuppliersControllerCore extends AdminController
      */
     public function renderView()
     {
+        $supplierId = (int)$this->object->id;
         $this->toolbar_title = $this->object->name;
-        $products = $this->object->getProductsLite($this->context->language->id);
-        $totalProduct = count($products);
+        $languageId = $this->context->language->id;
+        $link = $this->context->link;
 
-        for ($i = 0; $i < $totalProduct; $i++) {
-            $newProduct = new Product($products[$i]['id_product'], false, $this->context->language->id);
-            $newProduct->loadStockData();
-            // Build attributes combinations
-            $combinations = $newProduct->getAttributeCombinations($this->context->language->id);
-            foreach ($combinations as $k => $combination) {
-                $combInfos = Supplier::getProductInformationsBySupplier($this->object->id, $newProduct->id, $combination['id_product_attribute']);
-                $combArray[$combination['id_product_attribute']]['product_supplier_reference'] = $combInfos['product_supplier_reference'];
-                $combArray[$combination['id_product_attribute']]['product_supplier_price_te'] = Tools::displayPrice($combInfos['product_supplier_price_te'], new Currency($combInfos['id_currency']));
-                $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
-                $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
-                $combArray[$combination['id_product_attribute']]['upc'] = $combination['upc'];
-                $combArray[$combination['id_product_attribute']]['quantity'] = $combination['quantity'];
-                $combArray[$combination['id_product_attribute']]['attributes'][] = [
-                    $combination['group_name'],
-                    $combination['attribute_name'],
-                    $combination['id_attribute'],
-                ];
-            }
-
-            if (isset($combArray)) {
-                foreach ($combArray as $key => $productAttribute) {
-                    $list = '';
-                    foreach ($productAttribute['attributes'] as $attribute) {
-                        $list .= $attribute[0].' - '.$attribute[1].', ';
-                    }
-                    $combArray[$key]['attributes'] = rtrim($list, ', ');
-                }
-                $newProduct->combination = isset($combArray) ? $combArray : '';
-                unset($combArray);
-            } else {
-                $productInfos = Supplier::getProductInformationsBySupplier($this->object->id, $products[$i]['id_product'], 0);
-                $newProduct->product_supplier_reference = $productInfos['product_supplier_reference'];
-                $newProduct->product_supplier_price_te = Tools::displayPrice($productInfos['product_supplier_price_te'], new Currency($productInfos['id_currency']));
-            }
-
-            $products[$i] = $newProduct;
+        $products = [];
+        foreach ($this->object->getProductsLite($languageId) as $row) {
+            $productId = (int)$row['id_product'];
+            $product = new Product($productId, false, $languageId);
+            $product->loadStockData();
+            $infos = Supplier::getProductInformationsBySupplier($supplierId, $productId, 0);
+            $products[] = [
+                'id' => (int)$product->id,
+                'link' => $link->getAdminLink('AdminProducts', true, ['id_product' => $product->id, 'updateproduct' => true]),
+                'name' => $product->name,
+                'reference' => $product->reference,
+                'ean13' => $product->ean13,
+                'upc' => $product->upc,
+                'quantity' => $product->quantity,
+                'combinations' => $this->getProductCombinationArray($product, $languageId, $supplierId),
+                'product_supplier_reference' => static::getSupplierReference($infos),
+                'product_supplier_price_te' =>static::getSupplierPrice($infos),
+            ];
         }
+
 
         $this->tpl_view_vars = [
             'supplier'         => $this->object,
@@ -500,7 +483,7 @@ class AdminSuppliersControllerCore extends AdminController
      */
     public function processUpdate()
     {
-        if (Tools::isSubmit('id_supplier') && !($obj = $this->loadObject(true))) {
+        if (Tools::isSubmit('id_supplier') && !($this->loadObject(true))) {
             return false;
         }
 
@@ -573,7 +556,7 @@ class AdminSuppliersControllerCore extends AdminController
             }
 
             /** @var Supplier|false $supplier */
-            $supplier = parent::processDelete();;
+            $supplier = parent::processDelete();
             return $supplier;
         }
 
@@ -595,7 +578,7 @@ class AdminSuppliersControllerCore extends AdminController
             isset($_FILES) && count($_FILES) && file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
         ) {
             $imagesTypes = ImageType::getImagesTypes('suppliers');
-            foreach ($imagesTypes as $k => $imageType) {
+            foreach ($imagesTypes as $imageType) {
                 $file = _PS_SUPP_IMG_DIR_.$idSupplier.'.jpg';
                 $return = ImageManager::resize(
                     $file,
@@ -686,5 +669,80 @@ class AdminSuppliersControllerCore extends AdminController
         }
 
         return true;
+    }
+
+    /**
+     * @param Product $product
+     * @param int $languageId
+     * @param int $supplierId
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getProductCombinationArray(Product $product, int $languageId, int $supplierId)
+    {
+        $combinations = [];
+        foreach ($product->getAttributeCombinations($languageId) as $combination) {
+            $combinationId = (int)$combination['id_product_attribute'];
+            if (! isset($combinations[$combinationId])) {
+                $infos = Supplier::getProductInformationsBySupplier($supplierId, $product->id, $combinationId);
+                $combinations[$combinationId] = [
+                    'id' => $combinationId,
+                    'reference' => $combination['reference'],
+                    'ean13' => $combination['ean13'],
+                    'upc' => $combination['upc'],
+                    'quantity' => $combination['quantity'],
+                    'product_supplier_reference' => static::getSupplierReference($infos),
+                    'product_supplier_price_te' =>static::getSupplierPrice($infos),
+                    'attributes' => []
+                ];
+            }
+            $combinations[$combinationId]['attributes'][] = $combination['group_name'] . ' - ' . $combination['attribute_name'];
+        }
+        foreach ($combinations as &$combination) {
+            $combination['attributes'] = implode(', ', $combination['attributes']);
+        }
+        return $combinations;
+    }
+
+    /**
+     * @param array|false $infos
+     *
+     * @return string
+     */
+    protected static function getSupplierReference($infos)
+    {
+        if ($infos && isset($infos['product_supplier_reference'])) {
+            return (string)$infos['product_supplier_reference'];
+        }
+        return '';
+    }
+
+    /**
+     * @param array|false $infos
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getSupplierPrice($infos)
+    {
+        if ($infos) {
+            $price = (float)($infos['product_supplier_price_te'] ?? 0);
+            $currencyId = (int)$infos['id_currency'];
+        } else {
+            $price = 0;
+            $currencyId = 0;
+        }
+        if ($price == 0) {
+            return '';
+        }
+
+        $currency = Currency::getCurrencyInstance($currencyId);
+        if (! Validate::isLoadedObject($currencyId)) {
+            $currency = Currency::getDefaultCurrency();
+        }
+        return Tools::displayPrice($price, $currency);
     }
 }

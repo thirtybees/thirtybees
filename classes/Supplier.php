@@ -476,7 +476,7 @@ class SupplierCore extends ObjectModel
      */
     public static function getProductInformationsBySupplier($idSupplier, $idProduct, $idProductAttribute = 0)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('product_supplier_reference, product_supplier_price_te, id_currency')
                 ->from('product_supplier')
@@ -495,7 +495,7 @@ class SupplierCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -508,7 +508,7 @@ class SupplierCore extends ObjectModel
             $front = false;
         }
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('p.`id_product`, pl.`name`')
                 ->from('product', 'p')
