@@ -542,7 +542,7 @@ class ManufacturerCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -555,7 +555,7 @@ class ManufacturerCore extends ObjectModel
             $front = false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('p.`id_product`, pl.`name`')
                 ->from('product', 'p')

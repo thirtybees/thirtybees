@@ -183,7 +183,7 @@ class AdminManufacturersControllerCore extends AdminController
         $this->initToolbar();
         $this->initPageHeaderToolbar();
         if ($this->display == 'editaddresses' || $this->display == 'addaddress') {
-            $this->content .= $this->renderFormAddress();
+            $this->renderFormAddress();
         } elseif ($this->display == 'edit' || $this->display == 'add') {
             if (!$this->loadObject(true)) {
                 return;
@@ -661,11 +661,10 @@ class AdminManufacturersControllerCore extends AdminController
      */
     public function renderView()
     {
+        /** @var Manufacturer $manufacturer */
         if (!($manufacturer = $this->loadObject())) {
             return '';
         }
-
-        /** @var Manufacturer $manufacturer */
 
         $this->toolbar_btn['new'] = [
             'href' => $this->context->link->getAdminLink('AdminManufacturers').'&addaddress=1&id_manufacturer='.(int) $manufacturer->id,
@@ -675,38 +674,27 @@ class AdminManufacturersControllerCore extends AdminController
         $this->toolbar_title = is_array($this->breadcrumbs) ? array_unique($this->breadcrumbs) : [$this->breadcrumbs];
         $this->toolbar_title[] = $manufacturer->name;
 
-        $addresses = $manufacturer->getAddresses($this->context->language->id);
+        $link = $this->context->link;
+        $languageId = (int)$this->context->language->id;
+        $addresses = $manufacturer->getAddresses($languageId);
 
-        $products = $manufacturer->getProductsLite($this->context->language->id);
-        $totalProducts = count($products);
-        for ($i = 0; $i < $totalProducts; $i++) {
-            $products[$i] = new Product($products[$i]['id_product'], false, $this->context->language->id);
-            $products[$i]->loadStockData();
-            /* Build attributes combinations */
-            $combinations = $products[$i]->getAttributeCombinations($this->context->language->id);
-            foreach ($combinations as $k => $combination) {
-                $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
-                $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
-                $combArray[$combination['id_product_attribute']]['upc'] = $combination['upc'];
-                $combArray[$combination['id_product_attribute']]['quantity'] = $combination['quantity'];
-                $combArray[$combination['id_product_attribute']]['attributes'][] = [
-                    $combination['group_name'],
-                    $combination['attribute_name'],
-                    $combination['id_attribute'],
-                ];
-            }
+        $products = [];
+        foreach ($manufacturer->getProductsLite($languageId) as $row) {
+            $productId = (int)$row['id_product'];
+            $product = new Product($productId, false, $languageId);
+            $product->loadStockData();
 
-            if (isset($combArray)) {
-                foreach ($combArray as $key => $productAttribute) {
-                    $list = '';
-                    foreach ($productAttribute['attributes'] as $attribute) {
-                        $list .= $attribute[0].' - '.$attribute[1].', ';
-                    }
-                    $combArray[$key]['attributes'] = rtrim($list, ', ');
-                }
-                $products[$i]->combination = isset($combArray) ? $combArray : '';
-                unset($combArray);
-            }
+            $products[] = [
+                'id' => (int)$product->id,
+                'link' => $link->getAdminLink('AdminProducts', true, ['id_product' => $product->id, 'updateproduct' => true]),
+                'deleteLink' => $link->getAdminLink('AdminProducts', true, ['id_product' => $product->id, 'deleteproduct' => true]),
+                'name' => $product->name,
+                'reference' => $product->reference,
+                'ean13' => $product->ean13,
+                'upc' => $product->upc,
+                'quantity' => $product->quantity,
+                'combinations' => $this->getProductCombinationArray($product, $languageId),
+            ];
         }
 
         $this->tpl_view_vars = [
@@ -959,7 +947,7 @@ class AdminManufacturersControllerCore extends AdminController
             file_exists(_PS_MANU_IMG_DIR_.$idManufacturer.'.jpg')
         ) {
             $imagesTypes = ImageType::getImagesTypes('manufacturers');
-            foreach ($imagesTypes as $k => $imageType) {
+            foreach ($imagesTypes as $imageType) {
                 $res = ImageManager::resize(
                     _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                     _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.jpg',
@@ -1022,5 +1010,36 @@ class AdminManufacturersControllerCore extends AdminController
     protected function beforeDelete($object)
     {
         return true;
+    }
+
+    /**
+     * @param Product $product
+     * @param int $languageId
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function getProductCombinationArray(Product $product, int $languageId)
+    {
+        $combinations = [];
+        foreach ($product->getAttributeCombinations($languageId) as $combination) {
+            $combinationId = (int)$combination['id_product_attribute'];
+            if (! isset($combinations[$combinationId])) {
+                $combinations[$combinationId] = [
+                    'id' => $combinationId,
+                    'reference' => $combination['reference'],
+                    'ean13' => $combination['ean13'],
+                    'upc' => $combination['upc'],
+                    'quantity' => $combination['quantity'],
+                    'attributes' => []
+                ];
+            }
+            $combinations[$combinationId]['attributes'][] = $combination['group_name'] . ' - ' . $combination['attribute_name'];
+        }
+        foreach ($combinations as &$combination) {
+            $combination['attributes'] = implode(', ', $combination['attributes']);
+        }
+        return $combinations;
     }
 }

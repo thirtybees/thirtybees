@@ -7902,7 +7902,7 @@ class ProductCore extends ObjectModel
 				GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 				ORDER BY pa.`id_product_attribute`';
 
-        $res = Db::getInstance()->executeS($sql);
+        $res = Db::getInstance()->getArray($sql);
 
         //Get quantity of each variations
         foreach ($res as $key => $row) {
