@@ -34,12 +34,25 @@
  */
 class PdfOrderReturnControllerCore extends FrontController
 {
-    /** @var string $php_self */
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'pdf-order-return';
-    /** @var bool $display_header */
+
+    /**
+     * @var bool $display_header
+     */
     protected $display_header = false;
-    /** @var bool $display_footer */
+
+    /**
+     * @var bool $display_footer
+     */
     protected $display_footer = false;
+
+    /**
+     * @var OrderReturn
+     */
+    protected $orderReturn;
 
     /**
      * Post processing
