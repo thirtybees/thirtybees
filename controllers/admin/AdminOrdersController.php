@@ -2007,8 +2007,7 @@ class AdminOrdersControllerCore extends AdminController
             'id_lang'                      => $this->context->language->id,
             'can_edit'                     => (bool)$this->hasEditPermission(),
             'current_id_lang'              => $this->context->language->id,
-            'invoices_collection'          => $order->getInvoicesCollection(),
-            'not_paid_invoices_collection' => $order->getNotPaidInvoicesCollection(),
+            'invoices'                     => $this->getOrderInvoices($order),
             'payment_methods'              => $paymentMethods,
             'invoice_management_active'    => Configuration::get('PS_INVOICE', null, null, $order->id_shop),
             'display_warehouse'            => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
@@ -2534,15 +2533,7 @@ class AdminOrdersControllerCore extends AdminController
             $product['warehouse_location'] = false;
         }
 
-        // Get invoices collection
-        $invoiceCollection = $order->getInvoicesCollection();
-
-        $invoiceArray = [];
-        foreach ($invoiceCollection as $invoice) {
-            /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
-            $invoiceArray[] = $invoice;
-        }
+        $invoices = $this->getOrderInvoices($order);
 
         // Assign to smarty informations in order to show the new product line
         $this->context->smarty->assign(
@@ -2551,7 +2542,7 @@ class AdminOrdersControllerCore extends AdminController
                 'order'               => $order,
                 'currency'            => new Currency($order->id_currency),
                 'can_edit'            => $this->hasEditPermission(),
-                'invoices_collection' => $invoiceCollection,
+                'invoices'            => $invoices,
                 'current_id_lang'     => $this->context->language->id,
                 'link'                => $this->context->link,
                 'current_index'       => static::$currentIndex,
@@ -2601,7 +2592,7 @@ class AdminOrdersControllerCore extends AdminController
                     'view'               => $this->createTemplate('_product_line.tpl')->fetch(),
                     'can_edit'           => $this->hasAddPermission(),
                     'order'              => $order,
-                    'invoices'           => $invoiceArray,
+                    'invoices'           => $invoices,
                     'documents_html'     => $this->renderDocuments($order),
                     'shipping_html'      => $this->createTemplate('_shipping.tpl')->fetch(),
                     'discount_form_html' => $this->createTemplate('_discount_form.tpl')->fetch(),
@@ -2870,15 +2861,7 @@ class AdminOrdersControllerCore extends AdminController
             $product['warehouse_location'] = false;
         }
 
-        // Get invoices collection
-        $invoiceCollection = $order->getInvoicesCollection();
-
-        $invoiceArray = [];
-        foreach ($invoiceCollection as $invoice) {
-            /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
-            $invoiceArray[] = $invoice;
-        }
+        $invoices = $this->getOrderInvoices($order);
 
         // Assign to smarty informations in order to show the new product line
         $this->context->smarty->assign(
@@ -2887,7 +2870,7 @@ class AdminOrdersControllerCore extends AdminController
                 'order'               => $order,
                 'currency'            => new Currency($order->id_currency),
                 'can_edit'            => $this->hasEditPermission(),
-                'invoices_collection' => $invoiceCollection,
+                'invoices'            => $invoices,
                 'current_id_lang'     => $this->context->language->id,
                 'link'                => $this->context->link,
                 'current_index'       => static::$currentIndex,
@@ -2918,9 +2901,8 @@ class AdminOrdersControllerCore extends AdminController
             'result'              => $res,
             'view'                => $view,
             'can_edit'            => $this->hasAddPermission(),
-            'invoices_collection' => $invoiceCollection,
             'order'               => $order,
-            'invoices'            => $invoiceArray,
+            'invoices'            => $invoices,
             'documents_html'      => $this->renderDocuments($order),
             'shipping_html'       => $this->createTemplate('_shipping.tpl')->fetch(),
             'customized_product'  => is_array(Tools::getValue('product_quantity')),
@@ -3004,21 +2986,13 @@ class AdminOrdersControllerCore extends AdminController
             ]));
         }
 
-        // Get invoices collection
-        $invoiceCollection = $order->getInvoicesCollection();
-
-        $invoiceArray = [];
-        foreach ($invoiceCollection as $invoice) {
-            /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
-            $invoiceArray[] = $invoice;
-        }
+        $invoices = $this->getOrderInvoices($order);
 
         // Assign to smarty informations in order to show the new product line
         $this->context->smarty->assign([
             'order'               => $order,
             'currency'            => new Currency($order->id_currency),
-            'invoices_collection' => $invoiceCollection,
+            'invoices'            => $invoices,
             'current_id_lang'     => $this->context->language->id,
             'link'                => $this->context->link,
             'current_index'       => static::$currentIndex,
@@ -3029,7 +3003,7 @@ class AdminOrdersControllerCore extends AdminController
         $this->ajaxDie(json_encode([
             'result'         => $res,
             'order'          => $order,
-            'invoices'       => $invoiceArray,
+            'invoices'       => $invoices,
             'documents_html' => $this->renderDocuments($order),
             'shipping_html'  => $this->createTemplate('_shipping.tpl')->fetch(),
         ]));
@@ -3411,5 +3385,25 @@ class AdminOrdersControllerCore extends AdminController
         $template = $this->createTemplate('_documents.tpl');
         $template->assign('orderDocuments', $order->getDocuments());
         return $template->fetch();
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getOrderInvoices(Order $order): array
+    {
+        $invoiceArray = [];
+        foreach ($order->getInvoicesCollection() as $invoice) {
+            /** @var OrderInvoice $invoice */
+            $invoiceArray[] = [
+                'id' => (int)$invoice->id,
+                'name' => $invoice->getInvoiceNumberFormatted($this->context->language->id, (int)$order->id_shop),
+                'total_paid_tax_incl' => (float)$invoice->total_paid_tax_incl,
+            ];
+        }
+        return $invoiceArray;
     }
 }

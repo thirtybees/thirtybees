@@ -130,7 +130,7 @@
             {l s='Print order'}
           </a>
           &nbsp;
-          {if Configuration::get('PS_INVOICE') && count($invoices_collection) && $order->invoice_number}
+          {if Configuration::get('PS_INVOICE') && $invoices && $order->invoice_number}
             <a data-selenium-id="view_invoice" class="btn btn-default _blank" href="{$link->getAdminLink('AdminPdf')|escape:'html':'UTF-8'}&amp;submitAction=generateInvoicePDF&amp;id_order={$order->id|intval}">
               <i class="icon-file"></i>
               {l s='View invoice'}
@@ -529,10 +529,10 @@
                   </select>
                 </td>
                 <td>
-                  {if count($invoices_collection) > 0}
+                  {if $invoices}
                     <select name="payment_invoice" id="payment_invoice">
-                      {foreach from=$invoices_collection item=invoice}
-                        <option value="{$invoice->id}" selected="selected">{$invoice->getInvoiceNumberFormatted($current_id_lang, $order->id_shop)}</option>
+                      {foreach from=$invoices item=invoice}
+                        <option value="{$invoice.id}" selected="selected">{$invoice.name}</option>
                       {/foreach}
                     </select>
                   {/if}

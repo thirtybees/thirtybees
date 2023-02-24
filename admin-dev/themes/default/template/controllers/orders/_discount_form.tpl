@@ -71,9 +71,9 @@
 		</label>
 		<div class="col-lg-9">
 			<select name="discount_invoice">
-				{foreach from=$invoices_collection item=invoice}
-				<option value="{$invoice->id}" selected="selected">
-					{$invoice->getInvoiceNumberFormatted($current_id_lang)} - {displayPrice price=$invoice->total_paid_tax_incl currency=$order->id_currency}
+				{foreach from=$invoices item=invoice}
+				<option value="{$invoice.id}" selected="selected">
+					{$invoice.name} - {displayPrice price=$invoice.total_paid_tax_incl currency=$order->id_currency}
 				</option>
 				{/foreach}
 			</select>

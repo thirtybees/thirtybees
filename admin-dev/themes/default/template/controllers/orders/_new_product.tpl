@@ -76,11 +76,11 @@
 	<td style="display:none;" class="productQuantity" id="add_product_product_stock">0</td>
 	<td style="display:none;" id="add_product_product_total">{displayPrice price=0 currency=$currency->id}</td>
 	<td style="display:none;" colspan="2">
-		{if sizeof($invoices_collection)}
+		{if $invoices}
 		<select class="form-control" name="add_product[invoice]" id="add_product_product_invoice" disabled="disabled">
 			<optgroup class="existing" label="{l s='Existing'}">
-				{foreach from=$invoices_collection item=invoice}
-				<option value="{$invoice->id}">{$invoice->getInvoiceNumberFormatted($current_id_lang)}</option>
+				{foreach from=$invoices item=invoice}
+				<option value="{$invoice.id}">{$invoice.name}</option>
 				{/foreach}
 			</optgroup>
 			<optgroup label="{l s='New'}">

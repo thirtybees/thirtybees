@@ -218,11 +218,11 @@
 	</td>
 	{if ($can_edit && !$order->hasBeenDelivered())}
 	<td class="product_invoice" style="display: none;">
-		{if sizeof($invoices_collection)}
+		{if $invoices}
 		<select name="product_invoice" class="edit_product_invoice">
-			{foreach from=$invoices_collection item=invoice}
-			<option value="{$invoice->id}" {if $invoice->id == $product['id_order_invoice']}selected="selected"{/if}>
-				#{Configuration::get('PS_INVOICE_PREFIX', $current_id_lang, null, $order->id_shop)}{'%06d'|sprintf:$invoice->number}
+			{foreach from=$invoices item=invoice}
+			<option value="{$invoice.id}" {if $invoice.id == $product['id_order_invoice']}selected="selected"{/if}>
+				{$invoice.name}
 			</option>
 			{/foreach}
 		</select>
