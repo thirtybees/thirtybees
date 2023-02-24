@@ -1580,8 +1580,12 @@ abstract class AdminTabCore
                                 // Create new one with old objet values
                                 $objectNew = new $this->className($object->id);
                                 $objectNew->id = null;
-                                $objectNew->date_add = '';
-                                $objectNew->date_upd = '';
+                                if (property_exists($objectNew, 'date_add')) {
+                                    $objectNew->date_add = '';
+                                }
+                                if (property_exists($objectNew, 'date_upd')) {
+                                    $objectNew->date_upd = '';
+                                }
 
                                 // Update old object to deleted
                                 $object->deleted = 1;
