@@ -932,7 +932,6 @@ class WebserviceRequestCore
      */
     protected function setObjects()
     {
-        $objects = [];
         $arrAvoidId = [];
         $ids = [];
         if (isset($this->urlFragments['id'])) {
@@ -949,8 +948,6 @@ class WebserviceRequestCore
                 $object = new $retrieveData['className']((int) $id);
                 if (!$object->id) {
                     $arrAvoidId[] = $id;
-                } else {
-                    $objects[] = $object;
                 }
             }
         }

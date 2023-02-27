@@ -467,16 +467,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     protected function manageDefaultDeclinatedImages($directory, $normalImageSizes)
     {
         $this->defaultImage = true;
-        // Get the language iso code list
         $langList = Language::getIsoIds(true);
-        $langs = [];
-        $defaultLang = Configuration::get('PS_LANG_DEFAULT');
-        foreach ($langList as $lang) {
-            if ($lang['id_lang'] == $defaultLang) {
-                $defaultLang = $lang['iso_code'];
-            }
-            $langs[] = $lang['iso_code'];
-        }
 
         // Display list of languages
         if ($this->wsObject->urlSegment[3] == '' && $this->wsObject->method == 'GET') {

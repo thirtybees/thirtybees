@@ -89,11 +89,6 @@ class AdminProfilesControllerCore extends AdminController
             ],
         ];
 
-        $listProfile = [];
-        foreach (Profile::getProfiles($this->context->language->id) as $profile) {
-            $listProfile[] = ['value' => $profile['id_profile'], 'name' => $profile['name']];
-        }
-
         parent::__construct();
     }
 
