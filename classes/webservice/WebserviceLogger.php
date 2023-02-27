@@ -23,7 +23,7 @@
 class WebserviceLoggerCore
 {
     /**
-     * @var boolean
+     * @var bool
      */
     protected $enabled;
 

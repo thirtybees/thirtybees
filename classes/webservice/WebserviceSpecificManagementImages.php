@@ -459,7 +459,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     /**
      * @param string $directory
-     * @param array $normalImageSizes
+     * @param array[] $normalImageSizes
      *
      * @return bool
      *
@@ -567,7 +567,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     /**
      * @param string $directory
-     * @param array $normalImageSizes
+     * @param array[] $normalImageSizes
      *
      * @return bool
      * @throws PrestaShopDatabaseException
@@ -854,7 +854,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      *
      * @param bool $filenameExists if the filename exists
      * @param string $filename the image path
-     * @param array $imageSizes
+     * @param array[] $imageSizes
      * @param string $directory
      *
      * @return bool
@@ -974,7 +974,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      * @param string $newPath
      * @param int|null $destWidth
      * @param int|null $destHeight
-     * @param string[]|null $imageTypes
+     * @param array[]|null $imageTypes
      * @param string|null $parentPath
      *
      * @return string
@@ -1096,7 +1096,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      * @param string $receptionPath
      * @param int|null $destWidth
      * @param int|null $destHeight
-     * @param string[]|null $imageTypes
+     * @param array[]|null $imageTypes
      * @param string|null $parentPath
      *
      * @return bool

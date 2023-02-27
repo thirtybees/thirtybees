@@ -45,7 +45,7 @@ class GroupCore extends ObjectModel
     protected static $group_price_display_method = [];
 
     /**
-     * @var string Lastname
+     * @var string|string[] Lastname
      */
     public $name;
 

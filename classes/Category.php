@@ -85,7 +85,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     protected static $_links = [];
     /** @var int category ID */
     public $id_category;
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var bool Status for display */
     public $active = 1;
@@ -93,7 +93,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public $display_from_sub = 1;
     /** @var int category position */
     public $position;
-    /** @var string Description */
+    /** @var string|string[] Description */
     public $description;
     /** @var int Parent category ID */
     public $id_parent;
@@ -105,13 +105,13 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public $nleft;
     /** @var int Nested tree model "right" value */
     public $nright;
-    /** @var string string used in rewrited URL */
+    /** @var string|string[] string used in rewrited URL */
     public $link_rewrite;
-    /** @var string Meta title */
+    /** @var string|string[] Meta title */
     public $meta_title;
-    /** @var string Meta keywords */
+    /** @var string|string[] Meta keywords */
     public $meta_keywords;
-    /** @var string Meta description */
+    /** @var string|string[] Meta description */
     public $meta_description;
     /** @var string Object creation date */
     public $date_add;

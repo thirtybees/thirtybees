@@ -50,7 +50,7 @@ class ProfileCore extends ObjectModel
     protected static $_cache_permissions = [];
 
     /**
-     * @var string Name
+     * @var string|string[] Name
      */
     public $name;
 

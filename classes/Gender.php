@@ -58,7 +58,7 @@ class GenderCore extends ObjectModel
     public $id_gender;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $name;
 

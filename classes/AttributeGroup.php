@@ -56,7 +56,7 @@ class AttributeGroupCore extends ObjectModel
             ],
         ],
     ];
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var bool $is_color_group */
     public $is_color_group;
@@ -64,7 +64,7 @@ class AttributeGroupCore extends ObjectModel
     public $position;
     /** @var string $group_type */
     public $group_type;
-    /** @var string Public Name */
+    /** @var string|string[] Public Name */
     public $public_name;
     /**
      * @var array Webservice parameters

@@ -60,12 +60,12 @@ class SupplyOrderDetailCore extends ObjectModel
     public $supplier_reference;
 
     /**
-     * @var int Product name
+     * @var string Product name
      */
     public $name;
 
     /**
-     * @var int Product EAN13
+     * @var string Product EAN13
      */
     public $ean13;
 
@@ -121,7 +121,7 @@ class SupplyOrderDetailCore extends ObjectModel
     public $price_with_discount_te = 0;
 
     /**
-     * @var int Tax rate for the given product
+     * @var float Tax rate for the given product
      */
     public $tax_rate = 0;
 

@@ -40,7 +40,7 @@ class CustomizationFieldCore extends ObjectModel
     public $type;
     /** @var bool Field is required */
     public $required;
-    /** @var string Label for customized field */
+    /** @var string|string[] Label for customized field */
     public $name;
 
     /**

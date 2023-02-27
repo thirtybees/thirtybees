@@ -186,9 +186,9 @@ abstract class AdminTabCore
      */
     protected $_includeObj = [];
     /**
-     * @var bool
+     * @var array
      */
-    protected $_includeVars = false;
+    protected $_includeVars = [];
     /**
      * @var bool
      */

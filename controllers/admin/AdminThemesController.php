@@ -52,7 +52,7 @@ class AdminThemesControllerCore extends AdminController
     protected $toolbar_scroll = false;
 
     /**
-     * @var string
+     * @var string[]
      */
     private $img_error;
 

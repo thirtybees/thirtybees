@@ -55,7 +55,7 @@ class ProductSupplierCore extends ObjectModel
      */
     public $id_currency;
     /**
-     * @var string The unit price tax excluded of the product
+     * @var float The unit price tax excluded of the product
      */
     public $product_supplier_price_te;
 

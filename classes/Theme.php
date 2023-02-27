@@ -62,9 +62,9 @@ class ThemeCore extends ObjectModel
     public $directory;
     /** @var bool $responsive */
     public $responsive;
-    /** @var int $default_left_column */
+    /** @var bool $default_left_column */
     public $default_left_column;
-    /** @var int $default_right_column */
+    /** @var bool $default_right_column */
     public $default_right_column;
     /** @var int $product_per_page */
     public $product_per_page;

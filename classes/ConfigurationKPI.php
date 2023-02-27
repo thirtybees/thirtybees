@@ -93,7 +93,7 @@ class ConfigurationKPICore extends Configuration
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
-     * @return string
+     * @return false|null|string
      *
      * @throws PrestaShopException
      */
@@ -110,7 +110,7 @@ class ConfigurationKPICore extends Configuration
      * @param string $key
      * @param int|null $idLang
      *
-     * @return string
+     * @return false|null|string
      *
      * @throws PrestaShopException
      */

@@ -37,7 +37,7 @@ class StockMvtReasonCore extends ObjectModel
     /** @var int identifier of the movement reason */
     public $id;
 
-    /** @var string the name of the movement reason */
+    /** @var string|string[] the name of the movement reason */
     public $name;
 
     /** @var int detrmine if the movement reason correspond to a positive or negative operation */

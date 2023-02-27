@@ -34,7 +34,7 @@
  */
 class SceneCore extends ObjectModel
 {
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var bool Active Scene */
     public $active = true;

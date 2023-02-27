@@ -56,7 +56,7 @@ class CartRuleCore extends ObjectModel
     public $id;
 
     /**
-     * @var string $name
+     * @var string|string[] $name
      */
     public $name;
 
@@ -96,9 +96,9 @@ class CartRuleCore extends ObjectModel
     public $priority = 1;
 
     /**
-     * @var int $partial_use
+     * @var bool $partial_use
      */
-    public $partial_use = 1;
+    public $partial_use = true;
 
     /**
      * @var string $code
@@ -196,7 +196,7 @@ class CartRuleCore extends ObjectModel
     public $reduction_tax;
 
     /**
-     * @var bool $reduction_currency
+     * @var int $reduction_currency
      */
     public $reduction_currency;
 
@@ -221,9 +221,9 @@ class CartRuleCore extends ObjectModel
     public $highlight;
 
     /**
-     * @var int $active
+     * @var bool $active
      */
-    public $active = 1;
+    public $active = true;
 
     /**
      * @var string $date_add

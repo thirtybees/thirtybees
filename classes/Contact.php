@@ -40,7 +40,7 @@ class ContactCore extends ObjectModel
     public $id;
 
     /**
-     * @var string Name
+     * @var string|string[] Name
      */
     public $name;
 
@@ -50,12 +50,12 @@ class ContactCore extends ObjectModel
     public $email;
 
     /**
-     * @var string Detailed description
+     * @var string|string[] Detailed description
      */
     public $description;
 
     /**
-     * @var int
+     * @var bool
      */
     public $customer_service;
 

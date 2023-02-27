@@ -48,22 +48,22 @@ class MetaCore extends ObjectModel
     public $configurable = 1;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $title;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $description;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $keywords;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $url_rewrite;
 
@@ -77,7 +77,7 @@ class MetaCore extends ObjectModel
         'multilang_shop' => true,
         'fields'         => [
             'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 128, 'unique' => true],
-            'configurable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 1, 'dbDefault' => '1'],
+            'configurable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
 
             /* Lang fields */
             'title'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],

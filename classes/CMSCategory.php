@@ -78,11 +78,11 @@ class CMSCategoryCore extends ObjectModel
     protected static $_links = [];
     /** @var int CMSCategory ID */
     public $id_cms_category;
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var bool Status for display */
     public $active = 1;
-    /** @var string Description */
+    /** @var string|string[] Description */
     public $description;
     /** @var int Parent CMSCategory ID */
     public $id_parent;
@@ -90,13 +90,13 @@ class CMSCategoryCore extends ObjectModel
     public $position;
     /** @var int Parents number */
     public $level_depth;
-    /** @var string string used in rewrited URL */
+    /** @var string|string[] string used in rewrited URL */
     public $link_rewrite;
-    /** @var string Meta title */
+    /** @var string|string[] Meta title */
     public $meta_title;
-    /** @var string Meta keywords */
+    /** @var string|string[] Meta keywords */
     public $meta_keywords;
-    /** @var string Meta description */
+    /** @var string|string[] Meta description */
     public $meta_description;
     /** @var string Object creation date */
     public $date_add;

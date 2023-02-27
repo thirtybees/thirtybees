@@ -66,27 +66,27 @@ class CMSCore extends ObjectModel
     ];
 
     /**
-     * @var string Name
+     * @var string|string[] Name
      */
     public $meta_title;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $meta_description;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $meta_keywords;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $content;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $link_rewrite;
 

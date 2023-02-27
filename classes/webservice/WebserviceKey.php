@@ -48,7 +48,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     /** @var string php class to handle web request. Default WebserviceRequest */
     public $class_name;
 
-    /** @var boolean is this created by external module */
+    /** @var bool is this created by external module */
     public $is_module;
 
     /** @var string module name - webservice provider*/

@@ -40,7 +40,7 @@ class ConnectionCore extends ObjectModel
     public $id_guest;
     /** @var int */
     public $id_page;
-    /** @var string */
+    /** @var int */
     public $ip_address;
     /** @var string */
     public $http_referer;

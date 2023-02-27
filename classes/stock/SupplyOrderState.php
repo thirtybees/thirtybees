@@ -35,7 +35,7 @@
 class SupplyOrderStateCore extends ObjectModel
 {
     /**
-     * @var string Name of the state
+     * @var string|string[] Name of the state
      */
     public $name;
 

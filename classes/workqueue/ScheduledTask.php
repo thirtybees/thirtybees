@@ -89,32 +89,32 @@ class ScheduledTaskCore extends ObjectModel
     public $active;
 
     /**
-     * @var integer|null last execution unix timestamp. Integer is used instead of date to mitigate timezones issues
+     * @var int|null last execution unix timestamp. Integer is used instead of date to mitigate timezones issues
      */
     public $last_execution;
 
     /**
-     * @var integer|null last checked unix timestamp. Integer is used instead of date to mitigate timezones issues
+     * @var int|null last checked unix timestamp. Integer is used instead of date to mitigate timezones issues
      */
     public $last_checked;
 
     /**
-     * @var integer id employee
+     * @var int id employee
      */
     public $id_employee_context;
 
     /**
-     * @var integer id shop
+     * @var int id shop
      */
     public $id_shop_context;
 
     /**
-     * @var integer id customer
+     * @var int id customer
      */
     public $id_customer_context;
 
     /**
-     * @var integer id language
+     * @var int id language
      */
     public $id_language_context;
 

@@ -34,7 +34,7 @@
  */
 class TaxCore extends ObjectModel
 {
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
 
     /** @var float Rate (%) */

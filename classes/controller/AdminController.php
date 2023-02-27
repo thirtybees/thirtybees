@@ -52,7 +52,7 @@ class AdminControllerCore extends Controller
     public static $cache_lang = [];
     /** @var string */
     public $path;
-    /** @var string */
+    /** @var string|string[] */
     public $content;
     /** @var array */
     public $warnings = [];

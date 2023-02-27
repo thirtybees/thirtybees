@@ -46,7 +46,7 @@ class ImageCore extends ObjectModel
     public $position;
     /** @var bool Image is cover */
     public $cover;
-    /** @var string Legend */
+    /** @var string|string[] Legend */
     public $legend;
     /** @var string image extension */
     public $image_format = 'jpg';

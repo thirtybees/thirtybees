@@ -120,7 +120,7 @@ class SupplyOrderCore extends ObjectModel
     public $discount_value_te = 0;
 
     /**
-     * @var int Tells if this order is a template
+     * @var bool Tells if this order is a template
      */
     public $is_template = 0;
 

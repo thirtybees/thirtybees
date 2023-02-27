@@ -933,7 +933,6 @@ abstract class ModuleCore
 
                     if (!$xmlExist || $needNewConfigFile) {
                         static::$_generate_config_xml_mode = true;
-                        /** @var Module $tmpModule */
                         $tmpModule->_generateConfigXml();
                         static::$_generate_config_xml_mode = false;
                     }

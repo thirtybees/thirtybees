@@ -36,9 +36,9 @@ class FeatureValueCore extends ObjectModel
 {
     /** @var int Group id which attribute belongs */
     public $id_feature;
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $value;
-    /** @var string Value that will be displayed */
+    /** @var string|string[] Value that will be displayed */
     public $displayable;
     /** @var int Position if multiple values are selected */
     public $position;

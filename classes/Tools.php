@@ -625,7 +625,6 @@ class ToolsCore
     public static function setCurrency($cookie)
     {
         if (Tools::isSubmit('SubmitCurrency') && ($idCurrency = Tools::getValue('id_currency'))) {
-            /** @var Currency $currency */
             $currency = Currency::getCurrencyInstance((int) $idCurrency);
             if (is_object($currency) && $currency->id && !$currency->deleted && $currency->isAssociatedToShop()) {
                 $cookie->id_currency = (int) $currency->id;

@@ -158,9 +158,7 @@ abstract class CurrencyRateModuleCore extends Module
 
         $return = [];
         foreach ($results as $result) {
-            /** @var Currency $currency */
             $currency = Currency::getCurrencyInstance($result['id_currency']);
-            /** @var CurrencyRateModule $module */
             $module = Module::getInstanceById($result['id_module']);
             if (Validate::isLoadedObject($currency) && Validate::isLoadedObject($module)) {
                 if ($codesOnly) {

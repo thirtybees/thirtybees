@@ -651,7 +651,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param string $message
+     * @param array $message
      * @param bool $email
      * @param int|null $idEmployee
      *

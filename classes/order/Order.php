@@ -1669,9 +1669,7 @@ class OrderCore extends ObjectModel
             $taxCalculator = Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($this->id);
         } else {
             $wrappingTaxManager = TaxManagerFactory::getManager($address, (int) Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
-            /** @var TaxCalculator $wrappingTaxCalculator */
             $wrappingTaxCalculator = $wrappingTaxManager->getTaxCalculator();
-            /** @var TaxCalculator $taxCalculator */
             $taxCalculator = $carrier->getTaxCalculator($address);
         }
 

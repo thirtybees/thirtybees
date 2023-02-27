@@ -42,7 +42,7 @@ class StockCore extends ObjectModel
     public $id_product_attribute;
     /** @var string Product reference */
     public $reference;
-    /** @var int Product EAN13 */
+    /** @var string Product EAN13 */
     public $ean13;
     /** @var string UPC */
     public $upc;
@@ -50,7 +50,7 @@ class StockCore extends ObjectModel
     public $physical_quantity;
     /** @var int the usable quantity (for sale) of the current physical quantity */
     public $usable_quantity;
-    /** @var int the unit price without tax forthe current product */
+    /** @var float the unit price without tax forthe current product */
     public $price_te;
 
     /**

@@ -41,7 +41,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     const SORT_CUSTOM = 2;
 
     /**
-     * @var string Feature name
+     * @var string|string[] Feature name
      */
     public $name;
 
@@ -66,12 +66,12 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     public $allows_custom_values = true;
 
     /**
-     * @var string FO separator, when multiple values were selected
+     * @var string|string[] FO separator, when multiple values were selected
      */
     public $multiple_separator;
 
     /**
-     * @var string FO display schema, when multiple values were selected
+     * @var string|string[] FO display schema, when multiple values were selected
      */
     public $multiple_schema;
 

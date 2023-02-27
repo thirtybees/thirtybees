@@ -40,11 +40,11 @@ class AttachmentCore extends ObjectModel
     public $file_name;
     /** @var int $file_size */
     public $file_size;
-    /** @var string $name */
+    /** @var string|string[] $name */
     public $name;
     /** @var string $mime */
     public $mime;
-    /** @var string $description */
+    /** @var string|string[] $description */
     public $description;
     /** @var int position */
     public $position;

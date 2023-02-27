@@ -77,11 +77,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @deprecated 1.4.0 -- use display name instead
      */
     public $name;
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $display_name;
     /** @var string URL with a '@' for */
     public $url;
-    /** @var string Delay needed to deliver customer */
+    /** @var string|string[] Delay needed to deliver customer */
     public $delay;
     /** @var bool Carrier status */
     public $active = true;
@@ -89,7 +89,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     public $deleted = 0;
     /** @var bool Active or not the shipping handling */
     public $shipping_handling = true;
-    /** @var int Behavior taken for unknown range */
+    /** @var bool Behavior taken for unknown range */
     public $range_behavior;
     /** @var bool Carrier module */
     public $is_module;
@@ -119,9 +119,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     public $max_total;
     /** @var bool flag thas specify if max_total value is with or without tax */
     public $max_total_tax;
-    /** @var int minimum package weight managed by the transporter */
+    /** @var float minimum package weight managed by the transporter */
     public $min_weight;
-    /** @var int maximum package weight managed by the transporter */
+    /** @var float maximum package weight managed by the transporter */
     public $max_weight;
     /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
     public $grade;

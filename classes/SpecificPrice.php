@@ -66,7 +66,7 @@ class SpecificPriceCore extends ObjectModel
     public $price;
     /** @var int $from_quantity */
     public $from_quantity;
-    /** @var string $reduction */
+    /** @var float $reduction */
     public $reduction;
     /** @var int $reduction_tax */
     public $reduction_tax = 1;

@@ -40,7 +40,7 @@ class RiskCore extends ObjectModel
     public $id_risk;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     public $name;
 

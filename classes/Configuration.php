@@ -279,8 +279,8 @@ class ConfigurationCore extends ObjectModel
         'primary'   => 'id_configuration',
         'multilang' => true,
         'fields'    => [
-            'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
-            'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'id_shop_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'id_shop'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
             'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
             'value'         => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
             'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],

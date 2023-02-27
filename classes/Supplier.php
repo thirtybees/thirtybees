@@ -46,7 +46,7 @@ class SupplierCore extends ObjectModel
     public $id_supplier;
     /** @var string Name */
     public $name;
-    /** @var string A short description for the discount */
+    /** @var string|string[] A short description for the discount */
     public $description;
     /** @var string Object creation date */
     public $date_add;
@@ -54,11 +54,11 @@ class SupplierCore extends ObjectModel
     public $date_upd;
     /** @var string Friendly URL */
     public $link_rewrite;
-    /** @var string Meta title */
+    /** @var string|string[] Meta title */
     public $meta_title;
-    /** @var string Meta keywords */
+    /** @var string|string[] Meta keywords */
     public $meta_keywords;
-    /** @var string Meta description */
+    /** @var string|string[] Meta description */
     public $meta_description;
     /** @var bool active */
     public $active;

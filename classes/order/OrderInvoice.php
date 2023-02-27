@@ -80,7 +80,7 @@ class OrderInvoiceCore extends ObjectModel
     public $number;
     /** @var int */
     public $delivery_number;
-    /** @var int */
+    /** @var string */
     public $delivery_date = '0000-00-00 00:00:00';
     /** @var float */
     public $total_discount_tax_excl;
@@ -112,7 +112,7 @@ class OrderInvoiceCore extends ObjectModel
     public $delivery_address;
     /** @var string note */
     public $note;
-    /** @var int */
+    /** @var string */
     public $date_add;
     /** @var Order */
     private $order;

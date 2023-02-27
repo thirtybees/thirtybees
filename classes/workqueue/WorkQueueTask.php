@@ -104,22 +104,22 @@ class WorkQueueTaskCore extends ObjectModel
     public $error;
 
     /**
-     * @var integer Context value: employee id
+     * @var int Context value: employee id
      */
     public $id_employee_context;
 
     /**
-     * @var integer Context value: shop id
+     * @var int Context value: shop id
      */
     public $id_shop_context;
 
     /**
-     * @var integer Context value: customer id
+     * @var int Context value: customer id
      */
     public $id_customer_context;
 
     /**
-     * @var integer Context value: language id
+     * @var int Context value: language id
      */
     public $id_language_context;
 

@@ -155,13 +155,13 @@ class CustomerCore extends ObjectModel
     public $ape;
     /** @var float Outstanding allow amount (B2B opt) */
     public $outstanding_allow_amount = 0;
-    /** @var int Show public prices (B2B opt) */
+    /** @var bool Show public prices (B2B opt) */
     public $show_public_prices = 0;
     /** @var int Risk ID (B2B opt) */
     public $id_risk;
     /** @var int Max payment day */
     public $max_payment_days = 0;
-    /** @var int Password */
+    /** @var string Password */
     public $passwd;
     /** @var string Datetime Password */
     public $last_passwd_gen;

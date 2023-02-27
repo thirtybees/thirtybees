@@ -59,7 +59,6 @@ class Core_Business_Stock_StockManager
                 /** @var Adapter_StockManager $stockManager */
                 $stockManager = Adapter_ServiceLocator::get('Adapter_StockManager');
                 foreach ($productsPack as $productPack) {
-                    /** @var StockAvailable $productStockAvailable */
                     $productStockAvailable = $stockManager->getStockAvailableByProduct($productPack, $productPack->id_pack_product_attribute, $idShop);
                     $productStockAvailable->quantity = $productStockAvailable->quantity + ($deltaQuantity * $productPack->pack_quantity);
                     $productStockAvailable->update();
@@ -96,7 +95,6 @@ class Core_Business_Stock_StockManager
         if ($deltaQuantity !== 0) {
             /** @var Adapter_StockManager $stockManager */
             $stockManager = Adapter_ServiceLocator::get('Adapter_StockManager');
-            /** @var StockAvailable $stockAvailable */
             $stockAvailable = $stockManager->getStockAvailableByProduct($product, $idProductAttribute, $idShop);
 
             if (Validate::isLoadedObject($stockAvailable)) {

@@ -57,17 +57,17 @@ class CurrencyCore extends ObjectModel
     public $iso_code_num;
     /** @var string Symbol for short display */
     public $sign;
-    /** @var int bool used for displaying blank between sign and price */
+    /** @var bool used for displaying blank between sign and price */
     public $blank;
-    /** @var string exchange rate from euros */
+    /** @var float exchange rate from euros */
     public $conversion_rate;
     /** @var bool True if currency has been deleted (staying in database as deleted) */
     public $deleted = 0;
     /** @var int ID used for displaying prices */
     public $format;
-    /** @var int bool Display decimals on prices */
+    /** @var bool Display decimals on prices */
     public $decimals;
-    /** @var int bool active */
+    /** @var bool active */
     public $active;
     /**
      * contains the sign to display before price, according to its format
@@ -94,7 +94,7 @@ class CurrencyCore extends ObjectModel
             'iso_code'        => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3, 'dbDefault' => '0'],
             'iso_code_num'    => ['type' => self::TYPE_STRING, 'validate' => 'isNumericIsoCode', 'size' => 3, 'dbDefault' => '0'],
             'sign'            => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 8],
-            'blank'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 1, 'dbDefault' => '0'],
+            'blank'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'format'          => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'size' => 1, 'dbDefault' => '0'],
             'decimals'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
             'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true, 'size' => 13],
@@ -690,13 +690,15 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @return int|string
+     * @return float
      *
      * @throws PrestaShopException
      */
     public function getConversationRate()
     {
-        return $this->id != (int) Configuration::get('PS_CURRENCY_DEFAULT') ? $this->conversion_rate : 1;
+        return $this->id != (int) Configuration::get('PS_CURRENCY_DEFAULT')
+            ? (float)$this->conversion_rate
+            : 1.0;
     }
 
     /**

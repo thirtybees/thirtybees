@@ -55,12 +55,12 @@ class ManufacturerCore extends ObjectModel
     public $name;
 
     /**
-     * @var string A description
+     * @var string|string[] A description
      */
     public $description;
 
     /**
-     * @var string A short description
+     * @var string|string[] A short description
      */
     public $short_description;
 
@@ -85,17 +85,17 @@ class ManufacturerCore extends ObjectModel
     public $link_rewrite;
 
     /**
-     * @var string Meta title
+     * @var string|string[] Meta title
      */
     public $meta_title;
 
     /**
-     * @var string Meta keywords
+     * @var string|string[] Meta keywords
      */
     public $meta_keywords;
 
     /**
-     * @var string Meta description
+     * @var string|string[] Meta description
      */
     public $meta_description;
 

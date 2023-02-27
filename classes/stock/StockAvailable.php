@@ -50,8 +50,8 @@ class StockAvailableCore extends ObjectModel
     public $quantity = 0;
     /** @var bool determine if the available stock value depends on physical stock */
     public $depends_on_stock = false;
-    /** @var bool determine if a product is out of stock - it was previously in Product class */
-    public $out_of_stock = false;
+    /** @var int determine if a product is out of stock - it was previously in Product class */
+    public $out_of_stock = 0;
 
 
     /** @var int */
@@ -823,7 +823,6 @@ class StockAvailableCore extends ObjectModel
             }
             $shop = $context->shop;
         } elseif (is_object($shop)) {
-            /** @var Shop $shop */
             $shopGroup = $shop->getGroup();
         } else {
             $shop = new Shop($shop);

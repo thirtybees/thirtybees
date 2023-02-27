@@ -613,7 +613,6 @@ class AdminWarehousesControllerCore extends AdminController
      */
     protected function updateAddress()
     {
-        /** @var AddressCore $address */
         $address = new Address();
 
         if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
@@ -737,7 +736,6 @@ class AdminWarehousesControllerCore extends AdminController
         $address = new Address($warehouse->id_address);
         $this->markAddressAsDeleted($address);
 
-        /** @var WarehouseCore $warehouse */
         $warehouse->setCarriers([]);
         $warehouse->resetProductsLocations();
 
@@ -753,7 +751,6 @@ class AdminWarehousesControllerCore extends AdminController
      */
     protected function markAddressAsDeleted(Address $address)
     {
-        /** @var AddressCore $address */
         $address->deleted = 1;
         $address->save();
     }

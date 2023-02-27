@@ -242,7 +242,6 @@ class AdminDashboardControllerCore extends AdminController
             return parent::renderOptions();
         }
 
-        /** @var Employee $employee */
         $employee = $this->context->employee;
 
         // resolve date range

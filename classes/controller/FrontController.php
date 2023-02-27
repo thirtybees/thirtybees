@@ -1662,7 +1662,7 @@ class FrontControllerCore extends Controller
                 'link'                => $link,
                 'cart'                => $cart,
                 'currency'            => $currency,
-                'currencyRate'        => (float) $currency->getConversationRate(),
+                'currencyRate'        => $currency->getConversationRate(),
                 'cookie'              => $this->context->cookie,
                 'page_name'           => $pageName,
                 'hide_left_column'    => !$this->display_column_left,

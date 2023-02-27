@@ -42,7 +42,7 @@ class CustomerThreadCore extends ObjectModel
     public $id_order;
     /** @var int $id_product */
     public $id_product;
-    /** @var bool $status */
+    /** @var string $status */
     public $status;
     /** @var string $email */
     public $email;

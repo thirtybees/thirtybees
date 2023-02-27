@@ -40,7 +40,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     protected $warehouses;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $is_template_list;
 

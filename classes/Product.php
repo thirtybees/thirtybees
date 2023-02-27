@@ -146,17 +146,17 @@ class ProductCore extends ObjectModel
     public $supplier_name;
 
     /**
-     * @var string Name
+     * @var string|string[] Name
      */
     public $name;
 
     /**
-     * @var string Long description
+     * @var string|string[] Long description
      */
     public $description;
 
     /**
-     * @var string Short description
+     * @var string|string[] Short description
      */
     public $description_short;
 
@@ -171,12 +171,12 @@ class ProductCore extends ObjectModel
     public $minimal_quantity = 1;
 
     /**
-     * @var string available_now
+     * @var string|string[] available_now
      */
     public $available_now;
 
     /**
-     * @var string available_later
+     * @var string|string[] available_later
      */
     public $available_later;
 
@@ -281,17 +281,17 @@ class ProductCore extends ObjectModel
     public $link_rewrite;
 
     /**
-     * @var string Meta tag description
+     * @var string|string[] Meta tag description
      */
     public $meta_description;
 
     /**
-     * @var string Meta tag keywords
+     * @var string|string[] Meta tag keywords
      */
     public $meta_keywords;
 
     /**
-     * @var string Meta tag title
+     * @var string|string[] Meta tag title
      */
     public $meta_title;
 
@@ -326,12 +326,12 @@ class ProductCore extends ObjectModel
     public $active = true;
 
     /**
-     * @var bool Product statuts
+     * @var string
      */
     public $redirect_type = '';
 
     /**
-     * @var bool Product statuts
+     * @var int
      */
     public $id_product_redirected = 0;
 
@@ -501,7 +501,7 @@ class ProductCore extends ObjectModel
             'weight'                    => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'dbDefault' => '0.000000'],
             'out_of_stock'              => ['type' => self::TYPE_INT,  'validate' => 'isInt', 'dbDefault' => '2'],
             'quantity_discount'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0', 'dbNullable' => true],
-            'customizable'              => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
+            'customizable'              => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
             'uploadable_files'          => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'text_fields'               => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'active'                    => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbDefault' => '0'],

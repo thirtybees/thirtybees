@@ -44,7 +44,7 @@ class CountryCore extends ObjectModel
     public $iso_code;
     /** @var int international call prefix */
     public $call_prefix;
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var bool Contain states */
     public $contains_states;

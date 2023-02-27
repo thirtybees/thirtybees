@@ -51,7 +51,7 @@ class TabCore extends ObjectModel
      *
      * Multilang property
      *
-     * @var array
+     * @var string|string[]
      */
     public $name;
 

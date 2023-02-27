@@ -94,7 +94,7 @@ class DbCore
     protected $database;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $throwOnError;
 
