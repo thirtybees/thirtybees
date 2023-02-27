@@ -604,7 +604,7 @@ class LanguageCore extends ObjectModel
         }
 
         // Use the values given in parameters to override the data retrieved automatically
-        if ($paramsLang !== null && is_array($paramsLang)) {
+        if (is_array($paramsLang)) {
             foreach ($paramsLang as $key => $value) {
                 if ($key != 'iso_code' && isset(Language::$definition['fields'][$key])) {
                     $lang->$key = $value;

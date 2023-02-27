@@ -564,7 +564,7 @@ class CustomerCore extends ObjectModel
      */
     public function updateGroup($list)
     {
-        if ($list && !empty($list)) {
+        if (!empty($list)) {
             $this->cleanGroups();
             $this->addGroups($list);
         } else {

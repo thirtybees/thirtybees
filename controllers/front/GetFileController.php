@@ -102,7 +102,7 @@ class GetFileControllerCore extends FrontController
             }
 
             /* Product no more present in catalog */
-            if (!isset($info['id_product_download']) || empty($info['id_product_download'])) {
+            if (empty($info['id_product_download'])) {
                 $this->displayCustomError('This product has been deleted.');
             }
 

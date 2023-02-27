@@ -401,7 +401,7 @@ class MediaCore
      */
     public static function getMediaPath($mediaUri, $cssMediaType = null)
     {
-        if (is_array($mediaUri) || $mediaUri === null || empty($mediaUri)) {
+        if (is_array($mediaUri) || empty($mediaUri)) {
             return false;
         }
 
@@ -449,10 +449,10 @@ class MediaCore
         if (isset(Media::$jquery_ui_dependencies[$component]) && Media::$jquery_ui_dependencies[$component]['theme'] && $checkDependencies) {
             $themeCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.ui.theme.css');
             $compCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$component.'.css');
-            if (!empty($themeCss) || $themeCss) {
+            if ($themeCss) {
                 $uiPath['css'] = array_merge($uiPath['css'], $themeCss);
             }
-            if (!empty($compCss) || $compCss) {
+            if ($compCss) {
                 $uiPath['css'] = array_merge($uiPath['css'], $compCss);
             }
         }
@@ -463,7 +463,7 @@ class MediaCore
                     $depCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$dependency.'.css');
                 }
 
-                if (isset($depCss) && (!empty($depCss) || $depCss)) {
+                if (isset($depCss) && $depCss) {
                     $uiPath['css'] = array_merge($uiPath['css'], $depCss);
                 }
             }

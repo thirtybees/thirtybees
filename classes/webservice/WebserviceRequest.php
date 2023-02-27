@@ -30,7 +30,6 @@
  */
 
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
-use Thirtybees\Core\Error\ErrorHandler;
 
 /**
  * Class WebserviceRequestCore
@@ -1622,7 +1621,7 @@ class WebserviceRequestCore
                                         $values[] = $entry;
                                     }
                                     $setter = $this->resourceConfiguration['associations'][$association->getName()]['setter'];
-                                    if (!is_null($setter) && $setter && method_exists($object, $setter) && !$object->$setter($values)) {
+                                    if ($setter && method_exists($object, $setter) && !$object->$setter($values)) {
                                         $this->setError(500, 'Error occurred while setting the '.$association->getName().' value', 85);
 
                                         return false;

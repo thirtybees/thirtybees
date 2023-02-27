@@ -2653,7 +2653,7 @@ class CartCore extends ObjectModel
                 ->from('orders')
                 ->where('`id_order` = '.(int) $idOrder)
         );
-        if (!$result || empty($result) || !array_key_exists('id_cart', $result)) {
+        if (empty($result) || !array_key_exists('id_cart', $result)) {
             return false;
         }
 

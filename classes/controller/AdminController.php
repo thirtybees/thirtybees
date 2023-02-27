@@ -814,7 +814,7 @@ class AdminControllerCore extends Controller
             return $this->object;
         }
 
-        if (!isset($this->className) || empty($this->className)) {
+        if (empty($this->className)) {
             return true;
         }
 
@@ -1652,7 +1652,7 @@ class AdminControllerCore extends Controller
      */
     public function processAdd()
     {
-        if (!isset($this->className) || empty($this->className)) {
+        if (empty($this->className)) {
             return false;
         }
 

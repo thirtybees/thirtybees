@@ -2350,7 +2350,7 @@ abstract class ModuleCore
                 ->select('`id_module`, `id_shop`')
                 ->from('hook_module')
                 ->where('`id_hook` = '.(int) $idHook)
-                ->where((!is_null($shopList) && $shopList) ? '`id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '')
+                ->where($shopList ? '`id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '')
                 ->orderBy('`position`')
         );
         $position = [];

@@ -626,7 +626,7 @@ class AdminCartsControllerCore extends AdminController
                         }
                         $this->context->cart->addTextFieldToProduct((int) $product->id, (int) $customizationField['id_customization_field'], Product::CUSTOMIZE_TEXTFIELD, Tools::getValue($fieldId));
                     } elseif ($customizationField['type'] == Product::CUSTOMIZE_FILE) {
-                        if (!isset($_FILES[$fieldId]) || !isset($_FILES[$fieldId]['tmp_name']) || empty($_FILES[$fieldId]['tmp_name'])) {
+                        if (!isset($_FILES[$fieldId]) || empty($_FILES[$fieldId]['tmp_name'])) {
                             if ($customizationField['required']) {
                                 $errors[] = Tools::displayError('Please fill in all the required fields.');
                             }

@@ -1016,7 +1016,7 @@ class AdminModulesControllerCore extends AdminController
         if ($this->hasAddPermission()) {
             if (isset($_FILES['file']['error']) && $_FILES['file']['error'] != UPLOAD_ERR_OK) {
                 $this->errors[] = Tools::decodeUploadError($_FILES['file']['error']);
-            } elseif (!isset($_FILES['file']['tmp_name']) || empty($_FILES['file']['tmp_name'])) {
+            } elseif (empty($_FILES['file']['tmp_name'])) {
                 $this->errors[] = $this->l('No file has been selected');
             } elseif (substr($_FILES['file']['name'], -4) != '.tar' && substr($_FILES['file']['name'], -4) != '.zip'
                 && substr($_FILES['file']['name'], -4) != '.tgz' && substr($_FILES['file']['name'], -7) != '.tar.gz'

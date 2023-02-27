@@ -297,7 +297,7 @@ class ToolsCore
      */
     public static function getProtocol($useSsl = null)
     {
-        return (!is_null($useSsl) && $useSsl ? 'https://' : 'http://');
+        return $useSsl ? 'https://' : 'http://';
     }
 
     /**
@@ -422,7 +422,7 @@ class ToolsCore
      */
     public static function getIsset($key)
     {
-        if (!isset($key) || empty($key) || !is_string($key)) {
+        if (empty($key) || !is_string($key)) {
             return false;
         }
 
@@ -500,7 +500,7 @@ class ToolsCore
      */
     public static function getValueRaw($key, $defaultValue = false)
     {
-        if (!isset($key) || empty($key) || !is_string($key)) {
+        if (empty($key) || !is_string($key)) {
             return false;
         }
 
@@ -759,7 +759,7 @@ class ToolsCore
         $formatter = $tbCurrency->getFormatter();
         if ($formatter && is_callable($formatter)) {
             $result = $formatter($price, $tbCurrency, $context->language);
-            if (!is_null($result) && is_string($result)) {
+            if (is_string($result)) {
                 return $result;
             }
         }
@@ -3786,7 +3786,7 @@ FileETag none
      */
     public static function isPHPCLI()
     {
-        return (defined('STDIN') || (mb_strtolower(php_sapi_name()) == 'cli' && (!isset($_SERVER['REMOTE_ADDR']) || empty($_SERVER['REMOTE_ADDR']))));
+        return (defined('STDIN') || (mb_strtolower(php_sapi_name()) == 'cli' && empty($_SERVER['REMOTE_ADDR'])));
     }
 
     /**

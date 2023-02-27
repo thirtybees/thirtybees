@@ -731,7 +731,7 @@ abstract class AdminTabCore
         }
         $idCat = Tools::getValue('id_'.($isCms ? 'cms_' : '').'category');
 
-        if (!isset($token) || empty($token)) {
+        if (empty($token)) {
             $token = $this->token;
         }
 
@@ -2350,7 +2350,7 @@ abstract class AdminTabCore
      */
     public function displayImage($id, $image, $size, $idImage = null, $token = null, $disableCache = false)
     {
-        if (!isset($token) || empty($token)) {
+        if (empty($token)) {
             $token = $this->token;
         }
         if ($id && file_exists($image)) {

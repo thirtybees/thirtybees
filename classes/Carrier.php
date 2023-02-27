@@ -595,7 +595,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             $cart = Context::getContext()->cart;
         }
 
-        if (is_null($error) || !is_array($error)) {
+        if (!is_array($error)) {
             $error = [];
         }
 

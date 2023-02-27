@@ -307,7 +307,7 @@ class AddressCore extends ObjectModel
      */
     public static function getZoneById($idAddress)
     {
-        if (!isset($idAddress) || empty($idAddress)) {
+        if (empty($idAddress)) {
             return false;
         }
 
@@ -348,7 +348,7 @@ class AddressCore extends ObjectModel
      */
     public static function isCountryActiveById($idAddress)
     {
-        if (!isset($idAddress) || empty($idAddress)) {
+        if (empty($idAddress)) {
             return false;
         }
 

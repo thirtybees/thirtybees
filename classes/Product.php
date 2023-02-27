@@ -5185,7 +5185,7 @@ class ProductCore extends ObjectModel
         );
 
         /* If something's wrong */
-        if (!$result || empty($result)) {
+        if (empty($result)) {
             return false;
         }
         /* Product attributes simulation */

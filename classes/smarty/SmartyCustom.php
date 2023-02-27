@@ -276,7 +276,7 @@ class SmartyCustomCore extends Smarty
                 Tools::changeFileMTime($filename);
                 parent::clearAllCache();
             } else {
-                if ($cacheId !== null && (is_object($cacheId) || is_array($cacheId))) {
+                if (is_object($cacheId) || is_array($cacheId)) {
                     $cacheId = null;
                 }
 

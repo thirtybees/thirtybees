@@ -586,7 +586,7 @@ abstract class ControllerCore
             $key = is_array($cssPath) ? key($cssPath) : $cssPath;
             if ($cssPath && (!isset($this->css_files[$key]) || ($this->css_files[$key] != reset($cssPath)))) {
                 $size = count($this->css_files);
-                if ($offset === null || $offset > $size || $offset < 0 || !is_numeric($offset)) {
+                if ($offset > $size || $offset < 0 || !is_numeric($offset)) {
                     $offset = $size;
                 }
 

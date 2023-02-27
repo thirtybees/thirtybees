@@ -348,7 +348,7 @@ class AddressFormatCore extends ObjectModel
         $temporyObject = [];
 
         // Check if $address exist and it's an instanciate object of Address
-        if ($address && ($address instanceof Address)) {
+        if ($address instanceof Address) {
             if (Module::isInstalled('vatnumber')
                 && Module::isEnabled('vatnumber')
                 && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
@@ -573,7 +573,7 @@ class AddressFormatCore extends ObjectModel
     {
         $layoutData = [];
 
-        if ($address && $address instanceof Address) {
+        if ($address instanceof Address) {
             if (Module::isInstalled('vatnumber')
                 && Module::isEnabled('vatnumber')
                 && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {

@@ -718,7 +718,7 @@ class OrderCore extends ObjectModel
             $this->setProductCustomizedDatas($row, $customizedDatas);
 
             // Add information for virtual product
-            if ($row['download_hash'] && !empty($row['download_hash'])) {
+            if (!empty($row['download_hash'])) {
                 $row['filename'] = ProductDownload::getFilenameFromIdProduct((int) $row['product_id']);
                 // Get the display filename
                 $row['display_filename'] = ProductDownload::getFilenameFromFilename($row['filename']);
