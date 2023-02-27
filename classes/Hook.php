@@ -407,7 +407,7 @@ class HookCore extends ObjectModel
                 continue;
             }
 
-            if ((bool) $disableNonNativeModules && Hook::$native_module && count(Hook::$native_module) && !in_array($array['module'], Hook::$native_module)) {
+            if ($disableNonNativeModules && Hook::$native_module && count(Hook::$native_module) && !in_array($array['module'], Hook::$native_module)) {
                 continue;
             }
 

@@ -2174,7 +2174,7 @@ class AdminControllerCore extends Controller
                 }
 
                 // class_name is the name of the class controller
-                if (Tab::checkTabRights($subTab['id_tab']) === true && (bool) $subTab['active'] && $subTab['class_name'] != 'AdminCarrierWizard') {
+                if (Tab::checkTabRights($subTab['id_tab']) === true && $subTab['active'] && $subTab['class_name'] != 'AdminCarrierWizard') {
                     $subTabs[$index2]['href'] = $this->context->link->getAdminLink($subTab['class_name']);
                     $subTabs[$index2]['current'] = ($subTab['class_name'].'Controller' == get_class($this) || $subTab['class_name'] == Tools::getValue('controller'));
                 } elseif ($subTab['class_name'] == 'AdminCarrierWizard' && $subTab['class_name'].'Controller' == get_class($this)) {
@@ -2249,7 +2249,7 @@ class AdminControllerCore extends Controller
                 'pic_dir'                   => _THEME_PROD_PIC_DIR_,
                 'controller_name'           => htmlentities(Tools::getValue('controller')),
                 'currentIndex'              => static::$currentIndex,
-                'maintenance_mode'          => !(bool) Configuration::get('PS_SHOP_ENABLE'),
+                'maintenance_mode'          => !Configuration::get('PS_SHOP_ENABLE'),
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
             ]
@@ -2346,7 +2346,7 @@ class AdminControllerCore extends Controller
 
         $this->context->smarty->assign(
             [
-                'maintenance_mode'          => !(bool) Configuration::get('PS_SHOP_ENABLE'),
+                'maintenance_mode'          => !Configuration::get('PS_SHOP_ENABLE'),
                 'content'                   => $this->content,
                 'lite_display'              => $this->lite_display,
                 'url_post'                  => static::$currentIndex.'&token='.$this->token,
@@ -2602,7 +2602,7 @@ class AdminControllerCore extends Controller
                     if (!is_array($val)) {
                         $filterValue = '';
                         if (isset($t['type']) && $t['type'] == 'bool') {
-                            $filterValue = ((bool) $val) ? $this->l('yes') : $this->l('no');
+                            $filterValue = ($val) ? $this->l('yes') : $this->l('no');
                         } elseif (isset($t['type']) && $t['type'] == 'date' || isset($t['type']) && $t['type'] == 'datetime') {
                             $date = json_decode($val, true);
                             if (isset($date[0]) && $ts=strtotime($date[0])) {

@@ -93,7 +93,7 @@ class HistoryControllerCore extends FrontController
             [
                 'orders'            => $orders,
                 'invoiceAllowed'    => (int) Configuration::get('PS_INVOICE'),
-                'reorderingAllowed' => !(bool) Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
+                'reorderingAllowed' => !Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
                 'slowValidation'    => Tools::isSubmit('slowvalidation'),
             ]
         );

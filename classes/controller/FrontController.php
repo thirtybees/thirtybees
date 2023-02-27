@@ -628,7 +628,7 @@ class FrontControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'css_files' => $this->css_files,
-                'js_files'  => ($this->getLayout() && (bool) Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
+                'js_files'  => ($this->getLayout() && Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
             ]
         );
 
@@ -931,7 +931,7 @@ class FrontControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'css_files'      => $this->css_files,
-                'js_files'       => ($this->getLayout() && (bool) Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
+                'js_files'       => ($this->getLayout() && Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
                 'js_defer'       => (bool) Configuration::get('PS_JS_DEFER'),
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
@@ -1697,7 +1697,7 @@ class FrontControllerCore extends Controller
                 'display_tax_label'   => (bool) $displayTaxLabel,
                 'vat_management'      => (int) Configuration::get('VATNUMBER_MANAGEMENT'),
                 'opc'                 => (bool) Configuration::get('PS_ORDER_PROCESS_TYPE'),
-                'PS_CATALOG_MODE'     => (bool) Configuration::get('PS_CATALOG_MODE') || (Group::isFeatureActive() && !(bool) Group::getCurrent()->show_prices),
+                'PS_CATALOG_MODE'     => Configuration::get('PS_CATALOG_MODE') || (Group::isFeatureActive() && !Group::getCurrent()->show_prices),
                 'b2b_enable'          => (bool) Configuration::get('PS_B2B_ENABLE'),
                 'request'             => $link->getPaginationLink(false, false, false, true),
                 'PS_STOCK_MANAGEMENT' => Configuration::get('PS_STOCK_MANAGEMENT'),

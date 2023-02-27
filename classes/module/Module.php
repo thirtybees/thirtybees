@@ -2907,7 +2907,7 @@ abstract class ModuleCore
         }
 
         // first, check if module is marked as enabled
-        if (! (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('COUNT(*) n')
                 ->from('module_shop')

@@ -1084,8 +1084,8 @@ abstract class AdminTabCore
         );
 
         echo '<a href="'.$href.'">
-	        <img src="../img/admin/'.((bool) $value ? 'enabled.gif' : 'disabled.gif').'"
-	        alt="'.((bool) $value ? $this->l('Enabled') : $this->l('Disabled')).'" title="'.((bool) $value ? $this->l('Enabled') : $this->l('Disabled')).'" /></a>';
+	        <img src="../img/admin/'.($value ? 'enabled.gif' : 'disabled.gif').'"
+	        alt="'.($value ? $this->l('Enabled') : $this->l('Disabled')).'" title="'.($value ? $this->l('Enabled') : $this->l('Disabled')).'" /></a>';
     }
 
     /**

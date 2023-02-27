@@ -745,7 +745,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
         $this->_processAddressFormat();
 
-        if ((bool) Configuration::get('PS_ADVANCED_PAYMENT_API')) {
+        if (Configuration::get('PS_ADVANCED_PAYMENT_API')) {
             $this->addJS(_THEME_JS_DIR_.'advanced-payment-api.js');
             $this->setTemplate(_PS_THEME_DIR_.'order-opc-advanced.tpl');
         } else {
@@ -871,7 +871,7 @@ class OrderOpcControllerCore extends ParentOrderController
      */
     protected function _assignPayment()
     {
-        if ((bool) Configuration::get('PS_ADVANCED_PAYMENT_API')) {
+        if (Configuration::get('PS_ADVANCED_PAYMENT_API')) {
             $this->context->smarty->assign(
                 [
                     'HOOK_TOP_PAYMENT'      => ($this->isLogged ? Hook::exec('displayPaymentTop') : ''),

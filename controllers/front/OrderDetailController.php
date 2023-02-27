@@ -250,7 +250,7 @@ class OrderDetailControllerCore extends FrontController
                         /* DEPRECATED: customizedDatas @since 1.5 */
                         'customizedDatas'               => $customizedDatas,
                         /* DEPRECATED: customizedDatas @since 1.5 */
-                        'reorderingAllowed'             => !(bool) Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
+                        'reorderingAllowed'             => !Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
                     ]
                 );
 

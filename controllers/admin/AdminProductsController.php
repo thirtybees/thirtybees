@@ -3644,7 +3644,7 @@ class AdminProductsControllerCore extends AdminController
                     ];
                 }
 
-                $js = (bool) Image::getImages($this->context->language->id, (int) $product->id) ?
+                $js = Image::getImages($this->context->language->id, (int) $product->id) ?
                     'confirm_link(\'\', \''.$this->l('This will copy the images too. If you wish to proceed, click "Yes". If not, click "No".', null, true, false).'\', \''.$this->l('Yes', null, true, false).'\', \''.$this->l('No', null, true, false).'\', \''.$this->context->link->getAdminLink('AdminProducts', true).'&id_product='.(int) $product->id.'&duplicateproduct'.'\', \''.$this->context->link->getAdminLink('AdminProducts', true).'&id_product='.(int) $product->id.'&duplicateproduct&noimage=1'.'\')'
                     :
                     'document.location = \''.$this->context->link->getAdminLink('AdminProducts', true).'&id_product='.(int) $product->id.'&duplicateproduct&noimage=1'.'\'';
@@ -4637,7 +4637,7 @@ class AdminProductsControllerCore extends AdminController
     {
         $data = $this->createTemplate($this->tpl_form);
 
-        if ((bool) $obj->id) {
+        if ($obj->id) {
             if ($this->product_exists_in_shop) {
                 $labels = $obj->getCustomizationFields();
 
@@ -4788,7 +4788,7 @@ class AdminProductsControllerCore extends AdminController
         $data = $this->createTemplate($this->tpl_form);
         $data->assign('default_form_language', $this->default_form_language);
 
-        if ((bool) $obj->id) {
+        if ($obj->id) {
             if ($this->product_exists_in_shop) {
                 $attachmentName = [];
                 $attachmentDescription = [];
@@ -5230,7 +5230,7 @@ class AdminProductsControllerCore extends AdminController
     {
         $data = $this->createTemplate($this->tpl_form);
 
-        if ((bool) $obj->id) {
+        if ($obj->id) {
             if ($this->product_exists_in_shop) {
                 $data->assign('product', $this->loadObject());
 

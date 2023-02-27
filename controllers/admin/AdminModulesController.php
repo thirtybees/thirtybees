@@ -263,7 +263,7 @@ class AdminModulesControllerCore extends AdminController
     {
         // If we are on a module configuration, no need to load all modules
         if (Tools::getValue('configure') != '') {
-            $this->context->smarty->assign(['maintenance_mode' => !(bool) Configuration::Get('PS_SHOP_ENABLE')]);
+            $this->context->smarty->assign(['maintenance_mode' => !Configuration::Get('PS_SHOP_ENABLE')]);
             return;
         }
 
@@ -490,7 +490,7 @@ class AdminModulesControllerCore extends AdminController
             'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
             'modules_uri'               => __PS_BASE_URI__.basename(_PS_MODULE_DIR_),
             'dont_filter'               => $dontFilter,
-            'maintenance_mode'          => !(bool) Configuration::Get('PS_SHOP_ENABLE'),
+            'maintenance_mode'          => !Configuration::Get('PS_SHOP_ENABLE'),
         ];
 
         $smarty->assign($tplVars);

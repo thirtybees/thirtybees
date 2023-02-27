@@ -715,7 +715,7 @@ class ParentOrderControllerCore extends FrontController
      */
     protected function _assignPayment()
     {
-        if ((bool) Configuration::get('PS_ADVANCED_PAYMENT_API')) {
+        if (Configuration::get('PS_ADVANCED_PAYMENT_API')) {
             $this->addJS(_THEME_JS_DIR_.'advanced-payment-api.js');
 
             // TOS

@@ -523,7 +523,7 @@ class OrderControllerCore extends ParentOrderController
         /* We may need to display an order summary */
         $this->context->smarty->assign($this->context->cart->getSummaryDetails());
 
-        if ((bool) Configuration::get('PS_ADVANCED_PAYMENT_API')) {
+        if (Configuration::get('PS_ADVANCED_PAYMENT_API')) {
             $this->context->cart->checkedTos = null;
         } else {
             $this->context->cart->checkedTos = 1;

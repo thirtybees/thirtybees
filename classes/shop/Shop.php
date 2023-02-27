@@ -1212,7 +1212,7 @@ class ShopCore extends ObjectModel
         static $featureActive = null;
 
         if ($featureActive === null) {
-            $featureActive = (bool) Db::getInstance()->getValue('SELECT value FROM `'._DB_PREFIX_.'configuration` WHERE `name` = "PS_MULTISHOP_FEATURE_ACTIVE"')
+            $featureActive = Db::getInstance()->getValue('SELECT value FROM `'._DB_PREFIX_.'configuration` WHERE `name` = "PS_MULTISHOP_FEATURE_ACTIVE"')
                 && (Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'shop') > 1);
         }
 
