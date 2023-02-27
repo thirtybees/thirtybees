@@ -759,7 +759,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                     $_POST['position'] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
                 }
                 $_POST['id_parent'] = 0;
-                $this->processSave($this->token);
+                $this->processSave();
             }
 
             if (Tools::getValue('id_attribute') && Tools::isSubmit('submitAddattribute') && Tools::getValue('color') && !Tools::getValue('filename')) {

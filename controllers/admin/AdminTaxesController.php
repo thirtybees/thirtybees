@@ -311,7 +311,7 @@ class AdminTaxesControllerCore extends AdminController
                     $object = new $this->className($id);
                     if (Validate::isLoadedObject($object)) {
                         $this->copyFromPost($object, $this->table);
-                        $result = $object->update(false, false);
+                        $result = $object->update(false);
 
                         if (!$result) {
                             $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b>';

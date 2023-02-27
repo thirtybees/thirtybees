@@ -181,20 +181,17 @@ class SmartyCustomCore extends Smarty
      * @param string|null $cacheId
      * @param string|null $compileId
      * @param object|null $parent
-     * @param bool $display
-     * @param bool $mergeTplVars
-     * @param bool $noOutputFilter
      *
      * @return string
      *
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
+    public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null)
     {
         $this->check_compile_cache_invalidation();
 
-        return parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+        return parent::fetch($template, $cacheId, $compileId, $parent);
     }
 
     /**
@@ -512,19 +509,16 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
      * @param string|null $cacheId
      * @param string|null $compileId
      * @param object|null $parent
-     * @param bool $display
-     * @param bool $mergeTplVars
-     * @param bool $noOutputFilter
      *
      * @return string
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
+    public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null)
     {
         if ($this->smarty->caching) {
-            $tpl = $this->fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+            $tpl = $this->fetchWithRetries($template, $cacheId, $compileId, $parent);
             if (property_exists($this, 'cached')) {
                 $filepath = str_replace($this->smarty->getCacheDir(), '', $this->cached->filepath);
                 if ($this->smarty->is_in_lazy_cache($this->template_resource, $this->cache_id, $this->compile_id) != $filepath) {
@@ -533,7 +527,7 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
             }
             return $tpl;
         } else {
-            return $this->fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+            return $this->fetchWithRetries($template, $cacheId, $compileId, $parent);
         }
 
     }
@@ -545,20 +539,17 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
      * @param string|null $cacheId
      * @param string|null $compileId
      * @param object|null $parent
-     * @param bool $display
-     * @param bool $mergeTplVars
-     * @param bool $noOutputFilter
      * @return string
      * @throws SmartyException
      * @throws Exception
      */
-    public function fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter)
+    public function fetchWithRetries($template, $cacheId, $compileId, $parent)
     {
         $count = 0;
         $maxTries = 3;
         while (true) {
             try {
-                $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+                $tpl = parent::fetch($template, $cacheId, $compileId, $parent);
                 return isset($tpl) ? $tpl : '';
             } catch (SmartyException $e) {
                 // handle exception

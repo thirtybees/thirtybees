@@ -2769,7 +2769,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if ($this->fields_options && is_array($this->fields_options)) {
-            $helper = new HelperOptions($this);
+            $helper = new HelperOptions();
             $this->setHelperDisplay($helper);
             $helper->toolbar_scroll = true;
             $helper->title = $this->l('Theme appearance');

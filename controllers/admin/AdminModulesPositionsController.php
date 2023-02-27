@@ -185,7 +185,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         }
 
                         // Add files exceptions
-                        if (!$module->editExceptions($idHook, $exceptions, Shop::getContextListShopID())) {
+                        if (!$module->editExceptions($idHook, $exceptions)) {
                             $this->errors[] = Tools::displayError('An error occurred while transplanting the module to its hook.');
                         } else {
                             Tools::redirectAdmin(static::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
