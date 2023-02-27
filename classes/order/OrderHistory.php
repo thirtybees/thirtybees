@@ -254,7 +254,7 @@ class OrderHistoryCore extends ObjectModel
                     // if the product is a pack, we restock every products in the pack using the last negative stock mvts
                     if (Pack::isPack($product['product_id'])) {
                         $packProducts = Pack::getItems($product['product_id'], Configuration::get('PS_LANG_DEFAULT', null, null, $order->id_shop));
-                        if (is_array($packProducts && !empty($packProducts))) {
+                        if ($packProducts) {
                             foreach ($packProducts as $packProduct) {
                                 if ($packProduct->advanced_stock_management == 1) {
                                     $mvts = StockMvt::getNegativeStockMvts($order->id, $packProduct->id, 0, $packProduct->pack_quantity * $product['product_quantity']);
