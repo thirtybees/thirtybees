@@ -3597,14 +3597,12 @@ FileETag none
                 }
 
                 return $order_by_prefix.$value;
-                break;
 
             case 'way':
                 $value = (is_null($value) || $value === false || $value === '') ? (int) Configuration::get('PS_PRODUCTS_ORDER_WAY') : $value;
                 $list = [0 => 'asc', 1 => 'desc'];
 
                 return ((isset($list[$value])) ? $list[$value] : ((in_array($value, $list)) ? $value : 'asc'));
-                break;
         }
     }
 

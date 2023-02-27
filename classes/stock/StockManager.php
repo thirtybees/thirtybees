@@ -185,7 +185,6 @@ class StockManagerCore implements StockManagerInterface
 
             default:
                 return false;
-                break;
         }
 
         if (!$stockExists) {

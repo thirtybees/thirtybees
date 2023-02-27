@@ -135,13 +135,11 @@ class ProductControllerCore extends FrontController
                             header('HTTP/1.1 301 Moved Permanently');
                             header('Location: '.$this->context->link->getProductLink($this->product->id_product_redirected));
                             exit;
-                            break;
                         case '302':
                             header('HTTP/1.1 302 Moved Temporarily');
                             header('Cache-Control: no-cache');
                             header('Location: '.$this->context->link->getProductLink($this->product->id_product_redirected));
                             exit;
-                            break;
                         case '404':
                         default:
                             header('HTTP/1.1 404 Not Found');

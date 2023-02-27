@@ -423,7 +423,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 $this->output .= $this->objOutput->getObjectRender()->renderNodeFooter('general_image_types', []);
 
                 return true;
-                break;
 
             // If the image type does not exist...
             default:
@@ -437,7 +436,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 $this->imgToDisplay = ($path != '' && file_exists($path) && is_file($path)) ? $path : $alternativePath;
 
                 return true;
-                break;
             case 'PUT':
 
                 if ($this->writePostedImageOnDisk($path, null, null)) {
@@ -453,7 +451,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 } else {
                     throw new WebserviceException('Error while copying image to the directory', [54, 400]);
                 }
-                break;
         }
     }
 
@@ -888,7 +885,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 } else {
                     throw new WebserviceException('This image does not exist on disk', [63, 500]);
                 }
-                break;
             // Delete the image
             case 'DELETE':
                 // Delete products image in DB
@@ -909,7 +905,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 } else {
                     throw new WebserviceException('This image does not exist on disk', [64, 500]);
                 }
-                break;
             // Add the image
             case 'POST':
 
@@ -922,7 +917,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                         throw new WebserviceException('Unable to save this image', [66, 500]);
                     }
                 }
-                break;
             default:
                 throw new WebserviceException('This method is not allowed', [67, 405]);
         }
