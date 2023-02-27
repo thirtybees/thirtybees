@@ -882,14 +882,8 @@ class WebserviceOutputBuilderCore
      */
     public function setSpecificField($object, $method, $fieldName, $entityName)
     {
-        try {
-            $this->validateObjectAndMethod($object, $method);
-        } catch (WebserviceException $e) {
-            throw $e;
-        }
-
+        $this->validateObjectAndMethod($object, $method);
         $this->specificFields[$fieldName] = ['entity' => $entityName, 'object' => $object, 'method' => $method, 'type' => gettype($object)];
-
         return $this;
     }
 
@@ -958,12 +952,7 @@ class WebserviceOutputBuilderCore
      */
     public function setVirtualField($object, $method, $entityName, $parameters)
     {
-        try {
-            $this->validateObjectAndMethod($object, $method);
-        } catch (WebserviceException $e) {
-            throw $e;
-        }
-
+        $this->validateObjectAndMethod($object, $method);
         $this->virtualFields[$entityName][] = ['parameters' => $parameters, 'object' => $object, 'method' => $method, 'type' => gettype($object)];
     }
 
