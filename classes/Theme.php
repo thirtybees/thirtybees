@@ -841,7 +841,7 @@ class ThemeCore extends ObjectModel
             if (! $module->install()) {
                 return $module->getErrors();
             }
-        };
+        }
 
         $module->enable();
 

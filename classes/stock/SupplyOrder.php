@@ -521,7 +521,7 @@ class SupplyOrderCore extends ObjectModel
             return false;
         }
 
-        return new SupplyOrder($idSupplyOrder);;
+        return new SupplyOrder($idSupplyOrder);
     }
 
     /**

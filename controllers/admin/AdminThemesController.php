@@ -387,7 +387,7 @@ class AdminThemesControllerCore extends AdminController
             $availableThemeDir[$k]['value'] = $dirname;
             $availableThemeDir[$k]['label'] = $dirname;
             $availableThemeDir[$k]['id'] = $dirname;
-        };
+        }
 
         $this->fields_form = [
             'tinymce' => false,

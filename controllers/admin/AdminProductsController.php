@@ -1180,7 +1180,7 @@ class AdminProductsControllerCore extends AdminController
             if ($typeProduct !== Product::PTYPE_PACK) {
                 if (!Pack::deleteItems($idProduct)) {
                     $this->errors[] = Tools::displayError('Cannot delete product pack items.');
-                };
+                }
             }
             if ($typeProduct !== Product::PTYPE_VIRTUAL) {
                 $idProductDownload = ProductDownload::getIdFromIdProduct($idProduct, false);

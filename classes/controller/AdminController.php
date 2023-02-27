@@ -580,7 +580,7 @@ class AdminControllerCore extends Controller
         } catch (Throwable $e) {
             static::getErrorHandler()->logFatalError(ErrorUtils::describeException($e));
             $this->errors[] = $e->getMessage();
-        };
+        }
 
         return false;
     }

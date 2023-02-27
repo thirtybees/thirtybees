@@ -292,7 +292,7 @@ function checkingTab($tab)
  */
 function checkTabRights($id_tab)
 {
-    Tools::displayAsDeprecated();;
+    Tools::displayAsDeprecated();
     return Context::getContext()->employee->hasAccess($id_tab, Profile::PERMISSION_VIEW);
 }
 

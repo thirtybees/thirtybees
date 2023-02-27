@@ -139,7 +139,7 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
                 'description' => $this->l('This section contains database tables that reference customer table. System does not know anything about these tables, you have to decide on merge strategy'),
                 'fields' => $otherTables,
             ];
-        };
+        }
 
         $this->fields_options['merge'] =[
             'title' => $this->l('Merge customers'),
