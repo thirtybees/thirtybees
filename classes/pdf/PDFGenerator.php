@@ -19194,16 +19194,6 @@ class PDFGeneratorCore extends TCPDF
     }
 
     /**
-     * Gets the current active configuration setting of magic_quotes_runtime (if the get_magic_quotes_runtime function exist)
-     *
-     * @return int 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise.
-     */
-    public function get_mqr()
-    {
-        return TCPDF_STATIC::get_mqr();
-    }
-
-    /**
      * Get the border mode accounting for multicell position (opens bottom side of multicell crossing pages)
      *
      * @param mixed $brd Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
@@ -19999,16 +19989,6 @@ class PDFGeneratorCore extends TCPDF
     public function _AESnopad($key, $text)
     {
         return TCPDF_STATIC::_AESnopad($key, $text);
-    }
-
-    /**
-     * Sets the current active configuration setting of magic_quotes_runtime (if the set_magic_quotes_runtime function exist)
-     *
-     * @param bool $mqr `false` for off, TRUE for on.
-     */
-    public function set_mqr($mqr)
-    {
-        TCPDF_STATIC::set_mqr($mqr);
     }
 
     /**
