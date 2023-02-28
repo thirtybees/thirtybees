@@ -184,16 +184,6 @@ class TreeCore
     }
 
     /**
-     * @param string $name
-     *
-     * @return mixed|null
-     */
-    public function getAttribute($name)
-    {
-        return $this->hasAttribute($name) ? $this->_attributes[$name] : null;
-    }
-
-    /**
      * @param array $value
      *
      * @return static
