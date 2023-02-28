@@ -1610,7 +1610,7 @@ abstract class AdminTabCore
                             if (!$result) {
                                 $this->_errors[] = Tools::displayError('An error occurred while updating object.').' <b>'.$this->table.'</b> ('.Db::getInstance()->getMsgError().')';
                             } elseif ($this->postImage($object->id) && !count($this->_errors)) {
-                                if ($this->table == 'group') {
+                                if ($this->table == 'group' && method_exists($this, 'updateRestrictions')) {
                                     $this->updateRestrictions($object->id);
                                 }
                                 $parentId = (int) (Tools::getValue('id_parent', 1));
@@ -1651,7 +1651,7 @@ abstract class AdminTabCore
                             $parentId = (int) (Tools::getValue('id_parent', 1));
                             $this->afterAdd($object);
                             $this->updateAssoShop($object->id);
-                            if ($this->table == 'group') {
+                            if ($this->table == 'group' && method_exists($this, 'updateRestrictions')) {
                                 $this->updateRestrictions($object->id);
                                 // assign group access to every categories
                                 $categories = Category::getCategories($this->context->language->id, true);
