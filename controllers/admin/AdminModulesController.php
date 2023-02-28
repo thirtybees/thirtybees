@@ -1411,15 +1411,6 @@ class AdminModulesControllerCore extends AdminController
                 if (!Tools::getValue('module_name')) {
                     $modulesListSave = implode('|', $modules);
                 }
-            } elseif (($modules = Tools::getValue($key)) && $key != 'checkAndUpdate' && $key != 'updateAll') {
-                if (strpos($modules, '|')) {
-                    $modulesListSave = $modules;
-                    $modules = explode('|', $modules);
-                }
-                if (!is_array($modules)) {
-                    $modules = (array) $modules;
-                }
-                $modules = array_filter($modules, [Validate::class, 'isModuleName']);
             } elseif ($key == 'updateAll') {
                 $allModules = Module::getModulesOnDisk(true, false, $this->context->employee->id);
                 $modules = [];
@@ -1428,6 +1419,15 @@ class AdminModulesControllerCore extends AdminController
                         $modules[] = (string) $moduleToUpdate->name;
                     }
                 }
+            } elseif ($modules = Tools::getValue($key)) {
+                if (strpos($modules, '|')) {
+                    $modulesListSave = $modules;
+                    $modules = explode('|', $modules);
+                }
+                if (!is_array($modules)) {
+                    $modules = (array) $modules;
+                }
+                $modules = array_filter($modules, [Validate::class, 'isModuleName']);
             }
 
             /** @var TbUpdater $tbupdater */
