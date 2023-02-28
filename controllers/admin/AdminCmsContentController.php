@@ -121,8 +121,6 @@ class AdminCmsContentControllerCore extends AdminController
             $this->content .= $this->admin_cms_categories->renderForm();
         } elseif ($this->display == 'edit_page') {
             $this->content .= $this->admin_cms->renderForm();
-        } elseif ($this->display == 'view_page') {
-            $fixme = 'fixme'; // FIXME
         } else {
             $idCmsCategory = (int) Tools::getValue('id_cms_category', 1);
 
