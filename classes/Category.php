@@ -2114,10 +2114,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
         $idShop = $context->shop->id;
 
+        if (!isset($parentCategoryCache[$idShop])) {
+            $parentCategoryCache[$idShop] = [];
+        }
         if (!isset($parentCategoryCache[$idShop][$idLang])) {
-            if (!isset($parentCategoryCache[$idShop][$idLang])) {
-                $parentCategoryCache[$idShop] = [];
-            }
             $parentCategoryCache[$idShop][$idLang] = [];
         }
 
