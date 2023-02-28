@@ -2603,15 +2603,19 @@ class AdminControllerCore extends Controller
                     $field = $t['filter_key'];
                 }
 
-                if (($val = Tools::getValue($this->table.'Filter_'.$field)) || $val = $this->context->cookie->{$this->getCookieFilterPrefix().$this->table.'Filter_'.$field}) {
+                $val = $this->getFilterValue($field);
+
+                if (! is_null($val)) {
+                    $filterValue = '';
                     if (!is_array($val)) {
-                        $filterValue = '';
                         if (isset($t['type']) && $t['type'] == 'bool') {
-                            $filterValue = ($val) ? $this->l('yes') : $this->l('no');
+                            $filterValue = ($val)
+                                ? $this->l('yes')
+                                : $this->l('no');
                         } elseif (isset($t['type']) && $t['type'] == 'date' || isset($t['type']) && $t['type'] == 'datetime') {
                             $date = json_decode($val, true);
                             if (isset($date[0]) && $ts=strtotime($date[0])) {
-                                $filterValue = date('Y-m-d', $ts);
+                                $filterValue = (string)date('Y-m-d', $ts);
                                 if (isset($date[1]) && !empty($date[1]) && $ts=strtotime($date[1])) {
                                     $filterValue .= ' - '. date('Y-m-d', $ts);
                                 }
@@ -2619,20 +2623,19 @@ class AdminControllerCore extends Controller
                         } elseif (is_string($val)) {
                             $filterValue = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
                         }
-                        if (!empty($filterValue)) {
-                            $filters[] = sprintf($this->l('%s: %s'), $t['title'], $filterValue);
-                        }
                     } else {
-                        $filterValue = '';
                         foreach ($val as $v) {
-                            if (is_string($v) && !empty($v)) {
-                                $filterValue .= ' - '.htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+                            if (is_string($v)) {
+                                $v = trim($v);
+                                if ($v !== '') {
+                                    $filterValue .= ' - '.htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+                                }
                             }
                         }
                         $filterValue = ltrim($filterValue, ' -');
-                        if (!empty($filterValue)) {
-                            $filters[] = sprintf($this->l('%s: %s'), $t['title'], $filterValue);
-                        }
+                    }
+                    if ($filterValue !== '') {
+                        $filters[] = sprintf($this->l('%s: %s'), $t['title'], $filterValue);
                     }
                 }
             }
@@ -4718,5 +4721,23 @@ class AdminControllerCore extends Controller
             return $this->_orderWay;
         }
         return $this->_defaultOrderWay;
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return mixed|null
+     */
+    protected function getFilterValue($field)
+    {
+        $filterName = $this->table . 'Filter_' . $field;
+        if (Tools::getIsset($filterName)) {
+            return Tools::getValue($filterName);
+        }
+        $cookieFilterName = $this->getCookieFilterPrefix() . $filterName;
+        if (isset($this->context->cookie->$cookieFilterName)) {
+            return $this->context->cookie->$cookieFilterName;
+        }
+        return null;
     }
 }
