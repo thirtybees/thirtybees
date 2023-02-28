@@ -217,21 +217,24 @@ class TaxRuleCore extends ObjectModel
     {
         $zipCodes = explode('-', $zipCodes);
 
-        $from = $zipCodes[0];
-        $to = isset($zipCodes[1]) ? $zipCodes[1] : 0;
         if (count($zipCodes) == 2) {
-            $from = $zipCodes[0];
-            $to = $zipCodes[1];
             if ($zipCodes[0] > $zipCodes[1]) {
                 $from = $zipCodes[1];
                 $to = $zipCodes[0];
             } elseif ($zipCodes[0] == $zipCodes[1]) {
                 $from = $zipCodes[0];
                 $to = 0;
+            } else {
+                $from = $zipCodes[0];
+                $to = $zipCodes[1];
             }
         } elseif (count($zipCodes) == 1) {
             $from = $zipCodes[0];
             $to = 0;
+        } else {
+            $from = $zipCodes[0];
+            $to = isset($zipCodes[1]) ? $zipCodes[1] : 0;
+
         }
 
         return [$from, $to];

@@ -666,8 +666,6 @@ class MediaCore
         foreach ($cssFilesByMedia as $media => $mediaInfos) {
             $cacheFilename = $cachePath.'v_'.$version.'_'.$compressedCssFilesInfos[$media]['key'].'_'.$media.'.css';
             if ($mediaInfos['date'] > $compressedCssFilesInfos[$media]['date']) {
-                $cssSplitNeedRefresh = true;
-                $cacheFilename = $cachePath.'v_'.$version.'_'.$compressedCssFilesInfos[$media]['key'].'_'.$media.'.css';
                 $compressedCssFiles[$media] = '';
                 foreach ($mediaInfos['files'] as $fileInfos) {
                     if (file_exists($fileInfos['path'])) {

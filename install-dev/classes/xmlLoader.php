@@ -1477,7 +1477,6 @@ class InstallXmlLoader
 
         $types = [];
         if (isset($reference[$entity])) {
-            $types = [];
             foreach (ImageType::getImagesTypes($reference[$entity]) as $type) {
                 $types[] = $type['name'];
             }

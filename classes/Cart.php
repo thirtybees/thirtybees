@@ -3787,7 +3787,9 @@ class CartCore extends ObjectModel
         foreach (reset($deliveryOptionList) as $key => $option) {
             $price = $option['total_price_with_tax'];
             $priceTaxExcluded = $option['total_price_without_tax'];
-            $name = $img = $delay = '';
+            $name = '';
+            $img = '';
+            $delay = '';
 
             if ($option['unique_carrier']) {
                 $carrier = reset($option['carrier_list']);
@@ -3806,8 +3808,6 @@ class CartCore extends ObjectModel
                     $nameList[] = $carrier['instance']->name;
                 }
                 $name = join(' -', $nameList);
-                $img = ''; // No images if multiple carriers
-                $delay = '';
             }
             $carriers[] = [
                 'name'          => $name,

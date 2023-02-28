@@ -484,7 +484,6 @@ class LanguageCore extends ObjectModel
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
                 $success = true;
             } catch (Throwable $e) {
-                $success = false;
                 $errors[] = Tools::displayError('No translations pack available for your version.');
                 $errors[] = sprintf(
                     Tools::displayError('Downloading %s failed (PHP message: %s).'),

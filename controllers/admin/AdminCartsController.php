@@ -601,7 +601,6 @@ class AdminCartsControllerCore extends AdminController
      */
     public function ajaxProcessUpdateCustomizationFields()
     {
-        $errors = [];
         if ($this->hasEditPermission()) {
             $errors = [];
             if (Tools::getValue('only_display') != 1) {
