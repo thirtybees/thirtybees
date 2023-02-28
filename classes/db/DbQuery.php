@@ -205,7 +205,7 @@ class DbQueryCore
         $shopOn = '`' . pSQL($aliasShop) . '`.`id_' . $table . '` = `' . pSQL($alias). '`.`id_' . $table . '`';
         if ((int) Shop::getContextShopID()) {
             $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` = ' . (int) Shop::getContextShopID();
-        } elseif (Shpo::checkIdShopDefault($table)) {
+        } elseif (Shop::checkIdShopDefault($table)) {
             $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` = `'.$alias.'`.`id_shop_default`';
         } else {
             $shopOn .= ' AND `'.$aliasShop.'`.`id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')';
