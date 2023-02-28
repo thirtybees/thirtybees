@@ -121,12 +121,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             return '';
         }
 
-        try {
-            $currency = $this->getActualCurrency();
-        } catch (PrestaShopException $e) {
-            $this->errors[] = $e->getMessage();
-            return '';
-        }
+        $currency = $this->getActualCurrency();
 
         $this->tpl_view_vars = [
             'currency_sign'     => $currency->sign,
@@ -209,24 +204,20 @@ class AdminCarrierWizardControllerCore extends AdminController
 
     /**
      * @return Currency
+     *
+     * @throws PrestaShopException
      */
     public function getActualCurrency()
     {
-        try {
-            if ($this->type_context == Shop::CONTEXT_SHOP) {
-                Shop::setContext($this->type_context, $this->old_context->shop->id);
-            } elseif ($this->type_context == Shop::CONTEXT_GROUP) {
-                Shop::setContext($this->type_context, $this->old_context->shop->id_shop_group);
-            }
-
-            $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
-
-            Shop::setContext(Shop::CONTEXT_ALL);
-        } catch (Exception $e) {
-            $this->errors[] = $e->getMessage();
-
-            return new Currency();
+        if ($this->type_context == Shop::CONTEXT_SHOP) {
+            Shop::setContext($this->type_context, $this->old_context->shop->id);
+        } elseif ($this->type_context == Shop::CONTEXT_GROUP) {
+            Shop::setContext($this->type_context, $this->old_context->shop->id_shop_group);
         }
+
+        $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+
+        Shop::setContext(Shop::CONTEXT_ALL);
 
         return $currency;
     }
