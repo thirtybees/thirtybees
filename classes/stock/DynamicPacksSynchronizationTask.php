@@ -22,7 +22,6 @@ namespace Thirtybees\Core\Stock\Synchronization;
 use Pack;
 use Db;
 use DbQuery;
-use Exception;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use StockAvailable;

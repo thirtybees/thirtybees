@@ -30,7 +30,6 @@
  */
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 
 /**
  * Class EmployeeCore

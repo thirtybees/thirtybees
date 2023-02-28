@@ -30,7 +30,6 @@
  */
 
 use CoreUpdater\CodeCallback;
-use CoreUpdater\DatabaseCharset;
 use CoreUpdater\ObjectModelSchemaBuilder;
 
 /**
@@ -378,7 +377,7 @@ class InstallModelInstall extends InstallAbstractModel
     /**
      * Install languages
      *
-     * @param srray|null $languagesList
+     * @param array|null $languagesList
      * @return array Association between ID and iso array(id_lang => iso, ...)
      *
      * @throws PrestaShopException

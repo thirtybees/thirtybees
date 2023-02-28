@@ -5,7 +5,6 @@ namespace Thirtybees\Core\Mail\Template;
 use Context;
 use PrestaShopException;
 use Thirtybees\Core\Mail\MailTemplate;
-use Tools;
 
 class SimpleMailTemplateCore implements MailTemplate
 {

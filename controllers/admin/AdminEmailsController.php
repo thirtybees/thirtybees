@@ -29,9 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use Thirtybees\Core\DependencyInjection\ServiceLocator;
-use Thirtybees\Core\Error\Response\JSendErrorResponse;
-
 /**
  * Class AdminEmailsControllerCore
  */
