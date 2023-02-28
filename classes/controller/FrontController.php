@@ -1955,12 +1955,10 @@ class FrontControllerCore extends Controller
             }
         }
 
-        $ips = array_map('trim', $ips);
-        if (is_array($ips) && count($ips)) {
-            foreach ($ips as $ip) {
-                if (!empty($ip) && preg_match('/^'.$ip.'.*/', $userIp)) {
-                    $allowed = true;
-                }
+        foreach ($ips as $ip) {
+            $ip = trim((string)$ip);
+            if ($ip && preg_match('/^'.$ip.'.*/', $userIp)) {
+                $allowed = true;
             }
         }
 
