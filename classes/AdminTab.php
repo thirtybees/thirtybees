@@ -1818,7 +1818,7 @@ abstract class AdminTabCore
      */
     public function displayErrors()
     {
-        if ($nbErrors = count($this->_errors) && $this->_includeContainer) {
+        if (($nbErrors = count($this->_errors)) && $this->_includeContainer) {
             echo '<script type="text/javascript">
 				$(document).ready(function() {
 					$(\'#hideError\').unbind(\'click\').click(function(){
