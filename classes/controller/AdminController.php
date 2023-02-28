@@ -2131,34 +2131,7 @@ class AdminControllerCore extends Controller
                 continue;
             }
 
-            $imgCacheUrl = 'themes/'.$this->context->employee->bo_theme.'/img/t/'.$tab['class_name'].'.png';
-            $imgExistsCache = file_exists(_PS_ADMIN_DIR_.$imgCacheUrl);
-            // retrocompatibility : change png to gif if icon not exists
-            if (!$imgExistsCache) {
-                $imgExistsCache = file_exists(_PS_ADMIN_DIR_.str_replace('.png', '.gif', $imgCacheUrl));
-            }
-
-            if ($imgExistsCache) {
-                $pathImg = $img = $imgExistsCache;
-            } else {
-                $pathImg = _PS_IMG_DIR_.'t/'.$tab['class_name'].'.png';
-                // Relative link will always work, whatever the base uri set in the admin
-                $img = '../img/t/'.$tab['class_name'].'.png';
-            }
-
-            if (Validate::isModuleName($tab['module'])) {
-                $pathImg = _PS_MODULE_DIR_.$tab['module'].'/'.$tab['class_name'].'.png';
-                // Relative link will always work, whatever the base uri set in the admin
-                $img = '../modules/'.$tab['module'].'/'.$tab['class_name'].'.png';
-            }
-
-            // retrocompatibility
-            if (!file_exists($pathImg)) {
-                $img = str_replace('png', 'gif', $img);
-            }
-            // tab[class_name] does not contains the "Controller" suffix
             $tabs[$index]['current'] = ($tab['class_name'].'Controller' == get_class($this)) || ($currentId == $tab['id_tab']);
-            $tabs[$index]['img'] = $img;
             $tabs[$index]['href'] = $this->context->link->getAdminLink($tab['class_name']);
 
             $subTabs = Tab::getTabs($this->context->language->id, $tab['id_tab']);
