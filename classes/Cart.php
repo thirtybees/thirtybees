@@ -2342,7 +2342,7 @@ class CartCore extends ObjectModel
         if (!is_null($products)) {
             $totalWeight = 0;
             foreach ($products as $product) {
-                if (!isset($product['weight_attribute']) || is_null($product['weight_attribute'])) {
+                if (!isset($product['weight_attribute'])) {
                     $totalWeight += $product['weight'] * $product['cart_quantity'];
                 } else {
                     $totalWeight += $product['weight_attribute'] * $product['cart_quantity'];

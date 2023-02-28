@@ -962,7 +962,7 @@ abstract class AdminTabCore
                     $tmp = explode('!', $key);
                     $key = isset($tmp[1]) ? $tmp[1] : $tmp[0];
                     echo '
-					<td '.(isset($params['position']) ? ' id="td_'.(isset($idCategory) && $idCategory ? $idCategory : 0).'_'.$id.'"' : '').' class="'.((!isset($this->noLink) || !$this->noLink) ? 'pointer' : '').((isset($params['position']) && $this->_orderBy == 'position') ? ' dragHandle' : '').(isset($params['align']) ? ' '.$params['align'] : '').'" ';
+					<td '.(isset($params['position']) ? ' id="td_'.$idCategory.'_'.$id.'"' : '').' class="'.((!isset($this->noLink) || !$this->noLink) ? 'pointer' : '').((isset($params['position']) && $this->_orderBy == 'position') ? ' dragHandle' : '').(isset($params['align']) ? ' '.$params['align'] : '').'" ';
                     if (!isset($params['position']) && (!isset($this->noLink) || !$this->noLink)) {
                         echo ' onclick="document.location = \''.static::$currentIndex.'&'.$this->identifier.'='.$id.($this->view ? '&view' : '&update').$this->table.'&token='.($token != null ? $token : $this->token).'\'">'.(isset($params['prefix']) ? $params['prefix'] : '');
                     } else {
@@ -997,7 +997,7 @@ abstract class AdminTabCore
                             $image = new Image((int) $tr['id_image']);
                             $pathToImage = _PS_IMG_DIR_.$params['image'].'/'.$image->getExistingImgPath().'.'.$this->imageType;
                         } else {
-                            $pathToImage = _PS_IMG_DIR_.$params['image'].'/'.$itemId.(isset($tr['id_image']) ? '-'.(int) ($tr['id_image']) : '').'.'.$this->imageType;
+                            $pathToImage = _PS_IMG_DIR_.$params['image'].'/'.$itemId.'.'.$this->imageType;
                         }
 
                         echo ImageManager::thumbnail($pathToImage, $this->table.'_mini_'.$itemId.'.'.$this->imageType, 45, $this->imageType);
@@ -2286,7 +2286,7 @@ abstract class AdminTabCore
     {
         if (isset($field['validation'])) {
             $fieldValidation = $field['validation'];
-            if ((!isset($field['empty']) || !$field['empty'] || (isset($field['empty']) && $field['empty'] && $value)) && method_exists('Validate', $field['validation'])) {
+            if ((!isset($field['empty']) || !$field['empty'] || $value) && method_exists('Validate', $field['validation'])) {
                 if (!Validate::$fieldValidation($value)) {
                     $this->_errors[] = Tools::displayError($field['title'].' : Incorrect value');
 

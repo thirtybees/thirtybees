@@ -426,7 +426,7 @@ class AddressFormatCore extends ObjectModel
                 $tmpText = '';
                 foreach ($patternsList as $pattern) {
                     if ((!array_key_exists('avoid', $patternRules)) ||
-                        (is_array($patternRules) && array_key_exists('avoid', $patternRules) && !in_array($pattern, $patternRules['avoid']))
+                        (is_array($patternRules) && !in_array($pattern, $patternRules['avoid']))
                     ) {
                         $tmpText .= (isset($addressFormatedValues[$pattern]) && !empty($addressFormatedValues[$pattern])) ?
                             (((isset($style[$pattern])) ?
@@ -545,8 +545,7 @@ class AddressFormatCore extends ObjectModel
         foreach ($fieldSet as $fieldItem) {
             if ($splitAll) {
                 if ($cleaned) {
-                    $keyList = ($cleaned) ? preg_split(static::_CLEANING_REGEX_, $fieldItem, -1, PREG_SPLIT_NO_EMPTY) :
-                        explode(' ', $fieldItem);
+                    $keyList = preg_split(static::_CLEANING_REGEX_, $fieldItem, -1, PREG_SPLIT_NO_EMPTY);
                 }
                 if (isset($keyList)) {
                     foreach ($keyList as $wordItem) {

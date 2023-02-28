@@ -620,8 +620,8 @@ class AuthControllerCore extends FrontController
                         $this->errors[] = Tools::displayError('Country is invalid');
                     }
                 }
-                $containsState = isset($country) && is_object($country) ? (int) $country->contains_states: 0;
-                $idState = isset($address) && is_object($address) ? (int) $address->id_state : 0;
+                $containsState = $country->contains_states;
+                $idState = (int) $address->id_state;
                 if ((Tools::isSubmit('submitAccount') || Tools::isSubmit('submitGuestAccount')) && $containsState && !$idState) {
                     $this->errors[] = Tools::displayError('This country requires you to choose a State.');
                 }

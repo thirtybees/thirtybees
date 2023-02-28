@@ -4273,7 +4273,7 @@ class AdminControllerCore extends Controller
     {
         if (isset($field['validation'])) {
             $valid_method_exists = method_exists('Validate', $field['validation']);
-            if ((!isset($field['empty']) || !$field['empty'] || (isset($field['empty']) && $field['empty'] && $value)) && $valid_method_exists) {
+            if ((!isset($field['empty']) || !$field['empty'] || $value) && $valid_method_exists) {
                 $field_validation = $field['validation'];
                 if (!Validate::$field_validation($value)) {
                     $this->errors[] = Tools::displayError($field['title'].' : Incorrect value');

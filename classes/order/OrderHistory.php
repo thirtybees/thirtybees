@@ -121,7 +121,7 @@ class OrderHistoryCore extends ObjectModel
 
             // An email is sent the first time a virtual item is validated
             $virtualProducts = $order->getVirtualProducts();
-            if (is_array($virtualProducts) && !empty($virtualProducts) && (!$oldOs || !$oldOs->logable) && $newOs && $newOs->logable) {
+            if (is_array($virtualProducts) && !empty($virtualProducts) && (!$oldOs || !$oldOs->logable) && $newOs->logable) {
                 $assign = [];
                 foreach ($virtualProducts as $key => $virtualProduct) {
                     $idProductDownload = ProductDownload::getIdFromIdProduct($virtualProduct['product_id']);

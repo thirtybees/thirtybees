@@ -262,7 +262,7 @@ class AdminPaymentControllerCore extends AdminController
 
         $shopContext = (!Shop::isFeatureActive() || Shop::getContext() == Shop::CONTEXT_SHOP);
         if (!$shopContext) {
-            $this->tpl_view_vars = ['shop_context' => $shopContext];
+            $this->tpl_view_vars = ['shop_context' => false];
 
             return parent::renderView();
         }
@@ -357,7 +357,7 @@ class AdminPaymentControllerCore extends AdminController
             'ps_base_uri'          => __PS_BASE_URI__,
             'payment_modules'      => $this->payment_modules,
             'url_submit'           => static::$currentIndex.'&token='.$this->token,
-            'shop_context'         => $shopContext,
+            'shop_context'         => true,
         ];
 
         return parent::renderView();

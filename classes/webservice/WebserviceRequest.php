@@ -1071,9 +1071,7 @@ class WebserviceRequestCore
             if ((!isset($this->resourceConfiguration['hidden_fields']) ||
                 (isset($this->resourceConfiguration['hidden_fields']) && !in_array($fieldName, $this->resourceConfiguration['hidden_fields'])))
             ) {
-                if ((!isset($field['i18n']) ||
-                    (isset($field['i18n']) && !$field['i18n']))
-                ) {
+                if (!isset($field['i18n']) || !$field['i18n']) {
                     $availableFilters[] = $fieldName;
                 } else {
                     $i18NAvailableFilters[] = $fieldName;
@@ -1848,9 +1846,7 @@ class WebserviceRequestCore
         // if the output is not enable, delete the content
         // the type content too
         if (!$this->_outputEnabled) {
-            if (isset($return['type'])) {
-                unset($return['type']);
-            }
+            unset($return['type']);
             if (isset($return['content'])) {
                 unset($return['content']);
             }

@@ -887,7 +887,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $idShopList = Shop::getContextListShopID();
             }
 
-            $result = $conn->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int) $this->id.' AND id_shop IN ('.implode(', ', $idShopList).')') && $result;
+            $result = $conn->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int) $this->id.' AND id_shop IN ('.implode(', ', $idShopList).')');
         }
 
         // Database deletion

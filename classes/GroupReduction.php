@@ -401,7 +401,7 @@ class GroupReductionCore extends ObjectModel
                     'reduction' => (float) $this->reduction,
                 ],
                 '`id_product` IN('.implode(', ', $ids).') AND `id_group` = '.(int) $this->id_group
-            ) && $result;
+            );
         }
 
         return $result;

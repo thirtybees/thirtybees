@@ -125,7 +125,7 @@ class LocalizationPackCore
 
             if ($installMode && $res && isset($this->iso_currency)) {
                 Cache::clean('Currency::getIdByIsoCode_*');
-                $res = Configuration::updateValue('PS_CURRENCY_DEFAULT', (int) Currency::getIdByIsoCode($this->iso_currency)) && $res;
+                $res = Configuration::updateValue('PS_CURRENCY_DEFAULT', (int) Currency::getIdByIsoCode($this->iso_currency));
                 Currency::refreshCurrencies();
             }
         } else {
@@ -393,7 +393,7 @@ class LocalizationPackCore
                 $attributes = $data->attributes();
                 $name = (string) $attributes['name'];
 
-                if (isset($name) && isset($attributes['value']) && Configuration::get($name) !== false) {
+                if (isset($attributes['value']) && Configuration::get($name) !== false) {
                     if (!Configuration::updateValue($name, (string) $attributes['value'])) {
                         $this->_errors[] = Tools::displayError('An error occurred during the configuration setup: '.$name);
                     }
@@ -423,8 +423,8 @@ class LocalizationPackCore
                 /** @var SimpleXMLElement $data */
                 $attributes = $data->attributes();
                 $name = (string) $attributes['name'];
-                if (isset($name) && $module = Module::getInstanceByName($name)) {
-                    $install = ($attributes['install'] == 1) ? true : false;
+                if ($module = Module::getInstanceByName($name)) {
+                    $install = $attributes['install'] == 1;
 
                     if ($install) {
                         if (!Module::isInstalled($name)) {

@@ -538,12 +538,10 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             foreach ($nodes as $node) {
                 // avoid too much preg_match...
                 if ($node != '.' && $node != '..' && $node != '.svn') {
-                    if ($this->imageType != 'products') {
-                        preg_match('/^(\d+)\.jpg*$/Ui', $node, $matches);
-                        if (isset($matches[1])) {
-                            $id = $matches[1];
-                            $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image', [], ['id' => $id, 'xlink_resource' => $this->wsObject->wsUrl.'images/'.$this->imageType.'/'.$id], false);
-                        }
+                    preg_match('/^(\d+)\.jpg*$/Ui', $node, $matches);
+                    if (isset($matches[1])) {
+                        $id = $matches[1];
+                        $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image', [], ['id' => $id, 'xlink_resource' => $this->wsObject->wsUrl.'images/'.$this->imageType.'/'.$id], false);
                     }
                 }
             }
@@ -1177,9 +1175,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                     }
 
                     // copy image
-                    if (!isset($file['tmp_name'])) {
-                        return false;
-                    }
                     if ($error = ImageManager::validateUpload($file, $imgMaxUploadSize)) {
                         throw new WebserviceException('Bad image : '.$error, [76, 400]);
                     }

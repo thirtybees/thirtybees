@@ -634,9 +634,8 @@ class AdminWarehousesControllerCore extends AdminController
             $this->errors[] = Tools::displayError('Country is invalid');
         }
 
-        $containsState = isset($country) && is_object($country) ? (int) $country->contains_states : 0;
-        $idState = isset($address) && is_object($address) ? (int) $address->id_state : 0;
-        if ($containsState && !$idState) {
+        $idState = (int)$address->id_state;
+        if ($country->contains_states && !$idState) {
             $this->errors[] = Tools::displayError('This country requires you to choose a State.');
         }
 

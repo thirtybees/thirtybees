@@ -208,7 +208,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
                         case 'makeFreeOrder':
                             /* Bypass payment step if total is 0 */
-                            if (($idOrder = $this->_checkFreeOrder()) && $idOrder) {
+                            if ($idOrder = $this->_checkFreeOrder()) {
                                 $order = new Order((int) $idOrder);
                                 $email = $this->context->customer->email;
                                 if ($this->context->customer->is_guest) {

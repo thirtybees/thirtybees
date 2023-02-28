@@ -212,7 +212,7 @@ class AdminScenesControllerCore extends AdminController
 				</div>
 				';
 
-            if ($obj->id && file_exists(_PS_SCENE_IMG_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg')) {
+            if (file_exists(_PS_SCENE_IMG_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg')) {
                 $imageToMapDesc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'._THEME_SCENE_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg?rand='.(int) rand().'" />';
             }
 
@@ -238,7 +238,7 @@ class AdminScenesControllerCore extends AdminController
                 foreach (Tools::getValue('categories') as $row) {
                     $selectedCat[] = $row;
                 }
-            } elseif ($obj->id) {
+            } else {
                 foreach (Scene::getIndexedCategories($obj->id) as $row) {
                     $selectedCat[] = $row['id_category'];
                 }

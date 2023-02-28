@@ -596,14 +596,13 @@ class AdminTranslationsControllerCore extends AdminController
             return;
         }
 
-        $bool = true;
         $items = Language::getFilesList($fromLang, $fromTheme, $toLang, $toTheme, false, false, true);
         foreach ($items as $source => $dest) {
             if (!$this->checkDirAndCreate($dest)) {
                 $this->errors[] = sprintf($this->l('Impossible to create the directory "%s".'), $dest);
             } elseif (!copy($source, $dest)) {
                 $this->errors[] = sprintf($this->l('Impossible to copy "%s" to "%s".'), $source, $dest);
-            } elseif (strpos($dest, 'modules') && basename($source) === $fromLang.'.php' && $bool !== false) {
+            } elseif (strpos($dest, 'modules') && basename($source) === $fromLang.'.php') {
                 if (!$this->changeModulesKeyTranslation($dest, $fromTheme, $toTheme)) {
                     $this->errors[] = sprintf($this->l('Impossible to translate "$dest".'), $dest);
                 }

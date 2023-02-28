@@ -298,7 +298,7 @@ class AdminAttachmentsControllerCore extends AdminController
                         '<b>'.$_FILES['file']['name'].'</b> ',
                         '<b>'.$uploadMb.'</b>'
                     );
-                } elseif (!isset($a) || (isset($a) && !file_exists(_PS_DOWNLOAD_DIR_.$a->file))) {
+                } elseif (!isset($a) || !file_exists(_PS_DOWNLOAD_DIR_.$a->file)) {
                     $this->errors[] = $this->l('Upload error. Please check your server configurations for the maximum upload size allowed.');
                 }
             }

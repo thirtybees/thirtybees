@@ -750,10 +750,8 @@ class WebserviceOutputBuilderCore
                         $outputDetails .= $this->renderFlatAssociation($object, $depth, $assocName, $association['resource'], $fieldsAssoc, $value, $parentDetails);
                     } else {
                         foreach ($objectAssoc as $id) {
-                            if ($className !== null) {
-                                $child_object = new $className($id);
-                                $outputDetails .= $this->renderEntity($child_object, ($depth - 2 ? 0 : $depth - 2));
-                            }
+                            $child_object = new $className($id);
+                            $outputDetails .= $this->renderEntity($child_object, ($depth - 2 ? 0 : $depth - 2));
                         }
                     }
                 }

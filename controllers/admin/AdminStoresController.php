@@ -568,12 +568,12 @@ class AdminStoresControllerCore extends AdminController
             $idCountry = (int) Tools::getValue('id_country');
             $country = new Country((int) $idCountry);
 
-            if ($idCountry && $country && !(int) $country->contains_states && $idState) {
+            if (!$country->contains_states && $idState) {
                 $this->errors[] = Tools::displayError('You\'ve selected a state for a country that does not contain states.');
             }
 
             /* If the selected country contains states, then a state have to be selected */
-            if ((int) $country->contains_states && !$idState) {
+            if ($country->contains_states && !$idState) {
                 $this->errors[] = Tools::displayError('An address located in a country containing states must have a state selected.');
             }
 

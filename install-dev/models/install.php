@@ -712,14 +712,8 @@ class InstallModelInstall extends InstallAbstractModel
 
                 return false;
             }
-        } else {
-            $this->setError($this->language->l('Cannot create admin account'));
 
-            return false;
-        }
-
-        // Update default contact
-        if (isset($data['adminEmail'])) {
+            // Update default contact
             Configuration::updateGlobalValue('PS_SHOP_EMAIL', $data['adminEmail']);
 
             $contacts = new PrestaShopCollection('Contact');
@@ -728,13 +722,16 @@ class InstallModelInstall extends InstallAbstractModel
                 $contact->email = $data['adminEmail'];
                 $contact->update();
             }
-        }
 
-        if (!@Tools::generateHtaccess(null, $data['rewriteEngine'])) {
-            Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', 0);
-        }
+            if (!@Tools::generateHtaccess(null, $data['rewriteEngine'])) {
+                Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', 0);
+            }
 
-        return true;
+            return true;
+        } else {
+            $this->setError($this->language->l('Cannot create admin account'));
+            return false;
+        }
     }
 
     /**

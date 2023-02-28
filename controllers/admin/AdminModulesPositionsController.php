@@ -121,7 +121,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         foreach ($exceptions as $key => $except) {
                             if (empty($except)) {
                                 unset($exceptions[$key]);
-                            } elseif (!empty($except) && !Validate::isFileName($except)) {
+                            } elseif (!Validate::isFileName($except)) {
                                 $this->errors[] = Tools::displayError('No valid value for field exceptions has been defined.');
                             }
                         }
@@ -379,7 +379,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 'hooks'               => $hooks,
                 'exception_list'      => $this->displayModuleExceptionList(array_shift($exceptsList), 0),
                 'exception_list_diff' => $exceptionListDiff,
-                'except_diff'         => isset($exceptsDiff) ? $exceptsDiff : null,
+                'except_diff'         => $exceptsDiff,
                 'display_key'         => $this->display_key,
                 'modules'             => $modules,
                 'show_toolbar'        => true,

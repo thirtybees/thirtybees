@@ -1158,7 +1158,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 					INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 					('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
 					ON DUPLICATE KEY UPDATE `position` = '.(int) $position
-                ) && $return;
+                );
             }
         } else {
             $return = Db::getInstance()->execute(
@@ -1166,7 +1166,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 			INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 			('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
 			ON DUPLICATE KEY UPDATE `position` = '.(int) $position
-            ) && $return;
+            );
         }
 
         return $return;

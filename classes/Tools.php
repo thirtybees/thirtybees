@@ -3588,7 +3588,7 @@ FileETag none
                         $order_by_prefix = 'p.';
                     } elseif ($value == 'name') {
                         $order_by_prefix = 'pl.';
-                    } elseif ($value == 'manufacturer_name' && $prefix) {
+                    } elseif ($value == 'manufacturer_name') {
                         $order_by_prefix = 'm.';
                         $value = 'name';
                     } elseif ($value == 'position' || empty($value)) {

@@ -516,7 +516,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
                 $tr = new TaxRule();
 
                 // update or creation?
-                if (isset($idRule) && $first) {
+                if ($first) {
                     $tr->id = $idRule;
                     $first = false;
                 }

@@ -271,7 +271,7 @@ function checkingTab($tab)
     }
 
     // Class file is included in Dispatcher::dispatch() function
-    if (!class_exists($tab, false) || !$row['id_tab']) {
+    if (!class_exists($tab, false)) {
         echo sprintf(Tools::displayError('The class %s cannot be found.'), $tab);
         return false;
     }

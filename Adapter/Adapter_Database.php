@@ -61,10 +61,6 @@ class Adapter_Database implements Core_Foundation_Database_DatabaseInterface
      */
     public function escape($unsafeData)
     {
-        // Prepare required params
-        $htmlOk = true;
-        $bqSql = true;
-
-        return Db::getInstance()->escape($unsafeData, $htmlOk, $bqSql);
+        return Db::getInstance()->escape($unsafeData, true, true);
     }
 }

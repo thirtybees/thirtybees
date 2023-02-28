@@ -605,7 +605,7 @@ abstract class ModuleCore
      *
      * @param array|string $name
      *
-     * @return true if succeed
+     * @return true
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -616,15 +616,13 @@ abstract class ModuleCore
         if (!is_array($name)) {
             $name = [$name];
         }
-        $res = true;
         // Disable each module
         foreach ($name as $n) {
             if (Validate::isModuleName($n)) {
                 Module::getInstanceByName($n)->disable();
             }
         }
-
-        return $res;
+        return true;
     }
 
     /**

@@ -523,7 +523,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 $message = Tools::getValue('message_forward');
                 if (($error = $cm->validateField('message', $message, null, [], true)) !== true) {
                     $this->errors[] = $error;
-                } elseif ($idEmployee && $employee && Validate::isLoadedObject($employee)) {
+                } elseif (Validate::isLoadedObject($employee)) {
                     $params = [
                         '{messages}'  => stripslashes($output),
                         '{employee}'  => $currentEmployee->firstname.' '.$currentEmployee->lastname,

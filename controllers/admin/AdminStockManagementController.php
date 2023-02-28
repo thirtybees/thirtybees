@@ -329,9 +329,9 @@ class AdminStockManagementControllerCore extends AdminController
         for ($i = 0; $i < $nbItems; $i++) {
             $item = &$this->_list[$i];
 
-            $item['reference'] = (!empty($item['reference']) && isset($item['reference'])) ? $item['reference'] : '--';
-            $item['ean13'] = (!empty($item['ean13']) && isset($item['ean13'])) ? $item['ean13'] : '--';
-            $item['upc'] = (!empty($item['upc']) && isset($item['upc'])) ? $item['upc'] : '--';
+            $item['reference'] = $item['reference'] ?: '--';
+            $item['ean13'] = $item['ean13'] ?: '--';
+            $item['upc'] = $item['upc'] ?: '--';
 
             // if it's an ajax request we have to consider manipulating a product variation
             if (Tools::isSubmit('id_product')) {

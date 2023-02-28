@@ -93,9 +93,7 @@ class OrderControllerCore extends ParentOrderController
         }
         if (!$this->context->customer->isLogged(true) && in_array($this->step, [1, 2, 3])) {
             $params = [];
-            if ($this->step) {
-                $params['step'] = (int) $this->step;
-            }
+            $params['step'] = (int) $this->step;
             if ($multi = (int) Tools::getValue('multi-shipping')) {
                 $params['multi-shipping'] = $multi;
             }
@@ -295,7 +293,7 @@ class OrderControllerCore extends ParentOrderController
                 $this->autoStep();
 
                 // Bypass payment step if total is 0
-                if (($idOrder = $this->_checkFreeOrder()) && $idOrder) {
+                if ($idOrder = $this->_checkFreeOrder()) {
                     if ($this->context->customer->is_guest) {
                         $order = new Order((int) $idOrder);
                         $email = $this->context->customer->email;

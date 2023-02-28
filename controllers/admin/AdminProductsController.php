@@ -1729,7 +1729,7 @@ class AdminProductsControllerCore extends AdminController
         if (count($this->errors)) {
             return false;
         }
-        return ((isset($idImage) && is_int($idImage) && $idImage) ? $idImage : false);
+        return $idImage ? $idImage : false;
     }
 
     /**
