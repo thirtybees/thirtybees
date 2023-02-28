@@ -2527,15 +2527,20 @@ class AdminControllerCore extends Controller
                 break;
         }
 
-        if (is_array($this->page_header_toolbar_btn)
-            && $this->page_header_toolbar_btn instanceof Traversable
-            || count($this->toolbar_title)
-        ) {
-            $this->show_page_header_toolbar = true;
+        if (empty($this->page_header_toolbar_title) && $this->toolbar_title) {
+            if (is_array($this->toolbar_title)) {
+                $size = count($this->toolbar_title);
+                $this->page_header_toolbar_title = $this->toolbar_title[$size - 1];
+            } else {
+                $this->page_header_toolbar_title = $this->toolbar_title;
+            }
         }
 
-        if (empty($this->page_header_toolbar_title)) {
-            $this->page_header_toolbar_title = $this->toolbar_title[count($this->toolbar_title) - 1];
+        if (is_array($this->page_header_toolbar_btn)
+            || ($this->page_header_toolbar_btn instanceof Traversable)
+            || $this->page_header_toolbar_title
+        ) {
+            $this->show_page_header_toolbar = true;
         }
 
         $this->context->smarty->assign('help_link', '');

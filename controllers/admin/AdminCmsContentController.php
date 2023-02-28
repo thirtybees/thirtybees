@@ -206,19 +206,14 @@ class AdminCmsContentControllerCore extends AdminController
             ];
         }
 
-        $this->page_header_toolbar_title = implode(' '.Configuration::get('PS_NAVIGATION_PIPE').' ', $this->toolbar_title);
+        $this->page_header_toolbar_title = trim(implode(' '.Configuration::get('PS_NAVIGATION_PIPE').' ', $this->toolbar_title));
 
         if (is_array($this->page_header_toolbar_btn)
-            && $this->page_header_toolbar_btn instanceof Traversable
-            || trim($this->page_header_toolbar_title) != ''
+            || ($this->page_header_toolbar_btn instanceof Traversable)
+            || $this->page_header_toolbar_title
         ) {
             $this->show_page_header_toolbar = true;
         }
-
-        // TODO: Check if we need this
-//        $template = $this->context->smarty->createTemplate(
-//            $this->context->smarty->getTemplateDir(0).DIRECTORY_SEPARATOR.'page_header_toolbar.tpl', $this->context->smarty
-//        );
 
         $this->context->smarty->assign(
             [
