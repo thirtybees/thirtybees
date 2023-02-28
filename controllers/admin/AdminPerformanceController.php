@@ -1123,8 +1123,6 @@ class AdminPerformanceControllerCore extends AdminController
                                 $success = true;
                             } catch (EnvironmentIsBrokenException $e) {
                                 $this->errors[] = sprintf(Tools::displayError('It looks like your system isn\'t configured for the higest security possible. The error was: %s'), $e->getMessage());
-                            } catch (BadFormatException $e) {
-                                $this->errors[] = sprintf(Tools::displayError('Unable to generate a secure key on your system. You might not be able to use the PHP encryption library. The error was: %s'), $e->getMessage());
                             } catch (Exception $e) {
                                 sprintf(Tools::displayError('An error occurred while enabling the PHP Encryption library. The error was: %s'), $e->getMessage());
                             }
