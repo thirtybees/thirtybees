@@ -1110,9 +1110,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function addToShop(array $categories, $idShop)
     {
-        if (!is_array($categories)) {
-            return false;
-        }
         $sql = 'INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`) VALUES';
         $tabCategories = [];
         foreach ($categories as $idCategory) {

@@ -138,10 +138,6 @@ class WebserviceOutputBuilderCore
      */
     public function setObjectRender(WebserviceOutputInterface $objRender)
     {
-        if (!$objRender instanceof WebserviceOutputInterface) {
-            throw new WebserviceException('Obj_render param must be an WebserviceOutputInterface object type', [83, 500]);
-        }
-
         $this->objectRender = $objRender;
         $this->objectRender->setWsUrl($this->wsUrl);
         if ($this->objectRender->getContentType()) {
