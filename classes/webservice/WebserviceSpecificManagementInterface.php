@@ -70,6 +70,8 @@ interface WebserviceSpecificManagementInterface
      * This must be return an array with specific values as WebserviceRequest expects.
      *
      * @return array
+     *
+     * @throws WebserviceException
      */
     public function getContent();
 }
