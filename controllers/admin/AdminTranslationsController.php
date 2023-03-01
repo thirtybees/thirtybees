@@ -2947,7 +2947,7 @@ class AdminTranslationsControllerCore extends AdminController
                             $valueSubjectMail = isset($mails['subject'][$subjectMail]) ? $mails['subject'][$subjectMail] : '';
                             $strReturn .= '
                             <div class="label-subject row">
-                                <label class="control-label col-lg-3">'.sprintf($this->l('Email subject'));
+                                <label class="control-label col-lg-3">'. $this->l('Email subject');
                             if (isset($valueSubjectMail['use_sprintf']) && $valueSubjectMail['use_sprintf']) {
                                 $strReturn .= '<span class="useSpecialSyntax" title="'.$this->l('This expression uses a special syntax:').' '.$valueSubjectMail['use_sprintf'].'">
                                     <i class="icon-exclamation-triangle"></i>
