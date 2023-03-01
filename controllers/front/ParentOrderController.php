@@ -513,7 +513,7 @@ class ParentOrderControllerCore extends FrontController
             if (!count($customerAddresses) && !Tools::isSubmit('ajax')) {
                 if (($badDelivery = (bool) !Address::isCountryActiveById((int) $this->context->cart->id_address_delivery)) || !Address::isCountryActiveById((int) $this->context->cart->id_address_invoice)) {
                     $params = [];
-                    if ($this->step) {
+                    if (property_exists($this, 'step') && $this->step) {
                         $params['step'] = (int) $this->step;
                     }
                     if ($multi = (int) Tools::getValue('multi-shipping')) {
