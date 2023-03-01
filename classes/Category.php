@@ -1858,7 +1858,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 					WHERE cp.`id_category` IN ('.implode(',', $catsToSearchIn).')'.
                 ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
                 ($active ? ' AND product_shop.`active` = 1' : '').
-                ($idSupplier ? 'AND p.id_supplier = '.(int) $idSupplier : '');
+                ($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : '');
 
             return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
         }
@@ -1922,8 +1922,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 					AND cp.`id_category` IN ('.implode(',', $catsToSearchIn).')'
             .($active ? ' AND product_shop.`active` = 1' : '')
             .($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
-            .($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : ''
-            .' GROUP BY cp.id_product');
+            .($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : '')
+            .' GROUP BY cp.id_product';
 
         if ($random === true) {
             $sql .= ' ORDER BY RAND() LIMIT '.(int) $randomNumberProducts;
