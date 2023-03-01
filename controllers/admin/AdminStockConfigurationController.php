@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStockConfigurationControllerCore
+ *
+ * @property StockMvtReason|SupplyOrderState|null $object
  */
 class AdminStockConfigurationControllerCore extends AdminController
 {

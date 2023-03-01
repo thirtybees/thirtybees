@@ -31,6 +31,8 @@
 
 /**
  * Class AdminOrderMessageControllerCore
+ *
+ * @property OrderMessage|null $object
  */
 class AdminOrderMessageControllerCore extends AdminController
 {

@@ -31,6 +31,8 @@
 
 /**
  * Class AdminQuickAccessesControllerCore
+ *
+ * @property QuickAccess|null $object
  */
 class AdminQuickAccessesControllerCore extends AdminController
 {

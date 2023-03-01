@@ -31,6 +31,8 @@
 
 /**
  * Class AdminProductsControllerCore
+ *
+ * @property Product|null $object
  */
 class AdminProductsControllerCore extends AdminController
 {
@@ -96,9 +98,6 @@ class AdminProductsControllerCore extends AdminController
 
     /** @var int $id_current_category */
     protected $id_current_category;
-
-    /** @var Product $object */
-    public $object;
 
     /** @var string */
     protected $tpl_form;

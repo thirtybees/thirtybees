@@ -31,6 +31,8 @@
 
 /**
  * Class AdminTaxesControllerCore
+ *
+ * @property Tax|null $object
  */
 class AdminTaxesControllerCore extends AdminController
 {

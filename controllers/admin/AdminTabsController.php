@@ -31,6 +31,8 @@
 
 /**
  * Class AdminTabsControllerCore
+ *
+ * @property Tab|null $object
  */
 class AdminTabsControllerCore extends AdminController
 {

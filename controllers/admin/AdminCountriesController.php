@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCountriesControllerCore
+ *
+ * @property Country|null $object
  */
 class AdminCountriesControllerCore extends AdminController
 {

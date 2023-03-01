@@ -31,6 +31,8 @@
 
 /**
  * Class AdminReferrersControllerCore
+ *
+ * @property Referrer|null $object
  */
 class AdminReferrersControllerCore extends AdminController
 {

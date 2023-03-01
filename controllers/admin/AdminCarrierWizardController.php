@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCarrierWizardControllerCore
+ *
+ * @property Carrier|null $object
  */
 class AdminCarrierWizardControllerCore extends AdminController
 {

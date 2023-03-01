@@ -31,6 +31,8 @@
 
 /**
  * Class AdminAddressesControllerCore
+ *
+ * @property Address|null $object
  */
 class AdminAddressesControllerCore extends AdminController
 {

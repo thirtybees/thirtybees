@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCustomersControllerCore
+ *
+ * @property Customer|null $object
  */
 class AdminCustomersControllerCore extends AdminController
 {

@@ -31,6 +31,8 @@
 
 /**
  * Class AdminTaxRulesGroupControllerCore
+ *
+ * @property TaxRulesGroup|TaxRule|null $object
  */
 class AdminTaxRulesGroupControllerCore extends AdminController
 {

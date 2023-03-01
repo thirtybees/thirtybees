@@ -31,6 +31,8 @@
 
 /**
  * Class AdminScenesControllerCore
+ *
+ * @property Scene|null $object
  */
 class AdminScenesControllerCore extends AdminController
 {

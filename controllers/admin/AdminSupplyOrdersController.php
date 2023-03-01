@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSupplyOrdersControllerCore
+ *
+ * @property SupplyOrder|null $object
  */
 class AdminSupplyOrdersControllerCore extends AdminController
 {
@@ -2421,7 +2423,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @see AdminController::afterAdd()
      *
-     * @param ObjectModel $object
+     * @param SupplyOrder $object
      *
      * @return bool
      *

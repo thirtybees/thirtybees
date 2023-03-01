@@ -31,6 +31,8 @@
 
 /**
  * Class AdminLogsControllerCore
+ *
+ * @property PrestaShopLogger|null $object
  */
 class AdminLogsControllerCore extends AdminController
 {

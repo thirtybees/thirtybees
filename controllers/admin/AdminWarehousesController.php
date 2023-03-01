@@ -31,6 +31,8 @@
 
 /**
  * Class AdminWarehousesControllerCore
+ *
+ * @property Warehouse|null $object
  */
 class AdminWarehousesControllerCore extends AdminController
 {

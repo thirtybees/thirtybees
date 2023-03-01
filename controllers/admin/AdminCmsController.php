@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCmsControllerCore
+ *
+ * @property CMS|null $object
  */
 class AdminCmsControllerCore extends AdminController
 {
@@ -43,11 +45,6 @@ class AdminCmsControllerCore extends AdminController
      * @var string
      */
     protected $position_identifier = 'id_cms';
-
-    /**
-     * @var CMS $object
-     */
-    public $object;
 
     /**
      * AdminCmsControllerCore constructor.

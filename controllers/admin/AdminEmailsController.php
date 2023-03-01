@@ -31,6 +31,8 @@
 
 /**
  * Class AdminEmailsControllerCore
+ *
+ * @property Mail|null $object
  */
 class AdminEmailsControllerCore extends AdminController
 {

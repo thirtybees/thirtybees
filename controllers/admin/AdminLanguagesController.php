@@ -31,6 +31,8 @@
 
 /**
  * Class AdminLanguagesControllerCore
+ *
+ * @property Language|null $object
  */
 class AdminLanguagesControllerCore extends AdminController
 {

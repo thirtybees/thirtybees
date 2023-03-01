@@ -31,6 +31,8 @@
 
 /**
  * Class AdminContactsControllerCore
+ *
+ * @property Contact|null $object
  */
 class AdminContactsControllerCore extends AdminController
 {

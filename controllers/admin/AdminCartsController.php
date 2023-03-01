@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCartsControllerCore
+ *
+ * @property Cart|null $object
  */
 class AdminCartsControllerCore extends AdminController
 {

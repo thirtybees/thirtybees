@@ -31,6 +31,8 @@
 
 /**
  * Class AdminShopUrlControllerCore
+ *
+ * @property ShopUrl|null $object
  */
 class AdminShopUrlControllerCore extends AdminController
 {

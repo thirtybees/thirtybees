@@ -31,6 +31,8 @@
 
 /**
  * Class AdminImagesControllerCore
+ *
+ * @property ImageType|null $object
  */
 class AdminImagesControllerCore extends AdminController
 {

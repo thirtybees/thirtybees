@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSearchEnginesControllerCore
+ *
+ * @property SearchEngine|null $object
  */
 class AdminSearchEnginesControllerCore extends AdminController
 {

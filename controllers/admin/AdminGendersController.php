@@ -30,7 +30,7 @@
  */
 
 /**
- * @property Gender $object
+ * @property Gender|null $object
  */
 class AdminGendersControllerCore extends AdminController
 {

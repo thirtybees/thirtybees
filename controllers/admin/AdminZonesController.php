@@ -31,6 +31,8 @@
 
 /**
  * Class AdminZonesControllerCore
+ *
+ * @property Zone|null $object
  */
 class AdminZonesControllerCore extends AdminController
 {

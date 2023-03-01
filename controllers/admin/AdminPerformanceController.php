@@ -34,6 +34,8 @@ use Defuse\Crypto\Key;
 
 /**
  * Class AdminPerformanceControllerCore
+ *
+ * @property Configuration|null $object
  */
 class AdminPerformanceControllerCore extends AdminController
 {

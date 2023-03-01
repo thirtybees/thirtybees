@@ -31,6 +31,8 @@
 
 /**
  * Class AdminWebserviceControllerCore
+ *
+ * @property WebserviceKey|null $object
  */
 class AdminWebserviceControllerCore extends AdminController
 {

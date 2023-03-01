@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSuppliersControllerCore
+ *
+ * @property Supplier|null $object
  */
 class AdminSuppliersControllerCore extends AdminController
 {
@@ -38,11 +40,6 @@ class AdminSuppliersControllerCore extends AdminController
      * @var bool
      */
     public $bootstrap = true;
-
-    /**
-     * @var Supplier $object
-     */
-    public $object;
 
     /**
      * AdminSuppliersControllerCore constructor.

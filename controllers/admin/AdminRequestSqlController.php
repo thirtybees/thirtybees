@@ -31,6 +31,8 @@
 
 /**
  * Class AdminRequestSqlControllerCore
+ *
+ * @property RequestSql|null $object
  */
 class AdminRequestSqlControllerCore extends AdminController
 {

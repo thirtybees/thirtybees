@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCustomerThreadsControllerCore
+ *
+ * @property CustomerThread|null $object
  */
 class AdminCustomerThreadsControllerCore extends AdminController
 {

@@ -31,6 +31,8 @@
 
 /**
  * Class AdminMetaControllerCore
+ *
+ * @property Meta|null $object
  */
 class AdminMetaControllerCore extends AdminController
 {
@@ -78,11 +80,6 @@ class AdminMetaControllerCore extends AdminController
      * @var string
      */
     protected $sm_file = '';
-
-    /**
-     * @var Meta $object
-     */
-    protected $object;
 
     /**
      * AdminMetaControllerCore constructor.

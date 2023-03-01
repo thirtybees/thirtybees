@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStatesControllerCore
+ *
+ * @property State|null $object
  */
 class AdminStatesControllerCore extends AdminController
 {

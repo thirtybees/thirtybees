@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCustomerPreferencesControllerCore
+ *
+ * @property Configuration|null $object
  */
 class AdminCustomerPreferencesControllerCore extends AdminController
 {

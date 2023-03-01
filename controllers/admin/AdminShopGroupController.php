@@ -31,6 +31,8 @@
 
 /**
  * Class AdminShopGroupControllerCore
+ *
+ * @property ShopGroup|null $object
  */
 class AdminShopGroupControllerCore extends AdminController
 {

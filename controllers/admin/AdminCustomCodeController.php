@@ -4,6 +4,8 @@
  * Class AdminCustomCodeControllerCore
  *
  * Used to add custom meta, js and css to the front office
+ *
+ * @property Configuration|null $object
  */
 class AdminCustomCodeControllerCore extends AdminController
 {

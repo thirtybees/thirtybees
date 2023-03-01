@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStoresControllerCore
+ *
+ * @property Store|null $object
  */
 class AdminStoresControllerCore extends AdminController
 {

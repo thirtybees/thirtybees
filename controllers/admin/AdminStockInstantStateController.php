@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStockInstantStateControllerCore
+ *
+ * @property Stock|null $object
  */
 class AdminStockInstantStateControllerCore extends AdminController
 {

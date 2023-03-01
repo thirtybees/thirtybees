@@ -31,6 +31,8 @@
 
 /**
  * Class AdminManufacturersControllerCore
+ *
+ * @property Manufacturer|null $object
  */
 class AdminManufacturersControllerCore extends AdminController
 {

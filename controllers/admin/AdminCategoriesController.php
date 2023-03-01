@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCategoriesControllerCore
+ *
+ * @property Category|null $object
  */
 class AdminCategoriesControllerCore extends AdminController
 {

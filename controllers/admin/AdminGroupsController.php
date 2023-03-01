@@ -30,7 +30,7 @@
  */
 
 /**
- * @property Group $object
+ * @property Group|null $object
  */
 class AdminGroupsControllerCore extends AdminController
 {

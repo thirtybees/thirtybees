@@ -33,6 +33,8 @@
 
 /**
  * Class AdminAttributeGeneratorControllerCore
+ *
+ * @property Product|null $object
  */
 class AdminAttributeGeneratorControllerCore extends AdminController
 {

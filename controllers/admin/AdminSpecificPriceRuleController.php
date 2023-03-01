@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSpecificPriceRuleControllerCore
+ *
+ * @property SpecificPriceRule|null $object
  */
 class AdminSpecificPriceRuleControllerCore extends AdminController
 {

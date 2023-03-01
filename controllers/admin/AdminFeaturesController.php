@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * @property Feature|FeatureValue|null $object
+ */
 class AdminFeaturesControllerCore extends AdminController
 {
     /**

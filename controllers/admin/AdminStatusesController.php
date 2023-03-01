@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStatusesControllerCore
+ *
+ * @property OrderState|OrderReturnState|null $object
  */
 class AdminStatusesControllerCore extends AdminController
 {

@@ -31,6 +31,8 @@
 
 /**
  * Class AdminAttributesGroupsControllerCore
+ *
+ * @property ProductAttribute|AttributeGroup|null $object
  */
 class AdminAttributesGroupsControllerCore extends AdminController
 {

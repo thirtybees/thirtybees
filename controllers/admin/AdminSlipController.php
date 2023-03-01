@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSlipControllerCore
+ *
+ * @property OrderSlip|null $object
  */
 class AdminSlipControllerCore extends AdminController
 {

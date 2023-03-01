@@ -31,6 +31,8 @@
 
 /**
  * Class AdminAttachmentsControllerCore
+ *
+ * @property Attachment|null $object
  */
 class AdminAttachmentsControllerCore extends AdminController
 {

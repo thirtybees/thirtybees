@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCurrenciesControllerCore
+ *
+ * @property Currency|null $object
  */
 class AdminCurrenciesControllerCore extends AdminController
 {

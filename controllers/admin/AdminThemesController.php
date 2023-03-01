@@ -31,6 +31,8 @@
 
 /**
  * Class AdminThemesControllerCore
+ *
+ * @property Theme|null $object
  */
 class AdminThemesControllerCore extends AdminController
 {

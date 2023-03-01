@@ -31,6 +31,8 @@
 
 /**
  * Class AdminSearchConfControllerCore
+ *
+ * @property Alias|null $object
  */
 class AdminSearchConfControllerCore extends AdminController
 {

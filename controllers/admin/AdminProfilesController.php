@@ -31,6 +31,8 @@
 
 /**
  * Class AdminProfilesControllerCore
+ *
+ * @property Profile|null $object
  */
 class AdminProfilesControllerCore extends AdminController
 {

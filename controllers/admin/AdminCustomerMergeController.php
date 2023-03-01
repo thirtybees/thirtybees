@@ -21,6 +21,8 @@ use \Thirtybees\Core\InitializationCallback;
 
 /**
  * Class AdminCustomerMergeControllerCore
+ *
+ * @property Customer|null $object
  */
 class AdminCustomerMergeControllerCore extends AdminController implements InitializationCallback
 {

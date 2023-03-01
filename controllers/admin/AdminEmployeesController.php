@@ -31,6 +31,8 @@
 
 /**
  * Class AdminEmployeesControllerCore
+ *
+ * @property Employee|null $object
  */
 class AdminEmployeesControllerCore extends AdminController
 {

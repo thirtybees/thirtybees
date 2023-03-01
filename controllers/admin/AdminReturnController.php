@@ -31,6 +31,8 @@
 
 /**
  * Class AdminReturnControllerCore
+ *
+ * @property OrderReturn|null $object
  */
 class AdminReturnControllerCore extends AdminController
 {

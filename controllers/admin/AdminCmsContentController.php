@@ -31,6 +31,8 @@
 
 /**
  * Class AdminCmsContentControllerCore
+ *
+ * @property CMS|null $object
  */
 class AdminCmsContentControllerCore extends AdminController
 {

@@ -31,6 +31,8 @@
 
 /**
  * Class AdminOutstandingControllerCore
+ *
+ * @property OrderInvoice|null $object
  */
 class AdminOutstandingControllerCore extends AdminController
 {

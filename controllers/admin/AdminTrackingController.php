@@ -31,6 +31,8 @@
 
 /**
  * Class AdminTrackingControllerCore
+ *
+ * @property Product|Category|null $object
  */
 class AdminTrackingControllerCore extends AdminController
 {

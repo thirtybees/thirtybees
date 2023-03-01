@@ -31,6 +31,8 @@
 
 /**
  * Class AdminStockCoverControllerCore
+ *
+ * @property Product|null $object
  */
 class AdminStockCoverControllerCore extends AdminController
 {

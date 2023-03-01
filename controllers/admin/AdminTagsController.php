@@ -31,6 +31,8 @@
 
 /**
  * Class AdminTagsControllerCore
+ *
+ * @property Tag|null $object
  */
 class AdminTagsControllerCore extends AdminController
 {
