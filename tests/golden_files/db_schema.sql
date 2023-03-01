@@ -601,6 +601,7 @@ CREATE TABLE `PREFIX_contact` (
   `customer_service` tinyint(1) NOT NULL DEFAULT '0',
   `position` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `send_confirm` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_contact`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

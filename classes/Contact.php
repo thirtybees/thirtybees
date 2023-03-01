@@ -70,6 +70,11 @@ class ContactCore extends ObjectModel
     public $active;
 
     /**
+     * @var bool Active
+     */
+    public $send_confirm;
+
+    /**
      * @var array Object model definition
      */
     public static $definition = [
@@ -80,11 +85,12 @@ class ContactCore extends ObjectModel
             'email'            => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128, 'dbNullable' => false],
             'customer_service' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'position'         => ['type' => self::TYPE_INT, 'dbType' => 'tinyint(2) unsigned', 'dbDefault' => '0'],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'send_confirm'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
 
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
             'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
         ],
         'keys' => [
             'contact_shop' => [

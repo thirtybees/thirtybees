@@ -68,6 +68,14 @@ class AdminContactsControllerCore extends AdminController
                 'orderby'  => false,
                 'class'    => 'fixed-width-sm',
             ],
+            'send_confirm'      => [
+                'title'    => $this->l('Confirmation email'),
+                'align'    => 'text-center',
+                'type'     => 'bool',
+                'callback' => 'printSendConfirmIcon',
+                'orderby'  => false,
+                'class'    => 'fixed-width-sm',
+            ],
         ];
 
         parent::__construct();
@@ -142,7 +150,27 @@ class AdminContactsControllerCore extends AdminController
                     'label'    => $this->l('Is contact active?'),
                     'name'     => 'active',
                     'required' => false,
-                    'class'    => 't',
+                    'is_bool'  => true,
+                    'default_value' => true,
+                    'values'   => [
+                        [
+                            'id'    => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Send confirmation email to customer?'),
+                    'hint'     => $this->l('If enabled, confirmation email will be send to customer. Warning: this can be used for sending spam!'),
+                    'name'     => 'send_confirm',
+                    'required' => false,
                     'is_bool'  => true,
                     'default_value' => true,
                     'values'   => [
@@ -187,11 +215,10 @@ class AdminContactsControllerCore extends AdminController
         if (!Validate::isLoadedObject($contact)) {
             $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
         }
-        $update = Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'contact` SET active = '.($contact->active ? 0 : 1).' WHERE `id_contact` = '.(int)$contact->id);
-        if (!$update) {
+        $contact->active = !$contact->active;
+        if (! $contact->update()) {
             $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
         }
-        Tools::clearSmartyCache();
         Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
@@ -213,6 +240,47 @@ class AdminContactsControllerCore extends AdminController
         return (
             '<a class="list-action-enable'.($active ? ' action-enabled' : ' action-disabled').'" href="index.php?controller=AdminContacts&amp;id_contact='.$contactId.'&amp;changeContactActiveVal&amp;token='.Tools::getAdminTokenLite('AdminContacts').'">
 				'.($active ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>').
+            '</a>'
+        );
+    }
+
+    /**
+     * Toggle contact send_contact flag
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function processChangeContactSendConfirm()
+    {
+        $contact = new Contact($this->id_object);
+        if (!Validate::isLoadedObject($contact)) {
+            $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
+        }
+        $contact->send_confirm = !$contact->send_confirm;
+        if (! $contact->update()) {
+            $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
+        }
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
+    }
+
+    /**
+     * Print send confirm emmail flag
+     *
+     * @param bool $sendConfirm
+     * @param array $tr Row data
+     *
+     * @return string HTML link and icon
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function printSendConfirmIcon($sendConfirm, $tr)
+    {
+        $sendConfirm = (bool)$sendConfirm;
+        $contactId = (int)$tr['id_contact'];
+        return (
+            '<a class="list-action-enable'.($sendConfirm ? ' action-enabled' : ' action-disabled').'" href="index.php?controller=AdminContacts&amp;id_contact='.$contactId.'&amp;changeContactSendConfirm&amp;token='.Tools::getAdminTokenLite('AdminContacts').'">
+				'.($sendConfirm ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>').
             '</a>'
         );
     }
@@ -245,10 +313,14 @@ class AdminContactsControllerCore extends AdminController
     {
         parent::initProcess();
 
-        $this->id_object = Tools::getValue('id_'.$this->table);
+        $this->id_object = (int)Tools::getValue('id_'.$this->table);
 
-        if (Tools::isSubmit('changeContactActiveVal') && $this->id_object) {
-            $this->action = 'change_contact_active_val';
+        if ($this->id_object) {
+            if (Tools::isSubmit('changeContactActiveVal')) {
+                $this->action = 'change_contact_active_val';
+            } elseif (Tools::isSubmit('changeContactSendConfirm')) {
+                $this->action = 'change_contact_send_confirm';
+            }
         }
     }
 
