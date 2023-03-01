@@ -1046,7 +1046,8 @@ abstract class ModuleCore
         }
 
         if ($errors) {
-            if (!isset(Context::getContext()->controller) && !Context::getContext()->controller->controller_name) {
+            $controller = Context::getContext()->controller;
+            if (!isset($controller)) {
                 echo '<div class="alert error"><h3>'.Tools::displayError('The following module(s) could not be loaded').':</h3><ol>';
                 foreach ($errors as $error) {
                     echo '<li>'.$error.'</li>';
@@ -1054,7 +1055,7 @@ abstract class ModuleCore
                 echo '</ol></div>';
             } else {
                 foreach ($errors as $error) {
-                    Context::getContext()->controller->errors[] = $error;
+                    $controller->errors[] = $error;
                 }
             }
         }
