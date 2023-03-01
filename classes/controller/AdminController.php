@@ -2228,6 +2228,7 @@ class AdminControllerCore extends Controller
             ]
         );
 
+        /** @var ThemeConfigurator|false $module */
         $module = Module::getInstanceByName('themeconfigurator');
         if (is_object($module) && $module->active && (int) Configuration::get('PS_TC_ACTIVE') == 1 && $this->context->shop->getBaseURL()) {
             $request =

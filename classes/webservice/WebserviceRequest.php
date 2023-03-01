@@ -470,7 +470,7 @@ class WebserviceRequestCore
     /**
      * This method is used for calculate the price for products on a virtual fields
      *
-     * @param ObjectModel $entityObject
+     * @param Combination $entityObject
      * @param array $parameters
      *
      * @return array

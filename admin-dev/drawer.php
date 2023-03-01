@@ -53,6 +53,7 @@ if (!Validate::isModuleName($module)) {
     throw new PrestaShopException(sprintf(Tools::displayError("Invalid module name [%s]"), Tools::safeOutput($module)));
 }
 
+/** @var StatsModule $statsModuleInstance */
 $statsModuleInstance = Module::getInstanceByName('statsmodule');
 
 if ($statsModuleInstance->active && in_array($module, $statsModuleInstance->modules)) {

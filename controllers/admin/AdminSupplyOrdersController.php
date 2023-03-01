@@ -1854,7 +1854,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $supplyOrder->id = (int) 0;
         $supplyOrder->save();
 
-        // copies SupplyOrderDetail
+        /** @var SupplyOrderDetail $entry */
         foreach ($entries as $entry) {
             $entry->id_supply_order = $supplyOrder->id;
             $entry->id = (int) 0;

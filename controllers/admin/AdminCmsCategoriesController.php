@@ -137,6 +137,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
         elseif (Tools::isSubmit('statuscms_category') && Tools::getValue($this->identifier)) {
             if ($this->hasEditPermission()) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
+                    /** @var CMSCategory $object */
                     if ($object->toggleStatus()) {
                         $identifier = ((int) $object->id_parent ? '&id_cms_category='.(int) $object->id_parent : '');
                         Tools::redirectAdmin(static::$currentIndex.'&conf=5'.$identifier.'&token='.Tools::getValue('token'));
@@ -153,6 +154,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
         elseif (Tools::isSubmit('delete'.$this->table)) {
             if ($this->hasDeletePermission()) {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
+                    /** @var CMSCategory $object */
                     $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                     if ($this->deleted) {
                         $object->deleted = 1;

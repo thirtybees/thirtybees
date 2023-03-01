@@ -787,6 +787,7 @@ class WebserviceOutputBuilderCore
         if (isset($this->wsResource[$assocName]) && is_null($this->schemaToDisplay)) {
             if ($assocName == 'images') {
                 if ($parentDetails['entities_name'] == 'combinations') {
+                    /** @var Combination $object */
                     $moreAttr['xlink_resource'] = $this->wsUrl.$assocName.'/products/'.$object->id_product.'/'.$objectAssoc['id'];
                 } else {
                     $moreAttr['xlink_resource'] = $this->wsUrl.$assocName.'/'.$parentDetails['entities_name'].'/'.$parentDetails['object_id'].'/'.$objectAssoc['id'];

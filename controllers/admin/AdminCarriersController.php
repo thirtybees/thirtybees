@@ -464,7 +464,7 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * Overload the property $fields_value
      *
-     * @param ObjectModel $obj
+     * @param Carrier $obj
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
