@@ -4230,11 +4230,7 @@ class AdminProductsControllerCore extends AdminController
                 if ($specificPrice['id_product_attribute']) {
                     $combination = new Combination((int) $specificPrice['id_product_attribute']);
                     $attributes = $combination->getAttributesName((int) $this->context->language->id);
-                    $attributesName = '';
-                    foreach ($attributes as $attribute) {
-                        $attributesName .= $attribute['name'].' - ';
-                    }
-                    $attributesName = rtrim($attributesName, ' - ');
+                    $attributesName = implode(' - ', array_column($attributes, 'name'));
                 } else {
                     $attributesName = $this->l('All combinations');
                 }

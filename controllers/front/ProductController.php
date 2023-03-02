@@ -570,11 +570,7 @@ class ProductControllerCore extends FrontController
                 $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod === PS_TAX_INC, $quantityDiscount['id_product_attribute']);
                 $combination = new Combination((int) $quantityDiscount['id_product_attribute']);
                 $attributes = $combination->getAttributesName((int) $this->context->language->id);
-                $quantityDiscount['attributes'] = '';
-                foreach ($attributes as $attribute) {
-                    $quantityDiscount['attributes'] .= $attribute['name'].' - ';
-                }
-                $quantityDiscount['attributes'] = rtrim($quantityDiscount['attributes'], ' - ');
+                $quantityDiscount['attributes'] = implode(' - ', array_column($attributes, 'name'));
             } else {
                 $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC);
             }

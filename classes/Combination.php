@@ -466,14 +466,14 @@ class CombinationCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getAttributesName($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('al.*')
                 ->from('product_attribute_combination', 'pac')
