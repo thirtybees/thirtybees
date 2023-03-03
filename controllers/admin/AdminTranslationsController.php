@@ -3154,7 +3154,7 @@ class AdminTranslationsControllerCore extends AdminController
                     'mod_security_warning' => Tools::apacheModExists('mod_security'),
                     'textarea_sized'       => AdminTranslationsControllerCore::TEXTAREA_SIZED,
                     'cancel_url'           => $this->context->link->getAdminLink('AdminTranslations'),
-                    'theme_translations' => isset($this->modules_translations[$value['theme']]) ? $this->modules_translations[$value['theme']] : [],
+                    'theme_translations'   => $this->modules_translations[$this->theme_selected] ?? [],
                     'missing_translations' => $this->missing_translations,
                 ]
             );
