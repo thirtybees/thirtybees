@@ -2982,8 +2982,9 @@ abstract class ModuleCore
      */
     public function display($file, $template, $cache_id = null, $compile_id = null)
     {
-        if (($overloaded = Module::_isTemplateOverloadedStatic(basename($file, '.php'), $template)) === null) {
-            return Tools::displayError('No template found for module').' '.basename($file, '.php');
+        $moduleName = basename($file, '.php');
+        if (($overloaded = Module::_isTemplateOverloadedStatic($moduleName, $template)) === null) {
+            return Tools::displayError('No template found for module').' '. $moduleName . ': ' .$template;
         } else {
             if (Tools::getIsset('live_edit') || Tools::getIsset('live_configurator_token')) {
                 $cache_id = null;
@@ -2991,8 +2992,8 @@ abstract class ModuleCore
 
             $this->smarty->assign(
                 [
-                    'module_dir'          => __PS_BASE_URI__.'modules/'.basename($file, '.php').'/',
-                    'module_template_dir' => ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'.basename($file, '.php').'/'
+                    'module_dir'          => __PS_BASE_URI__.'modules/'. $moduleName .'/',
+                    'module_template_dir' => ($overloaded ? _THEME_DIR_ : __PS_BASE_URI__).'modules/'. $moduleName .'/'
                 ]
             );
 
