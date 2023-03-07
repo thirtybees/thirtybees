@@ -2577,7 +2577,7 @@ class AdminControllerCore extends Controller
                     $field = $t['filter_key'];
                 }
 
-                $val = $this->getFilterValue($field);
+                $val = $this->getListFieldFilterValue($field);
 
                 if (! is_null($val)) {
                     $filterValue = '';
@@ -4702,7 +4702,7 @@ class AdminControllerCore extends Controller
      *
      * @return mixed|null
      */
-    protected function getFilterValue($field)
+    protected function getListFieldFilterValue($field)
     {
         $filterName = $this->table . 'Filter_' . $field;
         if (Tools::getIsset($filterName)) {
