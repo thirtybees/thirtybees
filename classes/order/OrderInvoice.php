@@ -508,8 +508,9 @@ class OrderInvoiceCore extends ObjectModel
 
         foreach ($details as $row) {
             $rate = (float) round($row['tax_rate'], 3);
-            if (!isset($breakdown[$rate])) {
-                $breakdown[$rate] = [
+            $key = (string)$rate;
+            if (!isset($breakdown[$key])) {
+                $breakdown[$key] = [
                     'total_price_tax_excl' => 0,
                     'total_amount'         => 0,
                     'id_tax'               => $row['id_tax'],
@@ -517,17 +518,11 @@ class OrderInvoiceCore extends ObjectModel
                 ];
             }
 
-            $breakdown[$rate]['total_price_tax_excl'] += $row['total_tax_base'];
-            $breakdown[$rate]['total_amount'] += $row['total_amount'];
+            $breakdown[$key]['total_price_tax_excl'] += (float)$row['total_tax_base'];
+            $breakdown[$key]['total_amount'] += (float)$row['total_amount'];
         }
 
-        foreach ($breakdown as $rate => $data) {
-            $breakdown[$rate]['total_price_tax_excl']
-                = $data['total_price_tax_excl'];
-            $breakdown[$rate]['total_amount'] = $data['total_amount'];
-        }
-
-        ksort($breakdown);
+        ksort($breakdown, SORT_NUMERIC);
 
         return $breakdown;
     }
