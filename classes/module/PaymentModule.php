@@ -774,13 +774,13 @@ abstract class PaymentModuleCore extends Module
                     //	This is an "amount" reduction, not a reduction in % or a gift
                     // THEN
                     //	The voucher is cloned with a new value corresponding to the remainder
-                    if ($singleOrder && $values['tax_incl'] > ($order->total_products_wt - $totalReductionValueTaxIncluded) && $cartRule['obj']->partial_use == 1 && $cartRule['obj']->reduction_amount > 0) {
+                    if ($singleOrder && $values['tax_incl'] > ($order->total_products_wt - $totalReductionValueTaxIncluded) && $cartRule->partial_use == 1 && $cartRule->reduction_amount > 0) {
                         // Create a new voucher from the original
-                        $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                        $voucher = new CartRule((int) $cartRule->id); // We need to instantiate the CartRule without lang parameter to allow saving it
                         unset($voucher->id);
 
                         // Set a new voucher code
-                        $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule['obj']->id), 0, 16) : $voucher->code.'-2';
+                        $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule->id), 0, 16) : $voucher->code.'-2';
                         if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2]) {
                             $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
                         }
@@ -817,7 +817,7 @@ abstract class PaymentModuleCore extends Module
                         $voucher->free_shipping = 0;
                         if ($voucher->add()) {
                             // If the voucher has conditions, they are now copied to the new voucher
-                            CartRule::copyConditions($cartRule['obj']->id, $voucher->id);
+                            CartRule::copyConditions($cartRule->id, $voucher->id);
 
                             $params = [
                                 '{voucher_amount}' => Tools::displayPrice($voucher->reduction_amount, $this->context->currency, false),
@@ -850,14 +850,14 @@ abstract class PaymentModuleCore extends Module
 
                     // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
                     // The copied cart rule is converted into a product specific cart rule
-                    if ($cartRule['obj']->product_restriction) {
+                    if ($cartRule->product_restriction) {
                         // Create a new voucher from the original
-                        $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                        $voucher = new CartRule((int) $cartRule->id); // We need to instantiate the CartRule without lang parameter to allow saving it
                         if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
                             unset($voucher->id);
 
                             // Set a new voucher code
-                            $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule['obj']->id), 0, 16) : $voucher->code.'-2';
+                            $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule->id), 0, 16) : $voucher->code.'-2';
                             if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2]) {
                                 $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
                             }
@@ -882,26 +882,26 @@ abstract class PaymentModuleCore extends Module
                             ]);
                             $voucher->add();
 
-                            $cartRule['obj'] = $voucher;
+                            $cartRule = $voucher;
                         }
                     }
 
                     $totalReductionValueTaxIncluded += $values['tax_incl'];
                     $totalReductionValueTaxExcluded += $values['tax_excl'];
 
-                    $order->addCartRule($cartRule['obj']->id, $cartRule['obj']->name, $values, 0, $cartRule['obj']->free_shipping);
+                    $order->addCartRule($cartRule->id, $cartRule->name, $values, 0, $cartRule->free_shipping);
 
-                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule['obj']->id, $cartRuleUsed)) {
-                        $cartRuleUsed[] = $cartRule['obj']->id;
+                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule->id, $cartRuleUsed)) {
+                        $cartRuleUsed[] = $cartRule->id;
 
                         // Create a new instance of Cart Rule without id_lang, in order to update its quantity
-                        $cartRuleToUpdate = new CartRule((int) $cartRule['obj']->id);
+                        $cartRuleToUpdate = new CartRule((int) $cartRule->id);
                         $cartRuleToUpdate->quantity = max(0, $cartRuleToUpdate->quantity - 1);
                         $cartRuleToUpdate->update();
                     }
 
                     $cartRulesList[] = [
-                        'voucher_name'      => $cartRule['obj']->name,
+                        'voucher_name'      => $cartRule->name,
                         'voucher_reduction' => ($values['tax_incl'] != 0.00 ? '-' : '').Tools::displayPrice($values['tax_incl'], $this->context->currency, false),
                     ];
                 }
