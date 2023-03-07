@@ -2461,7 +2461,7 @@ class CartCore extends ObjectModel
     /**
      * @param int $filter
      *
-     * @return array|false
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2475,7 +2475,7 @@ class CartCore extends ObjectModel
 
         $cacheKey = 'static::getCartRules_'.$this->id.'-'.$filter;
         if (!Cache::isStored($cacheKey)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 (new DbQuery())
                     ->select('cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`')
                     ->from('cart_cart_rule', 'cd')
@@ -2489,6 +2489,7 @@ class CartCore extends ObjectModel
             );
             Cache::store($cacheKey, $result);
         } else {
+            /** @var array $result */
             $result = Cache::retrieve($cacheKey);
         }
 
@@ -2928,7 +2929,7 @@ class CartCore extends ObjectModel
      * @param bool $lite
      * @param bool $refresh
      *
-     * @return array|false
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
