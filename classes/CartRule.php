@@ -1196,14 +1196,13 @@ class CartRuleCore extends ObjectModel
                 }
             }
 
-            foreach ($cartRules as &$cartRule) {
+            foreach ($cartRules as $cartRule) {
                 if ($cartRule['gift_product']) {
                     foreach ($products as $key => &$product) {
                         if (empty($product['gift'])
-                            && $product['id_product']
-                               == $cartRule['gift_product']
-                            && $product['id_product_attribute']
-                               == $cartRule['gift_product_attribute']) {
+                            && $product['id_product'] == $cartRule['gift_product']
+                            && $product['id_product_attribute'] == $cartRule['gift_product_attribute']
+                        ) {
                             if ($this->minimum_amount_tax) {
                                 $cartTotal = $cartTotal - $product['price_wt'];
                             } else {
@@ -1226,12 +1225,8 @@ class CartRuleCore extends ObjectModel
             Important note: this MUST be the last check, because if the tested cart rule has priority over a non combinable one in the cart, we will switch them
         */
         $nbProducts = Cart::getNbProducts($context->cart->id);
-        $otherCartRules = [];
         if ($checkCarrier) {
-            $otherCartRules = $context->cart->getCartRules();
-        }
-        if (count($otherCartRules)) {
-            foreach ($otherCartRules as $otherCartRule) {
+            foreach ($context->cart->getCartRules() as $otherCartRule) {
                 if ($otherCartRule['id_cart_rule'] == $this->id && !$alreadyInCart) {
                     return (!$displayError) ? false : Tools::displayError('This voucher is already in your cart');
                 }
