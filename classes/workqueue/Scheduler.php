@@ -123,7 +123,7 @@ class SchedulerCore
      */
     public function deleteSyntheticEventSecret()
     {
-        Configuration::deleteByName(static::SYNTHETIC_CRON_SECRET);
+        Configuration::updateGlobalValue(static::SYNTHETIC_CRON_SECRET, '');
     }
 
     /**
