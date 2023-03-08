@@ -1284,7 +1284,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     {
         $this->cacheFieldsRequiredDatabase();
         $errors = [];
-        $requiredFieldsDatabase = (isset(static::$fieldsRequiredDatabase[get_class($this)])) ? static::$fieldsRequiredDatabase[get_class($this)] : [];
+        $className = get_class($this);
+        $requiredFieldsDatabase = static::$fieldsRequiredDatabase[$className] ?? [];
+
         foreach ($this->def['fields'] as $field => $data) {
             $value = Tools::getValue($field, $this->{$field});
             // Check if field is required by user
@@ -1297,7 +1299,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             // Checking for required fields
             if (isset($data['required']) && $data['required'] && $isEmpty) {
                 if (!$this->id || $field != 'passwd') {
-                    $errors[$field] = '<b>'.static::displayFieldName($field, get_class($this), $htmlentities).'</b> '.Tools::displayError('is required.');
+                    $errors[$field] = '<b>'.static::displayFieldName($field, $className, $htmlentities).'</b> '.Tools::displayError('is required.');
                 }
             }
 
@@ -1305,7 +1307,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             if (isset($data['size']) && !$isEmpty && in_array($data['type'], [static::TYPE_STRING, static::TYPE_HTML]) && mb_strlen($value) > $data['size']) {
                 $errors[$field] = sprintf(
                     Tools::displayError('%1$s is too long. Maximum length: %2$d'),
-                    static::displayFieldName($field, get_class($this), $htmlentities),
+                    static::displayFieldName($field, $className, $htmlentities),
                     $data['size']
                 );
             }
@@ -1317,7 +1319,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 if (isset($data['validate'])) {
                     $dataValidate = $data['validate'];
                     if (!Validate::$dataValidate($value) && (!$isEmpty || $data['required'])) {
-                        $errors[$field] = '<b>'.static::displayFieldName($field, get_class($this), $htmlentities).
+                        $errors[$field] = '<b>'.static::displayFieldName($field, $className, $htmlentities).
                             '</b> '.Tools::displayError('is invalid.');
                         $validationError = true;
                     }
@@ -1333,6 +1335,20 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         }
                     } else {
                         $this->{$field} = $value;
+                    }
+                }
+            }
+        }
+
+        // call modules hook to validate controller
+        foreach (['actionObjectValidateController', 'actionObject'.$className.'ValidateController'] as $hookName) {
+            $modulesErrors = Hook::getResponses($hookName, ['object' => $this, 'className' => $className]);
+            foreach ($modulesErrors as $moduleErrors) {
+                if (is_array($moduleErrors)) {
+                    foreach ($moduleErrors as $error) {
+                        if (is_string($error)) {
+                            $errors[] = $error;
+                        }
                     }
                 }
             }
