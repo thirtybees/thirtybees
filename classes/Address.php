@@ -252,47 +252,6 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @param bool $htmlEntities
-     *
-     * @return array
-     * @throws PrestaShopException
-     */
-    public function validateController($htmlEntities = true)
-    {
-        $errors = parent::validateController($htmlEntities);
-
-        if (Module::isInstalled('vatnumber')
-            && Module::isEnabled('vatnumber')
-            && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
-            include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
-
-            if (method_exists('VatNumber', 'validateNumber')) {
-                /*
-                 * Even better would be to execute such stuff as a hook, but
-                 * the current hook mechanism is designed with front office
-                 * display stuff in mind, so not really suitable here. A better
-                 * hook mechanism would allow to give arbitrary parameters, not
-                 * just arrays. And it would return results unchanged, not
-                 * casted to a string and results of all hooks concatenated.
-                 * --Traumflug, 2018-07-12
-                 */
-                $result = VatNumber::validateNumber($this);
-                if (is_string($result)) {
-                    $errors[] = $result;
-                }
-            } else {
-                // Retrocompatibility for module version < 2.1.0 (07/2018).
-                if (Configuration::get('VATNUMBER_MANAGEMENT')
-                    && Configuration::get('VATNUMBER_CHECKING')) {
-                    $errors = array_merge($errors, VatNumber::WebServiceCheck($this->vat_number));
-                }
-            }
-        }
-
-        return $errors;
-    }
-
-    /**
      * Get zone id for a given address
      *
      * @param int $idAddress Address id for which we want to get zone id
