@@ -31,13 +31,17 @@
 
 /**
  * Class Core_Business_CMS_CMSRoleRepository
+ *
+ * @method CMSRole|null findOneByName(string $name)
+ * @method CMSRole[]|null findByIdCmsRole(int|int[] $idCmsRole)
+ * @method CMSRole[]|null findByName(string|string[] $name)
  */
 class Core_Business_CMS_CMSRoleRepository extends Core_Foundation_Database_EntityRepository
 {
     /**
      * Return all CMSRoles which are already associated
      *
-     * @return array|null
+     * @return CMSRole[]|null
      */
     public function getCMSRolesAssociated()
     {
