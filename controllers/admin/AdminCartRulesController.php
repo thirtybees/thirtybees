@@ -107,31 +107,33 @@ class AdminCartRulesControllerCore extends AdminController
 
             /** @var CartRule $currentObject */
             $currentObject = $this->loadObject(true);
-            $cartRules = $currentObject->getAssociatedRestrictions('cart_rule', false, true, ($page) * $limit, $limit, $search);
+            if (Validate::isLoadedObject($currentObject)) {
+                $cartRules = $currentObject->getAssociatedRestrictions('cart_rule', false, true, ($page) * $limit, $limit, $search);
 
-            if ($type == 'selected') {
-                $i = 1;
-                foreach ($cartRules['selected'] as $cartRule) {
-                    $html .= '<option value="'.(int) $cartRule['id_cart_rule'].'">&nbsp;'.Tools::safeOutput($cartRule['name']).'</option>';
-                    if ($i == $limit) {
-                        break;
+                if ($type == 'selected') {
+                    $i = 1;
+                    foreach ($cartRules['selected'] as $cartRule) {
+                        $html .= '<option value="' . (int)$cartRule['id_cart_rule'] . '">&nbsp;' . Tools::safeOutput($cartRule['name']) . '</option>';
+                        if ($i == $limit) {
+                            break;
+                        }
+                        $i++;
                     }
-                    $i++;
-                }
-                if ($i == $limit) {
-                    $nextLink = $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=selected&count='.($count - 1 + count($cartRules['selected']).'&search='.urlencode($search));
-                }
-            } else {
-                $i = 1;
-                foreach ($cartRules['unselected'] as $cartRule) {
-                    $html .= '<option value="'.(int) $cartRule['id_cart_rule'].'">&nbsp;'.Tools::safeOutput($cartRule['name']).'</option>';
                     if ($i == $limit) {
-                        break;
+                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . (int)$idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=selected&count=' . ($count - 1 + count($cartRules['selected']) . '&search=' . urlencode($search));
                     }
-                    $i++;
-                }
-                if ($i == $limit) {
-                    $nextLink = $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=unselected&count='.($count - 1 + count($cartRules['unselected']).'&search='.urlencode($search));
+                } else {
+                    $i = 1;
+                    foreach ($cartRules['unselected'] as $cartRule) {
+                        $html .= '<option value="' . (int)$cartRule['id_cart_rule'] . '">&nbsp;' . Tools::safeOutput($cartRule['name']) . '</option>';
+                        if ($i == $limit) {
+                            break;
+                        }
+                        $i++;
+                    }
+                    if ($i == $limit) {
+                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . (int)$idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=unselected&count=' . ($count - 1 + count($cartRules['unselected']) . '&search=' . urlencode($search));
+                    }
                 }
             }
         }
