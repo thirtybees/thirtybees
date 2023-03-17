@@ -931,6 +931,10 @@ class AdminAttributesGroupsControllerCore extends AdminController
     {
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
+        if (! $this->_list) {
+            return;
+        }
+
         $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
 
         if ($this->display == 'view') {
