@@ -456,6 +456,7 @@ class AdminCarriersControllerCore extends AdminController
             return;
         }
 
+        /** @var Carrier $obj */
         $this->getFieldsValues($obj);
 
         return parent::renderForm();
@@ -744,7 +745,7 @@ class AdminCarriersControllerCore extends AdminController
      * @param int $id
      * @param string|null $name
      *
-     * @return string|void
+     * @return string|null
      *
      * @throws PrestaShopException
      * @throws SmartyException
@@ -765,7 +766,7 @@ class AdminCarriersControllerCore extends AdminController
 
             return $tpl->fetch();
         } else {
-            return;
+            return null;
         }
     }
 
@@ -774,7 +775,7 @@ class AdminCarriersControllerCore extends AdminController
      * @param int $id
      * @param string|null $name
      *
-     * @return string|void
+     * @return string|null
      *
      * @throws PrestaShopException
      * @throws SmartyException
@@ -814,7 +815,7 @@ class AdminCarriersControllerCore extends AdminController
 
             return $tpl->fetch();
         } else {
-            return;
+            return null;
         }
     }
 
