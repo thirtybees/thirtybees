@@ -135,16 +135,16 @@
         },
         {
             "name": "greenlion/php-sql-parser",
-            "version": "v4.5.0",
+            "version": "v4.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/greenlion/PHP-SQL-Parser.git",
-                "reference": "a5d5c292d97271c95140192e6f0e962916e39b50"
+                "reference": "f0e4645eb1612f0a295e3d35bda4c7740ae8c366"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/a5d5c292d97271c95140192e6f0e962916e39b50",
-                "reference": "a5d5c292d97271c95140192e6f0e962916e39b50",
+                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/f0e4645eb1612f0a295e3d35bda4c7740ae8c366",
+                "reference": "f0e4645eb1612f0a295e3d35bda4c7740ae8c366",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +191,7 @@
                 "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
                 "source": "https://github.com/greenlion/PHP-SQL-Parser"
             },
-            "time": "2022-02-01T09:26:56+00:00"
+            "time": "2023-03-09T20:54:23+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
