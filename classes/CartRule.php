@@ -328,7 +328,7 @@ class CartRuleCore extends ObjectModel
         Db::getInstance()->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_combination` (`id_cart_rule_1`, `id_cart_rule_2`)
-		(SELECT '.(int) $idCartRuleDestination.', IF(id_cart_rule_1 != '.(int) $idCartRuleSource.', id_cart_rule_1, id_cart_rule_2) FROM `'._DB_PREFIX_.'cart_rule_combination`
+		(SELECT DISTINCT '.(int) $idCartRuleDestination.', IF(id_cart_rule_1 != '.(int) $idCartRuleSource.', id_cart_rule_1, id_cart_rule_2) FROM `'._DB_PREFIX_.'cart_rule_combination`
 		WHERE `id_cart_rule_1` = '.(int) $idCartRuleSource.' OR `id_cart_rule_2` = '.(int) $idCartRuleSource.')'
         );
 
