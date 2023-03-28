@@ -728,8 +728,8 @@
                         <br/>
                       {/if}
                     </div>
-                    <div class="col-sm-6 hidden-print">
-                      <div id="map-delivery-canvas" style="height: 190px"></div>
+                    <div class="col-sm-6">
+                      {hook h='displayAdminOrderAddressExtra' addressType='delivery' address=$addresses.delivery order=$order}
                     </div>
                   </div>
                 </div>
@@ -789,8 +789,8 @@
                       <br/>
                     {/if}
                   </div>
-                  <div class="col-sm-6 hidden-print">
-                    <div id="map-invoice-canvas" style="height: 190px"></div>
+                  <div class="col-sm-6">
+                    {hook h='displayAdminOrderAddressExtra' addressType='invoice' address=$addresses.invoice order=$order}
                   </div>
                 </div>
               </div>
@@ -1353,54 +1353,8 @@
     </div>
   </div>
   <script type="text/javascript">
-    var delivery_map, invoice_map;
-
     $(document).ready(function () {
       $(".textarea-autosize").autosize();
-
-      if (window['google'] && google.maps) {
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({
-          address: '{$addresses.delivery->address1|@addcslashes:'\''},{$addresses.delivery->postcode|@addcslashes:'\''},{$addresses.delivery->city|@addcslashes:'\''}{if isset($addresses.deliveryState->name) && $addresses.delivery->id_state},{$addresses.deliveryState->name|@addcslashes:'\''}{/if},{$addresses.delivery->country|@addcslashes:'\''}'
-        }, function (results, status) {
-          if (status === google.maps.GeocoderStatus.OK) {
-            delivery_map = new google.maps.Map(document.getElementById('map-delivery-canvas'), {
-              zoom: 10,
-              mapTypeId: google.maps.MapTypeId.ROADMAP,
-              center: results[0].geometry.location
-            });
-            var delivery_marker = new google.maps.Marker({
-              map: delivery_map,
-              position: results[0].geometry.location,
-              url: 'https://maps.google.com?q={$addresses.delivery->address1|urlencode},{$addresses.delivery->postcode|urlencode},{$addresses.delivery->city|urlencode}{if isset($addresses.deliveryState->name) && $addresses.delivery->id_state},{$addresses.deliveryState->name|urlencode}{/if},{$addresses.delivery->country|urlencode}'
-            });
-            google.maps.event.addListener(delivery_marker, 'click', function () {
-              window.open(delivery_marker.url);
-            });
-          }
-        });
-
-        geocoder.geocode({
-          address: '{$addresses.invoice->address1|@addcslashes:'\''},{$addresses.invoice->postcode|@addcslashes:'\''},{$addresses.invoice->city|@addcslashes:'\''}{if isset($addresses.deliveryState->name) && $addresses.invoice->id_state},{$addresses.deliveryState->name|@addcslashes:'\''}{/if},{$addresses.invoice->country|@addcslashes:'\''}'
-        }, function (results, status) {
-          if (status === google.maps.GeocoderStatus.OK) {
-            invoice_map = new google.maps.Map(document.getElementById('map-invoice-canvas'), {
-              zoom: 10,
-              mapTypeId: google.maps.MapTypeId.ROADMAP,
-              center: results[0].geometry.location
-            });
-            invoice_marker = new google.maps.Marker({
-              map: invoice_map,
-              position: results[0].geometry.location,
-              url: 'https://maps.google.com?q={$addresses.invoice->address1|urlencode},{$addresses.invoice->postcode|urlencode},{$addresses.invoice->city|urlencode}{if isset($addresses.deliveryState->name) && $addresses.invoice->id_state},{$addresses.deliveryState->name|urlencode}{/if},{$addresses.invoice->country|urlencode}'
-            });
-            google.maps.event.addListener(invoice_marker, 'click', function () {
-              window.open(invoice_marker.url);
-            });
-          }
-        });
-      }
 
       $('.datepicker').datetimepicker({
         prevText: '',
@@ -1419,25 +1373,6 @@
         hourText: '{l s='Hour' js=1}',
         minuteText: '{l s='Minute' js=1}'
       });
-    });
-
-    // Fix wrong maps center when map is hidden
-    $('#tabAddresses').click(function () {
-      if (delivery_map) {
-        x = delivery_map.getZoom();
-        c = delivery_map.getCenter();
-        google.maps.event.trigger(delivery_map, 'resize');
-        delivery_map.setZoom(x);
-        delivery_map.setCenter(c);
-      }
-
-      if (invoice_map) {
-        x = invoice_map.getZoom();
-        c = invoice_map.getCenter();
-        google.maps.event.trigger(invoice_map, 'resize');
-        invoice_map.setZoom(x);
-        invoice_map.setCenter(c);
-      }
     });
   </script>
 {/block}
