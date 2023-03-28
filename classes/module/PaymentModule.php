@@ -936,7 +936,7 @@ abstract class PaymentModuleCore extends Module
                     $customerMessage->id_customer_thread = $customerThread->id;
                     $customerMessage->id_employee = 0;
                     $customerMessage->message = $updateMessage->message;
-                    $customerMessage->private = 1;
+                    $customerMessage->private = 0;
                     $customerMessage->add();
                 }
 
