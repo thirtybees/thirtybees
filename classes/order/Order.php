@@ -2242,7 +2242,7 @@ class OrderCore extends ObjectModel
             (new DbQuery())
                 ->select('DISTINCT oc.`id_order_invoice`, oc.`weight`, oc.`shipping_cost_tax_excl`')
                 ->select('oc.`shipping_cost_tax_incl`, c.`url`, oc.`id_carrier`, c.`name` AS `carrier_name`')
-                ->select('oc.`date_add`, "Delivery" AS `type`, "true" AS `can_edit`, oc.`tracking_number`')
+                ->select('oc.`date_add`, "Delivery" AS `type`, (CASE WHEN oc.id_order_carrier THEN 1 ELSE 0 END) AS `can_edit`, oc.`tracking_number`')
                 ->select('oc.`id_order_carrier`, osl.`name` AS order_state_name, c.`name` AS `state_name`')
                 ->from('orders', 'o')
                 ->leftJoin('order_history', 'oh', 'o.`id_order` = oh.`id_order`')
