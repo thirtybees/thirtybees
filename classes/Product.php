@@ -1201,18 +1201,14 @@ class ProductCore extends ObjectModel
         if ($useGroupReduction) {
             $reductionFromCategory = GroupReduction::getValueForProduct($idProduct, $idGroup);
             if ($reductionFromCategory !== false) {
-                $groupReduction = round(
-                    $price * $reductionFromCategory,
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
+                $groupReduction = Tools::roundPrice($price * $reductionFromCategory);
             } else {
                 // Apply group reduction if there is no group reduction for
                 // this category.
                 $reduc = Group::getReductionByIdGroup($idGroup);
-                $groupReduction = ($reduc ?
-                    round($price * $reduc / 100, _TB_PRICE_DATABASE_PRECISION_) :
-                    0
-                );
+                $groupReduction = $reduc
+                    ? Tools::roundPrice($price * $reduc / 100)
+                    : 0.0;
             }
 
             $price -= $groupReduction;

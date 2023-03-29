@@ -98,27 +98,31 @@ class GroupReductionCore extends ObjectModel
      * @param int $idProduct
      * @param int $idGroup
      *
-     * @return float
+     * @return float|false
      *
      * @throws PrestaShopException
      */
     public static function getValueForProduct($idProduct, $idGroup)
     {
         if (!Group::isFeatureActive()) {
-            return 0;
+            return false;
         }
 
         if (!isset(static::$reduction_cache[$idProduct.'-'.$idGroup])) {
-            static::$reduction_cache[$idProduct.'-'.$idGroup] = Db::getInstance()->getValue(
+            $value = Db::getInstance()->getValue(
                 (new DbQuery())
                     ->select('`reduction`')
                     ->from('product_group_reduction_cache')
                     ->where('`id_product` = '.(int) $idProduct)
                     ->where('`id_group` = '.(int) $idGroup)
             );
+            if ($value !== false) {
+                $value = (float)$value;
+            }
+            static::$reduction_cache[$idProduct.'-'.$idGroup] = $value;
+            return $value;
         }
 
-        // Should return string (decimal in database) and not a float
         return static::$reduction_cache[$idProduct.'-'.$idGroup];
     }
 
@@ -289,7 +293,7 @@ class GroupReductionCore extends ObjectModel
 
         $insert = [];
 
-        foreach ($res as &$row) {
+        foreach ($res as $row) {
             $insert[] = [
                 'id_product' => (int) $idProduct,
                 'id_group'   => (int) $row['id_group'],
