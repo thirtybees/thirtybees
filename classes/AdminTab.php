@@ -66,7 +66,7 @@ abstract class AdminTabCore
     public $lang = false;
     /** @var bool Tab Automatically displays edit/delete icons if true */
     public $edit = false;
-    /** @var bool Tab Automatically displays view icon if true */
+    /** @var string|bool Tab Automatically displays view icon if true */
     public $view = false;
     /** @var bool Tab Automatically displays delete icon if true */
     public $delete = false;
@@ -139,7 +139,7 @@ abstract class AdminTabCore
     protected $_group;
     /** @var string Having rows into data query to display list */
     protected $_having;
-    /** @var array Cache for query results */
+    /** @var array|false Cache for query results */
     protected $_list = [];
     /** @var int Number of results in list */
     protected $_listTotal = 0;

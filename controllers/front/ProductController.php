@@ -421,15 +421,13 @@ class ProductControllerCore extends FrontController
     /**
      * Text record
      *
-     * @return bool
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     protected function textRecord()
     {
         if (!$fieldIds = $this->product->getCustomizationFieldIds()) {
-            return false;
+            return;
         }
 
         $authorizedTextFields = [];
@@ -483,7 +481,7 @@ class ProductControllerCore extends FrontController
     protected function assignCategory()
     {
         // Assign category to the template
-        if ($this->category !== false && Validate::isLoadedObject($this->category) && $this->category->inShop() && $this->category->isAssociatedToShop()) {
+        if (Validate::isLoadedObject($this->category) && $this->category->inShop() && $this->category->isAssociatedToShop()) {
             $path = Tools::getPath($this->category->id, $this->product->name, true);
         } elseif (Category::inShopStatic($this->product->id_category_default, $this->context->shop)) {
             $this->category = new Category((int) $this->product->id_category_default, (int) $this->context->language->id);
@@ -867,7 +865,7 @@ class ProductControllerCore extends FrontController
             // wash attributes list (if some attributes are unavailables and if allowed to wash it)
             if (!Product::isAvailableWhenOutOfStock($this->product->out_of_stock) && Configuration::get('PS_DISP_UNAVAILABLE_ATTR') == 0) {
                 foreach ($groups as &$group) {
-                    foreach ($group['attributes_quantity'] as $key => &$quantity) {
+                    foreach ($group['attributes_quantity'] as $key => $quantity) {
                         if ($quantity <= 0) {
                             unset($group['attributes'][$key]);
                         }

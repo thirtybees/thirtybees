@@ -324,14 +324,8 @@ class ProductAttributeCore extends ObjectModel
 
         $idProduct = (int) $arr['id_product'];
         $qty = StockAvailable::getQuantityAvailableByProduct($idProduct);
-
-        if ($qty !== false) {
-            $arr['quantity'] = (int) $qty;
-
-            return true;
-        }
-
-        return false;
+        $arr['quantity'] = (int) $qty;
+        return true;
     }
 
     /**
