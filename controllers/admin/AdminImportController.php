@@ -1980,7 +1980,7 @@ class AdminImportControllerCore extends AdminController
     protected static function copyImg($idEntity, $idImage = null, $url = '', $entity = 'products', $regenerate = true)
     {
         $tmpfile = tempnam(_PS_TMP_IMG_DIR_, 'ps_import');
-        $watermarkTypes = explode(',', Configuration::get('WATERMARK_TYPES'));
+        $watermarkTypes = explode(',', (string)Configuration::get('WATERMARK_TYPES'));
 
         switch ($entity) {
             default:

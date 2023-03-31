@@ -160,7 +160,7 @@ class AdminGeolocationControllerCore extends AdminController
             'auto_value' => false,
         ];
 
-        $this->tpl_option_vars = ['allowed_countries' => explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))];
+        $this->tpl_option_vars = ['allowed_countries' => explode(';', (string)Configuration::get('PS_ALLOWED_COUNTRIES'))];
 
         return parent::renderOptions();
     }

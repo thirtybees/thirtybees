@@ -71,7 +71,7 @@ class AdminLoginControllerCore extends AdminController
             // header('HTTP/1.1 301 Moved Permanently');
             // header('Location: '.Tools::getShopDomainSsl(true).$_SERVER['REQUEST_URI']);
             // exit();
-            $clientIsMaintenanceOrLocal = in_array(Tools::getRemoteAddr(), array_merge(['127.0.0.1'], explode(',', Configuration::get('PS_MAINTENANCE_IP'))));
+            $clientIsMaintenanceOrLocal = in_array(Tools::getRemoteAddr(), array_merge(['127.0.0.1'], explode(',', (string)Configuration::get('PS_MAINTENANCE_IP'))));
             // If ssl is enabled, https protocol is required. Exception for maintenance and local (127.0.0.1) IP
             if ($clientIsMaintenanceOrLocal) {
                 $warningSslMessage = Tools::displayError('SSL is activated. However, your IP is allowed to enter unsecure mode for maintenance or local IP issues.');

@@ -853,7 +853,7 @@ class FrontControllerCore extends Controller
         if ($this->maintenance == true || !(int) Configuration::get('PS_SHOP_ENABLE')) {
             $this->maintenance = true;
             $isCLI = Tools::isPHPCLI();
-            $excludedIP = in_array(Tools::getRemoteAddr(), explode(',', Configuration::get('PS_MAINTENANCE_IP')));
+            $excludedIP = in_array(Tools::getRemoteAddr(), explode(',', (string)Configuration::get('PS_MAINTENANCE_IP')));
             // don't show maintenance page to excluded IP addresses, or to CLI scripts
             if (!$isCLI && !$excludedIP) {
                 header('HTTP/1.1 503 temporarily overloaded');
@@ -1539,7 +1539,7 @@ class FrontControllerCore extends Controller
                 $this->context->cookie->check_cgv = false;
             } /* Delete product of cart, if user can't make an order from his country */
             elseif (intval(Configuration::get('PS_GEOLOCATION_ENABLED')) &&
-                !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))) &&
+                !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', (string)Configuration::get('PS_ALLOWED_COUNTRIES'))) &&
                 $cart->nbProducts() && intval(Configuration::get('PS_GEOLOCATION_NA_BEHAVIOR')) != -1 &&
                 !FrontController::isInWhitelistForGeolocation() &&
                 !in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1'])
@@ -1867,7 +1867,7 @@ class FrontControllerCore extends Controller
             $geolocationModuleId = Module::getModuleIdByName($geolocationModule);
             if ($geolocationModuleId) {
 
-                $allowedCountries = explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'));
+                $allowedCountries = explode(';', (string)Configuration::get('PS_ALLOWED_COUNTRIES'));
                 if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), $allowedCountries))) {
 
                     // Invoke geolocation module service
@@ -1948,7 +1948,7 @@ class FrontControllerCore extends Controller
         $ips = [];
 
         // retrocompatibility
-        $ipsOld = explode(';', Configuration::get('PS_GEOLOCATION_WHITELIST'));
+        $ipsOld = explode(';', (string)Configuration::get('PS_GEOLOCATION_WHITELIST'));
         if (is_array($ipsOld) && count($ipsOld)) {
             foreach ($ipsOld as $ip) {
                 $ips = array_merge($ips, explode("\n", $ip));
