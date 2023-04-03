@@ -91,42 +91,64 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
     price = 0;
   }
 
-  if (typeof window['currencyFormatters'] !== 'undefined' && window.currencyFormatters[currency]) {
-    var formatter = window.currencyFormatters[currency];
-    var val = executeFunctionByName(formatter, [price, currencyFormat, currencySign, currencyBlank, priceDisplayPrecision]);
-    if (typeof val === 'string' || val instanceof String) {
-      return val;
+  const priceRoundingPrecision = getPriceDisplayPrecision();
+
+  if (typeof window['currencyFormatters'] !== 'undefined' && window['currencyFormatters'][currency]) {
+    var formatter = window['currencyFormatters'][currency];
+    if (formatter) {
+      var val = executeFunctionByName(formatter, [price, currencyFormat, currencySign, currencyBlank, priceRoundingPrecision]);
+      if (typeof val === 'string' || val instanceof String) {
+        return val;
+      }
     }
   }
 
   var blank = '';
-  price = ps_round(price, priceDisplayPrecision);
+  price = ps_round(price, priceRoundingPrecision);
   if (currencyBlank > 0) {
     blank = ' ';
   }
 
   // currencyFormat is available in front office, only.
   if (currencyFormat == 1) {
-    return currencySign + blank + formatNumber(price, priceDisplayPrecision, ',', '.');
+    return currencySign + blank + formatNumber(price, priceRoundingPrecision, ',', '.');
   }
   if (currencyFormat == 2) {
-    return (formatNumber(price, priceDisplayPrecision, ' ', ',') + blank + currencySign);
+    return (formatNumber(price, priceRoundingPrecision, ' ', ',') + blank + currencySign);
   }
   if (currencyFormat == 3) {
-    return (currencySign + blank + formatNumber(price, priceDisplayPrecision, '.', ','));
+    return (currencySign + blank + formatNumber(price, priceRoundingPrecision, '.', ','));
   }
   if (currencyFormat == 4) {
-    return (formatNumber(price, priceDisplayPrecision, ',', '.') + blank + currencySign);
+    return (formatNumber(price, priceRoundingPrecision, ',', '.') + blank + currencySign);
   }
   if (currencyFormat == 5) {
-    return (currencySign + blank + formatNumber(price, priceDisplayPrecision, '\'', '.'));
+    return (currencySign + blank + formatNumber(price, priceRoundingPrecision, '\'', '.'));
   }
   if (currencyFormat == 6) {
-    return (formatNumber(price, priceDisplayPrecision, '.', ',') + blank + currencySign);
+    return (formatNumber(price, priceRoundingPrecision, '.', ',') + blank + currencySign);
   }
 
-  return price.toFixed(priceDisplayPrecision);
+  return price.toFixed(priceRoundingPrecision);
 }
+
+const getPriceDisplayPrecision = (function() {
+  let precision = null;
+  return () => {
+    if (precision !== null) {
+      return precision;
+    } else {
+      if (typeof window['priceDisplayPrecision'] !== 'undefined') {
+        precision = parseInt(window['priceDisplayPrecision'], 10);
+      } else {
+        console.warn("Global variable 'priceDisplayPrecision' is not declared, fallback to 2");
+        console.trace("Stacktrace:");
+        precision = 2;
+      }
+      return precision;
+    }
+  }
+})();
 
 function ps_round_helper(value, mode) {
   // From PHP Math.c
