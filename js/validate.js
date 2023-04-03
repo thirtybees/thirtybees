@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -27,6 +29,8 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+
+
 function validate_isName(s)
 {
   return ! /www|http/i.test(s)
@@ -45,27 +49,62 @@ function validate_isAddress(s)
 	return reg.test(s);
 }
 
-function validate_isPostCode(s, pattern, iso_code)
+function validate_isPostCode(s, $element)
 {
-	if (typeof iso_code === 'undefined' || iso_code == '')
-		iso_code = '[A-Z]{2}';
-	if (typeof(pattern) == 'undefined' || pattern.length == 0)
-		pattern = '[a-zA-Z 0-9-]+';
-	else
-	{
-		var replacements = {
-			' ': '(?:\ |)',
-			'-': '(?:-|)',
-			'N': '[0-9]',
-			'L': '[a-zA-Z]',
-			'C': iso_code
-		};
+	const validatePostCodePatern = (s, pattern, iso_code) => {
+		if (typeof iso_code === 'undefined' || iso_code == '') {
+			iso_code = '[A-Z]{2}';
+		}
 
-		for (var new_value in replacements)
-			pattern = pattern.split(new_value).join(replacements[new_value]);
+		if (typeof pattern === 'undefined' || pattern.length == 0) {
+			pattern = '[a-zA-Z 0-9-]+';
+		} else {
+			const replacements = {
+				' ': '(?:\ |)',
+				'-': '(?:-|)',
+				'N': '[0-9]',
+				'L': '[a-zA-Z]',
+				'C': iso_code
+			};
+
+			for (var new_value in replacements) {
+				pattern = pattern.split(new_value).join(replacements[new_value]);
+			}
+		}
+		const reg = new RegExp('^' + pattern + '$');
+		return reg.test(s);
 	}
-	var reg = new RegExp('^' + pattern + '$');
-	return reg.test(s);
+
+	const getPostCodePattern = (countryId) => {
+		if ((typeof window['countriesNeedZipCode'] !== 'undefined') &&
+			(typeof window['countriesNeedZipCode'][countryId] !== 'undefined')
+		) {
+			return window['countriesNeedZipCode'][countryId];
+		}
+		return '';
+	}
+
+	const getIsoCode = (countryId) => {
+		if ((typeof window['countries'] !== 'undefined') &&
+			(typeof window['countries'][countryId] !== 'undefined') &&
+			(typeof window['countries'][countryId]['iso_code'] !== 'undefined')
+		) {
+			return window['countries'][countryId]['iso_code'];
+		}
+		return '';
+	}
+
+	if ($element instanceof jQuery) {
+		let selector = '#id_country';
+		if ($element.attr('name') == 'postcode_invoice') {
+			selector += '_invoice';
+		}
+		const countryId = $(selector + ' option:selected').val();
+		return validatePostCodePatern(s, getPostCodePattern(countryId), getIsoCode(countryId));
+	} else {
+		return validatePostCodePatern.apply(this, arguments);
+	}
+
 }
 
 function validate_isCityName(s)
@@ -99,8 +138,7 @@ function validate_isEmail(s)
 	var sQuotedPair = '\\x5c[\\x00-\\x7f]';
 	var sDomainLiteral = '\\x5b(' + sDtext + '|' + sQuotedPair + ')*\\x5d';
 	var sQuotedString = '\\x22(' + sQtext + '|' + sQuotedPair + ')*\\x22';
-	var sDomain_ref = sAtom;
-	var sSubDomain = '(' + sDomain_ref + '|' + sDomainLiteral + ')';
+	var sSubDomain = '(' + sAtom + '|' + sDomainLiteral + ')';
 	var sWord = '(' + sAtom + '|' + sQuotedString + ')';
 	var sDomain = sSubDomain + '(\\x2e' + sSubDomain + ')*';
 	var sLocalPart = sWord + '(\\x2e' + sWord + ')*';
@@ -119,26 +157,25 @@ function validate_isPasswd(s)
 
 function validate_field(that)
 {
-	if ($(that).hasClass('is_required') || $(that).val().length)
-	{
-		if ($(that).attr('data-validate') == 'isPostCode')
-		{
-			var selector = '#id_country';
-			if ($(that).attr('name') == 'postcode_invoice')
-				selector += '_invoice';
+	const $field = $(that);
+	const $form = $field.parent();
+	const value = $field.val();
 
-			var id_country = $(selector + ' option:selected').val();
+	if ($field.hasClass('is_required') || value.length) {
 
-			if (typeof(countriesNeedZipCode[id_country]) != 'undefined' && typeof(countries[id_country]) != 'undefined')
-				var result = window['validate_'+$(that).attr('data-validate')]($(that).val(), countriesNeedZipCode[id_country], countries[id_country]['iso_code']);
+		const validatorName = $field.attr('data-validate');
+		if (validatorName) {
+			const validatorFunc = window['validate_' + validatorName];
+			if (typeof validatorFunc === 'function') {
+				if (validatorFunc(value, $field)) {
+					$form.removeClass('form-error').addClass('form-ok');
+				} else {
+					$form.addClass('form-error').removeClass('form-ok');
+				}
+			} else {
+				console.warn("Validator function 'validate_"+validatorName+"' does not exist");
+			}
 		}
-		else if($(that).attr('data-validate'))
-			var result = window['validate_' + $(that).attr('data-validate')]($(that).val());
-
-		if (result)
-			$(that).parent().removeClass('form-error').addClass('form-ok');
-		else
-			$(that).parent().addClass('form-error').removeClass('form-ok');
 	}
 }
 
