@@ -2111,17 +2111,10 @@ class ToolsCore
      */
     public static function truncateString($text, $length = 120, $options = [])
     {
-        $default = [
-            'ellipsis' => '...', 'exact' => true, 'html' => true,
-        ];
-
-        $options = array_merge($default, $options);
-        extract($options);
-        /**
-         * @var string $ellipsis
-         * @var bool   $exact
-         * @var bool   $html
-         */
+        $text = (string)$text;
+        $ellipsis = (string)($options['ellipsis'] ?? '...');
+        $exact = (bool)($options['exact'] ?? true);
+        $html = (bool)($options['html'] ?? true);
 
         if ($html) {
             if (mb_strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
