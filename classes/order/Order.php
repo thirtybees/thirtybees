@@ -1985,13 +1985,31 @@ class OrderCore extends ObjectModel
      */
     public function addWs($autodate = true, $nullValues = false)
     {
-        /** @var PaymentModule $paymentModule */
+        if (! $this->module) {
+            throw new PrestaShopException("Payment module not specified");
+        }
         $paymentModule = Module::getInstanceByName($this->module);
-        $customer = new Customer($this->id_customer);
-        $paymentModule->validateOrder($this->id_cart, Configuration::get('PS_OS_WS_PAYMENT'), $this->total_paid, $this->payment, null, [], null, false, $customer->secure_key);
-        $this->id = $paymentModule->currentOrder;
-
-        return true;
+        if ($paymentModule === false) {
+           throw new PrestaShopException(sprintf("Payment module '%s' not found", $this->module));
+        }
+        if ($paymentModule instanceof PaymentModule) {
+            $customer = new Customer($this->id_customer);
+            $paymentModule->validateOrder(
+                $this->id_cart,
+                Configuration::get('PS_OS_WS_PAYMENT'),
+                $this->total_paid,
+                $this->payment,
+                null,
+                [],
+                null,
+                false,
+                $customer->secure_key
+            );
+            $this->id = $paymentModule->currentOrder;
+            return true;
+        } else {
+            throw new PrestaShopException(sprintf("Module '%s' is not payment module", $this->module));
+        }
     }
 
     /**
