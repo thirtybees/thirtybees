@@ -142,8 +142,9 @@ class AdminTagsControllerCore extends AdminController
                 $previousProducts = $obj->getProducts();
                 $removedProducts = [];
 
+                $products = $this->getSelectedProducts();
                 foreach ($previousProducts as $product) {
-                    if (!in_array($product['id_product'], $_POST['products'])) {
+                    if (!in_array($product['id_product'], $products)) {
                         $removedProducts[] = $product['id_product'];
                     }
                 }
@@ -152,7 +153,7 @@ class AdminTagsControllerCore extends AdminController
                     Search::removeProductsSearchIndex($removedProducts);
                 }
 
-                $obj->setProducts($_POST['products']);
+                $obj->setProducts($products);
             }
         }
 
@@ -209,5 +210,17 @@ class AdminTagsControllerCore extends AdminController
         ];
 
         return parent::renderForm();
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function getSelectedProducts()
+    {
+        $products = Tools::getValue('products', []);
+        if (! is_array($products)) {
+            return [];
+        }
+        return array_filter(array_map('intval', $products));
     }
 }
