@@ -1527,6 +1527,18 @@ class ToolsCore
     }
 
     /**
+     * Returns HMAC-SHA256 signature of $data
+     *
+     * @param string $data
+     *
+     * @return string
+     */
+    public static function signature($data)
+    {
+        return hash_hmac('sha256', (string)$data, _COOKIE_KEY_);
+    }
+
+    /**
      * @param string $tab
      * @param Context|null $context
      * @return bool|string

@@ -145,6 +145,18 @@ class ValidateCore
     }
 
     /**
+     * Check for SHA256 string validity
+     *
+     * @param string $sha265
+     *
+     * @return bool
+     */
+    public static function isSha256($sha265)
+    {
+        return (bool) preg_match('/^[a-fA-F0-9]{64}$/', (string)$sha265);
+    }
+
+    /**
      * @param float $float
      *
      * @return bool

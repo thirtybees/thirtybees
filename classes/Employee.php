@@ -30,11 +30,12 @@
  */
 
 use GuzzleHttp\Client;
+use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class EmployeeCore
  */
-class EmployeeCore extends ObjectModel
+class EmployeeCore extends ObjectModel implements InitializationCallback
 {
     /**
      * @var int Determine employee profile
@@ -161,6 +162,10 @@ class EmployeeCore extends ObjectModel
      */
     public $last_connection_date;
 
+    /**
+     * @var string stored HMAC-SHA256 signature of security-critical fields
+     */
+    public $signature;
 
     /**
      * @var Notification|null
@@ -196,6 +201,7 @@ class EmployeeCore extends ObjectModel
             'active'                   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'optin'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
             'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbDefault' => '1970-01-01', 'dbNullable' => true, 'dbType' => 'date'],
+            'signature'                => ['type' => self::TYPE_STRING, 'validate' => 'isSha256', 'size' => 64, 'copy_post' => false],
         ],
         'keys' => [
             'employee' => [
@@ -370,7 +376,9 @@ class EmployeeCore extends ObjectModel
         $this->saveOptin();
         $this->updateTextDirection();
 
-        return parent::add($autoDate, $nullValues);
+        $result = parent::add($autoDate, $nullValues);
+        $result = $this->updateSignature() && $result;
+        return $result;
     }
 
     /**
@@ -510,7 +518,9 @@ class EmployeeCore extends ObjectModel
 
         $this->updateTextDirection();
 
-        return $success && parent::update($nullValues);
+        $success = parent::update($nullValues) && $success;
+        $success = $this->updateSignature() && $success;
+        return $success;
     }
 
     /**
@@ -544,25 +554,38 @@ class EmployeeCore extends ObjectModel
             return false;
         }
 
-        // If password is provided but doesn't match.
-        if ($plainTextPassword && !password_verify($plainTextPassword, $result['passwd'])) {
+        // verify that stored password/email/profile/signature was not tampered with
+        $employeeId = (int)$result['id_employee'];
+        $profileId = (int)$result['id_profile'];
+        $storedPassword = $result['passwd'];
+        $storedEmail = $result['email'];
+        $storedSignature = $result['signature'];
+        $calculatedSignature = static::calculateSignature($employeeId, $profileId, $storedEmail, $storedPassword);
+        if ($storedSignature !== $calculatedSignature) {
+            return false;
+        }
+
+        if ($plainTextPassword && !password_verify($plainTextPassword, $storedPassword)) {
             // Check if it matches the legacy md5 hashing and, if it does, rehash it.
-            if (Validate::isMd5($result['passwd']) && $result['passwd'] === md5(_COOKIE_KEY_.$plainTextPassword)) {
-                $newHash = Tools::hash($plainTextPassword);
+            if (Validate::isMd5($storedPassword) && $storedPassword === md5(_COOKIE_KEY_.$plainTextPassword)) {
+                $newPassword = Tools::hash($plainTextPassword);
+                $newSignature = static::calculateSignature($employeeId, $profileId, $storedEmail, $newPassword);
                 Db::getInstance()->update(
                     bqSQL(static::$definition['table']),
                     [
-                        'passwd' => pSQL($newHash),
+                        'passwd' => pSQL($newPassword),
+                        'signature' => pSQL($newSignature),
                     ],
                     'id_employee = '.(int) $result['id_employee']
                 );
-                $result['passwd'] = $newHash;
+                $result['passwd'] = $newPassword;
+                $result['signature'] = $newSignature;
             } else {
                 return false;
             }
         }
 
-        $this->id = $result['id_employee'];
+        $this->id = $employeeId;
         $this->id_profile = $result['id_profile'];
         foreach ($result as $key => $value) {
             if (property_exists($this, $key)) {
@@ -825,4 +848,63 @@ class EmployeeCore extends ObjectModel
         $tabAccess = Profile::getProfileAccess($this->id_profile, $tabId);
         return (bool)$tabAccess[$permission];
     }
+
+    /**
+     * Calculates HMAC-SHA256 signature
+     *
+     * @param int $employeeId
+     * @param int $profileId,
+     * @param string $email
+     * @param string $password
+     *
+     * @return string
+     */
+    protected static function calculateSignature(int $employeeId, int $profileId, string $email, string $password)
+    {
+        return Tools::signature($employeeId . $email . $profileId . $password);
+    }
+
+    /**
+     * Updates HMAC-SHA256 signature stored inside database
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    protected function updateSignature()
+    {
+        $id = (int)$this->id;
+        if ($id) {
+            $signature = static::calculateSignature($id, (int)$this->id_profile, $this->email, $this->passwd);
+            if ($signature !== $this->signature) {
+                return Db::getInstance()->update(
+                    bqSQL(static::$definition['table']),
+                    [
+                        'signature' => pSQL($signature)
+                    ],
+                    'id_employee = ' . (int)$id
+                );
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param Db $conn
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        // if signature is missing/empty, calculate and save it
+        $employees = new PrestaShopCollection('Employee');
+        $employees->sqlWhere('COALESCE(`signature`, "") = ""');
+        /** @var Employee $employee */
+        foreach ($employees as $employee) {
+            $employee->updateSignature();
+        }
+    }
+
 }
