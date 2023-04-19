@@ -967,7 +967,12 @@ class DispatcherCore
                                     }
                                 }
                             }
-                            $controller = $route['controller'] ? $route['controller'] : $_GET['controller'];
+
+                            if (isset($route['controller']) && $route['controller']) {
+                                $controller = (string)$route['controller'];
+                            } elseif (isset($_GET['controller']) && $_GET['controller']) {
+                                $controller = (string)$_GET['controller'];
+                            }
                             if (!empty($route['params'])) {
                                 foreach ($route['params'] as $k => $v) {
                                     $_GET[$k] = $v;
@@ -1720,7 +1725,7 @@ class DispatcherCore
      */
     public function isModuleControllerRoute($routeId)
     {
-        if (preg_match('#module-([a-z0-9_-]+)-([a-z0-9_]+)$#i', $routeId, $m)) {
+        if (preg_match('#module-([a-z0-9_-]+)-([a-z0-9_]+)$#i', (string)$routeId, $m)) {
             return [
                 'module' => $m[1],
                 'controller' => $m[2]
