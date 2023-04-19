@@ -1650,17 +1650,11 @@ class DispatcherCore
     {
         $regexp = preg_quote($rule, '#');
         if ($keywords) {
-            $transformKeywords = [];
             preg_match_all('#\\\{(([^{}]*)\\\:)?('.implode('|', array_keys($keywords)).')(\\\:([^{}]*))?\\\}#', $regexp, $m);
             for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
                 $prepend = $m[2][$i];
                 $keyword = $m[3][$i];
                 $append = $m[5][$i];
-                $transformKeywords[$keyword] = [
-                    'required' => isset($keywords[$keyword]['param']),
-                    'prepend' => $prepend,
-                    'append' => $append,
-                ];
                 $prependRegexp = $appendRegexp = '';
                 if ($prepend || $append) {
                     $prependRegexp = '('.preg_quote($prepend);
