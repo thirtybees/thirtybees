@@ -4316,23 +4316,24 @@ class AdminControllerCore extends Controller
         if (is_array($this->boxes) && !empty($this->boxes)) {
             $result = true;
             foreach ($this->boxes as $id) {
-                /** @var ObjectModel $to_delete */
-                $to_delete = new $this->className($id);
-                $delete_ok = true;
-                if ($this->deleted) {
-                    $to_delete->deleted = 1;
-                    if (!$to_delete->update()) {
-                        $result = false;
-                        $delete_ok = false;
+                $id = (int)$id;
+                /** @var ObjectModel $objectToDelete */
+                $objectToDelete = new $this->className($id);
+                if (Validate::isLoadedObject($objectToDelete)) {
+                    if ($this->deleted && property_exists($objectToDelete, 'deleted')) {
+                        $objectToDelete->deleted = 1;
+                        $deleted = $objectToDelete->update();
+                    } else {
+                        $deleted = $objectToDelete->delete();
                     }
-                } elseif (!$to_delete->delete()) {
-                    $result = false;
-                    $delete_ok = false;
+                } else {
+                    $deleted = false;
                 }
 
-                if ($delete_ok) {
-                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$to_delete->id, true, (int)$this->context->employee->id);
+                if ($deleted) {
+                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$objectToDelete->id, true, (int)$this->context->employee->id);
                 } else {
+                    $result = false;
                     $this->errors[] = sprintf(Tools::displayError('Can\'t delete #%d'), $id);
                 }
             }
