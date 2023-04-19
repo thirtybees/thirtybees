@@ -137,8 +137,8 @@ class AdminFeaturesControllerCore extends AdminController
 
             case 'editFeatureValue':
                 if ((Tools::getValue('id_feature_value'))) {
-                    if (($id = Tools::getValue('id_feature'))) {
-                        if (Validate::isLoadedObject($obj = new Feature((int) $id))) {
+                    if (($id = (int)Tools::getValue('id_feature'))) {
+                        if (Validate::isLoadedObject($obj = new Feature($id))) {
                             $bread_extended[] = '<a href="'.$this->context->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
                         }
 
