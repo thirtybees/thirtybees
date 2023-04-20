@@ -444,13 +444,12 @@ class CookieCore
     {
         Tools::displayAsDeprecated();
 
-        /* Employee is valid only if it can be load and if cookie password is the same as database one */
-
-        return ($this->id_employee
-            && Validate::isUnsignedId($this->id_employee)
-            && Employee::checkPassword((int) $this->id_employee, $this->passwd)
-            && (!isset($this->_content['remote_addr']) || $this->_content['remote_addr'] == ip2long(Tools::getRemoteAddr()) || !Configuration::get('PS_COOKIE_CHECKIP'))
-        );
+        $employeeId = (int)$this->id_employee ?? 0;
+        if ($employeeId) {
+            $empoyee = new Employee($employeeId);
+            return $empoyee->isLoggedBack();
+        }
+        return false;
     }
 
     /**
