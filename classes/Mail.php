@@ -225,13 +225,8 @@ class MailCore extends ObjectModel
             }
 
             return $success;
-        } catch (PrestaShopException $e) {
-            $message = 'Send Email Error: ' . $e->getMessage();
-            Logger::addLog($message, 3, null, Logger::MAIL_ERROR, 0, true);
-            if ($die) {
-                throw $e;
-            }
-            return false;
+        } catch (Throwable $e) {
+            return static::handleError($die, $e);
         }
     }
 
@@ -807,5 +802,31 @@ class MailCore extends ObjectModel
         }
 
         return $attachments;
+    }
+
+    /**
+     * @param bool $die
+     * @param Throwable $e
+     *
+     * @return false
+     *
+     * @throws PrestaShopException
+     *
+     * @noinspection PhpUnhandledExceptionInspection
+     * @noinspection PhpDocMissingThrowsInspection
+     */
+    protected static function handleError($die, Throwable $e)
+    {
+        $message = 'Send Email Error: ' . $e->getMessage();
+        Logger::addLog($message, 3, null, Logger::MAIL_ERROR, 0, true);
+        if ($die) {
+            if ($e instanceof PrestaShopException) {
+                throw $e;
+            } else {
+                throw new PrestaShopException("Failed to send email", null, $e);
+            }
+        } else {
+            return false;
+        }
     }
 }

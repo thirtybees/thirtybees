@@ -19,6 +19,8 @@
 
 namespace Thirtybees\Core\Mail;
 
+use Throwable;
+
 /**
  * Interface MailTransport
  */
@@ -52,6 +54,8 @@ interface MailTransport
      * @param MailAttachement[] $attachements
      *
      * @return bool
+     *
+     * @throws Throwable
      */
     public function sendMail(
         int         $idShop,
