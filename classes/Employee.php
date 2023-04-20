@@ -148,11 +148,6 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
     public $optin = 1;
 
     /**
-     * @var string
-     */
-    public $remote_addr;
-
-    /**
      * @var int[]
      */
     protected $associated_shops = [];

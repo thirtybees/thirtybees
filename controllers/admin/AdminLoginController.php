@@ -247,14 +247,13 @@ class AdminLoginControllerCore extends AdminController
             } else {
                 Logger::addLog(sprintf($this->l('Back Office connection from %s', 'AdminTab', false, false), Tools::getRemoteAddr()), 1, null, '', 0, true, (int) $this->context->employee->id);
 
-                $this->context->employee->remote_addr = (int) ip2long(Tools::getRemoteAddr());
                 // Update cookie
                 $cookie = $this->context->cookie;
                 $cookie->id_employee = $this->context->employee->id;
                 $cookie->email = $this->context->employee->email;
                 $cookie->profile = $this->context->employee->id_profile;
                 $cookie->passwd = $this->context->employee->passwd;
-                $cookie->remote_addr = $this->context->employee->remote_addr;
+                $cookie->remote_addr = (int) ip2long(Tools::getRemoteAddr());
 
                 if (!Tools::getValue('stay_logged_in')) {
                     $cookie->last_activity = time();

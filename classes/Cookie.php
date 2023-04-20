@@ -70,7 +70,7 @@
  * @property bool $no_mobile
  * @property string $passwd
  * @property int $profile,
- * @property string $remote_addr,
+ * @property int $remote_addr,
  * @property string $separatorSelected,
  * @property string $shopContext,
  * @property int $stats_date_update,
