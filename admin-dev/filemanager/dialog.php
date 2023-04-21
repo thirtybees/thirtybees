@@ -190,19 +190,9 @@ if (isset($_POST['submit'])) {
 		<link href="css/jquery.contextMenu.min.css" rel="stylesheet" type="text/css"/>
 		<link href="css/bootstrap-modal.min.css" rel="stylesheet" type="text/css"/>
 		<link href="jPlayer/skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css">
-		<!--[if lt IE 8]>
-		<style>
-			.img-container span, .img-container-mini span {
-				display: inline-block;
-				height: 100%;
-			}
-		</style><![endif]-->
-		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script type="text/javascript">
-			if (typeof jQuery === 'undefined') {
-				document.write(unescape("%3Cscript src='js/jquery.js' type='text/javascript'%3E%3C/script%3E"));
-			}
-		</script>
+		<?php foreach (Media::getJqueryPath() as $jQueryPath) { ?>
+		<script type="text/javascript" src="<?php echo $jQueryPath ?>"></script>
+		<?php } ?>
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap-lightbox.min.js"></script>
 		<script type="text/javascript" src="js/dropzone.min.js"></script>
