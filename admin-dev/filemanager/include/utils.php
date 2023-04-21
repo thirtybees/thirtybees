@@ -1,7 +1,39 @@
 <?php
 
-if ($_SESSION["verify"] != "RESPONSIVEfilemanager") {
-    die('forbiden');
+/**
+ * Returns all extensions for given $category
+ *
+ * @param string $category
+ * @param array $allowedMineTypes
+ *
+ * @return string[]
+ */
+function getMimeTypeFileExtensions(string $category, array $allowedMineTypes): array
+{
+    return array_reduce($allowedMineTypes, function($carry, $record) use ($category){
+        if ($record['category'] === $category) {
+            return array_unique(array_merge($carry, $record['extensions']));
+        }
+        return $carry;
+    }, []);
+}
+
+/**
+ * Returns true, if file with mime type $mimeType and extension $extension is allowed to
+ * be uploaded
+ *
+ * @param string $mimeType
+ * @param string $extension
+ * @param array $allowedMimeTypes
+ *
+ * @return bool
+ */
+function canUploadFile(string $mimeType, string $extension, array $allowedMimeTypes): bool
+{
+    if (isset($allowedMimeTypes[$mimeType])) {
+        return in_array($extension, $allowedMimeTypes[$mimeType]['extensions']);
+    }
+    return false;
 }
 
 /**

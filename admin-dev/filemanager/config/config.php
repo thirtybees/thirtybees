@@ -10,6 +10,7 @@ if (!defined('_PS_ADMIN_DIR_')) {
 
 require_once(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 require_once(_PS_ADMIN_DIR_.'/init.php');
+require_once(__DIR__ . '/../include/utils.php');
 
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
@@ -105,17 +106,81 @@ $rename_files=true;
 $rename_folders=true;
 $duplicate_files=true;
 
+/**
+ *
+ * Allowed mime types
+ *
+ * All file extensions should match .htaccess rule in /img/cms/.htaccess
+ */
+$allowedMineTypes = [
+    'image/jpeg' => [
+        'extensions' => ['jpg', 'jpeg'],
+        'category' => 'image'
+    ],
+    'image/png' => [
+        'extensions' => ['png'],
+        'category' => 'image'
+    ],
+    'image/gif' => [
+        'extensions' => ['gif'],
+        'category' => 'image'
+    ],
+    'image/bmp' => [
+        'extensions' => ['bmp'],
+        'category' => 'image'
+    ],
+    'image/tiff' => [
+        'extensions' => ['tiff'],
+        'category' => 'image'
+    ],
+    'image/svg' => [
+        'extensions' => ['svg'],
+        'category' => 'image'
+    ],
+    'image/webp' => [
+        'extensions' => ['webp'],
+        'category' => 'image'
+    ],
+    'application/pdf' => [
+        'extensions' => ['pdf'],
+        'category' => 'file'
+    ],
+    'video/mpeg' => [
+        'extensions' => ['mpeg', 'mpg', 'mov'],
+        'category' => 'video'
+    ],
+    'video/mp4' => [
+        'extensions' => ['mp4'],
+        'category' => 'video'
+    ],
+    'video/x-msvideo' => [
+        'extensions' => ['avi'],
+        'category' => 'video'
+    ],
+    'audio/x-ms-wma' => [
+        'extensions' => ['wma'],
+        'category' => 'video'
+    ],
+    'video/x-flv' => [
+        'extensions' => ['flv'],
+        'category' => 'video'
+    ],
+    'video/webm' => [
+        'extensions' => ['webm'],
+        'category' => 'video'
+    ],
+];
+
 //**********************
 //Allowed extensions (lowercase insert)
 //**********************
-$ext_img = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg', 'webp']; //Images
-$ext_file = ['pdf', 'rtf', 'csv']; //array('doc', 'docx','rtf', 'pdf', 'xls', 'xlsx', 'txt', 'csv','html','xhtml','psd','sql','log','fla','xml','ade','adp','mdb','accdb','ppt','pptx','odt','ots','ott','odb','odg','otp','otg','odf','ods','odp','css','ai'); //Files
-$ext_video = ['mov', 'mpeg', 'mp4', 'avi', 'mpg', 'wma', 'flv', 'webm']; //Video
-$ext_music = [];//array('mp3', 'm4a', 'ac3', 'aiff', 'mid','ogg','wav'); //Audio
-$ext_misc = ['zip'];// array('zip', 'rar','gz','tar','iso','dmg'); //Archives
+$ext_img = getMimeTypeFileExtensions('image', $allowedMineTypes);
+$ext_file = getMimeTypeFileExtensions('file', $allowedMineTypes);
+$ext_video = getMimeTypeFileExtensions('video', $allowedMineTypes);
+$ext_music = getMimeTypeFileExtensions('audio', $allowedMineTypes);
+$ext_misc = getMimeTypeFileExtensions('misc', $allowedMineTypes);
 
 $ext=array_merge($ext_img, $ext_file, $ext_misc, $ext_video, $ext_music); //allowed extensions
-
 
 /******************
  * AVIARY config

@@ -6,9 +6,6 @@ $_SESSION["verify"] = "RESPONSIVEfilemanager";
 if (isset($_POST['submit'])) {
     include('upload.php');
 } else {
-    include('include/utils.php');
-
-
 
     if (isset($_GET['fldr'])
         && !empty($_GET['fldr'])

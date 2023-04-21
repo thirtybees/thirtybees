@@ -7,8 +7,6 @@ if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
     die('forbiden');
 }
 
-include('include/utils.php');
-
 if (isset($_GET['action'])) {
     switch ($_GET['action']) {
         case 'view':
