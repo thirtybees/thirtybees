@@ -63,24 +63,6 @@ $show_sorting_bar=true; //Show or not show sorting feature in filemanager
 $loading_bar=true; //Show or not show loading bar
 $transliteration=false; //active or deactive the transliteration (mean convert all strange characters in A..Za..z0..9 characters)
 
-//*******************************************
-//Images limit and resizing configuration
-//*******************************************
-
-// set maximum pixel width and/or maximum pixel height for all images
-// If you set a maximum width or height, oversized images are converted to those limits. Images smaller than the limit(s) are unaffected
-// if you don't need a limit set both to 0
-$image_max_width=0;
-$image_max_height=0;
-
-//Automatic resizing //
-// If you set $image_resizing to true the script converts all uploaded images exactly to image_resizing_width x image_resizing_height dimension
-// If you set width or height to 0 the script automatically calculates the other dimension
-// Is possible that if you upload very big images the script not work to overcome this increase the php configuration of memory and time limit
-$image_resizing=false;
-$image_resizing_width=0;
-$image_resizing_height=0;
-
 //******************
 // Default layout setting
 //
@@ -194,40 +176,3 @@ $file_number_limit_js=500;
 $hidden_folders = [];
 // set the names of any files you want hidden. Remember these names will be hidden in all folders (eg "this_document.pdf", "that_image.jpg" )
 $hidden_files = ['config.php'];
-
-/*******************
- * JAVA upload
- *******************/
-$java_upload=false;
-$JAVAMaxSizeUpload=200; //Gb
-
-
-//************************************
-//Thumbnail for external use creation
-//************************************
-
-
-// New image resized creation with fixed path from filemanager folder after uploading (thumbnails in fixed mode)
-// If you want create images resized out of upload folder for use with external script you can choose this method,
-// You can create also more than one image at a time just simply add a value in the array
-// Remember than the image creation respect the folder hierarchy so if you are inside source/test/test1/ the new image will create at
-// path_from_filemanager/test/test1/
-// PS if there isn't write permission in your destination folder you must set it
-$fixed_image_creation                   = false; //activate or not the creation of one or more image resized with fixed path from filemanager folder
-$fixed_path_from_filemanager            = ['../test/','../test1/']; //fixed path of the image folder from the current position on upload folder
-$fixed_image_creation_name_to_prepend   = ['','test_']; //name to prepend on filename
-$fixed_image_creation_to_append         = ['_test','']; //name to appendon filename
-$fixed_image_creation_width             = [300,400]; //width of image (you can leave empty if you set height)
-$fixed_image_creation_height            = [200,'']; //height of image (you can leave empty if you set width)
-
-
-// New image resized creation with relative path inside to upload folder after uploading (thumbnails in relative mode)
-// With Responsive filemanager you can create automatically resized image inside the upload folder, also more than one at a time
-// just simply add a value in the array
-// The image creation path is always relative so if i'm inside source/test/test1 and I upload an image, the path start from here
-$relative_image_creation                = false; //activate or not the creation of one or more image resized with relative path from upload folder
-$relative_path_from_current_pos         = ['thumb/','thumb/']; //relative path of the image folder from the current position on upload folder
-$relative_image_creation_name_to_prepend= ['','test_']; //name to prepend on filename
-$relative_image_creation_name_to_append = ['_test','']; //name to append on filename
-$relative_image_creation_width          = [300,400]; //width of image (you can leave empty if you set height)
-$relative_image_creation_height         = [200,'']; //height of image (you can leave empty if you set width)

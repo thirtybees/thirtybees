@@ -301,20 +301,6 @@ if (isset($_POST['submit'])) {
 			</center>
 			<div class="space10"></div>
 			<div class="space10"></div>
-			<?php if ($java_upload) {
-    ?>
-			<div class="tabbable upload-tabbable"> <!-- Only required for left/right tabs -->
-				<ul class="nav nav-tabs">
-					<li class="active"><a href="#tab1" data-toggle="tab"><?php echo Tools::safeOutput(lang_Upload_base);
-    ?></a></li>
-					<li><a href="#tab2" id="uploader-btn" data-toggle="tab"><?php echo Tools::safeOutput(lang_Upload_java);
-    ?></a></li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane active" id="tab1">
-						<?php 
-}
-    ?>
 						<form action="dialog.php" method="post" enctype="multipart/form-data" id="myAwesomeDropzone" class="dropzone">
 							<input type="hidden" name="path" value="<?php echo Tools::safeOutput($subfolder.$subdir);
     ?>"/>
@@ -343,19 +329,6 @@ if (isset($_POST['submit'])) {
 						</form>
 						<div class="upload-help"><?php echo Tools::safeOutput(lang_Upload_base_help);
     ?></div>
-						<?php if ($java_upload) {
-    ?>
-					</div>
-					<div class="tab-pane" id="tab2">
-						<div id="iframe-container">
-
-						</div>
-						<div class="upload-help"><?php echo Tools::safeOutput(lang_Upload_java_help);
-    ?></div>
-					</div>
-					<?php 
-}
-    ?>
 				</div>
 			</div>
 
@@ -919,7 +892,6 @@ if (isset($_POST['submit'])) {
         if (!file_exists($src_thumb)) {
             try {
                 create_img_gd($file_path, $src_thumb, 122, 91);
-                new_thumbnails_creation($current_path.$subfolder.$subdir, $file_path, $file, $current_path, $relative_image_creation, $relative_path_from_current_pos, $relative_image_creation_name_to_prepend, $relative_image_creation_name_to_append, $relative_image_creation_width, $relative_image_creation_height, $fixed_image_creation, $fixed_path_from_filemanager, $fixed_image_creation_name_to_prepend, $fixed_image_creation_to_append, $fixed_image_creation_width, $fixed_image_creation_height);
             } catch (Exception $e) {
                 $src_thumb = $mini_src = "";
             }

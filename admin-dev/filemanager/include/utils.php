@@ -123,7 +123,7 @@ function rename_folder($old_path, $name, $transliteration)
  */
 function create_img_gd($imgfile, $imgthumb, $newwidth, $newheight="")
 {
-    if (image_check_memory_usage($imgfile, $newwidth, $newheight)) {
+    if (ImageManager::checkImageMemoryLimit($imgfile)) {
         require_once('php_image_magician.php');
         $magicianObj = new imageLib($imgfile);
         $magicianObj->resizeImage($newwidth, $newheight, 'crop');
@@ -133,26 +133,6 @@ function create_img_gd($imgfile, $imgthumb, $newwidth, $newheight="")
     return false;
 }
 
-/**
- * @param string $imgfile
- * @param string $imgthumb
- * @param int $newwidth
- * @param string $newheight
- * @return bool
- * @throws PrestaShopException
- */
-function create_img($imgfile, $imgthumb, $newwidth, $newheight="")
-{
-    if (image_check_memory_usage($imgfile, $newwidth, $newheight)) {
-        require_once('php_image_magician.php');
-        $magicianObj = new imageLib($imgfile);
-        $magicianObj->resizeImage($newwidth, $newheight, 'auto');
-        $magicianObj->saveImage($imgthumb, 80);
-        return true;
-    } else {
-        return false;
-    }
-}
 
 /**
  * @param int $size
@@ -212,29 +192,6 @@ function create_folder($path=false, $path_thumbs=false)
     umask($oldumask);
 }
 
-/**
- * @param string $path
- * @param string[] $ext
- * @return void
- */
-function check_files_extensions_on_path($path, $ext)
-{
-    if (!is_dir($path)) {
-        $fileinfo = pathinfo($path);
-        if (function_exists('mb_strtolower')) {
-            if (!in_array(mb_strtolower($fileinfo['extension']), $ext)) {
-                unlink($path);
-            } elseif (!in_array(strtolower($fileinfo['extension']), $ext)) {
-                unlink($path);
-            }
-        }
-    } else {
-        $files = scandir($path);
-        foreach ($files as $file) {
-            check_files_extensions_on_path(trim($path, '/')."/".$file, $ext);
-        }
-    }
-}
 
 /**
  * @param Traversable $phar
@@ -360,170 +317,3 @@ function base_url()
   );
 }
 
-/**
- * @param string $current_path
- * @param string $fld
- * @return bool
- */
-function config_loading($current_path, $fld)
-{
-    if (file_exists($current_path.$fld.".config")) {
-        require_once($current_path.$fld.".config");
-        return true;
-    }
-    echo "!!!!".$parent=fix_dirname($fld);
-    if ($parent!="." && !empty($parent)) {
-        config_loading($current_path, $parent);
-    }
-
-    return false;
-}
-
-
-/**
- * @param string $img
- * @param int $max_breedte
- * @param int $max_hoogte
- * @return bool
- */
-function image_check_memory_usage($img, $max_breedte, $max_hoogte)
-{
-    if (file_exists($img)) {
-        $K64 = 65536;    // number of bytes in 64K
-        $memory_usage = memory_get_usage();
-        $memory_limit = abs(intval(str_replace('M', '', ini_get('memory_limit'))*1024*1024));
-        $image_properties = getimagesize($img);
-        $image_width = $image_properties[0];
-        $image_height = $image_properties[1];
-        $image_bits = $image_properties['bits'];
-        $image_memory_usage = $K64 + ($image_width * $image_height * ($image_bits)  * 2);
-        $thumb_memory_usage = $K64 + ($max_breedte * $max_hoogte * ($image_bits) * 2);
-        $memory_needed = intval($memory_usage + $image_memory_usage + $thumb_memory_usage);
-
-        if ($memory_needed > $memory_limit) {
-            ini_set('memory_limit', (intval($memory_needed/1024/1024)+5) . 'M');
-            if (ini_get('memory_limit') == (intval($memory_needed/1024/1024)+5) . 'M') {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    } else {
-        return false;
-    }
-}
-
-/**
- * @param string $haystack
- * @param string $needle
- * @return bool
- */
-function endsWith($haystack, $needle)
-{
-    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
-}
-
-/**
- * @param string $targetPath
- * @param string $targetFile
- * @param string $name
- * @param string $current_path
- * @param bool $relative_image_creation
- * @param array $relative_path_from_current_pos
- * @param array $relative_image_creation_name_to_prepend
- * @param array $relative_image_creation_name_to_append
- * @param array $relative_image_creation_width
- * @param array $relative_image_creation_height
- * @param bool $fixed_image_creation
- * @param array $fixed_path_from_filemanager
- * @param array $fixed_image_creation_name_to_prepend
- * @param array $fixed_image_creation_to_append
- * @param array $fixed_image_creation_width
- * @param array $fixed_image_creation_height
- * @return bool
- * @throws PrestaShopException
- */
-function new_thumbnails_creation(
-    $targetPath,
-    $targetFile,
-    $name,
-    $current_path,
-    $relative_image_creation,
-    $relative_path_from_current_pos,
-    $relative_image_creation_name_to_prepend,
-    $relative_image_creation_name_to_append,
-    $relative_image_creation_width,
-    $relative_image_creation_height,
-    $fixed_image_creation,
-    $fixed_path_from_filemanager,
-    $fixed_image_creation_name_to_prepend,
-    $fixed_image_creation_to_append,
-    $fixed_image_creation_width,
-    $fixed_image_creation_height
-) {
-    //create relative thumbs
-    $all_ok=true;
-    if ($relative_image_creation) {
-        foreach ($relative_path_from_current_pos as $k=>$path) {
-            if ($path!="" && $path[strlen($path)-1]!="/") {
-                $path.="/";
-            }
-            if (!file_exists($targetPath.$path)) {
-                create_folder($targetPath.$path, false);
-            }
-            $info=pathinfo($name);
-            if (!endsWith($targetPath, $path)) {
-                if (!create_img($targetFile, $targetPath.$path.$relative_image_creation_name_to_prepend[$k].$info['filename'].$relative_image_creation_name_to_append[$k].".".$info['extension'], $relative_image_creation_width[$k], $relative_image_creation_height[$k])) {
-                    $all_ok=false;
-                }
-            }
-        }
-    }
-
-    //create fixed thumbs
-    if ($fixed_image_creation) {
-        foreach ($fixed_path_from_filemanager as $k=>$path) {
-            if ($path!="" && $path[strlen($path)-1]!="/") {
-                $path.="/";
-            }
-            $base_dir=$path.substr_replace($targetPath, '', 0, strlen($current_path));
-            if (!file_exists($base_dir)) {
-                create_folder($base_dir, false);
-            }
-            $info=pathinfo($name);
-            if (!create_img($targetFile, $base_dir.$fixed_image_creation_name_to_prepend[$k].$info['filename'].$fixed_image_creation_to_append[$k].".".$info['extension'], $fixed_image_creation_width[$k], $fixed_image_creation_height[$k])) {
-                $all_ok=false;
-            }
-        }
-    }
-    return $all_ok;
-}
-
-
-/**
- * Get a remote file, using whichever mechanism is enabled
- * @param string $url
- * @return bool|string
- */
-function get_file_by_url($url)
-{
-    if (ini_get('allow_url_fopen')) {
-        return file_get_contents($url);
-    }
-    if (!function_exists('curl_version')) {
-        return false;
-    }
-
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, $url);
-
-    $data = curl_exec($ch);
-    curl_close($ch);
-
-    return $data;
-}

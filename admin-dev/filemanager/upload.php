@@ -72,62 +72,7 @@ if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
         if ($is_img) {
             move_uploaded_file($tempFile, $targetFile);
             chmod($targetFile, 0755);
-
-            if (create_img_gd($targetFile, $targetFileThumb, 122, 91)) {
-                if (new_thumbnails_creation(
-                        $targetPath,
-                        $targetFile,
-                        $_FILES['file']['name'],
-                        $current_path,
-                        $relative_image_creation,
-                        $relative_path_from_current_pos,
-                        $relative_image_creation_name_to_prepend,
-                        $relative_image_creation_name_to_append,
-                        $relative_image_creation_width,
-                        $relative_image_creation_height,
-                        $fixed_image_creation,
-                        $fixed_path_from_filemanager,
-                        $fixed_image_creation_name_to_prepend,
-                        $fixed_image_creation_to_append,
-                        $fixed_image_creation_width,
-                        $fixed_image_creation_height)
-                ) {
-                    $imginfo = getimagesize($targetFile);
-                    $srcWidth = $imginfo[0];
-                    $srcHeight = $imginfo[1];
-
-                    if ($image_resizing) {
-                        if ($image_resizing_width == 0) {
-                            if ($image_resizing_height == 0) {
-                                $image_resizing_width = $srcWidth;
-                                $image_resizing_height = $srcHeight;
-                            } else {
-                                $image_resizing_width = $image_resizing_height * $srcWidth / $srcHeight;
-                            }
-                        } elseif ($image_resizing_height == 0) {
-                            $image_resizing_height = $image_resizing_width * $srcHeight / $srcWidth;
-                        }
-                        $srcWidth = $image_resizing_width;
-                        $srcHeight = $image_resizing_height;
-                        create_img_gd($targetFile, $targetFile, $image_resizing_width, $image_resizing_height);
-                    }
-                    //max resizing limit control
-                    $resize = false;
-                    if ($image_max_width != 0 && $srcWidth > $image_max_width) {
-                        $resize = true;
-                        $srcHeight = $image_max_width * $srcHeight / $srcWidth;
-                        $srcWidth = $image_max_width;
-                    }
-                    if ($image_max_height != 0 && $srcHeight > $image_max_height) {
-                        $resize = true;
-                        $srcWidth = $image_max_height * $srcWidth / $srcHeight;
-                        $srcHeight = $image_max_height;
-                    }
-                    if ($resize) {
-                        create_img_gd($targetFile, $targetFile, $srcWidth, $srcHeight);
-                    }
-                }
-            }
+            create_img_gd($targetFile, $targetFileThumb, 122, 91);
         } else {
             move_uploaded_file($tempFile, $targetFile);
             chmod($targetFile, 0755);
