@@ -24,9 +24,6 @@ if (!$employee->hasAccess(AdminProductsController::class, Profile::PERMISSION_ED
 if (!$employee->hasAccess(AdminCmsContentController::class, Profile::PERMISSION_EDIT)) {
     throw new PrestaShopException(Tools::displayError("Access denied"));
 }
-//------------------------------------------------------------------------------
-// DON'T COPY THIS VARIABLES IN FOLDERS config.php FILES
-//------------------------------------------------------------------------------
 
 //**********************
 //Path configuration
@@ -49,10 +46,6 @@ $upload_dir = Context::getContext()->shop->getBaseURI().'img/cms/'; // path from
 $current_path = _PS_ROOT_DIR_.'/img/cms/'; // relative path from filemanager folder to upload folder (with final /)
 //thumbs folder can't put inside upload folder
 $thumbs_base_path = _PS_ROOT_DIR_.'/img/tmp/cms/'; // relative path from filemanager folder to thumbs folder (with final /)
-
-//--------------------------------------------------------------------------------------------------------
-// YOU CAN COPY AND CHANGE THESE VARIABLES INTO FOLDERS config.php FILES TO CUSTOMIZE EACH FOLDER OPTIONS
-//--------------------------------------------------------------------------------------------------------
 
 $MaxSizeUpload=100; //Mb
 
@@ -175,4 +168,4 @@ $file_number_limit_js=500;
 // set the names of any folders you want hidden (eg "hidden_folder1", "hidden_folder2" ) Remember all folders with these names will be hidden (you can set any exceptions in config.php files on folders)
 $hidden_folders = [];
 // set the names of any files you want hidden. Remember these names will be hidden in all folders (eg "this_document.pdf", "that_image.jpg" )
-$hidden_files = ['config.php'];
+$hidden_files = [];

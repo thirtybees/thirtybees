@@ -28,29 +28,6 @@ require_once $language_file;
 
 $base = $current_path;
 
-if (isset($_POST['path'])) {
-    $path = $current_path.str_replace("\0", "", $_POST['path']);
-} else {
-    $path = $current_path;
-}
-
-$cycle = true;
-$max_cycles = 50;
-$i = 0;
-while ($cycle && $i < $max_cycles) {
-    $i++;
-    if ($path == $base) {
-        $cycle = false;
-    }
-
-    if (file_exists($path.'config.php')) {
-        require_once($path.'config.php');
-        $cycle = false;
-    }
-    $path = fix_dirname($path).'/';
-    $cycle = false;
-}
-
 $path = $current_path.str_replace("\0", "", $_POST['path']);
 $path_thumb = $_POST['path_thumb'];
 if (isset($_POST['name'])) {

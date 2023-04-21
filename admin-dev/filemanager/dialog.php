@@ -61,32 +61,10 @@ if (isset($_POST['submit'])) {
         $cur_dir = $upload_dir.$subdir;
         $cur_path = $current_path.$subdir;
         $thumbs_path = $thumbs_base_path;
-        $parent = $subdir;
     } else {
         $cur_dir = $upload_dir.$subfolder.$subdir;
         $cur_path = $current_path.$subfolder.$subdir;
         $thumbs_path = $thumbs_base_path.$subfolder;
-        $parent = $subfolder.$subdir;
-    }
-
-    $cycle = true;
-    $max_cycles = 50;
-    $i = 0;
-    while ($cycle && $i < $max_cycles) {
-        $i++;
-        if ($parent == './') {
-            $parent = '';
-        }
-        if (file_exists($current_path.$parent.'config.php')) {
-            require_once($current_path.$parent.'config.php');
-            $cycle = false;
-        }
-
-        if ($parent == '') {
-            $cycle = false;
-        } else {
-            $parent = fix_dirname($parent).'/';
-        }
     }
 
     if (!is_dir($thumbs_path.$subdir)) {

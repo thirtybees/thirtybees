@@ -21,22 +21,6 @@ if ($path_pos === false || $thumb_pos === false
     die('wrong path');
 }
 
-$path = $storeFolder;
-$cycle = true;
-$max_cycles = 50;
-$i = 0;
-while ($cycle && $i < $max_cycles) {
-    $i++;
-    if ($path == $current_path) {
-        $cycle = false;
-    }
-    if (file_exists($path.'config.php')) {
-        require_once($path.'config.php');
-        $cycle = false;
-    }
-    $path = fix_dirname($path).'/';
-}
-
 if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
     $info = pathinfo($_FILES['file']['name']);
     $tempFile = $_FILES['file']['tmp_name'];
