@@ -7,65 +7,15 @@ if (isset($_POST['submit'])) {
     include('upload.php');
 } else {
 
-    if (isset($_GET['fldr'])
-        && !empty($_GET['fldr'])
-        && preg_match('/\.{1,2}[\/|\\\]/', urldecode($_GET['fldr'])) === 0
-    ) {
-        $subdir = str_replace("\0", '', urldecode(trim($_GET['fldr'], '/').'/'));
-    } else {
+    $subdir = getSubDir(Tools::getValue('fldr'));
+
+    if (! file_exists($current_path.$subdir)) {
         $subdir = '';
     }
 
-//remember last position
-    setcookie('last_position', $subdir, time() + (86400 * 7));
-
-    if ($subdir == '') {
-        if (!empty($_COOKIE['last_position'])
-            && strpos($_COOKIE['last_position'], '.') === false
-        ) {
-            $subdir = trim($_COOKIE['last_position']);
-        }
-    }
-
-    if ($subdir == '/') {
-        $subdir = '';
-    }
-
-
-    /***
-     *SUB-DIR CODE
-     ***/
-    if (!isset($_SESSION['subfolder'])) {
-        $_SESSION['subfolder'] = '';
-    }
-    $subfolder = '';
-    if (!empty($_SESSION['subfolder']) && strpos($_SESSION['subfolder'], '../') === false
-        && strpos($_SESSION['subfolder'], './') === false && strpos($_SESSION['subfolder'], '/') !== 0
-        && strpos($_SESSION['subfolder'], '.') === false
-    ) {
-        $subfolder = $_SESSION['subfolder'];
-    }
-
-    if ($subfolder != '' && $subfolder[strlen($subfolder) - 1] != '/') {
-        $subfolder .= '/';
-    }
-
-    if (!file_exists($current_path.$subfolder.$subdir)) {
-        $subdir = '';
-        if (!file_exists($current_path.$subfolder.$subdir)) {
-            $subfolder = '';
-        }
-    }
-
-    if (trim($subfolder) == '') {
-        $cur_dir = $upload_dir.$subdir;
-        $cur_path = $current_path.$subdir;
-        $thumbs_path = $thumbs_base_path;
-    } else {
-        $cur_dir = $upload_dir.$subfolder.$subdir;
-        $cur_path = $current_path.$subfolder.$subdir;
-        $thumbs_path = $thumbs_base_path.$subfolder;
-    }
+    $cur_dir = $upload_dir.$subdir;
+    $cur_path = $current_path.$subdir;
+    $thumbs_path = $thumbs_base_path;
 
     if (!is_dir($thumbs_path.$subdir)) {
         create_folder(false, $thumbs_path.$subdir);

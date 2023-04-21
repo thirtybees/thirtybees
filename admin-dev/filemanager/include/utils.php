@@ -317,3 +317,62 @@ function base_url()
   );
 }
 
+/**
+ * Returns currently selected subdirectory
+ *
+ * @param string|false|null $fldr
+ *
+ * @return string
+ */
+function getSubDir($fldr)
+{
+    $cookie = Context::getContext()->cookie;
+    if ($fldr) {
+        $fldr = str_replace('\\', '/', urldecode((string)$fldr));
+        $subdir = normalizePath($fldr);
+        if ($subdir) {
+            $subdir .= '/';
+            $cookie->fmLastPosition = $subdir;
+        } else {
+            unset($cookie->fmLastPosition);
+            return '';
+        }
+    }
+
+    if (isset($cookie->fmLastPosition)) {
+       return $cookie->fmLastPosition;
+    }
+
+    return '';
+}
+
+/**
+ * Normalize $path, and expands /./ and /../ symlinks
+ *
+ * @param string $path
+ *
+ * @return string
+ */
+function normalizePath(string $path): string
+{
+    $path = str_replace('\\', '/', $path);
+    $arr = explode('/', $path);
+    $arr = array_reduce($arr, function (array $path, string $item) {
+        $s = trim($item);
+        if (empty($s)) {
+            return $path;
+        }
+        if ($s === '.') {
+            return $path;
+        }
+        if ($s === '..') {
+            if ($path) {
+                array_pop($path);
+            }
+            return $path;
+        }
+        $path[] = $s;
+        return $path;
+    }, []);
+    return implode('/', $arr);
+}
