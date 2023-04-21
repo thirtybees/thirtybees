@@ -24,17 +24,6 @@ if (isset($_GET['action'])) {
                 $_SESSION['descending'] = $_GET['descending'] === 'true';
             }
             break;
-        case 'image_size':
-            if (realpath(dirname(_PS_ROOT_DIR_.$_POST['path'])) != realpath(_PS_ROOT_DIR_.$upload_dir)) {
-                exit;
-            }
-            $pos = strpos($_POST['path'], $upload_dir);
-            if ($pos !== false) {
-                $info = getimagesize(substr_replace($_POST['path'], $current_path, $pos, strlen($upload_dir)));
-                echo json_encode($info);
-            }
-
-            break;
         case 'extract':
             if (strpos($_POST['path'], '/') === 0 || strpos($_POST['path'], '../') !== false || strpos($_POST['path'], './') === 0) {
                 die('wrong path');
