@@ -182,16 +182,6 @@ $ext_misc = getMimeTypeFileExtensions('misc', $allowedMineTypes);
 
 $ext=array_merge($ext_img, $ext_file, $ext_misc, $ext_video, $ext_music); //allowed extensions
 
-/******************
- * AVIARY config
-*******************/
-$aviary_active=false;
-$aviary_key="dvh8qudbp6yx2bnp";
-$aviary_secret="m6xaym5q42rpw433";
-$aviary_version=3;
-$aviary_language='en';
-
-
 //The filter and sorter are managed through both javascript and php scripts because if you have a lot of
 //file in a folder the javascript script can't sort all or filter all, so the filemanager switch to php script.
 //The plugin automatic swich javascript to php when the current folder exceeds the below limit of files number
