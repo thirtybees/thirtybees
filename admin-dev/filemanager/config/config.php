@@ -2,8 +2,6 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
-session_start();
-
 if (!defined('_PS_ADMIN_DIR_')) {
     define('_PS_ADMIN_DIR_', dirname(__FILE__).'/../../');
 }
@@ -62,8 +60,6 @@ $transliteration=false; //active or deactive the transliteration (mean convert a
 // 0 => boxes
 // 1 => detailed list (1 column)
 // 2 => columns list (multiple columns depending on the width of the page)
-// YOU CAN ALSO PASS THIS PARAMETERS USING SESSION VAR => $_SESSION["VIEW"]=
-//
 //******************
 $default_view=0;
 

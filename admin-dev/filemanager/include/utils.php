@@ -323,6 +323,8 @@ function base_url()
  * @param string|false|null $fldr
  *
  * @return string
+ *
+ * @noinspection PhpUndefinedFieldInspection
  */
 function getSubDir($fldr)
 {
@@ -375,4 +377,94 @@ function normalizePath(string $path): string
         return $path;
     }, []);
     return implode('/', $arr);
+}
+
+/**
+ * @return int
+ */
+function getViewType():int
+{
+    $cookie = Context::getContext()->cookie;
+    if (isset($cookie->fmViewType)) {
+        return (int)$cookie->fmViewType;
+    }
+    return 0;
+}
+
+/**
+ * @param int $viewType
+ *
+ * @return int
+ *
+ * @noinspection PhpUndefinedFieldInspection
+ */
+function setViewType(int $viewType):int
+{
+    $viewType = (int)$viewType;
+    $cookie = Context::getContext()->cookie;
+    if ($viewType) {
+        $cookie->fmViewType = (int)$viewType;
+    } else {
+        unset($cookie->fmViewType);
+    }
+    return $viewType;
+}
+
+/**
+ * @return string
+ */
+function getSortBy(): string
+{
+    $cookie = Context::getContext()->cookie;
+    if (isset($cookie->fmSortBy)) {
+        $sortBy = strtolower($cookie->fmSortBy);
+        if (in_array($sortBy, ['name', 'date', 'size', 'extension'])) {
+            return $sortBy;
+        }
+        }
+    return 'name';
+}
+
+/**
+ * @param string $sortBy
+ *
+ * @return string
+ *
+ * @noinspection PhpUndefinedFieldInspection
+ */
+function setSortBy(string $sortBy):string
+{
+    $sortBy = strtolower($sortBy);
+    if (!in_array($sortBy, ['name', 'date', 'size', 'extension'])) {
+        $sortBy = 'name';
+    }
+    $cookie = Context::getContext()->cookie;
+    $cookie->fmSortBy = $sortBy;
+    return $sortBy;
+}
+
+/**
+ * @return bool
+ */
+function getDescending(): bool
+{
+    $cookie = Context::getContext()->cookie;
+    if (isset($cookie->fmSortOrder)) {
+        return (bool)$cookie->fmSortOrder;
+    }
+    return false;
+}
+
+/**
+ * @param bool $descending
+ *
+ * @return bool
+ *
+ * @noinspection PhpUndefinedFieldInspection
+ */
+function setDescending(bool $descending): bool
+{
+    $cookie = Context::getContext()->cookie;
+    $cookie->fmSortOrder = $descending ? 1 : 0;
+    return $descending;
 }

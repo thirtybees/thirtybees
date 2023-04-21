@@ -1,8 +1,5 @@
 <?php
 include('config/config.php');
-if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
-    die('forbiden');
-}
 
 $_POST['path_thumb'] = $thumbs_base_path.$_POST['path_thumb'];
 if (!isset($_POST['path_thumb']) && trim($_POST['path_thumb']) == '') {

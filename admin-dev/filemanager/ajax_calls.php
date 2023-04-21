@@ -3,26 +3,14 @@
 
 include('config/config.php');
 
-if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
-    die('forbiden');
-}
-
 if (isset($_GET['action'])) {
     switch ($_GET['action']) {
         case 'view':
-            if (isset($_GET['type'])) {
-                $_SESSION['view_type'] = $_GET['type'];
-            } else {
-                die('view type number missing');
-            }
+            setViewType((int)Tools::getValue('type', 0));
             break;
         case 'sort':
-            if (isset($_GET['sort_by'])) {
-                $_SESSION['sort_by'] = $_GET['sort_by'];
-            }
-            if (isset($_GET['descending'])) {
-                $_SESSION['descending'] = $_GET['descending'] === 'true';
-            }
+            setSortBy(Tools::getValue('sort_by'));
+            setDescending(Tools::getValue('descending') === 'true');
             break;
         case 'extract':
             if (strpos($_POST['path'], '/') === 0 || strpos($_POST['path'], '../') !== false || strpos($_POST['path'], './') === 0) {

@@ -1,8 +1,6 @@
 <?php
 include('config/config.php');
 
-$_SESSION["verify"] = "RESPONSIVEfilemanager";
-
 if (isset($_POST['submit'])) {
     include('upload.php');
 } else {
@@ -29,41 +27,24 @@ if (isset($_POST['submit'])) {
 //Sanitize popup
     $popup = !!$popup;
 
-//view type
-    if (!isset($_SESSION['view_type'])) {
-        $view = $default_view;
-        $_SESSION['view_type'] = $view;
-    }
-    if (isset($_GET['view'])) {
-        $view = $_GET['view'];
-        $_SESSION['view_type'] = $view;
-    }
-    $view = $_SESSION['view_type'];
+    // resolve view type
+    $view = isset($_GET['view'])
+        ? setViewType((int)Tools::getValue('view', 0))
+        : getViewType();
+
+    $sort_by = isset($_GET['sort_by'])
+        ? setSortBy(Tools::getValue('sort_by'))
+        : getSortBy();
+
+    $descending = isset($_GET['descending'])
+        ? setDescending(Tools::getValue('descending') === 'true')
+        : getDescending();
 
     if (isset($_GET['filter'])) {
         $filter = fix_filename($_GET['filter'], $transliteration);
     } else {
         $filter = '';
     }
-
-    if (!isset($_SESSION['sort_by'])) {
-        $_SESSION['sort_by'] = '';
-    }
-    if (isset($_GET['sort_by'])) {
-        $sort_by = $_SESSION['sort_by'] = fix_filename($_GET['sort_by'], $transliteration);
-    } else {
-        $sort_by = $_SESSION['sort_by'];
-    }
-
-    if (!isset($_SESSION['descending'])) {
-        $_SESSION['descending'] = false;
-    }
-    if (isset($_GET['descending'])) {
-        $descending = $_SESSION['descending'] = fix_filename($_GET['descending'], $transliteration) === 'true';
-    } else {
-        $descending = $_SESSION['descending'];
-    }
-
 
     $lang = $default_language;
     if (isset($_GET['lang']) && $_GET['lang'] != 'undefined' && $_GET['lang'] != '') {

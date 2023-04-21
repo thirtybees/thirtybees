@@ -1,8 +1,5 @@
 <?php
 include('config/config.php');
-if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
-    die('forbiden');
-}
 
 if (preg_match('/\.{1,2}[\/|\\\]/', $_POST['path']) !== 0) {
     die('wrong path');

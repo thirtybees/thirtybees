@@ -2,9 +2,6 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 include('config/config.php');
-if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
-    die('forbiden');
-}
 
 $_POST['path'] = $current_path.str_replace('\0', '', $_POST['path']);
 $_POST['path_thumb'] = $thumbs_base_path.str_replace("\0", '', $_POST['path_thumb']);
