@@ -9,11 +9,11 @@ if (strpos($_POST['name'], '/') !== false || strpos($_POST['name'], '\\') !== fa
     die('wrong path');
 }
 
-$path = $current_path.$_POST['path'];
+$path = FILE_MANAGER_BASE_DIR . $_POST['path'];
 $name = $_POST['name'];
 
 $info = pathinfo($name);
-if (!in_array(fix_strtolower($info['extension']), $ext)) {
+if (!in_array(fix_strtolower($info['extension']), getFileExtensions())) {
     die('wrong extension');
 }
 

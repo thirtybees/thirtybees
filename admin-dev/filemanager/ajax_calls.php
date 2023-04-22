@@ -16,9 +16,9 @@ if (isset($_GET['action'])) {
             if (strpos($_POST['path'], '/') === 0 || strpos($_POST['path'], '../') !== false || strpos($_POST['path'], './') === 0) {
                 die('wrong path');
             }
-            $path = $current_path.$_POST['path'];
+            $path = FILE_MANAGER_BASE_DIR.$_POST['path'];
             $info = pathinfo($path);
-            $base_folder = $current_path.fix_dirname($_POST['path']).'/';
+            $base_folder = FILE_MANAGER_BASE_DIR.fix_dirname($_POST['path']).'/';
             switch ($info['extension']) {
                 case 'zip':
                     $zip = new ZipArchive;
@@ -38,7 +38,7 @@ if (isset($_GET['action'])) {
 
                             if (!($FullFileName['name'][strlen($FullFileName['name']) - 1] == '/')) {
                                 $fileinfo = pathinfo($OnlyFileName);
-                                if (in_array(strtolower($fileinfo['extension']), $ext)) {
+                                if (in_array(strtolower($fileinfo['extension']), getFileExtensions())) {
                                     copy('zip://'.$path.'#'.$OnlyFileName, $base_folder.$FullFileName['name']);
                                 }
                             }
@@ -57,8 +57,8 @@ if (isset($_GET['action'])) {
                     $phar = new PharData($path);
                     $phar->decompressFiles();
                     $files = [];
-                    check_files_extensions_on_phar($phar, $files, '', $ext);
-                    $phar->extractTo($current_path.fix_dirname($_POST['path']).'/', $files, true);
+                    check_files_extensions_on_phar($phar, $files, '', getFileExtensions());
+                    $phar->extractTo(FILE_MANAGER_BASE_DIR.fix_dirname($_POST['path']).'/', $files, true);
 
                     break;
             }
@@ -124,7 +124,7 @@ if (isset($_GET['action'])) {
 				</div>
 			</div>
 			<?php
-            if (in_array(strtolower($info['extension']), $ext_music)) {
+            if (in_array(strtolower($info['extension']), getFileExtensions('audio'))) {
             ?>
 				<script type="text/javascript">
 					$(document).ready(function () {
@@ -148,7 +148,7 @@ if (isset($_GET['action'])) {
 					});
 				</script>
 
-			<?php } elseif (in_array(strtolower($info['extension']), $ext_video)) { ?>
+			<?php } elseif (in_array(strtolower($info['extension']), getFileExtensions('video'))) { ?>
 
 				<script type="text/javascript">
 					$(document).ready(function () {

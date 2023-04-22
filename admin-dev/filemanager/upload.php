@@ -3,14 +3,14 @@
 
 include('config/config.php');
 
-$_POST['path'] = $current_path.str_replace('\0', '', $_POST['path']);
-$_POST['path_thumb'] = $thumbs_base_path.str_replace("\0", '', $_POST['path_thumb']);
+$_POST['path'] = FILE_MANAGER_BASE_DIR.str_replace('\0', '', $_POST['path']);
+$_POST['path_thumb'] = FILE_MANAGER_THUMB_BASE_DIR.str_replace("\0", '', $_POST['path_thumb']);
 
 $storeFolder = $_POST['path'];
 $storeFolderThumb = $_POST['path_thumb'];
 
-$path_pos = strpos($storeFolder, $current_path);
-$thumb_pos = strpos($_POST['path_thumb'], $thumbs_base_path);
+$path_pos = strpos($storeFolder, FILE_MANAGER_BASE_DIR);
+$thumb_pos = strpos($_POST['path_thumb'], FILE_MANAGER_THUMB_BASE_DIR);
 
 if ($path_pos === false || $thumb_pos === false
     || preg_match('/\.{1,2}[\/|\\\]/', $_POST['path_thumb']) !== 0
@@ -23,11 +23,11 @@ if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
     $tempFile = $_FILES['file']['tmp_name'];
     $fileExtension = fix_strtolower($info['extension'] ?? '');
     $mimeType = mime_content_type($tempFile);
-    if (canUploadFile($mimeType, $fileExtension, $allowedMineTypes)) {
+    if (canUploadFile($mimeType, $fileExtension)) {
 
         $targetPath = $storeFolder;
         $targetPathThumb = $storeFolderThumb;
-        $_FILES['file']['name'] = fix_filename($_FILES['file']['name'], $transliteration);
+        $_FILES['file']['name'] = fix_filename($_FILES['file']['name']);
 
         $file_name_splitted = explode('.', $_FILES['file']['name']);
         array_pop($file_name_splitted);
@@ -44,7 +44,7 @@ if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
         $targetFile = $targetPath.$_FILES['file']['name'];
         $targetFileThumb = $targetPathThumb.$_FILES['file']['name'];
 
-        if (in_array($fileExtension, $ext_img) && @getimagesize($tempFile) != false) {
+        if (in_array($fileExtension,getFileExtensions('image')) && @getimagesize($tempFile) != false) {
             $is_img = true;
         } else {
             $is_img = false;

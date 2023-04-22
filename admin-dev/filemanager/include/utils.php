@@ -4,14 +4,13 @@
  * Returns all extensions for given $category
  *
  * @param string $category
- * @param array $allowedMineTypes
  *
  * @return string[]
  */
-function getMimeTypeFileExtensions(string $category, array $allowedMineTypes): array
+function getFileExtensions(string $category = 'all'): array
 {
-    return array_reduce($allowedMineTypes, function($carry, $record) use ($category){
-        if ($record['category'] === $category) {
+    return array_reduce(FILE_MANAGER_ALLOWED_MIME_TYPES, function($carry, $record) use ($category){
+        if ($category === 'all' || $record['category'] === $category) {
             return array_unique(array_merge($carry, $record['extensions']));
         }
         return $carry;
@@ -24,14 +23,13 @@ function getMimeTypeFileExtensions(string $category, array $allowedMineTypes): a
  *
  * @param string $mimeType
  * @param string $extension
- * @param array $allowedMimeTypes
  *
  * @return bool
  */
-function canUploadFile(string $mimeType, string $extension, array $allowedMimeTypes): bool
+function canUploadFile(string $mimeType, string $extension): bool
 {
-    if (isset($allowedMimeTypes[$mimeType])) {
-        return in_array($extension, $allowedMimeTypes[$mimeType]['extensions']);
+    if (isset(FILE_MANAGER_ALLOWED_MIME_TYPES[$mimeType])) {
+        return in_array($extension, FILE_MANAGER_ALLOWED_MIME_TYPES[$mimeType]['extensions']);
     }
     return false;
 }
@@ -79,12 +77,11 @@ function duplicate_file($old_path, $name)
 /**
  * @param string $old_path
  * @param string $name
- * @param bool $transliteration
  * @return bool|void
  */
-function rename_file($old_path, $name, $transliteration)
+function rename_file($old_path, $name)
 {
-    $name=fix_filename($name, $transliteration);
+    $name=fix_filename($name);
     if (file_exists($old_path)) {
         $info=pathinfo($old_path);
         $new_path=$info['dirname']."/".$name.".".$info['extension'];
@@ -98,12 +95,11 @@ function rename_file($old_path, $name, $transliteration)
 /**
  * @param string $old_path
  * @param string $name
- * @param bool $transliteration
  * @return bool|void
  */
-function rename_folder($old_path, $name, $transliteration)
+function rename_folder($old_path, $name)
 {
-    $name=fix_filename($name, $transliteration);
+    $name=fix_filename($name);
     if (file_exists($old_path)) {
         $new_path=fix_dirname($old_path)."/".$name;
         if (file_exists($new_path)) {
@@ -216,25 +212,13 @@ function check_files_extensions_on_phar($phar, &$files, $basepath, $ext)
 
 /**
  * @param string $str
- * @param bool $transliteration
  * @return string
  */
-function fix_filename($str, $transliteration)
+function fix_filename($str)
 {
-    if ($transliteration) {
-        if (function_exists('transliterator_transliterate')) {
-            $str = transliterator_transliterate('Accents-Any', $str);
-        } else {
-            $str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
-        }
-
-        $str = preg_replace("/[^a-zA-Z0-9.\[\]_| -]/", '', $str);
-    }
-
     $str=str_replace(['"', "'", "/", "\\"], "", $str);
     $str=strip_tags($str);
 
-    // Empty or incorrectly transliterated filename.
     // Here is a point: a good file UNKNOWN_LANGUAGE.jpg could become .jpg in previous code.
     // So we add that default 'file' name to fix that issue.
     if (strpos($str, '.') === 0) {
@@ -282,10 +266,9 @@ function fix_strtolower($str)
 
 /**
  * @param string $path
- * @param bool $transliteration
  * @return string
  */
-function fix_path($path, $transliteration)
+function fix_path($path)
 {
     $info=pathinfo($path);
     if (($s = strrpos($path, '/')) !== false) {
@@ -297,7 +280,7 @@ function fix_path($path, $transliteration)
     }
     $tmp_path = $info['dirname'].DIRECTORY_SEPARATOR.$info['basename'];
 
-    $str=fix_filename($info['filename'], $transliteration);
+    $str=fix_filename($info['filename']);
     if ($tmp_path!="") {
         return $tmp_path.DIRECTORY_SEPARATOR.$str;
     } else {
