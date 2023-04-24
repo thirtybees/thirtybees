@@ -74,6 +74,7 @@ smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPr
 // custom modifiers
 smartyRegisterFunction($smarty, 'modifier', 'addcslashes', 'addcslashes');
 smartyRegisterFunction($smarty, 'modifier', 'addslashes', 'addslashes');
+smartyRegisterFunction($smarty, 'modifier', 'array_sum', 'array_sum');
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 smartyRegisterFunction($smarty, 'modifier', 'constant', 'constant');
