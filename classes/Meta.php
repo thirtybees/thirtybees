@@ -322,7 +322,9 @@ class MetaCore extends ObjectModel
                 ->where('pl.`id_product` = '.(int) $idProduct)
                 ->where('product_shop.`active` = 1')
         )) {
-            if (empty($row['meta_description'])) {
+            if (! empty($row['meta_description'])) {
+                $row['meta_description'] = strip_tags($row['meta_description']);
+            } elseif (! empty($row['description_short'])) {
                 $row['meta_description'] = strip_tags($row['description_short']);
             }
 
@@ -348,13 +350,13 @@ class MetaCore extends ObjectModel
         }
 
         if (empty($metaTags['meta_title'])) {
-            $metaTags['meta_title'] = $defaultValue.' - '.Configuration::get('PS_SHOP_NAME');
+            $metaTags['meta_title'] = $defaultValue . ' - ' . Configuration::get('PS_SHOP_NAME');
         }
         if (empty($metaTags['meta_description'])) {
-            $metaTags['meta_description'] = Configuration::get('PS_META_DESCRIPTION', $context->language->id) ? Configuration::get('PS_META_DESCRIPTION', $context->language->id) : '';
+            $metaTags['meta_description'] = (string)Configuration::get('PS_META_DESCRIPTION', $context->language->id);
         }
         if (empty($metaTags['meta_keywords'])) {
-            $metaTags['meta_keywords'] = Configuration::get('PS_META_KEYWORDS', $context->language->id) ? Configuration::get('PS_META_KEYWORDS', $context->language->id) : '';
+            $metaTags['meta_keywords'] = (string)Configuration::get('PS_META_KEYWORDS', $context->language->id);
         }
 
         return $metaTags;
@@ -429,7 +431,9 @@ class MetaCore extends ObjectModel
                     ->where('cl.`id_lang` = '.(int) $idLang)
                     ->where('cl.`id_category` = '.(int) $idCategory.' '.Shop::addSqlRestrictionOnLang('cl'))
             )) {
-                if (empty($row['meta_description'])) {
+                if (! empty($row['meta_description'])) {
+                    $row['meta_description'] = strip_tags($row['meta_description']);
+                } elseif (! empty($row['description'])) {
                     $row['meta_description'] = strip_tags($row['description']);
                 }
 
