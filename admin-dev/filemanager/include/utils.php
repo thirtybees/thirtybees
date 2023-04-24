@@ -451,3 +451,26 @@ function setDescending(bool $descending): bool
     $cookie->fmSortOrder = $descending ? 1 : 0;
     return $descending;
 }
+
+/**
+ * @return string
+ */
+function resolveLanguage():string
+{
+    $lang = (string)Tools::getValue('lang', 'en');
+    $parts = pathinfo($lang);
+    $lang = $parts['basename'];
+    $languageFile = __DIR__ . '/../lang/'. $lang.'.php';
+    return file_exists($languageFile) ? $lang : 'en';
+}
+
+/**
+ * Loads filemanager language file
+ *
+ * @return void
+ */
+function setLanguage()
+{
+    $languageFile = __DIR__ . '/../lang/'. resolveLanguage().'.php';
+    require_once($languageFile);
+}

@@ -3,20 +3,9 @@
 
 include('config/config.php');
 
-$_POST['path'] = FILE_MANAGER_BASE_DIR.str_replace('\0', '', $_POST['path']);
-$_POST['path_thumb'] = FILE_MANAGER_THUMB_BASE_DIR.str_replace("\0", '', $_POST['path_thumb']);
 
-$storeFolder = $_POST['path'];
-$storeFolderThumb = $_POST['path_thumb'];
-
-$path_pos = strpos($storeFolder, FILE_MANAGER_BASE_DIR);
-$thumb_pos = strpos($_POST['path_thumb'], FILE_MANAGER_THUMB_BASE_DIR);
-
-if ($path_pos === false || $thumb_pos === false
-    || preg_match('/\.{1,2}[\/|\\\]/', $_POST['path_thumb']) !== 0
-    || preg_match('/\.{1,2}[\/|\\\]/', $_POST['path']) !== 0) {
-    die('wrong path');
-}
+$storeFolder = rtrim(FILE_MANAGER_BASE_DIR . normalizePath(Tools::getValue('path', '')), '/') . '/';
+$storeFolderThumb = rtrim(FILE_MANAGER_THUMB_BASE_DIR . normalizePath(Tools::getValue('path_thumb', '')), '/') . '/';
 
 if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
     $info = pathinfo($_FILES['file']['name']);
@@ -70,15 +59,13 @@ if (!empty($_FILES) && isset($_FILES['file']) && $_FILES['file']['tmp_name']) {
         die(Tools::displayError('Failed to upload file'));
     }
 }
-if (isset($_POST['submit'])) {
-    $query = http_build_query(
-        [
-            'type' => $_POST['type'],
-            'lang' => $_POST['lang'],
-            'popup' => $_POST['popup'],
-            'field_id' => $_POST['field_id'],
-            'fldr' => $_POST['fldr'],
-        ]
-    );
+
+if (Tools::isSubmit('submit')) {
+    $query = http_build_query([
+        'type' => Tools::getValue('type', ''),
+        'lang' => Tools::getValue('lang', ''),
+        'popup' => Tools::getValue('popup', ''),
+        'fldr' => Tools::getValue('fldr', ''),
+    ]);
     header('location: dialog.php?'.$query);
 }

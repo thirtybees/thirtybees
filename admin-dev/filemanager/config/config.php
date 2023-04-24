@@ -23,6 +23,8 @@ if (!$employee->hasAccess(AdminProductsController::class, Profile::PERMISSION_ED
 if (!$employee->hasAccess(AdminCmsContentController::class, Profile::PERMISSION_EDIT)) {
     throw new PrestaShopException(Tools::displayError("Access denied"));
 }
+// set language
+setLanguage();
 
 if (! defined('FILE_MANAGER_FILE_NUMBER_LIMIT_JS')) {
     define('FILE_MANAGER_FILE_NUMBER_LIMIT_JS', 500);
