@@ -126,7 +126,6 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                         'Mbstring'         => $this->l('Mbstring extension is enabled'),
                         'OpenSSL'          => $this->l('OpenSSL extension is enabled'),
                         'PdoMysql'         => $this->l('PDO MySQL extension is loaded'),
-                        'PhpVersion'       => $this->l('PHP is 5.6.0 or later'),
                         'Upload'           => $this->l('Can upload files'),
                         'Xml'              => $this->l('The PHP xml extension is enabled'),
                         'Zip'              => $this->l('The PHP zip extension/functionality is enabled'),
