@@ -268,7 +268,7 @@ class TagCore extends ObjectModel
      * @param int $idLang
      * @param int $nb
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -278,31 +278,28 @@ class TagCore extends ObjectModel
         $context = Context::getContext();
         if (Group::isFeatureActive()) {
             $groups = FrontController::getCurrentCustomerGroups();
-
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                (new DbQuery())
-                    ->select('t.`name`, `counter` AS `times`')
-                    ->from('tag_count', 'pt')
-                    ->leftJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
-                    ->where('pt.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1'))
-                    ->where('pt.`id_lang` = '.(int) $idLang)
-                    ->where('pt.`id_shop` = '.(int) $context->shop->id)
-                    ->orderBy('`times` DESC')
-                    ->limit((int) $nb)
-            );
+            $query = (new DbQuery())
+                ->select('t.`name`, pt.`counter` AS `times`')
+                ->from('tag_count', 'pt')
+                ->innerJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
+                ->where('pt.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1'))
+                ->where('pt.`id_lang` = '.(int) $idLang)
+                ->where('pt.`id_shop` = '.(int) $context->shop->id)
+                ->orderBy('`times` DESC')
+                ->limit((int) $nb);
         } else {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                (new DbQuery())
-                    ->select('t.`name`, `counter` AS `times`')
-                    ->from('tag_count', 'pt')
-                    ->leftJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
-                    ->where('pt.`id_group` = 0')
-                    ->where('pt.`id_lang` = '.(int) $idLang)
-                    ->where('pt.`id_shop` = '.(int) $context->shop->id)
-                    ->orderBy('`times` DESC')
-                    ->limit((int) $nb)
-            );
+            $query = (new DbQuery())
+                ->select('t.`name`, pt.`counter` AS `times`')
+                ->from('tag_count', 'pt')
+                ->innerJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
+                ->where('pt.`id_group` = 0')
+                ->where('pt.`id_lang` = '.(int) $idLang)
+                ->where('pt.`id_shop` = '.(int) $context->shop->id)
+                ->orderBy('`times` DESC')
+                ->limit((int) $nb);
         }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($query);
     }
 
     /**
