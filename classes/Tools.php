@@ -4291,7 +4291,7 @@ FileETag none
      */
     public static function getDescriptionClean($description)
     {
-        return strip_tags(stripslashes($description));
+        return strip_tags(stripslashes((string)$description));
     }
 
     /**
