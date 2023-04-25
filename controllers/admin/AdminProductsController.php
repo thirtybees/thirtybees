@@ -4973,7 +4973,6 @@ class AdminProductsControllerCore extends AdminController
                 'token'                          => $this->token,
                 'currency'                       => $currency,
                 'link'                           => $this->context->link,
-                'PS_PRODUCT_SHORT_DESC_LIMIT'    => Configuration::get('PS_PRODUCT_SHORT_DESC_LIMIT') ? Configuration::get('PS_PRODUCT_SHORT_DESC_LIMIT') : 400,
             ]
         );
         $data->assign($this->tpl_form_vars);

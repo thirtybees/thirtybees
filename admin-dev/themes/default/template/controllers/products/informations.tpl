@@ -368,7 +368,7 @@
 				input_name='description_short'
 				class="autoload_rte"
 				input_value=$product->description_short
-				max=$PS_PRODUCT_SHORT_DESC_LIMIT}
+			}
 		</div>
 	</div>
 	<div class="form-group">
@@ -384,7 +384,8 @@
 				file="controllers/products/textarea_lang.tpl"
 				languages=$languages input_name='description'
 				class="autoload_rte"
-				input_value=$product->description}
+				input_value=$product->description
+			}
 		</div>
 	</div>
 	{if $images}
