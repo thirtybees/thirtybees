@@ -1285,7 +1285,7 @@ class ToolsCore
             $excludeFiles = [$excludeFiles];
         }
 
-        if (file_exists($file) && is_file($file) && array_search(basename($file), $excludeFiles) === false) {
+        if (file_exists($file) && is_file($file) && !in_array(basename($file), $excludeFiles)) {
             @chmod($file, 0777); // NT ?
             unlink($file);
         }

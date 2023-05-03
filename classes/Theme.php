@@ -120,7 +120,7 @@ class ThemeCore extends ObjectModel
             }
 
             foreach ($dirlist as $theme) {
-                if (false !== array_search($theme, $themesDir)) {
+                if (in_array($theme, $themesDir)) {
                     $availableTheme[] = $theme;
                 }
             }
