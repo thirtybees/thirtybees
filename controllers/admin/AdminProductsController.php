@@ -4887,7 +4887,7 @@ class AdminProductsControllerCore extends AdminController
         );
 
         if (Configuration::get('PS_USE_ECOTAX')) {
-            array_push($productProps, 'ecotax');
+            $productProps[] = 'ecotax';
         }
 
         foreach ($productProps as $prop) {
