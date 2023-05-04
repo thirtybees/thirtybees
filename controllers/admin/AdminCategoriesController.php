@@ -205,13 +205,23 @@ class AdminCategoriesControllerCore extends AdminController
                     'desc' => $this->l('Add new root category', null, null, false),
                 ];
             }
-
             $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.(int) Tools::getValue('id_category') : '';
             $this->page_header_toolbar_btn['new_category'] = [
                 'href' => static::$currentIndex.'&addcategory&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add new category', null, null, false),
                 'icon' => 'process-icon-new',
             ];
+				
+				// adds tool button for Categories Quick List .\controllers\admin\AdminCategoriesAllController.php
+				if (!$tabId = Tab::getIdFromClassName('AdminCategoriesAll') ) {
+					$this->inicializeQuickList();
+				}
+            $this->page_header_toolbar_btn['categories_all'] = [
+                'href' => Context::getContext()->link->getAdminLink('AdminCategoriesAll'),
+                'desc' => $this->l('Categories quick list', null, null, false),
+                'icon' => 'process-icon-default icon-eye',
+            ];
+				
         } else {
             if ($this->display == 'edit') {
                 // adding button for preview this category
@@ -225,6 +235,19 @@ class AdminCategoriesControllerCore extends AdminController
             }
         }
     }
+	
+	// register controller for Categories Quick List .\controllers\admin\AdminCategoriesAllController.php
+	public function inicializeQuickList()
+	{
+		$newTab = new Tab((int) Tab::getIdFromClassName('AdminCategoriesAll'));
+		$newTab->class_name = 'AdminCategoriesAll';
+		$newTab->id_parent = -1;
+		foreach (Language::getLanguages() as $lang) {
+			$newTab->name[$lang['id_lang']] = $this->l('Categories quick list');
+		}
+		$newTab->save();
+		Tab::initAccess($newTab->id);
+	}
 
     /**
      * @throws PrestaShopException
