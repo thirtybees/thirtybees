@@ -491,4 +491,39 @@ class ValidateTest extends Unit
     {
         $this->assertSame($expected, Validate::isUriPath($input));
     }
+
+    /**
+     * @return array[]
+     */
+    public function isReferenceProvider()
+    {
+        return [
+            [true, ""],
+            [true, "reference"],
+            [true, "ref_01"],
+            [true, "ref-01"],
+            [true, "0"],
+            [true, "1"],
+            [true, "1-test"],
+            [true, "žščřĎŤŇ"],
+            [true, "家"],
+            [false, " "],
+            [false, "<test>"],
+            [false, "test=test"],
+            [false, "test>test"],
+            [false, "test;test"],
+            [false, "test test"],
+        ];
+    }
+
+    /**
+     * @param bool $expected
+     * @param string $input
+     *
+     * @dataProvider isReferenceProvider
+     */
+    public function testIsReference($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isReference($input));
+    }
 }
