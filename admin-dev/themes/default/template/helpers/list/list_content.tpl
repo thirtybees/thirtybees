@@ -57,7 +57,7 @@
 					{if (!isset($params.position) && !$no_link && !isset($params.remove_onclick))}
 						{if isset($linkUrlCallback)}
 							{if $linkUrl}
-								onclick="document.location = '{$linkUrl|escape:'html':'UTF-8'}'"
+								onclick="window.open('{$linkUrl|escape:'html':'UTF-8'}', '{$linkUrlTarget|escape:'html':'UTF-8'}');"
 							{/if}
 						{else}
 							onclick="document.location = '{$current_index|escape:'html':'UTF-8'}&amp;{$identifier|escape:'html':'UTF-8'}={$tr.$identifier|escape:'html':'UTF-8'}{if $view}&amp;view{else}&amp;update{/if}{$table|escape:'html':'UTF-8'}{if $page > 1}&amp;page={$page|intval}{/if}&amp;token={$token|escape:'html':'UTF-8'}'"

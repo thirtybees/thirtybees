@@ -232,6 +232,11 @@ class HelperListCore extends Helper
     public $linkUrlCallback;
 
     /**
+     * @var string target window for drilldown link
+     */
+    public $linkUrlTarget = '_self';
+
+    /**
      * HelperListCore constructor.
      */
     public function __construct()
@@ -707,6 +712,7 @@ class HelperListCore extends Helper
                     'no_link'                   => $this->no_link,
                     'current_index'             => $this->currentIndex,
                     'linkUrlCallback'           => is_callable($this->linkUrlCallback) ? $this->linkUrlCallback : null,
+                    'linkUrlTarget'             => $this->linkUrlTarget,
                     'view'                      => in_array('view', $this->actions),
                     'edit'                      => in_array('edit', $this->actions),
                     'has_actions'               => !empty($this->actions),
