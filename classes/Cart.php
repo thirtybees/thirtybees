@@ -2483,7 +2483,7 @@ class CartCore extends ObjectModel
                     ->leftJoin('cart_rule_lang', 'crl', 'cd.`id_cart_rule` = crl.`id_cart_rule` AND crl.`id_lang` = '.(int) $this->id_lang)
                     ->where('`id_cart` = '.(int) $this->id)
                     ->where((int) $filter === CartRule::FILTER_ACTION_SHIPPING ? '`free_shipping` = 1' : '')
-                    ->where((int) $filter === CartRule::FILTER_ACTION_GIFT ? '`gift_product` = 0' : '')
+                    ->where((int) $filter === CartRule::FILTER_ACTION_GIFT ? '`gift_product` = 1' : '')
                     ->where((int) $filter === CartRule::FILTER_ACTION_REDUCTION ? '`reduction_percent` != 0 OR `reduction_amount` != 0' : '')
                     ->orderBy('cr.`priority` ASC')
             );
