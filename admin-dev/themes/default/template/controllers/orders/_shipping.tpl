@@ -44,7 +44,6 @@
 				<th>
 					<span class="title_box ">{l s='Tracking number'}</span>
 				</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -63,8 +62,6 @@
 				</td>
 				<td>
 					<span class="shipping_number_show">{if $line.url && $line.tracking_number}<a class="_blank" href="{$line.url|replace:'@':$line.tracking_number}">{$line.tracking_number}</a>{else}{$line.tracking_number}{/if}</span>
-				</td>
-				<td>
 					{if $line.can_edit}
 						<form method="post" action="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;vieworder&amp;id_order={$order->id|intval}">
 							<span class="shipping_number_edit" style="display:none;">
