@@ -86,6 +86,7 @@ class AdminShippingControllerCore extends AdminController
                         'suffix'     => Configuration::get('PS_WEIGHT_UNIT'),
                         'cast'       => 'floatval',
                         'type'       => 'text',
+                        'class'      => 'fixed-width-lg',
                         'validation' => 'isUnsignedFloat',
                     ],
                 ],
