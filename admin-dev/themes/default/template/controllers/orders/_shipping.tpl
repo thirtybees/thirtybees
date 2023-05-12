@@ -44,7 +44,6 @@
 				<th>
 					<span class="title_box ">{l s='Tracking number'}</span>
 				</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -62,12 +61,10 @@
 					{/if}
 				</td>
 				<td>
-					<span class="shipping_number_show">{if $line.url && $line.tracking_number}<a class="_blank" href="{$line.url|replace:'@':$line.tracking_number}">{$line.tracking_number}</a>{else}{$line.tracking_number}{/if}</span>
-				</td>
-				<td>
+					<span class="shipping_number_show" style="float:left;margin:5px 20px 0 0">{if $line.url && $line.tracking_number}<a class="_blank" href="{$line.url|replace:'@':$line.tracking_number}">{$line.tracking_number}</a>{else}{$line.tracking_number}{/if}</span>
 					{if $line.can_edit}
 						<form method="post" action="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;vieworder&amp;id_order={$order->id|intval}">
-							<span class="shipping_number_edit" style="display:none;">
+							<span class="shipping_number_edit" style="display:none">
 								<input type="hidden" name="id_order_carrier" value="{$line.id_order_carrier|htmlentities}" />
 								<input type="text" name="tracking_number" value="{$line.tracking_number|htmlentities}" />
 								<button type="submit" class="btn btn-default" name="submitShippingNumber">
@@ -79,7 +76,7 @@
 								<i class="icon-pencil"></i>
 								{l s='Edit'}
 							</a>
-							<a href="#" class="cancel_shipping_number_link btn btn-default" style="display: none;">
+							<a href="#" class="cancel_shipping_number_link btn btn-default" style="display:none">
 								<i class="icon-remove"></i>
 								{l s='Cancel'}
 							</a>
