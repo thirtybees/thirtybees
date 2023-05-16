@@ -37,32 +37,30 @@ class EncryptorCore
     const ALGO_BLOWFISH = 0;
     const ALGO_PHP_ENCRYPTION = 2;
 
-    /** @var Blowfish|PhpEncryption cipher tool instance */
+    /**
+     * @var Blowfish|PhpEncryption cipher tool instance
+     */
     protected $cipherTool;
 
-    /** @var Encryptor $instance */
+    /**
+     * @var Encryptor $instance
+     */
     protected static $instance;
 
-    /** @var Encryptor $standalone */
+    /**
+     * @var Encryptor $standalone
+     */
     protected static $standalone;
 
     /**
      * Encryptor singleton
      *
      * @return Encryptor instance
-     * @throws PrestaShopException
      */
     public static function getInstance()
     {
         if (!static::$instance) {
-            $cipherTool = static::getCipherTool();
-            if (! $cipherTool) {
-                // we need some ciphering capability to encode error message
-                static::$instance = new Encryptor(static::getStandaloneCipherTool(__FILE__));
-                throw new PrestaShopException('No encryption tool available');
-            } else {
-                static::$instance = new Encryptor($cipherTool);
-            }
+            static::$instance = new Encryptor(static::getCipherTool());
         }
         return static::$instance;
     }
@@ -152,7 +150,7 @@ class EncryptorCore
     /**
      * Returns ciphering tool according to settings
      *
-     * @return Blowfish|PhpEncryption|null
+     * @return Blowfish|PhpEncryption
      */
     private static function getCipherTool()
     {
@@ -167,7 +165,7 @@ class EncryptorCore
             return new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
         }
 
-        return null;
+        die('Failed to construct cipher tool. Please install openssl extension.');
     }
 
     /**
