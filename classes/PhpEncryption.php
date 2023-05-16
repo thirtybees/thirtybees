@@ -30,6 +30,7 @@
  */
 
 use Defuse\Crypto\Crypto;
+use Defuse\Crypto\Encoding;
 use Defuse\Crypto\Key;
 
 /**
@@ -82,5 +83,17 @@ class PhpEncryptionCore
         } catch (Exception $exception) {
             return null;
         }
+    }
+
+    /**
+     * @param string $salt
+     *
+     * @return string
+     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
+     */
+    public static function createKeyFromSalt(string $salt)
+    {
+        $bytes = str_pad('', Key::KEY_BYTE_SIZE, hash('sha256', 'KeyFromSalt' . $salt . __FILE__));
+        return Encoding::saveBytesToChecksummedAsciiSafeString(Key::KEY_CURRENT_VERSION, $bytes);
     }
 }

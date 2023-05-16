@@ -48,7 +48,7 @@ class EncryptorCore
     protected static $instance;
 
     /**
-     * @var Encryptor $standalone
+     * @var Encryptor[] $standalone
      */
     protected static $standalone;
 
@@ -71,15 +71,19 @@ class EncryptorCore
      * This encryptor is used in special situations when encryption settings is not
      * set up yet. For example during installation
      *
+     * @param string $salt
+     *
      * @return Encryptor instance
+     *
+     * @throws PrestaShopException
      */
     public static function getStandaloneInstance($salt)
     {
-        if (!static::$standalone) {
-            static::$standalone = new Encryptor(static::getStandaloneCipherTool($salt));
+        if (! static::$standalone[$salt]) {
+            static::$standalone[$salt] = new Encryptor(static::getStandaloneCipherTool($salt));
         }
 
-        return static::$standalone;
+        return static::$standalone[$salt];
     }
 
     /**
@@ -173,10 +177,21 @@ class EncryptorCore
      *
      * @param string $salt
      *
-     * @return Blowfish
+     * @return Blowfish|PhpEncryption
+     *
+     * @throws PrestaShopException
      */
     private static function getStandaloneCipherTool($salt)
     {
+        if (static::supportsPhpEncryption()) {
+            try {
+                $key = PhpEncryption::createKeyFromSalt($salt);
+                return new PhpEncryption($key);
+            } catch (Throwable $e) {
+                throw new PrestaShopException("Failed to create standalone cipher tool from salt", 0, $e);
+            }
+        }
+
         return new Blowfish(str_pad('', 56, md5('ps'.$salt)), str_pad('', 56, md5('iv'.$salt)));
     }
 
