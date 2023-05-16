@@ -141,11 +141,11 @@ class EncryptorCore
             if (in_array($algo, [static::ALGO_BLOWFISH, static::ALGO_PHP_ENCRYPTION])) {
                 return $algo;
             }
-            Configuration::updateValue('PS_CIPHER_ALGORITHM', static::ALGO_BLOWFISH);
-            return static::ALGO_BLOWFISH;
+            Configuration::updateValue('PS_CIPHER_ALGORITHM', static::ALGO_PHP_ENCRYPTION);
+            return static::ALGO_PHP_ENCRYPTION;
         } catch (Throwable $e) {
             trigger_error("Failed to resolve encryption algorithm: " . $e);
-            return static::ALGO_BLOWFISH;
+            return static::ALGO_PHP_ENCRYPTION;
         }
     }
 
