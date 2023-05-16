@@ -326,17 +326,19 @@ class CryptBlowfishCore
     protected $_unpackMode = PS_UNPACK_NATIVE;
 
     /**
+     * @var bool
+     */
+    private $warningRaised = false;
+
+    /**
      * @param string $key
      * @param string $iv
      */
     public function __construct($key, $iv)
     {
-        $_iv = $iv;
-
         $len = strlen($key);
 
         $k = 0;
-        $data = 0;
         $datal = 0;
         $datar = 0;
 
@@ -401,6 +403,7 @@ class CryptBlowfishCore
      */
     public function encrypt($plainText)
     {
+        $this->raiseWarning();
         $cipherText = '';
         $len = strlen($plainText);
         $plainText .= str_repeat(chr(0), (8 - ($len % 8)) % 8);
@@ -441,6 +444,7 @@ class CryptBlowfishCore
      */
     public function decrypt($cipherText)
     {
+        $this->raiseWarning();
         $plainText = '';
         $len = strlen($cipherText);
         $cipherText .= str_repeat(chr(0), (8 - ($len % 8)) % 8);
@@ -470,5 +474,17 @@ class CryptBlowfishCore
         }
         $Xr = $Xl ^ $this->_P[1];
         $Xl = $temp ^ $this->_P[0];
+    }
+
+    /**
+     * @return void
+     */
+    protected function raiseWarning()
+    {
+        if (! $this->warningRaised) {
+            $this->warningRaised = true;
+            $errorMessage = 'Blowfish encryption is deprected and will be removed in next version of thirty bees. Please use PHP Encryption instead';
+            trigger_error($errorMessage, E_USER_WARNING);
+        }
     }
 }
