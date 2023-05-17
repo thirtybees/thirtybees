@@ -160,8 +160,12 @@ class EncryptorCore
     {
         $algo = static::getAlgorithm();
 
-        if ($algo === static::ALGO_PHP_ENCRYPTION && static::supportsPhpEncryption() && defined('_PHP_ENCRYPTION_KEY_')) {
-            return new PhpEncryption(_PHP_ENCRYPTION_KEY_);
+        if ($algo === static::ALGO_PHP_ENCRYPTION && static::supportsPhpEncryption()) {
+            if (defined('_PHP_ENCRYPTION_KEY_')) {
+                return new PhpEncryption(_PHP_ENCRYPTION_KEY_);
+            } else {
+                trigger_error('PHP Encryption can\'t be used because _PHP_ENCRYPTION_KEY_ constant is not defined. Using Blowfish encryption instead.', E_USER_WARNING);
+            }
         }
 
         // fallback to blowfish
