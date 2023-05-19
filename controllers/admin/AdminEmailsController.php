@@ -199,6 +199,19 @@ class AdminEmailsControllerCore extends AdminController
     }
 
     /**
+     * @return mixed
+     * @throws PrestaShopException
+     */
+    public function postProcess()
+    {
+        $result = parent::postProcess();
+        if (Mail::getSelectedTransport() === Mail::TRANSPORT_NONE) {
+            $this->warnings[] = $this->l('Your server is NOT sending emails. Please install some email transport module and select it for use.');
+        }
+        return $result;
+    }
+
+    /**
      * @return void
      * @throws PrestaShopException
      */

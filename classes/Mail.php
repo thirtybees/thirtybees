@@ -637,15 +637,38 @@ class MailCore extends ObjectModel
     public static function getTransport()
     {
         $transports = static::getAvailableTransports();
+        return $transports[static::resolveSelectedTransport($transports)];
+    }
+
+    /**
+     * Returns string identifier of selected email transport
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getSelectedTransport()
+    {
+        return static::resolveSelectedTransport(static::getAvailableTransports());
+    }
+
+    /**
+     * Returns string identifier of selected email transport
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected static function resolveSelectedTransport(array $transports)
+    {
+        $transports = static::getAvailableTransports();
         $selected = Configuration::get(Configuration::MAIL_TRANSPORT);
         if ($selected) {
             if (isset($transports[$selected])) {
-                return $transports[$selected];
+                return $selected;
             } else {
                 trigger_error("Mail transport '$selected' not found", E_USER_WARNING);
             }
         }
-        return $transports[static::TRANSPORT_NONE];
+        return static::TRANSPORT_NONE;
     }
 
     /**
