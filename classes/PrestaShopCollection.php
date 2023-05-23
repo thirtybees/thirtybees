@@ -334,13 +334,17 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         }
 
         if (!isset($this->join_list[$association])) {
-            $type = static::LEFT_JOIN;
+            if (! $type) {
+                $type = static::LEFT_JOIN;
+            }
             $definition = $this->getDefinition($association);
             $assocDefinition = $definition['asso'];
             if (isset($assocDefinition['joinTable'])) {
                 $joinAlias = $this->generateAlias($association . '_' . $assocDefinition['joinTable']);
                 $targetAlias = $this->generateAlias($association);
-                $on = $joinAlias . '.`' . $assocDefinition['joinTargetField'] . '` = {' . $assocDefinition['complete_foreign_field'] . '}';
+                if (! $on) {
+                    $on = $joinAlias . '.`' . $assocDefinition['joinTargetField'] . '` = {' . $assocDefinition['complete_foreign_field'] . '}';
+                }
                 $this->join_list[$association] = [
                     'joinTable' => $assocDefinition['joinTable'],
                     'joinAlias' => $joinAlias,
@@ -351,7 +355,9 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
                     'type' => $type
                 ];
             } else {
-                $on = '{' . $assocDefinition['complete_field'] . '} = {' . $assocDefinition['complete_foreign_field'] . '}';
+                if (! $on) {
+                    $on = '{' . $assocDefinition['complete_field'] . '} = {' . $assocDefinition['complete_foreign_field'] . '}';
+                }
                 $this->join_list[$association] = [
                     'table' => ($definition['is_lang']) ? $definition['table'] . '_lang' : $definition['table'],
                     'alias' => $this->generateAlias($association),
