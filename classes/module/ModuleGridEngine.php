@@ -184,6 +184,13 @@ class ModuleGridEngineCore extends Module
         if (!isset($params['defaultSortDirection'])) {
             $params['defaultSortDirection'] = false;
         }
+
+
+        $limit = 40;
+        if (isset($params['limit']) && Validate::isUnsignedInt($params['limit'])) {
+            $limit = (int)$params['limit'];
+        }
+
         $html .= '		$("#grid_1 tbody").append(newLine);
 						});
 					else
@@ -195,9 +202,9 @@ class ModuleGridEngineCore extends Module
 			{
 				var from = url.match(/&start=[0-9]+/i);
 				if (from && from[0] && parseInt(from[0].replace("&start=", "")) > 0)
-					from = "&start=" + (parseInt(from[0].replace("&start=", "")) + 40);
+					from = "&start=" + (parseInt(from[0].replace("&start=", "")) + '.$limit.');
 				else
-					from = "&start=40";
+					from = "&start='.$limit.'";
 				url = url.replace(/&start=[0-9]+/i, "") + from;
 				getGridData(url);
 			}
@@ -207,7 +214,7 @@ class ModuleGridEngineCore extends Module
 				var from = url.match(/&start=[0-9]+/i);
 				if (from && from[0] && parseInt(from[0].replace("&start=", "")) > 0)
 				{
-					var fromInt = parseInt(from[0].replace("&start=", "")) - 40;
+					var fromInt = parseInt(from[0].replace("&start=", "")) - '.$limit.';
 					if (fromInt > 0)
 						from = "&start=" + fromInt;
 					else
