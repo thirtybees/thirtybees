@@ -77,6 +77,13 @@
  * @property string $stats_day
  * @property string $stats_month
  * @property string $stats_year
+ *
+ * Properties set up by statsmodule
+ *
+ * @property int $checkup_order
+ * @property int $stats_granularity
+ * @property int $stats_id_zone
+ * @property int $statsstock_id_category
  */
 class CookieCore
 {

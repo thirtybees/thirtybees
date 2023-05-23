@@ -62,7 +62,7 @@ abstract class ModuleStatsCore extends Module
     ];
 
     /**
-     * @var ModuleGraphEngine graph engine
+     * @var ModuleGraphEngine|ModuleGridEngine graph engine
      */
     protected $_render;
 
@@ -586,7 +586,8 @@ abstract class ModuleStatsCore extends Module
      *
      * @param string $engineType type of engine, either ENGINE_GRAPH or ENGINE_GRID
      * @param string $type type parameter for engine
-     * @return ModuleGraphEngine or ModuleGridEngine instance
+     *
+     * @return ModuleGraphEngine|ModuleGridEngine
      *
      * @throws PrestaShopException
      */

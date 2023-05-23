@@ -106,6 +106,7 @@ if (!$shop_id) {
 
 require_once($module_path);
 
+/** @var StatsModule $graph */
 $graph = new $module();
 $graph->setEmployee($id_employee);
 $graph->setLang($id_lang);

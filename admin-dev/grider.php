@@ -111,6 +111,7 @@ if (!$shop_id) {
 
 require_once($module_path);
 
+/** @var StatsModule $grid */
 $grid = new $module();
 $grid->setEmployee($id_employee);
 $grid->setLang($id_lang);
