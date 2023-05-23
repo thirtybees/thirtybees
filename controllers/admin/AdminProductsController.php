@@ -5638,12 +5638,13 @@ class AdminProductsControllerCore extends AdminController
 
                 // Get all available suppliers
                 $suppliers = Supplier::getSuppliers();
+                $supplierIds = array_map('intval', array_column($suppliers, 'id_supplier'));
 
                 // Get already associated suppliers
-                $associated_suppliers = ProductSupplier::getSupplierCollection($obj->id);
+                $associated_suppliers = $this->filterSuppliers($supplierIds, ProductSupplier::getSupplierCollection($obj->id));
 
                 // Get already associated suppliers and force to retreive product declinaisons
-                $product_supplier_collection = ProductSupplier::getSupplierCollection($obj->id, false);
+                $product_supplier_collection = $this->filterSuppliers($supplierIds, ProductSupplier::getSupplierCollection($obj->id, false));
 
                 $default_supplier = 0;
                 $supplierNames = [];
@@ -6532,6 +6533,25 @@ class AdminProductsControllerCore extends AdminController
             }
         }
         return $quantity;
+    }
+
+    /**
+     * @param array $supplierIds
+     * @param PrestaShopCollection $collection
+     *
+     * @return ProductSupplier[]
+     */
+    protected function filterSuppliers(array $supplierIds, PrestaShopCollection $collection)
+    {
+        $productSuppliers = [];
+        /** @var ProductSupplier $productSupplier */
+        foreach ($collection as $productSupplier) {
+            $supplierId = (int)$productSupplier->id_supplier;
+            if (in_array($supplierId, $supplierIds)) {
+                $productSuppliers[] = $productSupplier;
+            }
+        }
+        return $productSuppliers;
     }
 
 }
