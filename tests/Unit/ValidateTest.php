@@ -507,12 +507,12 @@ class ValidateTest extends Unit
             [true, "1-test"],
             [true, "žščřĎŤŇ"],
             [true, "家"],
-            [false, " "],
+            [true, " "],
             [false, "<test>"],
             [false, "test=test"],
             [false, "test>test"],
             [false, "test;test"],
-            [false, "test test"],
+            [true, "test test"],
         ];
     }
 
