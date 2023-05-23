@@ -234,11 +234,26 @@ class SupplierCore extends ObjectModel
      */
     public function delete()
     {
+        $supplierId = (int) $this->id;
         if (PageCache::isEnabled()) {
-            PageCache::invalidateEntity('supplier', $this->id);
+            PageCache::invalidateEntity('supplier', $supplierId);
         }
 
-        return parent::delete();
+        $res = parent::delete();
+
+        if ($res) {
+            // delete product supplier references
+            $res = Db::getInstance()->delete('product_supplier', 'id_supplier=' . (int)$supplierId);
+
+            // mark supplier address as deleted
+            $idAddress = Address::getAddressIdBySupplierId($supplierId);
+            $address = new Address($idAddress);
+            if (Validate::isLoadedObject($address)) {
+                $address->deleted = 1;
+                $address->update();
+            }
+        }
+        return $res;
     }
 
     /**

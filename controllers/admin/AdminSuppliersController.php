@@ -531,36 +531,6 @@ class AdminSuppliersControllerCore extends AdminController
     }
 
     /**
-     * @return bool|Supplier
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function postProcessDelete()
-    {
-        if (!($obj = $this->loadObject(true))) {
-            return false;
-        } elseif (SupplyOrder::supplierHasPendingOrders($obj->id)) {
-            $this->errors[] = $this->l('It is not possible to delete a supplier if there are pending supplier orders.');
-        } else {
-            //delete all product_supplier linked to this supplier
-            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier` = '.(int) $obj->id);
-
-            $idAddress = Address::getAddressIdBySupplierId($obj->id);
-            $address = new Address($idAddress);
-            if (Validate::isLoadedObject($address)) {
-                $address->deleted = 1;
-                $address->save();
-            }
-
-            /** @var Supplier|false $supplier */
-            $supplier = parent::processDelete();
-            return $supplier;
-        }
-
-        return false;
-    }
-
-    /**
      * @return bool
      *
      * @throws PrestaShopDatabaseException
