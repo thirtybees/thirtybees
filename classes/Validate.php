@@ -534,7 +534,7 @@ class ValidateCore
      */
     public static function isReference($reference)
     {
-        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^\s<>;={}]*$/u'), $reference);
+        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^<>;={}]*$/u'), $reference);
     }
 
     /**
