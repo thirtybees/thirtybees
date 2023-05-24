@@ -31,7 +31,7 @@
 /* global jQuery, $, window, showSuccessMessage, showErrorMessage */
 
 function objToString(obj) {
-  var str = '';
+  let str = '';
   $.each(obj, function (p) {
     if (obj.hasOwnProperty(p)) {
       str += p + '=' + obj[p] + '&';
@@ -46,6 +46,9 @@ function initTableDnD(table) {
     table = 'table.tableDnD';
   }
 
+  let originalOrder = null;
+  let reOrder = null;
+
   $(table).tableDnD({
     onDragStart: function (table, row) {
       originalOrder = $.tableDnD.serialize();
@@ -59,11 +62,14 @@ function initTableDnD(table) {
     onDragClass: 'myDragClass',
     onDrop: function (table, row) {
       if (originalOrder != $.tableDnD.serialize()) {
-        var way = (originalOrder.indexOf(row.id) < $.tableDnD.serialize().indexOf(row.id)) ? 1 : 0;
-        var ids = row.id.split('_');
-        var tableDrag = table;
-        var params = {};
-        var tableId = table.id.replace('table-', '');
+        const way = (originalOrder.indexOf(row.id) < $.tableDnD.serialize().indexOf(row.id)) ? 1 : 0;
+        const ids = row.id.split('_');
+        const tableDrag = table;
+        const tableId = table.id.replace('table-', '');
+
+        let params = {};
+        let jsendResponse = false;
+
         if (tableId === 'cms_block_0' || tableId === 'cms_block_1') {
           params = {
             updatePositions: true,
@@ -136,24 +142,30 @@ function initTableDnD(table) {
         params.page = parseInt($('input[name=page]').val(), 10);
         params.selected_pagination = parseInt($('input[name=selected_pagination]').val(), 10);
 
-        var data = $.tableDnD.serialize().replace(/table-/g, '');
+        let data = $.tableDnD.serialize().replace(/table-/g, '');
         if ((tableId === 'category') && (data.indexOf('_0&') !== -1)) {
           data += '&found_first=1';
         }
-        $.ajax({
-          type: 'POST',
-          headers: { 'cache-control': 'no-cache' },
-          url: window.currentIndex + '&token=' + window.token + '&rand=' + new Date().getTime(),
-          data: data + '&' + objToString(params),
-          success: function () {
-            var nodragLines = $(tableDrag).find('tr:not(".nodrag")');
-            var newPos;
+
+        function processResponse(response) {
+          let error = null;
+          let successMessage = window.update_success_msg;
+          if (jsendResponse) {
+            if (response.status === 'error') {
+              error = response.message;
+            } else if (response.status === 'success') {
+              successMessage = response.data;
+            }
+          }
+          if (! error) {
+            let nodragLines = $(tableDrag).find('tr:not(".nodrag")');
+            let newPos;
             if (window.come_from === 'AdminModulesPositions') {
               nodragLines.each(function (i) {
                 $(this).find('.positions').html(i + 1);
               });
             } else {
-              var reg;
+              let reg;
               if (tableId === 'product' || tableId.indexOf('attribute') !== -1 || tableId === 'attribute_group' || tableId === 'feature') {
                 reg = /_[0-9][0-9]*$/g;
               } else {
@@ -183,7 +195,29 @@ function initTableDnD(table) {
               nodragLines.children('td.dragHandle:first').find('a:even').attr('disabled', true);
               nodragLines.children('td.dragHandle:last').find('a:odd').attr('disabled', true);
             }
-            showSuccessMessage(window.update_success_msg);
+            showSuccessMessage(successMessage);
+          } else {
+            showErrorMessage(error);
+          }
+        }
+
+        $.ajax({
+          type: 'POST',
+          headers: {'cache-control': 'no-cache'},
+          url: window.currentIndex + '&token=' + window.token + '&rand=' + new Date().getTime(),
+          data: data + '&' + objToString(params),
+          dataType: jsendResponse ? 'json' : undefined,
+          success: processResponse,
+          error: function(response, textStatus) {
+            if (jsendResponse) {
+              if (response.responseJSON) {
+                processResponse(response.responseJSON);
+              } else {
+                showErrorMessage("Failed to process request: " + textStatus + ". Response=" + response.responseText);
+              }
+            } else {
+              showErrorMessage("Failed to process request: " + textStatus);
+            }
           }
         });
       }
