@@ -335,8 +335,10 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
+        $output = $arrayReturn ? [] : '';
+
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {
-            return $arrayReturn ? [] : '';
+            return $output;
         }
         if ($usePush !== false) {
             Tools::displayParameterAsDeprecated('usePush');
@@ -355,12 +357,12 @@ class HookCore extends ObjectModel
         // If no modules associated to hook_name or recompatible hook name, we stop the function
 
         if (!$moduleList = Hook::getHookModuleExecList($hookName)) {
-            return '';
+            return $output;
         }
 
         // Check if hook exists
         if (!$idHook = Hook::getIdByName($hookName)) {
-            return false;
+            return $output;
         }
 
         // Store list of executed hooks on this page
@@ -379,17 +381,11 @@ class HookCore extends ObjectModel
 
         // Look on modules list
         $altern = 0;
-        if ($arrayReturn) {
-            $output = [];
-        } else {
-            $output = '';
-        }
 
         if ($disableNonNativeModules && !isset(Hook::$native_module)) {
             Hook::$native_module = Module::getNativeModuleList();
         }
 
-        $differentShop = false;
         if ($idShop !== null && Validate::isUnsignedId($idShop) && $idShop != $context->shop->getContextShopID()) {
             $oldContext = $context->shop->getContext();
             $oldShop = clone $context->shop;
@@ -397,7 +393,6 @@ class HookCore extends ObjectModel
             if (Validate::isLoadedObject($shop)) {
                 $context->shop = $shop;
                 $context->shop->setContext(Shop::CONTEXT_SHOP, $shop->id);
-                $differentShop = true;
             }
         }
 
@@ -456,7 +451,7 @@ class HookCore extends ObjectModel
                     // Call hook method
                     if ($hookCallable) {
                         $display = Hook::coreCallHook($moduleInstance, 'hook' . $hookName, $hookArgs);
-                    } elseif ($hookRetroCallable) {
+                    } else {
                         $display = Hook::coreCallHook($moduleInstance, 'hook' . $retroHookName, $hookArgs);
                     }
 
@@ -480,7 +475,7 @@ class HookCore extends ObjectModel
             }
         }
 
-        if ($differentShop) {
+        if (isset($oldShop) && isset($oldContext) && isset($shop)) {
             $context->shop = $oldShop;
             $context->shop->setContext($oldContext, $shop->id);
         }
@@ -488,9 +483,15 @@ class HookCore extends ObjectModel
         if ($arrayReturn) {
             return $output;
         } else {
-            return ($liveEdit ? '<script type="text/javascript">hooks_list.push(\''.$hookName.'\');</script>
-				<div id="'.$hookName.'" class="dndHook" style="min-height:50px">' : '').$output.($liveEdit ? '</div>' : '');
-        }// Return html string
+            if ($liveEdit) {
+                return (
+                    '<script type="text/javascript">hooks_list.push(\'' . $hookName . '\');</script>' .
+                    '<div id="' . $hookName . '" class="dndHook" style="min-height:50px">' . $output . '</div>'
+                );
+            } else {
+                return $output;
+            }
+        }
     }
 
     /**
