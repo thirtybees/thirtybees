@@ -6061,42 +6061,53 @@ class AdminProductsControllerCore extends AdminController
      */
     public function ajaxProcessUpdatePositions()
     {
-        if ($this->hasEditPermission()) {
-            $way = (int) (Tools::getValue('way'));
-            $id_product = (int) Tools::getValue('id_product');
-            $id_category = (int) Tools::getValue('id_category');
-            $positions = Tools::getValue('product');
-            $page = (int) Tools::getValue('page');
-            $selected_pagination = (int) Tools::getValue('selected_pagination');
+        $this->setJSendErrorHandling();
 
-            if (is_array($positions)) {
-                foreach ($positions as $position => $value) {
-                    $pos = explode('_', $value);
+        if (! $this->hasEditPermission()) {
+            throw new PrestaShopException(Tools::displayError('You do not have permission to edit this.'));
+        }
 
-                    if ((isset($pos[1]) && isset($pos[2])) && ($pos[1] == $id_category && (int) $pos[2] === $id_product)) {
-                        if ($page > 1) {
-                            $position = $position + (($page - 1) * $selected_pagination);
-                        }
+        $way = (int) (Tools::getValue('way'));
+        $productId = (int) Tools::getValue('id_product');
+        $categoryId = (int) Tools::getValue('id_category');
+        $positions = Tools::getValue('product');
+        $page = (int) Tools::getValue('page');
+        $selected_pagination = (int) Tools::getValue('selected_pagination');
 
-                        if ($product = new Product((int) $pos[2])) {
-                            if (isset($position) && $product->updatePosition($way, $position)) {
-                                $category = new Category((int) $id_category);
-                                if (Validate::isLoadedObject($category)) {
-                                    Hook::exec('categoryUpdate', ['category' => $category]);
-                                }
-                                echo 'ok position '.(int) $position.' for product '.(int) $pos[2]."\r\n";
-                            } else {
-                                echo '{"hasError" : true, "errors" : "Can not update product '.(int) $id_product.' to position '.(int) $position.' "}';
-                            }
-                        } else {
-                            echo '{"hasError" : true, "errors" : "This product ('.(int) $id_product.') can t be loaded"}';
-                        }
+        if (is_array($positions)) {
+            foreach ($positions as $position => $value) {
+                $pos = explode('_', $value);
+                $categoryIdPos = (int)$pos[1] ?? 0;
+                $productIdPos = (int)$pos[2] ?? 0;
 
-                        break;
+                if ($categoryIdPos === $categoryId && $productIdPos === $productId) {
+                    $position = (int)$position;
+                    if ($page > 1) {
+                        $position = $position + (($page - 1) * $selected_pagination);
                     }
+                    $product = new Product($productId, false, $this->context->language->id);
+
+                    if (Validate::isLoadedObject($product)) {
+                        if ($product->updatePosition($way, $position)) {
+                            $category = new Category($categoryId);
+                            if (Validate::isLoadedObject($category)) {
+                                Hook::exec('categoryUpdate', ['category' => $category]);
+                            }
+                            $this->ajaxDie(json_encode([
+                                'status' => 'success',
+                                'data' => sprintf($this->l('Product "%1$s" moved to position %2$d'), $product->name, ($position + 1)),
+                            ]));
+                        } else {
+                            throw new PrestaShopException(sprintf(Tools::displayError('Can not update product "%1$s" to position %2$d'), $product->name, ($position + 1)));
+                        }
+                    } else {
+                        throw new PrestaShopException(sprintf(Tools::displayError('Product with ID %d not found'), $productId));
+                    }
+                    return;
                 }
             }
         }
+        throw new PrestaShopException(Tools::displayError('New position not provided'));
     }
 
     /**

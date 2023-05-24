@@ -117,6 +117,7 @@ function initTableDnD(table) {
             way: way
           };
         } else if (tableId === 'product') {
+          jsendResponse = true;
           params = {
             action: 'updatePositions',
             id_category: ids[1],
