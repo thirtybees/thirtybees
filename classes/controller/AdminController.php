@@ -30,6 +30,7 @@
  */
 
 use Thirtybees\Core\Error\ErrorUtils;
+use Thirtybees\Core\Error\Response\JSendErrorResponse;
 
 /**
  * Class AdminControllerCore
@@ -303,6 +304,14 @@ class AdminControllerCore extends Controller
     protected array $_conf = [];
 
     /**
+     * If set to true, any exception throws in postProcess() phase will be converted to error message. Otherwise,
+     * exceptions will cause error page response
+     *
+     * @var bool
+     */
+    protected $postProcessHandleExceptions = true;
+
+    /**
      * AdminControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -523,6 +532,8 @@ class AdminControllerCore extends Controller
 
     /**
      * @return false|mixed
+     *
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
@@ -578,8 +589,16 @@ class AdminControllerCore extends Controller
                 }
             }
         } catch (Throwable $e) {
-            static::getErrorHandler()->logFatalError(ErrorUtils::describeException($e));
-            $this->errors[] = $e->getMessage();
+            if ($this->postProcessHandleExceptions) {
+                static::getErrorHandler()->logFatalError(ErrorUtils::describeException($e));
+                $this->errors[] = $e->getMessage();
+            } else {
+                if ($e instanceof PrestaShopException) {
+                    throw $e;
+                } else {
+                    throw new PrestaShopException($e->getMessage(), null, $e);
+                }
+            }
         }
 
         return false;
@@ -4714,5 +4733,14 @@ class AdminControllerCore extends Controller
             return $this->context->cookie->$cookieFilterName;
         }
         return null;
+    }
+
+    /**
+     * @return void
+     */
+    protected function setJSendErrorHandling()
+    {
+        $this->postProcessHandleExceptions = false;
+        static::getErrorHandler()->setErrorResponseHandler(new JSendErrorResponse(_PS_MODE_DEV_));
     }
 }
