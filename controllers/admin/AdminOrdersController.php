@@ -659,13 +659,13 @@ class AdminOrdersControllerCore extends AdminController
         } /* Change order status, add a new entry in order history and send an e-mail to the customer if needed */
         elseif (Tools::isSubmit('submitState') && isset($order)) {
             if ($this->hasEditPermission()) {
-                $orderState = new OrderState(Tools::getValue('id_order_state'));
+                $newOrderState = (int)Tools::getValue('id_order_state');
+                $orderState = new OrderState($newOrderState, $order->id_lang);
 
                 if (!Validate::isLoadedObject($orderState)) {
                     $this->errors[] = Tools::displayError('The new order status is invalid.');
                 } else {
-                    $currentOrderState = $order->getCurrentOrderState();
-                    if ($currentOrderState->id != $orderState->id) {
+                    if ((int)$order->current_state !== $newOrderState) {
                         // Create new OrderHistory
                         $history = new OrderHistory();
                         $history->id_order = $order->id;
@@ -675,7 +675,7 @@ class AdminOrdersControllerCore extends AdminController
                         // If there is no payment and the order status is `logable`
                         // then the order payment will be generated automatically
                         $useExistingPayment = !$order->hasInvoice();
-                        $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
+                        $history->changeIdOrderState($newOrderState, $order, $useExistingPayment);
 
                         $carrier = new Carrier($order->id_carrier, $order->id_lang);
                         $customer = new Customer($order->id_customer);
