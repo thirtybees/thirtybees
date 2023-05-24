@@ -168,7 +168,7 @@ class MailCore extends ObjectModel
             ], null, true);
 
             // do NOT continue if any module returned false
-            if (is_array($result) && in_array(false, $result, true)) {
+            if (in_array(false, $result, true)) {
                 return true;
             }
 
@@ -684,18 +684,16 @@ class MailCore extends ObjectModel
                 static::TRANSPORT_NONE => new MailTransportNone()
             ];
             $res = Hook::exec('actionRegisterMailTransport', [], null, true);
-            if (is_array($res)) {
-                foreach ($res as $mod => $modTransports) {
-                    if (!is_array($modTransports)) {
-                        $modTransports = ['default' => $modTransports];
-                    }
-                    foreach ($modTransports as $transportId => $transport) {
-                        if ($transport instanceof MailTransport) {
-                            $key = $mod . ':' . $transportId;
-                            $transports[$key] = $transport;
-                        } else {
-                            trigger_error("Module $mod returned invalid mail transport: $transportId", E_USER_WARNING);
-                        }
+            foreach ($res as $mod => $modTransports) {
+                if (!is_array($modTransports)) {
+                    $modTransports = ['default' => $modTransports];
+                }
+                foreach ($modTransports as $transportId => $transport) {
+                    if ($transport instanceof MailTransport) {
+                        $key = $mod . ':' . $transportId;
+                        $transports[$key] = $transport;
+                    } else {
+                        trigger_error("Module $mod returned invalid mail transport: $transportId", E_USER_WARNING);
                     }
                 }
             }

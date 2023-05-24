@@ -152,14 +152,12 @@ class NotificationCore
     {
         $moduleTypes = [];
         $result = Hook::exec('actionGetNotificationType', [], null, true);
-        if (is_array($result)) {
-            foreach ($result as $moduleName => $definitions) {
-                if (is_array($definitions)) {
-                    foreach ($definitions as $type => $definition) {
-                        $fullType = $moduleName . '_' . $type;
-                        $fullType = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $fullType));
-                        $moduleTypes[$fullType] = $definition;
-                    }
+        foreach ($result as $moduleName => $definitions) {
+            if (is_array($definitions)) {
+                foreach ($definitions as $type => $definition) {
+                    $fullType = $moduleName . '_' . $type;
+                    $fullType = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $fullType));
+                    $moduleTypes[$fullType] = $definition;
                 }
             }
         }

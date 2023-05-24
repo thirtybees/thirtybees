@@ -522,18 +522,16 @@ class DispatcherCore
     {
         // Load custom routes from modules
         $modulesRoutes = Hook::exec('moduleRoutes', ['id_shop' => $idShop], null, true, false);
-        if (is_array($modulesRoutes) && count($modulesRoutes)) {
-            foreach ($modulesRoutes as $moduleRoute) {
-                if (is_array($moduleRoute)) {
-                    foreach ($moduleRoute as $route => $routeDetails) {
-                        if (array_key_exists('controller', $routeDetails) && array_key_exists('rule', $routeDetails)
-                            && array_key_exists('keywords', $routeDetails) && array_key_exists('params', $routeDetails)
-                        ) {
-                            if (!isset($this->default_routes[$route])) {
-                                $this->default_routes[$route] = [];
-                            }
-                            $this->default_routes[$route] = array_merge($this->default_routes[$route], $routeDetails);
+        foreach ($modulesRoutes as $moduleRoute) {
+            if (is_array($moduleRoute)) {
+                foreach ($moduleRoute as $route => $routeDetails) {
+                    if (array_key_exists('controller', $routeDetails) && array_key_exists('rule', $routeDetails)
+                        && array_key_exists('keywords', $routeDetails) && array_key_exists('params', $routeDetails)
+                    ) {
+                        if (!isset($this->default_routes[$route])) {
+                            $this->default_routes[$route] = [];
                         }
+                        $this->default_routes[$route] = array_merge($this->default_routes[$route], $routeDetails);
                     }
                 }
             }

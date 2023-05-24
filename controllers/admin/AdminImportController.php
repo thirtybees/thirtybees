@@ -5219,23 +5219,21 @@ class AdminImportControllerCore extends AdminController
             ];
 
             $result = Hook::exec('actionRegisterImportDataSource', null, null, true);
-            if (is_array($result)) {
-                foreach ($result as $moduleId => $mod) {
-                    if (! isset($mod['extensions']) || ! is_array($mod['extensions'])) {
-                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "extensions"');
-                    }
-                    if (! isset($mod['constructor']) || ! is_callable($mod['constructor'])) {
-                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "constructor"');
-                    }
-                    if (! isset($mod['name'])) {
-                        throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "name"');
-                    }
-                    $this->registeredDataSources['module-' . $moduleId] = [
-                        'name' => $mod['name'],
-                        'extensions' => $mod['extensions'],
-                        'constructor' => $mod['constructor'],
-                    ];
+            foreach ($result as $moduleId => $mod) {
+                if (! isset($mod['extensions']) || ! is_array($mod['extensions'])) {
+                    throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "extensions"');
                 }
+                if (! isset($mod['constructor']) || ! is_callable($mod['constructor'])) {
+                    throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "constructor"');
+                }
+                if (! isset($mod['name'])) {
+                    throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "name"');
+                }
+                $this->registeredDataSources['module-' . $moduleId] = [
+                    'name' => $mod['name'],
+                    'extensions' => $mod['extensions'],
+                    'constructor' => $mod['constructor'],
+                ];
             }
         }
         return $this->registeredDataSources;
@@ -5348,17 +5346,15 @@ class AdminImportControllerCore extends AdminController
         if ($entityTypes === null) {
             $entityTypes = [];
             $result = Hook::exec('actionRegisterImportEntities', null, null, true);
-            if (is_array($result)) {
-                foreach ($result as $moduleId => $mod) {
-                    if (!is_array($mod)) {
-                        $mod = ['default' => $mod];
-                    }
-                    foreach ($mod as $entityTypeId => $entityType) {
-                        if ($entityType instanceof ImportEntityType) {
-                            $entityTypes[$moduleId . ':' . $entityTypeId] = $entityType;
-                        } else {
-                            trigger_error("Module $moduleId registered invalid import entity type");
-                        }
+            foreach ($result as $moduleId => $mod) {
+                if (!is_array($mod)) {
+                    $mod = ['default' => $mod];
+                }
+                foreach ($mod as $entityTypeId => $entityType) {
+                    if ($entityType instanceof ImportEntityType) {
+                        $entityTypes[$moduleId . ':' . $entityTypeId] = $entityType;
+                    } else {
+                        trigger_error("Module $moduleId registered invalid import entity type");
                     }
                 }
             }

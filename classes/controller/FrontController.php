@@ -1872,7 +1872,7 @@ class FrontControllerCore extends Controller
 
                     // Invoke geolocation module service
                     $res = Hook::exec('actionGeoLocation', [ 'ip' => $ip ], $geolocationModuleId, true);
-                    if ($res && isset($res[$geolocationModule]) && $res[$geolocationModule]) {
+                    if (isset($res[$geolocationModule]) && $res[$geolocationModule]) {
                         $countryCode = strtoupper($res[$geolocationModule]);
 
                         if (!in_array($countryCode, $allowedCountries) && !static::isInWhitelistForGeolocation()) {
@@ -2180,7 +2180,7 @@ class FrontControllerCore extends Controller
     public function getOverrideTemplate()
     {
         $result = Hook::exec('DisplayOverrideTemplate', ['controller' => $this], null, true);
-        $count = is_array($result) ? count($result) : 0;
+        $count = count($result);
         if ($count) {
             if ($count > 1) {
                 $modules = implode(', ', array_keys($result));
