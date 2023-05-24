@@ -895,7 +895,7 @@ class HookCore extends ObjectModel
     /**
      * @param string $module
      *
-     * @return string
+     * @return string|false
      * @throws PrestaShopException
      * @deprecated 1.0.0
      */
@@ -905,13 +905,14 @@ class HookCore extends ObjectModel
         if ($module) {
             return Hook::exec('backBeforePayment', ['module' => strval($module)]);
         }
+        return false;
     }
 
     /**
      * @param int $idCarrier
      * @param Carrier $carrier
      *
-     * @return bool|string
+     * @return string|false
      * @throws PrestaShopException
      * @deprecated 1.0.0
      */
@@ -1093,7 +1094,7 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @return string|false
+     * @return array|string
      * @throws PrestaShopException
      * @deprecated 1.0.0
      */

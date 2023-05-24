@@ -698,6 +698,7 @@ class AdminEmployeesControllerCore extends AdminController
 
     /**
      * @return bool
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

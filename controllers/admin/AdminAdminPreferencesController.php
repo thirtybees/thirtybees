@@ -163,6 +163,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
 
     /**
      * @return void
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

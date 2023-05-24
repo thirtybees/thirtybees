@@ -75,6 +75,7 @@ class AdminTrackingControllerCore extends AdminController
      * Post processing
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function postprocess()
     {

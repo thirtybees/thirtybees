@@ -428,6 +428,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      * Post process
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

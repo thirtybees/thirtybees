@@ -1336,6 +1336,7 @@ class AdminProductsControllerCore extends AdminController
      * postProcess handle every checks before saving products information
      *
      * @return void
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

@@ -96,6 +96,7 @@ class AdminRequestSqlControllerCore extends AdminController
      * Post processing
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function postProcess()
     {

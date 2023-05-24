@@ -533,9 +533,10 @@ class AdminStockConfigurationControllerCore extends AdminController
     /**
      * AdminController::postProcess() override
      *
+     * @return bool
+     * @throws PrestaShopException
      * @see AdminController::postProcess()
      *
-     * @return bool
      */
     public function postProcess()
     {

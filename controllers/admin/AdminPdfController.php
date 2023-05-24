@@ -38,6 +38,7 @@ class AdminPdfControllerCore extends AdminController
      * Post processing
      *
      * @return void
+     * @throws PrestaShopException
      */
     public function postProcess()
     {
