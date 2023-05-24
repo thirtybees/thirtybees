@@ -453,6 +453,17 @@ class HelperListCore extends Helper
             ]
         );
 
+        // Include dnd javascript if list contains position update functionality
+        if ($this->position_identifier && $this->orderBy === 'position') {
+            $controller = $this->context->controller;
+            $controller->addJqueryPlugin('tablednd');
+            $controller->addJS(_PS_JS_DIR_ . 'admin/dnd.js');
+            Media::addJsDef([
+                'come_from' => $this->list_id ?? $this->table,
+                'alternate' => $this->orderWay === 'DESC'
+            ]);
+        }
+
         $this->header_tpl->assign(
             array_merge(
                 [
@@ -461,7 +472,6 @@ class HelperListCore extends Helper
                     'show_filters'      => ((count($this->_list) > 1 && $hasSearchField) || $hasValue),
                     'currentIndex'      => $this->currentIndex,
                     'action'            => $action,
-                    'is_order_position' => $this->position_identifier && $this->orderBy == 'position',
                     'order_way'         => $this->orderWay,
                     'order_by'          => $this->orderBy,
                     'fields_display'    => $this->fields_list,
