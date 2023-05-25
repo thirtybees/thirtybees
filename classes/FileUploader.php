@@ -203,7 +203,7 @@ class QqUploadedFileForm
             }
         }
         unlink($tmpName);
-        Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
+        Hook::triggerEvent('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
 
         if (!$image->update()) {
             return ['error' => Tools::displayError('Error while updating status')];
@@ -332,7 +332,7 @@ class QqUploadedFileXhr
             }
         }
         unlink($tmpName);
-        Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
+        Hook::triggerEvent('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
 
         if (!$image->update()) {
             return ['error' => Tools::displayError('Error while updating status')];

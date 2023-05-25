@@ -1062,7 +1062,7 @@ class StockManagerCore implements StockManagerInterface
         $isUsable
     ) {
         if ($isUsable) {
-            Hook::exec(
+            Hook::triggerEvent(
                 'actionProductCoverage',
                 [
                     'id_product'           => $productId,

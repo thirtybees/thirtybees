@@ -237,8 +237,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
         $address = new Address((int) $this->order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
         $taxExempt = false;
-        // @TODO: Use a hook for this. Like:
-        //        Hook::exec('isVatExemption', ['address' => &$address]);
+        // @TODO: Use a hook for this
         if (Module::isEnabled('vatnumber')) {
             require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
 

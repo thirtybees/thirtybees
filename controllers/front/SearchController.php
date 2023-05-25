@@ -90,7 +90,7 @@ class SearchControllerCore extends FrontController
                 foreach ($searchResults as &$product) {
                     $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
                 }
-                Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
+                Hook::triggerEvent('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
             }
             $this->ajaxDie(json_encode($searchResults));
         }
@@ -105,7 +105,7 @@ class SearchControllerCore extends FrontController
             $this->n = abs((int) (Tools::getValue('n', $productPerPage)));
             $this->p = abs((int) (Tools::getValue('p', 1)));
             $search = Search::find($this->context->language->id, $query, 1, 10, 'position', 'desc');
-            Hook::exec('actionSearch', ['expr' => $query, 'total' => $search['total']]);
+            Hook::triggerEvent('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
             $this->pagination($nbProducts);
 
@@ -134,7 +134,7 @@ class SearchControllerCore extends FrontController
                 }
             }
 
-            Hook::exec('actionSearch', ['expr' => $query, 'total' => $search['total']]);
+            Hook::triggerEvent('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
             $this->pagination($nbProducts);
 
@@ -153,7 +153,7 @@ class SearchControllerCore extends FrontController
             $nbProducts = (int) (Search::searchTag($this->context->language->id, $tag, true));
             $this->pagination($nbProducts);
             $result = Search::searchTag($this->context->language->id, $tag, false, $this->p, $this->n, $this->orderBy, $this->orderWay);
-            Hook::exec('actionSearch', ['expr' => $tag, 'total' => is_array($result) ? count($result) : 0]);
+            Hook::triggerEvent('actionSearch', ['expr' => $tag, 'total' => is_array($result) ? count($result) : 0]);
 
             $this->addColorsToProductList($result);
 

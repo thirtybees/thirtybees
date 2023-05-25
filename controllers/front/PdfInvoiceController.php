@@ -119,7 +119,7 @@ class PdfInvoiceControllerCore extends FrontController
     public function display()
     {
         $orderInvoiceList = $this->order->getInvoicesCollection();
-        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
+        Hook::triggerEvent('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
 
         $pdf = new PDF($orderInvoiceList, PDF::TEMPLATE_INVOICE, $this->context->smarty);
         $pdf->render();

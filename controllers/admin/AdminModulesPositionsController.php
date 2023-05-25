@@ -673,7 +673,11 @@ class AdminModulesPositionsControllerCore extends AdminController
                     $mod = Module::getInstanceByName($module['name']);
                     if ($mod instanceof Module) {
                         if ($mod->isHookableOn($hookName)) {
-                            $hookableModulesList[] = ['id' => (int)$mod->id, 'name' => $mod->displayName, 'display' => Hook::exec($hookName, [], (int)$mod->id)];
+                            $hookableModulesList[] = [
+                                'id' => (int)$mod->id,
+                                'name' => $mod->displayName,
+                                'display' => Hook::displayHook($hookName, [], (int)$mod->id)
+                            ];
                         }
                     }
                 }

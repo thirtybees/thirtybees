@@ -244,7 +244,7 @@ class StockAvailableCore extends ObjectModel
 
                     $productQuantity = $manager->getProductRealQuantities($idProduct, null, $allowedWarehouseForProductClean, true);
 
-                    Hook::exec(
+                    Hook::triggerEvent(
                         'actionUpdateQuantity',
                         [
                             'id_product'           => $idProduct,
@@ -298,7 +298,7 @@ class StockAvailableCore extends ObjectModel
 
                         $productQuantity += $quantity;
 
-                        Hook::exec(
+                        Hook::triggerEvent(
                             'actionUpdateQuantity',
                             [
                                 'id_product'           => $idProduct,
@@ -987,7 +987,7 @@ class StockAvailableCore extends ObjectModel
             static::cleanQuantityCache($this->id_product);
 
             // and trigger hook
-            Hook::exec(
+            Hook::triggerEvent(
                 'actionUpdateQuantity',
                 [
                     'id_product' => (int)$this->id_product,

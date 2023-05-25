@@ -119,7 +119,7 @@ class AdminPdfControllerCore extends AdminController
         }
 
         $orderInvoiceList = $order->getInvoicesCollection();
-        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
+        Hook::triggerEvent('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
         $this->generatePDF($orderInvoiceList, PDF::TEMPLATE_INVOICE);
     }
 
@@ -157,7 +157,7 @@ class AdminPdfControllerCore extends AdminController
             throw new PrestaShopException(Tools::displayError('The order invoice cannot be found within your database.'));
         }
 
-        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => [$orderInvoice]]);
+        Hook::triggerEvent('actionPDFInvoiceRender', ['order_invoice_list' => [$orderInvoice]]);
         $this->generatePDF($orderInvoice, PDF::TEMPLATE_INVOICE);
     }
 

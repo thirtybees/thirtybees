@@ -344,9 +344,9 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
     public function getModuleManagedTables()
     {
         $modulesManaged = [];
-        $modules = Hook::exec('actionCustomerMergeStrategy', [], null, true);
-        if ($modules) {
-            foreach ($modules as $definitions) {
+        $modules = Hook::getResponses('actionCustomerMergeStrategy');
+        foreach ($modules as $definitions) {
+            if (is_array($definitions)) {
                 $modulesManaged = array_merge($modulesManaged, $definitions);
             }
         }

@@ -84,10 +84,10 @@ class OrderOpcControllerCore extends ParentOrderController
                                     $carriers = $this->context->cart->simulateCarriersOutput();
                                     $return = array_merge(
                                         [
-                                            'HOOK_TOP_PAYMENT'   => Hook::exec('displayPaymentTop'),
+                                            'HOOK_TOP_PAYMENT'   => Hook::displayHook('displayPaymentTop'),
                                             'HOOK_PAYMENT'       => $this->_getPaymentMethods(),
                                             'carrier_data'       => $this->_getCarrierList(),
-                                            'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', ['carriers' => $carriers]),
+                                            'HOOK_BEFORECARRIER' => Hook::displayHook('displayBeforeCarrier', ['carriers' => $carriers]),
                                         ],
                                         $this->getFormatedSummaryDetail()
                                     );
@@ -109,7 +109,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                 $this->ajaxDie(
                                     json_encode(
                                         [
-                                            'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
+                                            'HOOK_TOP_PAYMENT' => Hook::displayHook('displayPaymentTop'),
                                             'HOOK_PAYMENT'     => $this->_getPaymentMethods(),
                                         ]
                                     )
@@ -190,7 +190,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                         'block_user_info_nav'             => (isset($blockUserInfo) ? $blockUserInfo->hookDisplayNav([]) : ''),
                                         'formatedAddressFieldsValuesList' => $formatedAddressFieldsValuesList,
                                         'carrier_data'                    => ($isAdvApi ? '' : $this->_getCarrierList()),
-                                        'HOOK_TOP_PAYMENT'                => ($isAdvApi ? '' : Hook::exec('displayPaymentTop')),
+                                        'HOOK_TOP_PAYMENT'                => ($isAdvApi ? '' : Hook::displayHook('displayPaymentTop')),
                                         'HOOK_PAYMENT'                    => ($isAdvApi ? '' : $this->_getPaymentMethods()),
                                         'no_address'                      => 0,
                                         'gift_price'                      => Tools::displayPrice(
@@ -277,7 +277,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                         $result = array_merge(
                                             $result,
                                             [
-                                                'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
+                                                'HOOK_TOP_PAYMENT' => Hook::displayHook('displayPaymentTop'),
                                                 'HOOK_PAYMENT'     => $this->_getPaymentMethods(),
                                                 'gift_price'       => Tools::displayPrice(Tools::convertPrice(Product::getTaxCalculationMethod() == 1 ? $wrappingFees : $wrappingFeesTaxInc, new Currency((int) $this->context->cookie->id_currency))),
                                                 'carrier_data'     => $this->_getCarrierList(),
@@ -349,7 +349,7 @@ class OrderOpcControllerCore extends ParentOrderController
     /**
      * Get payment methods
      *
-     * @return array|string
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -412,7 +412,7 @@ class OrderOpcControllerCore extends ParentOrderController
             return '<p class="center"><button class="button btn btn-default button-medium" name="confirmOrder" id="confirmOrder" onclick="confirmFreeOrder();" type="submit"> <span>'.Tools::displayError('I confirm my order.').'</span></button></p>';
         }
 
-        $return = Hook::exec('displayPayment');
+        $return = Hook::displayHook('displayPayment');
         if (!$return) {
             return '<p class="warning">'.Tools::displayError('No payment method is available for use at this time. ').'</p>';
         }
@@ -478,7 +478,7 @@ class OrderOpcControllerCore extends ParentOrderController
             'address_collection'          => $this->context->cart->getAddressCollection(),
             'opc'                         => true,
             'oldMessage'                  => isset($oldMessage['message']) ? $oldMessage['message'] : '',
-            'HOOK_BEFORECARRIER'          => Hook::exec(
+            'HOOK_BEFORECARRIER'          => Hook::displayHook(
                 'displayBeforeCarrier',
                 [
                     'carriers'             => $carriers,
@@ -498,7 +498,7 @@ class OrderOpcControllerCore extends ParentOrderController
             $this->errors[] = Tools::displayError('This address is invalid.');
         } else {
             $result = [
-                'HOOK_BEFORECARRIER' => Hook::exec(
+                'HOOK_BEFORECARRIER' => Hook::displayHook(
                     'displayBeforeCarrier',
                     [
                         'carriers'             => $carriers,
@@ -709,8 +709,8 @@ class OrderOpcControllerCore extends ParentOrderController
                 'isPaymentStep'             => isset($_GET['isPaymentStep']) && $_GET['isPaymentStep'],
                 'genders'                   => Gender::getGenders(),
                 'one_phone_at_least'        => (int) Configuration::get('PS_ONE_PHONE_AT_LEAST'),
-                'HOOK_CREATE_ACCOUNT_FORM'  => Hook::exec('displayCustomerAccountForm'),
-                'HOOK_CREATE_ACCOUNT_TOP'   => Hook::exec('displayCustomerAccountFormTop'),
+                'HOOK_CREATE_ACCOUNT_FORM'  => Hook::displayHook('displayCustomerAccountForm'),
+                'HOOK_CREATE_ACCOUNT_TOP'   => Hook::displayHook('displayCustomerAccountFormTop'),
             ]
         );
         $years = Tools::dateYears();
@@ -847,7 +847,7 @@ class OrderOpcControllerCore extends ParentOrderController
                     'HOOK_EXTRACARRIER'      => null,
                     'HOOK_EXTRACARRIER_ADDR' => null,
                     'oldMessage'             => isset($oldMessage['message']) ? $oldMessage['message'] : '',
-                    'HOOK_BEFORECARRIER'     => Hook::exec(
+                    'HOOK_BEFORECARRIER'     => Hook::displayHook(
                         'displayBeforeCarrier', [
                             'carriers'             => $carriers,
                             'checked'              => $this->context->cart->simulateCarrierSelectedOutput(),
@@ -874,16 +874,16 @@ class OrderOpcControllerCore extends ParentOrderController
         if (Configuration::get('PS_ADVANCED_PAYMENT_API')) {
             $this->context->smarty->assign(
                 [
-                    'HOOK_TOP_PAYMENT'      => ($this->isLogged ? Hook::exec('displayPaymentTop') : ''),
+                    'HOOK_TOP_PAYMENT'      => ($this->isLogged ? Hook::displayHook('displayPaymentTop') : ''),
                     'HOOK_PAYMENT'          => $this->_getPaymentMethods(),
-                    'HOOK_ADVANCED_PAYMENT' => Hook::exec('advancedPaymentOptions', [], null, true),
+                    'HOOK_ADVANCED_PAYMENT' => Hook::getResponses('advancedPaymentOptions'),
                     'link_conditions'       => $this->link_conditions,
                 ]
             );
         } else {
             $this->context->smarty->assign(
                 [
-                    'HOOK_TOP_PAYMENT' => ($this->isLogged ? Hook::exec('displayPaymentTop') : ''),
+                    'HOOK_TOP_PAYMENT' => ($this->isLogged ? Hook::displayHook('displayPaymentTop') : ''),
                     'HOOK_PAYMENT'     => $this->_getPaymentMethods(),
                 ]
             );

@@ -3258,7 +3258,7 @@ FileETag none
         fclose($write_fd);
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
-            Hook::exec('actionHtaccessCreate');
+            Hook::triggerEvent('actionHtaccessCreate');
         }
 
         return true;

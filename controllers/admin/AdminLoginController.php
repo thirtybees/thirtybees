@@ -169,7 +169,7 @@ class AdminLoginControllerCore extends AdminController
         Media::addJsDefL('one_error', $this->l('There is one error.', null, true, false));
         Media::addJsDefL('more_errors', $this->l('There are several errors.', null, true, false));
 
-        Hook::exec('actionAdminLoginControllerSetMedia');
+        Hook::triggerEvent('actionAdminLoginControllerSetMedia');
     }
 
     /**

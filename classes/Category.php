@@ -1247,7 +1247,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             $this->updateGroup($this->groupBox);
         }
 
-        Hook::exec('actionCategoryAdd', ['category' => $this]);
+        Hook::triggerEvent('actionCategoryAdd', ['category' => $this]);
 
         return $ret;
     }
@@ -1452,7 +1452,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             $this->recalculateLevelDepth($this->id);
         }
 
-        Hook::exec('actionCategoryUpdate', ['category' => $this]);
+        Hook::triggerEvent('actionCategoryUpdate', ['category' => $this]);
 
         return $ret;
     }
@@ -1565,7 +1565,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public function toggleStatus()
     {
         $result = parent::toggleStatus();
-        Hook::exec('actionCategoryUpdate', ['category' => $this]);
+        Hook::triggerEvent('actionCategoryUpdate', ['category' => $this]);
 
         return $result;
     }
@@ -1749,7 +1749,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             Category::regenerateEntireNtree();
         }
 
-        Hook::exec('actionCategoryDelete', ['category' => $this, 'deleted_children' => $deletedChildren]);
+        Hook::triggerEvent('actionCategoryDelete', ['category' => $this, 'deleted_children' => $deletedChildren]);
 
         return true;
     }
@@ -2266,7 +2266,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             WHERE c.`id_parent` = '.(int) $moved_category['id_parent'].'
             AND c.`id_category`='.(int) $moved_category['id_category']
             ));
-        Hook::exec('actionCategoryUpdate', ['category' => new Category($moved_category['id_category'])]);
+        Hook::triggerEvent('actionCategoryUpdate', ['category' => new Category($moved_category['id_category'])]);
 
         return $result;
     }

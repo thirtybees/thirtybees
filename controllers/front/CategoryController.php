@@ -251,7 +251,7 @@ class CategoryControllerCore extends FrontController
     public function assignProductList()
     {
         $hookExecuted = false;
-        Hook::exec(
+        Hook::triggerEvent(
             'actionProductListOverride',
             [
                 'nbProducts'   => &$this->nbProducts,
@@ -274,7 +274,7 @@ class CategoryControllerCore extends FrontController
 
         $this->addColorsToProductList($this->cat_products);
 
-        Hook::exec(
+        Hook::triggerEvent(
             'actionProductListModifier',
             [
                 'nb_products'  => &$this->nbProducts,

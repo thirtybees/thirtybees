@@ -282,7 +282,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
 
             if (Validate::isLoadedObject($moduleInstance) && $moduleInstance && $moduleInstance->active) {
-                $hook = Hook::exec('displayAdminStatsModules', null, $moduleInstance->id);
+                $hook = Hook::displayHook('displayAdminStatsModules', [], (int)$moduleInstance->id);
             } else {
                 /** @var StatsModule $moduleInstance */
                 $moduleInstance = Module::getInstanceByName('statsmodule');

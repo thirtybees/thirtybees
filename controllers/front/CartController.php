@@ -317,7 +317,7 @@ class CartControllerCore extends FrontController
         }
 
         if ($this->context->cart->deleteProduct($this->id_product, $this->id_product_attribute, $this->customization_id, $this->id_address_delivery)) {
-            Hook::exec(
+            Hook::triggerEvent(
                 'actionAfterDeleteProductInCart',
                 [
                     'id_cart'              => (int) $this->context->cart->id,
@@ -462,8 +462,8 @@ class CartControllerCore extends FrontController
             $result = [];
             $result['summary'] = $this->context->cart->getSummaryDetails(null, true);
             $result['customizedDatas'] = Product::getAllCustomizedDatas($this->context->cart->id, null, true);
-            $result['HOOK_SHOPPING_CART'] = Hook::exec('displayShoppingCartFooter', $result['summary']);
-            $result['HOOK_SHOPPING_CART_EXTRA'] = Hook::exec('displayShoppingCart', $result['summary']);
+            $result['HOOK_SHOPPING_CART'] = Hook::displayHook('displayShoppingCartFooter', $result['summary']);
+            $result['HOOK_SHOPPING_CART_EXTRA'] = Hook::displayHook('displayShoppingCart', $result['summary']);
 
             foreach ($result['summary']['products'] as $key => &$product) {
                 $product['quantity_without_customization'] = $product['quantity'];
@@ -480,7 +480,7 @@ class CartControllerCore extends FrontController
             }
 
             $json = '';
-            Hook::exec('actionCartListOverride', ['summary' => $result, 'json' => &$json]);
+            Hook::triggerEvent('actionCartListOverride', ['summary' => $result, 'json' => &$json]);
             $this->ajaxDie(json_encode(array_merge($result, (array) json_decode($json, true))));
         } // @todo create a hook
         elseif (file_exists(_PS_MODULE_DIR_.'/blockcart/blockcart-ajax.php')) {

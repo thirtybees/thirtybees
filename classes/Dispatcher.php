@@ -521,7 +521,7 @@ class DispatcherCore
     protected function loadRoutes($idShop = null)
     {
         // Load custom routes from modules
-        $modulesRoutes = Hook::exec('moduleRoutes', ['id_shop' => $idShop], null, true, false);
+        $modulesRoutes = Hook::getResponses('moduleRoutes', ['id_shop' => $idShop]);
         foreach ($modulesRoutes as $moduleRoute) {
             if (is_array($moduleRoute)) {
                 foreach ($moduleRoute as $route => $routeDetails) {
@@ -845,7 +845,7 @@ class DispatcherCore
         $controller = ServiceLocator::getInstance()->getController($controllerClass);
 
         // Execute hook dispatcher
-        Hook::exec('actionDispatcher', $paramsHookActionDispatcher);
+        Hook::triggerEvent('actionDispatcher', $paramsHookActionDispatcher);
 
         // Running controller
         $controller->run();

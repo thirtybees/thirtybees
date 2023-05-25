@@ -2733,7 +2733,7 @@ class CartCore extends ObjectModel
         $first = true;
         $hookExtracarrierAddr = [];
         foreach (Context::getContext()->cart->getAddressCollection() as $address) {
-            $hook = Hook::exec('displayCarrierList', ['address' => $address]);
+            $hook = Hook::displayHook('displayCarrierList', ['address' => $address]);
             $hookExtracarrierAddr[$address->id] = $hook;
 
             if ($first) {
@@ -2845,7 +2845,7 @@ class CartCore extends ObjectModel
 
         $this->_products = null;
         $return = parent::update($nullValues);
-        Hook::exec('actionCartSave', ['cart' => $this]);
+        Hook::triggerEvent('actionCartSave', ['cart' => $this]);
 
         return $return;
     }
@@ -3214,7 +3214,7 @@ class CartCore extends ObjectModel
             unset(static::$_totalWeight[$this->id]);
         }
 
-        Hook::exec(
+        Hook::triggerEvent(
             'actionBeforeCartUpdateQty',
             [
                 'cart'                 => $this,
@@ -4151,9 +4151,10 @@ class CartCore extends ObjectModel
             }
         }
 
-        $hook = Hook::exec('actionCartSummary', $summary, null, true);
-        if ($hook) {
-            $summary = array_merge($summary, array_shift($hook));
+        foreach (Hook::getResponses('actionCartSummary', $summary) as $hookResponse) {
+            if (is_array($hookResponse)) {
+                $summary = array_merge($summary, $hookResponse);
+            }
         }
 
         return $summary;
@@ -4571,7 +4572,7 @@ class CartCore extends ObjectModel
         }
 
         $return = parent::add($autoDate, $nullValues);
-        Hook::exec('actionCartSave', ['cart' => $this]);
+        Hook::triggerEvent('actionCartSave', ['cart' => $this]);
 
         return $return;
     }

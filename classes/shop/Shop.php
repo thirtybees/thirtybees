@@ -1322,13 +1322,14 @@ class ShopCore extends ObjectModel
         if (is_array($modulesList) && count($modulesList) > 0) {
             foreach ($modulesList as $m) {
                 if (!$tablesImport || isset($tablesImport['Module'.ucfirst($m['module'])])) {
-                    Hook::exec(
+                    Hook::triggerEvent(
                         'actionShopDataDuplication',
                         [
                             'old_id_shop' => (int) $oldId,
                             'new_id_shop' => (int) $this->id,
                         ],
-                        $m['id_module']
+                        null,
+                        (int)$m['id_module']
                     );
                 }
             }

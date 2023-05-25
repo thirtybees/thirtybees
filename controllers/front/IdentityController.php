@@ -184,7 +184,7 @@ class IdentityControllerCore extends FrontController
         // Call a hook to display more information
         $this->context->smarty->assign(
             [
-                'HOOK_CUSTOMER_IDENTITY_FORM' => Hook::exec('displayCustomerIdentityForm'),
+                'HOOK_CUSTOMER_IDENTITY_FORM' => Hook::displayHook('displayCustomerIdentityForm'),
             ]
         );
 

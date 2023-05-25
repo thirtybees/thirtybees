@@ -941,7 +941,7 @@ abstract class PaymentModuleCore extends Module
                 }
 
                 // Hook validate order
-                Hook::exec(
+                Hook::triggerEvent(
                     'actionValidateOrder',
                     [
                         'cart'        => $this->context->cart,
@@ -1048,7 +1048,7 @@ abstract class PaymentModuleCore extends Module
                     // Join PDF invoice
                     if ((int) Configuration::get('PS_INVOICE') && $orderStatus->invoice && $order->invoice_number) {
                         $orderInvoiceList = $order->getInvoicesCollection();
-                        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
+                        Hook::triggerEvent('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
                         $pdf = new PDF($orderInvoiceList, PDF::TEMPLATE_INVOICE, $this->context->smarty);
                         $fileAttachment['content'] = $pdf->render(false);
                         $fileAttachment['name'] = Configuration::get('PS_INVOICE_PREFIX', (int) $order->id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';

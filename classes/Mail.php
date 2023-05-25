@@ -149,7 +149,7 @@ class MailCore extends ObjectModel
     {
         try {
             // allow hooks to modify input parameters
-            $result = Hook::exec('actionEmailSendBefore', [
+            $result = Hook::getResponses('actionEmailSendBefore', [
                 'idLang' => &$idLang,
                 'template' => &$template,
                 'subject' => &$subject,
@@ -165,7 +165,7 @@ class MailCore extends ObjectModel
                 'idShop' => &$idShop,
                 'bcc' => &$bcc,
                 'replyTo' => &$replyTo,
-            ], null, true);
+            ]);
 
             // do NOT continue if any module returned false
             if (in_array(false, $result, true)) {
@@ -393,12 +393,12 @@ class MailCore extends ObjectModel
 
         $templateHtml = '';
         $templateTxt = '';
-        Hook::exec('actionEmailAddBeforeContent', [
+        Hook::triggerEvent('actionEmailAddBeforeContent', [
             'template' => $template,
             'template_html' => &$templateHtml,
             'template_txt' => &$templateTxt,
             'id_lang' => (int)$idLang,
-        ], null, true);
+        ]);
 
         // load html template content
         if ($sendHtmlContent) {
@@ -416,12 +416,12 @@ class MailCore extends ObjectModel
             }
         }
 
-        Hook::exec('actionEmailAddAfterContent', [
+        Hook::triggerEvent('actionEmailAddAfterContent', [
             'template' => $template,
             'template_html' => &$templateHtml,
             'template_txt' => &$templateTxt,
             'id_lang' => (int)$idLang,
-        ], null, true);
+        ]);
 
         $templates = [];
         if ($templateHtml) {
@@ -563,12 +563,12 @@ class MailCore extends ObjectModel
 
         // Get extra template_vars
         $extraTemplateVars = [];
-        Hook::exec('actionGetExtraMailTemplateVars', [
+        Hook::triggerEvent('actionGetExtraMailTemplateVars', [
             'template' => $template,
             'template_vars' => $templateVars,
             'extra_template_vars' => &$extraTemplateVars,
             'id_lang' => (int)$idLang,
-        ], null, true);
+        ]);
 
         $templateVars = array_merge($templateVars, $extraTemplateVars);
         return $templateVars;
@@ -683,7 +683,7 @@ class MailCore extends ObjectModel
             $transports = [
                 static::TRANSPORT_NONE => new MailTransportNone()
             ];
-            $res = Hook::exec('actionRegisterMailTransport', [], null, true);
+            $res = Hook::getResponses('actionRegisterMailTransport');
             foreach ($res as $mod => $modTransports) {
                 if (!is_array($modTransports)) {
                     $modTransports = ['default' => $modTransports];

@@ -318,13 +318,13 @@ class ProductControllerCore extends FrontController
                     'attachments'              => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : []),
                     'allow_oosp'               => $this->product->isAvailableWhenOutOfStock((int) $this->product->out_of_stock),
                     'last_qties'               => (int) Configuration::get('PS_LAST_QTIES'),
-                    'HOOK_EXTRA_LEFT'          => Hook::exec('displayLeftColumnProduct'),
-                    'HOOK_EXTRA_RIGHT'         => Hook::exec('displayRightColumnProduct'),
-                    'HOOK_PRODUCT_OOS'         => Hook::exec('actionProductOutOfStock', ['product' => $this->product]),
-                    'HOOK_PRODUCT_ACTIONS'     => Hook::exec('displayProductButtons', ['product' => $this->product]),
-                    'HOOK_PRODUCT_TAB'         => Hook::exec('displayProductTab', ['product' => $this->product]),
-                    'HOOK_PRODUCT_TAB_CONTENT' => Hook::exec('displayProductTabContent', ['product' => $this->product]),
-                    'HOOK_PRODUCT_CONTENT'     => Hook::exec('displayProductContent', ['product' => $this->product]),
+                    'HOOK_EXTRA_LEFT'          => Hook::displayHook('displayLeftColumnProduct'),
+                    'HOOK_EXTRA_RIGHT'         => Hook::displayHook('displayRightColumnProduct'),
+                    'HOOK_PRODUCT_OOS'         => Hook::displayHook('actionProductOutOfStock', ['product' => $this->product]),
+                    'HOOK_PRODUCT_ACTIONS'     => Hook::displayHook('displayProductButtons', ['product' => $this->product]),
+                    'HOOK_PRODUCT_TAB'         => Hook::displayHook('displayProductTab', ['product' => $this->product]),
+                    'HOOK_PRODUCT_TAB_CONTENT' => Hook::displayHook('displayProductTabContent', ['product' => $this->product]),
+                    'HOOK_PRODUCT_CONTENT'     => Hook::displayHook('displayProductContent', ['product' => $this->product]),
                     'display_qties'            => (int) Configuration::get('PS_DISPLAY_QTIES'),
                     'display_ht'               => !Tax::excludeTaxeOption(),
                     'jqZoomEnabled'            => Configuration::get('PS_DISPLAY_JQZOOM'),
@@ -496,7 +496,6 @@ class ProductControllerCore extends FrontController
         if (Validate::isLoadedObject($this->category)) {
             $subCategories = $this->category->getSubCategories($this->context->language->id, true);
 
-            // various assignements before Hook::exec
             $this->context->smarty->assign(
                 [
                     'path'                 => $path,
@@ -509,7 +508,7 @@ class ProductControllerCore extends FrontController
                 ]
             );
         }
-        $this->context->smarty->assign(['HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])]);
+        $this->context->smarty->assign(['HOOK_PRODUCT_FOOTER' => Hook::displayHook('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])]);
     }
 
     /**

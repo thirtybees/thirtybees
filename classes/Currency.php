@@ -287,13 +287,21 @@ class CurrencyCore extends ObjectModel
         }
 
         foreach ($moduleRates as $idModule => $currencies) {
-            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => $currencies, 'baseCurrency' => mb_strtoupper($defaultCurrency->iso_code)], $idModule, true);
-            foreach ($response as $rates) {
+            $rates = Hook::getResponse(
+                'actionRetrieveCurrencyRates',
+                $idModule,
+                [
+                    'currencies' => $currencies,
+                    'baseCurrency' => mb_strtoupper($defaultCurrency->iso_code)
+                ],
+            );
+            if (is_array($rates)) {
                 foreach ($rates as $isoCode => $rate) {
                     $currency = Currency::getCurrencyInstance(Currency::getIdByIsoCode($isoCode));
-                    $currency->conversion_rate = $rate;
-
-                    $currency->save();
+                    if (Validate::isLoadedObject($currency)) {
+                        $currency->conversion_rate = (float)$rate;
+                        $currency->save();
+                    }
                 }
             }
         }
@@ -785,18 +793,13 @@ class CurrencyCore extends ObjectModel
     protected static function resolveFormatters()
     {
         $currencies = static::getCurrencies(false, false);
-        $results = Hook::exec(
-            'actionGetCurrencyFormatters',
-            [ 'currencies' => $currencies ],
-            null,
-            true
-        );
+        $results = Hook::getResponses('actionGetCurrencyFormatters', ['currencies' => $currencies]);
         $formatters = [];
         foreach ($results as $moduleFormatters) {
             foreach ($moduleFormatters as $currencyId => $definition) {
                 $currencyId = (int)$currencyId;
                 if (isset($formatters[$currencyId])) {
-                    trigger_error(E_USER_WARNING, "Multiple modules provided formatter for currency ".$currencyId);
+                    trigger_error("Multiple modules provided formatter for currency ".$currencyId, E_USER_WARNING);
                 }
                 $formatters[$currencyId] = $definition;
             }

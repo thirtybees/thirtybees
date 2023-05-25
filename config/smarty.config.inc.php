@@ -308,14 +308,14 @@ function smartyHook($params, $smarty)
         if (!empty($params['mod'])) {
             $module = Module::getInstanceByName($params['mod']);
             if ($module && $module->id) {
-                $id_module = $module->id;
+                $id_module = (int)$module->id;
             } else {
                 return '';
             }
             unset($hook_params['mod']);
         }
         unset($hook_params['h']);
-        return Hook::exec($params['h'], $hook_params, $id_module);
+        return Hook::displayHook($params['h'], $hook_params, $id_module);
     }
     return null;
 }

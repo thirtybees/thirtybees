@@ -543,13 +543,13 @@ class AdminControllerCore extends Controller
                 $action = Tools::getValue('action');
                 // no need to use displayConf() here
                 if (!empty($action) && method_exists($this, 'ajaxProcess'.Tools::toCamelCase($action))) {
-                    Hook::exec('actionAdmin'.ucfirst($action).'Before', ['controller' => $this]);
-                    Hook::exec('action'.get_class($this).ucfirst($action).'Before', ['controller' => $this]);
+                    Hook::triggerEvent('actionAdmin'.ucfirst($action).'Before', ['controller' => $this]);
+                    Hook::triggerEvent('action'.get_class($this).ucfirst($action).'Before', ['controller' => $this]);
 
                     $return = $this->{'ajaxProcess'.Tools::toCamelCase($action)}();
 
-                    Hook::exec('actionAdmin'.ucfirst($action).'After', ['controller' => $this, 'return' => $return]);
-                    Hook::exec('action'.get_class($this).ucfirst($action).'After', ['controller' => $this, 'return' => $return]);
+                    Hook::triggerEvent('actionAdmin'.ucfirst($action).'After', ['controller' => $this, 'return' => $return]);
+                    Hook::triggerEvent('action'.get_class($this).ucfirst($action).'After', ['controller' => $this, 'return' => $return]);
 
                     return $return;
                 } elseif (!empty($action) && $this->controller_name == 'AdminModules' && Tools::getIsset('configure')) {
@@ -577,13 +577,13 @@ class AdminControllerCore extends Controller
                 // If the method named after the action exists, call "before" hooks, then call action method, then call "after" hooks
                 if (!empty($this->action) && method_exists($this, 'process'.ucfirst(Tools::toCamelCase($this->action)))) {
                     // Hook before action
-                    Hook::exec('actionAdmin'.ucfirst($this->action).'Before', ['controller' => $this]);
-                    Hook::exec('action'.get_class($this).ucfirst($this->action).'Before', ['controller' => $this]);
+                    Hook::triggerEvent('actionAdmin'.ucfirst($this->action).'Before', ['controller' => $this]);
+                    Hook::triggerEvent('action'.get_class($this).ucfirst($this->action).'Before', ['controller' => $this]);
                     // Call process
                     $return = $this->{'process'.Tools::toCamelCase($this->action)}();
                     // Hook After Action
-                    Hook::exec('actionAdmin'.ucfirst($this->action).'After', ['controller' => $this, 'return' => $return]);
-                    Hook::exec('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => $return]);
+                    Hook::triggerEvent('actionAdmin'.ucfirst($this->action).'After', ['controller' => $this, 'return' => $return]);
+                    Hook::triggerEvent('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => $return]);
 
                     return $return;
                 }
@@ -610,7 +610,7 @@ class AdminControllerCore extends Controller
      */
     public function processFilter()
     {
-        Hook::exec('action'.$this->controller_name.'ListingFieldsModifier', ['fields' => &$this->fields_list]);
+        Hook::triggerEvent('action'.$this->controller_name.'ListingFieldsModifier', ['fields' => &$this->fields_list]);
 
         $this->ensureListIdDefinition();
 
@@ -1151,7 +1151,7 @@ class AdminControllerCore extends Controller
             }
         } while (empty($this->_list));
 
-        Hook::exec(
+        Hook::triggerEvent(
             'action'.$this->controller_name.'ListingResultsModifier', [
                 'list'       => &$this->_list,
                 'list_total' => &$this->_listTotal,
@@ -1164,7 +1164,7 @@ class AdminControllerCore extends Controller
      */
     protected function dispatchFieldsListingModifierEvent()
     {
-        Hook::exec(
+        Hook::triggerEvent(
             'action'.$this->controller_name.'ListingFieldsModifier', [
                 'select'    => &$this->_select,
                 'join'      => &$this->_join,
@@ -2671,7 +2671,7 @@ class AdminControllerCore extends Controller
 
             $fieldsValue = $this->getFieldsValue($this->object);
 
-            Hook::exec(
+            Hook::triggerEvent(
                 'action'.$this->controller_name.'FormModifier', [
                     'fields'       => &$this->fields_form,
                     'fields_value' => &$fieldsValue,
@@ -3520,7 +3520,7 @@ class AdminControllerCore extends Controller
      */
     public function renderOptions()
     {
-        Hook::exec(
+        Hook::triggerEvent(
             'action'.$this->controller_name.'OptionsModifier', [
                 'options'     => &$this->fields_options,
                 'option_vars' => &$this->tpl_option_vars,
@@ -3674,7 +3674,7 @@ class AdminControllerCore extends Controller
         $this->addSyntheticSchedulerJs();
 
         // Execute Hook AdminController SetMedia
-        Hook::exec('actionAdminControllerSetMedia');
+        Hook::triggerEvent('actionAdminControllerSetMedia');
     }
 
     /**
@@ -3755,12 +3755,12 @@ class AdminControllerCore extends Controller
         );
 
         if ($this->display_header) {
-            $this->context->smarty->assign('displayBackOfficeHeader', Hook::exec('displayBackOfficeHeader', []));
+            $this->context->smarty->assign('displayBackOfficeHeader', Hook::displayHook('displayBackOfficeHeader'));
         }
 
         $this->context->smarty->assign(
             [
-                'displayBackOfficeTop' => Hook::exec('displayBackOfficeTop', []),
+                'displayBackOfficeTop' => Hook::displayHook('displayBackOfficeTop'),
                 'submit_form_ajax'     => (int) Tools::getValue('submitFormAjax'),
             ]
         );

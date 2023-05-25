@@ -45,16 +45,6 @@ class HookCore extends ObjectModel
     public static $native_module;
 
     /**
-     * @deprecated 1.0.0
-     */
-    protected static $_hook_modules_cache = null;
-
-    /**
-     * @deprecated 1.0.0
-     */
-    protected static $_hook_modules_cache_exec = null;
-
-    /**
      * @var string Hook name identifier
      */
     public $name;
@@ -173,7 +163,7 @@ class HookCore extends ObjectModel
      */
     public static function getModulesFromHook($idHook, $idModule = null)
     {
-        $hmList = Hook::getHookModuleList();
+        $hmList = static::getHookModuleList();
         $moduleList = (isset($hmList[$idHook])) ? $hmList[$idHook] : [];
 
         if ($idModule) {
@@ -221,10 +211,6 @@ class HookCore extends ObjectModel
                 ];
             }
             Cache::store($cacheId, $list);
-
-            // @todo remove this in 1.6, we keep it in 1.5 for retrocompatibility
-            Hook::$_hook_modules_cache = $list;
-
             return $list;
         }
 
@@ -232,23 +218,127 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @param int $newOrderStatusId
-     * @param int $idOrder
+     * Executes displayable hook and returns HTML string
      *
-     * @return bool
+     * If $moduleId parameter is provided, only hook from single module will be executed. Otherwise, all modules
+     * will be invoked, and their HTML results will be concatenated.
+     *
+     * Module hook response is expected to be HTML code. Responses can be extended with additional HTML elements
+     * to support Live Edit functionality, FPC hole punching, etc. Do not use for hooks that return different type
+     * of data (for example javascript, json, or xml), as this post-processing would break it.
+     *
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param int|null $moduleId Execute hook for this module only
+     *
+     * @return string
+     *
      * @throws PrestaShopException
-     *@deprecated 1.0.0
+     *
+     * @since 1.5.0
      */
-    public static function updateOrderStatus($newOrderStatusId, $idOrder)
+    public static function displayHook(string $hookName, array $hookArgs = [], int $moduleId = null):string
     {
-        Tools::displayAsDeprecated();
-        $order = new Order((int) $idOrder);
-        $new_os = new OrderState((int) $newOrderStatusId, $order->id_lang);
+        return (string)static::exec($hookName, $hookArgs, $moduleId);
+    }
 
-        $return = ((int) $new_os->id == Configuration::get('PS_OS_PAYMENT')) ? Hook::exec('paymentConfirm', ['id_order' => (int) ($order->id)]) : true;
-        $return = Hook::exec('updateOrderStatus', ['newOrderStatus' => $new_os, 'id_order' => (int) ($order->id)]) && $return;
+    /**
+     * Triggers event
+     *
+     * Used to notify modules about some events
+     *
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param int|null $idShop If specified, hook will be executed for shop with this ID
+     * @param int|null $idModule Execute hook for this module only
+     *
+     * @return void
+     *
+     * @throws PrestaShopException
+     *
+     * @since 1.5.0
+     */
+    public static function triggerEvent(string $hookName, array $hookArgs = [], int $idShop = null, int $idModule = null): void
+    {
+        static::execWithoutCache($hookName, $hookArgs, $idModule, true, false, false, $idShop);
+    }
 
-        return $return;
+    /**
+     * Query modules for response
+     *
+     * This hook is used to query modules for some kind of informations. Returns array - map from module name to result
+     *
+     * Modules can return arbitrary data
+     *
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param int|null $idModule Execute hook for this module only
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     *
+     * @since 1.5.0
+     */
+    public static function getResponses(string $hookName, array $hookArgs = [], int $idModule = null): array
+    {
+        $ret = static::execWithoutCache($hookName, $hookArgs, $idModule, true, false);
+        if (is_array($ret)) {
+            return $ret;
+        }
+        trigger_error("Hook::execWithoutCache did not return array. Ignoring result");
+        return [];
+    }
+
+    /**
+     * Returns hook response from specific module
+     *
+     * @param string $hookName Hook Name
+     * @param int $idModule Execute hook for this module only
+     * @param array $hookArgs Parameters for the functions
+     *
+     * @return mixed|null
+     *
+     * @throws PrestaShopException
+     *
+     * @since 1.5.0
+     */
+    public static function getResponse(string $hookName, int $idModule, array $hookArgs = [])
+    {
+        $responses = static::getResponses($hookName, $hookArgs, $idModule);
+        return $responses
+            ? array_shift($responses)
+            : null;
+    }
+
+    /**
+     * Returns response from first module that implements this hook, according to hook positions
+     *
+     * If parameter $raiseWarning is set to true, and more than one module implements hook, warning will be raised.
+     *
+     * @param string $hookName Hook Name
+     * @param array $hookArgs Parameters for the functions
+     * @param bool $raiseWarning
+     *
+     * @return mixed|null
+     * @throws PrestaShopException
+     *
+     * @since 1.5.0
+     */
+    public static function getFirstResponse(string $hookName, array $hookArgs = [], bool $raiseWarning = true)
+    {
+        $responses = static::getResponses($hookName, $hookArgs);
+        $count = count($responses);
+        switch ($count) {
+            case 0:
+                return null;
+            case 1:
+                return array_shift($responses);
+            default:
+                $modules = implode(', ', array_keys($responses));
+                trigger_error(sprintf("Multiple modules [$1%s] are attached to '$2%s' hook. Only the first response will be used!", $modules, $hookName), E_USER_WARNING);
+                return array_shift($responses);
+        }
     }
 
     /**
@@ -588,8 +678,6 @@ class HookCore extends ObjectModel
             }
             if ($hookName != 'displayPayment' && $hookName != 'displayPaymentEU') {
                 Cache::store($cacheId, $list);
-                // @todo remove this in 1.6, we keep it in 1.5 for backward compatibility
-                static::$_hook_modules_cache_exec = $list;
             }
         } else {
             $list = Cache::retrieve($cacheId);
@@ -795,160 +883,6 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @param int $newOrderStatusId
-     * @param int $idOrder
-     *
-     * @return string
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function postUpdateOrderStatus($newOrderStatusId, $idOrder)
-    {
-        Tools::displayAsDeprecated();
-        $order = new Order((int) $idOrder);
-        $newOs = new OrderState((int) $newOrderStatusId, $order->id_lang);
-        $return = Hook::exec('postUpdateOrderStatus', ['newOrderStatus' => $newOs, 'id_order' => (int) ($order->id)]);
-
-        return $return;
-    }
-
-    /**
-     * @param int $idOrder
-     *
-     * @return bool|string
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function orderConfirmation($idOrder)
-    {
-        Tools::displayAsDeprecated();
-        if (Validate::isUnsignedId($idOrder)) {
-            $params = [];
-            $order = new Order((int) $idOrder);
-            $currency = new Currency((int) $order->id_currency);
-
-            if (Validate::isLoadedObject($order)) {
-                $cart = new Cart((int) $order->id_cart);
-                $params['total_to_pay'] = $cart->getOrderTotal();
-                $params['currency'] = $currency->sign;
-                $params['objOrder'] = $order;
-                $params['currencyObj'] = $currency;
-
-                return Hook::exec('orderConfirmation', $params);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int $idOrder
-     * @param int $idModule
-     *
-     * @return bool|string
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function paymentReturn($idOrder, $idModule)
-    {
-        Tools::displayAsDeprecated();
-        if (Validate::isUnsignedId($idOrder) && Validate::isUnsignedId($idModule)) {
-            $params = [];
-            $order = new Order((int) ($idOrder));
-            $currency = new Currency((int) ($order->id_currency));
-
-            if (Validate::isLoadedObject($order)) {
-                $cart = new Cart((int) $order->id_cart);
-                $params['total_to_pay'] = $cart->getOrderTotal();
-                $params['currency'] = $currency->sign;
-                $params['objOrder'] = $order;
-                $params['currencyObj'] = $currency;
-
-                return Hook::exec('paymentReturn', $params, (int) ($idModule));
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param mixed $pdf
-     * @param int $idOrder
-     *
-     * @return bool|string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function PDFInvoice($pdf, $idOrder)
-    {
-        Tools::displayAsDeprecated();
-        if (!is_object($pdf) || !Validate::isUnsignedId($idOrder)) {
-            return false;
-        }
-
-        return Hook::exec('PDFInvoice', ['pdf' => $pdf, 'id_order' => $idOrder]);
-    }
-
-    /**
-     * @param string $module
-     *
-     * @return string|false
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function backBeforePayment($module)
-    {
-        Tools::displayAsDeprecated();
-        if ($module) {
-            return Hook::exec('backBeforePayment', ['module' => strval($module)]);
-        }
-        return false;
-    }
-
-    /**
-     * @param int $idCarrier
-     * @param Carrier $carrier
-     *
-     * @return string|false
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function updateCarrier($idCarrier, $carrier)
-    {
-        Tools::displayAsDeprecated();
-        if (!Validate::isUnsignedId($idCarrier) || !is_object($carrier)) {
-            return false;
-        }
-
-        return Hook::exec('updateCarrier', ['id_carrier' => $idCarrier, 'carrier' => $carrier]);
-    }
-
-    /**
-     * Preload hook modules cache
-     *
-     * @deprecated 1.0.0 use Hook::getHookModuleList() instead
-     *
-     * @return bool preload_needed
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public static function preloadHookModulesCache()
-    {
-        Tools::displayAsDeprecated('Use Hook::getHookModuleList() instead');
-
-        if (!is_null(static::$_hook_modules_cache)) {
-            return false;
-        }
-
-        static::$_hook_modules_cache = Hook::getHookModuleList();
-
-        return true;
-    }
-
-    /**
      * Return hook ID from name
      *
      * @param string $hookName Hook name
@@ -957,6 +891,7 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     *
      * @deprecated 1.0.0 use Hook::getIdByName() instead
      */
     public static function get($hookName)
@@ -975,134 +910,6 @@ class HookCore extends ObjectModel
         );
 
         return ($result ? $result['id_hook'] : false);
-    }
-
-    /**
-     * Called when quantity of a product is updated.
-     *
-     * @deprecated 1.0.0
-     *
-     * @param Cart $cart
-     * @param Order $order
-     * @param Customer $customer
-     * @param Currency $currency
-     * @param int $orderStatus
-     *
-     * @throws PrestaShopException
-     *
-     * @return string
-     */
-    public static function newOrder($cart, $order, $customer, $currency, $orderStatus)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec(
-            'newOrder', [
-                'cart'        => $cart,
-                'order'       => $order,
-                'customer'    => $customer,
-                'currency'    => $currency,
-                'orderStatus' => $orderStatus,
-            ]
-        );
-    }
-
-    /**
-     * @param Product $product
-     * @param Order|null $order
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function updateQuantity($product, $order = null)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('updateQuantity', ['product' => $product, 'order' => $order]);
-    }
-
-    /**
-     * @param Product $product
-     * @param Category $category
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function productFooter($product, $category)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('productFooter', ['product' => $product, 'category' => $category]);
-    }
-
-    /**
-     * @param Product $product
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function productOutOfStock($product)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('productOutOfStock', ['product' => $product]);
-    }
-
-    /**
-     * @param Product $product
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function addProduct($product)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('addProduct', ['product' => $product]);
-    }
-
-    /**
-     * @param Product $product
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function updateProduct($product)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('updateProduct', ['product' => $product]);
-    }
-
-    /**
-     * @param Product $product
-     *
-     * @return string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function deleteProduct($product)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('deleteProduct', ['product' => $product]);
-    }
-
-    /**
-     * @return array|string
-     * @throws PrestaShopException
-     * @deprecated 1.0.0
-     */
-    public static function updateProductAttribute($idProductAttribute)
-    {
-        Tools::displayAsDeprecated();
-
-        return Hook::exec('updateProductAttribute', ['id_product_attribute' => $idProductAttribute]);
     }
 
     /**

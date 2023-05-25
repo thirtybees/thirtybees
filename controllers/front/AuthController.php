@@ -169,8 +169,8 @@ class AuthControllerCore extends FrontController
         // Call a hook to display more information on form
         $this->context->smarty->assign(
             [
-                'HOOK_CREATE_ACCOUNT_FORM' => Hook::exec('displayCustomerAccountForm'),
-                'HOOK_CREATE_ACCOUNT_TOP'  => Hook::exec('displayCustomerAccountFormTop'),
+                'HOOK_CREATE_ACCOUNT_FORM' => Hook::displayHook('displayCustomerAccountForm'),
+                'HOOK_CREATE_ACCOUNT_TOP'  => Hook::displayHook('displayCustomerAccountFormTop'),
             ]
         );
 
@@ -319,7 +319,7 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitLogin()
     {
-        Hook::exec('actionBeforeAuthentication');
+        Hook::triggerEvent('actionBeforeAuthentication');
         $passwd = trim(Tools::getValue('passwd'));
         $_POST['passwd'] = null;
         $email = Tools::convertEmailToIdn(trim(Tools::getValue('email')));
@@ -374,7 +374,7 @@ class AuthControllerCore extends FrontController
                 $this->context->cookie->write();
                 $this->context->cart->autosetProductAddress();
 
-                Hook::exec('actionAuthentication', ['customer' => $this->context->customer]);
+                Hook::triggerEvent('actionAuthentication', ['customer' => $this->context->customer]);
 
                 // Login information have changed, so we check if the cart rules still apply
                 CartRule::autoRemoveFromCart($this->context);
@@ -442,7 +442,7 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitAccount()
     {
-        Hook::exec('actionBeforeSubmitAccount');
+        Hook::triggerEvent('actionBeforeSubmitAccount');
         $this->create_account = true;
         if (Tools::isSubmit('submitAccount')) {
             $this->context->smarty->assign('email_create', 1);
@@ -525,7 +525,7 @@ class AuthControllerCore extends FrontController
                         $this->updateContext($customer);
 
                         $this->context->cart->update();
-                        Hook::exec(
+                        Hook::triggerEvent(
                             'actionCustomerAccountAdd',
                             [
                                 '_POST'       => $_POST,
@@ -702,7 +702,7 @@ class AuthControllerCore extends FrontController
                         // Avoid articles without delivery address on the cart
                         $this->context->cart->autosetProductAddress();
 
-                        Hook::exec(
+                        Hook::triggerEvent(
                             'actionCustomerAccountAdd',
                             [
                                 '_POST'       => $_POST,

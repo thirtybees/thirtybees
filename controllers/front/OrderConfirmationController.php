@@ -177,7 +177,7 @@ class OrderConfirmationControllerCore extends FrontController
     /**
      * Execute the hook displayOrderConfirmation
      *
-     * @return string|array|false
+     * @return false|string
      *
      * @throws PrestaShopException
      */
@@ -194,7 +194,7 @@ class OrderConfirmationControllerCore extends FrontController
                 $params['objOrder'] = $order;
                 $params['currencyObj'] = $currency;
 
-                return Hook::exec('displayOrderConfirmation', $params);
+                return Hook::displayHook('displayOrderConfirmation', $params);
             }
         }
 
@@ -204,7 +204,7 @@ class OrderConfirmationControllerCore extends FrontController
     /**
      * Execute the hook displayPaymentReturn
      *
-     * @return string|array|false
+     * @return false|string
      *
      * @throws PrestaShopException
      */
@@ -221,7 +221,7 @@ class OrderConfirmationControllerCore extends FrontController
                 $params['objOrder'] = $order;
                 $params['currencyObj'] = $currency;
 
-                return Hook::exec('displayPaymentReturn', $params, $this->id_module);
+                return Hook::displayHook('displayPaymentReturn', $params, (int)$this->id_module);
             }
         }
 

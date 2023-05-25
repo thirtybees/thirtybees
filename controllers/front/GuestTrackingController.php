@@ -165,9 +165,9 @@ class GuestTrackingControllerCore extends FrontController
             if ($order->carrier->url && $order->shipping_number) {
                 $order->followup = str_replace('@', $order->shipping_number, $order->carrier->url);
             }
-            $order->hook_orderdetaildisplayed = Hook::exec('displayOrderDetail', ['order' => $order]);
+            $order->hook_orderdetaildisplayed = Hook::displayHook('displayOrderDetail', ['order' => $order]);
 
-            Hook::exec('actionOrderDetail', ['carrier' => $order->carrier, 'order' => $order]);
+            Hook::triggerEvent('actionOrderDetail', ['carrier' => $order->carrier, 'order' => $order]);
         }
 
         $this->context->smarty->assign(

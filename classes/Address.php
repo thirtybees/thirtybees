@@ -315,7 +315,7 @@ class AddressCore extends ObjectModel
             return static::$_idZones[$idAddress];
         }
 
-        $idZone = Hook::exec('actionGetIDZoneByAddressID', ['id_address' => $idAddress]);
+        $idZone = Hook::getFirstResponse('actionGetIDZoneByAddressID', ['id_address' => $idAddress]);
 
         if (is_numeric($idZone)) {
             static::$_idZones[$idAddress] = (int) $idZone;

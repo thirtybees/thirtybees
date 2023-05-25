@@ -205,7 +205,7 @@ class FeatureValueCore extends ObjectModel
 
         $return = parent::add($autoDate, $nullValues);
         if ($return) {
-            Hook::exec('actionFeatureValueSave', ['id_feature_value' => $this->id]);
+            Hook::triggerEvent('actionFeatureValueSave', ['id_feature_value' => $this->id]);
         }
 
         return $return;
@@ -223,7 +223,7 @@ class FeatureValueCore extends ObjectModel
         $return = parent::delete();
 
         if ($return) {
-            Hook::exec('actionFeatureValueDelete', ['id_feature_value' => $this->id]);
+            Hook::triggerEvent('actionFeatureValueDelete', ['id_feature_value' => $this->id]);
         }
 
         self::cleanPositions($this->id_feature);
@@ -242,7 +242,7 @@ class FeatureValueCore extends ObjectModel
     {
         $return = parent::update($nullValues);
         if ($return) {
-            Hook::exec('actionFeatureValueSave', ['id_feature_value' => $this->id]);
+            Hook::triggerEvent('actionFeatureValueSave', ['id_feature_value' => $this->id]);
         }
 
         return $return;

@@ -269,8 +269,8 @@ class AdminDashboardControllerCore extends AdminController
         $this->tpl_view_vars = [
             'date_from'               => $dateFrom,
             'date_to'                 => $dateTo,
-            'hookDashboardZoneOne'    => Hook::exec('dashboardZoneOne', $params),
-            'hookDashboardZoneTwo'    => Hook::exec('dashboardZoneTwo', $params),
+            'hookDashboardZoneOne'    => Hook::displayHook('dashboardZoneOne', $params),
+            'hookDashboardZoneTwo'    => Hook::displayHook('dashboardZoneTwo', $params),
             'action'                  => '#',
             'warning'                 => $this->getWarningDomainName(),
             'calendar'                => $calendarHelper->generate(),
@@ -374,7 +374,7 @@ class AdminDashboardControllerCore extends AdminController
             'extra'              => (int) Tools::getValue('extra'),
         ];
 
-        $this->ajaxDie(json_encode(Hook::exec('dashboardData', $params, $idModule, true, true, false)));
+        $this->ajaxDie(json_encode(Hook::getResponses('dashboardData', $params, $idModule)));
     }
 
     /**

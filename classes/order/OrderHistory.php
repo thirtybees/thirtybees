@@ -107,14 +107,14 @@ class OrderHistoryCore extends ObjectModel
 
         // executes hook
         if (in_array($newOs->id, [Configuration::get('PS_OS_PAYMENT'), Configuration::get('PS_OS_WS_PAYMENT')])) {
-            Hook::exec('actionPaymentConfirmation', ['id_order' => (int) $order->id], null, false, true, false, $order->id_shop);
+            Hook::triggerEvent('actionPaymentConfirmation', ['id_order' => (int) $order->id], $order->id_shop);
         }
 
-        Hook::exec('actionOrderStatusUpdate', [
+        Hook::triggerEvent('actionOrderStatusUpdate', [
             'newOrderStatus' => $newOs,
             'id_order' => (int) $order->id,
             'order' => $order
-        ], null, false, true, false, $order->id_shop);
+        ], $order->id_shop);
 
         if (Validate::isLoadedObject($order) && ($newOs instanceof OrderState)) {
             $context = Context::getContext();
@@ -368,7 +368,7 @@ class OrderHistoryCore extends ObjectModel
         }
 
         // executes hook
-        Hook::exec('actionOrderStatusPostUpdate', ['newOrderStatus' => $newOs, 'id_order' => (int) $order->id, 'order' => $order], null, false, true, false, $order->id_shop);
+        Hook::triggerEvent('actionOrderStatusPostUpdate', ['newOrderStatus' => $newOs, 'id_order' => (int) $order->id, 'order' => $order], $order->id_shop);
 
         ShopUrl::resetMainDomainCache();
     }
@@ -493,7 +493,7 @@ class OrderHistoryCore extends ObjectModel
                     $fileAttachement = [];
 
                     if ($result['pdf_invoice'] && (int) Configuration::get('PS_INVOICE') && $order->invoice_number) {
-                        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $invoice]);
+                        Hook::triggerEvent('actionPDFInvoiceRender', ['order_invoice_list' => $invoice]);
                         $pdf = new PDF($invoice, PDF::TEMPLATE_INVOICE, $context->smarty);
                         $fileAttachement['invoice']['content'] = $pdf->render(false);
                         $fileAttachement['invoice']['name'] = Configuration::get('PS_INVOICE_PREFIX', (int) $order->id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';
@@ -554,7 +554,7 @@ class OrderHistoryCore extends ObjectModel
         $order->current_state = $this->id_order_state;
         $order->update();
 
-        Hook::exec('actionOrderHistoryAddAfter', ['order_history' => $this], null, false, true, false, $order->id_shop);
+        Hook::triggerEvent('actionOrderHistoryAddAfter', ['order_history' => $this], $order->id_shop);
 
         return true;
     }

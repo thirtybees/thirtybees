@@ -644,7 +644,15 @@ class AdminOrdersControllerCore extends AdminController
                             true,
                             (int) $order->id_shop
                         )) {
-                            Hook::exec('actionAdminOrdersTrackingNumberUpdate', ['order' => $order, 'customer' => $customer, 'carrier' => $carrier], null, false, true, false, $order->id_shop);
+                            Hook::triggerEvent(
+                                'actionAdminOrdersTrackingNumberUpdate',
+                                [
+                                    'order' => $order,
+                                    'customer' => $customer,
+                                    'carrier' => $carrier
+                                ],
+                                $order->id_shop
+                            );
                             Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
@@ -907,7 +915,14 @@ class AdminOrdersControllerCore extends AdminController
                         )) {
                             $this->errors[] = Tools::displayError('You cannot generate a partial credit slip.');
                         } else {
-                            Hook::exec('actionOrderSlipAdd', ['order' => $order, 'productList' => $orderDetailList, 'qtyList' => $fullQuantityList], null, false, true, false, $order->id_shop);
+                            Hook::triggerEvent(
+                                'actionOrderSlipAdd',
+                                [
+                                    'order' => $order,
+                                    'productList' => $orderDetailList,
+                                    'qtyList' => $fullQuantityList
+                                ], $order->id_shop
+                            );
                             $customer = new Customer((int) ($order->id_customer));
                             $params['{lastname}'] = $customer->lastname;
                             $params['{firstname}'] = $customer->firstname;
@@ -1121,7 +1136,14 @@ class AdminOrdersControllerCore extends AdminController
                                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && StockAvailable::dependsOnStock($orderDetail->product_id)) {
                                     StockAvailable::synchronize($orderDetail->product_id);
                                 }
-                                Hook::exec('actionProductCancel', ['order' => $order, 'id_order_detail' => (int) $idOrderDetail], null, false, true, false, $order->id_shop);
+                                Hook::triggerEvent(
+                                    'actionProductCancel',
+                                    [
+                                        'order' => $order,
+                                        'id_order_detail' => (int) $idOrderDetail
+                                    ],
+                                    $order->id_shop
+                                );
                             }
                         }
                         if (!count($this->errors) && $customizationList) {
@@ -1169,7 +1191,14 @@ class AdminOrdersControllerCore extends AdminController
                             if (!OrderSlip::create($order, $productList, $refundShipping, $amount, $chosen)) {
                                 $this->errors[] = Tools::displayError('A credit slip cannot be generated. ');
                             } else {
-                                Hook::exec('actionOrderSlipAdd', ['order' => $order, 'productList' => $fullProductList, 'qtyList' => $fullQuantityList], null, false, true, false, $order->id_shop);
+                                Hook::triggerEvent(
+                                    'actionOrderSlipAdd',
+                                    [
+                                        'order' => $order,
+                                        'productList' => $fullProductList,
+                                        'qtyList' => $fullQuantityList
+                                    ], $order->id_shop
+                                );
                                 @Mail::Send(
                                     (int) $order->id_lang,
                                     'credit_slip',
@@ -2009,7 +2038,7 @@ class AdminOrdersControllerCore extends AdminController
             'payment_methods'              => $paymentMethods,
             'invoice_management_active'    => Configuration::get('PS_INVOICE', null, null, $order->id_shop),
             'display_warehouse'            => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
-            'HOOK_CONTENT_ORDER'           => Hook::exec(
+            'HOOK_CONTENT_ORDER'           => Hook::displayHook(
                 'displayAdminOrderContentOrder',
                 [
                     'order'    => $order,
@@ -2017,7 +2046,7 @@ class AdminOrdersControllerCore extends AdminController
                     'customer' => $customer,
                 ]
             ),
-            'HOOK_CONTENT_SHIP'            => Hook::exec(
+            'HOOK_CONTENT_SHIP'            => Hook::displayHook(
                 'displayAdminOrderContentShip',
                 [
                     'order'    => $order,
@@ -2025,7 +2054,7 @@ class AdminOrdersControllerCore extends AdminController
                     'customer' => $customer,
                 ]
             ),
-            'HOOK_TAB_ORDER'               => Hook::exec(
+            'HOOK_TAB_ORDER'               => Hook::displayHook(
                 'displayAdminOrderTabOrder',
                 [
                     'order'    => $order,
@@ -2033,7 +2062,7 @@ class AdminOrdersControllerCore extends AdminController
                     'customer' => $customer,
                 ]
             ),
-            'HOOK_TAB_SHIP'                => Hook::exec(
+            'HOOK_TAB_SHIP'                => Hook::displayHook(
                 'displayAdminOrderTabShip', [
                     'order'    => $order,
                     'products' => $products,
@@ -2613,7 +2642,7 @@ class AdminOrdersControllerCore extends AdminController
             $order = new Order(Tools::getValue('id_order'));
         }
 
-        Hook::exec('actionOrderEdited', ['order' => $order]);
+        Hook::triggerEvent('actionOrderEdited', ['order' => $order]);
     }
 
     /**

@@ -151,7 +151,7 @@ class NotificationCore
     protected static function resolveModuleNotificationTypes()
     {
         $moduleTypes = [];
-        $result = Hook::exec('actionGetNotificationType', [], null, true);
+        $result = Hook::getResponses('actionGetNotificationType');
         foreach ($result as $moduleName => $definitions) {
             if (is_array($definitions)) {
                 foreach ($definitions as $type => $definition) {

@@ -939,8 +939,7 @@ class ProductCore extends ObjectModel
             $usetax = false;
         }
 
-        // @TODO: Use a hook for this. Like:
-        //        Hook::exec('isVatExemption', ['address' => &$address]);
+        // @TODO: Use a hook for this
         if (Module::isEnabled('vatnumber') && $idAddress) {
             require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
 
@@ -1478,8 +1477,7 @@ class ProductCore extends ObjectModel
                 $idAddress = (int) $curCart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
             }
 
-            // @TODO: Use a hook for this. Like:
-            //        Hook::exec('isVatExemption', ['address' => &$address]);
+            // @TODO: Use a hook for this
             if (Module::isEnabled('vatnumber')
                 && static::$_taxCalculationMethod != PS_TAX_EXC) {
                 require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
@@ -4099,7 +4097,7 @@ class ProductCore extends ObjectModel
 
         static::cleanPositions($categoryId);
 
-        Hook::exec('actionProductUpdate', ['id_product' => (int) $this->id, 'product' => $this]);
+        Hook::triggerEvent('actionProductUpdate', ['id_product' => (int) $this->id, 'product' => $this]);
 
         return $result;
     }
@@ -4232,7 +4230,7 @@ class ProductCore extends ObjectModel
             return true;
         }
 
-        Hook::exec('actionProductDelete', ['id_product' => (int) $this->id, 'product' => $this]);
+        Hook::triggerEvent('actionProductDelete', ['id_product' => (int) $this->id, 'product' => $this]);
         if (!$result ||
             !GroupReduction::deleteProductReduction($this->id) ||
             !$this->deleteCategories(true) ||
@@ -4267,7 +4265,7 @@ class ProductCore extends ObjectModel
      */
     public function deleteProductAttributes()
     {
-        Hook::exec('actionProductAttributeDelete', ['id_product_attribute' => 0, 'id_product' => (int) $this->id, 'deleteAllAttributes' => true]);
+        Hook::triggerEvent('actionProductAttributeDelete', ['id_product_attribute' => 0, 'id_product' => (int) $this->id, 'deleteAllAttributes' => true]);
 
         $result = true;
         $combinations = new PrestaShopCollection('Combination');
@@ -5261,8 +5259,8 @@ class ProductCore extends ObjectModel
             );
         }
 
-        Hook::exec('actionProductSave', ['id_product' => (int) $this->id, 'product' => $this]);
-        Hook::exec('actionProductUpdate', ['id_product' => (int) $this->id, 'product' => $this]);
+        Hook::triggerEvent('actionProductSave', ['id_product' => (int) $this->id, 'product' => $this]);
+        Hook::triggerEvent('actionProductUpdate', ['id_product' => (int) $this->id, 'product' => $this]);
         if ($this->getType() == static::PTYPE_VIRTUAL && $this->active && !Configuration::get('PS_VIRTUAL_PROD_FEATURE_ACTIVE')) {
             Configuration::updateGlobalValue('PS_VIRTUAL_PROD_FEATURE_ACTIVE', '1');
         }
@@ -5604,7 +5602,7 @@ class ProductCore extends ObjectModel
             );
         }
 
-        Hook::exec('actionProductAttributeUpdate', ['id_product_attribute' => (int) $idProductAttribute]);
+        Hook::triggerEvent('actionProductAttributeUpdate', ['id_product_attribute' => (int) $idProductAttribute]);
         Tools::clearColorListCache($this->id);
 
         return true;
@@ -7123,7 +7121,7 @@ class ProductCore extends ObjectModel
         } else {
             $result = $this->deleteCategories(true);
         }
-        Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
+        Hook::triggerEvent('updateProduct', ['id_product' => (int) $this->id]);
         return $result;
     }
 
@@ -7754,7 +7752,7 @@ class ProductCore extends ObjectModel
         }
 
         $this->setGroupReduction();
-        Hook::exec('actionProductSave', ['id_product' => (int) $this->id, 'product' => $this]);
+        Hook::triggerEvent('actionProductSave', ['id_product' => (int) $this->id, 'product' => $this]);
 
         return true;
     }
@@ -7772,7 +7770,7 @@ class ProductCore extends ObjectModel
         if ($success && Configuration::get('PS_SEARCH_INDEXATION')) {
             Search::indexation(false, $this->id);
         }
-        Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
+        Hook::triggerEvent('updateProduct', ['id_product' => (int) $this->id]);
 
         return $success;
     }
@@ -7953,7 +7951,7 @@ class ProductCore extends ObjectModel
             return false;
         }
 
-        Hook::exec(
+        Hook::triggerEvent(
             'deleteProductAttribute',
             [
                 'id_product_attribute' => $idProductAttribute,

@@ -1068,7 +1068,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             }
         }
 
-        Hook::exec('actionWatermark', ['id_image' => $this->wsObject->urlSegment[3], 'id_product' => $this->wsObject->urlSegment[2]]);
+        Hook::triggerEvent('actionWatermark', ['id_image' => $this->wsObject->urlSegment[3], 'id_product' => $this->wsObject->urlSegment[2]]);
 
         return $newPath;
     }
@@ -1171,7 +1171,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                         if (!Validate::isLoadedObject($product)) {
                             throw new WebserviceException('Product '.(int) $this->wsObject->urlSegment[2].' does not exist', [76, 400]);
                         }
-                        Hook::exec('updateProduct', ['id_product' => (int) $this->wsObject->urlSegment[2]]);
+                        Hook::triggerEvent('updateProduct', ['id_product' => (int) $this->wsObject->urlSegment[2]]);
                     }
 
                     // copy image

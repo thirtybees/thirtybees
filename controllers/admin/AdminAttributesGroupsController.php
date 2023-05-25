@@ -748,7 +748,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                     Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getAdminTokenLite('AdminAttributesGroups'));
                 }
             } elseif (Tools::isSubmit('submitAddattribute')) {
-                Hook::exec('actionObjectAttributeAddBefore');
+                Hook::triggerEvent('actionObjectAttributeAddBefore');
                 $this->action = 'save';
                 $idAttribute = (int) Tools::getValue('id_attribute');
                 // Adding last position to the attribute if not exist
@@ -789,7 +789,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 // clean position after delete
                 AttributeGroup::cleanPositions();
             } elseif (Tools::isSubmit('submitAdd'.$this->table)) {
-                Hook::exec('actionObjectAttributeGroupAddBefore');
+                Hook::triggerEvent('actionObjectAttributeGroupAddBefore');
                 $idAttributeGroup = (int) Tools::getValue('id_attribute_group');
                 // Adding last position to the attribute if not exist
                 if ($idAttributeGroup <= 0) {

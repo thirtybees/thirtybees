@@ -162,8 +162,8 @@ class CompareControllerCore extends FrontController
                             'product_features'               => $listFeatures,
                             'products'                       => $listProducts,
                             'width'                          => $width,
-                            'HOOK_COMPARE_EXTRA_INFORMATION' => Hook::exec('displayCompareExtraInformation', ['list_ids_product' => $ids]),
-                            'HOOK_EXTRA_PRODUCT_COMPARISON'  => Hook::exec('displayProductComparison', ['list_ids_product' => $ids]),
+                            'HOOK_COMPARE_EXTRA_INFORMATION' => Hook::displayHook('displayCompareExtraInformation', ['list_ids_product' => $ids]),
+                            'HOOK_EXTRA_PRODUCT_COMPARISON'  => Hook::displayHook('displayProductComparison', ['list_ids_product' => $ids]),
                             'homeSize'                       => Image::getSize(ImageType::getFormatedName('home')),
                         ]
                     );

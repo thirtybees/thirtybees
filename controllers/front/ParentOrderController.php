@@ -330,7 +330,7 @@ class ParentOrderControllerCore extends FrontController
             }
         }
 
-        Hook::exec('actionCarrierProcess', ['cart' => $this->context->cart]);
+        Hook::triggerEvent('actionCarrierProcess', ['cart' => $this->context->cart]);
 
         if (!$this->context->cart->update()) {
             return false;
@@ -461,8 +461,8 @@ class ParentOrderControllerCore extends FrontController
 
         $this->context->smarty->assign(
             [
-                'HOOK_SHOPPING_CART'       => Hook::exec('displayShoppingCartFooter', $summary),
-                'HOOK_SHOPPING_CART_EXTRA' => Hook::exec('displayShoppingCart', $summary),
+                'HOOK_SHOPPING_CART'       => Hook::displayHook('displayShoppingCartFooter', $summary),
+                'HOOK_SHOPPING_CART_EXTRA' => Hook::displayHook('displayShoppingCart', $summary),
             ]
         );
     }
@@ -617,7 +617,7 @@ class ParentOrderControllerCore extends FrontController
         $advancedPaymentApi = (bool) Configuration::get('PS_ADVANCED_PAYMENT_API');
 
         $vars = [
-            'HOOK_BEFORECARRIER'   => Hook::exec(
+            'HOOK_BEFORECARRIER'   => Hook::displayHook(
                 'displayBeforeCarrier',
                 [
                     'carriers'             => $carriers,
@@ -699,7 +699,7 @@ class ParentOrderControllerCore extends FrontController
                 'delivery_option'             => $this->context->cart->getDeliveryOption(null, false),
                 'gift_wrapping_price'         => (float) $wrappingFees,
                 'total_wrapping_cost'         => Tools::convertPrice($wrappingFeesTaxInc, $this->context->currency),
-                'override_tos_display'        => Hook::exec('overrideTOSDisplay'),
+                'override_tos_display'        => Hook::displayHook('overrideTOSDisplay'),
                 'total_wrapping_tax_exc_cost' => Tools::convertPrice($wrappingFees, $this->context->currency),
             ]
         );
@@ -729,16 +729,16 @@ class ParentOrderControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                    'HOOK_TOP_PAYMENT'      => Hook::exec('displayPaymentTop'),
-                    'HOOK_ADVANCED_PAYMENT' => Hook::exec('advancedPaymentOptions', [], null, true),
+                    'HOOK_TOP_PAYMENT'      => Hook::displayHook('displayPaymentTop'),
+                    'HOOK_ADVANCED_PAYMENT' => Hook::getResponses('advancedPaymentOptions'),
                     'link_conditions'       => $this->link_conditions,
                 ]
             );
         } else {
             $this->context->smarty->assign(
                 [
-                    'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
-                    'HOOK_PAYMENT'     => Hook::exec('displayPayment'),
+                    'HOOK_TOP_PAYMENT' => Hook::displayHook('displayPaymentTop'),
+                    'HOOK_PAYMENT'     => Hook::displayHook('displayPayment'),
                 ]
             );
         }

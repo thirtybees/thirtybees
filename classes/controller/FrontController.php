@@ -279,7 +279,7 @@ class FrontControllerCore extends Controller
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
 
-            $hookHeader = Hook::exec('displayHeader');
+            $hookHeader = Hook::displayHook('displayHeader');
 
             $faviconTemplate = Configuration::get('TB_SOURCE_FAVICON_CODE') ?? '';
             if (!empty(trim($faviconTemplate))) {
@@ -327,13 +327,13 @@ class FrontControllerCore extends Controller
             $this->context->smarty->assign(
                 [
                     'HOOK_HEADER'       => $hookHeader,
-                    'HOOK_TOP'          => Hook::exec('displayTop'),
-                    'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
-                    'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
+                    'HOOK_TOP'          => Hook::displayHook('displayTop'),
+                    'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::displayHook('displayLeftColumn') : ''),
+                    'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::displayHook('displayRightColumn', ['cart' => $this->context->cart]) : ''),
                 ]
             );
         } else {
-            $this->context->smarty->assign('HOOK_MOBILE_HEADER', Hook::exec('displayMobileHeader'));
+            $this->context->smarty->assign('HOOK_MOBILE_HEADER', Hook::displayHook('displayMobileHeader'));
         }
     }
 
@@ -601,7 +601,7 @@ class FrontControllerCore extends Controller
         Tools::displayAsDeprecated();
 
         $this->initHeader();
-        $hookHeader = Hook::exec('displayHeader');
+        $hookHeader = Hook::displayHook('displayHeader');
         if ((Configuration::get('PS_CSS_THEME_CACHE') || Configuration::get('PS_JS_THEME_CACHE')) && is_writable(_PS_THEME_DIR_.'cache')) {
             // CSS compressor management
             if (Configuration::get('PS_CSS_THEME_CACHE')) {
@@ -618,10 +618,10 @@ class FrontControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'HOOK_HEADER'       => $hookHeader,
-                'HOOK_TOP'          => Hook::exec('displayTop'),
-                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
-                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
-                'HOOK_FOOTER'       => Hook::exec('displayFooter'),
+                'HOOK_TOP'          => Hook::displayHook('displayTop'),
+                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::displayHook('displayLeftColumn') : ''),
+                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::displayHook('displayRightColumn', ['cart' => $this->context->cart]) : ''),
+                'HOOK_FOOTER'       => Hook::displayHook('displayFooter'),
             ]
         );
 
@@ -861,7 +861,7 @@ class FrontControllerCore extends Controller
                 $this->context->smarty->assign($this->initLogoAndFavicon());
                 $this->context->smarty->assign(
                     [
-                        'HOOK_MAINTENANCE' => Hook::exec('displayMaintenance', []),
+                        'HOOK_MAINTENANCE' => Hook::displayHook('displayMaintenance'),
                     ]
                 );
 
@@ -1051,7 +1051,7 @@ class FrontControllerCore extends Controller
         }
 
         // Execute Hook FrontController SetMedia
-        Hook::exec('actionFrontControllerSetMedia', []);
+        Hook::triggerEvent('actionFrontControllerSetMedia', []);
 
         $this->addSyntheticSchedulerJs();
         return true;
@@ -1198,7 +1198,7 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
-        $hookFooter = Hook::exec('displayFooter');
+        $hookFooter = Hook::displayHook('displayFooter');
 
         $extraJs = Configuration::get(Configuration::CUSTOMCODE_JS);
         $extraJsConf = '';
@@ -1871,9 +1871,9 @@ class FrontControllerCore extends Controller
                 if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), $allowedCountries))) {
 
                     // Invoke geolocation module service
-                    $res = Hook::exec('actionGeoLocation', [ 'ip' => $ip ], $geolocationModuleId, true);
-                    if (isset($res[$geolocationModule]) && $res[$geolocationModule]) {
-                        $countryCode = strtoupper($res[$geolocationModule]);
+                    $res = Hook::getResponse('actionGeoLocation', $geolocationModuleId, [ 'ip' => $ip ]);
+                    if ($res) {
+                        $countryCode = strtoupper((string)$res);
 
                         if (!in_array($countryCode, $allowedCountries) && !static::isInWhitelistForGeolocation()) {
                             if (Configuration::get('PS_GEOLOCATION_BEHAVIOR') == _PS_GEOLOCATION_NO_CATALOG_) {
@@ -2173,23 +2173,13 @@ class FrontControllerCore extends Controller
      * If not overridden, will return false. This method can be easily overriden in a
      * specific controller.
      *
-     * @return string|bool
+     * @return string
      *
      * @throws PrestaShopException
      */
     public function getOverrideTemplate()
     {
-        $result = Hook::exec('DisplayOverrideTemplate', ['controller' => $this], null, true);
-        $count = count($result);
-        if ($count) {
-            if ($count > 1) {
-                $modules = implode(', ', array_keys($result));
-                Logger::addLog("Multiple modules [$modules] are attached to 'displayOverrideTemplate' hook, thirtybees can't decide what template should be displayed");
-                return false;
-            }
-            return array_pop($result);
-        }
-        return false;
+        return (string)Hook::getFirstResponse('DisplayOverrideTemplate', ['controller' => $this]);
     }
 
     /**

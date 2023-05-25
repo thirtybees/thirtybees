@@ -554,7 +554,7 @@ class AdminCarriersControllerCore extends AdminController
                                 $newCarrier->copyCarrierData((int) $currentCarrier->id);
                                 $this->changeGroups($newCarrier->id);
                                 // Call of hooks
-                                Hook::exec(
+                                Hook::triggerEvent(
                                     'actionCarrierUpdate',
                                     [
                                         'id_carrier' => (int) $currentCarrier->id,

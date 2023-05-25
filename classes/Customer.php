@@ -1177,7 +1177,7 @@ class CustomerCore extends ObjectModel
      */
     public function logout()
     {
-        Hook::exec('actionCustomerLogoutBefore', ['customer' => $this]);
+        Hook::triggerEvent('actionCustomerLogoutBefore', ['customer' => $this]);
 
         if (isset(Context::getContext()->cookie)) {
             Context::getContext()->cookie->delete();
@@ -1185,7 +1185,7 @@ class CustomerCore extends ObjectModel
 
         $this->logged = 0;
 
-        Hook::exec('actionCustomerLogoutAfter', ['customer' => $this]);
+        Hook::triggerEvent('actionCustomerLogoutAfter', ['customer' => $this]);
     }
 
     /**
@@ -1196,7 +1196,7 @@ class CustomerCore extends ObjectModel
      */
     public function mylogout()
     {
-        Hook::exec('actionCustomerLogoutBefore', ['customer' => $this]);
+        Hook::triggerEvent('actionCustomerLogoutBefore', ['customer' => $this]);
 
         if (isset(Context::getContext()->cookie)) {
             Context::getContext()->cookie->mylogout();
@@ -1204,7 +1204,7 @@ class CustomerCore extends ObjectModel
 
         $this->logged = 0;
 
-        Hook::exec('actionCustomerLogoutAfter', ['customer' => $this]);
+        Hook::triggerEvent('actionCustomerLogoutAfter', ['customer' => $this]);
     }
 
     /**

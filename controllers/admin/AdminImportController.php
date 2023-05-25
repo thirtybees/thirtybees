@@ -2111,7 +2111,7 @@ class AdminImportControllerCore extends AdminController
                     }
 
                     if (in_array($imageType['id_image_type'], $watermarkTypes)) {
-                        Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idEntity]);
+                        Hook::triggerEvent('actionWatermark', ['id_image' => $idImage, 'id_product' => $idEntity]);
                     }
                 }
             }
@@ -5218,7 +5218,7 @@ class AdminImportControllerCore extends AdminController
                 ]
             ];
 
-            $result = Hook::exec('actionRegisterImportDataSource', null, null, true);
+            $result = Hook::getResponses('actionRegisterImportDataSource');
             foreach ($result as $moduleId => $mod) {
                 if (! isset($mod['extensions']) || ! is_array($mod['extensions'])) {
                     throw new PrestaShopException('Module '. $moduleId . ' returned invalid data for hook actionRegisterImportDataSource: missing "extensions"');
@@ -5345,7 +5345,7 @@ class AdminImportControllerCore extends AdminController
         static $entityTypes = null;
         if ($entityTypes === null) {
             $entityTypes = [];
-            $result = Hook::exec('actionRegisterImportEntities', null, null, true);
+            $result = Hook::getResponses('actionRegisterImportEntities');
             foreach ($result as $moduleId => $mod) {
                 if (!is_array($mod)) {
                     $mod = ['default' => $mod];

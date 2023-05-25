@@ -51,9 +51,9 @@ class IndexControllerCore extends FrontController
 
         $this->context->smarty->assign(
             [
-                'HOOK_HOME'             => Hook::exec('displayHome'),
-                'HOOK_HOME_TAB'         => Hook::exec('displayHomeTab'),
-                'HOOK_HOME_TAB_CONTENT' => Hook::exec('displayHomeTabContent'),
+                'HOOK_HOME'             => Hook::displayHook('displayHome'),
+                'HOOK_HOME_TAB'         => Hook::displayHook('displayHomeTab'),
+                'HOOK_HOME_TAB_CONTENT' => Hook::displayHook('displayHomeTabContent'),
             ]
         );
         $this->setTemplate(_PS_THEME_DIR_.'index.tpl');

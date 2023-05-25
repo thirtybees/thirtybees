@@ -576,8 +576,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // @hook actionObject*AddBefore
-        Hook::exec('actionObjectAddBefore', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'AddBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObjectAddBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'AddBefore', ['object' => $this]);
 
         // Automatically fill dates
         if ($autoDate && property_exists($this, 'date_add')) {
@@ -652,8 +652,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // @hook actionObject*AddAfter
-        Hook::exec('actionObjectAddAfter', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'AddAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObjectAddAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'AddAfter', ['object' => $this]);
 
         return $result;
     }
@@ -739,8 +739,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function update($nullValues = false)
     {
         // @hook actionObject*UpdateBefore
-        Hook::exec('actionObjectUpdateBefore', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'UpdateBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObjectUpdateBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'UpdateBefore', ['object' => $this]);
 
         $this->clearCache();
 
@@ -858,8 +858,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // @hook actionObject*UpdateAfter
-        Hook::exec('actionObjectUpdateAfter', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'UpdateAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObjectUpdateAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'UpdateAfter', ['object' => $this]);
 
         return $result;
     }
@@ -873,8 +873,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function delete()
     {
         // @hook actionObject*DeleteBefore
-        Hook::exec('actionObjectDeleteBefore', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'DeleteBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObjectDeleteBefore', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'DeleteBefore', ['object' => $this]);
 
         $this->clearCache();
         $result = true;
@@ -906,8 +906,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // @hook actionObject*DeleteAfter
-        Hook::exec('actionObjectDeleteAfter', ['object' => $this]);
-        Hook::exec('actionObject'.get_class($this).'DeleteAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObjectDeleteAfter', ['object' => $this]);
+        Hook::triggerEvent('actionObject'.get_class($this).'DeleteAfter', ['object' => $this]);
 
         return $result;
     }

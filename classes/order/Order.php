@@ -1625,7 +1625,7 @@ class OrderCore extends ObjectModel
 
             if (Configuration::get('PS_INVOICE')) {
                 $this->invoice_number = $this->getInvoiceNumber($orderInvoice->id);
-                $invoiceNumber = Hook::exec(
+                $invoiceNumber = Hook::getFirstResponse(
                     'actionSetInvoice',
                     [
                         get_class($this)         => $this,

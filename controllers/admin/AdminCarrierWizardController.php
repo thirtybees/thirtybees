@@ -992,7 +992,7 @@ class AdminCarrierWizardControllerCore extends AdminController
                     }
 
                     // Call of hooks
-                    Hook::exec(
+                    Hook::triggerEvent(
                         'actionCarrierUpdate', [
                             'id_carrier' => (int) $currentCarrier->id,
                             'carrier'    => $newCarrier,

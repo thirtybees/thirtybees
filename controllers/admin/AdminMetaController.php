@@ -548,7 +548,7 @@ class AdminMetaControllerCore extends AdminController
                 }
             }
 
-            Hook::exec('actionAdminMetaSave');
+            Hook::triggerEvent('actionAdminMetaSave');
         } elseif (Tools::isSubmit('submitGenerateRobots')) {
             $this->generateRobotsFile();
         } elseif (Tools::isSubmit('submitGenerateHtaccess')) {
@@ -604,7 +604,7 @@ class AdminMetaControllerCore extends AdminController
         if (!$writeFd = @fopen($this->rb_file, 'w')) {
             $this->errors[] = sprintf(Tools::displayError('Cannot write into file: %s. Please check write permissions.'), $this->rb_file);
         } else {
-            Hook::exec(
+            Hook::triggerEvent(
                 'actionAdminMetaBeforeWriteRobotsFile',
                 [
                     'rb_data' => &$this->rb_data,
@@ -674,7 +674,7 @@ class AdminMetaControllerCore extends AdminController
                 fwrite($writeFd, 'Sitemap: '.(Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].__PS_BASE_URI__.$sitemapFilename."\n");
             }
 
-            Hook::exec(
+            Hook::triggerEvent(
                 'actionAdminMetaAfterWriteRobotsFile',
                 [
                     'rb_data'  => $this->rb_data,

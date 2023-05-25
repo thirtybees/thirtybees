@@ -101,7 +101,7 @@ class OrderFollowControllerCore extends FrontController
             $orderReturn->state = 1;
             $orderReturn->add();
             $orderReturn->addReturnDetail($idsOrderDetail, $orderQteInput, $customizationIds, $customizationQtyInput);
-            Hook::exec('actionOrderReturn', ['orderReturn' => $orderReturn]);
+            Hook::triggerEvent('actionOrderReturn', ['orderReturn' => $orderReturn]);
             Tools::redirect('index.php?controller=order-follow');
         }
     }

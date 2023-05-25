@@ -253,7 +253,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
         }
 
         $return = parent::add($autoDate, true);
-        Hook::exec('actionFeatureSave', ['id_feature' => $this->id]);
+        Hook::triggerEvent('actionFeatureSave', ['id_feature' => $this->id]);
 
         return $return;
     }
@@ -302,7 +302,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
         if ($result) {
             $result = parent::update($nullValues);
             if ($result) {
-                Hook::exec('actionFeatureSave', ['id_feature' => $featureId]);
+                Hook::triggerEvent('actionFeatureSave', ['id_feature' => $featureId]);
             }
         }
 
@@ -409,7 +409,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
         $return = parent::delete();
         if ($return) {
-            Hook::exec('actionFeatureDelete', ['id_feature' => $this->id]);
+            Hook::triggerEvent('actionFeatureDelete', ['id_feature' => $this->id]);
         }
 
         /* Reinitializing position */

@@ -856,7 +856,7 @@ class AdminProductsControllerCore extends AdminController
                 if (!Tools::getValue('noimage') && !Image::duplicateProductImages($idProductOld, $product->id, $combinationImages)) {
                     $this->errors[] = Tools::displayError('An error occurred while copying images.');
                 } else {
-                    Hook::exec('actionProductAdd', ['id_product' => (int) $product->id, 'product' => $product]);
+                    Hook::triggerEvent('actionProductAdd', ['id_product' => (int) $product->id, 'product' => $product]);
                     if (in_array($product->visibility, ['both', 'search']) && Configuration::get('PS_SEARCH_INDEXATION')) {
                         Search::indexation(false, $product->id);
                     }
@@ -1151,7 +1151,7 @@ class AdminProductsControllerCore extends AdminController
         } else {
             $category = new Category((int) Tools::getValue('id_category'));
             if (Validate::isLoadedObject($category)) {
-                Hook::exec('actionCategoryUpdate', ['category' => $category]);
+                Hook::triggerEvent('actionCategoryUpdate', ['category' => $category]);
             }
             $this->redirect_after = static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&action=Customization&conf=5'.(($idCategory = (Tools::getIsset('id_category') ? (int) Tools::getValue('id_category') : '')) ? ('&id_category='.$idCategory) : '').'&token='.Tools::getAdminTokenLite('AdminProducts');
         }
@@ -1927,7 +1927,7 @@ class AdminProductsControllerCore extends AdminController
             }
 
             @unlink($tmpName);
-            Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
+            Hook::triggerEvent('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
         }
     }
 
@@ -1976,7 +1976,7 @@ class AdminProductsControllerCore extends AdminController
                 } elseif (!$this->updateTags($languages, $this->object)) {
                     $this->errors[] = Tools::displayError('An error occurred while adding tags.');
                 } else {
-                    Hook::exec('actionProductAdd', ['id_product' => (int) $this->object->id, 'product' => $this->object]);
+                    Hook::triggerEvent('actionProductAdd', ['id_product' => (int) $this->object->id, 'product' => $this->object]);
                     if (in_array($this->object->visibility, ['both', 'search']) && Configuration::get('PS_SEARCH_INDEXATION')) {
                         Search::indexation(false, $this->object->id);
                     }
@@ -5185,7 +5185,7 @@ class AdminProductsControllerCore extends AdminController
                 unlink($file['save_path']);
                 //Necesary to prevent hacking
                 unset($file['save_path']);
-                Hook::exec('actionWatermark', ['id_image' => $image->id, 'id_product' => $product->id]);
+                Hook::triggerEvent('actionWatermark', ['id_image' => $image->id, 'id_product' => $product->id]);
 
                 if (!$image->update()) {
                     $file['error'] .= Tools::displayError('Error while updating image status');
@@ -5894,7 +5894,7 @@ class AdminProductsControllerCore extends AdminController
                 }
 
                 StockAvailable::setQuantity($product->id, (int) Tools::getValue('id_product_attribute'), (int) Tools::getValue('value'));
-                Hook::exec('actionProductUpdate', ['id_product' => (int) $product->id, 'product' => $product]);
+                Hook::triggerEvent('actionProductUpdate', ['id_product' => (int) $product->id, 'product' => $product]);
                 break;
             case 'advanced_stock_management' :
                 if (Tools::getValue('value') === false) {
@@ -5998,13 +5998,13 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormModules($obj)
     {
-        $idModule = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idModule = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
             ->select('`id_module`')
             ->from('module')
             ->where('`name` = \''.pSQL($this->tab_display_module).'\'')
         );
-        $this->tpl_form_vars['custom_form'] = Hook::exec('displayAdminProductsExtra', [], (int) $idModule);
+        $this->tpl_form_vars['custom_form'] = Hook::displayHook('displayAdminProductsExtra', [], $idModule);
     }
 
     /**
@@ -6092,7 +6092,7 @@ class AdminProductsControllerCore extends AdminController
                         if ($product->updatePosition($way, $position)) {
                             $category = new Category($categoryId);
                             if (Validate::isLoadedObject($category)) {
-                                Hook::exec('categoryUpdate', ['category' => $category]);
+                                Hook::triggerEvent('categoryUpdate', ['category' => $category]);
                             }
                             $this->ajaxDie(json_encode([
                                 'status' => 'success',

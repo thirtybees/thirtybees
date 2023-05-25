@@ -156,7 +156,7 @@ class AttributeGroupCore extends ObjectModel
         }
 
         $return = parent::add($autoDate, true);
-        Hook::exec('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
+        Hook::triggerEvent('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
 
         return $return;
     }
@@ -201,7 +201,7 @@ class AttributeGroupCore extends ObjectModel
         }
 
         $return = parent::update($nullValues);
-        Hook::exec('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
+        Hook::triggerEvent('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
 
         return $return;
     }
@@ -276,7 +276,7 @@ class AttributeGroupCore extends ObjectModel
         }
         $return = parent::delete();
         if ($return) {
-            Hook::exec('actionAttributeGroupDelete', ['id_attribute_group' => $this->id]);
+            Hook::triggerEvent('actionAttributeGroupDelete', ['id_attribute_group' => $this->id]);
         }
 
         return $return;

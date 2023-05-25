@@ -880,8 +880,8 @@ class AdminPerformanceControllerCore extends AdminController
 
         $action = $this->action ?? Tools::getValue('action');
         if ($action) {
-            Hook::exec('actionAdmin'.ucfirst($action).'Before', ['controller' => $this]);
-            Hook::exec('action' . get_class($this) . ucfirst($action) . 'Before', ['controller' => $this]);
+            Hook::triggerEvent('actionAdmin'.ucfirst($action).'Before', ['controller' => $this]);
+            Hook::triggerEvent('action' . get_class($this) . ucfirst($action) . 'Before', ['controller' => $this]);
         }
 
         if (Tools::isSubmit('submitAddMemcachedServer')) {
@@ -1203,8 +1203,8 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if ($action) {
-            Hook::exec('actionAdmin'.ucfirst($action).'After', ['controller' => $this, 'return' => '']);
-            Hook::exec('action' . get_class($this) . ucfirst($action) . 'After', ['controller' => $this, 'return' => '']);
+            Hook::triggerEvent('actionAdmin'.ucfirst($action).'After', ['controller' => $this, 'return' => '']);
+            Hook::triggerEvent('action' . get_class($this) . ucfirst($action) . 'After', ['controller' => $this, 'return' => '']);
         }
 
         if ($redirectAdmin && (!isset($this->errors) || !count($this->errors))) {

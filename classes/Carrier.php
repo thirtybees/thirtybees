@@ -1060,7 +1060,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             static::$price_by_weight2[$cacheKey] = (isset($result['price']));
         }
 
-        $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
+        $priceByWeight = Hook::getFirstResponse('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
             static::$price_by_weight2[$cacheKey] = round(
                 $priceByWeight,
@@ -1106,7 +1106,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             static::$price_by_price2[$cacheKey] = (isset($result['price']));
         }
 
-        $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
+        $priceByPrice = Hook::getFirstResponse('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
             static::$price_by_price2[$cacheKey] = round(
                 $priceByPrice,
@@ -1356,7 +1356,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
         }
 
-        $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
+        $priceByWeight = Hook::getFirstResponse('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
             static::$price_by_weight[$cacheKey] = round(
                 $priceByWeight,
@@ -1405,7 +1405,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
         }
 
-        $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
+        $priceByPrice = Hook::getFirstResponse('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
             static::$price_by_price[$cacheKey] = round(
                 $priceByPrice,

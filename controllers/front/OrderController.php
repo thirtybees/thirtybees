@@ -208,7 +208,7 @@ class OrderControllerCore extends ParentOrderController
             $this->context->cart->setDeliveryOption($deliveryOption);
             $this->context->cart->save();
             $return = [
-                'content' => Hook::exec(
+                'content' => Hook::displayHook(
                     'displayCarrierList',
                     [
                         'address' => new Address((int) Tools::getValue('id_address')),
@@ -516,7 +516,7 @@ class OrderControllerCore extends ParentOrderController
         global $orderTotal;
 
         // Redirect instead of displaying payment modules if any module are grefted on
-        Hook::exec('displayBeforePayment', ['module' => 'order.php?step=3']);
+        Hook::triggerEvent('displayBeforePayment', ['module' => 'order.php?step=3']);
 
         /* We may need to display an order summary */
         $this->context->smarty->assign($this->context->cart->getSummaryDetails());
@@ -528,7 +528,7 @@ class OrderControllerCore extends ParentOrderController
         }
 
         // Test if we have to override TOS display through hook
-        $hookOverrideTosDisplay = Hook::exec('overrideTOSDisplay');
+        $hookOverrideTosDisplay = Hook::displayHook('overrideTOSDisplay');
 
         $this->context->smarty->assign(
             [

@@ -321,5 +321,5 @@ if (!defined('_PS_CACHE_ENABLED_')) {
     define('_PS_CACHE_ENABLED_', Cache::isEnabled());
 }
 
-Hook::exec('actionRegisterAutoloader', [], null, true, false);
-Hook::exec('actionRegisterErrorHandlers', [], null, true, false);
+Hook::triggerEvent('actionRegisterAutoloader');
+Hook::triggerEvent('actionRegisterErrorHandlers');

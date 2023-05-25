@@ -159,7 +159,7 @@ class PageCacheEntryCore
      *      ...
      *   </body>
      *
-     * Some hooks needs input parameters. When we call Hook::exec from
+     * Some hooks needs input parameters. When we call Hook::execWithoutCache from
      * getFreshContent() method, we need to pass these parameters.
      * Unfortunately, it's not possible to serialize parameters. Instead, we
      * will try to describe parameters, and use this description later to

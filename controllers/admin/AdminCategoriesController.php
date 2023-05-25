@@ -729,7 +729,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         $this->tpl_form_vars['shared_category'] = Validate::isLoadedObject($obj) && $obj->hasMultishopEntries();
         $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int) Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
-        $this->tpl_form_vars['displayBackOfficeCategory'] = Hook::exec('displayBackOfficeCategory');
+        $this->tpl_form_vars['displayBackOfficeCategory'] = Hook::displayHook('displayBackOfficeCategory');
 
         // Display this field only if multistore option is enabled
         if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') && Tools::isSubmit('add'.$this->table.'root')) {

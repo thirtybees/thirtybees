@@ -143,7 +143,7 @@ class PasswordControllerCore extends FrontController
         $customer->passwd = Tools::hash($password);
         $customer->last_passwd_gen = date('Y-m-d H:i:s', time());
         if ($customer->update()) {
-            Hook::exec('actionPasswordRenew', [
+            Hook::triggerEvent('actionPasswordRenew', [
                 'customer' => $customer,
                 'password' => $password
             ]);

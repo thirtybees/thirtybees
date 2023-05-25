@@ -672,8 +672,8 @@ abstract class ControllerCore
             $method = $bt[1]['function'];
         }
 
-        Hook::exec('actionBeforeAjaxDie', ['controller' => $controller, 'method' => $method, 'value' => $value]);
-        Hook::exec('actionBeforeAjaxDie'.$controller.$method, ['value' => $value]);
+        Hook::triggerEvent('actionBeforeAjaxDie', ['controller' => $controller, 'method' => $method, 'value' => $value]);
+        Hook::triggerEvent('actionBeforeAjaxDie'.$controller.$method, ['value' => $value]);
 
         die($value);
     }

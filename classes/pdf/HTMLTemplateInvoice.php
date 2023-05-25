@@ -249,7 +249,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
         $layout = $this->computeLayout(['has_discount' => $hasDiscount]);
 
-        $legalFreeText = Hook::exec('displayInvoiceLegalFreeText', ['order' => $this->order]);
+        $legalFreeText = Hook::displayHook('displayInvoiceLegalFreeText', ['order' => $this->order]);
         if (!$legalFreeText) {
             $legalFreeText = Configuration::get('PS_INVOICE_LEGAL_FREE_TEXT', (int) Context::getContext()->language->id, null, (int) $this->order->id_shop);
         }
@@ -302,8 +302,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $address = new Address((int) $this->order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
         $taxExempt = false;
-        // @TODO: Use a hook for this. Like:
-        //        Hook::exec('isVatExemption', ['address' => &$address]);
+        // @TODO: Use a hook for this
         if (Module::isEnabled('vatnumber')) {
             require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
 

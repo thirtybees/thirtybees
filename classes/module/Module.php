@@ -1262,7 +1262,7 @@ abstract class ModuleCore
     {
         Tools::displayAsDeprecated();
 
-        return Hook::exec($hookName, $hookArgs, $idModule);
+        return Hook::displayHook($hookName, $hookArgs, $idModule);
     }
 
     /**
@@ -1274,7 +1274,7 @@ abstract class ModuleCore
     {
         Tools::displayAsDeprecated();
 
-        return Hook::exec('displayPayment');
+        return Hook::displayHook('displayPayment');
     }
 
     /**
@@ -1433,7 +1433,7 @@ abstract class ModuleCore
      */
     public function install()
     {
-        Hook::exec('actionModuleInstallBefore', ['object' => $this]);
+        Hook::triggerEvent('actionModuleInstallBefore', ['object' => $this]);
         // Check module name validation
         if (!Validate::isModuleName($this->name)) {
             $this->_errors[] = Tools::displayError('Unable to install the module (Module name is not valid).');
@@ -1543,7 +1543,7 @@ abstract class ModuleCore
 
         // Adding Restrictions for client groups
         Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
-        Hook::exec('actionModuleInstallAfter', ['object' => $this]);
+        Hook::triggerEvent('actionModuleInstallAfter', ['object' => $this]);
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS') || !TB_INSTALLATION_IN_PROGRESS) {
             if (Module::$update_translations_after_install) {
@@ -2316,7 +2316,7 @@ abstract class ModuleCore
             $hookName = Hook::getNameById((int) $hookId);
         }
 
-        Hook::exec('actionModuleUnRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
+        Hook::triggerEvent('actionModuleUnRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
 
         // Unregister module on hook by id
         $result = Db::getInstance()->delete(
@@ -2327,7 +2327,7 @@ abstract class ModuleCore
         // Clean modules position
         $this->cleanPositions($hookId, $shopList);
 
-        Hook::exec('actionModuleUnRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
+        Hook::triggerEvent('actionModuleUnRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
 
         return $result;
     }
@@ -2531,7 +2531,7 @@ abstract class ModuleCore
                 $hookName = $alias;
             }
 
-            Hook::exec('actionModuleRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
+            Hook::triggerEvent('actionModuleRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
             // Get hook id
             $idHook = Hook::getIdByName($hookName);
 
@@ -2591,7 +2591,7 @@ abstract class ModuleCore
                 }
             }
 
-            Hook::exec('actionModuleRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
+            Hook::triggerEvent('actionModuleRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
         }
 
         return $return;

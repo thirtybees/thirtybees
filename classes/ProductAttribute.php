@@ -159,7 +159,7 @@ class ProductAttributeCore extends ObjectModel
         }
         $return = parent::delete();
         if ($return) {
-            Hook::exec('actionAttributeDelete', ['id_attribute' => $this->id]);
+            Hook::triggerEvent('actionAttributeDelete', ['id_attribute' => $this->id]);
         }
 
         return $return;
@@ -178,7 +178,7 @@ class ProductAttributeCore extends ObjectModel
         $return = parent::update($nullValues);
 
         if ($return) {
-            Hook::exec('actionAttributeSave', ['id_attribute' => $this->id]);
+            Hook::triggerEvent('actionAttributeSave', ['id_attribute' => $this->id]);
         }
 
         return $return;
@@ -201,7 +201,7 @@ class ProductAttributeCore extends ObjectModel
         $return = parent::add($autoDate, $nullValues);
 
         if ($return) {
-            Hook::exec('actionAttributeSave', ['id_attribute' => $this->id]);
+            Hook::triggerEvent('actionAttributeSave', ['id_attribute' => $this->id]);
         }
 
         return $return;
