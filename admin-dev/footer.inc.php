@@ -29,6 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 /** @noinspection PhpUnhandledExceptionInspection */
-$dir = Context::getContext()->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.trim($con->override_folder, '\\/').DIRECTORY_SEPARATOR;
+
+$overrideFolder = '';
+if (isset($con)) {
+    $overrideFolder = $con->override_folder;
+}
+
+$dir = Context::getContext()->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.trim($overrideFolder, '\\/').DIRECTORY_SEPARATOR;
 $footer_tpl = file_exists($dir.'footer.tpl') ? $dir.'footer.tpl' : 'footer.tpl';
 echo Context::getContext()->smarty->fetch($footer_tpl);
