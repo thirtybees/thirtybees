@@ -5657,7 +5657,6 @@ class AdminProductsControllerCore extends AdminController
                     $supplier['is_default'] = false;
 
                     foreach ($associated_suppliers as $associated_supplier) {
-                        /** @var ProductSupplier $associated_supplier */
                         if ($associated_supplier->id_supplier == $supplierId) {
                             $supplier['is_selected'] = true;
 

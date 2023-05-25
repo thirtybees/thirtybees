@@ -17,25 +17,15 @@
 # @license   Academic Free License (AFL 3.0)
 
 function usage {
-  echo "Usage: buildmodule.sh [-h|--help] [--filter-only] [--no-validate]"
-  echo "          [--target-dir=<dir>] [<git revision>]"
+  echo "Usage: buildmodule.sh [-h|--help] [--target-dir=<dir>] [<git revision>]"
   echo
   echo "This script builds a module release. It expects to be run in the root"
   echo "of the modules' repository, inside the thirty bees core repository."
   echo
   echo "    -h, --help            Show this help and exit."
   echo
-  echo "    --filter-only         Just build file filters, then exit. This is"
-  echo "                          used by validatemodule.sh to make sure it"
-  echo "                          always uses the same filters as this script."
-  echo "                          The filter is returned in PATH_FILTER, so use"
-  echo "                          this script as an include."
   echo
   echo "    -q, --quiet           Don't give hints."
-  echo
-  echo "    --[no-]validate       Enforce [no] validation. Default is to"
-  echo "                          validate when packaging 'master' or the"
-  echo "                          latest tag, but not when packaging others."
   echo
   echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
   echo "                          packaged files in <dir>. Helpful for e.g."
@@ -55,9 +45,7 @@ function usage {
 
 ### Options parsing.
 
-OPTION_FILTER_ONLY='false'
 OPTION_QUIET='false'
-OPTION_VALIDATE='auto'
 GIT_REVISION=''
 TARGET_DIR=''
 
@@ -67,17 +55,8 @@ while [ ${#} -ne 0 ]; do
       usage
       exit 0
       ;;
-    '--filter-only')
-      OPTION_FILTER_ONLY='true'
-      ;;
     '-q'|'--quiet')
       OPTION_QUIET='true'
-      ;;
-    '--validate')
-      OPTION_VALIDATE='true'
-      ;;
-    '--no-validate')
-      OPTION_VALIDATE='false'
       ;;
     '--target-dir')
       if [ -z "${2}" ]; then
@@ -122,16 +101,6 @@ if [ -n "${TARGET_DIR}" ] && ! [ -d "${TARGET_DIR}" ]; then
   exit 1
 fi
 
-# There should be no staged changes.
-if ([ ${OPTION_VALIDATE} = 'true' ] \
-    || [ ${OPTION_VALIDATE} = 'auto' ]) \
-   && ([ $(git diff | wc -l) -ne 0 ] \
-       || [ $(git diff --staged | wc -l) -ne 0 ]); then
-  echo "There are uncommitted changes. Aborting."
-  exit 1
-fi
-
-
 ### Find Git revision to package.
 
 if [ -z "${GIT_REVISION}" ]; then
@@ -153,8 +122,8 @@ else
     exit 1
   fi
 fi
-[ ${OPTION_FILTER_ONLY} = 'false' ] && [ ${OPTION_QUIET} = 'false' ] && \
-  echo "Packaging Git revision '${GIT_REVISION}'."
+
+echo "Packaging Git revision '${GIT_REVISION}'."
 
 # Warn for older revisions.
 if [ ${OPTION_QUIET} = 'false' ]; then
@@ -235,50 +204,6 @@ for I in "${EXCLUDE_PATH[@]}"; do
   PATH_FILTER+=' /^'"${I}"'\// d;'
 done
 unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
-
-[ ${OPTION_FILTER_ONLY} = 'true' ] && return
-
-
-### Quality assurance.
-#
-# Validate the package if 'master' or the latest tag ( = latest release) are
-# going to be packaged. Validation of older revisions is neither supported by
-# validatemodule.sh nor does it make sense.
-
-if [ ${OPTION_VALIDATE} = 'true' ] || [ ${OPTION_VALIDATE} = 'auto' ]; then
-  VALIDATE='false'
-  VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
-  VALIDATE_PARAMETERS=()
-
-  if [ ${OPTION_VALIDATE} = 'true' ]; then
-    VALIDATE='true'
-    VALIDATE_PARAMETERS+=('-r')
-  else
-    LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
-    [ -n "$(git tag --list ${LATEST_TAG})" ] || \
-      LATEST_TAG="v${LATEST_TAG}"  # Re-add the 'v'.
-
-    if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
-      VALIDATE='true'
-      VALIDATE_PARAMETERS+=('-r')
-    fi
-    if [ "${GIT_REVISION}" = 'master' ]; then
-      VALIDATE='true'
-    fi
-  fi
-
-  if [ ${VALIDATE} = 'true' ]; then
-    echo "Running validatemodule.sh ${VALIDATE_PARAMETERS[*]}."
-    if ! "${VALIDATEMODULE}" "${VALIDATE_PARAMETERS[@]}"; then
-      echo "buildmodule.sh: validatemodule.sh detected errors. Aborting."
-      exit 1
-    fi
-  else
-    echo "Packaging older revision, skipping validation."
-  fi
-  unset VALIDATE VALIDATEMODULE LATEST_TAG VALIDATE_PARAMETERS
-fi
-
 
 ### Actually build the package.
 

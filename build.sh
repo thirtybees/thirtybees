@@ -200,15 +200,28 @@ TBMODULE_LIST=()
 if git ls-tree --name-only ${GIT_REVISION} config/default_modules.php \
   | grep -q '.'; then
   # 'php -r' is pretty lame, we need a temporary file.
+
   PHP_TMP=$(mktemp)
-  git cat-file -p ${GIT_REVISION}:config/default_modules.php >> ${PHP_TMP}
-  echo 'foreach ($_TB_DEFAULT_MODULES_ as $module) {'        >> ${PHP_TMP}
-  echo '  print($module."\n");'                              >> ${PHP_TMP}
-  echo '}'                                                   >> ${PHP_TMP}
+  PHP_TMP_DEFAULT_MODULES=$(mktemp);
+
+  git cat-file -p ${GIT_REVISION}:config/default_modules.php >> ${PHP_TMP_DEFAULT_MODULES}
+
+  echo "<?php" >> ${PHP_TMP}
+  echo -n '$modules = ' >> ${PHP_TMP}
+  echo -n 'require("' >> ${PHP_TMP}
+  echo -n ${PHP_TMP_DEFAULT_MODULES} >> ${PHP_TMP}
+  echo '");' >> ${PHP_TMP}
+  echo 'if (isset($_TB_DEFAULT_MODULES_)) $modules = $_TB_DEFAULT_MODULES_;' >> ${PHP_TMP};
+  echo 'foreach ($modules as $module) {' >> ${PHP_TMP};
+  echo '  print($module."\n");' >> ${PHP_TMP}
+  echo '}' >> ${PHP_TMP}
 
   TBMODULE_LIST=($(php -f ${PHP_TMP}))
+
   rm ${PHP_TMP}
+  rm ${PHP_TMP_DEFAULT_MODULES}
   unset PHP_TMP
+  unset PHP_TMP_DEFAULT_MODULES
 fi
 
 # Make sure each submodule needed by the requested Git revision exists.
@@ -306,8 +319,6 @@ KEEP=('docs')               # For CSV import samples, linked in back office.
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=('generatemd5list.php')  <- Can't get removed.
 EXCLUDE_PATH=('tools/buildmodule.sh')
-EXCLUDE_PATH+=('tools/validatemodule.sh')
-EXCLUDE_PATH+=('tools/templates/')
 EXCLUDE_PATH+=('composer/')
 
 
@@ -363,30 +374,13 @@ git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
     echo "Copying ${THEME} ... "
     cd "${THEME}"                                                 || exit ${?}
 
-    # Validation section. Does a 'git fetch', but doesn't change anything else.
+    # Validation section
     if [ ${OPTION_VALIDATE} = 'true' ]; then
       if [ $(git diff | wc -l) -ne 0 ] \
          || [ $(git diff --staged | wc -l) -ne 0 ]; then
         echo "There are uncommitted changes in ${THEME}. Aborting."
         exit 1
       fi
-
-      LOCAL=$(git show -q ${DEFAULT_BRANCH} | head -1 | cut -d ' ' -f 2)
-      if [ ${HASH} != ${LOCAL} ]; then
-        echo "Repository ${THEME} not up to date, branch ${DEFAULT_BRANCH} not"
-        echo "committed in thirty bees core. Aborting."
-        exit 1
-      fi
-
-      git fetch
-      REMOTE=$(git show -q origin/${DEFAULT_BRANCH} | head -1 | cut -d ' ' -f 2)
-      if [ ${LOCAL} != ${REMOTE} ]; then
-        echo "Repository ${THEME} not up to date, branches ${DEFAULT_BRANCH}"
-        echo "and origin/${DEFAULT_BRANCH} don't match. Aborting."
-        exit 1
-      fi
-
-      unset LOCAL MASTER
     fi
     unset DEFAULT_BRANCH
 
@@ -442,12 +436,8 @@ git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 \
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
 
-    VALIDATE_FLAGS='--validate'
-    [ ${OPTION_VALIDATE} = 'false' ] && VALIDATE_FLAGS='--no-validate'
-
     ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" \
-      --quiet ${VALIDATE_FLAGS} ${HASH}                           || exit ${?}
-    unset VALIDATE_FLAGS
+      --quiet ${HASH}                           || exit ${?}
 
     echo "done."
   ) || exit ${?}

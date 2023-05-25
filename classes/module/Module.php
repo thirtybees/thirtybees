@@ -1124,9 +1124,7 @@ abstract class ModuleCore
      */
     public static function getNativeModuleList()
     {
-        require(_PS_CONFIG_DIR_.'default_modules.php');
-
-        return $_TB_DEFAULT_MODULES_;
+        return require(_PS_CONFIG_DIR_ . 'default_modules.php');
     }
 
     /**
@@ -1178,6 +1176,7 @@ abstract class ModuleCore
             'statsdata',
             'statsmodule',
             'trackingfront',
+            'collectlogs',
             // Installation maintenance modules.
             'apcumanager',
             'coreupdater',

@@ -781,9 +781,7 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function getModulesList()
     {
-        global $_TB_DEFAULT_MODULES_;
-
-        return $_TB_DEFAULT_MODULES_;
+        return require(_PS_CORE_DIR_ . '/config/default_modules.php');
     }
 
     /**

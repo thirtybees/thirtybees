@@ -53,7 +53,6 @@ require_once(_PS_CORE_DIR_.'/config/defines.inc.php');
 require_once(_PS_CORE_DIR_.'/config/autoload.php');
 require_once(_PS_CORE_DIR_.'/config/bootstrap.php');
 require_once(_PS_CORE_DIR_.'/config/defines_uri.inc.php');
-require_once(_PS_CORE_DIR_.'/config/default_modules.php');
 
 // Generate common constants
 define('TB_INSTALLATION_IN_PROGRESS', true);
