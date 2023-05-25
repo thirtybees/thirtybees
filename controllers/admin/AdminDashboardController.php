@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class AdminDashboardControllerCore
  */
@@ -454,7 +456,13 @@ class AdminDashboardControllerCore extends AdminController
 
                 if (!count($return['errors'])) {
                     if (method_exists($moduleObj, 'saveDashConfig')) {
-                        $return['has_errors'] = $moduleObj->saveDashConfig($configs);
+                        try {
+                            $moduleObj->saveDashConfig($configs);
+                        } catch (Throwable $e) {
+                            $return['has_errors'] = true;
+                            $return['errors'][] = Tools::displayError('Exception thrown when saving dashboard configuration');
+                            static::getErrorHandler()->logFatalError(ErrorUtils::describeException($e));
+                        }
                     } else {
                         $return['errors'][] = sprintf(Tools::displayError('Module %s does not implement saveDashConfig method!'), $module);
                         $return['has_errors'] = true;
