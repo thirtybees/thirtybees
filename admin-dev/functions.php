@@ -40,6 +40,8 @@ require_once(_PS_ADMIN_DIR_.'/../images.inc.php');
  */
 function bindDatepicker($id, $time)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     if ($time) {
         echo '
 		var dateObj = new Date();
@@ -70,7 +72,8 @@ function bindDatepicker($id, $time)
  */
 function includeDatepicker($id, $time = false)
 {
-    Tools::displayAsDeprecated();
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     echo '<script type="text/javascript" src="'.__PS_BASE_URI__.'js/jquery/ui/jquery.ui.core.min.js"></script>';
     echo '<link type="text/css" rel="stylesheet" href="'.__PS_BASE_URI__.'js/jquery/ui/themes/ui-lightness/jquery.ui.theme.css" />';
     echo '<link type="text/css" rel="stylesheet" href="'.__PS_BASE_URI__.'js/jquery/ui/themes/ui-lightness/jquery.ui.datepicker.css" />';
@@ -97,7 +100,8 @@ function includeDatepicker($id, $time = false)
  * @return float Casted price, rounded to _TB_PRICE_DATABASE_PRECISION_.
  */
 function priceval($price) {
-    Tools::displayAsDeprecated();
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     return Tools::parseNumber($price);
 }
 
@@ -112,7 +116,8 @@ function priceval($price) {
  */
 function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
 {
-    Tools::displayAsDeprecated();
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     return false;
 }
 
@@ -125,6 +130,8 @@ function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
 */
 function displayDate($sql_date, $with_time = false)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     return date('Y-m-d'.($with_time ? ' H:i:s' : ''), strtotime($sql_date));
 }
 
@@ -143,6 +150,8 @@ function displayDate($sql_date, $with_time = false)
  */
 function getPath($url_base, $id_category, $path = '', $highlight = '', $category_type = 'catalog', $home = false)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     $context = Context::getContext();
     if ($category_type == 'catalog') {
         $category = Db::getInstance()->getRow('
@@ -205,6 +214,8 @@ function getPath($url_base, $id_category, $path = '', $highlight = '', $category
  */
 function getDirContent($path)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     $content = [];
     if (is_dir($path)) {
         $d = dir($path);
@@ -225,6 +236,8 @@ function getDirContent($path)
  */
 function createDir($path, $rights)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     if (file_exists($path)) {
         return true;
     }
@@ -238,7 +251,7 @@ function createDir($path, $rights)
  */
 function translate($string)
 {
-    Tools::displayAsDeprecated();
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
 
     global $_LANGADM;
     if (!is_array($_LANGADM)) {
@@ -259,6 +272,8 @@ function translate($string)
  */
 function checkingTab($tab)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     if (!Validate::isTabName($tab)) {
         return false;
     }
@@ -293,7 +308,8 @@ function checkingTab($tab)
  */
 function checkTabRights($id_tab)
 {
-    Tools::displayAsDeprecated();
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     return Context::getContext()->employee->hasAccess($id_tab, Profile::PERMISSION_VIEW);
 }
 
@@ -338,6 +354,8 @@ function checkTabRights($id_tab)
  */
 function simpleXMLToArray($xml, $flatten_values = true, $flatten_attributes = true, $flatten_children = true, $value_key = '@value', $attributes_key = '@attributes', $children_key = '@children')
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     $return = [];
     if (!($xml instanceof SimpleXMLElement)) {
         return $return;
@@ -410,6 +428,8 @@ function simpleXMLToArray($xml, $flatten_values = true, $flatten_attributes = tr
  */
 function runAdminTab($tab, $ajax_mode = false)
 {
+    Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
+
     $ajax_mode = (bool)$ajax_mode;
 
     require_once(_PS_ADMIN_DIR_.'/init.php');
