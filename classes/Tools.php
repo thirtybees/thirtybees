@@ -4143,10 +4143,6 @@ FileETag none
      */
     public static function changeFileMTime($filename)
     {
-        if (@touch($filename)) {
-            return true;
-        }
-
         $dir = dirname($filename);
         if (!@file_exists($dir)) {
             @mkdir($dir, 0777, true);
