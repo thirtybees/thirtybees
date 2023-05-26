@@ -97,6 +97,7 @@ function includeDatepicker($id, $time = false)
  * @return float Casted price, rounded to _TB_PRICE_DATABASE_PRECISION_.
  */
 function priceval($price) {
+    Tools::displayAsDeprecated();
     return Tools::parseNumber($price);
 }
 

@@ -191,11 +191,8 @@ class HelperOptionsCore extends Helper
 
                 // Cast options values if specified
                 if ($field['type'] == 'select' && isset($field['cast'])) {
-                    $callable = $field['cast'];
-                    if (is_callable($callable)) {
-                        foreach ($field['list'] as $optionKey => $option) {
-                            $field['list'][$optionKey][$field['identifier']] = $callable($option[$field['identifier']]);
-                        }
+                    foreach ($field['list'] as $optionKey => $option) {
+                        $field['list'][$optionKey][$field['identifier']] = Tools::castInput($field['cast'], $option[$field['identifier']]);
                     }
                 }
 

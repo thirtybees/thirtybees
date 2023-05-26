@@ -4143,20 +4143,18 @@ class AdminControllerCore extends Controller
 
                 // Apply cast before validating.
                 if (array_key_exists('cast', $values)) {
-                    $callable = $values['cast'];
-                    if (is_callable($callable)) {
-                        if (array_key_exists('type', $values)
-                            && in_array($values['type'], [
-                                'textLang',
-                                'textareaLang',
-                            ])) {
-                            foreach ($languages as $language) {
-                                $langField = $field . '_' . $language['id_lang'];
-                                $_POST[$langField] = $callable(Tools::getValue($langField));
-                            }
-                        } else {
-                            $_POST[$field] = $callable(Tools::getValue($field));
+                    $cast = $values['cast'];
+                    if (array_key_exists('type', $values)
+                        && in_array($values['type'], [
+                            'textLang',
+                            'textareaLang',
+                        ])) {
+                        foreach ($languages as $language) {
+                            $langField = $field . '_' . $language['id_lang'];
+                            $_POST[$langField] = Tools::castInput($cast, Tools::getValue($langField));
                         }
+                    } else {
+                        $_POST[$field] = Tools::castInput($cast, Tools::getValue($field));
                     }
                 }
 

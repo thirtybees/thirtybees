@@ -5442,6 +5442,45 @@ FileETag none
         }
         return '';
     }
+
+    /**
+     * Function called by controllers / helpers to parse form input values
+     *
+     * @param string $cast
+     * @param mixed $input
+     *
+     * @return mixed
+     */
+    public static function castInput($cast, $input)
+    {
+        if ($cast) {
+            // this allows us to override build-in casts ('stringval', 'intval')
+            // or define new cast types without polluting global namespace 'priceval'
+            $method = 'cast' . ucFirst($cast);
+            if (method_exists(static::class, $method)) {
+                return static::$method($input);
+            }
+
+            if (is_callable($cast)) {
+                return $cast($input);
+            }
+
+            trigger_error(sprintf('Unknown cast type "%s"', $cast), E_USER_NOTICE);
+        }
+        return $input;
+    }
+
+    /**
+     * Cast function for prices
+     *
+     * @param mixed $input
+     *
+     * @return float
+     */
+    public static function castPriceval($input)
+    {
+        return static::parseNumber($input);
+    }
 }
 
 /**
