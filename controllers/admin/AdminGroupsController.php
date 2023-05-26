@@ -425,7 +425,7 @@ class AdminGroupsControllerCore extends AdminController
             }
 
             $category_reductions[(int)$category['id_category']] = [
-                'path' => getPath($this->context->link->getAdminLink('AdminCategories'), (int)$category['id_category']),
+                'path' => $this->getCategoryPath((int)$category['id_category']),
                 'reduction' => (float)$category['reduction'] * 100,
                 'id_category' => (int)$category['id_category']
             ];
@@ -435,7 +435,7 @@ class AdminGroupsControllerCore extends AdminController
             foreach ($category_reduction as $key => $val) {
                 if (!array_key_exists($key, $category_reductions)) {
                     $category_reductions[(int)$key] = [
-                        'path' => getPath($this->context->link->getAdminLink('AdminCategories'), $key),
+                        'path' => $this->getCategoryPath((int)$key),
                         'reduction' => (float)$val * 100,
                         'id_category' => (int)$key
                     ];
@@ -551,7 +551,7 @@ class AdminGroupsControllerCore extends AdminController
             $result['hasError'] = true;
         } else {
             $result['id_category'] = (int)$id_category;
-            $result['catPath'] = getPath(static::$currentIndex.'?tab=AdminCategories', (int)$id_category);
+            $result['catPath'] = $this->getCategoryPath((int)$id_category);
             $result['discount'] = $category_reduction;
             $result['hasError'] = false;
         }
@@ -717,5 +717,24 @@ class AdminGroupsControllerCore extends AdminController
         );
 
         return $tpl->fetch();
+    }
+
+    /**
+     * @param int $categoryId
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getCategoryPath(int $categoryId)
+    {
+        $path = Category::getCategoryPath($categoryId, (int)$this->context->language->id);
+        $names = array_map(function(Category $category) {
+            $link = Context::getContext()->link->getAdminLink('AdminCategories', true, [
+                'viewcategory' => 1,
+                'id_category' => (int)$category->id
+            ]);
+            return '<a href="'.$link.'">' . Tools::safeOutput($category->name) . '</a>';
+        }, $path);
+        return implode(' > ', $names);
     }
 }

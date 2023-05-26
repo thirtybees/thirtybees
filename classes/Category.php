@@ -2002,8 +2002,41 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $categories = new PrestaShopCollection('Category', $idLang);
         $categories->where('nleft', '<', $this->nleft);
         $categories->where('nright', '>', $this->nright);
+        $categories->orderBy('nleft');
 
         return $categories;
+    }
+
+    /**
+     * Returns path to category.
+     *
+     * @param int $categoryId leaf category ID
+     * @param int|null $idLang language context
+     * @param bool $includeRoot if true, Root pseudo-category will be included in the result
+     *
+     * @return Category[]
+     * @throws PrestaShopException
+     */
+    public static function getCategoryPath(int $categoryId, $idLang = null, $includeRoot = false)
+    {
+        if (is_null($idLang)) {
+            $idLang = (int)Context::getContext()->language->id;
+        }
+
+        $path = [];
+        $leaf = new Category($categoryId, $idLang);
+        if (Validate::isLoadedObject($leaf)) {
+            $parents = $leaf->getAllParents($idLang);
+
+            /** @var Category $parent */
+            foreach ($parents as $parent) {
+                if ($includeRoot || $parent->id_parent) {
+                    $path[] = $parent;
+                }
+            }
+            $path[] = $leaf;
+        }
+        return $path;
     }
 
     /**

@@ -353,7 +353,7 @@ class AdminSearchControllerCore extends AdminController
             if (isset($this->_list['categories']) && $this->_list['categories']) {
                 $categories = [];
                 foreach ($this->_list['categories'] as $category) {
-                    $categories[] = getPath($this->context->link->getAdminLink('AdminCategories', false), $category['id_category']);
+                    $categories[] = $this->getCategoryPath((int)$category['id_category']);
                 }
                 $this->tpl_view_vars['categories'] = $categories;
             }
@@ -514,5 +514,24 @@ class AdminSearchControllerCore extends AdminController
         } else {
             return $this->l('Customer');
         }
+    }
+
+    /**
+     * @param int $categoryId
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getCategoryPath(int $categoryId)
+    {
+        $path = Category::getCategoryPath($categoryId, (int)$this->context->language->id);
+        $names = array_map(function(Category $category) {
+            $link = Context::getContext()->link->getAdminLink('AdminCategories', true, [
+                'viewcategory' => 1,
+                'id_category' => (int)$category->id
+            ]);
+            return '<a href="'.$link.'">' . Tools::safeOutput($category->name) . '</a>';
+        }, $path);
+        return implode(' > ', $names);
     }
 }

@@ -125,34 +125,26 @@ class AdminCmsContentControllerCore extends AdminController
             $this->content .= $this->admin_cms->renderForm();
         } else {
             $idCmsCategory = (int) Tools::getValue('id_cms_category', 1);
-
-            // CMS categories breadcrumb
-            $cmsTabs = ['cms_category', 'cms'];
-            // Cleaning links
-            $catBarIndex = static::$currentIndex;
-            foreach ($cmsTabs as $tab) {
-                if (Tools::getValue($tab.'Orderby') && Tools::getValue($tab.'Orderway')) {
-                    $catBarIndex = preg_replace('/&'.$tab.'Orderby=([a-z _]*)&'.$tab.'Orderway=([a-z]*)/i', '', static::$currentIndex);
-                }
-            }
-            $this->context->smarty->assign(
-                [
-                    'cms_breadcrumb'            => getPath($catBarIndex, $idCmsCategory, '', '', 'cms'),
+            $category = new CMSCategory($idCmsCategory, $this->context->language->id);
+            if (Validate::isLoadedObject($category)) {
+                $toolbarTitle = $this->toolbar_title;
+                $toolbarTitle[] = static::isRootCategory($category)
+                    ? $this->l('Categories')
+                    : CMSCategory::hideCMSCategoryPosition($category->name);
+                $this->context->smarty->assign([
+                    'cms_breadcrumb'            => $this->getBreadcrumbs($idCmsCategory),
                     'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
-                    'page_header_toolbar_title' => $this->toolbar_title,
-                ]
-            );
+                    'page_header_toolbar_title' => $toolbarTitle,
+                    'title'                     => $toolbarTitle
+                ]);
 
-            $this->content .= $this->admin_cms_categories->renderList();
-            $this->admin_cms->id_cms_category = $idCmsCategory;
-            $this->content .= $this->admin_cms->renderList();
+                $this->content .= $this->admin_cms_categories->renderList();
+                $this->admin_cms->id_cms_category = $idCmsCategory;
+                $this->content .= $this->admin_cms->renderList();
+            }
         }
 
-        $this->context->smarty->assign(
-            [
-                'content' => $this->content,
-            ]
-        );
+        $this->context->smarty->assign('content', $this->content);
     }
 
     /**
@@ -383,5 +375,58 @@ class AdminCmsContentControllerCore extends AdminController
                 $this->ajaxDie('error: parameters');
             }
         }
+    }
+
+    /**
+     * @param int $idCmsCategory
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getBreadcrumbs(int $idCmsCategory)
+    {
+        return implode(static::constructBreadcrumbs($idCmsCategory, (int)$this->context->language->id));
+    }
+
+    /**
+     * @param int $idCmsCategory
+     * @param int $langId
+     * @param array $path
+     *
+     * @return string[]
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function constructBreadcrumbs(int $idCmsCategory, int $langId, array $path = [])
+    {
+        $category = new CMSCategory($idCmsCategory, $langId);
+        if (Validate::isLoadedObject($category)) {
+
+            $name = CMSCategory::hideCMSCategoryPosition($category->name);
+            $link = Context::getContext()->link->getAdminLink('AdminCmsContent', true, [
+                'id_cms_category' => $idCmsCategory
+            ]);
+            $item = '<li><a href="'.$link.'">' . Tools::safeOutput($name) . '</a></li>';
+            array_unshift($path, $item);
+            if (static::isRootCategory($category)) {
+                return $path;
+            }
+            return static::constructBreadcrumbs((int)$category->id_parent, $langId, $path);
+        }
+        return $path;
+    }
+
+    /**
+     * @param CMSCategory $category
+     *
+     * @return bool
+     */
+    protected static function isRootCategory(CMSCategory $category)
+    {
+        $parentId = (int)$category->id_parent;
+        return !$parentId || $parentId === (int)$category->id;
     }
 }
