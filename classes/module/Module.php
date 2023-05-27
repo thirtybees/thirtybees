@@ -630,7 +630,7 @@ abstract class ModuleCore
      * of an AdminTab which belongs to a module, in order to keep translation
      * related to a module in its directory (instead of $_LANGADM)
      *
-     * @param mixed $currentClass the
+     * @param string $currentClass
      *
      * @return bool|string if the class belongs to a module, will return the module name. Otherwise, return false.
      */

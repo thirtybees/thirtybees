@@ -2684,7 +2684,7 @@ class CartCore extends ObjectModel
 
     /**
      * @param string $echo
-     * @param mixed $tr
+     * @param array $tr
      *
      * @return string
      *

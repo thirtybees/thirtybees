@@ -367,7 +367,7 @@ class CookieCore
      * Magic method which adds data into _content array
      *
      * @param string $key Access key for the value
-     * @param mixed $value Value corresponding to the key
+     * @param string|int|float|bool|null $value Value corresponding to the key
      */
     public function __set($key, $value)
     {

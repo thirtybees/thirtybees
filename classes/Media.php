@@ -278,7 +278,7 @@ class MediaCore
     /**
      * return jquery path.
      *
-     * @param mixed $version
+     * @param string|null $version
      * @param string|null $folder
      * @param bool $minifier
      *
@@ -333,7 +333,7 @@ class MediaCore
     /**
      * addJS return javascript path
      *
-     * @param mixed $jsUri
+     * @param string $jsUri
      *
      * @return string
      */
@@ -432,7 +432,7 @@ class MediaCore
     /**
      * return jqueryUI component path.
      *
-     * @param mixed $component
+     * @param string $component
      * @param string $theme
      * @param bool $checkDependencies
      *
@@ -523,7 +523,7 @@ class MediaCore
     /**
      * return jquery plugin path.
      *
-     * @param mixed $name
+     * @param string $name
      * @param string|null $folder
      *
      * @return array|false
@@ -554,7 +554,7 @@ class MediaCore
     /**
      * return jquery plugin css path if exist.
      *
-     * @param mixed $name
+     * @param string $name
      * @param string|null $folder
      *
      * @return bool|array
@@ -895,7 +895,7 @@ class MediaCore
     /**
      * Add a new javascript definition at bottom of page
      *
-     * @param mixed $jsDef
+     * @param string|int|bool|float|array $jsDef
      *
      * @return void
      */
@@ -913,7 +913,7 @@ class MediaCore
     /**
      * Add a new javascript definition from a capture at bottom of page
      *
-     * @param mixed $params
+     * @param string|string[] $params
      * @param string $content
      * @param Smarty $smarty
      * @param bool $repeat

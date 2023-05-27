@@ -494,9 +494,9 @@ class ToolsCore
      * if unavailable, take a default value
      *
      * @param string $key Value key
-     * @param mixed $defaultValue (optional)
+     * @param array|bool|float|int|string|null $defaultValue (optional)
      *
-     * @return mixed Value
+     * @return array|bool|float|int|string|null Value
      */
     public static function getValueRaw($key, $defaultValue = false)
     {
@@ -527,9 +527,9 @@ class ToolsCore
      * This method performs basic sanitization of input value
      *
      * @param string $key Value key
-     * @param mixed $defaultValue (optional)
+     * @param array|bool|float|int|string|null $defaultValue (optional)
      *
-     * @return mixed Value
+     * @return array|bool|float|int|string|null Value
      */
     public static function getValue($key, $defaultValue = false)
     {

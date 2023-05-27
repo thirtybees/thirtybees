@@ -1396,7 +1396,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * update category positions in parent
      *
-     * @param mixed $nullValues
+     * @param bool $nullValues
      *
      * @return bool
      *
@@ -1949,7 +1949,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * checkAccess return true if id_customer is in a group allowed to see this category.
      *
-     * @param mixed $idCustomer
+     * @param int|null $idCustomer
      *
      * @access  public
      * @return bool true if access allowed for customer $id_customer

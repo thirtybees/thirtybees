@@ -301,7 +301,7 @@ class DbQueryCore
      * Adds shop restriction for a specific table alias.
      *
      * @param string $tableAlias
-     * @param mixed $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param string|false $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
 
      * @return static
      *

@@ -1035,7 +1035,7 @@ class DispatcherCore
     /**
      * Get list of all available FO controllers
      *
-     * @param mixed $dirs
+     * @param string|string[] $dirs
      *
      * @return array
      */

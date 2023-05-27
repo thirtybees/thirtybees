@@ -399,7 +399,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $field Field name
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
-     * @param mixed $value
+     * @param array|bool|float|int|string $value
      *
      * @return static
      *
@@ -415,7 +415,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $field Field name
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
-     * @param mixed $value
+     * @param array|bool|float|int|string $value
      * @param string $method
      *
      * @return static
@@ -477,7 +477,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Format a value with the type of the given field
      *
-     * @param mixed $value
+     * @param array|bool|float|int|string $value
      * @param string $field Field name
      *
      * @return array|bool|float|int|string|string[]|null

@@ -858,7 +858,7 @@ class ValidateCore
     /**
      * Check object validity
      *
-     * @param mixed $object Object to validate
+     * @param ObjectModel|mixed $object Object to validate
      *
      * @return bool Validity is ok or not
      */

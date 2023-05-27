@@ -39,7 +39,7 @@ class HelperTreeCategoriesCore extends TreeCore
     const DEFAULT_NODE_ITEM_TEMPLATE = 'tree_node_item_radio.tpl';
 
     /**
-     * @var array
+     * @var array|null
      */
     protected $_disabled_categories;
 
@@ -209,25 +209,25 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param mixed $value
+     * @param bool $value
      *
      * @return static
      */
     public function setChildrenOnly($value)
     {
-        $this->_children_only = $value;
+        $this->_children_only = (bool)$value;
 
         return $this;
     }
 
     /**
-     * @param mixed $value
+     * @param bool $value
      *
      * @return static
      */
     public function setFullTree($value)
     {
-        $this->_full_tree = $value;
+        $this->_full_tree = (bool)$value;
 
         return $this;
     }
@@ -241,7 +241,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param mixed $value
+     * @param array|null $value
      *
      * @return static
      */
@@ -253,7 +253,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getDisabledCategories()
     {
@@ -261,7 +261,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param mixed $value
+     * @param string $value
      *
      * @return static
      */

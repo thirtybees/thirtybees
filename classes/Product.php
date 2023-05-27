@@ -4099,7 +4099,7 @@ class ProductCore extends ObjectModel
      * @see ObjectModel::validateField()
      *
      * @param string $field
-     * @param mixed $value
+     * @param array|bool|float|int|string|null $value
      * @param int|null $idLang
      * @param array $skip
      * @param bool $humanErrors

@@ -947,7 +947,7 @@ class ShopCore extends ObjectModel
     /**
      * Get a list of ID concerned by the shop context (E.g. if context is shop group, get list of children shop ID)
      *
-     * @param bool|string $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param string|false $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      *
      * @return int[]
      *
@@ -1098,7 +1098,7 @@ class ShopCore extends ObjectModel
     /**
      * Returns sql restriction for shops fields
      *
-     * @param bool $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param string|false $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      * @param string $alias
      *
      * @return string

@@ -1105,7 +1105,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Validate a single field
      *
      * @param string $field Field name
-     * @param mixed $value Field value
+     * @param array|bool|float|int|string|null $value Field value
      * @param int|null $idLang Language ID
      * @param array $skip Array of fields to skip.
      * @param bool $humanErrors If true, uses more descriptive, translatable error strings.

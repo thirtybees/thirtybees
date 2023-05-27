@@ -40,7 +40,7 @@ class Adapter_EntityMapper
      * @param int $id
      * @param int $idLang
      * @param object $entity
-     * @param mixed $entityDefs
+     * @param array $entityDefs
      * @param int $idShop
      * @param bool $shouldCacheObjects
      *

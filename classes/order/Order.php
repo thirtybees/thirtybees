@@ -647,7 +647,7 @@ class OrderCore extends ObjectModel
      *
      * @deprecated 2.0.0
      *
-     * @param mixed $row
+     * @param array $row
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1237,7 +1237,7 @@ class OrderCore extends ObjectModel
     /**
      * Get product total without taxes
      *
-     * @param mixed $products Deprecated.
+     * @param false $products Deprecated.
      *
      * @return float Product total without taxes
      */
@@ -1253,7 +1253,7 @@ class OrderCore extends ObjectModel
     /**
      * Get product total with taxes
      *
-     * @param mixed $products Deprecated.
+     * @param false|array $products Deprecated.
      *
      * @return float Product total with taxes
      *
@@ -2726,8 +2726,8 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @param mixed $a
-     * @param mixed $b
+     * @param OrderInvoice|OrderSlip $a
+     * @param OrderInvoice|OrderSlip $b
      *
      * @return int
      */

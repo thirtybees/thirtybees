@@ -944,7 +944,7 @@ class LanguageCore extends ObjectModel
      * Concerned files are those located in translations/$iso_code/
      * and translations/mails/$iso_code .
      *
-     * @param mixed $isoCode
+     * @param string $isoCode
      *
      * @return bool true if all files exists
      *

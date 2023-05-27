@@ -533,7 +533,7 @@ class TabCore extends ObjectModel
     /**
      * return an available position in subtab for parent $id_parent
      *
-     * @param mixed $idParent
+     * @param int $idParent
      *
      * @return int
      *
