@@ -34,18 +34,23 @@
  */
 class HTMLTemplateOrderReturnCore extends HTMLTemplate
 {
-    /** @var OrderReturn $order_return */
+    /**
+     * @var OrderReturn $order_return
+     */
     public $order_return;
-    /** @var Order $order */
+
+    /**
+     * @var Order $order
+     */
     public $order;
 
     /**
-     * @param OrderReturnCore $orderReturn
+     * @param OrderReturn $orderReturn
      * @param Smarty $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderReturnCore $orderReturn, Smarty $smarty)
+    public function __construct(OrderReturn $orderReturn, Smarty $smarty)
     {
         $this->order_return = $orderReturn;
         $this->smarty = $smarty;

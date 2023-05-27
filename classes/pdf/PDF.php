@@ -41,7 +41,7 @@ class PDFCore
     /** @var PDFGenerator */
     public $pdf_renderer;
 
-    /** @var array */
+    /** @var ObjectModel[] */
     public $objects;
 
     /** @var string */
@@ -132,7 +132,7 @@ class PDFCore
     /**
      * Get correct PDF template classes
      *
-     * @param mixed $object
+     * @param OrderInvoice|OrderReturn|OrderSlip|SupplyOrder $object
      *
      * @return HTMLTemplate
      * @throws PrestaShopException

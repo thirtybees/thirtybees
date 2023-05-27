@@ -45,17 +45,17 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
     public $products;
 
     /**
-     * @var OrderSlipCore $order_slip
+     * @var OrderSlip $order_slip
      */
     public $order_slip;
 
     /**
-     * @param OrderSlipCore $orderSlip
+     * @param OrderSlip $orderSlip
      * @param Smarty $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderSlipCore $orderSlip, Smarty $smarty)
+    public function __construct(OrderSlip $orderSlip, Smarty $smarty)
     {
         $this->order_slip = $orderSlip;
         $this->order = new Order((int) $orderSlip->id_order);

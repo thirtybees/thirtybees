@@ -34,26 +34,43 @@
  */
 class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 {
-    /** @var SupplyOrder $supply_order */
+    /**
+     * @var SupplyOrder $supply_order
+     */
     public $supply_order;
-    /** @var Warehouse $warehouse */
+
+    /**
+     * @var Warehouse $warehouse
+     */
     public $warehouse;
-    /** @var Address $address_warehouse */
+
+    /**
+     * @var Address $address_warehouse
+     */
     public $address_warehouse;
-    /** @var Address $address_supplier */
+
+    /**
+     * @var Address $address_supplier
+     */
     public $address_supplier;
-    /** @var Context $context */
+
+    /**
+     * @var Context $context
+     */
     public $context;
-    /** @var Currency $currency */
+
+    /**
+     * @var Currency $currency
+     */
     protected $currency;
 
     /**
-     * @param SupplyOrderCore $supplyOrder
+     * @param SupplyOrder $supplyOrder
      * @param Smarty $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(SupplyOrderCore $supplyOrder, Smarty $smarty)
+    public function __construct(SupplyOrder $supplyOrder, Smarty $smarty)
     {
         $this->supply_order = $supplyOrder;
         $this->smarty = $smarty;

@@ -31,11 +31,19 @@
 
 class HTMLTemplateInvoiceCore extends HTMLTemplate
 {
-    /** @var Order $order */
+    /**
+     * @var Order $order
+     */
     public $order;
-    /** @var OrderInvoice $order_invoice */
+
+    /**
+     * @var OrderInvoice $order_invoice
+     */
     public $order_invoice;
-    /** @var bool $available_in_your_account */
+
+    /**
+     * @var bool $available_in_your_account
+     */
     public $available_in_your_account = false;
 
     /**
@@ -45,7 +53,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
+    public function __construct(OrderInvoice $orderInvoice, Smarty $smarty, $bulkMode = false)
     {
         $this->order_invoice = $orderInvoice;
         $this->order = new Order((int) $this->order_invoice->id_order);
