@@ -344,7 +344,7 @@ class AdminStockConfigurationControllerCore extends AdminController
             } else {
                 $this->toolbar_title = $this->l('Stock: Update supply order status');
 
-                $idSupplyOrderState = Tools::getValue('id_supply_order_state', 0);
+                $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
                 // only some fields are editable for initial states
                 if (in_array($idSupplyOrderState, [1, 2, 3, 4, 5, 6])) {
@@ -640,7 +640,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      */
     public function ajaxProcessEditableSupplyOrderState()
     {
-        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `editable` = NOT `editable` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -662,7 +662,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      */
     public function ajaxProcessDeliveryNoteSupplyOrderState()
     {
-        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `delivery_note` = NOT `delivery_note` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -684,7 +684,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      */
     public function ajaxProcessPendingReceiptSupplyOrderState()
     {
-        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `pending_receipt` = NOT `pending_receipt` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -706,7 +706,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      */
     public function ajaxProcessReceiptStateSupplyOrderState()
     {
-        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `receipt_state` = NOT `receipt_state` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -728,7 +728,7 @@ class AdminStockConfigurationControllerCore extends AdminController
      */
     public function ajaxProcessEnclosedSupplyOrderState()
     {
-        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = Tools::getIntValue('id_supply_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `enclosed`= NOT `enclosed` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);

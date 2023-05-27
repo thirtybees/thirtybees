@@ -60,10 +60,10 @@ class AdminShopUrlControllerCore extends AdminController
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->bulk_actions = [];
 
-        if ($this->id_shop = (int) Tools::getValue('shop_id')) {
+        if ($this->id_shop = Tools::getIntValue('shop_id')) {
             $_GET['id_shop'] = $this->id_shop;
         } else {
-            $this->id_shop = (int) Tools::getValue('id_shop');
+            $this->id_shop = Tools::getIntValue('id_shop');
         }
 
         $this->context = Context::getContext();
@@ -141,7 +141,7 @@ class AdminShopUrlControllerCore extends AdminController
         $this->_select = 's.name AS shop_name, CONCAT(\'http://\', a.domain, a.physical_uri, a.virtual_uri) AS url';
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'shop` s ON (s.id_shop = a.id_shop)';
 
-        if ($idShop = (int) Tools::getValue('id_shop')) {
+        if ($idShop = Tools::getIntValue('id_shop')) {
             $this->_where = 'AND a.id_shop = '.$idShop;
         }
         $this->_use_found_rows = false;

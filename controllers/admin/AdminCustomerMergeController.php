@@ -184,8 +184,8 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
      */
     public function postProcess()
     {
-        $source = $this->loadCustomer((int)Tools::getValue('source_customer_id'), $this->l('Source'));
-        $target = $this->loadCustomer((int)Tools::getValue('target_customer_id'), $this->l('Target'));
+        $source = $this->loadCustomer(Tools::getIntValue('source_customer_id'), $this->l('Source'));
+        $target = $this->loadCustomer(Tools::getIntValue('target_customer_id'), $this->l('Target'));
 
         if (Tools::isSubmit('submitMerge')) {
             $tables = $this->getTables();

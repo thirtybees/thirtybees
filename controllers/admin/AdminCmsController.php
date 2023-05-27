@@ -363,17 +363,17 @@ class AdminCmsControllerCore extends AdminController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('viewcms') && ($idCms = (int) Tools::getValue('id_cms'))) {
+        if (Tools::isSubmit('viewcms') && ($idCms = Tools::getIntValue('id_cms'))) {
             parent::postProcess();
             if (($cms = new CMS($idCms, $this->context->language->id)) && Validate::isLoadedObject($cms)) {
                 Tools::redirectAdmin(static::$currentIndex.'&id_cms='.$idCms.'&conf=4&updatecms&token='.Tools::getAdminTokenLite('AdminCmsContent').'&url_preview=1');
             }
         } elseif (Tools::isSubmit('deletecms')) {
-            if (Tools::getValue('id_cms') == Configuration::get('PS_CONDITIONS_CMS_ID')) {
+            if (Tools::getIntValue('id_cms') == Configuration::get('PS_CONDITIONS_CMS_ID')) {
                 Configuration::updateValue('PS_CONDITIONS', 0);
                 Configuration::updateValue('PS_CONDITIONS_CMS_ID', 0);
             }
-            $cms = new CMS((int) Tools::getValue('id_cms'));
+            $cms = new CMS(Tools::getIntValue('id_cms'));
             $cms->cleanPositions($cms->id_cms_category);
             if (!$cms->delete()) {
                 $this->errors[] = Tools::displayError('An error occurred while deleting the object.').' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
@@ -386,9 +386,9 @@ class AdminCmsControllerCore extends AdminController
                     $cms = new CMS();
                     $result = $cms->deleteSelection(Tools::getValue($this->table.'Box'));
                     if ($result) {
-                        $cms->cleanPositions((int) Tools::getValue('id_cms_category'));
+                        $cms->cleanPositions(Tools::getIntValue('id_cms_category'));
                         $token = Tools::getAdminTokenLite('AdminCmsContent');
-                        Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.Tools::getIntValue('id_cms_category'));
                     }
                     $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                 } else {
@@ -402,7 +402,7 @@ class AdminCmsControllerCore extends AdminController
             if (count($this->errors)) {
                 return false;
             }
-            if (!$idCms = (int) Tools::getValue('id_cms')) {
+            if (!$idCms = Tools::getIntValue('id_cms')) {
                 $cms = new CMS();
                 $this->copyFromPost($cms, 'cms');
                 if (!$cms->add()) {
@@ -432,7 +432,7 @@ class AdminCmsControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             } elseif (!Validate::isLoadedObject($object = $this->loadObject())) {
                 $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-            } elseif (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
+            } elseif (!$object->updatePosition(Tools::getIntValue('way'), Tools::getIntValue('position'))) {
                 $this->errors[] = Tools::displayError('Failed to update the position.');
             } else {
                 Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=4&id_cms_category='.(int) $object->id_cms_category.'&token='.Tools::getAdminTokenLite('AdminCmsContent'));

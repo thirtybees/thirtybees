@@ -339,7 +339,7 @@ abstract class AdminTabCore
                 echo $this->l('You do not have permission to add here');
             }
         } elseif (isset($_GET['update'.$this->table])) {
-            if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee'))) {
+            if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getIntValue('id_employee'))) {
                 $this->displayForm();
                 if ($this->tabAccess[Profile::PERMISSION_VIEW]) {
                     echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : static::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
@@ -539,7 +539,7 @@ abstract class AdminTabCore
             $orderWay = $this->context->cookie->__get($this->table.'Orderway') ? $this->context->cookie->__get($this->table.'Orderway') : 'ASC';
         }
 
-        $limit = (int) (Tools::getValue('pagination', $limit));
+        $limit = Tools::getIntValue('pagination', $limit);
         $this->context->cookie->{$this->table.'_pagination'} = $limit;
 
         /* Check params validity */
@@ -744,7 +744,7 @@ abstract class AdminTabCore
         echo '<a name="'.$this->table.'">&nbsp;</a>';
         echo '<form method="post" action="'.static::$currentIndex;
         if (Tools::getIsset($this->identifier)) {
-            echo '&'.$this->identifier.'='.(int) (Tools::getValue($this->identifier));
+            echo '&'.$this->identifier.'='.Tools::getIntValue($this->identifier);
         }
         echo '&token='.$token;
         if (Tools::getIsset($this->table.'Orderby')) {
@@ -758,7 +758,7 @@ abstract class AdminTabCore
 					<span style="float: left;">';
 
         /* Determine current page number */
-        $page = (int) (Tools::getValue('submitFilter'.$this->table));
+        $page = Tools::getIntValue('submitFilter'.$this->table);
         if (!$page) {
             $page = 1;
         }
@@ -806,7 +806,7 @@ abstract class AdminTabCore
 			<script type="text/javascript" src="../js/admin/dnd.js"></script>
 			';
         }
-        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.(((int) (Tools::getValue($this->identifiersDnd[$this->identifier], 1))) ? mb_substr($this->identifier, 3, mb_strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
+        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.((Tools::getIntValue($this->identifiersDnd[$this->identifier], 1)) ? mb_substr($this->identifier, 3, mb_strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
 			<thead>
 				<tr class="nodrag nodrop">
 					<th>';
@@ -952,7 +952,7 @@ abstract class AdminTabCore
             $keyToGet = 'id_'.($isCms ? 'cms_' : '').'category'.(in_array($this->identifier, ['id_category', 'id_cms_category']) ? '_parent' : '');
             foreach ($this->_list as $tr) {
                 $id = $tr[$this->identifier];
-                echo '<tr'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="tr_'.(($idCategory = (int) (Tools::getValue('id_'.($isCms ? 'cms_' : '').'category', '1'))) ? $idCategory : '').'_'.$id.'_'.$tr['position'].'"' : '').($irow++ % 2 ? ' class="alt_row"' : '').' '.((isset($tr['color']) && $this->colorOnBackground) ? 'style="background-color: '.$tr['color'].'"' : '').'>
+                echo '<tr'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="tr_'.(($idCategory = Tools::getIntValue('id_'.($isCms ? 'cms_' : '').'category', 1)) ? $idCategory : '').'_'.$id.'_'.$tr['position'].'"' : '').($irow++ % 2 ? ' class="alt_row"' : '').' '.((isset($tr['color']) && $this->colorOnBackground) ? 'style="background-color: '.$tr['color'].'"' : '').'>
 							<td class="center">';
                 if ($this->delete && (!isset($this->_listSkipDelete) || !in_array($id, $this->_listSkipDelete))) {
                     echo '<input type="checkbox" name="'.$this->table.'Box[]" value="'.$id.'" class="noborder" />';
@@ -969,7 +969,7 @@ abstract class AdminTabCore
                         echo '>';
                     }
                     if (isset($params['active']) && isset($tr[$key])) {
-                        $this->_displayEnableLink($token, $id, $tr[$key], $params['active'], Tools::getValue('id_category'), Tools::getValue('id_product'));
+                        $this->_displayEnableLink($token, $id, $tr[$key], $params['active'], Tools::getIntValue('id_category'), Tools::getIntValue('id_product'));
                     } elseif (isset($params['activeVisu']) && isset($tr[$key])) {
                         echo '<img src="../img/admin/'.($tr[$key] ? 'enabled.gif' : 'disabled.gif').'"
 						alt="'.($tr[$key] ? $this->l('Enabled') : $this->l('Disabled')).'" title="'.($tr[$key] ? $this->l('Enabled') : $this->l('Disabled')).'" />';
@@ -1509,7 +1509,7 @@ abstract class AdminTabCore
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var ObjectModel $object */
                     if ($object->toggleStatus()) {
-                        Tools::redirectAdmin(static::$currentIndex.'&conf=5'.((($idCategory = (int) (Tools::getValue('id_category'))) && Tools::getValue('id_product')) ? '&id_category='.$idCategory : '').'&token='.$token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=5'.((($idCategory = Tools::getIntValue('id_category')) && Tools::getIntValue('id_product')) ? '&id_category='.$idCategory : '').'&token='.$token);
                     } else {
                         $this->_errors[] = Tools::displayError('An error occurred while updating status.');
                     }
@@ -1526,10 +1526,10 @@ abstract class AdminTabCore
                 $this->_errors[] = Tools::displayError('You do not have permission to edit here.');
             } elseif (!Validate::isLoadedObject($object = $this->loadObject())) {
                 $this->_errors[] = Tools::displayError('An error occurred while updating status for object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-            } elseif (!$object->updatePosition((int) (Tools::getValue('way')), (int) (Tools::getValue('position')))) {
+            } elseif (!$object->updatePosition(Tools::getIntValue('way'), Tools::getIntValue('position'))) {
                 $this->_errors[] = Tools::displayError('Failed to update the position.');
             } else {
-                Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_identifier = (int) (Tools::getValue($this->identifier))) ? ('&'.$this->identifier.'='.$id_identifier) : '').'&token='.$token);
+                Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_identifier = Tools::getIntValue($this->identifier)) ? ('&'.$this->identifier.'='.$id_identifier) : '').'&token='.$token);
             }
         } /* Delete multiple objects */
         elseif (Tools::getValue('submitDel'.$this->table)) {
@@ -1566,11 +1566,11 @@ abstract class AdminTabCore
             /* Checking fields validity */
             $this->validateRules();
             if (!count($this->_errors)) {
-                $id = (int) (Tools::getValue($this->identifier));
+                $id = Tools::getIntValue($this->identifier);
 
                 /* Object update */
                 if ($id) {
-                    if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee') && Tools::isSubmit('updateemployee'))) {
+                    if ($this->tabAccess[Profile::PERMISSION_EDIT] || ($this->table == 'employee' && $this->context->employee->id == Tools::getIntValue('id_employee') && Tools::isSubmit('updateemployee'))) {
                         /** @var ObjectModel $object */
                         $object = new $this->className($id);
                         if (Validate::isLoadedObject($object)) {
@@ -1613,7 +1613,7 @@ abstract class AdminTabCore
                                 if ($this->table == 'group' && method_exists($this, 'updateRestrictions')) {
                                     $this->updateRestrictions($object->id);
                                 }
-                                $parentId = (int) (Tools::getValue('id_parent', 1));
+                                $parentId = Tools::getIntValue('id_parent', 1);
                                 // Specific back redirect
                                 if ($back = Tools::getValue('back')) {
                                     Tools::redirectAdmin(urldecode($back).'&conf=4');
@@ -1648,7 +1648,7 @@ abstract class AdminTabCore
                         if (!$object->add()) {
                             $this->_errors[] = Tools::displayError('An error occurred while creating object.').' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
                         } elseif (($_POST[$this->identifier] = $object->id /* voluntary */) && $this->postImage($object->id) && !count($this->_errors) && $this->_redirect) {
-                            $parentId = (int) (Tools::getValue('id_parent', 1));
+                            $parentId = Tools::getIntValue('id_parent', 1);
                             $this->afterAdd($object);
                             $this->updateAssoShop($object->id);
                             if ($this->table == 'group' && method_exists($this, 'updateRestrictions')) {
@@ -1790,7 +1790,7 @@ abstract class AdminTabCore
      */
     protected function loadObject($opt = false)
     {
-        $id = (int) Tools::getValue($this->identifier);
+        $id = Tools::getIntValue($this->identifier);
         if ($id && Validate::isUnsignedId($id)) {
             if (!$this->_object) {
                 $this->_object = new $this->className($id);

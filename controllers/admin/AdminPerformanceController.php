@@ -898,8 +898,8 @@ class AdminPerformanceControllerCore extends AdminController
                 if (!count($this->errors)) {
                     if (CacheMemcache::addServer(
                         pSQL(Tools::getValue('memcachedIp')),
-                        (int) Tools::getValue('memcachedPort'),
-                        (int) Tools::getValue('memcachedWeight')
+                        Tools::getIntValue('memcachedPort'),
+                        Tools::getIntValue('memcachedWeight')
                     )) {
                         Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
@@ -912,7 +912,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
         if (Tools::getValue('deleteMemcachedServer')) {
             if ($this->hasAddPermission()) {
-                if (CacheMemcache::deleteServer((int) Tools::getValue('deleteMemcachedServer'))) {
+                if (CacheMemcache::deleteServer(Tools::getIntValue('deleteMemcachedServer'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
                     $this->errors[] = Tools::displayError('There was an error when attempting to delete the Memcached server.');
@@ -938,9 +938,9 @@ class AdminPerformanceControllerCore extends AdminController
                 if (!count($this->errors)) {
                     if (CacheRedis::addServer(
                         pSQL(Tools::getValue('redisIp')),
-                        (int) Tools::getValue('redisPort'),
+                        Tools::getIntValue('redisPort'),
                         pSQL(Tools::getValue('redisAuth')),
-                        (int) Tools::getValue('redisDb')
+                        Tools::getIntValue('redisDb')
                     )) {
                         Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
@@ -953,7 +953,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
         if (Tools::isSubmit('deleteRedisServer')) {
             if ($this->hasAddPermission()) {
-                if (CacheRedis::deleteServer((int) Tools::getValue('deleteRedisServer'))) {
+                if (CacheRedis::deleteServer(Tools::getIntValue('deleteRedisServer'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
                     $this->errors[] = Tools::displayError('There was an error when attempting to delete the Redis server.');
@@ -1023,26 +1023,26 @@ class AdminPerformanceControllerCore extends AdminController
                     }
                 }
 
-                if ($tmp = (int) Tools::getValue('PS_CSS_THEME_CACHE')) {
+                if ($tmp = Tools::getIntValue('PS_CSS_THEME_CACHE')) {
                     $version = (int) Configuration::get('PS_CCCCSS_VERSION');
                     if (Configuration::get('PS_CSS_THEME_CACHE') != $tmp) {
                         Configuration::updateValue('PS_CCCCSS_VERSION', ++$version);
                     }
                 }
 
-                if ($tmp = (int) Tools::getValue('PS_JS_THEME_CACHE')) {
+                if ($tmp = Tools::getIntValue('PS_JS_THEME_CACHE')) {
                     $version = (int) Configuration::get('PS_CCCJS_VERSION');
                     if (Configuration::get('PS_JS_THEME_CACHE') != $tmp) {
                         Configuration::updateValue('PS_CCCJS_VERSION', ++$version);
                     }
                 }
 
-                if (!Configuration::updateValue('PS_CSS_THEME_CACHE', (int) Tools::getValue('PS_CSS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_THEME_CACHE', (int) Tools::getValue('PS_JS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', (int) Tools::getValue('PS_JS_HTML_THEME_COMPRESSION')) ||
-                    !Configuration::updateValue('PS_JS_DEFER', (int) Tools::getValue('PS_JS_DEFER')) ||
-                    !Configuration::updateValue('TB_KEEP_CCC_FILES', (int) Tools::getValue('TB_KEEP_CCC_FILES')) ||
-                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', (int) Tools::getValue('PS_HTACCESS_CACHE_CONTROL'))
+                if (!Configuration::updateValue('PS_CSS_THEME_CACHE', Tools::getIntValue('PS_CSS_THEME_CACHE')) ||
+                    !Configuration::updateValue('PS_JS_THEME_CACHE', Tools::getIntValue('PS_JS_THEME_CACHE')) ||
+                    !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION')) ||
+                    !Configuration::updateValue('PS_JS_DEFER', Tools::getIntValue('PS_JS_DEFER')) ||
+                    !Configuration::updateValue('TB_KEEP_CCC_FILES', Tools::getIntValue('TB_KEEP_CCC_FILES')) ||
+                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL'))
                 ) {
                     $this->errors[] = Tools::displayError('Unknown error.');
                 } else {
@@ -1108,7 +1108,7 @@ class AdminPerformanceControllerCore extends AdminController
 
         if (Tools::getValue('ciphering_up')) {
             if ($this->hasEditPermission()) {
-                $algo = (int)Tools::getValue('PS_CIPHER_ALGORITHM');
+                $algo = Tools::getIntValue('PS_CIPHER_ALGORITHM');
                 $prevSettings = file_get_contents(_PS_ROOT_DIR_.'/config/settings.inc.php');
                 $newSettings = $prevSettings;
                 if ($algo === Encryptor::ALGO_PHP_ENCRYPTION) {
@@ -1190,8 +1190,8 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitAddconfiguration')) {
-            Configuration::updateGlobalValue('PS_DISABLE_NON_NATIVE_MODULE', (int) Tools::getValue('native_module'));
-            Configuration::updateGlobalValue('PS_DISABLE_OVERRIDES', (int) Tools::getValue('overrides'));
+            Configuration::updateGlobalValue('PS_DISABLE_NON_NATIVE_MODULE', Tools::getIntValue('native_module'));
+            Configuration::updateGlobalValue('PS_DISABLE_OVERRIDES', Tools::getIntValue('overrides'));
 
             $this->updateCustomDefines([
                 '_PS_MODE_DEV_' => (bool)Tools::getValue('debug_mode'),
@@ -1381,7 +1381,7 @@ class AdminPerformanceControllerCore extends AdminController
 
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_memcached_server') {
             $host = pSQL(Tools::getValue('sHost', ''));
-            $port = (int) Tools::getValue('sPort', 0);
+            $port = Tools::getIntValue('sPort', 0);
             $type = Tools::getValue('type', '');
             if ($host != '' && $port != 0) {
                 try {
@@ -1437,9 +1437,9 @@ class AdminPerformanceControllerCore extends AdminController
         }
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_redis_server') {
             $host = pSQL(Tools::getValue('sHost', ''));
-            $port = (int) Tools::getValue('sPort', 0);
+            $port = Tools::getIntValue('sPort', 0);
             $auth = pSQL(Tools::getValue('sAuth', ''));
-            $db = (int) Tools::getValue('sDb', 0);
+            $db = Tools::getIntValue('sDb', 0);
             if ($host != '' && $port != 0) {
                 try {
                     if (! extension_loaded('redis')) {
@@ -1481,7 +1481,7 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function displayAjaxUpdateDynamicHooks()
     {
-        $idModule = (int) Tools::getValue('idModule');
+        $idModule = Tools::getIntValue('idModule');
         $status = Tools::getValue('status') === 'true';
         $hookName = Tools::getValue('hookName');
         $idHook = Hook::getIdByName($hookName);

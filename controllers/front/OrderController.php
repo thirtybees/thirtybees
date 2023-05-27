@@ -60,7 +60,7 @@ class OrderControllerCore extends ParentOrderController
 
         parent::init();
 
-        $this->step = (int) Tools::getValue('step');
+        $this->step = Tools::getIntValue('step');
         if (!$this->nbProducts) {
             $this->step = -1;
         }
@@ -94,7 +94,7 @@ class OrderControllerCore extends ParentOrderController
         if (!$this->context->customer->isLogged(true) && in_array($this->step, [1, 2, 3])) {
             $params = [];
             $params['step'] = (int) $this->step;
-            if ($multi = (int) Tools::getValue('multi-shipping')) {
+            if ($multi = Tools::getIntValue('multi-shipping')) {
                 $params['multi-shipping'] = $multi;
             }
 
@@ -204,14 +204,14 @@ class OrderControllerCore extends ParentOrderController
         if (Tools::isSubmit('ajax') && Tools::getValue('method') == 'updateExtraCarrier') {
             // Change virtualy the currents delivery options
             $deliveryOption = $this->context->cart->getDeliveryOption();
-            $deliveryOption[(int) Tools::getValue('id_address')] = Tools::getValue('id_delivery_option');
+            $deliveryOption[Tools::getIntValue('id_address')] = Tools::getValue('id_delivery_option');
             $this->context->cart->setDeliveryOption($deliveryOption);
             $this->context->cart->save();
             $return = [
                 'content' => Hook::displayHook(
                     'displayCarrierList',
                     [
-                        'address' => new Address((int) Tools::getValue('id_address')),
+                        'address' => new Address(Tools::getIntValue('id_address')),
                     ]
                 ),
             ];
@@ -274,9 +274,9 @@ class OrderControllerCore extends ParentOrderController
 
                 // Check the delivery option is set
                 if ($this->context->cart->isVirtualCart() === false) {
-                    if (!Tools::getValue('delivery_option') && !Tools::getValue('id_carrier') && !$this->context->cart->delivery_option && !$this->context->cart->id_carrier) {
+                    if (!Tools::getValue('delivery_option') && !Tools::getIntValue('id_carrier') && !$this->context->cart->delivery_option && !$this->context->cart->id_carrier) {
                         Tools::redirect('index.php?controller=order&step=2');
-                    } elseif (!Tools::getValue('id_carrier') && !$this->context->cart->id_carrier) {
+                    } elseif (!Tools::getIntValue('id_carrier') && !$this->context->cart->id_carrier) {
                         $deliveriesOptions = Tools::getValue('delivery_option');
                         if (!$deliveriesOptions) {
                             $deliveriesOptions = $this->context->cart->delivery_option;
@@ -373,18 +373,18 @@ class OrderControllerCore extends ParentOrderController
     public function processAddress()
     {
         $same = Tools::isSubmit('same');
-        if (!Tools::getValue('id_address_invoice', false) && !$same) {
+        if (!Tools::getIntValue('id_address_invoice') && !$same) {
             $same = true;
         }
 
-        if (!Customer::customerHasAddress($this->context->customer->id, (int) Tools::getValue('id_address_delivery'))
-            || (!$same && Tools::getValue('id_address_delivery') != Tools::getValue('id_address_invoice')
-                && !Customer::customerHasAddress($this->context->customer->id, (int) Tools::getValue('id_address_invoice')))
+        if (!Customer::customerHasAddress($this->context->customer->id, Tools::getIntValue('id_address_delivery'))
+            || (!$same && Tools::getIntValue('id_address_delivery') !== Tools::getIntValue('id_address_invoice')
+                && !Customer::customerHasAddress($this->context->customer->id, Tools::getIntValue('id_address_invoice')))
         ) {
             $this->errors[] = Tools::displayError('Invalid address', !Tools::getValue('ajax'));
         } else {
-            $this->context->cart->id_address_delivery = (int) Tools::getValue('id_address_delivery');
-            $this->context->cart->id_address_invoice = $same ? $this->context->cart->id_address_delivery : (int) Tools::getValue('id_address_invoice');
+            $this->context->cart->id_address_delivery = Tools::getIntValue('id_address_delivery');
+            $this->context->cart->id_address_invoice = $same ? $this->context->cart->id_address_delivery : Tools::getIntValue('id_address_invoice');
 
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);

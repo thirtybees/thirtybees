@@ -456,7 +456,7 @@ class AdminWarehousesControllerCore extends AdminController
     public function renderView()
     {
         // gets necessary objects
-        $idWarehouse = (int) Tools::getValue('id_warehouse');
+        $idWarehouse = Tools::getIntValue('id_warehouse');
         $warehouse = new Warehouse($idWarehouse);
         $employee = new Employee($warehouse->id_employee);
         $currency = new Currency($warehouse->id_currency);
@@ -617,8 +617,8 @@ class AdminWarehousesControllerCore extends AdminController
     {
         $address = new Address();
 
-        if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
-            $address = new Address((int) Tools::getValue('id_address'));
+        if (Tools::isSubmit('id_address') && Tools::getIntValue('id_address') > 0) {
+            $address = new Address(Tools::getIntValue('id_address'));
         }
 
         $address->alias = Tools::getValue('reference', null);
@@ -628,8 +628,8 @@ class AdminWarehousesControllerCore extends AdminController
         $address->address2 = Tools::getValue('address2', null);
         $address->postcode = Tools::getValue('postcode', null);
         $address->phone = Tools::getValue('phone', null);
-        $address->id_country = Tools::getValue('id_country', null);
-        $address->id_state = Tools::getValue('id_state', null);
+        $address->id_country = Tools::getIntValue('id_country');
+        $address->id_state = Tools::getIntValue('id_state');
         $address->city = Tools::getValue('city', null);
 
         if (!($country = new Country($address->id_country, Configuration::get('PS_LANG_DEFAULT'))) || !Validate::isLoadedObject($country)) {
@@ -658,11 +658,11 @@ class AdminWarehousesControllerCore extends AdminController
         } else {
             // valid
 
-            if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
+            if (Tools::isSubmit('id_address') && Tools::getIntValue('id_address') > 0) {
                 $address->update();
             } else {
                 $address->save();
-                $_POST['id_address'] = $address->id;
+                $_POST['id_address'] = (int)$address->id;
             }
         }
     }

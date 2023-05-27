@@ -149,7 +149,7 @@ class AdminShippingControllerCore extends AdminController
         /* Shipping fees */
         if (Tools::isSubmit('submitFees'.$this->table)) {
             if ($this->hasEditPermission()) {
-                if (($idCarrier = (int) (Tools::getValue('id_carrier'))) && $idCarrier == ($idCarrier2 = (int) (Tools::getValue('id_carrier2')))) {
+                if (($idCarrier = Tools::getIntValue('id_carrier')) && $idCarrier == ($idCarrier2 = Tools::getIntValue('id_carrier2'))) {
                     $carrier = new Carrier($idCarrier);
                     if (Validate::isLoadedObject($carrier)) {
                         /* Get configuration values */

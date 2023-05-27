@@ -48,9 +48,9 @@ ServiceLocator::getInstance()->getErrorHandler()->setErrorResponseHandler(new JS
 if (Tools::isSubmit('ajaxReferrers')) {
     if (Tools::isSubmit('ajaxProductFilter')) {
         Referrer::getAjaxProduct(
-            (int) Tools::getValue('id_referrer'),
-            (int) Tools::getValue('id_product'),
-            new Employee((int) Tools::getValue('id_employee'))
+            Tools::getIntValue('id_referrer'),
+            Tools::getIntValue('id_product'),
+            new Employee(Tools::getIntValue('id_employee'))
         );
     } else {
         if (Tools::isSubmit('ajaxFillProducts')) {
@@ -59,7 +59,7 @@ if (Tools::isSubmit('ajaxReferrers')) {
 			SELECT p.id_product, pl.name
 			FROM ' . _DB_PREFIX_ . 'product p
 			LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl
-				ON (p.id_product = pl.id_product AND pl.id_lang = ' . (int)Tools::getValue('id_lang') . ')
+				ON (p.id_product = pl.id_product AND pl.id_lang = ' . Tools::getIntValue('id_lang') . ')
 			' . (Tools::getValue('filter') != 'undefined' ? 'WHERE name LIKE "%' . pSQL(Tools::getValue('filter')) . '%"' : '')
             );
 
@@ -90,10 +90,10 @@ if (Tools::isSubmit('ajaxProductPackItems')) {
 	SELECT p.`id_product`, pl.`name`
 	FROM `'._DB_PREFIX_.'product` p
 	NATURAL LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
-	WHERE pl.`id_lang` = '.(int)(Tools::getValue('id_lang')).'
+	WHERE pl.`id_lang` = '.Tools::getIntValue('id_lang').'
 	'.Shop::addSqlRestrictionOnLang('pl').'
 	AND NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'pack` WHERE `id_product_pack` = p.`id_product`)
-	AND p.`id_product` != '.(int)(Tools::getValue('id_product')));
+	AND p.`id_product` != '.Tools::getIntValue('id_product'));
 
     foreach ($products as $packItem) {
         $jsonArray[] = '{"value": "'.(int)($packItem['id_product']).'-'.addslashes($packItem['name']).'", "text":"'.(int)($packItem['id_product']).' - '.addslashes($packItem['name']).'"}';
@@ -102,7 +102,7 @@ if (Tools::isSubmit('ajaxProductPackItems')) {
 }
 
 if (Tools::isSubmit('getChildrenCategories') && Tools::isSubmit('id_category_parent')) {
-    $children_categories = Category::getChildrenWithNbSelectedSubCat(Tools::getValue('id_category_parent'), Tools::getValue('selectedCat'), Context::getContext()->language->id, null, Tools::getValue('use_shop_context'));
+    $children_categories = Category::getChildrenWithNbSelectedSubCat(Tools::getIntValue('id_category_parent'), Tools::getValue('selectedCat'), Context::getContext()->language->id, null, Tools::getValue('use_shop_context'));
     die(json_encode($children_categories));
 }
 
@@ -121,7 +121,7 @@ if (Tools::isSubmit('markNotificationsRead')) {
     }
     $notification = $context->employee->getNotification();
     $type = Tools::getValue('type');
-    $lastId = (int)Tools::getValue('lastId');
+    $lastId = Tools::getIntValue('lastId');
     die(json_encode(['success' => $notification->markAsRead($type, $lastId)]));
 }
 
@@ -143,7 +143,7 @@ if (Tools::isSubmit('searchCategory')) {
     }
 }
 
-if (Tools::isSubmit('getParentCategoriesId') && $id_category = Tools::getValue('id_category')) {
+if (Tools::isSubmit('getParentCategoriesId') && $id_category = Tools::getIntValue('id_category')) {
     $category = new Category((int)$id_category);
     $results = Db::getInstance()->executeS('SELECT `id_category` FROM `'._DB_PREFIX_.'category` c WHERE c.`nleft` < '.(int)$category->nleft.' AND c.`nright` > '.(int)$category->nright);
     $output = [];

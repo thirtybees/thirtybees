@@ -4062,7 +4062,7 @@ class ProductCore extends ObjectModel
 
         $conn = Db::getInstance();
 
-        $categoryId = (int)Tools::getValue('id_category', 1);
+        $categoryId = Tools::getIntValue('id_category', 1);
         $productId = (int)$this->id;
 
         $newPosition = (int)$position;

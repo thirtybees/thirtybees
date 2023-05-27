@@ -75,11 +75,11 @@ class CartControllerCore extends FrontController
         header('X-Robots-Tag: noindex, nofollow', true);
 
         // Get page main parameters
-        $this->id_product = (int) Tools::getValue('id_product', null);
-        $this->id_product_attribute = (int) Tools::getValue('id_product_attribute', Tools::getValue('ipa'));
-        $this->customization_id = (int) Tools::getValue('id_customization');
-        $this->qty = abs((int)Tools::getValue('qty', 1));
-        $this->id_address_delivery = (int) Tools::getValue('id_address_delivery');
+        $this->id_product = Tools::getIntValue('id_product');
+        $this->id_product_attribute = Tools::getIntValue('id_product_attribute', Tools::getValue('ipa'));
+        $this->customization_id = Tools::getIntValue('id_customization');
+        $this->qty = abs(Tools::getIntValue('qty', 1));
+        $this->id_address_delivery = Tools::getIntValue('id_address_delivery');
     }
 
     /**
@@ -228,7 +228,7 @@ class CartControllerCore extends FrontController
                     $this->errors[] = sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimalQuantity);
                 } elseif (!$updateQuantity) {
                     $this->errors[] = Tools::displayError('You already have the maximum quantity available for this product.', !Tools::getValue('ajax'));
-                } elseif ((int) Tools::getValue('allow_refresh')) {
+                } elseif (Tools::getIntValue('allow_refresh')) {
                     // If the cart rules has changed, we need to refresh the whole cart
                     $cartRules2 = $this->context->cart->getCartRules();
                     if (count($cartRules2) != count($cartRules)) {
@@ -267,7 +267,7 @@ class CartControllerCore extends FrontController
 
         $removed = CartRule::autoRemoveFromCart();
         CartRule::autoAddToCart();
-        if (count($removed) && (int) Tools::getValue('allow_refresh')) {
+        if (count($removed) && Tools::getIntValue('allow_refresh')) {
             $this->ajax_refresh = true;
         }
     }
@@ -337,7 +337,7 @@ class CartControllerCore extends FrontController
         }
         $removed = CartRule::autoRemoveFromCart();
         CartRule::autoAddToCart();
-        if (count($removed) && (int) Tools::getValue('allow_refresh')) {
+        if (count($removed) && Tools::getIntValue('allow_refresh')) {
             $this->ajax_refresh = true;
         }
     }
@@ -356,8 +356,8 @@ class CartControllerCore extends FrontController
             return;
         }
 
-        $oldIdAddressDelivery = (int) Tools::getValue('old_id_address_delivery');
-        $newIdAddressDelivery = (int) Tools::getValue('new_id_address_delivery');
+        $oldIdAddressDelivery = Tools::getIntValue('old_id_address_delivery');
+        $newIdAddressDelivery = Tools::getIntValue('new_id_address_delivery');
 
         if (!count(Carrier::getAvailableCarrierList(new Product($this->id_product), null, $newIdAddressDelivery))) {
             $this->ajaxDie(
@@ -419,7 +419,7 @@ class CartControllerCore extends FrontController
             $this->id_product,
             $this->id_product_attribute,
             $this->id_address_delivery,
-            (int) Tools::getValue('new_id_address_delivery')
+            Tools::getIntValue('new_id_address_delivery')
         );
     }
 

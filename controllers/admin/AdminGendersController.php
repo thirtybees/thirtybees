@@ -227,9 +227,9 @@ class AdminGendersControllerCore extends AdminController
             if (!Validate::isInt(Tools::getValue('img_width')) || !Validate::isInt(Tools::getValue('img_height'))) {
                 $this->errors[] = Tools::displayError('Width and height must be numeric values.');
             } else {
-                if ((int)Tools::getValue('img_width') > 0 && (int)Tools::getValue('img_height') > 0) {
-                    $width = (int)Tools::getValue('img_width');
-                    $height = (int)Tools::getValue('img_height');
+                if (Tools::getIntValue('img_width') > 0 && Tools::getIntValue('img_height') > 0) {
+                    $width = Tools::getIntValue('img_width');
+                    $height = Tools::getIntValue('img_height');
                 } else {
                     $width = null;
                     $height = null;
@@ -247,7 +247,7 @@ class AdminGendersControllerCore extends AdminController
     {
         parent::afterImageUpload();
 
-        if (($id_gender = (int)Tools::getValue('id_gender')) &&
+        if (($id_gender = Tools::getIntValue('id_gender')) &&
              isset($_FILES) && count($_FILES) && file_exists(_PS_GENDERS_DIR_.$id_gender.'.jpg')) {
             $current_file = _PS_TMP_IMG_DIR_.'gender_mini_'.$id_gender.'_'.$this->context->shop->id.'.jpg';
 

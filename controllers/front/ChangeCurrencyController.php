@@ -42,7 +42,7 @@ class ChangeCurrencyControllerCore extends FrontController
      */
     public function initContent()
     {
-        $currency = new Currency((int) Tools::getValue('id_currency'));
+        $currency = new Currency(Tools::getIntValue('id_currency'));
         if (Validate::isLoadedObject($currency) && !$currency->deleted) {
             $this->context->cookie->id_currency = (int) $currency->id;
             $this->ajaxDie('1');

@@ -137,7 +137,7 @@ class AdminTagsControllerCore extends AdminController
     public function postProcess()
     {
         if ($this->hasEditPermission() && Tools::getValue('submitAdd'.$this->table)) {
-            if (($id = (int) Tools::getValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
+            if (($id = Tools::getIntValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
                 /** @var Tag $obj */
                 $previousProducts = $obj->getProducts();
                 $removedProducts = [];

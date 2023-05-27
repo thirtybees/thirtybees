@@ -280,17 +280,17 @@ class MetaCore extends ObjectModel
         if (!(!Configuration::get('PS_SHOP_ENABLE')
             && !in_array(Tools::getRemoteAddr(), explode(',', (string)Configuration::get('PS_MAINTENANCE_IP'))))
         ) {
-            if ($pageName == 'product' && ($idProduct = Tools::getValue('id_product'))) {
+            if ($pageName == 'product' && ($idProduct = Tools::getIntValue('id_product'))) {
                 return Meta::getProductMetas($idProduct, $idLang, $pageName);
-            } elseif ($pageName == 'category' && ($idCategory = Tools::getValue('id_category'))) {
+            } elseif ($pageName == 'category' && ($idCategory = Tools::getIntValue('id_category'))) {
                 return Meta::getCategoryMetas($idCategory, $idLang, $pageName, $title);
-            } elseif ($pageName == 'manufacturer' && ($idManufacturer = Tools::getValue('id_manufacturer'))) {
+            } elseif ($pageName == 'manufacturer' && ($idManufacturer = Tools::getIntValue('id_manufacturer'))) {
                 return Meta::getManufacturerMetas($idManufacturer, $idLang, $pageName);
-            } elseif ($pageName == 'supplier' && ($idSupplier = Tools::getValue('id_supplier'))) {
+            } elseif ($pageName == 'supplier' && ($idSupplier = Tools::getIntValue('id_supplier'))) {
                 return Meta::getSupplierMetas($idSupplier, $idLang, $pageName);
-            } elseif ($pageName == 'cms' && ($idCms = Tools::getValue('id_cms'))) {
+            } elseif ($pageName == 'cms' && ($idCms = Tools::getIntValue('id_cms'))) {
                 return Meta::getCmsMetas($idCms, $idLang, $pageName);
-            } elseif ($pageName == 'cms' && ($idCmsCategory = Tools::getValue('id_cms_category'))) {
+            } elseif ($pageName == 'cms' && ($idCmsCategory = Tools::getIntValue('id_cms_category'))) {
                 return Meta::getCmsCategoryMetas($idCmsCategory, $idLang, $pageName);
             }
         }
@@ -421,7 +421,7 @@ class MetaCore extends ObjectModel
         if (!empty($title)) {
             $title = ' - '.$title;
         }
-        $pageNumber = (int) Tools::getValue('p');
+        $pageNumber = Tools::getIntValue('p');
         $cacheId = 'Meta::getCategoryMetas'.(int) $idCategory.'-'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
             if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
@@ -474,7 +474,7 @@ class MetaCore extends ObjectModel
      */
     public static function getManufacturerMetas($idManufacturer, $idLang, $pageName)
     {
-        $pageNumber = (int) Tools::getValue('p');
+        $pageNumber = Tools::getIntValue('p');
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')

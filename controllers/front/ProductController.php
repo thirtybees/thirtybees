@@ -104,7 +104,7 @@ class ProductControllerCore extends FrontController
     {
         parent::init();
 
-        if ($idProduct = (int) Tools::getValue('id_product')) {
+        if ($idProduct = Tools::getIntValue('id_product')) {
             $this->product = new Product($idProduct, true, $this->context->language->id, $this->context->shop->id);
         }
 
@@ -121,7 +121,7 @@ class ProductControllerCore extends FrontController
              * In all the others cases => 404 "Product is no longer available"
              */
             if (!$this->product->isAssociatedToShop() || !$this->product->active) {
-                if (Tools::getValue('adtoken') == Tools::getAdminToken('AdminProducts'.(int) Tab::getIdFromClassName('AdminProducts').(int) Tools::getValue('id_employee')) && $this->product->isAssociatedToShop()) {
+                if (Tools::getValue('adtoken') == Tools::getAdminToken('AdminProducts'.(int) Tab::getIdFromClassName('AdminProducts').Tools::getIntValue('id_employee')) && $this->product->isAssociatedToShop()) {
                     // If the product is not active, it's the admin preview mode
                     $this->context->smarty->assign('adminActionDisplay', true);
                 } else {
@@ -718,7 +718,7 @@ class ProductControllerCore extends FrontController
         $size = Image::getSize(ImageType::getFormatedName('large'));
         $this->context->smarty->assign(
             [
-                'have_image'  => (isset($cover['id_image']) && (int) $cover['id_image']) ? [(int) $cover['id_image']] : Product::getCover((int) Tools::getValue('id_product')),
+                'have_image'  => (isset($cover['id_image']) && (int) $cover['id_image']) ? [(int) $cover['id_image']] : Product::getCover(Tools::getIntValue('id_product')),
                 'cover'       => $cover,
                 'imgWidth'    => (int) $size['width'],
                 'mediumSize'  => Image::getSize(ImageType::getFormatedName('medium')),

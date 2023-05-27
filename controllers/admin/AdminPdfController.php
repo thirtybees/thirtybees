@@ -92,9 +92,9 @@ class AdminPdfControllerCore extends AdminController
     public function processGenerateInvoicePdf()
     {
         if (Tools::isSubmit('id_order')) {
-            $this->generateInvoicePDFByIdOrder(Tools::getValue('id_order'));
+            $this->generateInvoicePDFByIdOrder(Tools::getIntValue('id_order'));
         } elseif (Tools::isSubmit('id_order_invoice')) {
-            $this->generateInvoicePDFByIdOrderInvoice(Tools::getValue('id_order_invoice'));
+            $this->generateInvoicePDFByIdOrderInvoice(Tools::getIntValue('id_order_invoice'));
         } else {
             throw new PrestaShopException(Tools::displayError('The order ID -- or the invoice order ID -- is missing.'));
         }
@@ -173,7 +173,7 @@ class AdminPdfControllerCore extends AdminController
      */
     public function processGenerateOrderSlipPDF()
     {
-        $orderSlip = new OrderSlip((int) Tools::getValue('id_order_slip'));
+        $orderSlip = new OrderSlip(Tools::getIntValue('id_order_slip'));
 
         if ( ! Validate::isLoadedObject($orderSlip)) {
             throw new PrestaShopException(Tools::displayError('The order slip cannot be found within your database.'));
@@ -194,11 +194,11 @@ class AdminPdfControllerCore extends AdminController
     public function processGenerateDeliverySlipPDF()
     {
         if (Tools::isSubmit('id_order')) {
-            $this->generateDeliverySlipPDFByIdOrder((int) Tools::getValue('id_order'));
+            $this->generateDeliverySlipPDFByIdOrder(Tools::getIntValue('id_order'));
         } elseif (Tools::isSubmit('id_order_invoice')) {
-            $this->generateDeliverySlipPDFByIdOrderInvoice((int) Tools::getValue('id_order_invoice'));
+            $this->generateDeliverySlipPDFByIdOrderInvoice(Tools::getIntValue('id_order_invoice'));
         } elseif (Tools::isSubmit('id_delivery')) {
-            $order = Order::getByDelivery((int) Tools::getValue('id_delivery'));
+            $order = Order::getByDelivery(Tools::getIntValue('id_delivery'));
             $this->generateDeliverySlipPDFByIdOrder((int) $order->id);
         } else {
             throw new PrestaShopException(Tools::displayError('The order ID -- or the invoice order ID -- is missing.'));
@@ -358,7 +358,7 @@ class AdminPdfControllerCore extends AdminController
             throw new PrestaShopException(Tools::displayError('The supply order ID is missing.'));
         }
 
-        $idSupplyOrder = (int) Tools::getValue('id_supply_order');
+        $idSupplyOrder = Tools::getIntValue('id_supply_order');
         $supplyOrder = new SupplyOrder($idSupplyOrder);
 
         if (!Validate::isLoadedObject($supplyOrder)) {

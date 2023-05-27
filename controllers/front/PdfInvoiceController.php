@@ -84,7 +84,7 @@ class PdfInvoiceControllerCore extends FrontController
             Tools::redirect($link->getPageLink('pagenotfound'));
         }
 
-        $idOrder = (int) Tools::getValue('id_order');
+        $idOrder = Tools::getIntValue('id_order');
 
         if (!$this->context->customer->isLogged() && !Tools::getValue('secure_key')) {
             $backLink = $link->getPageLink('pdf-invoice', null, $this->context->language->id, 'id_order=' . $idOrder);

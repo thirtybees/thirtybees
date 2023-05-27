@@ -44,7 +44,7 @@ class AttachmentControllerCore extends FrontController
      */
     public function postProcess()
     {
-        $a = new Attachment(Tools::getValue('id_attachment'), $this->context->language->id);
+        $a = new Attachment(Tools::getIntValue('id_attachment'), $this->context->language->id);
         if (!$a->id) {
             Tools::redirect('index.php');
         }

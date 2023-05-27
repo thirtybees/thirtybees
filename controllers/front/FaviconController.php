@@ -46,8 +46,8 @@ class FaviconControllerCore extends FrontController
     {
         if (Tools::getValue('icon') === 'apple-touch-icon') {
             if (Tools::getIsset('width') && Tools::getIsset('height')) {
-                $width = (int)Tools::getValue('width');
-                $height = (int)Tools::getValue('height');
+                $width = Tools::getIntValue('width');
+                $height = Tools::getIntValue('height');
 
                 if (file_exists(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_{$width}_{$height}.png")) {
                     header('Content-Type: image/png');

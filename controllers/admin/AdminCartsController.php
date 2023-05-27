@@ -380,10 +380,10 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxPreProcess()
     {
         if ($this->hasEditPermission()) {
-            $idCustomer = (int) Tools::getValue('id_customer');
+            $idCustomer = Tools::getIntValue('id_customer');
             $customer = new Customer((int) $idCustomer);
             $this->context->customer = $customer;
-            $idCart = (int) Tools::getValue('id_cart');
+            $idCart = Tools::getIntValue('id_cart');
             if (!$idCart) {
                 $idCart = $customer->getLastCart(false);
             }
@@ -407,15 +407,15 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->id_shop = (int) $this->context->shop->id;
             }
             if (!$this->context->cart->id_lang) {
-                $this->context->cart->id_lang = (($idLang = (int) Tools::getValue('id_lang')) ? $idLang : Configuration::get('PS_LANG_DEFAULT'));
+                $this->context->cart->id_lang = (($idLang = Tools::getIntValue('id_lang')) ? $idLang : Configuration::get('PS_LANG_DEFAULT'));
             }
             if (!$this->context->cart->id_currency) {
-                $this->context->cart->id_currency = (($idCurrency = (int) Tools::getValue('id_currency')) ? $idCurrency : Configuration::get('PS_CURRENCY_DEFAULT'));
+                $this->context->cart->id_currency = (($idCurrency = Tools::getIntValue('id_currency')) ? $idCurrency : Configuration::get('PS_CURRENCY_DEFAULT'));
             }
 
             $addresses = $customer->getAddresses((int) $this->context->cart->id_lang);
-            $idAddressDelivery = (int) Tools::getValue('id_address_delivery');
-            $idAddressInvoice = (int) Tools::getValue('id_address_delivery');
+            $idAddressDelivery = Tools::getIntValue('id_address_delivery');
+            $idAddressInvoice = Tools::getIntValue('id_address_delivery');
 
             if (!$this->context->cart->id_address_invoice && isset($addresses[0])) {
                 $this->context->cart->id_address_invoice = (int) $addresses[0]['id_address'];
@@ -441,16 +441,16 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $errors = [];
-            if ((!$idProduct = (int) Tools::getValue('id_product')) || !Validate::isInt($idProduct)) {
+            if ((!$idProduct = Tools::getIntValue('id_product')) || !Validate::isInt($idProduct)) {
                 $errors[] = Tools::displayError('Invalid product');
             }
-            if (($idProductAttribute = (int) Tools::getValue('id_product_attribute')) && !Validate::isInt($idProductAttribute)) {
+            if (($idProductAttribute = Tools::getIntValue('id_product_attribute')) && !Validate::isInt($idProductAttribute)) {
                 $errors[] = Tools::displayError('Invalid combination');
             }
             if (count($errors)) {
                 $this->ajaxDie(json_encode($errors));
             }
-            if ($this->context->cart->deleteProduct($idProduct, $idProductAttribute, (int) Tools::getValue('id_customization'))) {
+            if ($this->context->cart->deleteProduct($idProduct, $idProductAttribute, Tools::getIntValue('id_customization'))) {
                 $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
         }
@@ -606,7 +606,7 @@ class AdminCartsControllerCore extends AdminController
         if ($this->hasEditPermission()) {
             $errors = [];
             if (Tools::getValue('only_display') != 1) {
-                if (!$this->context->cart->id || (!$idProduct = (int) Tools::getValue('id_product'))) {
+                if (!$this->context->cart->id || (!$idProduct = Tools::getIntValue('id_product'))) {
                     return;
                 }
                 $product = new Product((int) $idProduct);
@@ -678,7 +678,7 @@ class AdminCartsControllerCore extends AdminController
             }
             if ($this->context->cart->OrderExists()) {
                 $errors[] = Tools::displayError('An order has already been placed with this cart.');
-            } elseif (!($idProduct = (int) Tools::getValue('id_product')) || !($product = new Product((int) $idProduct, true, $this->context->language->id))) {
+            } elseif (!($idProduct = Tools::getIntValue('id_product')) || !($product = new Product((int) $idProduct, true, $this->context->language->id))) {
                 $errors[] = Tools::displayError('Invalid product');
             } elseif (!($qty = Tools::getValue('qty')) || $qty == 0) {
                 $errors[] = Tools::displayError('Invalid quantity');
@@ -686,14 +686,14 @@ class AdminCartsControllerCore extends AdminController
 
             // Don't try to use a product if not instanciated before due to errors
             if (isset($product) && $product->id) {
-                if (($idProductAttribute = Tools::getValue('id_product_attribute')) != 0) {
+                if (($idProductAttribute = Tools::getIntValue('id_product_attribute')) !== 0) {
                     if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !ProductAttribute::checkAttributeQty((int) $idProductAttribute, (int) $qty)) {
                         $errors[] = Tools::displayError('There is not enough product in stock.');
                     }
                 } elseif (!$product->checkQty((int) $qty)) {
                     $errors[] = Tools::displayError('There is not enough product in stock.');
                 }
-                if (!($idCustomization = (int) Tools::getValue('id_customization', 0)) && !$product->hasAllRequiredCustomizableFields()) {
+                if (!($idCustomization = Tools::getIntValue('id_customization', 0)) && !$product->hasAllRequiredCustomizableFields()) {
                     $errors[] = Tools::displayError('Please fill in all the required fields.');
                 }
                 $this->context->cart->save();
@@ -731,10 +731,10 @@ class AdminCartsControllerCore extends AdminController
             if ($deliveryOption !== false) {
                 $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => $deliveryOption]);
             }
-            if (Validate::isBool(($recyclable = (int) Tools::getValue('recyclable')))) {
+            if (Validate::isBool(($recyclable = Tools::getIntValue('recyclable')))) {
                 $this->context->cart->recyclable = $recyclable;
             }
-            if (Validate::isBool(($gift = (int) Tools::getValue('gift')))) {
+            if (Validate::isBool(($gift = Tools::getIntValue('gift')))) {
                 $this->context->cart->gift = $gift;
             }
             if (Validate::isMessage(($giftMessage = pSQL(Tools::getValue('gift_message'))))) {
@@ -776,7 +776,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateCurrency()
     {
         if ($this->hasEditPermission()) {
-            $currency = new Currency((int) Tools::getValue('id_currency'));
+            $currency = new Currency(Tools::getIntValue('id_currency'));
             if (Validate::isLoadedObject($currency) && !$currency->deleted && $currency->active) {
                 $this->context->cart->id_currency = (int) $currency->id;
                 $this->context->currency = $currency;
@@ -792,7 +792,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateLang()
     {
         if ($this->hasEditPermission()) {
-            $lang = new Language((int) Tools::getValue('id_lang'));
+            $lang = new Language(Tools::getIntValue('id_lang'));
             if (Validate::isLoadedObject($lang) && $lang->active) {
                 $this->context->cart->id_lang = (int) $lang->id;
                 $this->context->cart->save();
@@ -807,7 +807,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessDuplicateOrder()
     {
         if ($this->hasEditPermission()) {
-            if ($idOrder = Tools::getValue('id_order')) {
+            if ($idOrder = Tools::getIntValue('id_order')) {
                 $cart = Cart::getCartByOrderId($idOrder);
                 if (Validate::isLoadedObject($cart)) {
                     $newCart = $cart->duplicate();
@@ -838,7 +838,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessDeleteVoucher()
     {
         if ($this->hasEditPermission()) {
-            if ($this->context->cart->removeCartRule((int) Tools::getValue('id_cart_rule'))) {
+            if ($this->context->cart->removeCartRule(Tools::getIntValue('id_cart_rule'))) {
                 $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
         }
@@ -884,7 +884,7 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $errors = [];
-            if (!($idCartRule = Tools::getValue('id_cart_rule')) || !$cartRule = new CartRule((int) $idCartRule)) {
+            if (!($idCartRule = Tools::getIntValue('id_cart_rule')) || !$cartRule = new CartRule($idCartRule)) {
                 $errors[] = Tools::displayError('Invalid voucher.');
             } elseif ($err = $cartRule->checkValidity($this->context)) {
                 $errors[] = $err;
@@ -914,14 +914,14 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateAddresses()
     {
         if ($this->hasEditPermission()) {
-            if (($idAddressDelivery = (int) Tools::getValue('id_address_delivery')) &&
+            if (($idAddressDelivery = Tools::getIntValue('id_address_delivery')) &&
                 ($addressDelivery = new Address((int) $idAddressDelivery)) &&
                 $addressDelivery->id_customer == $this->context->cart->id_customer
             ) {
                 $this->context->cart->id_address_delivery = (int) $addressDelivery->id;
             }
 
-            if (($idAddressInvoice = (int) Tools::getValue('id_address_invoice')) &&
+            if (($idAddressInvoice = Tools::getIntValue('id_address_invoice')) &&
                 ($addressInvoice = new Address((int) $idAddressInvoice)) &&
                 $addressInvoice->id_customer = $this->context->cart->id_customer
             ) {
@@ -938,7 +938,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function displayAjaxSearchCarts()
     {
-        $idCustomer = (int) Tools::getValue('id_customer');
+        $idCustomer = Tools::getIntValue('id_customer');
         $carts = Cart::getCustomerCarts((int) $idCustomer);
         $orders = Order::getCustomerOrders((int) $idCustomer);
 
@@ -997,7 +997,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateProductPrice()
     {
         if ($this->hasEditPermission()) {
-            SpecificPrice::deleteByIdCart((int) $this->context->cart->id, (int) Tools::getValue('id_product'), (int) Tools::getValue('id_product_attribute'));
+            SpecificPrice::deleteByIdCart((int) $this->context->cart->id, Tools::getIntValue('id_product'), Tools::getIntValue('id_product_attribute'));
             $specificPrice = new SpecificPrice();
             $specificPrice->id_cart = (int) $this->context->cart->id;
             $specificPrice->id_shop = 0;
@@ -1006,8 +1006,8 @@ class AdminCartsControllerCore extends AdminController
             $specificPrice->id_country = 0;
             $specificPrice->id_group = 0;
             $specificPrice->id_customer = (int) $this->context->customer->id;
-            $specificPrice->id_product = (int) Tools::getValue('id_product');
-            $specificPrice->id_product_attribute = (int) Tools::getValue('id_product_attribute');
+            $specificPrice->id_product = Tools::getIntValue('id_product');
+            $specificPrice->id_product_attribute = Tools::getIntValue('id_product_attribute');
             $specificPrice->price = Tools::convertPrice(Tools::getValue('price'), (int)$this->context->cart->id_currency, false);
             $specificPrice->from_quantity = 1;
             $specificPrice->reduction = 0;

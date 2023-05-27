@@ -402,7 +402,7 @@ class AdminLocalizationControllerCore extends AdminController
      */
     public function beforeUpdateOptions()
     {
-        $lang = new Language((int) Tools::getValue('PS_LANG_DEFAULT'));
+        $lang = new Language(Tools::getIntValue('PS_LANG_DEFAULT'));
 
         if (!$lang->active) {
             $lang->active = 1;

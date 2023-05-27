@@ -2640,24 +2640,19 @@ class CartCore extends ObjectModel
     /**
      * @param int $idOrder
      *
-     * @return bool
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getCartIdByOrderId($idOrder)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_cart`')
                 ->from('orders')
                 ->where('`id_order` = '.(int) $idOrder)
         );
-        if (empty($result) || !array_key_exists('id_cart', $result)) {
-            return false;
-        }
-
-        return $result['id_cart'];
     }
 
     /**
@@ -4121,7 +4116,7 @@ class CartCore extends ObjectModel
             'total_price'               => $baseTotalTaxInc,
             'total_tax'                 => $totalTax,
             'total_price_without_tax'   => $baseTotalTaxExc,
-            'is_multi_address_delivery' => $this->isMultiAddressDelivery() || ((int) Tools::getValue('multi-shipping') == 1),
+            'is_multi_address_delivery' => $this->isMultiAddressDelivery() || (Tools::getIntValue('multi-shipping') == 1),
             'free_ship'                 => !$totalShipping && !count($this->getDeliveryAddressesWithoutCarriers(true, $errors)),
             'carrier'                   => new Carrier($this->id_carrier, $idLang),
             'errors'                    => [],

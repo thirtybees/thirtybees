@@ -826,7 +826,7 @@ class AdminImportControllerCore extends AdminController
 
         // Show date format select only in Products,Combinations and Customer import
         $dateFormats = null;
-        if (in_array((int)Tools::getValue('entity'), [1, 2, 3])) {
+        if (in_array(Tools::getIntValue('entity'), [1, 2, 3])) {
             if ( ! empty($this->context->language)
                 && ! empty($this->context->language->date_format_lite)
             ) {
@@ -898,7 +898,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         // seek current row
-        $toSkip = (int)Tools::getValue('skip');
+        $toSkip = Tools::getIntValue('skip');
         if ($offset && $offset > 0) {
             $toSkip += $offset;
         }
@@ -1318,7 +1318,7 @@ class AdminImportControllerCore extends AdminController
                 if ($offset === 0) {
                     // compute total count only once, because it takes time
                     $datasource = $this->openDataSource(0);
-                    $results['totalCount'] = $datasource->getNumberOfRows() - (int)Tools::getValue('skip');
+                    $results['totalCount'] = $datasource->getNumberOfRows() - Tools::getIntValue('skip');
                     $datasource->close();
                 }
                 if (!isset($moreStepLabels)) {
@@ -5117,7 +5117,7 @@ class AdminImportControllerCore extends AdminController
                     (new DbQuery())
                         ->select('*')
                         ->from('import_match')
-                        ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs'))
+                        ->where('`id_import_match` = '.Tools::getIntValue('idImportMatchs'))
                 );
                 $this->ajaxDie(json_encode([
                     'id' => $return[0]['id_import_match'],
@@ -5145,7 +5145,7 @@ class AdminImportControllerCore extends AdminController
             try {
                 Db::getInstance()->delete(
                     'import_match',
-                    '`id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
+                    '`id_import_match` = '.Tools::getIntValue('idImportMatchs'),
                     false
                 );
             } catch (PrestaShopException $e) {
@@ -5163,10 +5163,10 @@ class AdminImportControllerCore extends AdminController
      */
     public function ajaxProcessImport()
     {
-        $offset = (int) Tools::getValue('offset');
-        $limit = (int) Tools::getValue('limit');
-        $validateOnly = ((int) Tools::getValue('validateOnly') == 1);
-        $moreStep = (int) Tools::getValue('moreStep');
+        $offset = Tools::getIntValue('offset');
+        $limit = Tools::getIntValue('limit');
+        $validateOnly = (Tools::getIntValue('validateOnly') === 1);
+        $moreStep = Tools::getIntValue('moreStep');
 
         $results = [];
         $this->importByGroups($offset, $limit, $results, $validateOnly, $moreStep);

@@ -137,7 +137,7 @@ class AdminStockCoverControllerCore extends AdminController
                 'href' => $this->context->link->getAdminLink('AdminStockCover')
                     .(Tools::getValue('coverage_period') ? '&coverage_period='.Tools::getValue('coverage_period') : '')
                     .(Tools::getValue('warn_days') ? '&warn_days='.Tools::getValue('warn_days') : '')
-                    .(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
+                    .(Tools::getIntValue('id_warehouse') ? '&id_warehouse='.Tools::getIntValue('id_warehouse') : ''),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];
@@ -166,10 +166,10 @@ class AdminStockCoverControllerCore extends AdminController
             $this->actions = [];
             $this->list_simple_header = true;
             $this->table = 'product_attribute';
-            $idProduct = (int) Tools::getValue('id_product');
-            $warehouse = Tools::getValue('id_warehouse', -1);
+            $idProduct = Tools::getIntValue('id_product');
+            $warehouse = Tools::getIntValue('id_warehouse', -1);
             $whereWarehouse = '';
-            if ($warehouse != -1) {
+            if ($warehouse !== -1) {
                 $whereWarehouse = ' AND s.id_warehouse = '.(int) $warehouse;
             }
 
@@ -257,8 +257,8 @@ class AdminStockCoverControllerCore extends AdminController
 
         if ($coveragePeriod == 0) {
             $coveragePeriod = 7; // Week by default
-            if ((int) Tools::getValue('coverage_period')) {
-                $coveragePeriod = (int) Tools::getValue('coverage_period');
+            if (Tools::getIntValue('coverage_period')) {
+                $coveragePeriod = Tools::getIntValue('coverage_period');
             }
         }
 
@@ -277,7 +277,7 @@ class AdminStockCoverControllerCore extends AdminController
         if ($warning == 0) {
             $warning = 0;
             if (Tools::getValue('warn_days') && Validate::isInt(Tools::getValue('warn_days'))) {
-                $warning = (int) Tools::getValue('warn_days');
+                $warning = Tools::getIntValue('warn_days');
             }
         }
 
@@ -295,8 +295,8 @@ class AdminStockCoverControllerCore extends AdminController
 
         if ($warehouse == 0) {
             $warehouse = -1; // all warehouses
-            if ((int) Tools::getValue('id_warehouse')) {
-                $warehouse = (int) Tools::getValue('id_warehouse');
+            if (Tools::getIntValue('id_warehouse')) {
+                $warehouse = Tools::getIntValue('id_warehouse');
             }
         }
 
@@ -332,8 +332,8 @@ class AdminStockCoverControllerCore extends AdminController
                 $coverage = StockManagerFactory::getManager()->getProductCoverage(
                     $item['id_product'],
                     $item['id'],
-                    (Tools::getValue('period') ? (int) Tools::getValue('period') : 7),
-                    (($this->getCurrentCoverageWarehouse() == -1) ? null : Tools::getValue('id_warehouse', -1))
+                    (Tools::getValue('period') ? Tools::getIntValue('period') : 7),
+                    (($this->getCurrentCoverageWarehouse() == -1) ? null : Tools::getIntValue('id_warehouse', -1))
                 );
                 if ($coverage != -1) {
                     // if coverage is available

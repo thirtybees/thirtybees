@@ -248,12 +248,12 @@ class AdminStatesControllerCore extends AdminController
 
         // Idiot-proof controls
         if (!Tools::getValue('id_'.$this->table)) {
-            if (Validate::isStateIsoCode(Tools::getValue('iso_code')) && State::getIdByIso(Tools::getValue('iso_code'), Tools::getValue('id_country'))) {
+            if (Validate::isStateIsoCode(Tools::getValue('iso_code')) && State::getIdByIso(Tools::getValue('iso_code'), Tools::getIntValue('id_country'))) {
                 $this->errors[] = Tools::displayError('This ISO code already exists. You cannot create two states with the same ISO code.');
             }
         } elseif (Validate::isStateIsoCode(Tools::getValue('iso_code'))) {
-            $idState = State::getIdByIso(Tools::getValue('iso_code'), Tools::getValue('id_country'));
-            if ($idState && $idState != Tools::getValue('id_'.$this->table)) {
+            $idState = State::getIdByIso(Tools::getValue('iso_code'), Tools::getIntValue('id_country'));
+            if ($idState && $idState !== Tools::getIntValue('id_'.$this->table)) {
                 $this->errors[] = Tools::displayError('This ISO code already exists. You cannot create two states with the same ISO code.');
             }
         }
@@ -298,7 +298,7 @@ class AdminStatesControllerCore extends AdminController
 		SELECT s.id_state, s.name
 		FROM '._DB_PREFIX_.'state s
 		LEFT JOIN '._DB_PREFIX_.'country c ON (s.`id_country` = c.`id_country`)
-		WHERE s.id_country = '.(int) (Tools::getValue('id_country')).' AND s.active = 1 AND c.`contains_states` = 1
+		WHERE s.id_country = '.Tools::getIntValue('id_country').' AND s.active = 1 AND c.`contains_states` = 1
 		ORDER BY s.`name` ASC'
         );
 

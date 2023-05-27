@@ -293,7 +293,7 @@ class AdminManufacturersControllerCore extends AdminController
         // Change table and className for addresses
         $this->table = 'address';
         $this->className = 'Address';
-        $idAddress = Tools::getValue('id_address');
+        $idAddress = Tools::getIntValue('id_address');
 
         // Create Object Address
         $address = new Address($idAddress);
@@ -943,7 +943,7 @@ class AdminManufacturersControllerCore extends AdminController
         $res = true;
 
         /* Generate image with differents size */
-        if (($idManufacturer = (int) Tools::getValue('id_manufacturer')) &&
+        if (($idManufacturer = Tools::getIntValue('id_manufacturer')) &&
             isset($_FILES) &&
             count($_FILES) &&
             file_exists(_PS_MANU_IMG_DIR_.$idManufacturer.'.jpg')

@@ -456,7 +456,7 @@ class ToolsCore
         }
 
         /* Automatically detect language if not already defined, detect_language is set in Cookie::update */
-        if (!Tools::getValue('isolang') && !Tools::getValue('id_lang') && (!$cookie->id_lang || isset($cookie->detect_language))
+        if (!Tools::getValue('isolang') && !Tools::getIntValue('id_lang') && (!$cookie->id_lang || isset($cookie->detect_language))
             && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])
         ) {
             $array = explode(',', mb_strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -543,6 +543,19 @@ class ToolsCore
     }
 
     /**
+     * @param string $key
+     * @param int $defaultValue
+     *
+     * @return int
+     *
+     * @since 1.5.0
+     */
+    public static function getIntValue(string $key, int $defaultValue = 0): int
+    {
+        return (int)static::getValueRaw($key, $defaultValue);
+    }
+
+    /**
      * Set cookie id_lang
      *
      * @param Context|null $context
@@ -570,7 +583,7 @@ class ToolsCore
         // or if default language changed
         $cookieIdLang = $context->cookie->id_lang;
         $configurationIdLang = Configuration::get('PS_LANG_DEFAULT');
-        if ((($idLang = (int) Tools::getValue('id_lang')) && Validate::isUnsignedId($idLang) && $cookieIdLang != (int) $idLang)
+        if ((($idLang = Tools::getIntValue('id_lang')) && Validate::isUnsignedId($idLang) && $cookieIdLang != (int) $idLang)
             || (($idLang == $configurationIdLang) && Validate::isUnsignedId($idLang) && $idLang != $cookieIdLang)
         ) {
             $context->cookie->id_lang = $idLang;
@@ -596,7 +609,7 @@ class ToolsCore
      */
     public static function getCountry($address = null)
     {
-        $idCountry = (int) Tools::getValue('id_country');
+        $idCountry = Tools::getIntValue('id_country');
         if ($idCountry && Validate::isInt($idCountry)) {
             return (int) $idCountry;
         } elseif (!$idCountry && isset($address) && isset($address->id_country) && $address->id_country) {
@@ -624,8 +637,8 @@ class ToolsCore
      */
     public static function setCurrency($cookie)
     {
-        if (Tools::isSubmit('SubmitCurrency') && ($idCurrency = Tools::getValue('id_currency'))) {
-            $currency = Currency::getCurrencyInstance((int) $idCurrency);
+        if (Tools::isSubmit('SubmitCurrency') && ($idCurrency = Tools::getIntValue('id_currency'))) {
+            $currency = Currency::getCurrencyInstance($idCurrency);
             if (is_object($currency) && $currency->id && !$currency->deleted && $currency->isAssociatedToShop()) {
                 $cookie->id_currency = (int) $currency->id;
             }

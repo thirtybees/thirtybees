@@ -569,8 +569,8 @@ class AdminMetaControllerCore extends AdminController
             Tools::clearCache($this->context->smarty);
         }
 
-        if (Tools::isSubmit('deletemeta') && (int) Tools::getValue('id_meta') > 0) {
-            Db::getInstance()->delete('theme_meta', 'id_meta='.(int) Tools::getValue('id_meta'));
+        if (Tools::isSubmit('deletemeta') && Tools::getIntValue('id_meta') > 0) {
+            Db::getInstance()->delete('theme_meta', 'id_meta='.Tools::getIntValue('id_meta'));
         }
 
         /** @var Theme $ret */
@@ -771,7 +771,7 @@ class AdminMetaControllerCore extends AdminController
      */
     public function updateOptionPsRewritingSettings()
     {
-        Configuration::updateValue('PS_REWRITING_SETTINGS', (int) Tools::getValue('PS_REWRITING_SETTINGS'));
+        Configuration::updateValue('PS_REWRITING_SETTINGS', Tools::getIntValue('PS_REWRITING_SETTINGS'));
 
         $this->updateOptionDomain(Tools::getValue('domain'));
         $this->updateOptionDomainSsl(Tools::getValue('domain_ssl'));

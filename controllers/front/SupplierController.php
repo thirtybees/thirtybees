@@ -67,7 +67,7 @@ class SupplierControllerCore extends FrontController
     {
         parent::init();
 
-        if ($idSupplier = (int) Tools::getValue('id_supplier')) {
+        if ($idSupplier = Tools::getIntValue('id_supplier')) {
             $this->supplier = new Supplier($idSupplier, $this->context->language->id);
 
             if (!Validate::isLoadedObject($this->supplier) || !$this->supplier->active) {

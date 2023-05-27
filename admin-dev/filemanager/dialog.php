@@ -23,7 +23,7 @@ if (Tools::isSubmit('submit')) {
 
     // resolve view type
     $view = Tools::getIsset('view')
-        ? setViewType((int)Tools::getValue('view', 0))
+        ? setViewType(Tools::getIntValue('view', 0))
         : getViewType();
 
     $sort_by = Tools::getIsset('sort_by')
@@ -36,7 +36,7 @@ if (Tools::isSubmit('submit')) {
 
     $lang = resolveLanguage();
     $filter = fix_filename(Tools::getValue('filter', ''));
-    $type = (int)Tools::getValue('type', 0);
+    $type = Tools::getIntValue('type', 0);
 
     $get_params = http_build_query([
         'type' => $type,

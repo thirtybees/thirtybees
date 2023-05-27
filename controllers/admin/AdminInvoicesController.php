@@ -405,7 +405,8 @@ class AdminInvoicesControllerCore extends AdminController
      */
     public function beforeUpdateOptions()
     {
-        if ((int) Tools::getValue('PS_INVOICE_START_NUMBER') != 0 && (int) Tools::getValue('PS_INVOICE_START_NUMBER') <= Order::getLastInvoiceNumber()) {
+        if (Tools::getIntValue('PS_INVOICE_START_NUMBER') !== 0 &&
+            Tools::getIntValue('PS_INVOICE_START_NUMBER') <= Order::getLastInvoiceNumber()) {
             $this->errors[] = $this->l('Invalid invoice number.').Order::getLastInvoiceNumber().')';
         }
     }

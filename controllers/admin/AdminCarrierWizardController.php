@@ -111,13 +111,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     {
         $this->initWizard();
 
-        if (Tools::getValue('id_carrier') && $this->hasEditPermission()) {
+        if (Tools::getIntValue('id_carrier') && $this->hasEditPermission()) {
             $carrier = $this->loadObject();
         } elseif ($this->hasAddPermission()) {
             $carrier = new Carrier();
         }
 
-        if ((!$this->hasEditPermission() && Tools::getValue('id_carrier')) || (!$this->hasAddPermission() && !Tools::getValue('id_carrier'))) {
+        if ((!$this->hasEditPermission() && Tools::getIntValue('id_carrier')) || (!$this->hasAddPermission() && !Tools::getIntValue('id_carrier'))) {
             $this->errors[] = Tools::displayError('You do not have permission to use this wizard.');
 
             return '';
@@ -326,7 +326,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $helper->default_form_language = $lang->id;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $this->fields_form = [];
-        $helper->id = (int) Tools::getValue('id_carrier');
+        $helper->id = Tools::getIntValue('id_carrier');
         $helper->identifier = $this->identifier;
         $helper->tpl_vars = array_merge(
             [
@@ -817,7 +817,7 @@ class AdminCarrierWizardControllerCore extends AdminController
      */
     public function initBreadcrumbs($tabId = null, $tabs = null)
     {
-        if (Tools::getValue('id_carrier')) {
+        if (Tools::getIntValue('id_carrier')) {
             $this->display = 'edit';
         } else {
             $this->display = 'add';
@@ -897,7 +897,7 @@ class AdminCarrierWizardControllerCore extends AdminController
      */
     protected function validateForm($die = true)
     {
-        $stepNumber = (int) Tools::getValue('step_number');
+        $stepNumber = Tools::getIntValue('step_number');
         $return = ['has_error' => false];
 
         if (!$this->hasEditPermission()) {
@@ -965,8 +965,8 @@ class AdminCarrierWizardControllerCore extends AdminController
             ];
         } else {
             $this->validateForm(false);
-            if ($idCarrier = Tools::getValue('id_carrier')) {
-                $currentCarrier = new Carrier((int) $idCarrier);
+            if ($idCarrier = Tools::getIntValue('id_carrier')) {
+                $currentCarrier = new Carrier($idCarrier);
 
                 // if update we duplicate current Carrier
                 /** @var Carrier $newCarrier */
@@ -1000,7 +1000,7 @@ class AdminCarrierWizardControllerCore extends AdminController
                     );
                     $this->postImage($newCarrier->id);
                     $this->changeZones($newCarrier->id);
-                    $newCarrier->setTaxRulesGroup((int) Tools::getValue('id_tax_rules_group'));
+                    $newCarrier->setTaxRulesGroup(Tools::getIntValue('id_tax_rules_group'));
                     $carrier = $newCarrier;
                 }
             } else {
@@ -1041,7 +1041,7 @@ class AdminCarrierWizardControllerCore extends AdminController
                     $return['errors'][] = $this->l('An error occurred while saving associations of shops.');
                 }
 
-                if (!$carrier->setTaxRulesGroup((int) Tools::getValue('id_tax_rules_group'))) {
+                if (!$carrier->setTaxRulesGroup(Tools::getIntValue('id_tax_rules_group'))) {
                     $return['has_error'] = true;
                     $return['errors'][] = $this->l('An error occurred while saving the tax rules group.');
                 }
@@ -1205,7 +1205,7 @@ class AdminCarrierWizardControllerCore extends AdminController
      */
     public function getValidationRules()
     {
-        $stepNumber = (int) Tools::getValue('step_number');
+        $stepNumber = Tools::getIntValue('step_number');
         if (!$stepNumber) {
             return;
         }

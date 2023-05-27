@@ -315,7 +315,7 @@ class AdminContactsControllerCore extends AdminController
     {
         parent::initProcess();
 
-        $this->id_object = (int)Tools::getValue('id_'.$this->table);
+        $this->id_object = Tools::getIntValue('id_'.$this->table);
 
         if ($this->id_object) {
             if (Tools::isSubmit('changeContactActiveVal')) {

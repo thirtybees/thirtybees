@@ -487,10 +487,10 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     protected function processCreateRule()
     {
         $zipCode = Tools::getValue('zipcode');
-        $idRule = (int) Tools::getValue('id_tax_rule');
-        $idTax = (int) Tools::getValue('id_tax');
-        $idTaxRulesGroup = (int) Tools::getValue('id_tax_rules_group');
-        $behavior = (int) Tools::getValue('behavior');
+        $idRule = Tools::getIntValue('id_tax_rule');
+        $idTax = Tools::getIntValue('id_tax');
+        $idTaxRulesGroup = Tools::getIntValue('id_tax_rules_group');
+        $behavior = Tools::getIntValue('behavior');
         $description = pSQL(Tools::getValue('description'));
 
         if ((int) ($idCountry = Tools::getValue('country')) == 0) {
@@ -669,8 +669,8 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     protected function displayAjaxUpdateTaxRule()
     {
         if ($this->hasViewPermission()) {
-            $idTaxRule = Tools::getValue('id_tax_rule');
-            $taxRules = new TaxRule((int) $idTaxRule);
+            $idTaxRule = Tools::getIntValue('id_tax_rule');
+            $taxRules = new TaxRule($idTaxRule);
             $output = [];
             foreach ($taxRules as $key => $result) {
                 $output[$key] = $result;

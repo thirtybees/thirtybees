@@ -7,7 +7,7 @@ $action = Tools::getValue('action', '');
 
 switch ($action) {
     case 'view':
-        setViewType((int)Tools::getValue('type', 0));
+        setViewType(Tools::getIntValue('type', 0));
         break;
     case 'sort':
         setSortBy(Tools::getValue('sort_by'));

@@ -211,7 +211,7 @@ class AdminGroupsControllerCore extends AdminController
             }
 
             if (Tools::getIsset('submitFilter' . $this->list_id)) {
-                static::$currentIndex .= '&id_group=' . (int)Tools::getValue('id_group') . '&viewgroup';
+                static::$currentIndex .= '&id_group=' . Tools::getIntValue('id_group') . '&viewgroup';
             }
         } else {
             $this->list_id = 'group';
@@ -540,7 +540,7 @@ class AdminGroupsControllerCore extends AdminController
     public function ajaxProcessAddCategoryReduction()
     {
         $category_reduction = Tools::getValue('category_reduction');
-        $id_category = Tools::getValue('id_category'); //no cast validation is done with Validate::isUnsignedId($id_category)
+        $id_category = Tools::getIntValue('id_category'); //no cast validation is done with Validate::isUnsignedId($id_category)
 
         $result = [];
         if (!Validate::isUnsignedId($id_category)) {
@@ -565,11 +565,11 @@ class AdminGroupsControllerCore extends AdminController
      */
     protected function updateRestrictions()
     {
-        $id_group = Tools::getValue('id_group');
+        $id_group = Tools::getIntValue('id_group');
         $auth_modules = Tools::getValue('modulesBoxAuth');
         $return = true;
         if ($id_group) {
-            Group::truncateModulesRestrictions((int)$id_group);
+            Group::truncateModulesRestrictions($id_group);
         }
         $shops = Shop::getShops(true, null, true);
         if (is_array($auth_modules)) {
@@ -588,11 +588,11 @@ class AdminGroupsControllerCore extends AdminController
         $category_reduction = Tools::getValue('category_reduction');
         Db::getInstance()->execute('
 			DELETE FROM `'._DB_PREFIX_.'group_reduction`
-			WHERE `id_group` = '.(int)Tools::getValue('id_group')
+			WHERE `id_group` = '.Tools::getIntValue('id_group')
         );
         Db::getInstance()->execute('
 			DELETE FROM `'._DB_PREFIX_.'product_group_reduction_cache`
-			WHERE `id_group` = '.(int)Tools::getValue('id_group')
+			WHERE `id_group` = '.Tools::getIntValue('id_group')
         );
         if (is_array($category_reduction) && count($category_reduction)) {
             if (!Configuration::getGlobalValue('PS_GROUP_FEATURE_ACTIVE')) {
@@ -603,9 +603,9 @@ class AdminGroupsControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('The discount value is incorrect.');
                 } else {
                     $category = new Category((int)$cat);
-                    $category->addGroupsIfNoExist((int)Tools::getValue('id_group'));
+                    $category->addGroupsIfNoExist(Tools::getIntValue('id_group'));
                     $group_reduction = new GroupReduction();
-                    $group_reduction->id_group = (int)Tools::getValue('id_group');
+                    $group_reduction->id_group = Tools::getIntValue('id_group');
                     $group_reduction->reduction = (float)($reduction / 100);
                     $group_reduction->id_category = (int)$cat;
                     if (!$group_reduction->save()) {

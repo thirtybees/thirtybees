@@ -139,7 +139,7 @@ class AdminStockMvtControllerCore extends AdminController
     {
         $this->page_header_toolbar_title = $this->l('Stock movement');
 
-        if (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
+        if (Tools::isSubmit('id_warehouse') && Tools::getIntValue('id_warehouse') != -1) {
             $this->page_header_toolbar_btn['export-stock-mvt-csv'] = [
                 'short'    => $this->l('Export this list as CSV', null, null, false),
                 'href'     => $this->context->link->getAdminLink('AdminStockMvt').'&csv&id_warehouse='.(int) $this->getCurrentWarehouseId(),
@@ -162,8 +162,8 @@ class AdminStockMvtControllerCore extends AdminController
 
         if ($warehouse == 0) {
             $warehouse = -1;
-            if ((int) Tools::getValue('id_warehouse')) {
-                $warehouse = (int) Tools::getValue('id_warehouse');
+            if (Tools::getIntValue('id_warehouse')) {
+                $warehouse = Tools::getIntValue('id_warehouse');
             }
         }
 
@@ -264,7 +264,7 @@ class AdminStockMvtControllerCore extends AdminController
      */
     public function initToolbar()
     {
-        if (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
+        if (Tools::isSubmit('id_warehouse') && Tools::getIntValue('id_warehouse') != -1) {
             $this->toolbar_btn['export-stock-mvt-csv'] = [
                 'short'    => 'Export this list as CSV',
                 'href'     => $this->context->link->getAdminLink('AdminStockMvt').'&amp;csv&amp;id_warehouse='.(int) $this->getCurrentWarehouseId(),
@@ -291,7 +291,7 @@ class AdminStockMvtControllerCore extends AdminController
         }
 
         // header
-        $warehouseId = (int)Tools::getValue('id_warehouse');
+        $warehouseId = Tools::getIntValue('id_warehouse');
         if ($warehouseId > 0) {
             $filename = $this->l('stock_mvt').'_'.Warehouse::getWarehouseNameById($warehouseId).'.csv';
         } else {

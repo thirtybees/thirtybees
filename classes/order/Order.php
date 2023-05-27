@@ -1439,7 +1439,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopException
      */
@@ -1452,7 +1452,7 @@ class OrderCore extends ObjectModel
             $sql->where('DATE_FORMAT(`date_add`, "%Y") = '.(int) date('Y'));
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
     }
 
     /**

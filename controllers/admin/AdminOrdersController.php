@@ -199,7 +199,7 @@ class AdminOrdersControllerCore extends AdminController
 
         if (Tools::isSubmit('id_order')) {
             // Save context (in order to apply cart rule)
-            $order = new Order((int) Tools::getValue('id_order'));
+            $order = new Order(Tools::getIntValue('id_order'));
             $this->context->cart = new Cart($order->id_cart);
             $this->context->customer = new Customer($order->id_customer);
         }
@@ -273,7 +273,7 @@ class AdminOrdersControllerCore extends AdminController
             $this->errors[] = $this->l('You have to select a shop before creating new orders.');
         }
 
-        $idCart = (int) Tools::getValue('id_cart');
+        $idCart = Tools::getIntValue('id_cart');
         $cart = new Cart((int) $idCart);
         if ($idCart && !Validate::isLoadedObject($cart)) {
             $this->errors[] = $this->l('This cart does not exists');
@@ -472,7 +472,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function processBulkUpdateOrderStatus()
     {
-        if (Tools::isSubmit('submitUpdateOrderStatus') && ($idOrderState = (int) Tools::getValue('id_order_state'))) {
+        if (Tools::isSubmit('submitUpdateOrderStatus') && ($idOrderState = Tools::getIntValue('id_order_state'))) {
             if (! $this->hasEditPermission()) {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             } else {
@@ -584,8 +584,8 @@ class AdminOrdersControllerCore extends AdminController
     public function postProcess()
     {
         // If id_order is sent, we instanciate a new Order object
-        if (Tools::isSubmit('id_order') && Tools::getValue('id_order') > 0) {
-            $order = new Order(Tools::getValue('id_order'));
+        if (Tools::isSubmit('id_order') && Tools::getIntValue('id_order') > 0) {
+            $order = new Order(Tools::getIntValue('id_order'));
             if (!Validate::isLoadedObject($order)) {
                 $this->errors[] = Tools::displayError('The order cannot be found within your database.');
             }
@@ -594,7 +594,7 @@ class AdminOrdersControllerCore extends AdminController
         /* Update shipping number */
         if (Tools::isSubmit('submitShippingNumber') && isset($order)) {
             if ($this->hasEditPermission()) {
-                $orderCarrier = new OrderCarrier(Tools::getValue('id_order_carrier'));
+                $orderCarrier = new OrderCarrier(Tools::getIntValue('id_order_carrier'));
                 $trackingNumber = Tools::getValue('tracking_number');
                 if (!Validate::isLoadedObject($orderCarrier)) {
                     $this->errors[] = Tools::displayError('The order carrier ID is invalid.');
@@ -667,7 +667,7 @@ class AdminOrdersControllerCore extends AdminController
         } /* Change order status, add a new entry in order history and send an e-mail to the customer if needed */
         elseif (Tools::isSubmit('submitState') && isset($order)) {
             if ($this->hasEditPermission()) {
-                $newOrderState = (int)Tools::getValue('id_order_state');
+                $newOrderState = Tools::getIntValue('id_order_state');
                 $orderState = new OrderState($newOrderState, $order->id_lang);
 
                 if (!Validate::isLoadedObject($orderState)) {
@@ -734,7 +734,7 @@ class AdminOrdersControllerCore extends AdminController
         } /* Add a new message for the current order and send an e-mail to the customer if needed */
         elseif (Tools::isSubmit('submitMessage') && isset($order)) {
             if ($this->hasEditPermission()) {
-                $customer = new Customer(Tools::getValue('id_customer'));
+                $customer = new Customer(Tools::getIntValue('id_customer'));
                 if (!Validate::isLoadedObject($customer)) {
                     $this->errors[] = Tools::displayError('The customer is invalid.');
                 } elseif (!Tools::getValue('message')) {
@@ -884,9 +884,9 @@ class AdminOrdersControllerCore extends AdminController
                     $chosen = false;
                     $voucher = 0;
 
-                    if ((int) Tools::getValue('refund_voucher_off') == 1) {
+                    if (Tools::getIntValue('refund_voucher_off') === 1) {
                         $amount -= $voucher = Tools::getNumberValue('order_discount_price');
-                    } elseif ((int) Tools::getValue('refund_voucher_off') == 2) {
+                    } elseif (Tools::getIntValue('refund_voucher_off') === 2) {
                         $chosen = true;
                         $amount = $voucher = Tools::getNumberValue('refund_voucher_choose');
                     }
@@ -1171,9 +1171,9 @@ class AdminOrdersControllerCore extends AdminController
                             $amount = $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail];
 
                             $chosen = false;
-                            if ((int) Tools::getValue('refund_total_voucher_off') == 1) {
+                            if (Tools::getIntValue('refund_total_voucher_off') === 1) {
                                 $amount -= $voucher = Tools::getNumberValue('order_discount_price');
-                            } elseif ((int) Tools::getValue('refund_total_voucher_off') == 2) {
+                            } elseif (Tools::getIntValue('refund_total_voucher_off') === 2) {
                                 $chosen = true;
                                 $amount = $voucher = Tools::getNumberValue('refund_total_voucher_choose');
                             }
@@ -1249,9 +1249,9 @@ class AdminOrdersControllerCore extends AdminController
                                 $total += $order->total_shipping;
                             }
 
-                            if ((int) Tools::getValue('refund_total_voucher_off') == 1) {
+                            if (Tools::getIntValue('refund_total_voucher_off') === 1) {
                                 $total -= Tools::getNumberValue('order_discount_price');
-                            } elseif ((int) Tools::getValue('refund_total_voucher_off') == 2) {
+                            } elseif (Tools::getIntValue('refund_total_voucher_off') === 2) {
                                 $total = Tools::getNumberValue('refund_total_voucher_choose');
                             }
 
@@ -1343,7 +1343,7 @@ class AdminOrdersControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('submitEditNote')) {
             $note = Tools::getValue('note');
-            $orderInvoice = new OrderInvoice((int) Tools::getValue('id_order_invoice'));
+            $orderInvoice = new OrderInvoice(Tools::getIntValue('id_order_invoice'));
             if (Validate::isLoadedObject($orderInvoice) && Validate::isCleanHtml($note)) {
                 if ($this->hasEditPermission()) {
                     $orderInvoice->note = $note;
@@ -1358,9 +1358,9 @@ class AdminOrdersControllerCore extends AdminController
             } else {
                 $this->errors[] = Tools::displayError('The invoice for edit note was unable to load. ');
             }
-        } elseif (Tools::isSubmit('submitAddOrder') && ($idCart = Tools::getValue('id_cart')) &&
+        } elseif (Tools::isSubmit('submitAddOrder') && ($idCart = Tools::getIntValue('id_cart')) &&
             ($moduleName = Tools::getValue('payment_module_name')) &&
-            ($idOrderState = Tools::getValue('id_order_state')) && Validate::isModuleName($moduleName)
+            ($idOrderState = Tools::getIntValue('id_order_state')) && Validate::isModuleName($moduleName)
         ) {
             if ($this->hasEditPermission()) {
                 if (!Configuration::get('PS_CATALOG_MODE')) {
@@ -1403,7 +1403,7 @@ class AdminOrdersControllerCore extends AdminController
             }
         } elseif ((Tools::isSubmit('submitAddressShipping') || Tools::isSubmit('submitAddressInvoice')) && isset($order)) {
             if ($this->hasEditPermission()) {
-                $address = new Address(Tools::getValue('id_address'));
+                $address = new Address(Tools::getIntValue('id_address'));
                 if (Validate::isLoadedObject($address)) {
                     // Update the address on order
                     if (Tools::isSubmit('submitAddressShipping')) {
@@ -1526,7 +1526,7 @@ class AdminOrdersControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('submitDeleteVoucher') && isset($order)) {
             if ($this->hasEditPermission()) {
-                $orderCartRule = new OrderCartRule(Tools::getValue('id_order_cart_rule'));
+                $orderCartRule = new OrderCartRule(Tools::getIntValue('id_order_cart_rule'));
                 if (Validate::isLoadedObject($orderCartRule) && $orderCartRule->id_order == $order->id) {
                     if ($orderCartRule->id_order_invoice) {
                         $orderInvoice = new OrderInvoice($orderCartRule->id_order_invoice);
@@ -1732,14 +1732,14 @@ class AdminOrdersControllerCore extends AdminController
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
-        } elseif (Tools::isSubmit('sendStateEmail') && Tools::getValue('sendStateEmail') > 0 && Tools::getValue('id_order') > 0) {
+        } elseif (Tools::isSubmit('sendStateEmail') && Tools::getValue('sendStateEmail') > 0 && Tools::getIntValue('id_order') > 0) {
             if ($this->hasEditPermission()) {
-                $orderState = new OrderState((int) Tools::getValue('sendStateEmail'));
+                $orderState = new OrderState(Tools::getIntValue('sendStateEmail'));
 
                 if (!Validate::isLoadedObject($orderState)) {
                     $this->errors[] = Tools::displayError('An error occurred while loading order status.');
                 } else {
-                    $history = new OrderHistory((int) Tools::getValue('id_order_history'));
+                    $history = new OrderHistory(Tools::getIntValue('id_order_history'));
 
                     $carrier = new Carrier($order->id_carrier, $order->id_lang);
                     $customer = new Customer($order->id_customer);
@@ -1869,7 +1869,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function renderView()
     {
-        $order = new Order(Tools::getValue('id_order'));
+        $order = new Order(Tools::getIntValue('id_order'));
         if (!Validate::isLoadedObject($order)) {
             $this->errors[] = Tools::displayError('The order cannot be found within your database.');
         }
@@ -2084,8 +2084,8 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function ajaxProcessSearchProducts()
     {
-        $this->context->customer = new Customer((int) Tools::getValue('id_customer'));
-        $currency = new Currency((int) Tools::getValue('id_currency'));
+        $this->context->customer = new Customer(Tools::getIntValue('id_customer'));
+        $currency = new Currency(Tools::getIntValue('id_currency'));
         if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
             $decimals = 0;
             if ($currency->decimals) {
@@ -2109,7 +2109,7 @@ class AdminOrdersControllerCore extends AdminController
 
                 // Tax rate for this customer
                 if (Tools::isSubmit('id_address')) {
-                    $product['tax_rate'] = $productObj->getTaxesRate(new Address(Tools::getValue('id_address')));
+                    $product['tax_rate'] = $productObj->getTaxesRate(new Address(Tools::getIntValue('id_address')));
                 }
 
                 $product['warehouse_list'] = [];
@@ -2187,7 +2187,7 @@ class AdminOrdersControllerCore extends AdminController
     public function ajaxProcessSendMailValidateOrder()
     {
         if ($this->hasEditPermission()) {
-            $cart = new Cart((int) Tools::getValue('id_cart'));
+            $cart = new Cart(Tools::getIntValue('id_cart'));
             if (Validate::isLoadedObject($cart)) {
                 $customer = new Customer((int) $cart->id_customer);
                 if (Validate::isLoadedObject($customer)) {
@@ -2231,7 +2231,7 @@ class AdminOrdersControllerCore extends AdminController
     public function ajaxProcessAddProductOnOrder()
     {
         // Load object
-        $order = new Order((int) Tools::getValue('id_order'));
+        $order = new Order(Tools::getIntValue('id_order'));
         if (!Validate::isLoadedObject($order)) {
             $this->ajaxDie(
                 json_encode(
@@ -2485,7 +2485,7 @@ class AdminOrdersControllerCore extends AdminController
             $cart->getProducts(),
             (isset($orderInvoice) ? $orderInvoice->id : 0),
             true,
-            (int) Tools::getValue('add_product_warehouse')
+            Tools::getIntValue('add_product_warehouse')
         );
 
         // update totals amount of order
@@ -2639,7 +2639,7 @@ class AdminOrdersControllerCore extends AdminController
     public function sendChangedNotification(Order $order = null)
     {
         if (is_null($order)) {
-            $order = new Order(Tools::getValue('id_order'));
+            $order = new Order(Tools::getIntValue('id_order'));
         }
 
         Hook::triggerEvent('actionOrderEdited', ['order' => $order]);
@@ -2655,7 +2655,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function ajaxProcessLoadProductInformation()
     {
-        $orderDetail = new OrderDetail(Tools::getValue('id_order_detail'));
+        $orderDetail = new OrderDetail(Tools::getIntValue('id_order_detail'));
         if (!Validate::isLoadedObject($orderDetail)) {
             $this->ajaxDie(
                 json_encode(
@@ -2679,7 +2679,7 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        $address = new Address(Tools::getValue('id_address'));
+        $address = new Address(Tools::getIntValue('id_address'));
         if (!Validate::isLoadedObject($address)) {
             $this->ajaxDie(
                 json_encode(
@@ -2729,10 +2729,10 @@ class AdminOrdersControllerCore extends AdminController
         // Return value
         $res = true;
 
-        $order = new Order((int) Tools::getValue('id_order'));
-        $orderDetail = new OrderDetail((int) Tools::getValue('product_id_order_detail'));
+        $order = new Order(Tools::getIntValue('id_order'));
+        $orderDetail = new OrderDetail(Tools::getIntValue('product_id_order_detail'));
         if (Tools::isSubmit('product_invoice')) {
-            $orderInvoice = new OrderInvoice((int) Tools::getValue('product_invoice'));
+            $orderInvoice = new OrderInvoice(Tools::getIntValue('product_invoice'));
         }
 
         // If multiple product_quantity, the order details concern a product customized
@@ -2976,8 +2976,8 @@ class AdminOrdersControllerCore extends AdminController
     {
         $res = true;
 
-        $orderDetail = new OrderDetail((int) Tools::getValue('id_order_detail'));
-        $order = new Order((int) Tools::getValue('id_order'));
+        $orderDetail = new OrderDetail(Tools::getIntValue('id_order_detail'));
+        $order = new Order(Tools::getIntValue('id_order'));
 
         $this->doDeleteProductLineValidation($orderDetail, $order);
 
@@ -3047,7 +3047,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function ajaxProcessChangePaymentMethod()
     {
-        $customer = new Customer(Tools::getValue('id_customer'));
+        $customer = new Customer(Tools::getIntValue('id_customer'));
         $modules = Module::getAuthorizedModules($customer->id_default_group);
         $authorizedModules = [];
 
@@ -3150,7 +3150,7 @@ class AdminOrdersControllerCore extends AdminController
             ]));
         }
 
-        if (!empty($orderInvoice) && $orderInvoice->id_order != Tools::getValue('id_order')) {
+        if (!empty($orderInvoice) && (int)$orderInvoice->id_order !== Tools::getIntValue('id_order')) {
             $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot use this invoice for the order'),

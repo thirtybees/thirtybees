@@ -297,10 +297,10 @@ class AdminStatusesControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitAddorder_return_state')) {
-            $idOrderReturnState = Tools::getValue('id_order_return_state');
+            $idOrderReturnState = Tools::getIntValue('id_order_return_state');
 
             // Create Object OrderReturnState
-            $orderReturnState = new OrderReturnState((int) $idOrderReturnState);
+            $orderReturnState = new OrderReturnState($idOrderReturnState);
 
             $orderReturnState->color = Tools::getValue('color');
             $orderReturnState->active = Tools::getValue('active_on');
@@ -325,10 +325,10 @@ class AdminStatusesControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('deleteorder_return_state')) {
-            $idOrderReturnState = Tools::getValue('id_order_return_state');
+            $idOrderReturnState = Tools::getIntValue('id_order_return_state');
 
             // Create Object OrderReturnState
-            $orderReturnState = new OrderReturnState((int) $idOrderReturnState);
+            $orderReturnState = new OrderReturnState($idOrderReturnState);
 
             if (!$orderReturnState->delete()) {
                 $this->errors[] = Tools::displayError('An error has occurred: Can\'t delete the current order\'s return status.');
@@ -339,16 +339,16 @@ class AdminStatusesControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table)) {
             $this->deleted = false; // Disabling saving historisation
-            $_POST['invoice'] = (int) Tools::getValue('invoice_on');
-            $_POST['logable'] = (int) Tools::getValue('logable_on');
-            $_POST['send_email'] = (int) Tools::getValue('send_email_on');
-            $_POST['hidden'] = (int) Tools::getValue('hidden_on');
-            $_POST['shipped'] = (int) Tools::getValue('shipped_on');
-            $_POST['paid'] = (int) Tools::getValue('paid_on');
-            $_POST['delivery'] = (int) Tools::getValue('delivery_on');
-            $_POST['pdf_delivery'] = (int) Tools::getValue('pdf_delivery_on');
-            $_POST['pdf_invoice'] = (int) Tools::getValue('pdf_invoice_on');
-            $_POST['active'] = (int) Tools::getValue('active_on');
+            $_POST['invoice'] = Tools::getIntValue('invoice_on');
+            $_POST['logable'] = Tools::getIntValue('logable_on');
+            $_POST['send_email'] = Tools::getIntValue('send_email_on');
+            $_POST['hidden'] = Tools::getIntValue('hidden_on');
+            $_POST['shipped'] = Tools::getIntValue('shipped_on');
+            $_POST['paid'] = Tools::getIntValue('paid_on');
+            $_POST['delivery'] = Tools::getIntValue('delivery_on');
+            $_POST['pdf_delivery'] = Tools::getIntValue('pdf_delivery_on');
+            $_POST['pdf_invoice'] = Tools::getIntValue('pdf_invoice_on');
+            $_POST['active'] = Tools::getIntValue('active_on');
             if (!$_POST['send_email']) {
                 foreach (Language::getIDs(false) as $idLang) {
                     $_POST['template_'.$idLang] = '';
@@ -357,7 +357,7 @@ class AdminStatusesControllerCore extends AdminController
 
             return parent::postProcess();
         } elseif (Tools::isSubmit('delete'.$this->table)) {
-            $orderState = new OrderState(Tools::getValue('id_order_state'), $this->context->language->id);
+            $orderState = new OrderState(Tools::getIntValue('id_order_state'), (int)$this->context->language->id);
             if (!$orderState->isRemovable()) {
                 $this->errors[] = $this->l('For security reasons, you cannot delete default order statuses.');
             } else {
@@ -709,7 +709,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     protected function initOrderReturnsForm()
     {
-        $idOrderReturnState = (int) Tools::getValue('id_order_return_state');
+        $idOrderReturnState = Tools::getIntValue('id_order_return_state');
 
         // Create Object OrderReturnState
         $orderReturnState = new OrderReturnState($idOrderReturnState);
@@ -760,7 +760,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function ajaxProcessSendEmailOrderState()
     {
-        $idOrderState = (int) Tools::getValue('id_order_state');
+        $idOrderState = Tools::getIntValue('id_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_state SET `send_email`= NOT `send_email` WHERE id_order_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -782,7 +782,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function ajaxProcessDeliveryOrderState()
     {
-        $idOrderState = (int) Tools::getValue('id_order_state');
+        $idOrderState = Tools::getIntValue('id_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_state SET `delivery`= NOT `delivery` WHERE id_order_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -804,7 +804,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function ajaxProcessInvoiceOrderState()
     {
-        $idOrderState = (int) Tools::getValue('id_order_state');
+        $idOrderState = Tools::getIntValue('id_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_state SET `invoice`= NOT `invoice` WHERE id_order_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -826,7 +826,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function ajaxProcessActiveOrderState()
     {
-        $idOrderState = (int) Tools::getValue('id_order_state');
+        $idOrderState = Tools::getIntValue('id_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_state SET `active`= NOT `active` WHERE id_order_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -848,7 +848,7 @@ class AdminStatusesControllerCore extends AdminController
      */
     public function ajaxProcessActiveOrderReturnState()
     {
-        $idOrderState = (int) Tools::getValue('id_order_return_state');
+        $idOrderState = Tools::getIntValue('id_order_return_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_return_state SET `active`= NOT `active` WHERE id_order_return_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
@@ -884,7 +884,7 @@ class AdminStatusesControllerCore extends AdminController
     {
         parent::afterImageUpload();
 
-        if (($idOrderState = (int) Tools::getValue('id_order_state')) &&
+        if (($idOrderState = Tools::getIntValue('id_order_state')) &&
             isset($_FILES) && count($_FILES) && file_exists(_PS_ORDER_STATE_IMG_DIR_.$idOrderState.'.gif')
         ) {
             $currentFile = _PS_TMP_IMG_DIR_.'order_state_mini_'.$idOrderState.'_'.$this->context->shop->id.'.gif';

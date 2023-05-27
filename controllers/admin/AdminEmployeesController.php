@@ -203,7 +203,7 @@ class AdminEmployeesControllerCore extends AdminController
         parent::__construct();
 
         // An employee can edit its own profile
-        if ($this->context->employee->id == Tools::getValue('id_employee')) {
+        if ($this->context->employee->id == Tools::getIntValue('id_employee')) {
             $this->restrict_edition = true;
             $this->tabAccess[Profile::PERMISSION_VIEW] = Profile::formatPermissionValue(true);
             $this->tabAccess[Profile::PERMISSION_EDIT] = Profile::formatPermissionValue(true);
@@ -517,7 +517,7 @@ class AdminEmployeesControllerCore extends AdminController
             return false;
         }
 
-        $employee = new Employee(Tools::getValue('id_employee'));
+        $employee = new Employee(Tools::getIntValue('id_employee'));
         if ($employee->isLastAdmin()) {
             $this->errors[] = Tools::displayError('You cannot disable or delete the administrator account.');
 
@@ -525,7 +525,7 @@ class AdminEmployeesControllerCore extends AdminController
         }
 
         // It is not possible to delete an employee if he manages warehouses
-        $warehouses = Warehouse::getWarehousesByEmployee((int) Tools::getValue('id_employee'));
+        $warehouses = Warehouse::getWarehousesByEmployee(Tools::getIntValue('id_employee'));
         if (Tools::isSubmit('deleteemployee') && count($warehouses) > 0) {
             $this->errors[] = Tools::displayError('You cannot delete this account because it manages warehouses. Check your warehouses first.');
 
@@ -557,7 +557,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     public function processSave()
     {
-        $employee = new Employee((int) Tools::getValue('id_employee'));
+        $employee = new Employee(Tools::getIntValue('id_employee'));
 
         // If the employee is editing its own account
         if ($this->restrict_edition) {
@@ -619,7 +619,7 @@ class AdminEmployeesControllerCore extends AdminController
         }
 
         if ($employee->isLastAdmin()) {
-            if (Tools::getValue('id_profile') != (int) _PS_ADMIN_PROFILE_) {
+            if (Tools::getIntValue('id_profile') !== _PS_ADMIN_PROFILE_) {
                 $this->errors[] = Tools::displayError('You should have at least one employee in the administrator group.');
 
                 return false;
@@ -684,7 +684,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     public function validateRules($className = false)
     {
-        $employee = new Employee((int) Tools::getValue('id_employee'));
+        $employee = new Employee(Tools::getIntValue('id_employee'));
 
         if (!Validate::isLoadedObject($employee) && !Validate::isPasswd(Tools::getvalue('passwd'), Validate::ADMIN_PASSWORD_LENGTH)) {
             return !($this->errors[] = sprintf(
@@ -721,7 +721,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     public function initContent()
     {
-        if ($this->context->employee->id == Tools::getValue('id_employee')) {
+        if ($this->context->employee->id == Tools::getIntValue('id_employee')) {
             $this->display = 'edit';
         }
 
@@ -760,7 +760,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     public function ajaxProcessGetTabByIdProfile()
     {
-        $idProfile = Tools::getValue('id_profile');
+        $idProfile = Tools::getIntValue('id_profile');
         $tabs = Tab::getTabByIdProfile(0, $idProfile);
         $this->tabs_list = [];
         foreach ($tabs as $tab) {
@@ -790,13 +790,13 @@ class AdminEmployeesControllerCore extends AdminController
             return false;
         }
 
-        if (Tools::getValue('id_profile') == _PS_ADMIN_PROFILE_ && $this->context->employee->id_profile != _PS_ADMIN_PROFILE_) {
+        if (Tools::getIntValue('id_profile') === _PS_ADMIN_PROFILE_ && (int)$this->context->employee->id_profile !== _PS_ADMIN_PROFILE_) {
             $this->errors[] = Tools::displayError('The provided profile is invalid');
         }
 
         $email = $this->getFieldValue($obj, 'email');
-        if (Validate::isEmail($email) && Employee::employeeExists($email) && (!Tools::getValue('id_employee')
-                || ($employee = new Employee((int) Tools::getValue('id_employee'))) && $employee->email != $email)
+        if (Validate::isEmail($email) && Employee::employeeExists($email) && (!Tools::getIntValue('id_employee')
+                || ($employee = new Employee(Tools::getIntValue('id_employee'))) && $employee->email != $email)
         ) {
             $this->errors[] = Tools::displayError('An account already exists for this email address:').' '.$email;
         }
@@ -836,7 +836,7 @@ class AdminEmployeesControllerCore extends AdminController
     {
         $res = parent::afterUpdate($object);
         // Update cookie if needed
-        if (Tools::getValue('id_employee') == $this->context->employee->id && ($passwd = Tools::getValue('passwd'))
+        if (Tools::getIntValue('id_employee') == $this->context->employee->id && ($passwd = Tools::getValue('passwd'))
             && $object->passwd != $this->context->employee->passwd
         ) {
             $this->context->cookie->passwd = $this->context->employee->passwd = $object->passwd;
@@ -863,7 +863,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     protected function ajaxProcessFormLanguage()
     {
-        $this->context->cookie->employee_form_lang = (int) Tools::getValue('form_language_id');
+        $this->context->cookie->employee_form_lang = Tools::getIntValue('form_language_id');
         if (!$this->context->cookie->write()) {
             $this->ajaxDie('Error while updating cookie.');
         }
@@ -879,7 +879,7 @@ class AdminEmployeesControllerCore extends AdminController
      */
     protected function ajaxProcessToggleMenu()
     {
-        $this->context->cookie->collapse_menu = (int) Tools::getValue('collapse');
+        $this->context->cookie->collapse_menu = Tools::getIntValue('collapse');
         $this->context->cookie->write();
     }
 }

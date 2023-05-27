@@ -83,7 +83,7 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public static function getCurrentCMSCategory()
     {
-        $idCmsCategory = (int)Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
+        $idCmsCategory = Tools::getIntValue('id_cms_category', Tools::getIntValue('id_cms_category_parent', 1));
         return new CMSCategory($idCmsCategory);
     }
 
@@ -124,7 +124,7 @@ class AdminCmsContentControllerCore extends AdminController
         } elseif ($this->display == 'edit_page') {
             $this->content .= $this->admin_cms->renderForm();
         } else {
-            $idCmsCategory = (int) Tools::getValue('id_cms_category', 1);
+            $idCmsCategory = Tools::getIntValue('id_cms_category', 1);
             $category = new CMSCategory($idCmsCategory, $this->context->language->id);
             if (Validate::isLoadedObject($category)) {
                 $toolbarTitle = $this->toolbar_title;
@@ -157,8 +157,8 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public function renderPageHeaderToolbar()
     {
-        $idCmsCategory = (int) Tools::getValue('id_cms_category');
-        $idCmsPage = Tools::getValue('id_cms');
+        $idCmsCategory = Tools::getIntValue('id_cms_category');
+        $idCmsPage = Tools::getIntValue('id_cms');
 
         if (!$idCmsCategory) {
             $idCmsCategory = 1;
@@ -281,9 +281,9 @@ class AdminCmsContentControllerCore extends AdminController
     public function ajaxProcessUpdateCmsPositions()
     {
         if ($this->hasEditPermission()) {
-            $idCms = (int) Tools::getValue('id_cms');
-            $idCategory = (int) Tools::getValue('id_cms_category');
-            $way = (int) Tools::getValue('way');
+            $idCms = Tools::getIntValue('id_cms');
+            $idCategory = Tools::getIntValue('id_cms_category');
+            $way = Tools::getIntValue('way');
             $positions = Tools::getValue('cms');
             if (is_array($positions)) {
                 foreach ($positions as $key => $value) {
@@ -318,9 +318,9 @@ class AdminCmsContentControllerCore extends AdminController
     public function ajaxProcessUpdateCmsCategoriesPositions()
     {
         if ($this->hasEditPermission()) {
-            $idCmsCategoryToMove = (int) Tools::getValue('id_cms_category_to_move');
-            $idCmsCategoryParent = (int) Tools::getValue('id_cms_category_parent');
-            $way = (int) Tools::getValue('way');
+            $idCmsCategoryToMove = Tools::getIntValue('id_cms_category_to_move');
+            $idCmsCategoryParent = Tools::getIntValue('id_cms_category_parent');
+            $way = Tools::getIntValue('way');
             $positions = Tools::getValue('cms_category');
             if (is_array($positions)) {
                 foreach ($positions as $key => $value) {
@@ -354,13 +354,13 @@ class AdminCmsContentControllerCore extends AdminController
     public function ajaxProcessPublishCMS()
     {
         if ($this->hasEditPermission()) {
-            if ($idCms = (int) Tools::getValue('id_cms')) {
+            if ($idCms = Tools::getIntValue('id_cms')) {
                 $boCmsUrl = $this->context->link->getAdminLink('AdminCmsContent', true).'&updatecms&id_cms='.(int) $idCms;
                 if (Tools::getValue('redirect')) {
                     $this->ajaxDie($boCmsUrl);
                 }
 
-                $cms = new CMS((int) (Tools::getValue('id_cms')));
+                $cms = new CMS(Tools::getIntValue('id_cms'));
                 if (!Validate::isLoadedObject($cms)) {
                     $this->ajaxDie('error: invalid id');
                 }

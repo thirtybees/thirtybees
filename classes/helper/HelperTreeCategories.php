@@ -407,7 +407,7 @@ class HelperTreeCategoriesCore extends TreeCore
     {
         if (!isset($this->_shop)) {
             if (Tools::isSubmit('id_shop')) {
-                $this->setShop(new Shop(Tools::getValue('id_shop')));
+                $this->setShop(new Shop(Tools::getIntValue('id_shop')));
             } elseif ($this->getContext()->shop->id) {
                 $this->setShop(new Shop($this->getContext()->shop->id));
             } elseif (!Shop::isFeatureActive()) {

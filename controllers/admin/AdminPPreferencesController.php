@@ -332,7 +332,7 @@ class AdminPPreferencesControllerCore extends AdminController
         $fieldName = 'PS_ADVANCED_STOCK_MANAGEMENT';
         $field = $this->fields_options['stock']['fields'][$fieldName];
         if (Configuration::get($fieldName) == 1
-            && (int) Tools::getValue($fieldName) == 0
+            && Tools::getIntValue($fieldName) == 0
             && ! (Shop::isFeatureActive()
                   && $field['visibility'] > Shop::getContext())
         ) {

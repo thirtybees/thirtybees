@@ -124,11 +124,11 @@ class AdminStockInstantStateControllerCore extends AdminController
 
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back_to_list'] = [
-                'href' => $this->context->link->getAdminLink('AdminStockInstantState').(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
+                'href' => $this->context->link->getAdminLink('AdminStockInstantState').(Tools::getIntValue('id_warehouse') ? '&id_warehouse='.Tools::getIntValue('id_warehouse') : ''),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];
-        } elseif (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
+        } elseif (Tools::isSubmit('id_warehouse') && Tools::getIntValue('id_warehouse') != -1) {
             $this->page_header_toolbar_btn['export-stock-state-quantities-csv'] = [
                 'short' => $this->l('Export this list as CSV', null, null, false),
                 'href'  => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_quantities&id_warehouse='.(int) $this->getCurrentCoverageWarehouse(),
@@ -158,8 +158,8 @@ class AdminStockInstantStateControllerCore extends AdminController
 
         if ($warehouse == 0) {
             $warehouse = -1; // all warehouses
-            if ((int) Tools::getValue('id_warehouse')) {
-                $warehouse = (int) Tools::getValue('id_warehouse');
+            if (Tools::getIntValue('id_warehouse')) {
+                $warehouse = Tools::getIntValue('id_warehouse');
             }
         }
 
@@ -241,7 +241,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
         // if export requested
         if ((Tools::isSubmit('csv_quantities') || Tools::isSubmit('csv_prices')) &&
-            (int) Tools::getValue('id_warehouse') != -1
+            Tools::getIntValue('id_warehouse') != -1
         ) {
             if (count($this->_list) > 0) {
                 $this->renderCSV();
@@ -259,7 +259,7 @@ class AdminStockInstantStateControllerCore extends AdminController
      */
     public function initToolbar()
     {
-        if (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
+        if (Tools::isSubmit('id_warehouse') && Tools::getIntValue('id_warehouse') != -1) {
             $this->toolbar_btn['export-stock-state-quantities-csv'] = [
                 'short' => 'Export this list as CSV',
                 'href'  => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_quantities&id_warehouse='.(int) $this->getCurrentCoverageWarehouse(),
@@ -290,7 +290,7 @@ class AdminStockInstantStateControllerCore extends AdminController
         }
 
         // sets warehouse id and warehouse name
-        $idWarehouse = (int) Tools::getValue('id_warehouse');
+        $idWarehouse = Tools::getIntValue('id_warehouse');
         $warehouseName = Warehouse::getWarehouseNameById($idWarehouse);
 
         // if quantities requested
@@ -389,7 +389,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
             $idProduct = $ids[0];
             $idProductAttribute = $ids[1];
-            $idWarehouse = Tools::getValue('id_warehouse', -1);
+            $idWarehouse = Tools::getIntValue('id_warehouse', -1);
             $this->_select = 'IFNULL(pa.ean13, p.ean13) as ean13,
                 IFNULL(pa.upc, p.upc) as upc,
                 IFNULL(pa.reference, p.reference) as reference,
@@ -414,8 +414,8 @@ class AdminStockInstantStateControllerCore extends AdminController
 			)';
             $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
 
-            if ($idWarehouse != -1) {
-                $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
+            if ($idWarehouse !== -1) {
+                $this->_where .= ' AND a.id_warehouse = '.$idWarehouse;
             }
 
             $this->_orderBy = 'name';
@@ -423,7 +423,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
             $this->_group = 'GROUP BY a.price_te';
 
-            static::$currentIndex = static::$currentIndex.'&id_stock='.Tools::getValue('id_stock').'&detailsstock';
+            static::$currentIndex = static::$currentIndex.'&id_stock='.Tools::getIntValue('id_stock').'&detailsstock';
 
             return parent::renderList();
         }
@@ -483,7 +483,7 @@ class AdminStockInstantStateControllerCore extends AdminController
             }
         } else {
             if ((Tools::isSubmit('csv_quantities') || Tools::isSubmit('csv_prices')) &&
-                (int) Tools::getValue('id_warehouse') != -1
+                Tools::getIntValue('id_warehouse') != -1
             ) {
                 $limit = false;
             }

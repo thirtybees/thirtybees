@@ -566,8 +566,8 @@ class AdminControllerCore extends Controller
                     $this->processFilter();
                 }
 
-                if (isset($_POST) && count($_POST) && (int) Tools::getValue('submitFilter'.$this->list_id) || Tools::isSubmit('submitReset'.$this->list_id)) {
-                    $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : '').(isset($_GET['id_'.$this->list_id]) ? '&id_'.$this->list_id.'='.(int) $_GET['id_'.$this->list_id] : ''));
+                if (isset($_POST) && count($_POST) && Tools::getIntValue('submitFilter'.$this->list_id) || Tools::isSubmit('submitReset'.$this->list_id)) {
+                    $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.Tools::getIntValue('submitFilter'.$this->list_id) : '').(isset($_GET['id_'.$this->list_id]) ? '&id_'.$this->list_id.'='.(int) $_GET['id_'.$this->list_id] : ''));
 
                     if (!empty(Tools::getValue('id_'.$this->list_id.'_category'))) {
                         $this->setRedirectAfter($this->redirect_after.'&id_'.$this->list_id.'_category='.Tools::getValue('id_'.$this->list_id.'_category'));
@@ -837,7 +837,7 @@ class AdminControllerCore extends Controller
             return true;
         }
 
-        $id = (int) Tools::getValue($this->identifier);
+        $id = Tools::getIntValue($this->identifier);
         if ($id && Validate::isUnsignedId($id)) {
             $this->object = new $this->className($id);
             if (Validate::isLoadedObject($this->object)) {
@@ -975,7 +975,7 @@ class AdminControllerCore extends Controller
         $orderBy = $this->resolveOrderBy($orderBy);
         $orderWay = $this->resolveOrderWay($orderWay);
 
-        $limit = (int) Tools::getValue($this->list_id.'_pagination', $limit);
+        $limit = Tools::getIntValue($this->list_id.'_pagination', $limit);
         if (in_array($limit, $this->_pagination) && $limit != $this->_default_pagination) {
             $this->context->cookie->{$this->list_id.'_pagination'} = $limit;
         } else {
@@ -1000,8 +1000,8 @@ class AdminControllerCore extends Controller
 
         /* Determine offset from current page */
         $start = 0;
-        if ((int) Tools::getValue('submitFilter'.$this->list_id)) {
-            $start = ((int) Tools::getValue('submitFilter'.$this->list_id) - 1) * $limit;
+        if (Tools::getIntValue('submitFilter'.$this->list_id)) {
+            $start = (Tools::getIntValue('submitFilter'.$this->list_id) - 1) * $limit;
         } elseif (empty($start) && isset($this->context->cookie->{$this->list_id.'_start'}) && Tools::isSubmit('export'.$this->table)) {
             $start = $this->context->cookie->{$this->list_id.'_start'};
         }
@@ -1248,7 +1248,7 @@ class AdminControllerCore extends Controller
         /* Checking fields validity */
         $this->validateRules();
         if (empty($this->errors)) {
-            $id = (int) Tools::getValue($this->identifier);
+            $id = Tools::getIntValue($this->identifier);
 
             /* Object update */
             if ($id) {
@@ -1285,7 +1285,7 @@ class AdminControllerCore extends Controller
                     if (!isset($result) || !$result) {
                         $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> ('.Db::getInstance()->getMsgError().')';
                     } elseif ($this->postImage($object->id) && !count($this->errors) && $this->_redirect) {
-                        $parentId = (int) Tools::getValue('id_parent', 1);
+                        $parentId = Tools::getIntValue('id_parent', 1);
                         // Specific back redirect
                         if ($back = Tools::getValue('back')) {
                             $this->redirect_after = urldecode($back).'&conf=4';
@@ -1685,7 +1685,7 @@ class AdminControllerCore extends Controller
                 $this->errors[] = Tools::displayError('An error occurred while creating an object.').' <strong>'.$this->table.' ('.Db::getInstance()->getMsgError().')</strong>';
             } elseif (($_POST[$this->identifier] = $this->object->id /* voluntary do affectation here */) && $this->postImage($this->object->id) && !count($this->errors) && $this->_redirect) {
                 Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
-                $parentId = (int) Tools::getValue('id_parent', 1);
+                $parentId = Tools::getIntValue('id_parent', 1);
                 $this->afterAdd($this->object);
                 $this->updateAssoShop($this->object->id);
                 // Save and stay on same form
@@ -1792,9 +1792,9 @@ class AdminControllerCore extends Controller
                     $this->redirect_after = static::$currentIndex.'&token='.$this->token;
                 }
 
-                $idCategory = (($idCategory = (int) Tools::getValue('id_category')) && Tools::getValue('id_product')) ? '&id_category='.$idCategory : '';
+                $idCategory = (($idCategory = Tools::getIntValue('id_category')) && Tools::getIntValue('id_product')) ? '&id_category='.$idCategory : '';
 
-                $page = (int) Tools::getValue('page');
+                $page = Tools::getIntValue('page');
                 $page = $page > 1 ? '&submitFilter'.$this->table.'='.(int) $page : '';
                 $this->redirect_after .= '&conf=5'.$idCategory.$page;
             } else {
@@ -1819,10 +1819,10 @@ class AdminControllerCore extends Controller
         if (!Validate::isLoadedObject($object = $this->loadObject())) {
             $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').
                 ' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-        } elseif (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
+        } elseif (!$object->updatePosition(Tools::getIntValue('way'), Tools::getIntValue('position'))) {
             $this->errors[] = Tools::displayError('Failed to update the position.');
         } else {
-            $idIdentifierStr = ($idIdentifier = (int) Tools::getValue($this->identifier)) ? '&'.$this->identifier.'='.$idIdentifier : '';
+            $idIdentifierStr = ($idIdentifier = Tools::getIntValue($this->identifier)) ? '&'.$this->identifier.'='.$idIdentifier : '';
             $redirect = static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$idIdentifierStr.'&token='.$this->token;
             $this->redirect_after = $redirect;
         }
@@ -2763,7 +2763,7 @@ class AdminControllerCore extends Controller
      * @param string $key Field name
      * @param int|null $idLang Language id (optional)
      *
-     * @return false|mixed
+     * @return array|bool|float|int|string|null
      */
     public function getFieldValue($obj, $key, $idLang = null)
     {
@@ -3189,8 +3189,8 @@ class AdminControllerCore extends Controller
 
         $module->optionsHtml = $this->displayModuleOptions($module, $outputType, $back);
 
-        if ((Tools::getValue('module_name') == $module->name || in_array($module->name, explode('|', Tools::getValue('modules_list')))) && (int) Tools::getValue('conf') > 0) {
-            $module->message = $this->_conf[(int) Tools::getValue('conf')];
+        if ((Tools::getValue('module_name') == $module->name || in_array($module->name, explode('|', Tools::getValue('modules_list')))) && Tools::getIntValue('conf') > 0) {
+            $module->message = $this->_conf[Tools::getIntValue('conf')];
         }
     }
 
@@ -3733,7 +3733,7 @@ class AdminControllerCore extends Controller
         static::$currentIndex = $current_index;
         $currentIndex = $current_index;
 
-        if ((int) Tools::getValue('liteDisplaying')) {
+        if (Tools::getIntValue('liteDisplaying')) {
             $this->display_header = false;
             $this->display_header_javascript = true;
             $this->display_footer = false;
@@ -3761,7 +3761,7 @@ class AdminControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'displayBackOfficeTop' => Hook::displayHook('displayBackOfficeTop'),
-                'submit_form_ajax'     => (int) Tools::getValue('submitFormAjax'),
+                'submit_form_ajax'     => Tools::getIntValue('submitFormAjax'),
             ]
         );
 
@@ -3791,7 +3791,7 @@ class AdminControllerCore extends Controller
             $this->filter = true;
         }
 
-        $this->id_object = (int) Tools::getValue($this->identifier);
+        $this->id_object = Tools::getIntValue($this->identifier);
 
         /* Delete object image */
         if (isset($_GET['deleteImage'])) {
@@ -4718,7 +4718,7 @@ class AdminControllerCore extends Controller
     /**
      * @param string $field
      *
-     * @return mixed|null
+     * @return array|bool|float|int|string|null
      */
     protected function getListFieldFilterValue($field)
     {

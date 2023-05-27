@@ -380,7 +380,7 @@ class AdminWebserviceControllerCore extends AdminController
             if (strlen($key) < 32) {
                 $this->errors[] = Tools::displayError('Key length must be 32 character long.');
             }
-            if (WebserviceKey::keyExists($key) && !Tools::getValue('id_webservice_account')) {
+            if (WebserviceKey::keyExists($key) && !Tools::getIntValue('id_webservice_account')) {
                 $this->errors[] = Tools::displayError('This key already exists.');
             }
         }

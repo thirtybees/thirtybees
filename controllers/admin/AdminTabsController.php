@@ -143,7 +143,7 @@ class AdminTabsControllerCore extends AdminController
         // If editing, we clean itself
         if (Tools::isSubmit('id_tab')) {
             foreach ($tabs as $key => $tab) {
-                if ($tab['id_tab'] == Tools::getValue('id_tab')) {
+                if ((int)$tab['id_tab'] == Tools::getIntValue('id_tab')) {
                     unset($tabs[$key]);
                 }
             }
@@ -320,25 +320,25 @@ class AdminTabsControllerCore extends AdminController
         }
         /* PrestaShop demo mode*/
 
-        if (($idTab = (int) Tools::getValue('id_tab')) && ($direction = Tools::getValue('move')) && Validate::isLoadedObject($tab = new Tab($idTab))) {
+        if (($idTab = Tools::getIntValue('id_tab')) && ($direction = Tools::getValue('move')) && Validate::isLoadedObject($tab = new Tab($idTab))) {
             if ($tab->move($direction)) {
                 Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
         } elseif (Tools::getValue('position') && !Tools::isSubmit('submitAdd'.$this->table)) {
             if (! $this->hasEditPermission()) {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
-            } elseif (!Validate::isLoadedObject($object = new Tab((int) Tools::getValue($this->identifier)))) {
+            } elseif (!Validate::isLoadedObject($object = new Tab(Tools::getIntValue($this->identifier)))) {
                 $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').
                     ' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
             }
-            if (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
+            if (!$object->updatePosition(Tools::getIntValue('way'), Tools::getIntValue('position'))) {
                 $this->errors[] = Tools::displayError('Failed to update the position.');
             } else {
                 Tools::redirectAdmin(static::$currentIndex.'&conf=5&token='.Tools::getAdminTokenLite('AdminTabs'));
             }
-        } elseif (Tools::isSubmit('submitAdd'.$this->table) && Tools::getValue('id_tab') === Tools::getValue('id_parent')) {
+        } elseif (Tools::isSubmit('submitAdd'.$this->table) && Tools::getIntValue('id_tab') === Tools::getIntValue('id_parent')) {
             $this->errors[] = Tools::displayError('You can\'t put this menu inside itself. ');
-        } elseif (Tools::isSubmit('submitAdd'.$this->table) && $idParent = (int) Tools::getValue('id_parent')) {
+        } elseif (Tools::isSubmit('submitAdd'.$this->table) && $idParent = Tools::getIntValue('id_parent')) {
             $this->redirect_after = static::$currentIndex.'&id_'.$this->table.'='.$idParent.'&details'.$this->table.'&conf=4&token='.$this->token;
         } elseif (isset($_GET['details'.$this->table]) && is_array($this->bulk_actions)) {
             $submitBulkActions = array_merge(
@@ -395,8 +395,8 @@ class AdminTabsControllerCore extends AdminController
      */
     public function ajaxProcessUpdatePositions()
     {
-        $way = (int) (Tools::getValue('way'));
-        $idTab = (int) (Tools::getValue('id'));
+        $way = Tools::getIntValue('way');
+        $idTab = Tools::getIntValue('id');
         $positions = Tools::getValue('tab');
 
         // when changing positions in a tab sub-list, the first array value is empty and needs to be removed

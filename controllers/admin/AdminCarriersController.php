@@ -48,13 +48,13 @@ class AdminCarriersControllerCore extends AdminController
      */
     public function __construct()
     {
-        if (($idCarrier = Tools::getValue('id_carrier')) &&
+        if (($idCarrier = Tools::getIntValue('id_carrier')) &&
             !Tools::isSubmit('deletecarrier') &&
             !Tools::isSubmit('statuscarrier') &&
             !Tools::isSubmit('isFreecarrier') &&
             !Tools::isSubmit('onboarding_carrier')
         ) {
-            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $idCarrier);
+            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.$idCarrier);
         }
 
         $this->bootstrap = true;
@@ -526,7 +526,7 @@ class AdminCarriersControllerCore extends AdminController
             /* Checking fields validity */
             $this->validateRules();
             if (!count($this->errors)) {
-                $id = (int) Tools::getValue('id_'.$this->table);
+                $id = Tools::getIntValue('id_'.$this->table);
 
                 /* Object update */
                 if ($id) {
@@ -563,7 +563,7 @@ class AdminCarriersControllerCore extends AdminController
                                 );
                                 $this->postImage($newCarrier->id);
                                 $this->changeZones($newCarrier->id);
-                                $newCarrier->setTaxRulesGroup((int) Tools::getValue('id_tax_rules_group'));
+                                $newCarrier->setTaxRulesGroup(Tools::getIntValue('id_tax_rules_group'));
                                 Tools::redirectAdmin(static::$currentIndex.'&id_'.$this->table.'='.$currentCarrier->id.'&conf=4&token='.$this->token);
                             } else {
                                 $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b>';
@@ -583,7 +583,7 @@ class AdminCarriersControllerCore extends AdminController
                         $carrier->position = Carrier::getHigherPosition() + 1;
                         if ($carrier->add()) {
                             if (($_POST['id_'.$this->table] = $carrier->id /* voluntary */) && $this->postImage($carrier->id) && $this->_redirect) {
-                                $carrier->setTaxRulesGroup((int) Tools::getValue('id_tax_rules_group'), true);
+                                $carrier->setTaxRulesGroup(Tools::getIntValue('id_tax_rules_group'), true);
                                 $this->changeZones($carrier->id);
                                 $this->changeGroups($carrier->id);
                                 $this->updateAssoShop($carrier->id);
@@ -602,7 +602,7 @@ class AdminCarriersControllerCore extends AdminController
             $this->processIsFree();
         } else {
             if (Tools::isSubmit('delete'.$this->table)) {
-                $id = (int) Tools::getValue('id_'.$this->table);
+                $id = Tools::getIntValue('id_'.$this->table);
                 // Delete from the reference_id and not from the carrier id
                 $carrier = new Carrier((int) $id);
                 Warehouse::removeCarrier($carrier->id_reference);
@@ -717,8 +717,8 @@ class AdminCarriersControllerCore extends AdminController
      */
     public function ajaxProcessUpdatePositions()
     {
-        $way = (int) (Tools::getValue('way'));
-        $idCarrier = (int) (Tools::getValue('id'));
+        $way = Tools::getIntValue('way');
+        $idCarrier = Tools::getIntValue('id');
         $positions = Tools::getValue($this->table);
 
         foreach ($positions as $position => $value) {

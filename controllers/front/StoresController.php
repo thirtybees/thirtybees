@@ -249,7 +249,7 @@ class StoresControllerCore extends FrontController
 			WHERE s.active = 1 AND cl.id_lang = '.(int) $this->context->language->id
             );
         } else {
-            $distance = (int) Tools::getValue('radius', 100);
+            $distance = Tools::getIntValue('radius', 100);
             $multiplicator = ($distanceUnit == 'km' ? 6371 : 3959);
 
             $stores = Db::getInstance()->executeS(

@@ -549,7 +549,7 @@ class HookCore extends ObjectModel
                     if (!$arrayReturn && $array['live_edit'] && Tools::isSubmit('live_edit') && Tools::getValue('ad')
                         && Tools::getValue('liveToken') == Tools::getAdminToken(
                             'AdminModulesPositions'
-                            . (int)Tab::getIdFromClassName('AdminModulesPositions') . (int)Tools::getValue('id_employee')
+                            . (int)Tab::getIdFromClassName('AdminModulesPositions') . Tools::getIntValue('id_employee')
                         )
                     ) {
                         $liveEdit = true;

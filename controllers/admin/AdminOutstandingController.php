@@ -191,7 +191,7 @@ class AdminOutstandingControllerCore extends AdminController
      */
     public function renderView()
     {
-        $orderInvoice = new OrderInvoice((int) Tools::getValue('id_order_invoice'));
+        $orderInvoice = new OrderInvoice(Tools::getIntValue('id_order_invoice'));
         if (!Validate::isLoadedObject($orderInvoice)) {
             throw new PrestaShopException('object OrderInvoice cannot be loaded');
         }

@@ -263,7 +263,7 @@ class AdminAttachmentsControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitAdd'.$this->table)) {
-            $id = (int) Tools::getValue('id_attachment');
+            $id = Tools::getIntValue('id_attachment');
             if ($id && $a = new Attachment($id)) {
                 $_POST['file'] = $a->file;
                 $_POST['mime'] = $a->mime;

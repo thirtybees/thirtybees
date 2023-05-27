@@ -103,7 +103,7 @@ class ParentOrderControllerCore extends FrontController
 
         if (Tools::isSubmit('submitReorder')
             && $this->context->customer->isLogged()
-            && $idOrder = (int)Tools::getValue('id_order')
+            && $idOrder = Tools::getIntValue('id_order')
         ) {
             $oldCart = new Cart(Order::getCartIdStatic($idOrder, $this->context->customer->id));
             $duplication = $oldCart->duplicate();
@@ -153,7 +153,7 @@ class ParentOrderControllerCore extends FrontController
                             'discount_name' => Tools::safeOutput($code),
                         ]
                     );
-                } elseif (($idCartRule = (int) Tools::getValue('deleteDiscount')) && Validate::isUnsignedId($idCartRule)) {
+                } elseif (($idCartRule = Tools::getIntValue('deleteDiscount')) && Validate::isUnsignedId($idCartRule)) {
                     $this->context->cart->removeCartRule($idCartRule);
                     CartRule::autoAddToCart($this->context);
                     Tools::redirect('index.php?controller=order-opc');
@@ -203,7 +203,7 @@ class ParentOrderControllerCore extends FrontController
         }
         $this->addJqueryPlugin('fancybox');
 
-        if (in_array((int) Tools::getValue('step'), [0, 2, 3]) || Configuration::get('PS_ORDER_PROCESS_TYPE')) {
+        if (in_array(Tools::getIntValue('step'), [0, 2, 3]) || Configuration::get('PS_ORDER_PROCESS_TYPE')) {
             $this->addJqueryPlugin('typewatch');
             $this->addJS(_THEME_JS_DIR_.'cart-summary.js');
         }
@@ -286,9 +286,9 @@ class ParentOrderControllerCore extends FrontController
      */
     protected function _processCarrier()
     {
-        $this->context->cart->recyclable = (int) Tools::getValue('recyclable');
-        $this->context->cart->gift = (int) Tools::getValue('gift');
-        if ((int) Tools::getValue('gift')) {
+        $this->context->cart->recyclable = Tools::getIntValue('recyclable');
+        $this->context->cart->gift = Tools::getIntValue('gift');
+        if (Tools::getIntValue('gift')) {
             if (!Validate::isMessage(Tools::getValue('gift_message'))) {
                 $this->errors[] = Tools::displayError('Invalid gift message.');
             } else {
@@ -314,10 +314,10 @@ class ParentOrderControllerCore extends FrontController
             $deliveryOptionList = $this->context->cart->getDeliveryOptionList();
             if (count($deliveryOptionList) == 1) {
                 $delivery_option = reset($deliveryOptionList);
-                $key = Cart::desintifier(Tools::getValue('id_carrier'));
+                $key = Cart::desintifier(Tools::getIntValue('id_carrier'));
                 foreach ($deliveryOptionList as $idAddress => $options) {
                     if (isset($options[$key])) {
-                        $this->context->cart->id_carrier = (int) Tools::getValue('id_carrier');
+                        $this->context->cart->id_carrier = Tools::getIntValue('id_carrier');
                         $this->context->cart->setDeliveryOption([$idAddress => $key]);
                         if (isset($this->context->cookie->id_country)) {
                             unset($this->context->cookie->id_country);
@@ -482,7 +482,7 @@ class ParentOrderControllerCore extends FrontController
             $this->context->customer->logout();
             Tools::redirect('');
         } elseif (!Customer::getAddressesTotalById($this->context->customer->id)) {
-            $multi = (int) Tools::getValue('multi-shipping');
+            $multi = Tools::getIntValue('multi-shipping');
             Tools::redirect('index.php?controller=address&back='.urlencode('order.php?step=1'.($multi ? '&multi-shipping='.$multi : '')));
         }
 
@@ -516,7 +516,7 @@ class ParentOrderControllerCore extends FrontController
                     if (property_exists($this, 'step') && $this->step) {
                         $params['step'] = (int) $this->step;
                     }
-                    if ($multi = (int) Tools::getValue('multi-shipping')) {
+                    if ($multi = Tools::getIntValue('multi-shipping')) {
                         $params['multi-shipping'] = $multi;
                     }
                     $backUrl = $this->context->link->getPageLink('order', true, (int) $this->context->language->id, $params);

@@ -136,13 +136,13 @@ class AdminFeaturesControllerCore extends AdminController
                 break;
 
             case 'editFeatureValue':
-                if ((Tools::getValue('id_feature_value'))) {
-                    if (($id = (int)Tools::getValue('id_feature'))) {
+                if ((Tools::getIntValue('id_feature_value'))) {
+                    if (($id = Tools::getIntValue('id_feature'))) {
                         if (Validate::isLoadedObject($obj = new Feature($id))) {
                             $bread_extended[] = '<a href="'.$this->context->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
                         }
 
-                        if (Validate::isLoadedObject($obj = new FeatureValue((int) Tools::getValue('id_feature_value')))) {
+                        if (Validate::isLoadedObject($obj = new FeatureValue(Tools::getIntValue('id_feature_value')))) {
                             $bread_extended[] = sprintf($this->l('Edit: %s'), $obj->value[$this->context->employee->id_lang]);
                         }
                     } else {
@@ -185,7 +185,7 @@ class AdminFeaturesControllerCore extends AdminController
                 }
                 $this->content .= $this->renderView();
             } elseif ($this->display == 'editFeatureValue') {
-                if (!$this->object = new FeatureValue((int) Tools::getValue('id_feature_value'))) {
+                if (!$this->object = new FeatureValue(Tools::getIntValue('id_feature_value'))) {
                     return;
                 }
 
@@ -256,7 +256,7 @@ class AdminFeaturesControllerCore extends AdminController
                 break;
             case 'view':
                 $this->toolbar_btn['newAttributes'] = [
-                    'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                    'href' => static::$currentIndex.'&addfeature_value&id_feature='.Tools::getIntValue('id_feature').'&token='.$this->token,
                     'desc' => $this->l('Add new feature values'),
                 ];
                 $this->toolbar_btn['back'] = [
@@ -283,7 +283,7 @@ class AdminFeaturesControllerCore extends AdminController
             ];
 
             $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.Tools::getIntValue('id_feature').'&token='.$this->token,
                 'desc' => $this->l('Add new feature value', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -291,7 +291,7 @@ class AdminFeaturesControllerCore extends AdminController
 
         if ($this->display == 'view') {
             $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.Tools::getIntValue('id_feature').'&token='.$this->token,
                 'desc' => $this->l('Add new feature value', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -558,11 +558,11 @@ class AdminFeaturesControllerCore extends AdminController
             ],
         ];
 
-        $this->fields_value['id_feature'] = (int) Tools::getValue('id_feature');
+        $this->fields_value['id_feature'] = Tools::getIntValue('id_feature');
 
         // Create Object FeatureValue
         $this->getlanguages();
-        $feature_value = new FeatureValue(Tools::getValue('id_feature_value'));
+        $feature_value = new FeatureValue(Tools::getIntValue('id_feature_value'));
         $fieldsValue = $this->getFieldsValue($feature_value);
 
         Hook::triggerEvent(
@@ -632,7 +632,7 @@ class AdminFeaturesControllerCore extends AdminController
     public function initProcess()
     {
         // Are we working on feature values?
-        if (Tools::getValue('id_feature_value')
+        if (Tools::getIntValue('id_feature_value')
             || Tools::isSubmit('deletefeature_value')
             || Tools::isSubmit('submitAddfeature_value')
             || Tools::isSubmit('addfeature_value')
@@ -650,7 +650,7 @@ class AdminFeaturesControllerCore extends AdminController
             }
 
             if (Tools::getIsset('submitFilter') . $this->list_id) {
-                static::$currentIndex = static::$currentIndex . '&id_feature=' . (int)Tools::getValue('id_feature') . '&viewfeature';
+                static::$currentIndex = static::$currentIndex . '&id_feature=' . Tools::getIntValue('id_feature') . '&viewfeature';
             }
         } else {
             $this->list_id = 'feature';
@@ -702,7 +702,7 @@ class AdminFeaturesControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
             if ($this->table == 'feature_value' && ($this->display == 'edit' || $this->display == 'add')) {
-                $this->redirect_after = static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&addfeature_value&id_feature='.Tools::getIntValue('id_feature').'&token='.$this->token;
             } else {
                 $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
             }
@@ -738,7 +738,7 @@ class AdminFeaturesControllerCore extends AdminController
     public function processSave()
     {
         if ($this->table == 'feature') {
-            $id_feature = (int) Tools::getValue('id_feature');
+            $id_feature = Tools::getIntValue('id_feature');
             // Adding last position to the feature if not exist
             if ($id_feature <= 0) {
                 $sql = 'SELECT `position`+1
@@ -829,8 +829,8 @@ class AdminFeaturesControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $isFeatureValue = Tools::isSubmit('viewfeature');
-            $way = (int)Tools::getValue('way');
-            $id = (int)Tools::getValue('id');
+            $way = Tools::getIntValue('way');
+            $id = Tools::getIntValue('id');
             $positions = $isFeatureValue
                 ? Tools::getValue('feature_value')
                 : Tools::getValue('feature');
@@ -872,7 +872,7 @@ class AdminFeaturesControllerCore extends AdminController
     protected function ajaxProcessSetAllowMultipleValuesFeature()
     {
         try {
-            $feature = new Feature(Tools::getValue('id_feature'));
+            $feature = new Feature(Tools::getIntValue('id_feature'));
             if (! Validate::isLoadedObject($feature)) {
                 throw new PrestaShopException($this->l('Feature not found'));
             }

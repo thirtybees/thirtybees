@@ -70,7 +70,7 @@ class OrderDetailControllerCore extends FrontController
     public function postProcess()
     {
         if (Tools::isSubmit('msgText') && Tools::isSubmit('id_order') && Tools::isSubmit('id_product')) {
-            $idOrder = (int) Tools::getValue('id_order');
+            $idOrder = Tools::getIntValue('id_order');
             $msgText = Tools::getValue('msgText');
 
             if (!$idOrder || !Validate::isUnsignedId($idOrder)) {
@@ -85,7 +85,7 @@ class OrderDetailControllerCore extends FrontController
                 if (Validate::isLoadedObject($order) && $order->id_customer == $this->context->customer->id) {
                     //check if a thread already exist
                     $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($this->context->customer->email, $order->id);
-                    $idProduct = (int) Tools::getValue('id_product');
+                    $idProduct = Tools::getIntValue('id_product');
                     $cm = new CustomerMessage();
                     if (!$idCustomerThread) {
                         $ct = new CustomerThread();
@@ -189,7 +189,7 @@ class OrderDetailControllerCore extends FrontController
     {
         parent::initContent();
 
-        if (!($idOrder = (int) Tools::getValue('id_order')) || !Validate::isUnsignedId($idOrder)) {
+        if (!($idOrder = Tools::getIntValue('id_order')) || !Validate::isUnsignedId($idOrder)) {
             $this->errors[] = Tools::displayError('Order ID required');
         } else {
             $order = new Order($idOrder);

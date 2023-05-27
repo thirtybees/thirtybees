@@ -417,7 +417,7 @@ class AttributeGroupCore extends ObjectModel
             (new DbQuery())
                 ->select('ag.`position`, ag.`id_attribute_group`')
                 ->from('attribute_group', 'ag')
-                ->where('ag.`id_attribute_group` = '.(int) Tools::getValue('id_attribute_group', 1))
+                ->where('ag.`id_attribute_group` = '.Tools::getIntValue('id_attribute_group', 1))
                 ->orderBy('ag.`position` ASC')
         )
         ) {

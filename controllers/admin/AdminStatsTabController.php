@@ -235,7 +235,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $action .= ($identifier && $id ? '&'.Tools::safeOutput($identifier).'='.(int) $id : '');
         $module = Tools::getValue('module');
         $action .= ($module ? '&module='.Tools::safeOutput($module) : '');
-        $action .= (($idProduct = Tools::getValue('id_product')) ? '&id_product='.Tools::safeOutput($idProduct) : '');
+        $action .= (($idProduct = Tools::getIntValue('id_product')) ? '&id_product='.Tools::safeOutput($idProduct) : '');
         $tpl->assign(
             [
                 'current'        => static::$currentIndex,

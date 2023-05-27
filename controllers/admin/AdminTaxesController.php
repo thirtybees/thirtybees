@@ -305,7 +305,7 @@ class AdminTaxesControllerCore extends AdminController
             /* Checking fields validity */
             $this->validateRules();
             if (!count($this->errors)) {
-                $id = (int) (Tools::getValue('id_'.$this->table));
+                $id = Tools::getIntValue('id_'.$this->table);
 
                 /* Object update */
                 if ($id) {

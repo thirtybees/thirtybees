@@ -181,7 +181,7 @@ class PasswordControllerCore extends FrontController
     protected static function resolveCustomer()
     {
         $token = Tools::getValue('token');
-        $idCustomer = (int) Tools::getValue('id_customer');
+        $idCustomer = Tools::getIntValue('id_customer');
         if ($token && $idCustomer) {
             $email = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())

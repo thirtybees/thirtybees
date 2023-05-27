@@ -380,14 +380,14 @@ class FrontControllerCore extends Controller
         $defaultLang = Configuration::get('PS_LANG_DEFAULT');
         switch ($this->php_self) {
             case 'product': // product page
-                $idProduct = (int) Tools::getValue('id_product');
+                $idProduct = Tools::getIntValue('id_product');
                 $canonical = $this->context->link->getProductLink($idProduct);
                 $hreflang = $this->getHrefLang('product', $idProduct, $languages, $defaultLang);
 
                 break;
 
             case 'category':
-                $idCategory = (int) Tools::getValue('id_category');
+                $idCategory = Tools::getIntValue('id_category');
                 $content .= $this->getRelPrevNext('category', $idCategory);
                 $canonical = $this->context->link->getCategoryLink((int) $idCategory);
                 $hreflang = $this->getHrefLang('category', $idCategory, $languages, $defaultLang);
@@ -395,7 +395,7 @@ class FrontControllerCore extends Controller
                 break;
 
             case 'manufacturer':
-                $idManufacturer = (int) Tools::getValue('id_manufacturer');
+                $idManufacturer = Tools::getIntValue('id_manufacturer');
                 $content .= $this->getRelPrevNext('manufacturer', $idManufacturer);
                 $hreflang = $this->getHrefLang('manufacturer', $idManufacturer, $languages, $defaultLang);
 
@@ -408,24 +408,24 @@ class FrontControllerCore extends Controller
                 break;
 
             case 'supplier':
-                $idSupplier = (int) Tools::getValue('id_supplier');
+                $idSupplier = Tools::getIntValue('id_supplier');
                 $content .= $this->getRelPrevNext('supplier', $idSupplier);
                 $hreflang = $this->getHrefLang('supplier', $idSupplier, $languages, $defaultLang);
 
-                if (!Tools::getValue('id_supplier')) {
+                if (!Tools::getIntValue('id_supplier')) {
                     $canonical = $this->context->link->getPageLink('supplier');
                 } else {
-                    $canonical = $this->context->link->getSupplierLink((int) Tools::getValue('id_supplier'));
+                    $canonical = $this->context->link->getSupplierLink(Tools::getIntValue('id_supplier'));
                 }
 
                 break;
 
             case 'cms':
-                $idCms = Tools::getValue('id_cms');
-                $idCmsCategory = Tools::getValue('id_cms_category');
+                $idCms = Tools::getIntValue('id_cms');
+                $idCmsCategory = Tools::getIntValue('id_cms_category');
                 if ($idCms) {
-                    $canonical = $this->context->link->getCMSLink((int) $idCms);
-                    $hreflang = $this->getHrefLang('cms', (int) $idCms, $languages, $defaultLang);
+                    $canonical = $this->context->link->getCMSLink($idCms);
+                    $hreflang = $this->getHrefLang('cms', $idCms, $languages, $defaultLang);
                 } else {
                     $canonical = $this->context->link->getCMSCategoryLink((int) $idCmsCategory);
                     $hreflang = $this->getHrefLang('cms_category', (int) $idCmsCategory, $languages, $defaultLang);
@@ -512,7 +512,7 @@ class FrontControllerCore extends Controller
             }
 
             // append page number
-            if ($p = (int)Tools::getValue('p')) {
+            if ($p = Tools::getIntValue('p')) {
                 $lnk .= "?p=$p";
             }
 
@@ -555,7 +555,7 @@ class FrontControllerCore extends Controller
                 return '';
         }
 
-        $p = (int) Tools::getValue('p');
+        $p = Tools::getIntValue('p');
         $n = (int) Configuration::get('PS_PRODUCTS_PER_PAGE');
 
         $totalPages = ceil($nbProducts / $n);
@@ -657,7 +657,7 @@ class FrontControllerCore extends Controller
                 'static_token'          => Tools::getToken(false),
                 'token'                 => Tools::getToken(),
                 'priceDisplayPrecision' => $decimals,
-                'content_only'          => (int) Tools::getValue('content_only'),
+                'content_only'          => Tools::getIntValue('content_only'),
             ]
         );
 
@@ -706,7 +706,7 @@ class FrontControllerCore extends Controller
     public function getLayout()
     {
         $entity = $this->php_self;
-        $idItem = (int) Tools::getValue('id_'.$entity);
+        $idItem = Tools::getIntValue('id_'.$entity);
 
         $layoutDir = $this->getThemeDir();
         $layoutOverrideDir = $this->getOverrideThemeDir();
@@ -1036,7 +1036,7 @@ class FrontControllerCore extends Controller
             }
         }
 
-        if (Tools::isSubmit('live_edit') && Tools::getValue('ad') && Tools::getAdminToken('AdminModulesPositions'.(int) Tab::getIdFromClassName('AdminModulesPositions').(int) Tools::getValue('id_employee'))) {
+        if (Tools::isSubmit('live_edit') && Tools::getValue('ad') && Tools::getAdminToken('AdminModulesPositions'.(int) Tab::getIdFromClassName('AdminModulesPositions').Tools::getIntValue('id_employee'))) {
             $this->addJqueryUI('ui.sortable');
             $this->addjqueryPlugin('fancybox');
             $this->addJS(_PS_JS_DIR_.'hookLiveEdit.js');
@@ -1276,7 +1276,7 @@ class FrontControllerCore extends Controller
             return false;
         }
 
-        if (Tools::getValue('liveToken') != Tools::getAdminToken('AdminModulesPositions'.(int) Tab::getIdFromClassName('AdminModulesPositions').(int) Tools::getValue('id_employee'))) {
+        if (Tools::getValue('liveToken') != Tools::getAdminToken('AdminModulesPositions'.(int) Tab::getIdFromClassName('AdminModulesPositions').Tools::getIntValue('id_employee'))) {
             return false;
         }
 
@@ -1341,7 +1341,7 @@ class FrontControllerCore extends Controller
         $defaultProductsPerPage = max(1, (int) Configuration::get('PS_PRODUCTS_PER_PAGE'));
         $nArray = [$defaultProductsPerPage, $defaultProductsPerPage * 2, $defaultProductsPerPage * 5];
 
-        if ((int) Tools::getValue('n') && (int) $totalProducts > 0) {
+        if (Tools::getIntValue('n') && (int) $totalProducts > 0) {
             $nArray[] = $totalProducts;
         }
         // Retrieve the current number of products per page (either the default, the GET parameter or the one in the cookie)
@@ -1350,12 +1350,12 @@ class FrontControllerCore extends Controller
             $this->n = (int) $this->context->cookie->nb_item_per_page;
         }
 
-        if ((int) Tools::getValue('n') && in_array((int) Tools::getValue('n'), $nArray)) {
-            $this->n = (int) Tools::getValue('n');
+        if (Tools::getIntValue('n') && in_array(Tools::getIntValue('n'), $nArray)) {
+            $this->n = Tools::getIntValue('n');
         }
 
         // Retrieve the page number (either the GET parameter or the first page)
-        $this->p = (int) Tools::getValue('p', 1);
+        $this->p = Tools::getIntValue('p', 1);
         // If the parameter is not correct then redirect (do not merge with the previous line, the redirect is required in order to avoid duplicate content)
         if (!is_numeric($this->p) || $this->p < 1) {
             Tools::redirect($this->context->link->getPaginationLink(false, false, $this->n, false, 1, false));
@@ -1822,7 +1822,7 @@ class FrontControllerCore extends Controller
      */
     protected function recoverCart()
     {
-        if (($idCart = (int) Tools::getValue('recover_cart')) && Tools::getValue('token_cart') == md5(_COOKIE_KEY_.'recover_cart_'.$idCart)) {
+        if (($idCart = Tools::getIntValue('recover_cart')) && Tools::getValue('token_cart') == md5(_COOKIE_KEY_.'recover_cart_'.$idCart)) {
             $cart = new Cart((int) $idCart);
             if (Validate::isLoadedObject($cart)) {
                 $customer = new Customer((int) $cart->id_customer);

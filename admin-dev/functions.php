@@ -292,7 +292,7 @@ function checkingTab($tab)
         return false;
     }
     $admin_obj = new $tab;
-    if (!$admin_obj->viewAccess() && ($admin_obj->table != 'employee' || Context::getContext()->employee->id != Tools::getValue('id_employee') || !Tools::isSubmit('updateemployee'))) {
+    if (!$admin_obj->viewAccess() && ($admin_obj->table != 'employee' || Context::getContext()->employee->id != Tools::getIntValue('id_employee') || !Tools::isSubmit('updateemployee'))) {
         $admin_obj->_errors = [Tools::displayError('Access denied.')];
         echo $admin_obj->displayErrors();
         return false;

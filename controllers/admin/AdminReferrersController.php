@@ -308,7 +308,7 @@ class AdminReferrersControllerCore extends AdminController
                     'statsdata_name' => $statsdataName,
                     'current'        => static::$currentIndex,
                     'token'          => $this->token,
-                    'tracking_dt'    => (int) Tools::getValue('tracking_dt', Configuration::get('TRACKING_DIRECT_TRAFFIC')),
+                    'tracking_dt'    => Tools::getIntValue('tracking_dt', Configuration::get('TRACKING_DIRECT_TRAFFIC')),
                 ]
             );
 
@@ -536,7 +536,7 @@ class AdminReferrersControllerCore extends AdminController
 
         if (Tools::isSubmit('submitSettings')) {
             if ($this->hasEditPermission()) {
-                if (Configuration::updateValue('TRACKING_DIRECT_TRAFFIC', (int) Tools::getValue('tracking_dt'))) {
+                if (Configuration::updateValue('TRACKING_DIRECT_TRAFFIC', Tools::getIntValue('tracking_dt'))) {
                     Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.Tools::getValue('token'));
                 }
             }
@@ -563,7 +563,7 @@ class AdminReferrersControllerCore extends AdminController
      */
     public function renderView()
     {
-        $referrer = new Referrer((int) Tools::getValue('id_referrer'));
+        $referrer = new Referrer(Tools::getIntValue('id_referrer'));
 
         $displayTab = [
             'uniqs'         => $this->l('Unique visitors'),
@@ -582,7 +582,7 @@ class AdminReferrersControllerCore extends AdminController
 
         $this->tpl_view_vars = [
             'enable_calendar' => $this->enableCalendar(),
-            'calendar_form'   => $this->displayCalendar($this->action, $this->table, $this->identifier, (int) Tools::getValue($this->identifier)),
+            'calendar_form'   => $this->displayCalendar($this->action, $this->table, $this->identifier, Tools::getIntValue($this->identifier)),
             'referrer'        => $referrer,
             'display_tab'     => $displayTab,
             'id_employee'     => (int) $this->context->employee->id,

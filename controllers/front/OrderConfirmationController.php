@@ -63,7 +63,7 @@ class OrderConfirmationControllerCore extends FrontController
     {
         parent::init();
 
-        $this->id_cart = (int) Tools::getValue('id_cart', 0);
+        $this->id_cart = Tools::getIntValue('id_cart', 0);
         $isGuest = false;
 
         /* check if the cart has been made by a Guest customer, for redirect link */
@@ -74,7 +74,7 @@ class OrderConfirmationControllerCore extends FrontController
             $redirectLink = 'index.php?controller=history';
         }
 
-        $this->id_module = (int) (Tools::getValue('id_module', 0));
+        $this->id_module = Tools::getIntValue('id_module', 0);
         $this->id_order = Order::getOrderByCartId((int) ($this->id_cart));
         $this->secure_key = Tools::getValue('key', false);
         $order = new Order((int) ($this->id_order));
@@ -115,7 +115,7 @@ class OrderConfirmationControllerCore extends FrontController
             - total amount
         */
 
-        $idCart = (int) Tools::getValue('id_cart');
+        $idCart = Tools::getIntValue('id_cart');
         $idOrder = Order::getOrderByCartId($idCart);
         $order = new Order($idOrder);
         $varProducts = [];

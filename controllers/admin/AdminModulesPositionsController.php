@@ -60,7 +60,7 @@ class AdminModulesPositionsControllerCore extends AdminController
     {
         // Getting key value for display
         if (Tools::getValue('show_modules') && strval(Tools::getValue('show_modules')) != 'all') {
-            $this->display_key = (int) Tools::getValue('show_modules');
+            $this->display_key = Tools::getIntValue('show_modules');
         }
 
         $this->addjQueryPlugin(
@@ -79,11 +79,11 @@ class AdminModulesPositionsControllerCore extends AdminController
         // Change position in hook
         if (array_key_exists('changePosition', $_GET)) {
             if ($this->hasEditPermission()) {
-                $idModule = (int) Tools::getValue('id_module');
-                $idHook = (int) Tools::getValue('id_hook');
+                $idModule = Tools::getIntValue('id_module');
+                $idHook = Tools::getIntValue('id_hook');
                 $module = Module::getInstanceById($idModule);
                 if (Validate::isLoadedObject($module)) {
-                    $module->updatePosition($idHook, (int) Tools::getValue('direction'));
+                    $module->updatePosition($idHook, Tools::getIntValue('direction'));
                     Tools::redirectAdmin(static::$currentIndex.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                 } else {
                     $this->errors[] = Tools::displayError('This module cannot be loaded.');
@@ -95,9 +95,9 @@ class AdminModulesPositionsControllerCore extends AdminController
         elseif (Tools::isSubmit('submitAddToHook')) {
             if ($this->hasAddPermission()) {
                 // Getting vars...
-                $idModule = (int) Tools::getValue('id_module');
+                $idModule = Tools::getIntValue('id_module');
                 $module = Module::getInstanceById($idModule);
-                $idHook = (int) Tools::getValue('id_hook');
+                $idHook = Tools::getIntValue('id_hook');
                 $hook = new Hook($idHook);
 
                 if (!$idModule || !Validate::isLoadedObject($module)) {
@@ -140,9 +140,9 @@ class AdminModulesPositionsControllerCore extends AdminController
         elseif (Tools::isSubmit('submitEditGraft')) {
             if ($this->hasAddPermission()) {
                 // Getting vars...
-                $idModule = (int) Tools::getValue('id_module');
+                $idModule = Tools::getIntValue('id_module');
                 $module = Module::getInstanceById($idModule);
-                $idHook = (int) Tools::getValue('id_hook');
+                $idHook = Tools::getIntValue('id_hook');
                 $hook = new Hook($idHook);
 
                 if (!$idModule || !Validate::isLoadedObject($module)) {
@@ -198,9 +198,9 @@ class AdminModulesPositionsControllerCore extends AdminController
         } // Delete module from hook
         elseif (array_key_exists('deleteGraft', $_GET)) {
             if ($this->hasDeletePermission()) {
-                $idModule = (int) Tools::getValue('id_module');
+                $idModule = Tools::getIntValue('id_module');
                 $module = Module::getInstanceById($idModule);
-                $idHook = (int) Tools::getValue('id_hook');
+                $idHook = Tools::getIntValue('id_hook');
                 $hook = new Hook($idHook);
                 if (!Validate::isLoadedObject($module)) {
                     $this->errors[] = Tools::displayError('This module cannot be loaded.');
@@ -312,9 +312,9 @@ class AdminModulesPositionsControllerCore extends AdminController
         $this->initToolbarTitle();
         // toolbar (save, cancel, new, ..)
         $this->initToolbar();
-        $idModule = (int) Tools::getValue('id_module');
-        $idHook = (int) Tools::getValue('id_hook');
-        $showModules = (int) Tools::getValue('show_modules');
+        $idModule = Tools::getIntValue('id_module');
+        $idHook = Tools::getIntValue('id_hook');
+        $showModules = Tools::getIntValue('show_modules');
 
         if (Tools::isSubmit('editGraft')) {
             // Check auth for this page
@@ -358,8 +358,8 @@ class AdminModulesPositionsControllerCore extends AdminController
         $modules = $instances;
 
         $hooks = [];
-        if ($showModules || (Tools::getValue('id_hook') > 0)) {
-            $moduleInstance = Module::getInstanceById((int) Tools::getValue('id_module', $showModules));
+        if ($showModules || (Tools::getIntValue('id_hook') > 0)) {
+            $moduleInstance = Module::getInstanceById(Tools::getIntValue('id_module', $showModules));
             $hooks = $moduleInstance->getPossibleHooksList();
         }
 
@@ -373,8 +373,8 @@ class AdminModulesPositionsControllerCore extends AdminController
             [
                 'url_submit'          => static::$currentIndex.'&token='.$this->token,
                 'edit_graft'          => Tools::isSubmit('editGraft'),
-                'id_module'           => (int) Tools::getValue('id_module'),
-                'id_hook'             => (int) Tools::getValue('id_hook'),
+                'id_module'           => Tools::getIntValue('id_module'),
+                'id_hook'             => Tools::getIntValue('id_hook'),
                 'show_modules'        => $showModules,
                 'hooks'               => $hooks,
                 'exception_list'      => $this->displayModuleExceptionList(array_shift($exceptsList), 0),
@@ -522,7 +522,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 'token'              => $this->token,
                 'url_show_modules'   => static::$currentIndex.'&token='.$this->token.'&show_modules=',
                 'modules'            => $moduleInstances,
-                'url_show_invisible' => static::$currentIndex.'&token='.$this->token.'&show_modules='.(int) Tools::getValue('show_modules').'&hook_position=',
+                'url_show_invisible' => static::$currentIndex.'&token='.$this->token.'&show_modules='.Tools::getIntValue('show_modules').'&hook_position=',
                 'live_edit'          => Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP,
                 'url_live_edit'      => $this->getLiveEditUrl($liveEditParams),
                 'display_key'        => $this->display_key,
@@ -573,9 +573,9 @@ class AdminModulesPositionsControllerCore extends AdminController
     public function ajaxProcessUpdatePositions()
     {
         if ($this->hasEditPermission()) {
-            $idModule = (int) (Tools::getValue('id_module'));
-            $idHook = (int) (Tools::getValue('id_hook'));
-            $way = (int) (Tools::getValue('way'));
+            $idModule = Tools::getIntValue('id_module');
+            $idHook = Tools::getIntValue('id_hook');
+            $way = Tools::getIntValue('way');
             $positions = Tools::getValue(strval($idHook));
             $position = (is_array($positions)) ? array_search($idHook.'_'.$idModule, $positions) : null;
             $module = Module::getInstanceById($idModule);
@@ -702,7 +702,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
 
-            $idShop = (int) Tools::getValue('id_shop');
+            $idShop = Tools::getIntValue('id_shop');
             if (!$idShop) {
                 $idShop = $this->context->shop->id;
             }
@@ -757,7 +757,7 @@ class AdminModulesPositionsControllerCore extends AdminController
      */
     public function ajaxProcessGetPossibleHookingListForModule()
     {
-        $moduleId = (int) Tools::getValue('module_id');
+        $moduleId = Tools::getIntValue('module_id');
         if ($moduleId == 0) {
             $this->ajaxDie(json_encode(['hasError' => true, 'errors' => ['Wrong Module ID.']]));
         }

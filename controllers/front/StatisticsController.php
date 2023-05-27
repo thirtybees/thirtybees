@@ -75,7 +75,7 @@ class StatisticsControllerCore extends FrontController
      */
     protected function processNavigationStats()
     {
-        $idGuest = (int) Tools::getValue('id_guest');
+        $idGuest = Tools::getIntValue('id_guest');
         if (sha1($idGuest._COOKIE_KEY_) != $this->param_token) {
             die;
         }
@@ -103,10 +103,10 @@ class StatisticsControllerCore extends FrontController
      */
     protected function processPageTime()
     {
-        $idConnection = (int) Tools::getValue('id_connections');
-        $time = (int) Tools::getValue('time');
+        $idConnection = Tools::getIntValue('id_connections');
+        $time = Tools::getIntValue('time');
         $timeStart = Tools::getValue('time_start');
-        $idPage = (int) Tools::getValue('id_page');
+        $idPage = Tools::getIntValue('id_page');
 
         if (sha1($idConnection.$idPage.$timeStart._COOKIE_KEY_) != $this->param_token) {
             die;

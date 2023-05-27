@@ -79,12 +79,12 @@ class AdminTrackingControllerCore extends AdminController
      */
     public function postprocess()
     {
-        if (Tools::getValue('id_product') && Tools::isSubmit('statusproduct')) {
+        if (Tools::getIntValue('id_product') && Tools::isSubmit('statusproduct')) {
             $this->table = 'product';
             $this->identifier = 'id_product';
             $this->action = 'status';
             $this->className = 'Product';
-        } elseif (Tools::getValue('id_category') && Tools::isSubmit('statuscategory')) {
+        } elseif (Tools::getIntValue('id_category') && Tools::isSubmit('statuscategory')) {
             $this->table = 'category';
             $this->identifier = 'id_category';
             $this->action = 'status';
@@ -107,7 +107,7 @@ class AdminTrackingControllerCore extends AdminController
     {
         $this->initPageHeaderToolbar();
 
-        if (($idCategory = (int)Tools::getValue('id_category')) && Tools::getIsset('viewcategory')) {
+        if (($idCategory = Tools::getIntValue('id_category')) && Tools::getIsset('viewcategory')) {
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_category='.$idCategory.'&viewcategory');
         }
 

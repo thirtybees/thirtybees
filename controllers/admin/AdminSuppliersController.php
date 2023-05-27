@@ -443,8 +443,8 @@ class AdminSuppliersControllerCore extends AdminController
         $address->postcode = Tools::getValue('postcode', null);
         $address->phone = Tools::getValue('phone', null);
         $address->phone_mobile = Tools::getValue('phone_mobile', null);
-        $address->id_country = Tools::getValue('id_country', null);
-        $address->id_state = Tools::getValue('id_state', null);
+        $address->id_country = Tools::getIntValue('id_country');
+        $address->id_state = Tools::getIntValue('id_state');
         $address->city = Tools::getValue('city', null);
 
         $validation = $address->validateController();
@@ -456,11 +456,11 @@ class AdminSuppliersControllerCore extends AdminController
             }
             $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
         } else {
-            if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
+            if (Tools::isSubmit('id_address') && Tools::getIntValue('id_address') > 0) {
                 $address->update();
             } else {
                 $address->save();
-                $_POST['id_address'] = $address->id;
+                $_POST['id_address'] = (int)$address->id;
             }
         }
 
@@ -485,8 +485,8 @@ class AdminSuppliersControllerCore extends AdminController
         }
 
         // updates/creates address if it does not exist
-        if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
-            $address = new Address((int) Tools::getValue('id_address'));
+        if (Tools::isSubmit('id_address') && Tools::getIntValue('id_address') > 0) {
+            $address = new Address(Tools::getIntValue('id_address'));
         } // updates address
         else {
             $address = new Address();
@@ -500,8 +500,8 @@ class AdminSuppliersControllerCore extends AdminController
         $address->postcode = Tools::getValue('postcode', null);
         $address->phone = Tools::getValue('phone', null);
         $address->phone_mobile = Tools::getValue('phone_mobile', null);
-        $address->id_country = Tools::getValue('id_country', null);
-        $address->id_state = Tools::getValue('id_state', null);
+        $address->id_country = Tools::getIntValue('id_country');
+        $address->id_state = Tools::getIntValue('id_state');
         $address->city = Tools::getValue('city', null);
 
         $validation = $address->validateController();
@@ -513,11 +513,11 @@ class AdminSuppliersControllerCore extends AdminController
             }
             $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
         } else {
-            if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
+            if (Tools::isSubmit('id_address') && Tools::getIntValue('id_address') > 0) {
                 $address->update();
             } else {
                 $address->save();
-                $_POST['id_address'] = $address->id;
+                $_POST['id_address'] = (int)$address->id;
             }
         }
 
@@ -541,7 +541,7 @@ class AdminSuppliersControllerCore extends AdminController
         $return = true;
 
         /* Generate image with differents size */
-        if (($idSupplier = (int) Tools::getValue('id_supplier')) &&
+        if (($idSupplier = Tools::getIntValue('id_supplier')) &&
             isset($_FILES) && count($_FILES) && file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
         ) {
             $imagesTypes = ImageType::getImagesTypes('suppliers');

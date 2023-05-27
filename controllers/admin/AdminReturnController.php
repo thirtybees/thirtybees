@@ -240,14 +240,14 @@ class AdminReturnControllerCore extends AdminController
     {
         if (Tools::isSubmit('deleteorder_return_detail')) {
             if ($this->hasDeletePermission()) {
-                if (($idOrderDetail = (int) (Tools::getValue('id_order_detail'))) && Validate::isUnsignedId($idOrderDetail)) {
-                    if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
+                if (($idOrderDetail = Tools::getIntValue('id_order_detail')) && Validate::isUnsignedId($idOrderDetail)) {
+                    if (($idOrderReturn = Tools::getIntValue('id_order_return')) && Validate::isUnsignedId($idOrderReturn)) {
                         $orderReturn = new OrderReturn($idOrderReturn);
                         if (!Validate::isLoadedObject($orderReturn)) {
                             $this->errors[] = Tools::displayError('Order return not found');
                         } else {
                             if ((int)($orderReturn->countProduct()) > 1) {
-                                if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, (int)(Tools::getValue('id_customization', 0)))) {
+                                if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, Tools::getIntValue('id_customization', 0))) {
                                     Tools::redirectAdmin(static::$currentIndex . '&conf=4token=' . $this->token);
                                 } else {
                                     $this->errors[] = Tools::displayError('An error occurred while deleting the details of your order return.');
@@ -267,11 +267,11 @@ class AdminReturnControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('submitAddorder_return') || Tools::isSubmit('submitAddorder_returnAndStay')) {
             if ($this->hasEditPermission()) {
-                if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
+                if (($idOrderReturn = Tools::getIntValue('id_order_return')) && Validate::isUnsignedId($idOrderReturn)) {
                     $orderReturn = new OrderReturn($idOrderReturn);
                     $order = new Order($orderReturn->id_order);
                     $customer = new Customer($orderReturn->id_customer);
-                    $orderReturn->state = (int) (Tools::getValue('state'));
+                    $orderReturn->state = Tools::getIntValue('state');
                     if ($orderReturn->save()) {
                         $orderReturnState = new OrderReturnState($orderReturn->state);
                         $vars = [

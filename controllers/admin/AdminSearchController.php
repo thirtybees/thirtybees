@@ -61,7 +61,7 @@ class AdminSearchControllerCore extends AdminController
     public function postProcess()
     {
         $this->query = trim(Tools::getValue('bo_query'));
-        $searchType = (int) Tools::getValue('bo_search_type');
+        $searchType = Tools::getIntValue('bo_search_type');
         /* Handle empty search field */
         if (!empty($this->query)) {
             if (!$searchType && strlen($this->query) > 1) {
@@ -371,7 +371,7 @@ class AdminSearchControllerCore extends AdminController
                 $helper->currentIndex = $this->context->link->getAdminLink('AdminProducts', false);
 
                 $query = trim(Tools::getValue('bo_query'));
-                $searchType = (int) Tools::getValue('bo_search_type');
+                $searchType = Tools::getIntValue('bo_search_type');
 
                 if ($query) {
                     $helper->currentIndex .= '&bo_query='.urlencode($query).'&bo_search_type='.$searchType;

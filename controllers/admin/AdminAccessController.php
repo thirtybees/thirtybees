@@ -222,9 +222,9 @@ class AdminAccessControllerCore extends AdminController
                 throw new PrestaShopException('permission does not exist');
             }
 
-            $enabled = (int) Tools::getValue('enabled');
-            $idTab = (int) Tools::getValue('id_tab');
-            $idProfile = (int) Tools::getValue('id_profile');
+            $enabled = Tools::getIntValue('enabled');
+            $idTab = Tools::getIntValue('id_tab');
+            $idProfile = Tools::getIntValue('id_profile');
             $where = '`id_tab`';
             $join = '';
             if (Tools::isSubmit('addFromParent')) {
@@ -278,9 +278,9 @@ class AdminAccessControllerCore extends AdminController
 
         if (Tools::isSubmit('changeModuleAccess')) {
             $perm = Tools::getValue('perm');
-            $enabled = (int) Tools::getValue('enabled');
-            $idModule = (int) Tools::getValue('id_module');
-            $idProfile = (int) Tools::getValue('id_profile');
+            $enabled = Tools::getIntValue('enabled');
+            $idModule = Tools::getIntValue('id_module');
+            $idProfile = Tools::getIntValue('id_profile');
 
             if (!in_array($perm, ['view', 'configure', 'uninstall'])) {
                 throw new PrestaShopException('permission does not exist');
@@ -371,7 +371,7 @@ class AdminAccessControllerCore extends AdminController
      */
     protected function saveAdminControllerPermissions()
     {
-        $profileId = (int)Tools::getValue('profileId');
+        $profileId = Tools::getIntValue('profileId');
         $controllerId = Tools::getValue('controllerId');
         $permissions = Tools::getValue('permissions');
         if ($profileId && $controllerId) {

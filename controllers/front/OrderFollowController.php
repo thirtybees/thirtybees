@@ -56,7 +56,7 @@ class OrderFollowControllerCore extends FrontController
             $orderQteInput = Tools::getValue('order_qte_input');
             $customizationIds = Tools::getValue('customization_ids');
 
-            if (!$idOrder = (int) Tools::getValue('id_order')) {
+            if (!$idOrder = Tools::getIntValue('id_order')) {
                 Tools::redirect('index.php?controller=history');
             }
             if (!$orderQteInput && !$customizationQtyInput && !$customizationIds) {
@@ -88,7 +88,7 @@ class OrderFollowControllerCore extends FrontController
                         [
                             'ids_order_detail' => $idsOrderDetail,
                             'order_qte_input'  => $orderQteInput,
-                            'id_order'         => Tools::getValue('id_order'),
+                            'id_order'         => $idOrder,
                         ]
                     )
                 );
@@ -128,7 +128,7 @@ class OrderFollowControllerCore extends FrontController
                     'errorMsg'         => true,
                     'ids_order_detail' => Tools::getValue('ids_order_detail', []),
                     'order_qte_input'  => Tools::getValue('order_qte_input', []),
-                    'id_order'         => (int) Tools::getValue('id_order'),
+                    'id_order'         => Tools::getIntValue('id_order'),
                 ]
             );
         } elseif (Tools::isSubmit('errorDetail1')) {

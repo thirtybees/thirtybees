@@ -63,14 +63,14 @@ class PdfOrderReturnControllerCore extends FrontController
      */
     public function postProcess()
     {
-        $fromAdmin = (Tools::getValue('adtoken') == Tools::getAdminToken('AdminReturn'.(int) Tab::getIdFromClassName('AdminReturn').(int) Tools::getValue('id_employee')));
+        $fromAdmin = (Tools::getValue('adtoken') == Tools::getAdminToken('AdminReturn'.(int) Tab::getIdFromClassName('AdminReturn').Tools::getIntValue('id_employee')));
 
         if (!$fromAdmin && !$this->context->customer->isLogged()) {
             Tools::redirect('index.php?controller=authentication&back=order-follow');
         }
 
-        if (Tools::getValue('id_order_return') && Validate::isUnsignedId(Tools::getValue('id_order_return'))) {
-            $this->orderReturn = new OrderReturn(Tools::getValue('id_order_return'));
+        if (Tools::getIntValue('id_order_return') && Validate::isUnsignedId(Tools::getIntValue('id_order_return'))) {
+            $this->orderReturn = new OrderReturn(Tools::getIntValue('id_order_return'));
         }
 
         if (!isset($this->orderReturn) || !Validate::isLoadedObject($this->orderReturn)) {

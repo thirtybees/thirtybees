@@ -89,7 +89,7 @@ class AddressControllerCore extends FrontController
                 $idAddress = (int) $this->context->cart->id_address_invoice;
             }
         } else {
-            $idAddress = (int) Tools::getValue('id_address', 0);
+            $idAddress = Tools::getIntValue('id_address', 0);
         }
 
         // Initialize address
@@ -170,7 +170,7 @@ class AddressControllerCore extends FrontController
                 'ajaxurl'            => _MODULE_DIR_,
                 'errors'             => $this->errors,
                 'token'              => Tools::getToken(false),
-                'select_address'     => (int) Tools::getValue('select_address'),
+                'select_address'     => Tools::getIntValue('select_address'),
                 'address'            => $this->_address,
                 'id_address'         => (Validate::isLoadedObject($this->_address)) ? $this->_address->id : 0,
             ]
@@ -258,12 +258,12 @@ class AddressControllerCore extends FrontController
         }
         // Check if the alias exists
         if (!$this->context->customer->is_guest && !empty($_POST['alias']) && (int) $this->context->customer->id > 0) {
-            $idAddress = Tools::getValue('id_address');
-            if (Configuration::get('PS_ORDER_PROCESS_TYPE') && (int) Tools::getValue('opc_id_address_'.Tools::getValue('type')) > 0) {
-                $idAddress = Tools::getValue('opc_id_address_'.Tools::getValue('type'));
+            $idAddress = Tools::getIntValue('id_address');
+            if (Configuration::get('PS_ORDER_PROCESS_TYPE') && Tools::getIntValue('opc_id_address_'.Tools::getValue('type')) > 0) {
+                $idAddress = Tools::getIntValue('opc_id_address_'.Tools::getValue('type'));
             }
 
-            if (Address::aliasExist(Tools::getValue('alias'), (int) $idAddress, (int) $this->context->customer->id)) {
+            if (Address::aliasExist(Tools::getValue('alias'), $idAddress, (int) $this->context->customer->id)) {
                 $this->errors[] = sprintf(Tools::displayError('The alias "%s" has already been used. Please select another one.'), Tools::safeOutput(Tools::getValue('alias')));
             }
         }

@@ -197,9 +197,9 @@ class AdminAddressesControllerCore extends AdminController
             ],
         ];
 
-        $this->fields_value['address_type'] = (int) Tools::getValue('address_type', 1);
+        $this->fields_value['address_type'] = Tools::getIntValue('address_type', 1);
 
-        $idCustomer = (int) Tools::getValue('id_customer');
+        $idCustomer = Tools::getIntValue('id_customer');
         if (!$idCustomer && Validate::isLoadedObject($this->object)) {
             $idCustomer = $this->object->id_customer;
         }
@@ -377,7 +377,7 @@ class AdminAddressesControllerCore extends AdminController
      */
     protected function processAddressFormat()
     {
-        $tmpAddr = new Address((int) Tools::getValue('id_address'));
+        $tmpAddr = new Address(Tools::getIntValue('id_address'));
 
         $selectedCountry = $tmpAddr->id_country
             ? (int)$tmpAddr->id_country
@@ -434,7 +434,7 @@ class AdminAddressesControllerCore extends AdminController
             } else {
                 $this->errors[] = Tools::displayError('This email address is not registered.');
             }
-        } elseif ($idCustomer = Tools::getValue('id_customer')) {
+        } elseif ($idCustomer = Tools::getIntValue('id_customer')) {
             $customer = new Customer((int) $idCustomer);
             if (Validate::isLoadedObject($customer)) {
                 $_POST['id_customer'] = $customer->id;
@@ -444,13 +444,13 @@ class AdminAddressesControllerCore extends AdminController
         } else {
             $this->errors[] = Tools::displayError('This email address is not valid. Please use an address like bob@example.com.');
         }
-        if (Country::isNeedDniByCountryId(Tools::getValue('id_country')) && !Tools::getValue('dni')) {
+        if (Country::isNeedDniByCountryId(Tools::getIntValue('id_country')) && !Tools::getValue('dni')) {
             $this->errors[] = Tools::displayError('The identification number is incorrect or has already been used.');
         }
 
         /* If the selected country does not contain states */
-        $idState = (int) Tools::getValue('id_state');
-        $idCountry = (int) Tools::getValue('id_country');
+        $idState = Tools::getIntValue('id_state');
+        $idCountry = Tools::getIntValue('id_country');
         $country = new Country((int) $idCountry);
         if (!(int) $country->contains_states && $idState) {
             $this->errors[] = Tools::displayError('You have selected a state for a country that does not contain states.');
@@ -477,7 +477,7 @@ class AdminAddressesControllerCore extends AdminController
 
         /* If this address come from order's edition and is the same as the other one (invoice or delivery one)
         ** we delete its id_address to force the creation of a new one */
-        if ((int) Tools::getValue('id_order')) {
+        if (Tools::getIntValue('id_order')) {
             $this->_redirect = false;
             if (isset($_POST['address_type'])) {
                 $_POST['id_address'] = '';
@@ -498,9 +498,9 @@ class AdminAddressesControllerCore extends AdminController
         }
 
         /* Reassignation of the order's new (invoice or delivery) address */
-        $addressType = (int) Tools::getValue('address_type') == 2 ? 'invoice' : 'delivery';
+        $addressType = Tools::getIntValue('address_type') === 2 ? 'invoice' : 'delivery';
 
-        if ($this->action == 'save' && ($idOrder = (int) Tools::getValue('id_order')) && !count($this->errors) && !empty($addressType)) {
+        if ($this->action == 'save' && ($idOrder = Tools::getIntValue('id_order')) && !count($this->errors) && !empty($addressType)) {
             if (!Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'orders SET `id_address_'.bqSQL($addressType).'` = '.(int) $this->object->id.' WHERE `id_order` = '.(int) $idOrder)) {
                 $this->errors[] = Tools::displayError('An error occurred while linking this address to its order.');
             } else {

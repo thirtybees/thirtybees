@@ -66,7 +66,7 @@ class ManufacturerControllerCore extends FrontController
     {
         parent::init();
 
-        if ($idManufacturer = Tools::getValue('id_manufacturer')) {
+        if ($idManufacturer = Tools::getIntValue('id_manufacturer')) {
             $this->manufacturer = new Manufacturer((int) $idManufacturer, $this->context->language->id);
             if (!Validate::isLoadedObject($this->manufacturer) || !$this->manufacturer->active || !$this->manufacturer->isAssociatedToShop()) {
                 header('HTTP/1.1 404 Not Found');

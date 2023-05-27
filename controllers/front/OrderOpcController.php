@@ -59,8 +59,8 @@ class OrderOpcControllerCore extends ParentOrderController
             $this->context->smarty->assign('virtual_cart', $this->context->cart->isVirtualCart());
         }
 
-        $this->context->smarty->assign('is_multi_address_delivery', $this->context->cart->isMultiAddressDelivery() || ((int) Tools::getValue('multi-shipping') == 1));
-        $this->context->smarty->assign('open_multishipping_fancybox', (int) Tools::getValue('multi-shipping') == 1);
+        $this->context->smarty->assign('is_multi_address_delivery', $this->context->cart->isMultiAddressDelivery() || (Tools::getIntValue('multi-shipping') == 1));
+        $this->context->smarty->assign('open_multishipping_fancybox', Tools::getIntValue('multi-shipping') == 1);
 
         if ($this->context->cart->nbProducts()) {
             if (Tools::isSubmit('ajax')) {
@@ -105,7 +105,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
                         case 'updateTOSStatusAndGetPayments':
                             if (Tools::isSubmit('checked')) {
-                                $this->context->cookie->checkedTOS = (int) Tools::getValue('checked');
+                                $this->context->cookie->checkedTOS = Tools::getIntValue('checked');
                                 $this->ajaxDie(
                                     json_encode(
                                         [
@@ -128,7 +128,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
 
                             if (Tools::getValue('years')) {
-                                $this->context->customer->birthday = (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days');
+                                $this->context->customer->birthday = Tools::getIntValue('years').'-'.Tools::getIntValue('months').'-'.Tools::getIntValue('days');
                             }
 
                             $_POST['lastname'] = $_POST['customer_lastname'];
@@ -220,18 +220,18 @@ class OrderOpcControllerCore extends ParentOrderController
 
                         case 'updateAddressesSelected':
                             if ($this->context->customer->isLogged(true)) {
-                                $addressDelivery = new Address((int) Tools::getValue('id_address_delivery'));
+                                $addressDelivery = new Address(Tools::getIntValue('id_address_delivery'));
                                 $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
-                                $addressInvoice = ((int) Tools::getValue('id_address_delivery') == (int) Tools::getValue('id_address_invoice') ? $addressDelivery : new Address((int) Tools::getValue('id_address_invoice')));
+                                $addressInvoice = (Tools::getIntValue('id_address_delivery') == Tools::getIntValue('id_address_invoice') ? $addressDelivery : new Address(Tools::getIntValue('id_address_invoice')));
                                 if ($addressDelivery->id_customer != $this->context->customer->id || $addressInvoice->id_customer != $this->context->customer->id) {
                                     $this->errors[] = Tools::displayError('This address is not yours.');
-                                } elseif (!Address::isCountryActiveById((int) Tools::getValue('id_address_delivery'))) {
+                                } elseif (!Address::isCountryActiveById(Tools::getIntValue('id_address_delivery'))) {
                                     $this->errors[] = Tools::displayError('This address is not in a valid area.');
                                 } elseif (!Validate::isLoadedObject($addressDelivery) || !Validate::isLoadedObject($addressInvoice) || $addressInvoice->deleted || $addressDelivery->deleted) {
                                     $this->errors[] = Tools::displayError('This address is invalid.');
                                 } else {
-                                    $this->context->cart->id_address_delivery = (int) Tools::getValue('id_address_delivery');
-                                    $this->context->cart->id_address_invoice = Tools::isSubmit('same') ? $this->context->cart->id_address_delivery : (int) Tools::getValue('id_address_invoice');
+                                    $this->context->cart->id_address_delivery = Tools::getIntValue('id_address_delivery');
+                                    $this->context->cart->id_address_invoice = Tools::isSubmit('same') ? $this->context->cart->id_address_delivery : Tools::getIntValue('id_address_invoice');
                                     if (!$this->context->cart->update()) {
                                         $this->errors[] = Tools::displayError('An error occurred while updating your cart.');
                                     }
@@ -246,7 +246,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                     $cartRules = $this->context->cart->getCartRules();
                                     CartRule::autoRemoveFromCart($this->context);
                                     CartRule::autoAddToCart($this->context);
-                                    if ((int) Tools::getValue('allow_refresh')) {
+                                    if (Tools::getIntValue('allow_refresh')) {
                                         // If the cart rules has changed, we need to refresh the whole cart
                                         $cartRules2 = $this->context->cart->getCartRules();
                                         if (count($cartRules2) != count($cartRules)) {

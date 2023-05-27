@@ -59,10 +59,10 @@ class AdminShopControllerCore extends AdminController
         $this->className = 'Shop';
         $this->multishop_context = Shop::CONTEXT_ALL;
 
-        $this->id_shop_group = (int) Tools::getValue('id_shop_group');
+        $this->id_shop_group = Tools::getIntValue('id_shop_group');
 
         /* if $_GET['id_shop'] is transmitted, virtual url can be loaded in config.php, so we wether transmit shop_id in herfs */
-        if ($this->id_shop = (int) Tools::getValue('shop_id')) {
+        if ($this->id_shop = Tools::getIntValue('shop_id')) {
             $_GET['id_shop'] = $this->id_shop;
         }
 
@@ -267,7 +267,7 @@ class AdminShopControllerCore extends AdminController
 		';
         $this->_group = 'GROUP BY a.id_shop';
 
-        if ($idShopGroup = (int) Tools::getValue('id_shop_group')) {
+        if ($idShopGroup = Tools::getIntValue('id_shop_group')) {
             $this->_where = 'AND a.id_shop_group = '.$idShopGroup;
         }
 
@@ -284,13 +284,13 @@ class AdminShopControllerCore extends AdminController
     public function displayAjaxGetCategoriesFromRootCategory()
     {
         if (Tools::isSubmit('id_category')) {
-            $selectedCat = [(int) Tools::getValue('id_category')];
-            $children = Category::getChildren((int) Tools::getValue('id_category'), $this->context->language->id);
+            $selectedCat = [Tools::getIntValue('id_category')];
+            $children = Category::getChildren(Tools::getIntValue('id_category'), $this->context->language->id);
             foreach ($children as $child) {
                 $selectedCat[] = $child['id_category'];
             }
 
-            $helper = new HelperTreeCategories('categories-tree', null, (int) Tools::getValue('id_category'), null, false);
+            $helper = new HelperTreeCategories('categories-tree', null, Tools::getIntValue('id_category'), null, false);
             $this->content = $helper->setSelectedCategories($selectedCat)->setUseSearch(true)->setUseCheckBox(true)
                 ->render();
         }
@@ -308,12 +308,12 @@ class AdminShopControllerCore extends AdminController
     public function postProcess()
     {
         if (Tools::isSubmit('id_category_default')) {
-            $_POST['id_category'] = Tools::getValue('id_category_default');
+            $_POST['id_category'] = Tools::getIntValue('id_category_default');
         }
 
         if (Tools::isSubmit('submitAddshopAndStay') || Tools::isSubmit('submitAddshop')) {
-            $shopGroup = new ShopGroup((int) Tools::getValue('id_shop_group'));
-            if ($shopGroup->shopNameExists(Tools::getValue('name'), (int) Tools::getValue('id_shop'))) {
+            $shopGroup = new ShopGroup(Tools::getIntValue('id_shop_group'));
+            if ($shopGroup->shopNameExists(Tools::getValue('name'), Tools::getIntValue('id_shop'))) {
                 $this->errors[] = Tools::displayError('You cannot have two shops with the same name in the same group.');
             }
         }
@@ -493,15 +493,22 @@ class AdminShopControllerCore extends AdminController
         ];
 
         if (Tools::isSubmit('id_shop')) {
-            $shop = new Shop((int) Tools::getValue('id_shop'));
+            $shop = new Shop(Tools::getIntValue('id_shop'));
             $idRoot = $shop->id_category;
         } else {
             $idRoot = $categories[0]['id_category'];
         }
 
-        $idShop = (int) Tools::getValue('id_shop');
-        static::$currentIndex = static::$currentIndex.'&id_shop_group='.(int) (Tools::getValue('id_shop_group') ?
-                Tools::getValue('id_shop_group') : (isset($obj->id_shop_group) ? $obj->id_shop_group : Shop::getContextShopGroupID()));
+        $idShop = Tools::getIntValue('id_shop');
+        // determine Shop Group
+        if (Tools::getIntValue('id_shop_group')) {
+            $idShopGroup = Tools::getIntValue('id_shop_group');
+        } elseif (isset($obj->id_shop_group)) {
+            $idShopGroup = (int)$obj->id_shop_group;
+        } else {
+            $idShopGroup = (int)Shop::getContextShopGroupID();
+        }
+        static::$currentIndex = static::$currentIndex.'&id_shop_group='.$idShopGroup;
         $shop = new Shop($idShop);
         $selectedCat = Shop::getCategories($idShop);
 
@@ -542,7 +549,7 @@ class AdminShopControllerCore extends AdminController
         if (!isset($obj->id_theme)) {
             foreach ($themes as $theme) {
                 if (isset($theme->id)) {
-                    $idTheme = $theme->id;
+                    $idTheme = (int)$theme->id;
                     break;
                 }
             }
@@ -565,29 +572,18 @@ class AdminShopControllerCore extends AdminController
             $disabled = false;
         }
 
-
-        // determine Shop Group
-        if (Tools::getValue('id_shop_group')) {
-            $idShopGroup = Tools::getValue('id_shop_group');
-        } elseif (isset($obj->id_shop_group)) {
-            $idShopGroup = $obj->id_shop_group;
-        } else {
-            $idShopGroup = Shop::getContextShopGroupID();
-        }
-
         // determine Category ID
-        if (Tools::getValue('id_category')) {
-            $idCategory = Tools::getValue('id_category');
+        if (Tools::getIntValue('id_category')) {
+            $idCategory = Tools::getIntValue('id_category');
         } elseif (isset($obj->id_category)) {
-            $idCategory = $obj->id_category;
+            $idCategory = (int)$obj->id_category;
         } else {
-            $idCategory = Configuration::get('PS_HOME_CATEGORY');
+            $idCategory = (int)Configuration::get('PS_HOME_CATEGORY');
         }
-
 
         $this->fields_value = [
-            'id_shop_group'    => (int)$idShopGroup,
-            'id_category'      => (int)$idCategory,
+            'id_shop_group'    => $idShopGroup,
+            'id_category'      => $idCategory,
             'id_theme_checked' => (int)(isset($obj->id_theme) ? $obj->id_theme : $idTheme),
         ];
 
@@ -684,12 +680,12 @@ class AdminShopControllerCore extends AdminController
      */
     public function processAdd()
     {
-        if (!Tools::getValue('categoryBox') || !in_array(Tools::getValue('id_category'), Tools::getValue('categoryBox'))) {
+        if (!Tools::getValue('categoryBox') || !in_array(Tools::getIntValue('id_category'), Tools::getValue('categoryBox'))) {
             $this->errors[] = $this->l('You need to select at least the root category.');
         }
 
         if (Tools::isSubmit('id_category_default')) {
-            $_POST['id_category'] = (int) Tools::getValue('id_category_default');
+            $_POST['id_category'] = Tools::getIntValue('id_category_default');
         }
 
         /* Checking fields validity */
@@ -705,7 +701,7 @@ class AdminShopControllerCore extends AdminController
                     ' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
             } /* voluntary do affectation here */
             elseif (($_POST[$this->identifier] = $object->id) && $this->postImage($object->id) && !count($this->errors) && $this->_redirect) {
-                $parentId = (int) Tools::getValue('id_parent', 1);
+                $parentId = Tools::getIntValue('id_parent', 1);
                 $this->afterAdd($object);
                 $this->updateAssoShop($object->id);
                 // Save and stay on same form
@@ -756,7 +752,7 @@ class AdminShopControllerCore extends AdminController
         $importData = Tools::getValue('importData', []);
 
         // The root category should be at least imported
-        $newShop->copyShopData((int) Tools::getValue('importFromShop'), $importData);
+        $newShop->copyShopData(Tools::getIntValue('importFromShop'), $importData);
 
         // copy default data
         if (!Tools::getValue('useImportData') || (is_array($importData) && !isset($importData['group']))) {
@@ -821,7 +817,7 @@ class AdminShopControllerCore extends AdminController
         if (is_null($idRoot)) {
             $idRoot = Configuration::get('PS_ROOT_CATEGORY');
         }
-        $idShop = (int) Tools::getValue('id_shop');
+        $idShop = Tools::getIntValue('id_shop');
         $shop = new Shop($idShop);
         $selectedCat = Shop::getCategories($idShop);
         if (empty($selectedCat)) {
@@ -990,7 +986,7 @@ class AdminShopControllerCore extends AdminController
             $this->errors[] = $this->l('You need to select at least the root category.');
         }
         if (Tools::getValue('useImportData') && ($importData = Tools::getValue('importData')) && is_array($importData)) {
-            $newShop->copyShopData((int) Tools::getValue('importFromShop'), $importData);
+            $newShop->copyShopData(Tools::getIntValue('importFromShop'), $importData);
         }
 
         if (Tools::isSubmit('submitAddshopAndStay') || Tools::isSubmit('submitAddshop')) {

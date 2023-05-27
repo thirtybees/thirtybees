@@ -371,7 +371,7 @@ class AdminDashboardControllerCore extends AdminController
             'date_to'            => $this->context->employee->stats_date_to,
             'compare_from'       => $this->context->employee->stats_compare_from,
             'compare_to'         => $this->context->employee->stats_compare_to,
-            'extra'              => (int) Tools::getValue('extra'),
+            'extra'              => Tools::getIntValue('extra'),
         ];
 
         $this->ajaxDie(json_encode(Hook::getResponses('dashboardData', $params, $idModule)));
@@ -382,7 +382,7 @@ class AdminDashboardControllerCore extends AdminController
      */
     public function ajaxProcessSetSimulationMode()
     {
-        Configuration::updateValue('PS_DASHBOARD_SIMULATION', (int) Tools::getValue('PS_DASHBOARD_SIMULATION'));
+        Configuration::updateValue('PS_DASHBOARD_SIMULATION', Tools::getIntValue('PS_DASHBOARD_SIMULATION'));
         $this->ajaxDie('k'.Configuration::get('PS_DASHBOARD_SIMULATION').'k');
     }
 

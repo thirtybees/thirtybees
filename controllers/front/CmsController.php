@@ -71,9 +71,9 @@ class CmsControllerCore extends FrontController
      */
     public function init()
     {
-        if ($idCms = (int) Tools::getValue('id_cms')) {
+        if ($idCms = Tools::getIntValue('id_cms')) {
             $this->cms = new CMS($idCms, $this->context->language->id, $this->context->shop->id);
-        } elseif ($idCmsCategory = (int) Tools::getValue('id_cms_category')) {
+        } elseif ($idCmsCategory = Tools::getIntValue('id_cms_category')) {
             $this->cms_category = new CMSCategory($idCmsCategory, $this->context->language->id, $this->context->shop->id);
         }
 
@@ -89,7 +89,7 @@ class CmsControllerCore extends FrontController
 
         // assignCase (1 = CMS page, 2 = CMS category)
         if (Validate::isLoadedObject($this->cms)) {
-            $adtoken = Tools::getAdminToken('AdminCmsContent'.(int) Tab::getIdFromClassName('AdminCmsContent').(int) Tools::getValue('id_employee'));
+            $adtoken = Tools::getAdminToken('AdminCmsContent'.(int) Tab::getIdFromClassName('AdminCmsContent').Tools::getIntValue('id_employee'));
             if (!$this->cms->isAssociatedToShop() || !$this->cms->active && Tools::getValue('adtoken') != $adtoken) {
                 header('HTTP/1.1 404 Not Found');
                 header('Status: 404 Not Found');
@@ -164,7 +164,7 @@ class CmsControllerCore extends FrontController
             $this->context->smarty->assign(
                 [
                     'cms'          => $this->cms,
-                    'content_only' => (int) Tools::getValue('content_only'),
+                    'content_only' => Tools::getIntValue('content_only'),
                     'path'         => isset($path) ? $path : '',
                     'body_classes' => [$this->php_self.'-'.$this->cms->id, $this->php_self.'-'.$this->cms->link_rewrite],
                 ]

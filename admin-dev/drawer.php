@@ -42,8 +42,8 @@ $option = Tools::getValue('option');
 $layers = Tools::getValue('layers');
 $width = Tools::getValue('width');
 $height = Tools::getValue('height');
-$id_employee = Tools::getValue('id_employee');
-$id_lang = Tools::getValue('id_lang');
+$id_employee = Tools::getIntValue('id_employee');
+$id_lang = Tools::getIntValue('id_lang');
 
 if (!isset($cookie->id_employee) || !$cookie->id_employee || $cookie->id_employee != $id_employee) {
     throw new PrestaShopException(Tools::displayError("Employee not validated"));

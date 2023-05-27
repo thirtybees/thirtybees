@@ -669,7 +669,7 @@ class AdminLanguagesControllerCore extends AdminController
     {
         parent::afterImageUpload();
 
-        if (($idLang = (int) Tools::getValue('id_lang')) && isset($_FILES) && count($_FILES) && file_exists(_PS_LANG_IMG_DIR_.$idLang.'.jpg')) {
+        if (($idLang = Tools::getIntValue('id_lang')) && isset($_FILES) && count($_FILES) && file_exists(_PS_LANG_IMG_DIR_.$idLang.'.jpg')) {
             $currentFile = _PS_TMP_IMG_DIR_.'lang_mini_'.$idLang.'_'.$this->context->shop->id.'.jpg';
 
             if (file_exists($currentFile)) {

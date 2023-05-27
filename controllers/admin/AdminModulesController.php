@@ -451,7 +451,7 @@ class AdminModulesControllerCore extends AdminController
 
         ConfigurationKPI::updateValue('UPDATE_MODULES', count($upgradeAvailable));
 
-        if (count($upgradeAvailable) == 0 && (int) Tools::getValue('check') == 1) {
+        if (count($upgradeAvailable) == 0 && Tools::getIntValue('check') === 1) {
             $this->confirmations[] = $this->l('Everything is up-to-date');
         }
 
@@ -1244,7 +1244,7 @@ class AdminModulesControllerCore extends AdminController
                 if (!$module->getPermission('configure')) {
                     $this->errors[] = Tools::displayError('You do not have the permission to use this module.');
                 } else {
-                    $module->enableDevice((int) Tools::getValue('enable_device'));
+                    $module->enableDevice(Tools::getIntValue('enable_device'));
                     Tools::redirectAdmin($this->getCurrentUrl('enable_device'));
                 }
             } else {
@@ -1271,7 +1271,7 @@ class AdminModulesControllerCore extends AdminController
                 if (!$module->getPermission('configure')) {
                     $this->errors[] = Tools::displayError('You do not have the permission to use this module.');
                 } else {
-                    $module->disableDevice((int) Tools::getValue('disable_device'));
+                    $module->disableDevice(Tools::getIntValue('disable_device'));
                     Tools::redirectAdmin($this->getCurrentUrl('disable_device'));
                 }
             } else {

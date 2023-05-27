@@ -1146,7 +1146,7 @@ class AdminCustomersControllerCore extends AdminController
     public function processSave()
     {
         // Check that default group is selected
-        if (!is_array(Tools::getValue('groupBox')) || !in_array(Tools::getValue('id_default_group'), Tools::getValue('groupBox'))) {
+        if (!is_array(Tools::getValue('groupBox')) || !in_array(Tools::getIntValue('id_default_group'), Tools::getValue('groupBox'))) {
             $this->errors[] = Tools::displayError('A default customer group must be selected in group box.');
         }
 
@@ -1167,14 +1167,14 @@ class AdminCustomersControllerCore extends AdminController
      */
     public function processGuestToCustomer()
     {
-        $customer = new Customer((int) Tools::getValue('id_customer'));
+        $customer = new Customer(Tools::getIntValue('id_customer'));
         if (!Validate::isLoadedObject($customer)) {
             $this->errors[] = Tools::displayError('This customer does not exist.');
         }
         if (Customer::customerExists($customer->email)) {
             $this->errors[] = Tools::displayError('This customer already exists as a non-guest.');
-        } elseif ($customer->transformToCustomer(Tools::getValue('id_lang', $this->context->language->id))) {
-            if ($idOrder = (int) Tools::getValue('id_order')) {
+        } elseif ($customer->transformToCustomer(Tools::getIntValue('id_lang', (int)$this->context->language->id))) {
+            if ($idOrder = Tools::getIntValue('id_order')) {
                 Tools::redirectAdmin($this->context->link->getAdminLink('AdminOrders').'&id_order='.$idOrder.'&vieworder&conf=3');
             } else {
                 Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$customer->id.'&viewcustomer&conf=3&token='.$this->token);
@@ -1356,7 +1356,7 @@ class AdminCustomersControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $note = Tools::htmlentitiesDecodeUTF8(Tools::getValue('note'));
-            $customer = new Customer((int) Tools::getValue('id_customer'));
+            $customer = new Customer(Tools::getIntValue('id_customer'));
             if (!Validate::isLoadedObject($customer)) {
                 $this->ajaxDie('error:update');
             }

@@ -124,7 +124,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->toolbar_btn = [];
 
             // Get product id
-            $idProduct = (int) Tools::getValue('id_product');
+            $idProduct = Tools::getIntValue('id_product');
 
             // Load product attributes with sql override
             $this->table = 'product_attribute';
@@ -167,9 +167,9 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function renderList()
     {
-        $idProduct = (int) Tools::getValue('id_product');
+        $idProduct = Tools::getIntValue('id_product');
         if (!empty($idProduct)) {
-            $idProductAttribute = (int) Tools::getValue('id_product_attribute');
+            $idProductAttribute = Tools::getIntValue('id_product_attribute');
             $this->previousManagementStock($idProduct, $idProductAttribute);
         } else {
             // sets actions
@@ -286,7 +286,7 @@ class AdminStockManagementControllerCore extends AdminController
         $this->list_id = 'stock';
         $this->lang = false;
 
-        $idWarehouse = Tools::getValue('id_warehouse', -1);
+        $idWarehouse = Tools::getIntValue('id_warehouse', -1);
 
         $this->_select = 'w.id_currency, a.id_product as id, (a.price_te * a.physical_quantity) as valuation, w.name as warehouse';
         $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
@@ -296,8 +296,8 @@ class AdminStockManagementControllerCore extends AdminController
         $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
         $this->_where .= ' AND pl.id_lang = '.(int) $this->context->language->id.' AND pl.id_shop = p.id_shop_default';
 
-        if ($idWarehouse != -1) {
-            $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
+        if ($idWarehouse !== -1) {
+            $this->_where .= ' AND a.id_warehouse = '. $idWarehouse;
         }
 
         $this->_filter = '';
@@ -406,7 +406,7 @@ class AdminStockManagementControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitFilter') && Tools::getIsset('detailsproduct')) {
-            $idProduct = (int) Tools::getValue('id_product', 0);
+            $idProduct = Tools::getIntValue('id_product', 0);
             $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
             $redirect = static::$currentIndex.'&id_product='.$idProduct.'&detailsproduct&token='.$token;
             Tools::redirectAdmin($redirect);
@@ -415,13 +415,13 @@ class AdminStockManagementControllerCore extends AdminController
         // Global checks when add / remove / transfer product
         if ((Tools::isSubmit('addstock') || Tools::isSubmit('removestock') || Tools::isSubmit('transferstock')) && Tools::isSubmit('is_post')) {
             // get product ID
-            $idProduct = (int) Tools::getValue('id_product', 0);
+            $idProduct = Tools::getIntValue('id_product', 0);
             if ($idProduct <= 0) {
                 $this->errors[] = Tools::displayError('The selected product is not valid.');
             }
 
             // get product_attribute ID
-            $idProductAttribute = (int) Tools::getValue('id_product_attribute', 0);
+            $idProductAttribute = Tools::getIntValue('id_product_attribute', 0);
 
             // check the product hash
             $check = Tools::getValue('check', '');
@@ -445,14 +445,14 @@ class AdminStockManagementControllerCore extends AdminController
         // Global checks when add / remove product
         if ((Tools::isSubmit('addstock') || Tools::isSubmit('removestock')) && Tools::isSubmit('is_post')) {
             $stockAttributes = $this->getStockAttributes();
-            $idWarehouse = $stockAttributes['warehouse_id'];
+            $idWarehouse = (int)$stockAttributes['warehouse_id'];
 
             if ($idWarehouse <= 0 || !Warehouse::exists($idWarehouse)) {
                 $this->errors[] = Tools::displayError('The selected warehouse is not valid.');
             }
 
             // get stock movement reason id
-            $idStockMvtReason = (int) Tools::getValue('id_stock_mvt_reason', 0);
+            $idStockMvtReason = Tools::getIntValue('id_stock_mvt_reason', 0);
             if ($idStockMvtReason <= 0 || !StockMvtReason::exists($idStockMvtReason)) {
                 $this->errors[] = Tools::displayError('The reason is not valid.');
             }
@@ -470,7 +470,7 @@ class AdminStockManagementControllerCore extends AdminController
             $price = Tools::getValue('price', 0);
 
             // get product unit price currency id
-            $idCurrency = (int) Tools::getValue('id_currency', 0);
+            $idCurrency = Tools::getIntValue('id_currency', 0);
             if ($idCurrency <= 0 || (!($result = Currency::getCurrency($idCurrency)) || empty($result))) {
                 $this->errors[] = Tools::displayError('The selected currency is not valid.');
             }
@@ -568,7 +568,7 @@ class AdminStockManagementControllerCore extends AdminController
             $stockAttributes = $this->getStockAttributes();
 
             // get destination warehouse id
-            $idWarehouseTo = (int) Tools::getValue('id_warehouse_to', 0);
+            $idWarehouseTo = Tools::getIntValue('id_warehouse_to');
             if ($idWarehouseTo <= 0 || !Warehouse::exists($idWarehouseTo)) {
                 $this->errors[] = Tools::displayError('The destination warehouse is not valid.');
             }
@@ -619,11 +619,11 @@ class AdminStockManagementControllerCore extends AdminController
      */
     protected function getStockAttributes()
     {
-        $idProduct = (int) Tools::getValue('id_product', 0);
-        $idProductAttribute = (int) Tools::getValue('id_product_attribute', 0);
-        $idStock = (int) Tools::getValue('id_stock', 0);
+        $idProduct = Tools::getIntValue('id_product');
+        $idProductAttribute = Tools::getIntValue('id_product_attribute');
+        $idStock = Tools::getIntValue('id_stock');
         $stock = null;
-        $idWarehouse = Tools::getValue('id_warehouse', null);
+        $idWarehouse = Tools::getIntValue('id_warehouse');
         $warehouse = null;
 
         if ($idStock > 0) {
@@ -656,9 +656,9 @@ class AdminStockManagementControllerCore extends AdminController
     {
         parent::init();
 
-        $idProduct = (int) Tools::getValue('id_product');
+        $idProduct = Tools::getIntValue('id_product');
         if (!empty($idProduct)) {
-            $idProductAttribute = (int) Tools::getValue('id_product_attribute');
+            $idProductAttribute = Tools::getIntValue('id_product_attribute');
             $productName = Product::getProductName($idProduct, $idProductAttribute);
         }
 
@@ -859,8 +859,8 @@ class AdminStockManagementControllerCore extends AdminController
     public function renderForm()
     {
         // gets the product
-        $idProduct = (int) Tools::getValue('id_product');
-        $idProductAttribute = (int) Tools::getValue('id_product_attribute');
+        $idProduct = Tools::getIntValue('id_product');
+        $idProductAttribute = Tools::getIntValue('id_product_attribute');
 
         // gets warehouses
         $warehousesAdd = Warehouse::getWarehouses();
@@ -879,7 +879,7 @@ class AdminStockManagementControllerCore extends AdminController
                 break;
 
             case 'removestock':
-                $idStock = (int) Tools::getValue('id_stock');
+                $idStock = Tools::getIntValue('id_stock');
                 if (!empty($idStock)) {
                     $this->prepareRemoveStockForm($idStock);
                 } else {
@@ -888,7 +888,7 @@ class AdminStockManagementControllerCore extends AdminController
                 break;
 
             case 'transferstock':
-                $idStock = (int) Tools::getValue('id_stock');
+                $idStock = Tools::getIntValue('id_stock');
                 if (!empty($idStock)) {
                     $this->prepareTransferStockForm($warehousesAdd);
                 } else {

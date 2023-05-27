@@ -371,8 +371,9 @@ class AdminCurrenciesControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         }
-        if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency')
-            && Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))
+        if (Tools::isSubmit('submitAddcurrency') &&
+            !Tools::getIntValue('id_currency') &&
+            Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))
         ) {
             $this->errors[] = Tools::displayError('This currency already exists.');
         }
@@ -443,8 +444,8 @@ class AdminCurrenciesControllerCore extends AdminController
      */
     public function ajaxProcessUpdateFxService()
     {
-        $idModule = (int) Tools::getValue('idModule');
-        $idCurrency = (int) Tools::getValue('idCurrency');
+        $idModule = Tools::getIntValue('idModule');
+        $idCurrency = Tools::getIntValue('idCurrency');
 
         if ($idModule && $idCurrency) {
             CurrencyRateModule::setModule($idCurrency, $idModule);

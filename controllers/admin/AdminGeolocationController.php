@@ -130,9 +130,9 @@ class AdminGeolocationControllerCore extends AdminController
             } else {
                 Configuration::updateValue(
                     'PS_GEOLOCATION_BEHAVIOR',
-                    (!(int) Tools::getValue('PS_GEOLOCATION_BEHAVIOR') ? _PS_GEOLOCATION_NO_CATALOG_ : _PS_GEOLOCATION_NO_ORDER_)
+                    (!Tools::getIntValue('PS_GEOLOCATION_BEHAVIOR') ? _PS_GEOLOCATION_NO_CATALOG_ : _PS_GEOLOCATION_NO_ORDER_)
                 );
-                Configuration::updateValue('PS_GEOLOCATION_NA_BEHAVIOR', (int) Tools::getValue('PS_GEOLOCATION_NA_BEHAVIOR'));
+                Configuration::updateValue('PS_GEOLOCATION_NA_BEHAVIOR', Tools::getIntValue('PS_GEOLOCATION_NA_BEHAVIOR'));
                 Configuration::updateValue('PS_ALLOWED_COUNTRIES', implode(';', Tools::getValue('countries')));
             }
         }

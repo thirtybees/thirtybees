@@ -39,14 +39,14 @@ include_once(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 $module = Tools::getValue('module');
 $type = Tools::getValue('type');
 $option = Tools::getValue('option');
-$width = (int) (Tools::getValue('width', 600));
-$height = (int) (Tools::getValue('height', 920));
-$start = (int) (Tools::getValue('start', 0));
-$limit = (int) (Tools::getValue('limit', 40));
+$width = Tools::getIntValue('width', 600);
+$height = Tools::getIntValue('height', 920);
+$start = Tools::getIntValue('start', 0);
+$limit = Tools::getIntValue('limit', 40);
 $sort = Tools::getValue('sort', 0); // Should be a String. Default value is an Integer because we don't know what can be the name of the column to sort.
 $dir = Tools::getValue('dir', 0); // Should be a String : Either ASC or DESC
-$id_employee = (int) (Tools::getValue('id_employee'));
-$id_lang = (int) (Tools::getValue('id_lang'));
+$id_employee = Tools::getIntValue('id_employee');
+$id_lang = Tools::getIntValue('id_lang');
 
 
 if (!isset($cookie->id_employee) || !$cookie->id_employee || $cookie->id_employee != $id_employee) {

@@ -148,7 +148,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
      */
     public function postProcess()
     {
-        $this->product = new Product((int) Tools::getValue('id_product'));
+        $this->product = new Product(Tools::getIntValue('id_product'));
         $this->product->loadStockData();
         parent::postProcess();
     }
@@ -195,7 +195,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 // @since 1.5.0
                 if ($this->product->depends_on_stock == 0) {
                     $attributes = Product::getProductAttributesIds($this->product->id, true);
-                    $quantity = (int) Tools::getValue('quantity');
+                    $quantity = Tools::getIntValue('quantity');
                     foreach ($attributes as $attribute) {
                         if (Shop::getContext() == Shop::CONTEXT_ALL) {
                             $shopsList = Shop::getShops();
@@ -217,7 +217,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 SpecificPriceRule::enableAnyApplication();
                 SpecificPriceRule::applyAllRules([(int) $this->product->id]);
 
-                Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_product='.(int) Tools::getValue('id_product').'&updateproduct&key_tab=Combinations&conf=4');
+                Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_product='.Tools::getIntValue('id_product').'&updateproduct&key_tab=Combinations&conf=4');
             } else {
                 $this->errors[] = Tools::displayError('Unable to initialize these parameters. A combination is missing or an object cannot be loaded.');
             }
@@ -262,7 +262,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         }
 
         $attributeGroups = AttributeGroup::getAttributesGroups($this->context->language->id);
-        $this->product = new Product((int) Tools::getValue('id_product'));
+        $this->product = new Product(Tools::getIntValue('id_product'));
 
         $this->context->smarty->assign(
             [
@@ -271,7 +271,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'combinations_size'         => count($this->combinations),
                 'product_name'              => $this->product->name[$this->context->language->id] ?? '',
                 'product_reference'         => $this->product->reference,
-                'url_generator'             => static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&attributegenerator&token='.Tools::getValue('token'),
+                'url_generator'             => static::$currentIndex.'&id_product='.Tools::getIntValue('id_product').'&attributegenerator&token='.Tools::getValue('token'),
                 'attribute_groups'          => $attributeGroups,
                 'attribute_js'              => $attributeJs,
                 'toolbar_btn'               => $this->toolbar_btn,
@@ -292,7 +292,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
 
         $this->page_header_toolbar_title = $this->l('Attributes generator', null, null, false);
         $this->page_header_toolbar_btn['back'] = [
-            'href' => $this->context->link->getAdminLink('AdminProducts').'&id_product='.(int) Tools::getValue('id_product').'&updateproduct&key_tab=Combinations',
+            'href' => $this->context->link->getAdminLink('AdminProducts').'&id_product='.Tools::getIntValue('id_product').'&updateproduct&key_tab=Combinations',
             'desc' => $this->l('Back to the product', null, null, false),
         ];
     }
@@ -344,7 +344,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'price'          => $price,
                 'weight'         => $weight,
                 'ecotax'         => 0,
-                'quantity'       => (int) Tools::getValue('quantity'),
+                'quantity'       => Tools::getIntValue('quantity'),
                 'reference'      => pSQL($reference),
                 'default_on'     => 0,
                 'available_date' => '0000-00-00',

@@ -613,7 +613,7 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            $idBased = (int) Tools::getValue('based_on');
+            $idBased = Tools::getIntValue('based_on');
             if ($idBased) {
                 $baseTheme = new Theme($idBased);
                 Tools::recurseCopy(
@@ -689,17 +689,17 @@ class AdminThemesControllerCore extends AdminController
             $this->errors[] = Tools::displayError('You do not have permission to edit here.');
         } else {
             if (Tools::getIsset('id_theme') && Tools::getIsset('name') && Tools::getIsset('directory')) {
-                $theme = new Theme((int) Tools::getValue('id_theme'));
+                $theme = new Theme(Tools::getIntValue('id_theme'));
                 $theme->name = Tools::getValue('name');
                 $theme->directory = Tools::getValue('directory');
                 $theme->default_left_column = Tools::getValue('default_left_column');
                 $theme->default_right_column = Tools::getValue('default_right_column');
-                $nbProductPerPage = (int) Tools::getValue('product_per_page');
+                $nbProductPerPage = Tools::getIntValue('product_per_page');
                 if ($nbProductPerPage == 0) {
                     $nbProductPerPage = 1;
                 }
                 $theme->product_per_page = $nbProductPerPage;
-                if ($this->context->shop->id_theme == (int) Tools::getValue('id_theme')) {
+                if ($this->context->shop->id_theme == Tools::getIntValue('id_theme')) {
                     Configuration::updateValue('PS_PRODUCTS_PER_PAGE', $nbProductPerPage);
                 }
                 if (isset($_FILES['image_preview']) && $_FILES['image_preview']['error'] == 0) {
@@ -1955,7 +1955,7 @@ class AdminThemesControllerCore extends AdminController
         /**
          * Install the new theme.
          */
-        $theme = new Theme((int) Tools::getValue('id_theme'));
+        $theme = new Theme(Tools::getIntValue('id_theme'));
         $installationResult = $theme->installIntoShopContext();
         $this->img_error['ok'] = $installationResult['imageTypes'];
         $this->modules_errors = $installationResult['moduleErrors'];
@@ -2491,7 +2491,7 @@ class AdminThemesControllerCore extends AdminController
             return;
         }
 
-        $idTheme = (int) Tools::getValue('id_theme');
+        $idTheme = Tools::getIntValue('id_theme');
         if ($idTheme && $this->context->shop->id_theme != $idTheme) {
             $this->context->shop->id_theme = $idTheme;
             $this->context->shop->update();
@@ -2646,7 +2646,7 @@ class AdminThemesControllerCore extends AdminController
             [
                 'left_column' => ['type' => 'sql', 'value' => 'NOT `left_column`'],
             ],
-            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            '`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'),
             1
         );
 
@@ -2675,7 +2675,7 @@ class AdminThemesControllerCore extends AdminController
             [
                 'left_column' => ['type' => 'sql', 'value' => 'NOT `left_column`'],
             ],
-            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            '`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'),
             1
         );
 
@@ -2684,7 +2684,7 @@ class AdminThemesControllerCore extends AdminController
                 (new DbQuery())
                     ->select('`id_theme`')
                     ->from('theme_meta')
-                    ->where('`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'))
+                    ->where('`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'))
             );
 
             $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$idTheme.'&conf=5&token='.$this->token;
@@ -2708,7 +2708,7 @@ class AdminThemesControllerCore extends AdminController
             [
                 'right_column' => ['type' => 'sql', 'value' => 'NOT `right_column`'],
             ],
-            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            '`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'),
             1
         );
 
@@ -2737,7 +2737,7 @@ class AdminThemesControllerCore extends AdminController
             [
                 'right_column' => ['type' => 'sql', 'value' => 'NOT `right_column`'],
             ],
-            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            '`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'),
             1
         );
 
@@ -2746,7 +2746,7 @@ class AdminThemesControllerCore extends AdminController
                 (new DbQuery())
                     ->select('`id_theme`')
                     ->from('theme_meta')
-                    ->where('`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'))
+                    ->where('`id_theme_meta` = '.Tools::getIntValue('id_theme_meta'))
             );
 
             $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$idTheme.'&conf=5&token='.$this->token;

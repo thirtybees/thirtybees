@@ -115,7 +115,7 @@ class CategoryControllerCore extends FrontController
     public function init()
     {
         // Get category ID
-        $idCategory = (int) Tools::getValue('id_category');
+        $idCategory = Tools::getIntValue('id_category');
         if (!$idCategory || !Validate::isUnsignedId($idCategory)) {
             $this->errors[] = Tools::displayError('Missing category ID');
         }

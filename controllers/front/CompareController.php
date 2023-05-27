@@ -61,8 +61,8 @@ class CompareControllerCore extends FrontController
     public function displayAjax()
     {
         // Add or remove product with Ajax
-        if (Tools::getValue('ajax') && Tools::getValue('id_product') && Tools::getValue('action')) {
-            $productId = (int)Tools::getValue('id_product');
+        if (Tools::getValue('ajax') && Tools::getIntValue('id_product') && Tools::getValue('action')) {
+            $productId = Tools::getIntValue('id_product');
             if (Tools::getValue('action') == 'add') {
                 $idCompare = $this->context->cookie->id_compare ?? false;
                 if (CompareProduct::getNumberProducts($idCompare) < Configuration::get('PS_COMPARATOR_MAX_ITEM')) {

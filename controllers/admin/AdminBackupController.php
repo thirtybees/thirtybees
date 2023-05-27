@@ -298,7 +298,7 @@ class AdminBackupControllerCore extends AdminController
                 ? $this->context->cookie->{$this->table.'_pagination'}
                 : $this->_pagination[0];
         }
-        $limit = (int) Tools::getValue('pagination', $limit);
+        $limit = Tools::getIntValue('pagination', $limit);
         $this->context->cookie->{$this->table.'_pagination'} = $limit;
 
         /* Determine offset from current page */

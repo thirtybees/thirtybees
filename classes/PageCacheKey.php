@@ -205,7 +205,7 @@ class PageCacheKeyCore
             $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
         }
 
-        $entityId = (int) Tools::getValue('id_'.$entityType);
+        $entityId = Tools::getIntValue('id_'.$entityType);
 
         return new PageCacheKey(
             $entityType,

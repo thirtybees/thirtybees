@@ -80,10 +80,10 @@ class SearchControllerCore extends FrontController
         $originalQuery = Tools::getValue('q');
         $query = Tools::replaceAccentedChars(urldecode($originalQuery));
         if ($this->ajax_search) {
-            $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
+            $searchResults = Search::find(Tools::getIntValue('id_lang'), $query, 1, 10, 'position', 'desc', true);
 
             if (! $searchResults && Configuration::get('TB_SEARCH_SIMILAR')) {
-                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
+                $searchResults = Search::find(Tools::getIntValue('id_lang'), self::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
             }
 
             if (is_array($searchResults)) {
@@ -98,12 +98,14 @@ class SearchControllerCore extends FrontController
         //Only controller content initialization when the user use the normal search
         parent::initContent();
 
-        $productPerPage = isset($this->context->cookie->nb_item_per_page) ? (int) $this->context->cookie->nb_item_per_page : Configuration::get('PS_PRODUCTS_PER_PAGE');
+        $productPerPage = isset($this->context->cookie->nb_item_per_page)
+            ? (int) $this->context->cookie->nb_item_per_page
+            : (int) Configuration::get('PS_PRODUCTS_PER_PAGE');
 
         if ($this->instant_search && !is_array($query)) {
             $this->productSort();
-            $this->n = abs((int) (Tools::getValue('n', $productPerPage)));
-            $this->p = abs((int) (Tools::getValue('p', 1)));
+            $this->n = abs(Tools::getIntValue('n', $productPerPage));
+            $this->p = abs(Tools::getIntValue('p', 1));
             $search = Search::find($this->context->language->id, $query, 1, 10, 'position', 'desc');
             Hook::triggerEvent('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
@@ -123,8 +125,8 @@ class SearchControllerCore extends FrontController
             );
         } elseif (($query = Tools::getValue('search_query', Tools::getValue('ref'))) && !is_array($query)) {
             $this->productSort();
-            $this->n = abs((int) (Tools::getValue('n', $productPerPage)));
-            $this->p = abs((int) (Tools::getValue('p', 1)));
+            $this->n = abs(Tools::getIntValue('n', $productPerPage));
+            $this->p = abs(Tools::getIntValue('p', 1));
             $originalQuery = $query;
             $query = Tools::replaceAccentedChars(urldecode($query));
             $search = Search::find($this->context->language->id, $query, $this->p, $this->n, $this->orderBy, $this->orderWay);

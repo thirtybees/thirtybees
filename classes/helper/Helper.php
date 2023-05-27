@@ -194,7 +194,7 @@ class HelperCore
         ];
 
         if (Tools::isSubmit('id_shop')) {
-            $idShop = Tools::getValue('id_shop');
+            $idShop = Tools::getIntValue('id_shop');
         } elseif (Context::getContext()->shop->id) {
             $idShop = Context::getContext()->shop->id;
         } elseif (!Shop::isFeatureActive()) {

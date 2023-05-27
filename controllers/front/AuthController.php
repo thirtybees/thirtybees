@@ -203,11 +203,11 @@ class AuthControllerCore extends FrontController
      */
     protected function assignDate()
     {
-        $selectedYears = (int) (Tools::getValue('years', 0));
+        $selectedYears = Tools::getIntValue('years', 0);
         $years = Tools::dateYears();
-        $selectedMonths = (int) (Tools::getValue('months', 0));
+        $selectedMonths = Tools::getIntValue('months', 0);
         $months = Tools::dateMonths();
-        $selectedDays = (int) (Tools::getValue('days', 0));
+        $selectedDays = Tools::getIntValue('days', 0);
         $days = Tools::dateDays();
 
         $this->context->smarty->assign(
@@ -551,7 +551,7 @@ class AuthControllerCore extends FrontController
 
                         // redirection: if cart is not empty : redirection to the cart
                         if (count($this->context->cart->getProducts(true)) > 0) {
-                            $multi = (int) Tools::getValue('multi-shipping');
+                            $multi = Tools::getIntValue('multi-shipping');
                             Tools::redirect('index.php?controller=order'.($multi ? '&multi-shipping='.$multi : ''));
                         } else {
                             // else : redirection to the account
@@ -732,7 +732,7 @@ class AuthControllerCore extends FrontController
 
                         // redirection: if cart is not empty : redirection to the cart
                         if (count($this->context->cart->getProducts(true)) > 0) {
-                            Tools::redirect('index.php?controller=order'.(($multi = (int) Tools::getValue('multi-shipping')) ? '&multi-shipping='.$multi : ''));
+                            Tools::redirect('index.php?controller=order'.(($multi = Tools::getIntValue('multi-shipping')) ? '&multi-shipping='.$multi : ''));
                         } else {
                             // else : redirection to the account
                             Tools::redirect('index.php?controller='.(($this->authRedirection !== false) ? urlencode($this->authRedirection) : 'my-account'));

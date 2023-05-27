@@ -1838,7 +1838,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         $front = in_array($context->controller->controller_type, ['front', 'modulefront']);
-        $idSupplier = (int) Tools::getValue('id_supplier');
+        $idSupplier = Tools::getIntValue('id_supplier');
 
         $subcats = $this->getAllSubcategories();
         $catsToSearchIn = [$this->id];
@@ -2172,7 +2172,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 }
                 $rootCategory = Category::getRootCategory();
                 if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP
-                    && (!Tools::isSubmit('id_category') || (int) Tools::getValue('id_category') == (int) $rootCategory->id || (int) $rootCategory->id == (int) $context->shop->id_category)
+                    && (!Tools::isSubmit('id_category') || Tools::getIntValue('id_category') === (int) $rootCategory->id || (int)$rootCategory->id === (int)$context->shop->id_category)
                 ) {
                     $sql->where('c.`id_parent` != 0');
                 }

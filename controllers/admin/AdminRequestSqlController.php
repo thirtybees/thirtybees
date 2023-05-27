@@ -366,9 +366,9 @@ class AdminRequestSqlControllerCore extends AdminController
      */
     public function initToolbar()
     {
-        if ($this->display == 'view' && $idRequest = Tools::getValue('id_request_sql')) {
+        if ($this->display == 'view' && $idRequest = Tools::getIntValue('id_request_sql')) {
             $this->toolbar_btn['edit'] = [
-                'href' => static::$currentIndex.'&amp;updaterequest_sql&amp;token='.$this->token.'&amp;id_request_sql='.(int) $idRequest,
+                'href' => static::$currentIndex.'&amp;updaterequest_sql&amp;token='.$this->token.'&amp;id_request_sql='.$idRequest,
                 'desc' => $this->l('Edit this SQL query'),
             ];
         }

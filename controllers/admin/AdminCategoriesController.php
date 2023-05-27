@@ -155,7 +155,7 @@ class AdminCategoriesControllerCore extends AdminController
         parent::init();
 
         // context->shop is set in the init() function, so we move the _category instanciation after that
-        if (($idCategory = Tools::getvalue('id_category')) && $this->action != 'select_delete') {
+        if (($idCategory = Tools::getIntValue('id_category')) && $this->action != 'select_delete') {
             $this->_category = new Category($idCategory);
         } else {
             if (count(Category::getCategoriesWithoutParent()) > 1) {
@@ -206,7 +206,7 @@ class AdminCategoriesControllerCore extends AdminController
                 ];
             }
 
-            $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.(int) Tools::getValue('id_category') : '';
+            $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.Tools::getIntValue('id_category') : '';
             $this->page_header_toolbar_btn['new_category'] = [
                 'href' => static::$currentIndex.'&addcategory&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add new category', null, null, false),
@@ -322,16 +322,16 @@ class AdminCategoriesControllerCore extends AdminController
                 'desc' => $this->l('Edit'),
             ];
         }
-        if (Tools::getValue('id_category') && !Tools::isSubmit('updatecategory')) {
+        if (Tools::getIntValue('id_category') && !Tools::isSubmit('updatecategory')) {
             $this->toolbar_btn['edit'] = [
-                'href' => static::$currentIndex.'&update'.$this->table.'&id_category='.(int) Tools::getValue('id_category').'&token='.$this->token,
+                'href' => static::$currentIndex.'&update'.$this->table.'&id_category='.Tools::getIntValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Edit'),
             ];
         }
 
         if ($this->display == 'view') {
             $this->toolbar_btn['new'] = [
-                'href' => static::$currentIndex.'&add'.$this->table.'&id_parent='.(int) Tools::getValue('id_category').'&token='.$this->token,
+                'href' => static::$currentIndex.'&add'.$this->table.'&id_parent='.Tools::getIntValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Add New'),
             ];
         }
@@ -341,7 +341,7 @@ class AdminCategoriesControllerCore extends AdminController
         }
         // after adding a category
         if (empty($this->display)) {
-            $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.(int) Tools::getValue('id_category') : '';
+            $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.Tools::getIntValue('id_category') : '';
             $this->toolbar_btn['new'] = [
                 'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add New'),
@@ -399,7 +399,7 @@ class AdminCategoriesControllerCore extends AdminController
         $this->tpl_list_vars['categories_tree_current_id'] = $this->_category->id;
 
         if (Tools::isSubmit('submitBulkdelete'.$this->table) || Tools::isSubmit('delete'.$this->table)) {
-            $category = new Category(Tools::getValue('id_category'));
+            $category = new Category(Tools::getIntValue('id_category'));
             if ($category->is_root_category) {
                 $this->tpl_list_vars['need_delete_mode'] = false;
             } else {
@@ -534,7 +534,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         $context = $this->context;
         $idShop = $context->shop->id;
-        $selectedCategories = [(isset($obj->id_parent) && $obj->isParentCategoryAvailable($idShop)) ? (int) $obj->id_parent : (int) Tools::getValue('id_parent', Category::getRootCategory()->id)];
+        $selectedCategories = [(isset($obj->id_parent) && $obj->isParentCategoryAvailable($idShop)) ? (int) $obj->id_parent : Tools::getIntValue('id_parent', Category::getRootCategory()->id)];
         $unidentified = new Group(Configuration::get('PS_UNIDENTIFIED_GROUP'));
         $guest = new Group(Configuration::get('PS_GUEST_GROUP'));
         $default = new Group(Configuration::get('PS_CUSTOMER_GROUP'));
@@ -877,8 +877,8 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function processAdd()
     {
-        $idCategory = (int) Tools::getValue('id_category');
-        $idParent = (int) Tools::getValue('id_parent');
+        $idCategory = Tools::getIntValue('id_category');
+        $idParent = Tools::getIntValue('id_parent');
 
         // if true, we are in a root category creation
         if (!$idParent) {
@@ -939,14 +939,14 @@ class AdminCategoriesControllerCore extends AdminController
     {
         if (!$this->hasEditPermission()) {
             $this->errors[] = Tools::displayError('You do not have permission to edit this.');
-        } elseif (!Validate::isLoadedObject($object = new Category((int) Tools::getValue($this->identifier, Tools::getValue('id_category_to_move', 1))))) {
+        } elseif (!Validate::isLoadedObject($object = new Category(Tools::getIntValue($this->identifier, Tools::getIntValue('id_category_to_move', 1))))) {
             $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
         }
-        if (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
+        if (!$object->updatePosition(Tools::getIntValue('way'), Tools::getIntValue('position'))) {
             $this->errors[] = Tools::displayError('Failed to update the position.');
         } else {
             $object->regenerateEntireNtree();
-            Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_category = (int) Tools::getValue($this->identifier, Tools::getValue('id_category_parent', 1))) ? ('&'.$this->identifier.'='.$id_category) : '').'&token='.Tools::getAdminTokenLite('AdminCategories'));
+            Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_category = Tools::getIntValue($this->identifier, Tools::getIntValue('id_category_parent', 1))) ? ('&'.$this->identifier.'='.$id_category) : '').'&token='.Tools::getAdminTokenLite('AdminCategories'));
         }
     }
 
@@ -955,9 +955,9 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function ajaxProcessUpdatePositions()
     {
-        $idCategoryToMove = (int) Tools::getValue('id_category_to_move');
-        $idCategoryParent = (int) Tools::getValue('id_category_parent');
-        $way = (int) Tools::getValue('way');
+        $idCategoryToMove = Tools::getIntValue('id_category_to_move');
+        $idCategoryParent = Tools::getIntValue('id_category_parent');
+        $way = Tools::getIntValue('way');
         $positions = Tools::getValue('category');
         $foundFirst = (bool) Tools::getValue('found_first');
         if (is_array($positions)) {
@@ -992,7 +992,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function ajaxProcessStatusCategory()
     {
-        if (!$idCategory = (int) Tools::getValue('id_category')) {
+        if (!$idCategory = Tools::getIntValue('id_category')) {
             $this->ajaxDie(json_encode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
         } else {
             $category = new Category((int) $idCategory);
@@ -1128,7 +1128,7 @@ class AdminCategoriesControllerCore extends AdminController
     protected function postImage($id)
     {
         $ret = parent::postImage($id);
-        if (($idCategory = (int) Tools::getValue('id_category')) && isset($_FILES) && count($_FILES)) {
+        if (($idCategory = Tools::getIntValue('id_category')) && isset($_FILES) && count($_FILES)) {
             $name = 'image';
             if ($_FILES[$name]['name'] != null && file_exists(_PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType)) {
                 try {

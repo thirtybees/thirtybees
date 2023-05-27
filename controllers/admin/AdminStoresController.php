@@ -566,8 +566,8 @@ class AdminStoresControllerCore extends AdminController
             $_POST['longitude'] = number_format((float) $_POST['longitude'], 8);
 
             /* If the selected country does not contain states */
-            $idState = (int) Tools::getValue('id_state');
-            $idCountry = (int) Tools::getValue('id_country');
+            $idState = Tools::getIntValue('id_state');
+            $idCountry = Tools::getIntValue('id_country');
             $country = new Country((int) $idCountry);
 
             if (!$country->contains_states && $idState) {
@@ -623,8 +623,8 @@ class AdminStoresControllerCore extends AdminController
     {
         if (isset($_POST['PS_SHOP_STATE_ID']) && $_POST['PS_SHOP_STATE_ID'] != '0') {
             $sql = 'SELECT `active` FROM `'._DB_PREFIX_.'state`
-					WHERE `id_country` = '.(int) Tools::getValue('PS_SHOP_COUNTRY_ID').'
-						AND `id_state` = '.(int) Tools::getValue('PS_SHOP_STATE_ID');
+					WHERE `id_country` = '.Tools::getIntValue('PS_SHOP_COUNTRY_ID').'
+						AND `id_state` = '.Tools::getIntValue('PS_SHOP_STATE_ID');
             $isStateOk = Db::getInstance()->getValue($sql);
             if ($isStateOk != 1) {
                 $this->errors[] = Tools::displayError('The specified state is not located in this country.');
@@ -682,7 +682,7 @@ class AdminStoresControllerCore extends AdminController
     {
         $ret = parent::postImage($id);
 
-        if (($idStore = (int) Tools::getValue('id_store')) && isset($_FILES) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
+        if (($idStore = Tools::getIntValue('id_store')) && isset($_FILES) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
             $imageTypes = ImageType::getImagesTypes('stores');
             foreach ($imageTypes as $k => $imageType) {
                 ImageManager::resize(

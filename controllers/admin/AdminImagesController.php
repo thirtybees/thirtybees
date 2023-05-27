@@ -439,14 +439,14 @@ class AdminImagesControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('submitOptions'.$this->table)) {
             if ($this->hasEditPermission()) {
-                if ((int) Tools::getValue('PS_JPEG_QUALITY') < 0
-                    || (int) Tools::getValue('PS_JPEG_QUALITY') > 100
+                if (Tools::getIntValue('PS_JPEG_QUALITY') < 0
+                    || Tools::getIntValue('PS_JPEG_QUALITY') > 100
                 ) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected JPEG image compression.');
-                } elseif (((int) Tools::getValue('TB_WEBP_QUALITY') < 0 || (int) Tools::getValue('TB_WEBP_QUALITY') > 100)) {
+                } elseif ((Tools::getIntValue('TB_WEBP_QUALITY') < 0 || Tools::getIntValue('TB_WEBP_QUALITY') > 100)) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected WEBP image compression.');
-                } elseif ((int) Tools::getValue('PS_PNG_QUALITY') < 0
-                    || (int) Tools::getValue('PS_PNG_QUALITY') > 9
+                } elseif (Tools::getIntValue('PS_PNG_QUALITY') < 0
+                    || Tools::getIntValue('PS_PNG_QUALITY') > 9
                 ) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected PNG image compression.');
                 } elseif (!Configuration::updateValue('PS_IMAGE_QUALITY', Tools::getValue('PS_IMAGE_QUALITY'))
@@ -1227,7 +1227,10 @@ class AdminImagesControllerCore extends AdminController
      */
     protected function _childValidation()
     {
-        if (!Tools::getValue('id_image_type') && Validate::isImageTypeName($typeName = Tools::getValue('name')) && ImageType::typeAlreadyExists($typeName)) {
+        if (!Tools::getIntValue('id_image_type') &&
+            Validate::isImageTypeName($typeName = Tools::getValue('name')) &&
+            ImageType::typeAlreadyExists($typeName)
+        ) {
             $this->errors[] = Tools::displayError('This name already exists.');
         }
     }

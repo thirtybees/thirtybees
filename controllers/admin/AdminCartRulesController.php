@@ -73,10 +73,10 @@ class AdminCartRulesControllerCore extends AdminController
      */
     public function ajaxProcessLoadCartRules()
     {
-        $type = $token = $search = '';
+        $type = $search = '';
         $limit = $count = $idCartRule = 0;
         if (Tools::getIsset('limit')) {
-            $limit = Tools::getValue('limit');
+            $limit = Tools::getIntValue('limit');
         }
 
         if (Tools::getIsset('type')) {
@@ -84,11 +84,11 @@ class AdminCartRulesControllerCore extends AdminController
         }
 
         if (Tools::getIsset('count')) {
-            $count = Tools::getValue('count');
+            $count = Tools::getIntValue('count');
         }
 
         if (Tools::getIsset('id_cart_rule')) {
-            $idCartRule = Tools::getValue('id_cart_rule');
+            $idCartRule = Tools::getIntValue('id_cart_rule');
         }
 
         if (Tools::getIsset('search')) {
@@ -100,8 +100,8 @@ class AdminCartRulesControllerCore extends AdminController
         $html = '';
         $nextLink = '';
 
-        if (($page * $limit) + 1 == $count || $count == 0) {
-            if ($count == 0) {
+        if (($page * $limit) + 1 == $count || $count === 0) {
+            if ($count === 0) {
                 $count = 1;
             }
 
@@ -120,7 +120,7 @@ class AdminCartRulesControllerCore extends AdminController
                         $i++;
                     }
                     if ($i == $limit) {
-                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . (int)$idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=selected&count=' . ($count - 1 + count($cartRules['selected']) . '&search=' . urlencode($search));
+                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . $idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=selected&count=' . ($count - 1 + count($cartRules['selected']) . '&search=' . urlencode($search));
                     }
                 } else {
                     $i = 1;
@@ -132,7 +132,7 @@ class AdminCartRulesControllerCore extends AdminController
                         $i++;
                     }
                     if ($i == $limit) {
-                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . (int)$idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=unselected&count=' . ($count - 1 + count($cartRules['unselected']) . '&search=' . urlencode($search));
+                        $nextLink = $this->context->link->getAdminLink('AdminCartRules') . '&ajaxMode=1&ajax=1&id_cart_rule=' . $idCartRule . '&action=loadCartRules&limit=' . (int)$limit . '&type=unselected&count=' . ($count - 1 + count($cartRules['unselected']) . '&search=' . urlencode($search));
                     }
                 }
             }
@@ -176,8 +176,8 @@ class AdminCartRulesControllerCore extends AdminController
     {
         if (Tools::isSubmit('submitAddcart_rule') || Tools::isSubmit('submitAddcart_ruleAndStay')) {
             // If the reduction is associated to a specific product, then it must be part of the product restrictions
-            if ((int) Tools::getValue('reduction_product') && Tools::getValue('apply_discount_to') == 'specific' && Tools::getValue('apply_discount') != 'off') {
-                $reductionProduct = (int) Tools::getValue('reduction_product');
+            if (Tools::getIntValue('reduction_product') && Tools::getValue('apply_discount_to') == 'specific' && Tools::getValue('apply_discount') != 'off') {
+                $reductionProduct = Tools::getIntValue('reduction_product');
 
                 // First, check if it is not already part of the restrictions
                 $alreadyRestricted = false;
@@ -229,32 +229,32 @@ class AdminCartRulesControllerCore extends AdminController
             }
 
             // Remove the gift if the radio button is set to "no"
-            if (!(int) Tools::getValue('free_gift')) {
+            if (!Tools::getIntValue('free_gift')) {
                 $_POST['gift_product'] = 0;
             }
 
             // Retrieve the product attribute id of the gift (if available)
-            if ($idProduct = (int) Tools::getValue('gift_product')) {
-                $_POST['gift_product_attribute'] = (int) Tools::getValue('ipa_'.$idProduct);
+            if ($idProduct = Tools::getIntValue('gift_product')) {
+                $_POST['gift_product_attribute'] = Tools::getIntValue('ipa_'.$idProduct);
             }
 
             // Idiot-proof control
             if (strtotime(Tools::getValue('date_from')) > strtotime(Tools::getValue('date_to'))) {
                 $this->errors[] = Tools::displayError('The voucher cannot end before it begins.');
             }
-            if ((int) Tools::getValue('minimum_amount') < 0) {
+            if (Tools::getIntValue('minimum_amount') < 0) {
                 $this->errors[] = Tools::displayError('The minimum amount cannot be lower than zero.');
             }
             if (Tools::getNumberValue('reduction_percent') < 0 || Tools::getNumberValue('reduction_percent') > 100) {
                 $this->errors[] = Tools::displayError('Reduction percentage must be between 0% and 100%');
             }
-            if ((int) Tools::getValue('reduction_amount') < 0) {
+            if (Tools::getIntValue('reduction_amount') < 0) {
                 $this->errors[] = Tools::displayError('Reduction amount cannot be lower than zero.');
             }
-            if ((int) Tools::getValue('reduction_percent_max') < 0) {
+            if (Tools::getIntValue('reduction_percent_max') < 0) {
                 $this->errors[] = Tools::displayError('Reduction max amount cannot be lower than zero.');
             }
-            if (Tools::getValue('code') && ($sameCode = (int) CartRule::getIdByCode(Tools::getValue('code'))) && $sameCode != Tools::getValue('id_cart_rule')) {
+            if (Tools::getValue('code') && ($sameCode = (int) CartRule::getIdByCode(Tools::getValue('code'))) && $sameCode !== Tools::getIntValue('id_cart_rule')) {
                 $this->errors[] = sprintf(Tools::displayError('This cart rule code is already used (conflict with cart rule %d)'), $sameCode);
             }
             if (Tools::getValue('apply_discount') == 'off' && !Tools::getValue('free_shipping') && !Tools::getValue('free_gift')) {
@@ -670,7 +670,7 @@ class AdminCartRulesControllerCore extends AdminController
         );
         Media::addJsDef(
             [
-                'baseHref' => $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) Tools::getValue('id_cart_rule').'&action=loadCartRules&limit='.(int) $limit.'&count=0',
+                'baseHref' => $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.Tools::getIntValue('id_cart_rule').'&action=loadCartRules&limit='.(int) $limit.'&count=0',
             ]
         );
         $this->content .= $this->createTemplate('form.tpl')->fetch();
@@ -713,7 +713,7 @@ class AdminCartRulesControllerCore extends AdminController
 
                 $productRuleGroupsArray[] = $this->getProductRuleGroupDisplay(
                     $i++,
-                    (int) Tools::getValue('product_rule_group_'.$ruleGroupId.'_quantity'),
+                    Tools::getIntValue('product_rule_group_'.$ruleGroupId.'_quantity'),
                     $productRulesArray
                 );
             }
@@ -754,9 +754,9 @@ class AdminCartRulesControllerCore extends AdminController
     protected function afterUpdate($currentObject)
     {
         // All the associations are deleted for an update, then recreated when we call the "afterAdd" method
-        $idCartRule = Tools::getValue('id_cart_rule');
+        $idCartRule = Tools::getIntValue('id_cart_rule');
         foreach (['country', 'carrier', 'group', 'product_rule_group', 'shop'] as $type) {
-            Db::getInstance()->delete('cart_rule_'.$type, '`id_cart_rule` = '.(int) $idCartRule);
+            Db::getInstance()->delete('cart_rule_'.$type, '`id_cart_rule` = '.$idCartRule);
         }
 
         Db::getInstance()->delete(
@@ -767,7 +767,7 @@ class AdminCartRulesControllerCore extends AdminController
             'cart_rule_product_rule_value', 'NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'cart_rule_product_rule`
 			WHERE `'._DB_PREFIX_.'cart_rule_product_rule_value`.`id_product_rule` = `'._DB_PREFIX_.'cart_rule_product_rule`.`id_product_rule`)'
         );
-        Db::getInstance()->delete('cart_rule_combination', '`id_cart_rule_1` = '.(int) $idCartRule.' OR `id_cart_rule_2` = '.(int) $idCartRule);
+        Db::getInstance()->delete('cart_rule_combination', '`id_cart_rule_1` = '.$idCartRule.' OR `id_cart_rule_2` = '.$idCartRule);
 
         $this->afterAdd($currentObject);
     }
@@ -806,7 +806,7 @@ class AdminCartRulesControllerCore extends AdminController
             foreach ($ruleGroupArray as $ruleGroupId) {
                 Db::getInstance()->execute(
                     'INSERT INTO `'._DB_PREFIX_.'cart_rule_product_rule_group` (`id_cart_rule`, `quantity`)
-				VALUES ('.(int) $currentObject->id.', '.(int) Tools::getValue('product_rule_group_'.$ruleGroupId.'_quantity').')'
+				VALUES ('.(int) $currentObject->id.', '.Tools::getIntValue('product_rule_group_'.$ruleGroupId.'_quantity').')'
                 );
                 $idProductRuleGroup = Db::getInstance()->Insert_ID();
 

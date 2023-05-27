@@ -59,7 +59,7 @@ class ContactControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('The message cannot be blank.');
             } elseif (!Validate::isCleanHtml($message)) {
                 $this->errors[] = Tools::displayError('Invalid message');
-            } elseif (!($idContact = (int) Tools::getValue('id_contact')) || !(Validate::isLoadedObject($contact = new Contact($idContact, $this->context->language->id)))) {
+            } elseif (!($idContact = Tools::getIntValue('id_contact')) || !(Validate::isLoadedObject($contact = new Contact($idContact, $this->context->language->id)))) {
                 $this->errors[] = Tools::displayError('Please select a subject from the list provided. ');
             } elseif (!empty($fileAttachment['name']) && $fileAttachment['error'] != 0) {
                 $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
@@ -74,7 +74,7 @@ class ContactControllerCore extends FrontController
                 $idOrder = (int) $this->getOrder();
 
                 if (!((
-                        ($idCustomerThread = (int) Tools::getValue('id_customer_thread'))
+                        ($idCustomerThread = Tools::getIntValue('id_customer_thread'))
                         && (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                             (new DbQuery())
                                 ->select('ct.`id_customer_thread`')
@@ -110,7 +110,7 @@ class ContactControllerCore extends FrontController
                         if ($row['id_contact'] == $idContact) {
                             $tmp++;
                         }
-                        if (Tools::getValue('id_product') != 0 && $row['id_product'] == Tools::getValue('id_product')) {
+                        if (Tools::getIntValue('id_product') !== 0 && (int)$row['id_product'] === Tools::getIntValue('id_product')) {
                             $tmp += 2;
                         }
                         if ($tmp >= 5 && $tmp >= $score) {
@@ -139,7 +139,7 @@ class ContactControllerCore extends FrontController
                             $ct->id_lang = (int)$this->context->language->id;
                             $ct->id_contact = (int)$idContact;
                             $ct->id_order = (int)$idOrder;
-                            if ($idProduct = (int)Tools::getValue('id_product')) {
+                            if ($idProduct = Tools::getIntValue('id_product')) {
                                 $ct->id_product = $idProduct;
                             }
                             $ct->update();
@@ -150,7 +150,7 @@ class ContactControllerCore extends FrontController
                             }
                             $ct->id_shop = (int)$this->context->shop->id;
                             $ct->id_order = (int)$idOrder;
-                            if ($idProduct = (int)Tools::getValue('id_product')) {
+                            if ($idProduct = Tools::getIntValue('id_product')) {
                                 $ct->id_product = $idProduct;
                             }
                             $ct->id_contact = (int)$idContact;
@@ -201,7 +201,7 @@ class ContactControllerCore extends FrontController
      */
     protected function getOrder()
     {
-        $idOrder = (int)Tools::getValue('id_order');
+        $idOrder = Tools::getIntValue('id_order');
         if ($idOrder) {
             $order = new Order($idOrder);
             if (Validate::isLoadedObject($order)) {
@@ -254,7 +254,7 @@ class ContactControllerCore extends FrontController
             ]
         );
 
-        if (($idCustomerThread = (int) Tools::getValue('id_customer_thread')) && $token = Tools::getValue('token')) {
+        if (($idCustomerThread = Tools::getIntValue('id_customer_thread')) && $token = Tools::getValue('token')) {
             $customerThread = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
                     ->select('cm.*')
@@ -446,7 +446,7 @@ class ContactControllerCore extends FrontController
             $varList['{id_order}'] = (int)$order->id;
         }
 
-        $idProduct = (int)Tools::getValue('id_product');
+        $idProduct = Tools::getIntValue('id_product');
         if ($idProduct) {
             $product = new Product((int)$idProduct);
             if (Validate::isLoadedObject($product) && isset($product->name[$this->context->language->id])) {

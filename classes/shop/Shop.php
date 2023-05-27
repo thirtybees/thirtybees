@@ -324,7 +324,7 @@ class ShopCore extends ObjectModel
     public static function initialize()
     {
         // Find current shop from URL
-        if (!($idShop = Tools::getValue('id_shop')) || defined('_PS_ADMIN_DIR_')) {
+        if (!($idShop = Tools::getIntValue('id_shop')) || defined('_PS_ADMIN_DIR_')) {
             $foundUri = '';
             $isMainUri = false;
             $host = Tools::getHttpHost();

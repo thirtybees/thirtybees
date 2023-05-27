@@ -474,7 +474,7 @@ class AdminCountriesControllerCore extends AdminController
     {
         /** @var Country $country */
         $country = $this->loadObject();
-        if (Validate::isLoadedObject($country) && Tools::getValue('id_zone')) {
+        if (Validate::isLoadedObject($country) && Tools::getIntValue('id_zone')) {
             $oldIdZone = $country->id_zone;
             $sql = new DbQuery();
             $sql->select('id_state');
@@ -492,7 +492,7 @@ class AdminCountriesControllerCore extends AdminController
                     Db::getInstance()->update(
                         'state',
                         [
-                            'id_zone' => (int) Tools::getValue('id_zone'),
+                            'id_zone' => Tools::getIntValue('id_zone'),
                         ],
                         '`id_state` IN ('.implode(',', $ids).')'
                     );
@@ -519,7 +519,7 @@ class AdminCountriesControllerCore extends AdminController
             }
         } elseif (Validate::isLanguageIsoCode(Tools::getValue('iso_code'))) {
             $idCountry = (int)Country::getByIso(Tools::getValue('iso_code'));
-            if ($idCountry !== (int)Tools::getValue('id_'.$this->table)) {
+            if ($idCountry !== Tools::getIntValue('id_'.$this->table)) {
                 $this->errors[] = Tools::displayError('This ISO code already exists.You cannot create two countries with the same ISO code.');
             }
         }

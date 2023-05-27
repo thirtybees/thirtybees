@@ -60,7 +60,7 @@ class OrderReturnControllerCore extends FrontController
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 
-        $idOrderReturn = (int) Tools::getValue('id_order_return');
+        $idOrderReturn = Tools::getIntValue('id_order_return');
 
         if (!isset($idOrderReturn) || !Validate::isUnsignedId($idOrderReturn)) {
             $this->errors[] = Tools::displayError('Order ID required');

@@ -302,7 +302,7 @@ class HelperListCore extends Helper
             $this->list_id = $this->table;
         }
 
-        $idCat = (int) Tools::getValue('id_'.($this->is_cms ? 'cms_' : '').'category');
+        $idCat = Tools::getIntValue('id_'.($this->is_cms ? 'cms_' : '').'category');
 
         if (empty($token)) {
             $token = $this->token;
@@ -310,15 +310,15 @@ class HelperListCore extends Helper
 
         /* Determine total page number */
         $pagination = $this->_default_pagination;
-        if (in_array((int) Tools::getValue($this->list_id.'_pagination'), $this->_pagination)) {
-            $pagination = (int) Tools::getValue($this->list_id.'_pagination');
+        if (in_array(Tools::getIntValue($this->list_id.'_pagination'), $this->_pagination)) {
+            $pagination = Tools::getIntValue($this->list_id.'_pagination');
         } elseif (isset($this->context->cookie->{$this->list_id.'_pagination'}) && $this->context->cookie->{$this->list_id.'_pagination'}) {
             $pagination = $this->context->cookie->{$this->list_id.'_pagination'};
         }
 
         $totalPages = max(1, ceil($this->listTotal / $pagination));
 
-        $identifier = Tools::getIsset($this->identifier) ? '&'.$this->identifier.'='.(int) Tools::getValue($this->identifier) : '';
+        $identifier = Tools::getIsset($this->identifier) ? '&'.$this->identifier.'='.Tools::getIntValue($this->identifier) : '';
 //        $order = '';
 //        if (Tools::getIsset($this->table.'Orderby')) {
 //            $order = '&'.$this->table.'Orderby='.urlencode($this->orderBy).'&'.$this->table.'Orderway='.urlencode(strtolower($this->orderWay));
@@ -327,7 +327,7 @@ class HelperListCore extends Helper
         $action = $this->currentIndex.$identifier.'&token='.$token.'#'.$this->list_id;
 
         /* Determine current page number */
-        $page = (int) Tools::getValue('submitFilter'.$this->list_id);
+        $page = Tools::getIntValue('submitFilter'.$this->list_id);
 
         if (!$page) {
             $page = 1;
@@ -345,7 +345,7 @@ class HelperListCore extends Helper
             $this->context->cookie->{$this->list_id . '_pagination'} ?? $this->_default_pagination
         );
 
-        if (is_null($this->table_id) && $this->position_identifier && (int) Tools::getValue($this->position_identifier, 1)) {
+        if (is_null($this->table_id) && $this->position_identifier && Tools::getIntValue($this->position_identifier, 1)) {
             $this->table_id = substr($this->identifier, 3, strlen($this->identifier));
         }
 
@@ -545,7 +545,7 @@ class HelperListCore extends Helper
                         ? Tools::getValue($this->position_group_identifier)
                         : $this->position_group_identifier;
                 } else {
-                    $positionGroupIdentifier = (int) Tools::getValue('id_'.($this->is_cms ? 'cms_' : '').'category', ($this->is_cms ? '1' : Category::getRootCategory()->id));
+                    $positionGroupIdentifier = Tools::getIntValue('id_'.($this->is_cms ? 'cms_' : '').'category', ($this->is_cms ? '1' : Category::getRootCategory()->id));
                 }
             } else {
                 $positionGroupIdentifier = Category::getRootCategory()->id;
@@ -634,8 +634,8 @@ class HelperListCore extends Helper
                         $id,
                         $dataValue,
                         $params['active'],
-                        Tools::getValue('id_category'),
-                        Tools::getValue('id_product'),
+                        Tools::getIntValue('id_category'),
+                        Tools::getIntValue('id_product'),
                         $params['ajax']
                     );
                 } elseif (isset($params['activeVisu'])) {
