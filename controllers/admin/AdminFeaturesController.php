@@ -430,7 +430,9 @@ class AdminFeaturesControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->toolbar_title = $feature->name;
+        $this->toolbar_title = is_array($feature->name)
+            ? $feature->name[$this->context->language->id]
+            : $feature->name;
         $this->fields_list = [
             'id_feature_value' => [
                 'title' => $this->l('ID'),
