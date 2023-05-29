@@ -559,10 +559,18 @@ class AdminFeaturesControllerCore extends AdminController
         $this->fields_value['id_feature'] = (int) Tools::getValue('id_feature');
 
         // Create Object FeatureValue
-        $feature_value = new FeatureValue(Tools::getValue('id_feature_value'));
-
-
         $this->getlanguages();
+        $feature_value = new FeatureValue(Tools::getValue('id_feature_value'));
+        $fieldsValue = $this->getFieldsValue($feature_value);
+
+        Hook::triggerEvent(
+            'action'.$this->controller_name.'FormModifier', [
+                'fields'       => &$this->fields_form,
+                'fields_value' => &$fieldsValue,
+                'form_vars'    => &$this->tpl_form_vars,
+            ]
+        );
+
         $helper = new HelperForm();
         $helper->show_cancel_button = true;
 
@@ -580,7 +588,7 @@ class AdminFeaturesControllerCore extends AdminController
         $helper->languages = $this->_languages;
         $helper->default_form_language = $this->default_form_language;
         $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
-        $helper->fields_value = $this->getFieldsValue($feature_value);
+        $helper->fields_value = $fieldsValue;
         $helper->toolbar_btn = $this->toolbar_btn;
         $helper->title = $this->l('Add a new feature value');
         $this->content .= $helper->generateForm($this->fields_form);
