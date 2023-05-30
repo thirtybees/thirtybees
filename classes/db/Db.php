@@ -533,7 +533,7 @@ class DbCore
                 $callPoint = Tools::getCallPoint([Db::class]);
                 $error = 'Db::executeS method should be used for SELECT queries only. ';
                 $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
-                $error .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'] . '. ';
+                $error .= 'Called from: ' . $callPoint['description'] . '. ';
                 $error .= 'Illegal SQL: [' . $sql . ']';
                 trigger_error($error, E_USER_DEPRECATED);
                 return $this->execute($sql, $useCache);

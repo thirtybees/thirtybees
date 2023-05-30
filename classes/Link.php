@@ -317,7 +317,7 @@ class LinkCore
             $errorMessage = 'Link::getAdminLink(): parameter $params has invalid type. ';
             $errorMessage .= 'Expected array, got ' . gettype($params) . '. ';
             $errorMessage .= 'This will raise error in future version of thirty bees. ';
-            $errorMessage .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'];
+            $errorMessage .= 'Called from: ' . $callPoint['description'];
             trigger_error($errorMessage, E_USER_WARNING);
             $params = [];
         }
@@ -362,7 +362,7 @@ class LinkCore
             $errorMessage = 'Link::getImageLink(): parameter $name has invalid type. ';
             $errorMessage .= 'Expected string, got ' . gettype($name) . '. ';
             $errorMessage .= 'This will raise error in future version of thirty bees. ';
-            $errorMessage .= 'Called from: ' . $callPoint['class'] . '::' . $callPoint['function'] . '() in ' . $callPoint['file'] . ':' . $callPoint['line'];
+            $errorMessage .= 'Called from: ' . $callPoint['description'];
             trigger_error($errorMessage, E_USER_WARNING);
             $name = static::resolveName($name, $ids);
         }

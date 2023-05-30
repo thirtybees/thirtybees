@@ -1157,11 +1157,20 @@ class ToolsCore
         while ($trace = next($backtrace)) {
             $class = $trace['class'] ?? '';
             if (!in_array(static::normalizeClassName($class), $ignoreClassNames)) {
+                $func = $trace['function'];
+                $line = (int)$prev['line'];
+                $file = ErrorUtils::getRelativeFile($prev['file']);
+                if ($class) {
+                    $description = $class . '::' . $func . '() in file \'' . $file . '\' at line ' . $line;
+                } else {
+                    $description = 'Function ' . $func . '() in file \'' . $file . '\' at line ' . $line;
+                }
                 return [
                     'class' => $class,
-                    'function' => $trace['function'],
-                    'line' => $prev['line'],
-                    'file' => ErrorUtils::getRelativeFile($prev['file']),
+                    'function' => $func,
+                    'line' => $line,
+                    'file' => $file,
+                    'description' => $description,
                 ];
             }
             $prev = $trace;
@@ -1170,7 +1179,8 @@ class ToolsCore
             'class' => 'unknown',
             'function' => 'unknown',
             'line' => 0,
-            'file' => 'unknown'
+            'file' => 'unknown',
+            'description' => 'unknown',
         ];
     }
 
