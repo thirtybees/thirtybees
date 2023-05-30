@@ -146,7 +146,7 @@ class CompareControllerCore extends FrontController
 
                     $cover = Product::getCover((int) $id);
 
-                    $curProduct->id_image = Tools::htmlentitiesUTF8(Product::defineProductImage(['id_image' => $cover['id_image'], 'id_product' => $id], $this->context->language->id));
+                    $curProduct->id_image = (int)$cover['id_image'];
                     $curProduct->allow_oosp = Product::isAvailableWhenOutOfStock($curProduct->out_of_stock);
                     $listProducts[] = $curProduct;
                 }

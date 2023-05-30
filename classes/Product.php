@@ -2023,7 +2023,6 @@ class ProductCore extends ObjectModel
             );
         }
 
-        $row['id_image'] = static::defineProductImage($row, $idLang);
         $row['features'] = static::getFrontFeaturesStatic((int) $idLang, $row['id_product']);
 
         $row['attachments'] = [];
@@ -2122,17 +2121,11 @@ class ProductCore extends ObjectModel
      * @param array $row
      * @param int $idLang
      *
-     * @return string
-     *
-     * @throws PrestaShopException
+     * @return int
      */
     public static function defineProductImage($row, $idLang)
     {
-        if (isset($row['id_image']) && $row['id_image']) {
-            return $row['id_product'].'-'.$row['id_image'];
-        }
-
-        return Language::getIsoById((int) $idLang).'-default';
+        return (int)($row['id_image'] ?? 0);
     }
 
     /**

@@ -340,7 +340,7 @@ class LinkCore
      * Returns a link to a product image for display
      *
      * @param string $name Rewrite link of the image
-     * @param string $ids ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
+     * @param string|int|null $ids ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
      * @param string $type Image type
      * @param string $format Image format (jpg/png/webp). Auto-detected by default
      * @param bool $highDpi Higher resolution

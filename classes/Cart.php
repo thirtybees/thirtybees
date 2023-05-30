@@ -628,7 +628,6 @@ class CartCore extends ObjectModel
 
             $row['reduction_applies'] = ($specificPriceOutput && (float) $specificPriceOutput['reduction']);
             $row['quantity_discount_applies'] = ($specificPriceOutput && $quantity >= (int) $specificPriceOutput['from_quantity']);
-            $row['id_image'] = Product::defineProductImage($row, $this->id_lang);
             $row['allow_oosp'] = Product::isAvailableWhenOutOfStock($row['out_of_stock']);
             $row['features'] = Product::getFeaturesStatic((int) $row['id_product']);
 
