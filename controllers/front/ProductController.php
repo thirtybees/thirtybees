@@ -356,9 +356,10 @@ class ProductControllerCore extends FrontController
      */
     protected function transformDescriptionWithImg($desc)
     {
+        $desc = (string)$desc;
         $reg = '/\[img\-([0-9]+)\-(left|right)\-([a-zA-Z0-9-_]+)\]/';
         while (preg_match($reg, $desc, $matches)) {
-            $linkLmg = $this->context->link->getImageLink($this->product->link_rewrite, $this->product->id.'-'.$matches[1], $matches[3]);
+            $linkLmg = $this->context->link->getImageLink($this->product->link_rewrite, (int)$matches[1], $matches[3]);
             $class = $matches[2] == 'left' ? 'class="imageFloatLeft"' : 'class="imageFloatRight"';
             $htmlImg = '<img src="'.$linkLmg.'" alt="" '.$class.'/>';
             $desc = str_replace($matches[0], $htmlImg, $desc);
