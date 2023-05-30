@@ -582,6 +582,7 @@ class AdminFeaturesControllerCore extends AdminController
         $helper->table = $this->table;
         $helper->identifier = $this->identifier;
         $helper->override_folder = 'feature_value/';
+        $helper->name_controller = $this->controller_name;
         $helper->id = $feature_value->id;
         $helper->toolbar_scroll = false;
         $helper->tpl_vars = [
