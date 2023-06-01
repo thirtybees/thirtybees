@@ -76,7 +76,7 @@ class CartControllerCore extends FrontController
 
         // Get page main parameters
         $this->id_product = Tools::getIntValue('id_product');
-        $this->id_product_attribute = Tools::getIntValue('id_product_attribute', Tools::getValue('ipa'));
+        $this->id_product_attribute = Tools::getIntValue('id_product_attribute', Tools::getIntValue('ipa'));
         $this->customization_id = Tools::getIntValue('id_customization');
         $this->qty = abs(Tools::getIntValue('qty', 1));
         $this->id_address_delivery = Tools::getIntValue('id_address_delivery');
@@ -166,8 +166,8 @@ class CartControllerCore extends FrontController
 
         if (is_array($cartProducts)) {
             foreach ($cartProducts as $cartProduct) {
-                if ((!isset($this->id_product_attribute) || $cartProduct['id_product_attribute'] == $this->id_product_attribute) &&
-                    (isset($this->id_product) && $cartProduct['id_product'] == $this->id_product)
+                if (((int)$cartProduct['id_product_attribute'] === $this->id_product_attribute) &&
+                    ((int)$cartProduct['id_product'] === $this->id_product)
                 ) {
                     $qtyToCheck = $cartProduct['cart_quantity'];
 
