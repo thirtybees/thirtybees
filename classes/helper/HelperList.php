@@ -545,7 +545,14 @@ class HelperListCore extends Helper
                         ? Tools::getValue($this->position_group_identifier)
                         : $this->position_group_identifier;
                 } else {
-                    $positionGroupIdentifier = Tools::getIntValue('id_'.($this->is_cms ? 'cms_' : '').'category', ($this->is_cms ? '1' : Category::getRootCategory()->id));
+                    if ($this->is_cms) {
+                        $parameter = 'id_cms_category';
+                        $defaultId = 1;
+                    } else {
+                        $parameter = 'id_category';
+                        $defaultId = (int)Category::getRootCategory()->id;
+                    }
+                    $positionGroupIdentifier = Tools::getIntValue($parameter, $defaultId);
                 }
             } else {
                 $positionGroupIdentifier = Category::getRootCategory()->id;

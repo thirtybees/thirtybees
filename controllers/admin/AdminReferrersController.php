@@ -308,7 +308,7 @@ class AdminReferrersControllerCore extends AdminController
                     'statsdata_name' => $statsdataName,
                     'current'        => static::$currentIndex,
                     'token'          => $this->token,
-                    'tracking_dt'    => Tools::getIntValue('tracking_dt', Configuration::get('TRACKING_DIRECT_TRAFFIC')),
+                    'tracking_dt'    => Tools::getIntValue('tracking_dt', (int)Configuration::get('TRACKING_DIRECT_TRAFFIC')),
                 ]
             );
 
