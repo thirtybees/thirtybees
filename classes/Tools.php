@@ -550,9 +550,15 @@ class ToolsCore
      *
      * @since 1.5.0
      */
-    public static function getIntValue(string $key, int $defaultValue = 0): int
+    public static function getIntValue(string $key, $defaultValue = 0): int
     {
-        return (int)static::getValueRaw($key, $defaultValue);
+        if (_PS_MODE_DEV_ && !is_null($defaultValue)) {
+            $type = gettype($defaultValue);
+            if ($type !== 'integer') {
+                trigger_error(sprintf('Tools::getIntValue(): Argument #2 ($defaultValue) must be of type int, %s given', $type), E_USER_WARNING);
+            }
+        }
+        return (int)static::getValueRaw($key, (int)$defaultValue);
     }
 
     /**
