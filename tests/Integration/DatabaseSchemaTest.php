@@ -94,7 +94,6 @@ class DatabaseSchemaTest extends Unit
                 'linksmenutop_lang',
                 'newsletter',
                 'pagenotfound',
-                'sekeyword',
                 'statssearch',
                 'themeconfigurator',
                 'bees_blog_category',

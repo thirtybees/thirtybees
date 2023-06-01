@@ -99,7 +99,6 @@ class AdminConfigurationPagesCest
         ],
         'AdminParentStats' => [
             'AdminStats',
-            'AdminSearchEngines',
             'AdminReferrers',
         ],
     ];

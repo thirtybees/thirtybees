@@ -288,9 +288,6 @@
     <tab id="Stats_1" id_parent="Stats" active="1">
       <class_name>AdminStats</class_name>
     </tab>
-    <tab id="Search_Engines" id_parent="Stats" active="1">
-      <class_name>AdminSearchEngines</class_name>
-    </tab>
     <tab id="Referrers" id_parent="Stats" active="1">
       <class_name>AdminReferrers</class_name>
     </tab>

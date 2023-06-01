@@ -2154,13 +2154,6 @@ CREATE TABLE `PREFIX_scheduled_task_execution` (
   PRIMARY KEY (`id_scheduled_task_execution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `PREFIX_search_engine` (
-  `id_search_engine` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `server` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `getvar` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_search_engine`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE `PREFIX_search_index` (
   `id_product` int(11) unsigned NOT NULL,
   `id_word` int(11) unsigned NOT NULL,

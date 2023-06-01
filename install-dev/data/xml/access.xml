@@ -88,7 +88,6 @@
     <access id="access_1_89" id_profile="SuperAdmin" id_tab="Profiles" view="1" add="1" edit="1" delete="1"/>
     <access id="access_1_90" id_profile="SuperAdmin" id_tab="Permissions" view="1" add="1" edit="1" delete="1"/>
     <access id="access_1_91" id_profile="SuperAdmin" id_tab="Tabs" view="1" add="1" edit="1" delete="1"/>
-    <access id="access_1_93" id_profile="SuperAdmin" id_tab="Search_Engines" view="1" add="1" edit="1" delete="1"/>
     <access id="access_1_94" id_profile="SuperAdmin" id_tab="Referrers" view="1" add="1" edit="1" delete="1"/>
     <access id="access_1_95" id_profile="SuperAdmin" id_tab="Warehouses" view="1" add="1" edit="1" delete="1"/>
     <access id="access_1_96" id_profile="SuperAdmin" id_tab="Stock_Management" view="1" add="1" edit="1" delete="1"/>

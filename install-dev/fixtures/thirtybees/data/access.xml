@@ -100,7 +100,6 @@
     <access id="access_3_90" id_profile="Logistician" id_tab="Permissions" view="0" add="0" edit="0" delete="0"/>
     <access id="access_3_91" id_profile="Logistician" id_tab="Tabs" view="0" add="0" edit="0" delete="0"/>
     <access id="access_3_92" id_profile="Logistician" id_tab="Stats_1" view="0" add="0" edit="0" delete="0"/>
-    <access id="access_3_93" id_profile="Logistician" id_tab="Search_Engines" view="0" add="0" edit="0" delete="0"/>
     <access id="access_3_94" id_profile="Logistician" id_tab="Referrers" view="0" add="0" edit="0" delete="0"/>
     <access id="access_3_95" id_profile="Logistician" id_tab="Warehouses" view="1" add="1" edit="1" delete="1"/>
     <access id="access_3_96" id_profile="Logistician" id_tab="Stock_Management" view="1" add="1" edit="1" delete="1"/>
@@ -200,7 +199,6 @@
     <access id="access_4_90" id_profile="Translator" id_tab="Permissions" view="0" add="0" edit="0" delete="0"/>
     <access id="access_4_91" id_profile="Translator" id_tab="Tabs" view="0" add="0" edit="0" delete="0"/>
     <access id="access_4_92" id_profile="Translator" id_tab="Stats_1" view="0" add="0" edit="0" delete="0"/>
-    <access id="access_4_93" id_profile="Translator" id_tab="Search_Engines" view="0" add="0" edit="0" delete="0"/>
     <access id="access_4_94" id_profile="Translator" id_tab="Referrers" view="0" add="0" edit="0" delete="0"/>
     <access id="access_4_95" id_profile="Translator" id_tab="Warehouses" view="0" add="0" edit="0" delete="0"/>
     <access id="access_4_96" id_profile="Translator" id_tab="Stock_Management" view="0" add="0" edit="0" delete="0"/>
@@ -300,7 +298,6 @@
     <access id="access_5_90" id_profile="Salesman" id_tab="Permissions" view="0" add="0" edit="0" delete="0"/>
     <access id="access_5_91" id_profile="Salesman" id_tab="Tabs" view="0" add="0" edit="0" delete="0"/>
     <access id="access_5_92" id_profile="Salesman" id_tab="Stats_1" view="1" add="1" edit="1" delete="1"/>
-    <access id="access_5_93" id_profile="Salesman" id_tab="Search_Engines" view="0" add="0" edit="0" delete="0"/>
     <access id="access_5_94" id_profile="Salesman" id_tab="Referrers" view="1" add="1" edit="1" delete="1"/>
     <access id="access_5_95" id_profile="Salesman" id_tab="Warehouses" view="0" add="0" edit="0" delete="0"/>
     <access id="access_5_96" id_profile="Salesman" id_tab="Stock_Management" view="0" add="0" edit="0" delete="0"/>

@@ -94,7 +94,6 @@
   <tab id="Permissions" name="權限"/>
   <tab id="Menus" name="選單"/>
   <tab id="Stats_1" name="狀態"/>
-  <tab id="Search_Engines" name="搜尋引擎"/>
   <tab id="Referrers" name="來源"/>
   <tab id="Warehouses" name="倉庫"/>
   <tab id="Stock_Management" name="庫存管理"/>

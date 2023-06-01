@@ -129,7 +129,6 @@ class ConnectionsSourceCore extends ObjectModel
             }
 
             $source->http_referer = substr($referer, 0, ConnectionsSource::$uri_max_size);
-            $source->keywords = substr(trim(SearchEngine::getKeywords($referer)), 0, ConnectionsSource::$uri_max_size);
         }
 
         $source->id_connections = (int) $cookie->id_connections;
