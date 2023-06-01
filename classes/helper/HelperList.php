@@ -310,10 +310,11 @@ class HelperListCore extends Helper
 
         /* Determine total page number */
         $pagination = $this->_default_pagination;
+        $cookie = $this->context->cookie;
         if (in_array(Tools::getIntValue($this->list_id.'_pagination'), $this->_pagination)) {
             $pagination = Tools::getIntValue($this->list_id.'_pagination');
-        } elseif (isset($this->context->cookie->{$this->list_id.'_pagination'}) && $this->context->cookie->{$this->list_id.'_pagination'}) {
-            $pagination = $this->context->cookie->{$this->list_id.'_pagination'};
+        } elseif (isset($cookie->{$this->list_id.'_pagination'}) && $cookie->{$this->list_id.'_pagination'}) {
+            $pagination = $cookie->{$this->list_id.'_pagination'};
         }
 
         $totalPages = max(1, ceil($this->listTotal / $pagination));
@@ -342,7 +343,7 @@ class HelperListCore extends Helper
         /* Choose number of results per page */
         $selectedPagination = Tools::getValue(
             $this->list_id.'_pagination',
-            $this->context->cookie->{$this->list_id . '_pagination'} ?? $this->_default_pagination
+            $cookie->{$this->list_id . '_pagination'} ?? $this->_default_pagination
         );
 
         if (is_null($this->table_id) && $this->position_identifier && Tools::getIntValue($this->position_identifier, 1)) {
@@ -366,7 +367,7 @@ class HelperListCore extends Helper
                 $keys = explode('!', $params['filter_key']);
                 $valueKey = $keys[1];
             }
-            $value = Context::getContext()->cookie->{$valueKey};
+            $value = $cookie->{$valueKey};
             if (!$value && Tools::getIsset($valueKey)) {
                 $value = Tools::getValue($valueKey);
             }
@@ -399,9 +400,9 @@ class HelperListCore extends Helper
 
                 case 'select':
                     foreach ($params['list'] as $optionValue => $optionDisplay) {
-                        if (isset(Context::getContext()->cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']})
-                            && Context::getContext()->cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} == $optionValue
-                            && Context::getContext()->cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} != ''
+                        if (isset($cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']})
+                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} == $optionValue
+                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} != ''
                         ) {
                             $this->fields_list[$key]['select'][$optionValue]['selected'] = 'selected';
                         }
@@ -435,7 +436,7 @@ class HelperListCore extends Helper
             }
         }
 
-        Context::getContext()->smarty->assign(
+        $this->context->smarty->assign(
             [
                 'page'                => $page,
                 'simple_header'       => $this->simple_header,

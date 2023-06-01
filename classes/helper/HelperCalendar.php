@@ -90,8 +90,8 @@ class HelperCalendarCore extends Helper
     {
         $this->base_folder = 'helpers/calendar/';
         $this->base_tpl = 'calendar.tpl';
-        $this->_rtl = (bool)Context::getContext()->language->is_rtl;
         parent::__construct();
+        $this->_rtl = (bool)$this->context->language->is_rtl;
     }
 
     /**
@@ -312,7 +312,7 @@ class HelperCalendarCore extends Helper
      */
     public function generate()
     {
-        $context = Context::getContext();
+        $context = $this->context;
         $controller = $this->getController();
         $adminWebpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
         $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
