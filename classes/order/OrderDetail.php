@@ -218,6 +218,16 @@ class OrderDetailCore extends ObjectModel
                 'setter'   => false,
                 'fields'   => ['id' => []],
             ],
+            'pack'        => [
+                'resource' => 'product',
+                'getter'   => 'getWsPack',
+                'api'      => 'products',
+                'fields'   => [
+                    'id' => ['required' => true, 'xlink_resource' => 'products'],
+                    'combination_id' => ['xlink_resource' => 'combinations'],
+                    'quantity' => [],
+                ],
+            ],
         ],
     ];
 
@@ -557,20 +567,34 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsTaxes()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('id_tax as id')
                 ->from('order_detail_tax', 'tax')
                 ->leftJoin('order_detail', 'od', 'tax.`id_order_detail` = od.`id_order_detail`')
                 ->where('od.`id_order_detail` = '.(int) $this->id_order_detail)
         );
+    }
+
+    /**
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    public function getWsPack()
+    {
+        $sql = (new DbQuery())
+            ->select('odp.id_product AS id, odp.quantity, odp.id_product_attribute AS combination_id')
+            ->from('order_detail_pack', 'odp')
+            ->where('odp.`id_order_detail` = '.(int) $this->id_order_detail);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
     }
 
     /**

@@ -238,7 +238,10 @@ class OrderCore extends ObjectModel
         ],
         'associations'    => [
             'order_rows' => [
-                'resource' => 'order_row', 'setter' => false, 'virtual_entity' => true,
+                'resource' => 'order_row',
+                'getter' => 'getWsOrderRows',
+                'setter' => false,
+                'virtual_entity' => true,
                 'fields'   => [
                     'id'                   => [],
                     'product_id'           => ['required' => true],
@@ -251,6 +254,7 @@ class OrderCore extends ObjectModel
                     'product_price'        => ['setter' => false],
                     'unit_price_tax_incl'  => ['setter' => false],
                     'unit_price_tax_excl'  => ['setter' => false],
+                    'is_pack'              => ['setter' => false],
                 ],
             ],
         ],
@@ -1911,32 +1915,32 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsOrderRows()
     {
-        $result = Db::getInstance()->executeS(
-            (new DbQuery())
-                ->select('`id_order_detail` AS `id`')
-                ->select('`product_id`')
-                ->select('`product_price`')
-                ->select('`id_order`')
-                ->select('`product_attribute_id`')
-                ->select('`product_quantity`')
-                ->select('`product_name`')
-                ->select('`product_reference`')
-                ->select('`product_ean13`')
-                ->select('`product_upc`')
-                ->select('`unit_price_tax_incl`')
-                ->select('`unit_price_tax_excl`')
-                ->from('order_detail')
+        $sql = (new DbQuery())
+                ->select('od.`id_order_detail` AS `id`')
+                ->select('od.`product_id`')
+                ->select('od.`product_price`')
+                ->select('od.`id_order`')
+                ->select('od.`product_attribute_id`')
+                ->select('od.`product_quantity`')
+                ->select('od.`product_name`')
+                ->select('od.`product_reference`')
+                ->select('od.`product_ean13`')
+                ->select('od.`product_upc`')
+                ->select('od.`unit_price_tax_incl`')
+                ->select('od.`unit_price_tax_excl`')
+                ->select('(CASE WHEN COUNT(odp.id_order_detail_pack) > 0 THEN 1 ELSE 0 END) as is_pack')
+                ->from('order_detail', 'od')
+                ->leftJoin('order_detail_pack', 'odp', 'od.id_order_detail = odp.id_order_detail')
                 ->where('`id_order` = '.(int) $this->id)
-        );
-
-        return $result;
+                ->groupBy('od.id_order_detail');
+        return Db::getInstance()->getArray($sql);
     }
 
     /** Set current order status
