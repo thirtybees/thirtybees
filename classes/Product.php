@@ -7087,7 +7087,7 @@ class ProductCore extends ObjectModel
      */
     public function getWsCategories()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('cp.`id_category` AS `id`')
                 ->from('category_product', 'cp')
@@ -7128,7 +7128,7 @@ class ProductCore extends ObjectModel
      */
     public function getWsAccessories()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('p.`id_product` AS `id`')
                 ->from('accessory', 'a')
@@ -7173,7 +7173,7 @@ class ProductCore extends ObjectModel
      */
     public function getWsCombinations()
     {
-        $result = Db::getInstance()->executeS(
+        $result = Db::getInstance()->getArray(
             'SELECT pa.`id_product_attribute` AS id
 			FROM `'._DB_PREFIX_.'product_attribute` pa
 			'.Shop::addSqlAssociation('product_attribute', 'pa').'
@@ -7267,7 +7267,7 @@ class ProductCore extends ObjectModel
      */
     public function getWsProductOptionValues()
     {
-        $result = Db::getInstance()->executeS(
+        $result = Db::getInstance()->getArray(
             'SELECT DISTINCT pac.id_attribute AS id
 			FROM `'._DB_PREFIX_.'product_attribute` pa
 			'.Shop::addSqlAssociation('product_attribute', 'pa').'
@@ -7339,17 +7339,17 @@ class ProductCore extends ObjectModel
      */
     public function getWsPositionInCategory()
     {
-        $result = Db::getInstance()->executeS(
+        $result = Db::getInstance()->getArray(
             'SELECT position
 			FROM `'._DB_PREFIX_.'category_product`
 			WHERE id_category = '.(int) $this->id_category_default.'
 			AND id_product = '.(int) $this->id
         );
         if (count($result) > 0) {
-            return $result[0]['position'];
+            return (int)$result[0]['position'];
         }
 
-        return '';
+        return 0;
     }
 
     /**
@@ -7432,7 +7432,7 @@ class ProductCore extends ObjectModel
      */
     public function getWsImages()
     {
-        return Db::getInstance()->executeS(
+        return Db::getInstance()->getArray(
             '
 		SELECT i.`id_image` AS id
 		FROM `'._DB_PREFIX_.'image` i
@@ -7443,14 +7443,14 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsStockAvailables()
     {
-        return Db::getInstance()->executeS(
+        return Db::getInstance()->getArray(
             'SELECT `id_stock_available` id, `id_product_attribute`
 														FROM `'._DB_PREFIX_.'stock_available`
 														WHERE `id_product`='.($this->id).StockAvailable::addSqlShopRestriction()
@@ -7458,14 +7458,14 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsTags()
     {
-        return Db::getInstance()->executeS(
+        return Db::getInstance()->getArray(
             '
 		SELECT `id_tag` AS id
 		FROM `'._DB_PREFIX_.'product_tag`
@@ -8009,8 +8009,7 @@ class ProductCore extends ObjectModel
             ->select('id_product_item AS id, quantity, NULLIF(id_product_attribute_item, 0) AS combination_id')
             ->from('pack')
             ->where('id_product_pack = ' . (int) $this->id);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-        return is_array($result) ? $result : [];
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
     }
 
     /**

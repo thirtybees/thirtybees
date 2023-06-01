@@ -382,14 +382,14 @@ class AttributeGroupCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsProductOptionValues()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('a.`id_attribute` AS `id`')
                 ->from('attribute', 'a')

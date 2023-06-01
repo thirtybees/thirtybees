@@ -2794,7 +2794,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @deprecated 2.0.0
+     * @return int
      */
     public function getWsCurrentState()
     {

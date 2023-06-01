@@ -590,14 +590,14 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getWsAddresses()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('a.`id_address` AS `id`')
                 ->from('address', 'a')

@@ -635,6 +635,6 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_detail', 'sod');
         $query->where('id_supply_order = '.(int) $this->id);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($query);
     }
 }

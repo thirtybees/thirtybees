@@ -317,7 +317,7 @@ class CustomizationCore extends ObjectModel
     {
         $id = (int) $this->id;
         if ($id) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())
+            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
@@ -325,12 +325,7 @@ class CustomizationCore extends ObjectModel
                 ->where('cd.`id_customization` = ' . $id)
                 ->where('cf.`type` = 1')
             );
-
-            if (is_array($results)) {
-                return $results;
-            }
         }
-
         return [];
     }
 
@@ -344,7 +339,7 @@ class CustomizationCore extends ObjectModel
     {
         $id = (int) $this->id;
         if ($id) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
@@ -352,11 +347,7 @@ class CustomizationCore extends ObjectModel
                 ->where('cd.`id_customization` = ' . $id)
                 ->where('cf.`type` = 0')
             );
-
-            if (is_array($results)) {
-                return $results;
-            }
-
+            return $results;
         }
 
         return [];

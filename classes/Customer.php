@@ -1292,7 +1292,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1301,7 +1301,7 @@ class CustomerCore extends ObjectModel
      */
     public function getWsGroups()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
             (new DbQuery())
                 ->select('cg.`id_group` AS `id`')
                 ->from('customer_group', 'cg')

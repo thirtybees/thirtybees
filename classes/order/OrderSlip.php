@@ -633,7 +633,7 @@ class OrderSlipCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -642,7 +642,7 @@ class OrderSlipCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        $result = Db::getInstance()->executeS(
+        $result = Db::getInstance()->getArray(
             (new DbQuery())
                 ->select('`id_order_slip` AS `id`, `id_order_detail`, `product_quantity`, `amount_tax_excl`, `amount_tax_incl`')
                 ->from('order_slip_detail')
