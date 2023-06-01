@@ -323,19 +323,18 @@ class HelperUploaderCore extends Uploader
      * @param string $template
      *
      * @return string
-     *
-     * @throws PrestaShopException
      */
     public function getTemplateFile($template)
     {
-        if (preg_match_all('/((?:^|[A-Z])[a-z]+)/', get_class($this->getContext()->controller), $matches) !== false) {
+        $controller = $this->getContext()->controller;
+        if (preg_match_all('/((?:^|[A-Z])[a-z]+)/', get_class($controller), $matches) !== false) {
             $controllerName = strtolower($matches[0][1]);
         }
 
-        if ($this->getContext()->controller instanceof ModuleAdminController &&
-            file_exists($this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)).$this->getTemplateDirectory().$template)) {
-            return $this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)).$this->getTemplateDirectory().$template;
-        } elseif ($this->getContext()->controller instanceof AdminController && isset($controllerName)
+        if ($controller instanceof ModuleAdminController &&
+            file_exists($this->_normalizeDirectory($controller->getTemplatePath()).$this->getTemplateDirectory().$template)) {
+            return $this->_normalizeDirectory($controller->getTemplatePath()).$this->getTemplateDirectory().$template;
+        } elseif ($controller instanceof AdminController && isset($controllerName)
             && file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'.DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template)) {
             return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'.DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template;
         } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1)).$this->getTemplateDirectory().$template)) {
@@ -410,7 +409,6 @@ class HelperUploaderCore extends Uploader
     /**
      * @return string
      *
-     * @throws PrestaShopException
      * @throws SmartyException
      */
     public function render()
@@ -424,12 +422,13 @@ class HelperUploaderCore extends Uploader
             $boTheme = 'default';
         }
 
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.iframe-transport.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-process.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-validate.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
+        $controller = $this->getContext()->controller;
+        $controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.iframe-transport.js');
+        $controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload.js');
+        $controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-process.js');
+        $controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-validate.js');
+        $controller->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
+        $controller->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
 
         if ($this->useAjax() && !isset($this->_template)) {
             $this->setTemplate(static::DEFAULT_AJAX_TEMPLATE);

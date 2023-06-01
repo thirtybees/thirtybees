@@ -262,7 +262,7 @@ class HelperListCore extends Helper
     {
         // Append when we get a syntax error in SQL query
         if ($list === false) {
-            $this->context->controller->warnings[] = $this->l('Bad SQL query', 'Helper');
+            $this->getController()->warnings[] = $this->l('Bad SQL query', 'Helper');
 
             return false;
         }
@@ -355,6 +355,7 @@ class HelperListCore extends Helper
 
         $prefix = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
         $ajax = false;
+        $controller = $this->getController();
         foreach ($this->fields_list as $key => $params) {
             if (!isset($params['type'])) {
                 $params['type'] = 'text';
@@ -393,7 +394,7 @@ class HelperListCore extends Helper
                     $params['id_date'] = $nameId;
                     $params['name_date'] = $name;
 
-                    $this->context->controller->addJqueryUI('ui.datepicker');
+                    $controller->addJqueryUI('ui.datepicker');
                     break;
 
                 case 'select':
@@ -455,7 +456,6 @@ class HelperListCore extends Helper
 
         // Include dnd javascript if list contains position update functionality
         if ($this->position_identifier && $this->orderBy === 'position') {
-            $controller = $this->context->controller;
             $controller->addJqueryPlugin('tablednd');
             $controller->addJS(_PS_JS_DIR_ . 'admin/dnd.js');
             Media::addJsDef([
@@ -583,13 +583,14 @@ class HelperListCore extends Helper
 
             $isFirst = true;
             // Check all available actions to add to the current list row
+            $controller = $this->getController();
             foreach ($this->actions as $action) {
                 //Check if the action is available for the current row
                 if (!array_key_exists($action, $this->list_skip_actions) || !in_array($id, $this->list_skip_actions[$action])) {
                     $methodName = 'display'.ucfirst($action).'Link';
 
-                    if (method_exists($this->context->controller, $methodName)) {
-                        $this->_list[$index][$action] = $this->context->controller->$methodName($this->token, $id, $name);
+                    if (method_exists($controller, $methodName)) {
+                        $this->_list[$index][$action] = $controller->$methodName($this->token, $id, $name);
                     } elseif ($this->module instanceof Module && method_exists($this->module, $methodName)) {
                         $this->_list[$index][$action] = $this->module->$methodName($this->token, $id, $name);
                     } elseif (method_exists($this, $methodName)) {
@@ -625,8 +626,8 @@ class HelperListCore extends Helper
 
                 if (isset($params['active'])) {
                     // If method is defined in calling controller, use it instead of the Helper method
-                    if (method_exists($this->context->controller, 'displayEnableLink')) {
-                        $callingObj = $this->context->controller;
+                    if (method_exists($controller, 'displayEnableLink')) {
+                        $callingObj = $controller;
                     } elseif ($this->module && method_exists($this->module, 'displayEnableLink')) {
                         $callingObj = $this->module;
                     } else {
@@ -697,7 +698,7 @@ class HelperListCore extends Helper
                     $this->_list[$index][$key] = rtrim(rtrim($dataValue, '0'), '.');
                 } elseif (isset($dataValue)) {
                     if (isset($params['callback'])) {
-                        $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $this->context->controller;
+                        $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $controller;
                         $this->_list[$index][$key] = call_user_func_array([$callbackObj, $params['callback']], [$dataValue, $tr]);
                     } else {
                         $this->_list[$index][$key] = $dataValue;
@@ -886,7 +887,7 @@ class HelperListCore extends Helper
             [
                 'id'          => $id,
                 'href'        => $this->currentIndex.'&'.$this->identifier.'='.$id.'&details'.$this->table.'&token='.($token != null ? $token : $this->token),
-                'controller'  => str_replace('Controller', '', get_class($this->context->controller)),
+                'controller'  => str_replace('Controller', '', get_class($this->getController())),
                 'token'       => $token != null ? $token : $this->token,
                 'action'      => static::$cache_lang['Details'],
                 'params'      => $ajaxParams,

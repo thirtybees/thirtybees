@@ -49,10 +49,10 @@ class HelperShopCore extends Helper
         }
 
         $shopContext = Shop::getContext();
-        $context = Context::getContext();
         $tree = Shop::getTree();
+        $controller = $this->getController();
 
-        if ($shopContext == Shop::CONTEXT_ALL || ($context->controller->multishop_context_group == false && $shopContext == Shop::CONTEXT_GROUP)) {
+        if ($shopContext == Shop::CONTEXT_ALL || ($controller->multishop_context_group == false && $shopContext == Shop::CONTEXT_GROUP)) {
             $currentShopValue = '';
             $currentShopName = Translate::getAdminTranslation('All shops');
         } elseif ($shopContext == Shop::CONTEXT_GROUP) {
@@ -78,10 +78,10 @@ class HelperShopCore extends Helper
                 'tree'                    => $tree,
                 'current_shop_name'       => $currentShopName,
                 'current_shop_value'      => $currentShopValue,
-                'multishop_context'       => $context->controller->multishop_context,
-                'multishop_context_group' => $context->controller->multishop_context_group,
-                'is_shop_context'         => ($context->controller->multishop_context & Shop::CONTEXT_SHOP),
-                'is_group_context'        => ($context->controller->multishop_context & Shop::CONTEXT_GROUP),
+                'multishop_context'       => $controller->multishop_context,
+                'multishop_context_group' => $controller->multishop_context_group,
+                'is_shop_context'         => ($controller->multishop_context & Shop::CONTEXT_SHOP),
+                'is_group_context'        => ($controller->multishop_context & Shop::CONTEXT_GROUP),
                 'shop_context'            => $shopContext,
                 'url'                     => $_SERVER['REQUEST_URI'].(($_SERVER['QUERY_STRING']) ? '&' : '?').'setShopContext=',
             ]

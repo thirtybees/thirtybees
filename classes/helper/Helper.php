@@ -214,7 +214,7 @@ class HelperCore
         }
 
         if ($useSearch) {
-            $this->context->controller->addJs(_PS_JS_DIR_.'jquery/plugins/autocomplete/jquery.autocomplete.js');
+            $this->getController()->addJs(_PS_JS_DIR_.'jquery/plugins/autocomplete/jquery.autocomplete.js');
         }
 
         $html = '
@@ -323,7 +323,10 @@ class HelperCore
 
         // Get default value
         $shopContext = Shop::getContext();
-        if ($shopContext == Shop::CONTEXT_ALL || ($context->controller->multishop_context_group == false && $shopContext == Shop::CONTEXT_GROUP)) {
+        /** @var AdminController $controller */
+        $controller = $context->controller;
+
+        if ($shopContext == Shop::CONTEXT_ALL || ($controller->multishop_context_group == false && $shopContext == Shop::CONTEXT_GROUP)) {
             $value = '';
         } elseif ($shopContext == Shop::CONTEXT_GROUP) {
             $value = 'g-'.Shop::getContextShopGroupID();
@@ -338,19 +341,19 @@ class HelperCore
         $html .= '<option value="" class="first">'.Translate::getAdminTranslation('All shops').'</option>';
 
         foreach ($tree as $groupId => $groupData) {
-            if ((!isset($context->controller->multishop_context) || $context->controller->multishop_context & Shop::CONTEXT_GROUP)) {
-                $html .= '<option class="group" value="g-'.$groupId.'"'.(((empty($value) && $shopContext == Shop::CONTEXT_GROUP) || $value == 'g-'.$groupId) ? ' selected="selected"' : '').($context->controller->multishop_context_group == false ? ' disabled="disabled"' : '').'>'.Translate::getAdminTranslation('Group:').' '.htmlspecialchars($groupData['name']).'</option>';
+            if ((!isset($controller->multishop_context) || $controller->multishop_context & Shop::CONTEXT_GROUP)) {
+                $html .= '<option class="group" value="g-'.$groupId.'"'.(((empty($value) && $shopContext == Shop::CONTEXT_GROUP) || $value == 'g-'.$groupId) ? ' selected="selected"' : '').($controller->multishop_context_group == false ? ' disabled="disabled"' : '').'>'.Translate::getAdminTranslation('Group:').' '.htmlspecialchars($groupData['name']).'</option>';
             } else {
-                $html .= '<optgroup class="group" label="'.Translate::getAdminTranslation('Group:').' '.htmlspecialchars($groupData['name']).'"'.($context->controller->multishop_context_group == false ? ' disabled="disabled"' : '').'>';
+                $html .= '<optgroup class="group" label="'.Translate::getAdminTranslation('Group:').' '.htmlspecialchars($groupData['name']).'"'.($controller->multishop_context_group == false ? ' disabled="disabled"' : '').'>';
             }
-            if (!isset($context->controller->multishop_context) || $context->controller->multishop_context & Shop::CONTEXT_SHOP) {
+            if (!isset($controller->multishop_context) || $controller->multishop_context & Shop::CONTEXT_SHOP) {
                 foreach ($groupData['shops'] as $shopId => $shopData) {
                     if ($shopData['active']) {
-                        $html .= '<option value="s-'.$shopId.'" class="shop"'.(($value == 's-'.$shopId) ? ' selected="selected"' : '').'>'.($context->controller->multishop_context_group == false ? htmlspecialchars($groupData['name']).' - ' : '').$shopData['name'].'</option>';
+                        $html .= '<option value="s-'.$shopId.'" class="shop"'.(($value == 's-'.$shopId) ? ' selected="selected"' : '').'>'.($controller->multishop_context_group == false ? htmlspecialchars($groupData['name']).' - ' : '').$shopData['name'].'</option>';
                     }
                 }
             }
-            if (!(!isset($context->controller->multishop_context) || $context->controller->multishop_context & Shop::CONTEXT_GROUP)) {
+            if (!(!isset($controller->multishop_context) || $controller->multishop_context & Shop::CONTEXT_GROUP)) {
                 $html .= '</optgroup>';
             }
         }
@@ -492,8 +495,9 @@ class HelperCore
     protected function getOverrideTemplatePath($tplName)
     {
         if ($this->override_folder) {
-            if ($this->context->controller instanceof ModuleAdminController) {
-                $path = $this->context->controller->getTemplatePath($tplName) . $this->override_folder . $this->base_folder . $tplName;
+            $controller = $this->getController();
+            if ($controller instanceof ModuleAdminController) {
+                $path = $controller->getTemplatePath() . $this->override_folder . $this->base_folder . $tplName;
                 if (file_exists($path)) {
                     return $path;
                 }
@@ -523,5 +527,18 @@ class HelperCore
         }
 
         return false;
+    }
+
+    /**
+     * @return AdminController
+     */
+    protected function getController()
+    {
+        /** @var AdminController $controller */
+       $controller = $this->context->controller;
+       if (! ($controller instanceof AdminController)) {
+           trigger_error('Helper class used outside AdminController context', E_USER_WARNING);
+       }
+       return $controller;
     }
 }

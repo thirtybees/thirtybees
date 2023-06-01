@@ -154,6 +154,7 @@ class HelperFormCore extends Helper
                     if (isset($params['condition']) && !$params['condition']) {
                         unset($this->fields_form[$fieldsetKey]['form']['input'][$key]);
                     }
+                    $controller = $this->getController();
                     switch ($params['type']) {
                         case 'select':
                             $fieldName = (string) $params['name'];
@@ -259,14 +260,14 @@ class HelperFormCore extends Helper
                         case 'color':
                             if ($color) {
                                 // Added JS file
-                                $this->context->controller->addJqueryPlugin('colorpicker');
+                                $controller->addJqueryPlugin('colorpicker');
                                 $color = false;
                             }
                             break;
 
                         case 'date':
                             if ($date) {
-                                $this->context->controller->addJqueryUI('ui.datepicker');
+                                $controller->addJqueryUI('ui.datepicker');
                                 $date = false;
                             }
                             break;
@@ -279,24 +280,24 @@ class HelperFormCore extends Helper
                                 $this->tpl_vars['ad'] = __PS_BASE_URI__.basename(_PS_ADMIN_DIR_);
                                 $this->tpl_vars['tinymce'] = true;
 
-                                $this->context->controller->addJS(_PS_JS_DIR_.'tiny_mce/tiny_mce.js');
-                                $this->context->controller->addJS(_PS_JS_DIR_.'admin/tinymce.inc.js');
+                                $controller->addJS(_PS_JS_DIR_.'tiny_mce/tiny_mce.js');
+                                $controller->addJS(_PS_JS_DIR_.'admin/tinymce.inc.js');
                                 $tinymce = false;
                             }
 
                             if ($textareaAutosize) {
-                                $this->context->controller->addJqueryPlugin('autosize');
+                                $controller->addJqueryPlugin('autosize');
                                 $textareaAutosize = false;
                             }
                             break;
 
                         case 'tags':
-                            $this->context->controller->addJqueryPlugin('tagify');
+                            $controller->addJqueryPlugin('tagify');
                             break;
 
                         case 'code':
-                            $this->context->controller->addJS(_PS_JS_DIR_.'ace/ace.js');
-                            $this->context->controller->addCSS(_PS_JS_DIR_.'ace/aceinput.css');
+                            $controller->addJS(_PS_JS_DIR_.'ace/ace.js');
+                            $controller->addCSS(_PS_JS_DIR_.'ace/aceinput.css');
                             break;
 
                         case 'shop':

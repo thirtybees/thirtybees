@@ -118,23 +118,24 @@ class HelperOptionsCore extends Helper
 
                 $field['required'] = $field['required'] ?? $this->required;
 
+                $controller = $this->getController();
                 if ($field['type'] === 'color') {
-                    $this->context->controller->addJqueryPlugin('colorpicker');
+                    $controller->addJqueryPlugin('colorpicker');
                 }
 
                 if ($field['type'] === 'textarea' || $field['type'] === 'textareaLang') {
-                    $this->context->controller->addJqueryPlugin('autosize');
+                    $controller->addJqueryPlugin('autosize');
                 }
 
                 if ($field['type'] === 'code') {
-                    $this->context->controller->addJS(_PS_JS_DIR_.'ace/ace.js');
-                    $this->context->controller->addJS(_PS_JS_DIR_.'ace/ext-language_tools.js');
-                    $this->context->controller->addJS(_PS_JS_DIR_.'ace/snippets/'.$field['mode'].'.js');
-                    $this->context->controller->addCSS(_PS_JS_DIR_.'ace/aceinput.css');
+                    $controller->addJS(_PS_JS_DIR_.'ace/ace.js');
+                    $controller->addJS(_PS_JS_DIR_.'ace/ext-language_tools.js');
+                    $controller->addJS(_PS_JS_DIR_.'ace/snippets/'.$field['mode'].'.js');
+                    $controller->addCSS(_PS_JS_DIR_.'ace/aceinput.css');
                 }
 
                 if ($field['type'] == 'tags') {
-                    $this->context->controller->addJqueryPlugin('tagify');
+                    $controller->addJqueryPlugin('tagify');
                 }
 
                 if ($field['type'] == 'file') {
