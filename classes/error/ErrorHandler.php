@@ -20,8 +20,6 @@
 namespace Thirtybees\Core\Error;
 
 use FileLogger;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use SmartyCustom;
 use Thirtybees\Core\Error\Response\ErrorResponseInterface;
 use Throwable;
@@ -33,18 +31,27 @@ class ErrorHandlerCore
 {
     const MAX_ERROR_MESSAGES = 1000;
 
+    const LEVEL_EMERGENCY = 'emergency';
+    const LEVEL_ALERT     = 'alert';
+    const LEVEL_CRITICAL  = 'critical';
+    const LEVEL_ERROR     = 'error';
+    const LEVEL_WARNING   = 'warning';
+    const LEVEL_NOTICE    = 'notice';
+    const LEVEL_INFO      = 'info';
+    const LEVEL_DEBUG     = 'debug';
+
     /**
      * @var ErrorResponseInterface
      */
     protected $errorResponse;
 
     /**
-     * @var array list of errors, warnings and notices encountered during request processing
+     * @var array[] list of errors, warnings and notices encountered during request processing
      */
     protected $errorMessages = [];
 
     /**
-     * @var LoggerInterface[] psr compliant logger
+     * @var object[] psr compliant logger
      */
     protected $loggers = [];
 
@@ -90,7 +97,7 @@ class ErrorHandlerCore
      *             messages that were suppressed using @ operator
      * @param int $mask message types to return, defaults to E_ALL.
      *
-     * @return array of collected error messages
+     * @return array[] of collected error messages
      */
     public function getErrorMessages($includeSuppressed = false, $mask = E_ALL)
     {
@@ -189,6 +196,7 @@ class ErrorHandlerCore
         $line = $errline;
         $realFile = null;
         $realLine = 0;
+        $errno = (int)$errno;
 
         if (SmartyCustom::isCompiledTemplate($file)) {
             $realFile = ErrorUtils::getRelativeFile($errfile);
@@ -247,10 +255,10 @@ class ErrorHandlerCore
      * Adds external logger. If $replay parameter is true, then any already
      * collected error messages will be emitted.
      *
-     * @param LoggerInterface $logger
+     * @param object $logger
      * @param bool $replay
      */
-    public function addLogger(LoggerInterface $logger, $replay=false)
+    public function addLogger($logger, $replay=false)
     {
         $this->loggers[] = $logger;
         if ($replay) {
@@ -295,12 +303,11 @@ class ErrorHandlerCore
      *
      * @return string
      */
-    public static function formatErrorMessage($msg)
+    public static function formatErrorMessage(array $msg)
     {
         $file = ErrorUtils::getRelativeFile($msg['errfile']);
 
-        return $msg['type'].': '
-            .$msg['errstr'].' in '.$file.' at line '.$msg['errline'];
+        return $msg['type'] . ': ' . $msg['errstr'] . ' in ' . $file . ' at line ' . $msg['errline'];
     }
 
     /**
@@ -310,7 +317,7 @@ class ErrorHandlerCore
      *
      * @return string error type
      */
-    public static function getErrorType($errno)
+    public static function getErrorType(int $errno)
     {
         switch ($errno) {
             case E_PARSE:
@@ -360,29 +367,29 @@ class ErrorHandlerCore
      *
      * @return string error log level
      */
-    public static function getLogLevel($errno)
+    public static function getLogLevel(int $errno)
     {
         switch ($errno) {
             case E_PARSE:
             case E_CORE_ERROR:
             case E_COMPILE_ERROR:
-                return LogLevel::CRITICAL;
+                return static::LEVEL_CRITICAL;
             case E_USER_ERROR:
             case E_RECOVERABLE_ERROR:
             case E_ERROR:
-                return LogLevel::ERROR;
+                return static::LEVEL_ERROR;
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
             case E_USER_WARNING:
             case E_WARNING:
             case E_USER_DEPRECATED:
             case E_DEPRECATED:
-                return LogLevel::WARNING;
+                return static::LEVEL_WARNING;
             case E_USER_NOTICE:
             case E_NOTICE:
-                return LogLevel::NOTICE;
+                return static::LEVEL_NOTICE;
             default:
-                return LogLevel::DEBUG;
+                return static::LEVEL_DEBUG;
         }
     }
 
@@ -411,38 +418,40 @@ class ErrorHandlerCore
     }
 
     /**
-     * @param LoggerInterface $logger
+     * @param object $logger
      * @param array $msg
      * @return void
      */
-    protected function sendMessageToLogger(LoggerInterface $logger, $msg)
+    protected function sendMessageToLogger($logger, array $msg)
     {
         $message = static::formatErrorMessage($msg);
-
         switch ($msg['level']) {
-            case LogLevel::EMERGENCY:
+            case static::LEVEL_EMERGENCY:
                 $logger->emergency($message, $msg);
                 break;
-            case LogLevel::ALERT:
+            case static::LEVEL_ALERT:
                 $logger->alert($message, $msg);
                 break;
-            case LogLevel::CRITICAL:
+            case static::LEVEL_CRITICAL:
                 $logger->critical($message, $msg);
                 break;
-            case LogLevel::ERROR:
+            case static::LEVEL_ERROR:
                 $logger->error($message, $msg);
                 break;
-            case LogLevel::WARNING:
+            case static::LEVEL_WARNING:
                 $logger->warning($message, $msg);
                 break;
-            case LogLevel::NOTICE:
+            case static::LEVEL_NOTICE:
                 $logger->notice($message, $msg);
                 break;
-            case LogLevel::INFO:
+            case static::LEVEL_INFO:
                 $logger->info($message, $msg);
                 break;
-            case LogLevel::DEBUG:
+            case static::LEVEL_DEBUG:
                 $logger->debug($message, $msg);
+                break;
+            default:
+                $logger->log($msg['level'], $message, $msg);
                 break;
         }
     }
