@@ -445,6 +445,10 @@ class FrontControllerCore extends Controller
                 break;
 
         }
+        // append page number
+        if ($p = Tools::getIntValue('p')) {
+            $canonical .= "?p=$p";
+        }
         // build new content
         $content .= '<link rel="canonical" href="'.$canonical.'">'."\n";
         if (is_array($hreflang) && !empty($hreflang)) {
