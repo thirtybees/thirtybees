@@ -53,7 +53,7 @@ abstract class TaxManagerModuleCore extends Module
     /**
      * @param array $args
      *
-     * @return bool
+     * @return TaxManagerInterface|false
      *
      * @throws PrestaShopException
      */

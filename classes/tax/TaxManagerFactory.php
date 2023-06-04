@@ -35,7 +35,7 @@
 class TaxManagerFactoryCore
 {
     /**
-     * @var TaxManagerInterface
+     * @var TaxManagerInterface[]
      */
     protected static $cache_tax_manager;
 
@@ -43,26 +43,26 @@ class TaxManagerFactoryCore
      * Returns a tax manager able to handle this address
      *
      * @param Address $address
-     * @param int $type TaxRulesGroup id
+     * @param int $taxRuleGroupId TaxRulesGroup id
      *
      * @return TaxManagerInterface
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getManager(Address $address, $type)
+    public static function getManager(Address $address, $taxRuleGroupId)
     {
-        $cacheId = TaxManagerFactory::getCacheKey($address).'-'.$type;
-        if (!isset(TaxManagerFactory::$cache_tax_manager[$cacheId])) {
-            $taxManager = TaxManagerFactory::execHookTaxManagerFactory($address, $type);
-            if (!($taxManager instanceof TaxManagerInterface)) {
-                $taxManager = new TaxRulesTaxManager($address, $type);
+        $cacheId = static::getCacheKey($address).'-'.$taxRuleGroupId;
+        if (!isset(static::$cache_tax_manager[$cacheId])) {
+            $taxManager = static::execHookTaxManagerFactory($address, $taxRuleGroupId);
+            if ($taxManager) {
+                static::$cache_tax_manager[$cacheId] = $taxManager;
+            } else {
+                static::$cache_tax_manager[$cacheId] = new TaxRulesTaxManager($address, $taxRuleGroupId);
             }
-
-            TaxManagerFactory::$cache_tax_manager[$cacheId] = $taxManager;
         }
 
-        return TaxManagerFactory::$cache_tax_manager[$cacheId];
+        return static::$cache_tax_manager[$cacheId];
     }
 
     /**
@@ -78,26 +78,22 @@ class TaxManagerFactoryCore
      */
     public static function execHookTaxManagerFactory(Address $address, $type)
     {
-        $modulesInfos = Hook::getModulesFromHook(Hook::getIdByName('taxManager'));
-        $taxManager = false;
+        $hookName = 'taxManager';
+        $modules = Hook::getModulesFromHook($hookName);
 
-        foreach ($modulesInfos as $moduleInfos) {
-            $moduleInstance = Module::getInstanceByName($moduleInfos['name']);
-            if (is_callable([$moduleInstance, 'hookTaxManager'])) {
-                $taxManager = $moduleInstance->hookTaxManager(
-                    [
-                        'address' => $address,
-                        'params'  => $type,
-                    ]
-                );
-            }
-
-            if ($taxManager) {
-                break;
+        foreach ($modules as $module) {
+            $moduleId = (int)$module['id_module'];
+            /** @var TaxManagerInterface|false|null $taxManager */
+            $taxManager = Hook::getResponse($hookName, $moduleId, [
+                'address' => $address,
+                'params' => $type,
+            ]);
+            if ($taxManager instanceof TaxManagerInterface) {
+                return $taxManager;
             }
         }
 
-        return $taxManager;
+        return false;
     }
 
     /**

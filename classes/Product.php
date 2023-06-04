@@ -1382,7 +1382,7 @@ class ProductCore extends ObjectModel
      * @param int $idProduct
      * @param Context|null $context
      *
-     * @return int|null
+     * @return int
      *
      * @throws PrestaShopException
      */
