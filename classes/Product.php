@@ -1085,31 +1085,34 @@ class ProductCore extends ObjectModel
         $cacheId2 = $idProduct.'-'.$idShop;
         if (!isset(static::$_pricesLevel2[$cacheId2])) {
             $sql = new DbQuery();
-            $sql->select('product_shop.`price`, product_shop.`ecotax`');
+            $sql->select('product_shop.`price`');
+            $sql->select('product_shop.`ecotax`');
             $sql->from('product', 'p');
             $sql->innerJoin('product_shop', 'product_shop', '(product_shop.id_product=p.id_product AND product_shop.id_shop = '.(int) $idShop.')');
             $sql->where('p.`id_product` = '.(int) $idProduct);
             if (Combination::isFeatureActive()) {
-                $sql->select('IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute, product_attribute_shop.`price` AS attribute_price, product_attribute_shop.default_on');
+                $sql
+                    ->select('IFNULL(product_attribute_shop.id_product_attribute,0) AS id_product_attribute')
+                    ->select('product_attribute_shop.`price` AS attribute_price')
+                    ->select('product_attribute_shop.default_on')
+                    ->select('product_attribute_shop.`ecotax` AS attribute_ecotax');
                 $sql->leftJoin('product_attribute_shop', 'product_attribute_shop', '(product_attribute_shop.id_product = p.id_product AND product_attribute_shop.id_shop = '.(int) $idShop.')');
             } else {
                 $sql->select('0 as id_product_attribute');
             }
 
-            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
+            foreach ($res as $row) {
+                $arrayTmp = [
+                    'price' => $row['price'],
+                    'ecotax' => $row['ecotax'],
+                    'attribute_price' => $row['attribute_price'] ?? null,
+                    'attribute_ecotax' => $row['attribute_ecotax'] ?? null,
+                ];
+                static::$_pricesLevel2[$cacheId2][(int) $row['id_product_attribute']] = $arrayTmp;
 
-            if (is_array($res) && count($res)) {
-                foreach ($res as $row) {
-                    $arrayTmp = [
-                        'price'           => $row['price'],
-                        'ecotax'          => $row['ecotax'],
-                        'attribute_price' => (isset($row['attribute_price']) ? $row['attribute_price'] : null),
-                    ];
-                    static::$_pricesLevel2[$cacheId2][(int) $row['id_product_attribute']] = $arrayTmp;
-
-                    if (isset($row['default_on']) && $row['default_on'] == 1) {
-                        static::$_pricesLevel2[$cacheId2][0] = $arrayTmp;
-                    }
+                if (isset($row['default_on']) && $row['default_on'] == 1) {
+                    static::$_pricesLevel2[$cacheId2][0] = $arrayTmp;
                 }
             }
         }
