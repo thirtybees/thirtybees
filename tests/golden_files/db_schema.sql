@@ -894,10 +894,12 @@ CREATE TABLE `PREFIX_feature_lang` (
   `id_feature` int(11) unsigned NOT NULL,
   `id_lang` int(11) unsigned NOT NULL,
   `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `public_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `multiple_separator` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `multiple_schema` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_feature`,`id_lang`),
-  KEY `id_lang` (`id_lang`,`name`)
+  KEY `id_lang` (`id_lang`,`name`),
+  KEY `id_lang_pub` (`id_lang`,`public_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_feature_product` (

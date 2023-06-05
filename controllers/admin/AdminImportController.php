@@ -301,7 +301,7 @@ class AdminImportControllerCore extends AdminController
                     'delete_existing_images'    => [
                         'label' => $this->l('Delete existing images (0 = No, 1 = Yes)'),
                     ],
-                    'features'                  => ['label' => $this->l('Feature (Name:Value:Position)')],
+                    'features'                  => ['label' => $this->l('Feature (Name:Value:Position:Public name)')],
                     'online_only'               => ['label' => $this->l('Available online only (0 = No, 1 = Yes)')],
                     'condition'                 => ['label' => $this->l('Condition')],
                     'customizable'              => ['label' => $this->l('Customizable (0 = No, 1 = Yes)')],
@@ -2937,8 +2937,9 @@ class AdminImportControllerCore extends AdminController
                     $featureName = isset($tabFeature[0]) ? trim($tabFeature[0]) : '';
                     $featureValue = isset($tabFeature[1]) ? trim($tabFeature[1]) : '';
                     $position = isset($tabFeature[2]) ? (int) $tabFeature[2] - 1 : false;
+                    $featurePublicName = isset($tabFeature[3]) ? trim($tabFeature[0]) : null;
                     if (!empty($featureName) && !empty($featureValue)) {
-                        $idFeature = (int) Feature::addFeatureImport($featureName, $position);
+                        $idFeature = (int) Feature::addFeatureImport($featureName, $position, $featurePublicName);
                         $idFeatureValue = (int) FeatureValue::addFeatureValueImport($idFeature, $featureValue, $idLang);
                         if (! isset($featureValuesToImport[$idFeature])) {
                             $featureValuesToImport[$idFeature] = [];

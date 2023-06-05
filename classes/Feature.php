@@ -46,6 +46,11 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     public $name;
 
     /**
+     * @var string|string[] Feature name
+     */
+    public $public_name;
+
+    /**
      * @var int Position of the feature
      */
     public $position;
@@ -91,12 +96,14 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
             /* Lang fields */
             'name'                 => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+            'public_name'          => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
             'multiple_separator'   => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => false, 'size' => 128, 'dbNullable' => true],
             'multiple_schema'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => false, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [
             'feature_lang' => [
                 'id_lang' => ['type' => ObjectModel::KEY, 'columns' => ['id_lang', 'name']],
+                'id_lang_pub' => ['type' => ObjectModel::KEY, 'columns' => ['id_lang', 'public_name']],
             ],
             'feature_shop' => [
                 'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
@@ -181,14 +188,18 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      * Create a feature from import
      *
      * @param string $name
-     * @param bool $position
+     * @param int|false $position
+     * @param string|null $publicName
      *
      * @return int
      *
      * @throws PrestaShopException
      */
-    public static function addFeatureImport($name, $position = false)
+    public static function addFeatureImport($name, $position = false, $publicName = null)
     {
+        $name = (string)$name;
+        $publicName = $publicName ? (string)$publicName : $name;
+
         $featureId = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_feature`')
@@ -198,7 +209,8 @@ class FeatureCore extends ObjectModel implements InitializationCallback
         if (! $featureId) {
             // Feature doesn't exist, create it
             $feature = new Feature();
-            $feature->name = array_fill_keys(Language::getIDs(), (string) $name);
+            $feature->name = array_fill_keys(Language::getIDs(), $name);
+            $feature->public_name = array_fill_keys(Language::getIDs(), $publicName);
             if ($position) {
                 $feature->position = (int) $position;
             } else {
@@ -250,6 +262,10 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     {
         if ($this->position <= 0) {
             $this->position = Feature::getHigherPosition() + 1;
+        }
+
+        if ($this->name && !$this->public_name) {
+            $this->public_name = $this->name;
         }
 
         $return = parent::add($autoDate, true);
@@ -505,6 +521,10 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function initializationCallback(Db $conn)
     {
+        // add missing public names
+        $conn->execute('UPDATE ' . _DB_PREFIX_ . "feature_lang SET public_name = name WHERE COALESCE(public_name, '') = ''");
+
+        // recalculate positions
         $features = static::getFeatures(Configuration::get('PS_LANG_DEFAULT'));
         foreach ($features as $feature) {
             FeatureValue::cleanPositions((int)$feature['id_feature']);

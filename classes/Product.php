@@ -2148,7 +2148,7 @@ class ProductCore extends ObjectModel
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
             $feature_values = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
                 '
-				SELECT fl.name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
+				SELECT COALESCE(NULLIF(fl.public_name, \'\'), fl.name) AS name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
 				FROM '._DB_PREFIX_.'feature_product pf
 				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.' AND pfl.id_product = '.(int)$idProduct.')
 				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')

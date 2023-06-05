@@ -327,7 +327,16 @@ class AdminFeaturesControllerCore extends AdminController
                     'name'     => 'name',
                     'lang'     => true,
                     'size'     => 33,
-                    'hint'     => $this->l('Invalid characters:').' <>;=#{}',
+                    'hint'     => $this->l('Your internal name for this feature.').'&nbsp;'.$this->l('Invalid characters:').' <>;=#{}',
+                    'required' => true,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Public name'),
+                    'name'     => 'public_name',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('The public name for this feature, displayed to the customers.').'&nbsp;'.$this->l('Invalid characters:').' <>;=#{}',
                     'required' => true,
                 ],
                 [
@@ -945,4 +954,5 @@ class AdminFeaturesControllerCore extends AdminController
         $link = Context::getContext()->link->getAdminLink('AdminProducts', true, $params);
         return "<a href=\"$link\">$value</a>";
     }
+
 }

@@ -26,7 +26,7 @@
 
 {block name="input_row"}
 	{$smarty.block.parent}
-	{if $input.name == 'name'}
+	{if $input.name == 'public_name'}
 		{hook h="displayFeatureForm" id_feature=$form_id}
 	{/if}
 {/block}
