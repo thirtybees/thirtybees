@@ -145,6 +145,7 @@ class ModuleGridEngineCore extends Module
             }
         }
         $html = '
+		<div class="table-responsive">
 		<table class="table" id="grid_1">
 			<thead>
 				<tr>';
@@ -156,6 +157,7 @@ class ModuleGridEngineCore extends Module
 			<tbody></tbody>
 			<tfoot><tr><th colspan="'.count($params['columns']).'"></th></tr></tfoot>
 		</table>
+		</div>
 		<script type="text/javascript">
 			function getGridData(url)
 			{
