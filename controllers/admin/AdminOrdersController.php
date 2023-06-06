@@ -2346,8 +2346,7 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         // Creating specific price if needed
-        if ((string) $productInformations['product_price_tax_incl']
-            !== (string) $initialProductPriceTaxIncl) {
+        if ((string) $productInformations['product_price_tax_incl'] !== (string) $initialProductPriceTaxIncl) {
             $specificPrice = new SpecificPrice();
             $specificPrice->id_cart = $cart->id;
             $specificPrice->id_shop = 0;
@@ -2362,7 +2361,7 @@ class AdminOrdersControllerCore extends AdminController
             } else {
                 $specificPrice->id_product_attribute = 0;
             }
-            $specificPrice->price = $productInformations['product_price_tax_excl'];
+            $specificPrice->price = Tools::parseNumber($productInformations['product_price_tax_excl']);
             $specificPrice->from_quantity = 1;
             $specificPrice->reduction = 0;
             $specificPrice->reduction_type = 'amount';
