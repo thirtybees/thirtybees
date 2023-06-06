@@ -2757,11 +2757,12 @@ class AdminOrdersControllerCore extends AdminController
         $productQuantity = 0;
         if (is_array(Tools::getValue('product_quantity'))) {
             foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
+                $qty = (int)$qty;
                 // Update quantity of each customization
                 Db::getInstance()->update(
                     'customization',
                     [
-                        'quantity' => (int) $qty,
+                        'quantity' => $qty,
                     ],
                     'id_customization = '.(int) $idCustomization,
                     1
@@ -2770,17 +2771,11 @@ class AdminOrdersControllerCore extends AdminController
                 $productQuantity += $qty;
             }
         } else {
-            $productQuantity = Tools::getValue('product_quantity');
+            $productQuantity = Tools::getIntValue('product_quantity');
         }
 
-        $productPriceTaxIncl = round(
-            Tools::getValue('product_price_tax_incl'),
-            _TB_PRICE_DATABASE_PRECISION_
-        );
-        $productPriceTaxExcl = round(
-            Tools::getValue('product_price_tax_excl'),
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        $productPriceTaxIncl = Tools::getNumberValue('product_price_tax_incl', _TB_PRICE_DATABASE_PRECISION_);
+        $productPriceTaxExcl = Tools::getNumberValue('product_price_tax_excl', _TB_PRICE_DATABASE_PRECISION_);
         $totalProductsTaxIncl = $productPriceTaxIncl * $productQuantity;
         $totalProductsTaxExcl = $productPriceTaxExcl * $productQuantity;
 
