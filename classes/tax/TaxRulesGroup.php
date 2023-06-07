@@ -165,29 +165,41 @@ class TaxRulesGroupCore extends ObjectModel
     /**
      * @param int $idTaxRule
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getIdTaxRuleGroupFromHistorizedId($idTaxRule)
     {
-        $params = Db::getInstance()->getRow(
-            '
-		SELECT id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior
-		FROM '._DB_PREFIX_.'tax_rule
-		WHERE id_tax_rule='.(int) $idTaxRule
-        );
+        $idTaxRule = (int)$idTaxRule;
+        if ($idTaxRule) {
+            $params = Db::getInstance()->getRow((new DbQuery())
+                ->select( 't.id_country')
+                ->select('t.id_state')
+                ->select('t.zipcode_from')
+                ->select('t.zipcode_to')
+                ->select('t.id_tax')
+                ->select('t.behavior')
+                ->from('tax_rule', 't')
+                ->where('t.id_tax_rule = ' . $idTaxRule)
+            );
 
-        return Db::getInstance()->getValue(
-            '
-		SELECT id_tax_rule
-		FROM '._DB_PREFIX_.'tax_rule
-		WHERE
-			id_tax_rules_group = '.(int) $this->id.' AND
-			id_country='.(int) $params['id_country'].' AND id_state='.(int) $params['id_state'].' AND id_tax='.(int) $params['id_tax'].' AND
-			zipcode_from=\''.pSQL($params['zipcode_from']).'\' AND zipcode_to=\''.pSQL($params['zipcode_to']).'\' AND behavior='.(int) $params['behavior']
-        );
+            if ($params) {
+                return (int)Db::getInstance()->getValue((new DbQuery())
+                    ->select('t.id_tax_rule')
+                    ->from('tax_rule', 't')
+                    ->where('t.id_tax_rules_group = ' . (int)$this->id)
+                    ->where('t.id_country = ' . (int)$params['id_country'])
+                    ->where('t.id_state = ' . (int)$params['id_state'])
+                    ->where('t.id_tax = ' . (int)$params['id_tax'])
+                    ->where('t.zipcode_from = "' . pSQL($params['zipcode_from']) . '"')
+                    ->where('t.zipcode_to = "' . pSQL($params['zipcode_to']) . '"')
+                    ->where('t.behavior = ' . (int)$params['behavior'])
+                );
+            }
+        }
+        return 0;
     }
 
     /**
