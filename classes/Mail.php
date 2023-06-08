@@ -425,10 +425,10 @@ class MailCore extends ObjectModel
 
         $templates = [];
         if ($templateHtml) {
-            $templates[] = new SimpleMailTemplate('text/html', $templateHtml);
+            $templates[] = new SimpleMailTemplate($template, 'text/html', $templateHtml);
         }
         if ($templateTxt) {
-            $templates[] = new SimpleMailTemplate('text/plain', $templateTxt);
+            $templates[] = new SimpleMailTemplate($template, 'text/plain', $templateTxt);
         }
 
         if (!$templates) {

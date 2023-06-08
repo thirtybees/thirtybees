@@ -20,13 +20,28 @@ class SimpleMailTemplateCore implements MailTemplate
     protected $template;
 
     /**
+     * @var string
+     */
+    protected $templateName;
+
+    /**
+     * @param string $templateName
      * @param string $contentType
      * @param string $template
      */
-    public function __construct(string $contentType, string $template)
+    public function __construct(string $templateName, string $contentType, string $template)
     {
+        $this->templateName = $templateName;
         $this->contentType = $contentType;
         $this->template = $template;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateName(): string
+    {
+        return $this->templateName;
     }
 
     /**

@@ -5,11 +5,22 @@ namespace Thirtybees\Core\Mail;
 interface MailTemplate
 {
     /**
+     * Returns name of template
+     *
+     * @return string
+     */
+    public function getTemplateName():string;
+
+    /**
+     * Returns template content type
+     *
      * @return string
      */
     public function getContentType():string;
 
     /**
+     * Returns template content
+     *
      * @return string
      */
     public function getTemplate():string;
