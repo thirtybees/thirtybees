@@ -596,7 +596,7 @@ class AdminControllerCore extends Controller
                 if ($e instanceof PrestaShopException) {
                     throw $e;
                 } else {
-                    throw new PrestaShopException($e->getMessage(), null, $e);
+                    throw new PrestaShopException($e->getMessage(), 0, $e);
                 }
             }
         }

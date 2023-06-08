@@ -844,7 +844,7 @@ class MailCore extends ObjectModel
             if ($e instanceof PrestaShopException) {
                 throw $e;
             } else {
-                throw new PrestaShopException("Failed to send email", null, $e);
+                throw new PrestaShopException("Failed to send email", 0, $e);
             }
         } else {
             return false;
