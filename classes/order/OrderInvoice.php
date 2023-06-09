@@ -154,7 +154,7 @@ class OrderInvoiceCore extends ObjectModel
      * @param string $dateFrom
      * @param string $dateTo
      *
-     * @return static[] collection of OrderInvoice
+     * @return OrderInvoice[] collection of OrderInvoice
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -172,13 +172,13 @@ class OrderInvoiceCore extends ObjectModel
                 ->orderBy('oi.`date_add` ASC')
         );
 
-        return ObjectModel::hydrateCollection(__CLASS__, $orderInvoiceList);
+        return ObjectModel::hydrateCollection(OrderInvoice::class, $orderInvoiceList);
     }
 
     /**
      * @param int $idOrderState
      *
-     * @return static[] collection of OrderInvoice
+     * @return OrderInvoice[] collection of OrderInvoice
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -195,14 +195,14 @@ class OrderInvoiceCore extends ObjectModel
                 ->orderBy('oi.`date_add` ASC')
         );
 
-        return ObjectModel::hydrateCollection(__CLASS__, $orderInvoiceList);
+        return ObjectModel::hydrateCollection(OrderInvoice::class, $orderInvoiceList);
     }
 
     /**
      * @param string $dateFrom
      * @param string $dateTo
      *
-     * @return static[] collection of invoice
+     * @return OrderInvoice[] collection of invoice
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -219,7 +219,7 @@ class OrderInvoiceCore extends ObjectModel
                 ->orderBy('oi.`delivery_date` ASC')
         );
 
-        return ObjectModel::hydrateCollection(__CLASS__, $orderInvoiceList);
+        return ObjectModel::hydrateCollection(OrderInvoice::class, $orderInvoiceList);
     }
 
     /**
