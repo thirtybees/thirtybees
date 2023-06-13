@@ -815,7 +815,7 @@ class AdminTranslationsControllerCore extends AdminController
                         }
 
                         if (preg_match('@^[0-9a-z-_/\\\\]+\.php$@i', $file2check['filename'])) {
-                            if (!@filemtime($sandbox.$file2check['filename']) || !AdminTranslationsController::checkTranslationFile(file_get_contents($sandbox.$file2check['filename']))) {
+                            if (!file_exists($sandbox.$file2check['filename']) || !AdminTranslationsController::checkTranslationFile(file_get_contents($sandbox.$file2check['filename']))) {
                                 $this->errors[] = sprintf(Tools::displayError('Validation failed for: %s'), $file2check['filename']);
                             }
                         } elseif (!preg_match('@mails[0-9a-z-_/\\\\]+\.(html|tpl|txt)$@i', $file2check['filename'])) {
@@ -2599,7 +2599,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         $filesByDirectiories = $this->getFileToParseByTypeTranslation();
 
-        if (!$this->theme_selected || !@filemtime($this->translations_informations[$this->type_selected]['override']['dir'])) {
+        if (!$this->theme_selected || !file_exists($this->translations_informations[$this->type_selected]['override']['dir'])) {
             $this->copyMailFilesForAllLanguages();
         }
 
@@ -2613,7 +2613,7 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         // Get path of directory for find a good path of translation file
-        if ($this->theme_selected && @filemtime($this->translations_informations[$this->type_selected]['override']['dir'])) {
+        if ($this->theme_selected && file_exists($this->translations_informations[$this->type_selected]['override']['dir'])) {
             $i18NDir = $this->translations_informations[$this->type_selected]['override']['dir'];
         } else {
             $i18NDir = $this->translations_informations[$this->type_selected]['dir'];
