@@ -1054,22 +1054,29 @@ class ToolsCore
             return $amount;
         }
 
+        $defaultCurrencyId = (int)Configuration::get('PS_CURRENCY_DEFAULT');
+
         if ($currencyFrom === null) {
-            $currencyFrom = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+            $currencyFrom = Currency::getCurrencyInstance($defaultCurrencyId);
         }
 
         if ($currencyTo === null) {
-            $currencyTo = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+            $currencyTo = Currency::getCurrencyInstance($defaultCurrencyId);
         }
 
-        if ($currencyFrom->id == Configuration::get('PS_CURRENCY_DEFAULT')) {
-            $amount *= $currencyTo->conversion_rate;
-        } else {
-            $conversionRate = ($currencyFrom->conversion_rate == 0 ? 1 : $currencyFrom->conversion_rate);
-            // Convert amount to default currency (using the old currency rate)
-            $amount = $amount / $conversionRate;
-            // Convert to new currency
-            $amount *= $currencyTo->conversion_rate;
+        $currencyFromId = (int)$currencyFrom->id;
+        $currencyToId = (int)$currencyTo->id;
+
+        if ($currencyFromId !== $currencyToId) {
+            if ($currencyFromId === $defaultCurrencyId) {
+                $amount *= $currencyTo->conversion_rate;
+            } else {
+                $conversionRate = ($currencyFrom->conversion_rate == 0 ? 1 : $currencyFrom->conversion_rate);
+                // Convert amount to default currency (using the old currency rate)
+                $amount = $amount / $conversionRate;
+                // Convert to new currency
+                $amount *= $currencyTo->conversion_rate;
+            }
         }
         $amount = round($amount, _TB_PRICE_DATABASE_PRECISION_);
 
