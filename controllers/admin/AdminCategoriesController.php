@@ -1095,23 +1095,21 @@ class AdminCategoriesControllerCore extends AdminController
             $skipCheck = false;
         }
 
-        $fatherlessProducts = Db::getInstance()->executeS($sql);
-        if (is_array($fatherlessProducts)) {
-            foreach ($fatherlessProducts as $product) {
-                $productId = (int)$product['id_product'];
-                if ($skipCheck || in_array($productId, $products)) {
-                    $poorProduct = new Product($productId);
-                    if (Validate::isLoadedObject($poorProduct)) {
-                        if ($this->remove_products || $idParent == 0) {
-                            $poorProduct->delete();
-                        } else {
-                            if ($this->disable_products) {
-                                $poorProduct->active = 0;
-                            }
-                            $poorProduct->id_category_default = $idParent;
-                            $poorProduct->addToCategories($idParent);
-                            $poorProduct->save();
+        $fatherlessProducts = Db::readOnly()->getArray($sql);
+        foreach ($fatherlessProducts as $product) {
+            $productId = (int)$product['id_product'];
+            if ($skipCheck || in_array($productId, $products)) {
+                $poorProduct = new Product($productId);
+                if (Validate::isLoadedObject($poorProduct)) {
+                    if ($this->remove_products || $idParent == 0) {
+                        $poorProduct->delete();
+                    } else {
+                        if ($this->disable_products) {
+                            $poorProduct->active = 0;
                         }
+                        $poorProduct->id_category_default = $idParent;
+                        $poorProduct->addToCategories($idParent);
+                        $poorProduct->save();
                     }
                 }
             }

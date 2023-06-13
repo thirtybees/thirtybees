@@ -175,7 +175,7 @@ class CombinationCore extends ObjectModel
             return 0;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('pa.id_product_attribute')
                 ->from('product_attribute', 'pa')
@@ -195,7 +195,7 @@ class CombinationCore extends ObjectModel
      */
     public static function getPrice($idProductAttribute)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('product_attribute_shop.`price`')
                 ->from('product_attribute', 'pa')
@@ -352,7 +352,8 @@ class CombinationCore extends ObjectModel
      */
     public function setAttributes($idsAttribute)
     {
-        $result = Db::getInstance()->delete('product_attribute_combination', '`id_product_attribute` = '.(int) $this->id);
+        $conn = Db::getInstance();
+        $result = $conn->delete('product_attribute_combination', '`id_product_attribute` = '.(int) $this->id);
 
         if ($result && is_array($idsAttribute) && $idsAttribute) {
             $sqlValues = [];
@@ -366,7 +367,7 @@ class CombinationCore extends ObjectModel
                 }
             }
             if ($sqlValues) {
-                $result = Db::getInstance()->insert('product_attribute_combination', $sqlValues);
+                $result = $conn->insert('product_attribute_combination', $sqlValues);
             }
         }
 
@@ -381,7 +382,7 @@ class CombinationCore extends ObjectModel
      */
     public function getWsProductOptionValues()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.`id_attribute` AS `id`')
                 ->from('product_attribute_combination', 'a')
@@ -389,7 +390,7 @@ class CombinationCore extends ObjectModel
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
 
-        return is_array($result) ? $result : [];
+        return $result;
     }
 
     /**
@@ -399,7 +400,7 @@ class CombinationCore extends ObjectModel
      */
     public function getWsImages()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.`id_image` AS `id`')
                 ->from('product_attribute_image', 'a')
@@ -407,7 +408,7 @@ class CombinationCore extends ObjectModel
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
 
-        return is_array($result) ? $result : [];
+        return $result;
     }
 
     /**
@@ -439,7 +440,8 @@ class CombinationCore extends ObjectModel
      */
     public function setImages($idsImage)
     {
-        if (Db::getInstance()->delete('product_attribute_image', '`id_product_attribute` = '.(int) $this->id) === false) {
+        $conn = Db::getInstance();
+        if ($conn->delete('product_attribute_image', '`id_product_attribute` = '.(int) $this->id) === false) {
             return false;
         }
 
@@ -456,7 +458,7 @@ class CombinationCore extends ObjectModel
             }
 
             if ($sqlValues) {
-                Db::getInstance()->insert('product_attribute_image', $sqlValues);
+                $conn->insert('product_attribute_image', $sqlValues);
             }
         }
 
@@ -473,7 +475,7 @@ class CombinationCore extends ObjectModel
      */
     public function getAttributesName($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('al.*')
                 ->from('product_attribute_combination', 'pac')
@@ -484,14 +486,14 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getColorsAttributes()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.`id_attribute`')
                 ->from('product_attribute_combination', 'pac')

@@ -116,7 +116,7 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
         $cacheId = (int) $this->address->id_country.'-'.(int) $this->address->id_state.'-'.$postcode.'-'.(int) $this->type;
 
         if (!Cache::isStored($cacheId)) {
-            $rows = Db::getInstance()->executeS(
+            $rows = Db::readOnly()->getArray(
                 '
 				SELECT tr.*
 				FROM `'._DB_PREFIX_.'tax_rule` tr

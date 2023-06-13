@@ -109,7 +109,7 @@ class AttachmentCore extends ObjectModel
     {
         @unlink(_PS_DOWNLOAD_DIR_.$this->file);
 
-        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $products = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_product`')
                 ->from('product_attachment')
@@ -141,7 +141,7 @@ class AttachmentCore extends ObjectModel
 
         $return = true;
 
-        $attachmentsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $attachmentsData = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from(bqSQL(Attachment::$definition['table']))
@@ -166,13 +166,13 @@ class AttachmentCore extends ObjectModel
      * @param int $idProduct
      * @param bool $include
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getAttachments($idLang, $idProduct, $include = true)
     {
-        return Db::getInstance()->executeS('
+        return Db::readOnly()->getArray('
             SELECT *
             FROM '._DB_PREFIX_.'attachment a
             LEFT JOIN '._DB_PREFIX_.'attachment_lang al
@@ -286,7 +286,7 @@ class AttachmentCore extends ObjectModel
                 $idAttachments[] = $attachment['id_attachment'];
             }
 
-            $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $tmp = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('*')
                     ->from('product_attachment', 'pa')

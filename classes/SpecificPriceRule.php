@@ -248,7 +248,7 @@ class SpecificPriceRuleCore extends ObjectModel
                     $query->select('NULL as `id_product_attribute`');
                 }
 
-                $result = array_merge($result, Db::getInstance()->executeS($query));
+                $result = array_merge($result, Db::readOnly()->getArray($query));
             }
         } else {
             // All products without conditions
@@ -260,7 +260,7 @@ class SpecificPriceRuleCore extends ObjectModel
                     ->leftJoin('product_shop', 'ps', 'p.`id_product` = ps.`id_product`')
                     ->where('ps.id_shop = '.(int) $currentShopId);
                 $query->where('p.`id_product` IN ('.implode(', ', array_map('intval', $products)).')');
-                $result = Db::getInstance()->executeS($query);
+                $result = Db::readOnly()->getArray($query);
             } else {
                 $result = [['id_product' => 0, 'id_product_attribute' => null]];
             }
@@ -277,7 +277,8 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public function getConditions()
     {
-        $conditions = Db::getInstance()->executeS(
+        $conn = Db::readOnly();
+        $conditions = $conn->getArray(
             '
 			SELECT g.*, c.*
 			FROM '._DB_PREFIX_.'specific_price_rule_condition_group g
@@ -289,13 +290,13 @@ class SpecificPriceRuleCore extends ObjectModel
         if ($conditions) {
             foreach ($conditions as &$condition) {
                 if ($condition['type'] == 'attribute') {
-                    $condition['id_attribute_group'] = Db::getInstance()->getValue(
+                    $condition['id_attribute_group'] = $conn->getValue(
                         'SELECT id_attribute_group
 							 FROM '._DB_PREFIX_.'attribute
 							 WHERE id_attribute='.(int) $condition['value']
                     );
                 } elseif ($condition['type'] == 'feature') {
-                    $condition['id_feature'] = Db::getInstance()->getValue(
+                    $condition['id_feature'] = $conn->getValue(
                         'SELECT id_feature
 							 FROM '._DB_PREFIX_.'feature_value
 							 WHERE id_feature_value='.(int) $condition['value']
@@ -373,16 +374,17 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public function deleteConditions()
     {
-        $idsConditionGroup = Db::getInstance()->executeS(
+        $idsConditionGroup = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_specific_price_rule_condition_group`')
                 ->from('specific_price_rule_condition_group')
                 ->where('`id_specific_price_rule` = '.(int) $this->id)
         );
         if ($idsConditionGroup) {
+            $conn = Db::getInstance();
             foreach ($idsConditionGroup as $row) {
-                Db::getInstance()->delete('specific_price_rule_condition_group', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
-                Db::getInstance()->delete('specific_price_rule_condition', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
+                $conn->delete('specific_price_rule_condition_group', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
+                $conn->delete('specific_price_rule_condition', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
             }
         }
     }
@@ -401,7 +403,8 @@ class SpecificPriceRuleCore extends ObjectModel
             return false;
         }
 
-        $result = Db::getInstance()->insert(
+        $conn = Db::getInstance();
+        $result = $conn->insert(
             'specific_price_rule_condition_group',
             [
                 'id_specific_price_rule' => (int) $this->id,
@@ -410,9 +413,9 @@ class SpecificPriceRuleCore extends ObjectModel
         if (!$result) {
             return false;
         }
-        $idSpecificPriceRuleConditionGroup = (int) Db::getInstance()->Insert_ID();
+        $idSpecificPriceRuleConditionGroup = (int) $conn->Insert_ID();
         foreach ($conditions as $condition) {
-            $result = Db::getInstance()->insert(
+            $result = $conn->insert(
                 'specific_price_rule_condition',
                 [
                     'id_specific_price_rule_condition_group' => (int) $idSpecificPriceRuleConditionGroup,

@@ -125,7 +125,8 @@ class CMSCategoryCore extends ObjectModel
             $idLang = Context::getContext()->language->id;
         }
 
-        $category = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $connection = Db::readOnly();
+        $category = $connection->getRow(
             (new DbQuery())
                 ->select('c.`id_cms_category`, c.`id_parent`, c.`level_depth`, cl.`name`, cl.`link_rewrite`')
                 ->from('cms_category', 'c')
@@ -142,7 +143,7 @@ class CMSCategoryCore extends ObjectModel
 				FROM `'._DB_PREFIX_.'cms_category` c
 				WHERE c.`id_parent` = '.(int) $current.
             ($active ? ' AND c.`active` = 1' : '');
-        $result = Db::getInstance()->getArray($sql);
+        $result = $connection->getArray($sql);
         $children = [];
         if ($result) {
             foreach ($result as $row) {
@@ -162,7 +163,7 @@ class CMSCategoryCore extends ObjectModel
 				AND cl.`id_lang` = '.(int) $idLang.($active ? ' AND c.`active` = 1' : '').'
 				GROUP BY c.id_cms
 				ORDER BY c.`position`';
-        $category['cms'] = Db::getInstance()->getArray($sql);
+        $category['cms'] = $connection->getArray($sql);
         if ($links == 1) {
             $category['link'] = $link->getCMSCategoryLink($current, $category['link_rewrite']);
             foreach ($category['cms'] as $key => $cms) {
@@ -213,7 +214,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getCategories($idLang, $active = true, $order = true)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT *
 		FROM `'._DB_PREFIX_.'cms_category` c
@@ -238,14 +239,14 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getSimpleCategories($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             '
 		SELECT c.`id_cms_category`, cl.`name`
 		FROM `'._DB_PREFIX_.'cms_category` c
@@ -283,7 +284,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getChildren($idParent, $idLang, $active = true)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT c.`id_cms_category`, cl.`name`, cl.`link_rewrite`
 		FROM `'._DB_PREFIX_.'cms_category` c
@@ -326,7 +327,7 @@ class CMSCategoryCore extends ObjectModel
         $i = (int) $idParent;
 
         while (42) {
-            $result = Db::getInstance()->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'cms_category` WHERE `id_cms_category` = '.(int) $i);
+            $result = Db::readOnly()->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'cms_category` WHERE `id_cms_category` = '.(int) $i);
             if (!isset($result['id_parent'])) {
                 return false;
             }
@@ -359,7 +360,7 @@ class CMSCategoryCore extends ObjectModel
             return static::$_links[$idCmsCategory.'-'.$idLang];
         }
 
-        $result = Db::getInstance()->getRow(
+        $result = Db::readOnly()->getRow(
             '
 		SELECT cl.`link_rewrite`
 		FROM `'._DB_PREFIX_.'cms_category` c
@@ -386,8 +387,9 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function searchByName($idLang, $query, $unrestricted = false)
     {
+        $connection = Db::readOnly();
         if ($unrestricted === true) {
-            return Db::getInstance()->getRow(
+            return $connection->getRow(
                 '
 			SELECT c.*, cl.*
 			FROM `'._DB_PREFIX_.'cms_category` c
@@ -395,7 +397,7 @@ class CMSCategoryCore extends ObjectModel
 			WHERE `name` = \''.pSQL($query).'\''
             );
         } else {
-            return Db::getInstance()->executeS(
+            return $connection->getArray(
                 '
 			SELECT c.*, cl.*
 			FROM `'._DB_PREFIX_.'cms_category` c
@@ -421,7 +423,7 @@ class CMSCategoryCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        return Db::getInstance()->getRow(
+        return Db::readOnly()->getRow(
             '
 		SELECT c.*, cl.*
 	    FROM `'._DB_PREFIX_.'cms_category` c
@@ -435,14 +437,14 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getUrlRewriteInformations($idCategory)
     {
-        return Db::getInstance()->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('l.`id_lang`, c.`link_rewrite`')
                 ->from('cms_category_lang', 'c')
@@ -485,7 +487,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getLastPosition($idCategoryParent)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`)')
                 ->from('cms_category')
@@ -517,7 +519,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function cleanPositions($idCategoryParent)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_cms_category`')
                 ->from('cms_category')
@@ -623,7 +625,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public function getSubCategories($idLang, $active = true)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT c.*, cl.id_lang, cl.name, cl.description, cl.link_rewrite, cl.meta_title, cl.meta_keywords, cl.meta_description
 		FROM `'._DB_PREFIX_.'cms_category` c
@@ -703,18 +705,19 @@ class CMSCategoryCore extends ObjectModel
             ? $this->id_shop_list
             : Shop::getContextListShopID();
 
-        Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'` IN ('.$list.') AND id_shop IN ('.implode(', ', $idShopList).')');
+        $conn = Db::getInstance();
+        $conn->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'` IN ('.$list.') AND id_shop IN ('.implode(', ', $idShopList).')');
 
         $hasMultishopEntries = $this->hasMultishopEntries();
         if (!$hasMultishopEntries) {
-            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'cms_category` WHERE `id_cms_category` IN ('.$list.')');
-            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'cms_category_lang` WHERE `id_cms_category` IN ('.$list.')');
+            $conn->execute('DELETE FROM `'._DB_PREFIX_.'cms_category` WHERE `id_cms_category` IN ('.$list.')');
+            $conn->execute('DELETE FROM `'._DB_PREFIX_.'cms_category_lang` WHERE `id_cms_category` IN ('.$list.')');
         }
 
         CMSCategory::cleanPositions($this->id_parent);
 
         // Delete pages which are in categories to delete
-        $result = Db::getInstance()->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT `id_cms`
 		FROM `'._DB_PREFIX_.'cms`
@@ -745,7 +748,7 @@ class CMSCategoryCore extends ObjectModel
             throw new PrestaShopException("Invalid input parameters");
         }
 
-        $result = Db::getInstance()->getArray(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT `id_cms_category`
 		FROM `'._DB_PREFIX_.'cms_category`
@@ -819,7 +822,7 @@ class CMSCategoryCore extends ObjectModel
 				LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON (c.`id_cms_category` = cl.`id_cms_category` AND `id_lang` = '.(int) $idLang.')
 				WHERE c.`id_cms_category` = '.(int) $idCurrent.' AND c.`id_parent` != 0
 			';
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $result = Db::readOnly()->getArray($query);
 
             $categories[] = $result[0];
             if (!$result || $result[0]['id_parent'] == 1) {
@@ -840,7 +843,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
+        if (!$res = Db::readOnly()->getArray(
             '
 			SELECT cp.`id_cms_category`, cp.`position`, cp.`id_parent`
 			FROM `'._DB_PREFIX_.'cms_category` cp
@@ -861,7 +864,8 @@ class CMSCategoryCore extends ObjectModel
         }
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        return ($conn->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'cms_category`
 			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
@@ -871,7 +875,7 @@ class CMSCategoryCore extends ObjectModel
                     : '< '.(int) $movedCategory['position'].' AND `position` >= '.(int) $position).'
 			AND `id_parent`='.(int) $movedCategory['id_parent']
             )
-            && Db::getInstance()->execute(
+            && $conn->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'cms_category`
 			SET `position` = '.(int) $position.'

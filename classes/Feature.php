@@ -133,7 +133,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function getFeature($idLang, $idFeature)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('feature', 'f')
@@ -155,7 +155,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function getFeatures($idLang, $withShop = true)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('DISTINCT f.`id_feature`, f.*, fl.*')
                 ->from('feature', 'f')
@@ -176,7 +176,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function nbFeatures($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*) as `nb`')
                 ->from('feature', 'ag')
@@ -200,7 +200,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
         $name = (string)$name;
         $publicName = $publicName ? (string)$publicName : $name;
 
-        $featureId = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $featureId = (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_feature`')
                 ->from('feature_lang')
@@ -241,7 +241,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function getHigherPosition()
     {
-        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $position = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`)')
                 ->from('feature')
@@ -351,7 +351,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
             return [];
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('f.*, fl.*')
                 ->from('feature', 'f')
@@ -407,7 +407,8 @@ class FeatureCore extends ObjectModel implements InitializationCallback
     public function delete()
     {
         /* Also delete related attributes */
-        Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $conn->execute(
             '
 			DELETE
 				`'._DB_PREFIX_.'feature_value_lang`
@@ -419,9 +420,9 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 				`'._DB_PREFIX_.'feature_value`.`id_feature` = '.(int) $this->id.'
 		'
         );
-        Db::getInstance()->delete('feature_value', '`id_feature` = '.(int) $this->id);
+        $conn->delete('feature_value', '`id_feature` = '.(int) $this->id);
         /* Also delete related products */
-        Db::getInstance()->delete('feature_product', '`id_feature` = '.(int) $this->id);
+        $conn->delete('feature_product', '`id_feature` = '.(int) $this->id);
 
         $return = parent::delete();
         if ($return) {
@@ -444,10 +445,11 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public static function cleanPositions()
     {
-        Db::getInstance()->execute('SET @i = -1', false);
+        $conn = Db::getInstance();
+        $conn->execute('SET @i = -1', false);
         $sql = 'UPDATE `'._DB_PREFIX_.'feature` SET `position` = @i:=@i+1 ORDER BY `position` ASC';
 
-        return (bool) Db::getInstance()->execute($sql);
+        return (bool) $conn->execute($sql);
     }
 
     /**
@@ -464,7 +466,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      */
     public function updatePosition($way, $position, $idFeature = null)
     {
-        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`position`, `id_feature`')
                 ->from('feature')
@@ -486,14 +488,15 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->update(
+        $conn = Db::getInstance();
+        return ($conn->update(
             'feature',
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
             '`position`'.($way ? '> '.(int) $movedFeature['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedFeature['position'].' AND `position` >= '.(int) $position)
         )
-        && Db::getInstance()->update(
+        && $conn->update(
             'feature',
             [
                 'position' => (int) $position,

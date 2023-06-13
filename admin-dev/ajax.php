@@ -45,6 +45,7 @@ require_once(_PS_ADMIN_DIR_.'/init.php');
 $context = Context::getContext();
 ServiceLocator::getInstance()->getErrorHandler()->setErrorResponseHandler(new JSendErrorResponse(_PS_MODE_DEV_));
 
+$conn = Db::readOnly();
 if (Tools::isSubmit('ajaxReferrers')) {
     if (Tools::isSubmit('ajaxProductFilter')) {
         Referrer::getAjaxProduct(
@@ -55,7 +56,7 @@ if (Tools::isSubmit('ajaxReferrers')) {
     } else {
         if (Tools::isSubmit('ajaxFillProducts')) {
             $jsonArray = [];
-            $result = Db::getInstance()->executeS('
+            $result = $conn->getArray('
 			SELECT p.id_product, pl.name
 			FROM ' . _DB_PREFIX_ . 'product p
 			LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl
@@ -86,7 +87,7 @@ if (Tools::isSubmit('getAvailableFields') and Tools::isSubmit('entity')) {
 
 if (Tools::isSubmit('ajaxProductPackItems')) {
     $jsonArray = [];
-    $products = Db::getInstance()->executeS('
+    $products = $conn->getArray('
 	SELECT p.`id_product`, pl.`name`
 	FROM `'._DB_PREFIX_.'product` p
 	NATURAL LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
@@ -128,7 +129,7 @@ if (Tools::isSubmit('markNotificationsRead')) {
 if (Tools::isSubmit('searchCategory')) {
     $q = Tools::getValue('q');
     $limit = Tools::getValue('limit');
-    $results = Db::getInstance()->executeS('SELECT c.`id_category`, cl.`name`
+    $results = $conn->getArray('SELECT c.`id_category`, cl.`name`
 		FROM `'._DB_PREFIX_.'category` c
 		LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category`'.Shop::addSqlRestrictionOnLang('cl').')
 		WHERE cl.`id_lang` = '.(int)$context->language->id.' AND c.`level_depth` <> 0
@@ -145,7 +146,7 @@ if (Tools::isSubmit('searchCategory')) {
 
 if (Tools::isSubmit('getParentCategoriesId') && $id_category = Tools::getIntValue('id_category')) {
     $category = new Category((int)$id_category);
-    $results = Db::getInstance()->executeS('SELECT `id_category` FROM `'._DB_PREFIX_.'category` c WHERE c.`nleft` < '.(int)$category->nleft.' AND c.`nright` > '.(int)$category->nright);
+    $results = $conn->getArray('SELECT `id_category` FROM `'._DB_PREFIX_.'category` c WHERE c.`nleft` < '.(int)$category->nleft.' AND c.`nright` > '.(int)$category->nright);
     $output = [];
     foreach ($results as $result) {
         $output[] = $result;

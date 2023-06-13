@@ -625,7 +625,7 @@ class AdminStoresControllerCore extends AdminController
             $sql = 'SELECT `active` FROM `'._DB_PREFIX_.'state`
 					WHERE `id_country` = '.Tools::getIntValue('PS_SHOP_COUNTRY_ID').'
 						AND `id_state` = '.Tools::getIntValue('PS_SHOP_STATE_ID');
-            $isStateOk = Db::getInstance()->getValue($sql);
+            $isStateOk = Db::readOnly()->getValue($sql);
             if ($isStateOk != 1) {
                 $this->errors[] = Tools::displayError('The specified state is not located in this country.');
             }

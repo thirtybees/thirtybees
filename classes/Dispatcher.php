@@ -603,7 +603,7 @@ class DispatcherCore
         // Load the custom routes prior the defaults to avoid infinite loops
         if ($this->use_routes) {
             /* Load routes from meta table */
-            if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            if ($results = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('m.`page`, ml.`url_rewrite`, ml.`id_lang`')
                     ->from('meta', 'm')
@@ -1393,7 +1393,7 @@ class DispatcherCore
         $sql->where('`id_lang` = '.(int) $idLang);
         $sql->where('`id_shop` = '.(int) $idShop);
 
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
         if (!empty($results)) {
             $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
@@ -1449,7 +1449,7 @@ class DispatcherCore
         $sql->where('`id_lang` = '.(int) $idLang);
         $sql->where('`id_shop` = '.(int) $idShop);
 
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
         if (!empty($results)) {
             $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
@@ -1558,7 +1558,7 @@ class DispatcherCore
         $sql->where('`cl`.`id_lang` = '.(int) $idLang);
         $sql->where('`cs`.`id_shop` = '.(int) $idShop);
 
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
         if (!empty($results)) {
             $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
@@ -1615,7 +1615,7 @@ class DispatcherCore
         $sql->where('`cl`.`id_lang` = '.(int) $idLang);
         $sql->where('`cs`.`id_shop` = '.(int) $idShop);
 
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
 
         if (!empty($results)) {
             $baseLink = $link->getBaseLink().$link->getLangLink();

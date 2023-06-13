@@ -274,7 +274,7 @@ class SearchControllerCore extends FrontController
                 ->where('LENGTH(`word`) > ' . $targetLenghtMin)
                 ->where('LENGTH(`word`) < ' . $targetLenghtMax);
 
-            $selectedWords = Db::getInstance()->getArray($sql);
+            $selectedWords = Db::readOnly()->getArray($sql);
             if ($selectedWords) {
                 $minDistance = PHP_INT_MAX;
                 $selectedWord = '';

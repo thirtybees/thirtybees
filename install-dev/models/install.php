@@ -636,7 +636,8 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_CIPHER_ALGORITHM', $this->getCipherAlgorightm());
 
         $groups = Group::getGroups((int) Configuration::get('PS_LANG_DEFAULT'));
-        $groupsDefault = Db::getInstance()->executeS('SELECT `name` FROM '._DB_PREFIX_.'configuration WHERE `name` LIKE "PS_%_GROUP" ORDER BY `id_configuration`');
+        $conn = Db::getInstance();
+        $groupsDefault = $conn->getArray('SELECT `name` FROM '._DB_PREFIX_.'configuration WHERE `name` LIKE "PS_%_GROUP" ORDER BY `id_configuration`');
         foreach ($groupsDefault as &$groupDefault) {
             if (is_array($groupDefault) && isset($groupDefault['name'])) {
                 $groupDefault = $groupDefault['name'];
@@ -651,8 +652,8 @@ class InstallModelInstall extends InstallAbstractModel
             }
         }
 
-        $states = Db::getInstance()->executeS('SELECT `id_order_state` FROM '._DB_PREFIX_.'order_state ORDER BY `id_order_state`');
-        $statesDefault = Db::getInstance()->executeS('SELECT MIN(`id_configuration`), `name` FROM '._DB_PREFIX_.'configuration WHERE `name` LIKE "PS_OS_%" GROUP BY `value` ORDER BY`id_configuration`');
+        $states = $conn->getArray('SELECT `id_order_state` FROM '._DB_PREFIX_.'order_state ORDER BY `id_order_state`');
+        $statesDefault = $conn->getArray('SELECT MIN(`id_configuration`), `name` FROM '._DB_PREFIX_.'configuration WHERE `name` LIKE "PS_OS_%" GROUP BY `value` ORDER BY`id_configuration`');
 
         foreach ($statesDefault as &$stateDefault) {
             if (is_array($stateDefault) && isset($stateDefault['name'])) {
@@ -660,7 +661,7 @@ class InstallModelInstall extends InstallAbstractModel
             }
         }
 
-        if (is_array($states) && count($states)) {
+        if (count($states)) {
             foreach ($states as $key => $state) {
                 if (Configuration::get($statesDefault[$key]) != $states[$key]['id_order_state']) {
                     Configuration::updateGlobalValue($statesDefault[$key], (int) $states[$key]['id_order_state']);
@@ -680,7 +681,7 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_SMARTY_CACHE', 1);
 
         // Active only the country selected by the merchant
-        Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'country SET active = 0 WHERE id_country != '.(int) $idCountry);
+        $conn->execute('UPDATE '._DB_PREFIX_.'country SET active = 0 WHERE id_country != '.(int) $idCountry);
 
         // Set localization configuration
         $version = str_replace('.', '', _TB_VERSION_);

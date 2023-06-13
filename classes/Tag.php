@@ -83,7 +83,7 @@ class TagCore extends ObjectModel
         if ($id) {
             parent::__construct($id);
         } elseif ($name && Validate::isGenericName($name) && $idLang && Validate::isUnsignedId($idLang)) {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('*')
                     ->from('tag', 't')
@@ -194,7 +194,8 @@ class TagCore extends ObjectModel
      */
     public function setProducts($array)
     {
-        $result = Db::getInstance()->delete('product_tag', '`id_tag` = '.(int) $this->id);
+        $conn = Db::getInstance();
+        $result = $conn->delete('product_tag', '`id_tag` = '.(int) $this->id);
         if (is_array($array) && $array) {
             $array = array_map('intval', $array);
             $result = (
@@ -211,7 +212,7 @@ class TagCore extends ObjectModel
             }
 
             if ($result) {
-                $result = Db::getInstance()->insert('product_tag', $ids);
+                $result = $conn->insert('product_tag', $ids);
                 if (Configuration::get('PS_SEARCH_INDEXATION')) {
                     $result = Search::indexation(false) && $result;
                 }
@@ -230,14 +231,15 @@ class TagCore extends ObjectModel
     public static function updateTagCount($tagList = null)
     {
         if (!Module::getBatchMode()) {
+            $conn = Db::getInstance();
             if ($tagList != null) {
                 $tagListQuery = ' AND pt.id_tag IN ('.implode(',', $tagList).')';
-                Db::getInstance()->execute('DELETE pt FROM `'._DB_PREFIX_.'tag_count` pt WHERE 1=1 '.$tagListQuery);
+                $conn->execute('DELETE pt FROM `'._DB_PREFIX_.'tag_count` pt WHERE 1=1 '.$tagListQuery);
             } else {
                 $tagListQuery = '';
             }
 
-            Db::getInstance()->execute(
+            $conn->execute(
                 'REPLACE INTO `'._DB_PREFIX_.'tag_count` (id_group, id_tag, id_lang, id_shop, counter)
 			SELECT cg.id_group, pt.id_tag, pt.id_lang, id_shop, COUNT(pt.id_tag) AS times
 				FROM `'._DB_PREFIX_.'product_tag` pt
@@ -251,7 +253,7 @@ class TagCore extends ObjectModel
 				'.$tagListQuery.'
 				GROUP BY pt.id_tag, pt.id_lang, cg.id_group, id_shop ORDER BY NULL'
             );
-            Db::getInstance()->execute(
+            $conn->execute(
                 'REPLACE INTO `'._DB_PREFIX_.'tag_count` (id_group, id_tag, id_lang, id_shop, counter)
 			SELECT 0, pt.id_tag, pt.id_lang, id_shop, COUNT(pt.id_tag) AS times
 				FROM `'._DB_PREFIX_.'product_tag` pt
@@ -299,7 +301,7 @@ class TagCore extends ObjectModel
                 ->limit((int) $nb);
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**
@@ -312,7 +314,7 @@ class TagCore extends ObjectModel
      */
     public static function getProductTags($idProduct)
     {
-        if (!$tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$tmp = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.`id_lang`, t.`name`')
                 ->from('tag', 't')
@@ -340,14 +342,15 @@ class TagCore extends ObjectModel
      */
     public static function deleteTagsForProduct($idProduct)
     {
-        $tagsRemoved = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $tagsRemoved = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_tag`')
                 ->from('product_tag')
                 ->where('`id_product` = '.(int) $idProduct)
         );
-        $result = Db::getInstance()->delete('product_tag', 'id_product = '.(int) $idProduct);
-        Db::getInstance()->delete('tag', 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'product_tag WHERE '._DB_PREFIX_.'product_tag.id_tag = '._DB_PREFIX_.'tag.id_tag)');
+        $conn = Db::getInstance();
+        $result = $conn->delete('product_tag', 'id_product = '.(int) $idProduct);
+        $conn->delete('tag', 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'product_tag WHERE '._DB_PREFIX_.'product_tag.id_tag = '._DB_PREFIX_.'tag.id_tag)');
         $tagList = [];
         foreach ($tagsRemoved as $tagRemoved) {
             $tagList[] = $tagRemoved['id_tag'];
@@ -363,7 +366,7 @@ class TagCore extends ObjectModel
      * @param bool $associated
      * @param Context|null $context
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -381,7 +384,7 @@ class TagCore extends ObjectModel
 
         $in = $associated ? 'IN' : 'NOT IN';
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('pl.`name`, pl.`id_product`')
                 ->from('product', 'p')

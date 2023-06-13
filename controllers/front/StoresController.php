@@ -101,7 +101,7 @@ class StoresControllerCore extends FrontController
      */
     protected function assignStoresSimplified()
     {
-        $stores = Db::getInstance()->executeS(
+        $stores = Db::readOnly()->getArray(
             '
 		SELECT s.*, cl.name country, st.iso_code state
 		FROM '._DB_PREFIX_.'store s
@@ -226,7 +226,7 @@ class StoresControllerCore extends FrontController
     /**
      * Get Stores
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -238,8 +238,9 @@ class StoresControllerCore extends FrontController
             $distanceUnit = 'km';
         }
 
+        $conn = Db::readOnly();
         if (Tools::getValue('all') == 1) {
-            $stores = Db::getInstance()->executeS(
+            $stores = $conn->getArray(
                 '
 			SELECT s.*, cl.name country, st.iso_code state
 			FROM '._DB_PREFIX_.'store s
@@ -252,7 +253,7 @@ class StoresControllerCore extends FrontController
             $distance = Tools::getIntValue('radius', 100);
             $multiplicator = ($distanceUnit == 'km' ? 6371 : 3959);
 
-            $stores = Db::getInstance()->executeS(
+            $stores = $conn->getArray(
                 '
 			SELECT s.*, cl.name country, st.iso_code state,
 			('.(int) $multiplicator.'

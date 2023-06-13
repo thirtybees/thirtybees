@@ -301,6 +301,7 @@ class AdminThemesControllerCore extends AdminController
         if ($this->object) {
             $idTheme = (int) $this->object->id;
             if ($idTheme) {
+                $conn = Db::getInstance();
                 $theme = new Theme($idTheme);
 
                 $metaPages = Meta::getPages(false, false, true);
@@ -316,7 +317,7 @@ class AdminThemesControllerCore extends AdminController
                         ->where('tm.`id_theme` = '.$idTheme)
                         ->where('m.`page` = \''.$metaPage.'\'');
 
-                    $description = Db::getInstance()->getRow($pageQuery);
+                    $description = $conn->getRow($pageQuery);
 
                     /**
                      * Add theme metas present, but not found in the database.
@@ -329,7 +330,7 @@ class AdminThemesControllerCore extends AdminController
                      * processUpdate() and/or ajaxProcess{Left|Right}Meta().
                      */
                     if ( ! $description) {
-                        $idMeta = Db::getInstance()->getValue((new DbQuery())
+                        $idMeta = $conn->getValue((new DbQuery())
                             ->select('`id_meta`')
                             ->from('meta', 'm')
                             ->where('m.`page` = \''.$metaPage.'\'')
@@ -350,7 +351,7 @@ class AdminThemesControllerCore extends AdminController
                             'right'   => $theme->default_right_column,
                         ]]);
 
-                        $description = Db::getInstance()->getRow($pageQuery);
+                        $description = $conn->getRow($pageQuery);
                     }
 
                     $formatedMetas[] = $description;
@@ -371,7 +372,7 @@ class AdminThemesControllerCore extends AdminController
                     }
 
                     if ( ! $found) {
-                        Db::getInstance()->delete(
+                        $conn->delete(
                             'theme_meta',
                             'id_theme_meta = '.$themeMeta['id_theme_meta']
                         );
@@ -783,7 +784,8 @@ class AdminThemesControllerCore extends AdminController
             $name = Tools::htmlentitiesUTF8(Tools::getValue('documentationName'));
             $this->user_doc = [$name.'¤doc/'.$filename];
 
-            $table = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $conn = Db::readOnly();
+            $table = $conn->getArray(
                 (new DbQuery())
                     ->select('`name`')
                     ->select('`width`')
@@ -809,7 +811,7 @@ class AdminThemesControllerCore extends AdminController
                     ($row['scenes'] == 1 ? 'true' : 'false');
             }
 
-            $idShop = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idShop = $conn->getValue(
                 (new DbQuery())
                     ->select('`id_shop`')
                     ->from('shop')
@@ -817,7 +819,7 @@ class AdminThemesControllerCore extends AdminController
             );
 
             // Select the list of module for this shop
-            $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $this->module_list = $conn->getArray(
                 (new DbQuery())
                     ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
                     ->from('module', 'm')
@@ -826,7 +828,7 @@ class AdminThemesControllerCore extends AdminController
             );
 
             // Select the list of hook for this shop
-            $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $this->hook_list = $conn->getArray(
                 (new DbQuery())
                     ->select('h.`id_hook`, h.`name` AS `name_hook`, hm.`position`, hm.`id_module`, m.`name` AS `name_module`, GROUP_CONCAT(hme.`file_name`, ",") AS `exceptions`')
                     ->from('hook', 'h')
@@ -1239,7 +1241,8 @@ class AdminThemesControllerCore extends AdminController
     {
         $toInstall = [];
 
-        $moduleList = Db::getInstance()->getArray(
+        $conn = Db::readOnly();
+        $moduleList = $conn->getArray(
             '
 			SELECT m.`id_module`, m.`name`, m.`active`, ms.`id_shop`
 			FROM `'._DB_PREFIX_.'module` m
@@ -1249,7 +1252,7 @@ class AdminThemesControllerCore extends AdminController
         );
 
         // Select the list of hook for this shop
-        $hookList = Db::getInstance()->getArray(
+        $hookList = $conn->getArray(
             '
 			SELECT h.`id_hook`, h.`name` as name_hook, hm.`position`, hm.`id_module`, m.`name` as name_module, GROUP_CONCAT(hme.`file_name`, ",") as exceptions
 			FROM `'._DB_PREFIX_.'hook` h
@@ -2680,7 +2683,7 @@ class AdminThemesControllerCore extends AdminController
         );
 
         if ($result) {
-            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idTheme = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_theme`')
                     ->from('theme_meta')
@@ -2742,7 +2745,7 @@ class AdminThemesControllerCore extends AdminController
         );
 
         if ($result) {
-            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idTheme = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_theme`')
                     ->from('theme_meta')

@@ -649,7 +649,7 @@ class AddressFormatCore extends ObjectModel
     protected function _getFormatDB($idCountry)
     {
         if (!Cache::isStored('AddressFormat::_getFormatDB'.$idCountry)) {
-            $format = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $format = Db::readOnly()->getValue(
                 (new DbQuery())
                 ->select('`format`')
                 ->from(bqSQL(static::$definition['table']))

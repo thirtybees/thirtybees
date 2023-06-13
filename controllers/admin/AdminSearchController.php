@@ -188,7 +188,7 @@ class AdminSearchControllerCore extends AdminController
 
         $tabs = [];
         $keyMatch = [];
-        $result = Db::getInstance()->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT class_name, name
 		FROM '._DB_PREFIX_.'tab t

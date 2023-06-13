@@ -77,14 +77,14 @@ class GroupReductionCore extends ObjectModel
      * @param int $idGroup
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getGroupReductions($idGroup, $idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('gr.`id_group_reduction`, gr.`id_group`, gr.`id_category`, gr.`reduction`, cl.`name` AS category_name')
                 ->from('group_reduction', 'gr')
@@ -109,7 +109,7 @@ class GroupReductionCore extends ObjectModel
         }
 
         if (!isset(static::$reduction_cache[$idProduct.'-'.$idGroup])) {
-            $value = Db::getInstance()->getValue(
+            $value = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`reduction`')
                     ->from('product_group_reduction_cache')
@@ -136,7 +136,7 @@ class GroupReductionCore extends ObjectModel
      */
     public static function doesExist($idGroup, $idCategory)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('gr.`id_group`')
                 ->from('group_reduction', 'gr')
@@ -158,7 +158,7 @@ class GroupReductionCore extends ObjectModel
     {
         Tools::displayAsDeprecated('Use GroupReduction::getGroupsByCategoryId($id_category)');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('gr.`id_group`')
                 ->from('group_reduction', 'gr')
@@ -169,14 +169,14 @@ class GroupReductionCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getGroupsReductionByCategoryId($idCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('gr.`id_group_reduction` AS `id_group_reduction`, gr.`id_group`')
                 ->from('group_reduction', 'gr')
@@ -197,7 +197,7 @@ class GroupReductionCore extends ObjectModel
     {
         Tools::displayAsDeprecated('Use GroupReduction::getGroupsByCategoryId($id_category)');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('gr.`id_group_reduction`')
                 ->from('group_reduction', 'gr')
@@ -254,14 +254,14 @@ class GroupReductionCore extends ObjectModel
     /**
      * @param int $idCategory
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getGroupsByCategoryId($idCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('gr.`id_group`, gr.`reduction`, gr.`id_group_reduction`')
                 ->from('group_reduction', 'gr')
@@ -280,7 +280,7 @@ class GroupReductionCore extends ObjectModel
      */
     public static function duplicateReduction($idProductOld, $idProduct)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executes(
+        $res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('pgr.`id_product`, pgr.`id_group`, pgr.`reduction`')
                 ->from('product_group_reduction_cache', 'pgr')
@@ -341,7 +341,7 @@ class GroupReductionCore extends ObjectModel
      */
     protected function _setCache()
     {
-        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $products = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cp.`id_product`')
                 ->from('category_product', 'cp')
@@ -385,7 +385,7 @@ class GroupReductionCore extends ObjectModel
      */
     protected function _updateCache()
     {
-        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $products = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cp.`id_product`')
                 ->from('category_product', 'cp')
@@ -419,7 +419,7 @@ class GroupReductionCore extends ObjectModel
      */
     public function delete()
     {
-        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $products = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cp.`id_product`')
                 ->from('category_product', 'cp')

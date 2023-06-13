@@ -77,7 +77,7 @@ function includeDatepicker($id, $time = false)
     echo '<script type="text/javascript" src="'.__PS_BASE_URI__.'js/jquery/ui/jquery.ui.core.min.js"></script>';
     echo '<link type="text/css" rel="stylesheet" href="'.__PS_BASE_URI__.'js/jquery/ui/themes/ui-lightness/jquery.ui.theme.css" />';
     echo '<link type="text/css" rel="stylesheet" href="'.__PS_BASE_URI__.'js/jquery/ui/themes/ui-lightness/jquery.ui.datepicker.css" />';
-    $iso = Db::getInstance()->getValue('SELECT iso_code FROM '._DB_PREFIX_.'lang WHERE `id_lang` = '.(int)Context::getContext()->language->id);
+    $iso = Db::readOnly()->getValue('SELECT iso_code FROM '._DB_PREFIX_.'lang WHERE `id_lang` = '.(int)Context::getContext()->language->id);
     if ($iso != 'en') {
         echo '<script type="text/javascript" src="'.__PS_BASE_URI__.'js/jquery/ui/i18n/jquery.ui.datepicker-'.Tools::htmlentitiesUTF8($iso).'.js"></script>';
     }
@@ -154,7 +154,8 @@ function getPath($url_base, $id_category, $path = '', $highlight = '', $category
 
     $context = Context::getContext();
     if ($category_type == 'catalog') {
-        $category = Db::getInstance()->getRow('
+        $conn = Db::readOnly();
+        $category = $conn->getRow('
 		SELECT id_category, level_depth, nleft, nright
 		FROM '._DB_PREFIX_.'category
 		WHERE id_category = '.(int)$id_category);
@@ -170,7 +171,7 @@ function getPath($url_base, $id_category, $path = '', $highlight = '', $category
 					GROUP BY c.id_category
 					ORDER BY c.level_depth ASC
 					LIMIT '.(!$home ? (int)$category['level_depth'] + 1 : 1);
-            $categories = Db::getInstance()->executeS($sql);
+            $categories = $conn->getArray($sql);
             $full_path = '';
             $n = 1;
             $n_categories = (int)count($categories);
@@ -277,7 +278,7 @@ function checkingTab($tab)
     if (!Validate::isTabName($tab)) {
         return false;
     }
-    $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('SELECT id_tab, module, class_name FROM `'._DB_PREFIX_.'tab` WHERE LOWER(class_name) = \''.pSQL($tab).'\'');
+    $row = Db::readOnly()->getRow('SELECT id_tab, module, class_name FROM `'._DB_PREFIX_.'tab` WHERE LOWER(class_name) = \''.pSQL($tab).'\'');
     if (!$row['id_tab']) {
         if (isset(AdminTab::$tabParenting[$tab])) {
             Tools::redirectAdmin('?tab='.AdminTab::$tabParenting[$tab].'&token='.Tools::getAdminTokenLite(AdminTab::$tabParenting[$tab]));

@@ -79,7 +79,7 @@ class AliasCore extends ObjectModel
                 $this->alias = $alias;
                 $this->search = $search;
             } else {
-                $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $row = Db::readOnly()->getRow(
                     (new DbQuery())
                     ->select('a.`id_alias`, a.`search`, a.`alias`')
                     ->from('alias', 'a')
@@ -151,7 +151,7 @@ class AliasCore extends ObjectModel
             return '';
         }
 
-        $aliases = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $aliases = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('a.`alias`')
             ->from('alias', 'a')
@@ -190,7 +190,7 @@ class AliasCore extends ObjectModel
             return false;
         }
 
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             (new DbQuery())
             ->select('`id_alias`')
             ->from('alias', 'a')

@@ -39,14 +39,14 @@ class Adapter_Database implements Core_Foundation_Database_DatabaseInterface
      *
      * @param string $sql
      *
-     * @return array|false
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function select($sql)
     {
-        return Db::getInstance()->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**

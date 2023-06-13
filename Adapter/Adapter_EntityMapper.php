@@ -70,7 +70,8 @@ class Adapter_EntityMapper
                 $sql->leftJoin($entityDefs['table'].'_shop', 'c', 'a.`'.bqSQL($entityDefs['primary']).'` = c.`'.bqSQL($entityDefs['primary']).'` AND c.`id_shop` = '.(int) $idShop);
             }
 
-            if ($objectData = Db::getInstance()->getRow($sql)) {
+            $conn = Db::readOnly();
+            if ($objectData = $conn->getRow($sql)) {
                 if (!$idLang && isset($entityDefs['multilang']) && $entityDefs['multilang']) {
                     $sql = (new DbQuery())
                         ->select('*')
@@ -78,7 +79,7 @@ class Adapter_EntityMapper
                         ->where('`'.$entityDefs['primary'].'` = '.(int) $id)
                         ->where(($idShop && $entity->isLangMultishop()) ? '`id_shop` = '.(int) $idShop : null);
 
-                    if ($objectDatasLang = Db::getInstance()->executeS($sql)) {
+                    if ($objectDatasLang = $conn->getArray($sql)) {
                         foreach ($objectDatasLang as $row) {
                             foreach ($row as $key => $value) {
                                 if ($key !== $entityDefs['primary']

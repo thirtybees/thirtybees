@@ -79,7 +79,7 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfiles($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('p.`id_profile`, `name`')
                 ->from('profile', 'p')
@@ -106,7 +106,7 @@ class ProfileCore extends ObjectModel
             $idLang = Configuration::get('PS_LANG_DEFAULT');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`name`')
                 ->from('profile', 'p')
@@ -177,7 +177,7 @@ class ProfileCore extends ObjectModel
      */
     protected static function loadPermissions($idProfile)
     {
-        $data = Db::getInstance()->executeS(
+        $data = Db::readOnly()->getArray(
             (new DbQuery())
                 ->from('profile_permission')
                 ->where("id_profile = " . (int)$idProfile)
@@ -231,7 +231,7 @@ class ProfileCore extends ObjectModel
                     ];
                 }
             } else {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $result = Db::readOnly()->getArray(
                     (new DbQuery())
                         ->select('*')
                         ->from('access', 'a')
@@ -263,8 +263,9 @@ class ProfileCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         if (parent::add($autoDate, true)) {
-            $result = Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'access (SELECT '.(int) $this->id.', id_tab, 0, 0, 0, 0 FROM '._DB_PREFIX_.'tab)');
-            $result = Db::getInstance()->execute(
+            $conn = Db::getInstance();
+            $result = $conn->execute('INSERT INTO '._DB_PREFIX_.'access (SELECT '.(int) $this->id.', id_tab, 0, 0, 0, 0 FROM '._DB_PREFIX_.'tab)');
+            $result = $conn->execute(
                 '
 				INSERT INTO '._DB_PREFIX_.'module_access
 				(`id_profile`, `id_module`, `configure`, `view`, `uninstall`)
@@ -287,9 +288,10 @@ class ProfileCore extends ObjectModel
     public function delete()
     {
         if (parent::delete()) {
+            $conn = Db::getInstance();
             return (
-                Db::getInstance()->delete('access', '`id_profile` = '.(int) $this->id)
-                && Db::getInstance()->delete('module_access', '`id_profile` = '.(int) $this->id)
+                $conn->delete('access', '`id_profile` = '.(int) $this->id) &&
+                $conn->delete('module_access', '`id_profile` = '.(int) $this->id)
             );
         }
 

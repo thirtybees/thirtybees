@@ -299,7 +299,7 @@ class SupplyOrderCore extends ObjectModel
 
         $query->groupBy('s.id_supply_order_detail');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**
@@ -331,7 +331,7 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_detail', 's');
         $query->where('s.id_supply_order = '.(int) $this->id);
 
-        return (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query) > 0);
+        return (Db::readOnly()->getValue($query) > 0);
     }
 
     /**
@@ -348,7 +348,7 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_state', 's');
         $query->where('s.id_supply_order_state = '.(int) $this->id_supply_order_state);
 
-        return (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query) == 1);
+        return (Db::readOnly()->getValue($query) == 1);
     }
 
     /**
@@ -365,7 +365,7 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_state', 's');
         $query->where('s.id_supply_order_state = '.(int) $this->id_supply_order_state);
 
-        return (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query) == 1);
+        return (Db::readOnly()->getValue($query) == 1);
     }
 
     /**
@@ -382,7 +382,7 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_state', 's');
         $query->where('s.id_supply_order_state = '.(int) $this->id_supply_order_state);
 
-        return (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query) == 1);
+        return (Db::readOnly()->getValue($query) == 1);
     }
 
     /**
@@ -439,7 +439,7 @@ class SupplyOrderCore extends ObjectModel
         $query->where('sos.enclosed != 1');
         $query->where('so.id_warehouse = '.(int) $idWarehouse);
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $res = Db::readOnly()->getValue($query);
 
         return ($res > 0);
     }
@@ -466,7 +466,7 @@ class SupplyOrderCore extends ObjectModel
         $query->where('sos.enclosed != 1');
         $query->where('so.id_supplier = '.(int) $idSupplier);
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $res = Db::readOnly()->getValue($query);
 
         return ($res > 0);
     }
@@ -491,7 +491,7 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order', 'so');
         $query->where('so.id_supply_order = '.(int) $match.' OR so.reference = "'.pSQL($match).'"');
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $res = Db::readOnly()->getValue($query);
 
         return ((int) $res);
     }
@@ -515,7 +515,7 @@ class SupplyOrderCore extends ObjectModel
         $query->select('id_supply_order');
         $query->from('supply_order', 'so');
         $query->where('so.reference = "'.pSQL($reference).'"');
-        $idSupplyOrder = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $idSupplyOrder = (int) Db::readOnly()->getValue($query);
 
         if (!$idSupplyOrder) {
             return false;
@@ -566,7 +566,7 @@ class SupplyOrderCore extends ObjectModel
         $query->select('so.reference');
         $query->from('supply_order', 'so');
         $query->where('so.id_supply_order = '.(int) $idSupplyOrder);
-        $ref = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $ref = Db::readOnly()->getValue($query);
 
         return (pSQL($ref));
     }
@@ -578,7 +578,7 @@ class SupplyOrderCore extends ObjectModel
      */
     public function getAllExpectedQuantity()
     {
-        return Db::getInstance()->getValue(
+        return Db::readOnly()->getValue(
             '
 			SELECT SUM(`quantity_expected`)
 			FROM `'._DB_PREFIX_.'supply_order_detail`
@@ -593,7 +593,7 @@ class SupplyOrderCore extends ObjectModel
      */
     public function getAllReceivedQuantity()
     {
-        return Db::getInstance()->getValue(
+        return Db::readOnly()->getValue(
             '
 			SELECT SUM(`quantity_received`)
 			FROM `'._DB_PREFIX_.'supply_order_detail`
@@ -608,7 +608,7 @@ class SupplyOrderCore extends ObjectModel
      */
     public function getAllPendingQuantity()
     {
-        return Db::getInstance()->getValue(
+        return Db::readOnly()->getValue(
             '
 			SELECT (SUM(`quantity_expected`) - SUM(`quantity_received`))
 			FROM `'._DB_PREFIX_.'supply_order_detail`
@@ -635,6 +635,6 @@ class SupplyOrderCore extends ObjectModel
         $query->from('supply_order_detail', 'sod');
         $query->where('id_supply_order = '.(int) $this->id);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($query);
+        return Db::readOnly()->getArray($query);
     }
 }

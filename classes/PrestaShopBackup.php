@@ -246,8 +246,9 @@ class PrestaShopBackupCore
         fwrite($fp, '/* Backup for '.Tools::getHttpHost(false, false).__PS_BASE_URI__."\n *  at ".date($date)."\n */\n");
         fwrite($fp, "\n".'SET NAMES \'utf8\';'."\n\n");
 
+        $conn = Db::getInstance();
         // Find all tables
-        $tables = Db::getInstance()->executeS('SHOW TABLES');
+        $tables = $conn->getArray('SHOW TABLES');
         $found = 0;
         foreach ($tables as $table) {
             $table = current($table);
@@ -258,7 +259,7 @@ class PrestaShopBackupCore
             }
 
             // Export the table schema
-            $schema = Db::getInstance()->executeS('SHOW CREATE TABLE `'.$table.'`');
+            $schema = $conn->getArray('SHOW CREATE TABLE `'.$table.'`');
 
             if (count($schema) != 1 || !isset($schema[0]['Table']) || !isset($schema[0]['Create Table'])) {
                 fclose($fp);
@@ -277,15 +278,15 @@ class PrestaShopBackupCore
             fwrite($fp, $schema[0]['Create Table'].";\n\n");
 
             if (!in_array($schema[0]['Table'], $ignoreInsertTable)) {
-                $data = Db::getInstance()->query('SELECT * FROM `'.$schema[0]['Table'].'`');
-                $sizeof = DB::getInstance()->NumRows();
+                $data = $conn->query('SELECT * FROM `'.$schema[0]['Table'].'`');
+                $sizeof = $conn->NumRows();
                 $lines = explode("\n", $schema[0]['Create Table']);
 
                 if ($data && $sizeof > 0) {
                     // Export the table data
                     fwrite($fp, 'INSERT INTO `'.$schema[0]['Table']."` VALUES\n");
                     $i = 1;
-                    while ($row = DB::getInstance()->nextRow($data)) {
+                    while ($row = $conn->nextRow($data)) {
                         $s = '(';
 
                         foreach ($row as $field => $value) {

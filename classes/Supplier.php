@@ -135,7 +135,7 @@ class SupplierCore extends ObjectModel
      * @param bool $n
      * @param bool $allGroups
      *
-     * @return array|false Suppliers
+     * @return array Suppliers
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -161,10 +161,8 @@ class SupplierCore extends ObjectModel
         $query->limit($n, ($p - 1) * $n);
         $query->groupBy('s.id_supplier');
 
-        $suppliers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
-        if ($suppliers === false) {
-            return false;
-        }
+        $conn = Db::readOnly();
+        $suppliers = $conn->getArray($query);
         if ($getNbProducts) {
             $sqlGroups = '';
             if (!$allGroups) {
@@ -172,7 +170,7 @@ class SupplierCore extends ObjectModel
                 $sqlGroups = (count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
             }
 
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $results = $conn->getArray(
                 (new DbQuery())
                     ->select('ps.`id_supplier`, COUNT(DISTINCT ps.`id_product`) AS nb_products')
                     ->from('product_supplier', 'ps')
@@ -191,7 +189,7 @@ class SupplierCore extends ObjectModel
                 $counts[(int) $result['id_supplier']] = (int) $result['nb_products'];
             }
 
-            if (count($counts) && is_array($suppliers)) {
+            if (count($counts)) {
                 foreach ($suppliers as $key => $supplier) {
                     if (isset($counts[(int) $supplier['id_supplier']])) {
                         $suppliers[$key]['nb_products'] = $counts[(int) $supplier['id_supplier']];
@@ -266,7 +264,7 @@ class SupplierCore extends ObjectModel
     public static function getNameById($idSupplier)
     {
         if (!isset(static::$cache_name[$idSupplier])) {
-            static::$cache_name[$idSupplier] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$cache_name[$idSupplier] = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`name`')
                     ->from('supplier')
@@ -287,7 +285,7 @@ class SupplierCore extends ObjectModel
      */
     public static function getIdByName($name)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_supplier`')
                 ->from('supplier')
@@ -355,6 +353,7 @@ class SupplierCore extends ObjectModel
         }
 
         /* Return only the number of products */
+        $conn = Db::readOnly();
         if ($getTotal) {
             $sql = new DbQuery();
             $sql->select('cp.`id_product`');
@@ -367,7 +366,7 @@ class SupplierCore extends ObjectModel
             }
 	        $sql->where($sqlGroups);
 
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int) $conn->getValue(
                 (new DbQuery())
                     ->select('COUNT(DISTINCT ps.`id_product`)')
                     ->from('product_supplier', 'ps')
@@ -445,7 +444,7 @@ class SupplierCore extends ObjectModel
 				ORDER BY '.$alias.pSQL($orderBy).' '.pSQL($orderWay).'
 				LIMIT '.(((int) $p - 1) * (int) $n).','.(int) $n;
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        $result = $conn->getArray($sql);
 
         if (!$result) {
             return false;
@@ -467,7 +466,7 @@ class SupplierCore extends ObjectModel
      */
     public static function supplierExists($idSupplier)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $res = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('id_supplier')
                 ->from('supplier')
@@ -491,7 +490,7 @@ class SupplierCore extends ObjectModel
      */
     public static function getProductInformationsBySupplier($idSupplier, $idProduct, $idProductAttribute = 0)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        $res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('product_supplier_reference, product_supplier_price_te, id_currency')
                 ->from('product_supplier')
@@ -523,7 +522,7 @@ class SupplierCore extends ObjectModel
             $front = false;
         }
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        $res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('p.`id_product`, pl.`name`')
                 ->from('product', 'p')

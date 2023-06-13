@@ -160,7 +160,7 @@ abstract class CacheCore
             $sql->select('`value`');
             $sql->from('configuration');
             $sql->where('`name` = \'TB_CACHE_SYSTEM\'');
-            $cachingSystem = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql, false);
+            $cachingSystem = Db::readOnly()->getValue($sql);
             if ($cachingSystem) {
                 static::$instance = new $cachingSystem();
             } else {

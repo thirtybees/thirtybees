@@ -96,7 +96,7 @@ class HookCore extends ObjectModel
      */
     public static function getHooks($position = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             '
 			SELECT * FROM `'._DB_PREFIX_.'hook` h
 			'.($position ? 'WHERE h.`position` = 1' : '').'
@@ -113,7 +113,7 @@ class HookCore extends ObjectModel
     {
         $cacheId = 'hook_namebyid_'.$hookId;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance()->getValue(
+            $result = Db::readOnly()->getValue(
                 '
 							SELECT `name`
 							FROM `'._DB_PREFIX_.'hook`
@@ -136,7 +136,7 @@ class HookCore extends ObjectModel
     {
         $cacheId = 'hook_live_editbyid_'.$hookId;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance()->getValue(
+            $result = Db::readOnly()->getValue(
                 '
 							SELECT `live_edit`
 							FROM `'._DB_PREFIX_.'hook`
@@ -185,7 +185,7 @@ class HookCore extends ObjectModel
     {
         $cacheId = 'hook_module_list';
         if (!Cache::isStored($cacheId)) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+            $results = Db::readOnly()->getArray('
                 SELECT h.id_hook, h.name AS h_name, h.title, h.description, h.position, h.live_edit, hm.position AS hm_position, m.id_module, m.name, m.active
                 FROM `'._DB_PREFIX_.'hook_module` hm
                 STRAIGHT_JOIN `'._DB_PREFIX_.'hook` h ON (h.id_hook = hm.id_hook AND hm.id_shop = '.(int) Context::getContext()->shop->id.')
@@ -661,7 +661,7 @@ class HookCore extends ObjectModel
             $sql->orderBy('hm.`position`');
 
             $list = [];
-            if ($result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
+            if ($result = Db::readOnly()->getArray($sql)) {
                 foreach ($result as $row) {
                     $row['hook'] = strtolower($row['hook']);
                     if (!isset($list[$row['hook']])) {
@@ -750,7 +750,7 @@ class HookCore extends ObjectModel
     {
         $cacheId = 'hook_alias';
         if (!Cache::isStored($cacheId)) {
-            $hookAliasList = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'hook_alias`');
+            $hookAliasList = Db::readOnly()->getArray('SELECT * FROM `'._DB_PREFIX_.'hook_alias`');
             $hookAlias = [];
             if ($hookAliasList) {
                 foreach ($hookAliasList as $ha) {
@@ -786,17 +786,17 @@ class HookCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             // Get all hook ID by name and alias
             $hookIds = [];
-            $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
-            $result = $db->executeS(
+            $db = Db::readOnly();
+            $result = $db->getArray(
                 '
 			SELECT `id_hook`, `name`
 			FROM `'._DB_PREFIX_.'hook`
 			UNION
 			SELECT `id_hook`, ha.`alias` AS name
 			FROM `'._DB_PREFIX_.'hook_alias` ha
-			INNER JOIN `'._DB_PREFIX_.'hook` h ON ha.name = h.name', false
+			INNER JOIN `'._DB_PREFIX_.'hook` h ON ha.name = h.name'
             );
-            while ($row = $db->nextRow($result)) {
+            foreach ($result as $row) {
                 $hookIds[strtolower($row['name'])] = $row['id_hook'];
             }
             Cache::store($cacheId, $hookIds);
@@ -902,7 +902,7 @@ class HookCore extends ObjectModel
             throw new PrestaShopException("Invalid hook name: " . $hookName);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_hook`, `name`')
                 ->from('hook')

@@ -746,7 +746,7 @@ class LinkCore
         $sql->select('`'.bqSQL(CMSCategory::$definition['primary']).'`');
         $sql->from(bqSQL(CMS::$definition['table']));
         $sql->where('`'.bqSQL(CMS::$definition['primary']).'` = '.(int) $idCms);
-        $idCmsCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $idCmsCategory = Db::readOnly()->getValue($sql);
         if (empty($idCmsCategory)) {
             return '';
         }
@@ -837,7 +837,7 @@ class LinkCore
         $sql->select('`id_parent`');
         $sql->from(bqSQL(CMSCategory::$definition['table']));
         $sql->where('`'.bqSQL(CMSCategory::$definition['primary']).'` = '.(int) $idCmsCategory);
-        $idParent = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $idParent = Db::readOnly()->getValue($sql);
         if (empty($idParent)) {
             return 0;
         }

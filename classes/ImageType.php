@@ -119,7 +119,7 @@ class ImageTypeCore extends ObjectModel
             return $type;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_image_type`')
                 ->from('image_type')
@@ -165,7 +165,7 @@ class ImageTypeCore extends ObjectModel
                 $query->orderBy('`name` ASC');
             }
 
-            $cache[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $cache[$type] = Db::readOnly()->getArray($query);
         }
 
         return $cache[$type];
@@ -199,16 +199,14 @@ class ImageTypeCore extends ObjectModel
         static $typeNameCache = false;
         if ($typeNameCache === false) {
             $typeNameCache = [];
-            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $rows = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`name`')
                     ->from('image_type')
             );
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    $name = $row['name'];
-                    $typeNameCache[$name] = $name;
-                }
+            foreach ($rows as $row) {
+                $name = $row['name'];
+                $typeNameCache[$name] = $name;
             }
         }
         return $typeNameCache;

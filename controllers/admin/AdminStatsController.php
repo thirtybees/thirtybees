@@ -48,6 +48,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public function displayAjaxGetKpi()
     {
         $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+        $conn = Db::readOnly();
         switch (Tools::getValue('kpi')) {
             case 'conversion_rate':
                 $visitors = AdminStatsController::getVisits(true, date('Y-m-d', strtotime('-31 day')), date('Y-m-d', strtotime('-1 day')), false /*'day'*/);
@@ -178,7 +179,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'newsletter_registrations':
-                $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $value = $conn->getValue(
                     '
 				SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'customer`
@@ -186,7 +187,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				'.Shop::addSqlRestriction(Shop::SHARE_ORDER)
                 );
                 if (Module::isInstalled('blocknewsletter')) {
-                    $value += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    $value += $conn->getValue(
                         '
 					SELECT COUNT(*)
 					FROM `'._DB_PREFIX_.'newsletter`
@@ -239,7 +240,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'orders_per_customer':
-                $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $value = $conn->getValue(
                     '
 				SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'customer` c
@@ -247,7 +248,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				'.Shop::addSqlRestriction()
                 );
                 if ($value) {
-                    $orders = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    $orders = $conn->getValue(
                         '
 					SELECT COUNT(*)
 					FROM `'._DB_PREFIX_.'orders` o
@@ -262,7 +263,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'average_order_value':
-                $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $row = $conn->getRow(
                     '
 				SELECT
 					COUNT(`id_order`) as orders,
@@ -364,8 +365,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 }
             }
         } else {
+            $conn = Db::readOnly();
             if ($granularity == 'day') {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+                $result = $conn->getArray(
                     '
 				SELECT LEFT(`date_add`, 10) as date, COUNT('.($unique ? 'DISTINCT id_guest' : '*').') as visits
 				FROM `'._DB_PREFIX_.'connections`
@@ -377,7 +379,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     $visits[strtotime($row['date'])] = $row['visits'];
                 }
             } elseif ($granularity == 'month') {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+                $result = $conn->getArray(
                     '
 				SELECT LEFT(`date_add`, 7) as date, COUNT('.($unique ? 'DISTINCT id_guest' : '*').') as visits
 				FROM `'._DB_PREFIX_.'connections`
@@ -389,7 +391,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     $visits[strtotime($row['date'].'-01')] = $row['visits'];
                 }
             } else {
-                $visits = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $visits = $conn->getValue(
                     '
 				SELECT COUNT('.($unique ? 'DISTINCT id_guest' : '*').') as visits
 				FROM `'._DB_PREFIX_.'connections`
@@ -417,9 +419,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getOrders($dateFrom, $dateTo, $granularity = false)
     {
         $dateColumn = static::getOrderDateColumn('o');
+        $conn = Db::readOnly();
         if ($granularity == 'day') {
             $orders = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = $conn->getArray(
                 '
 			SELECT LEFT('.$dateColumn.', 10) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
@@ -434,7 +437,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
             return $orders;
         } elseif ($granularity == 'month') {
             $orders = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = $conn->getArray(
                 '
 			SELECT LEFT('.$dateColumn.', 7) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
@@ -448,7 +451,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
             }
             return $orders;
         } else {
-            return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int)$conn->getValue(
                 '
 			SELECT COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
@@ -472,7 +475,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getAbandonedCarts($dateFrom, $dateTo)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT COUNT(DISTINCT id_guest)
 		FROM `'._DB_PREFIX_.'cart`
@@ -492,7 +495,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getInstalledModules()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT COUNT(DISTINCT m.`id_module`)
 		FROM `'._DB_PREFIX_.'module` m
@@ -510,7 +513,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getDisabledModules()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'module` m
@@ -549,7 +552,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getPercentProductStock()
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             '
 		SELECT SUM(IF(IFNULL(stock.quantity, 0) > 0, 1, 0)) as with_stock, COUNT(*) as products
 		FROM `'._DB_PREFIX_.'product` p
@@ -570,7 +573,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getPercentProductOutOfStock()
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             '
 		SELECT SUM(IF(IFNULL(stock.quantity, 0) = 0, 1, 0)) as without_stock, COUNT(*) as products
 		FROM `'._DB_PREFIX_.'product` p
@@ -597,7 +600,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON p.id_product = pa.id_product
 		'.Shop::addSqlAssociation('product_attribute', 'pa', false).'
 		WHERE product_shop.active = 1';
-        $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $value = Db::readOnly()->getValue($sql);
 
         return round(100 * $value, 2).'%';
     }
@@ -611,7 +614,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getDisabledCategories()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'category` c
@@ -630,7 +633,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getDisabledProducts()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'product` p
@@ -649,7 +652,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getTotalProducts()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'product` p
@@ -668,7 +671,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function get8020SalesCatalog($dateFrom, $dateTo)
     {
-        $distinctProducts = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $distinctProducts = Db::readOnly()->getValue(
             '
 		SELECT COUNT(DISTINCT od.product_id)
 		FROM `'._DB_PREFIX_.'orders` o
@@ -692,7 +695,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getEmptyCategories()
     {
-        $total = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $conn = Db::readOnly();
+        $total = (int) $conn->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'category` c
@@ -700,7 +704,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		AND category_shop.active = 1
 		AND c.nright = c.nleft + 1'
         );
-        $used = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $used = (int) $conn->getValue(
             '
 		SELECT COUNT(DISTINCT cp.id_category)
 		FROM `'._DB_PREFIX_.'category` c
@@ -723,7 +727,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getCustomerMainGender()
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             '
 		SELECT SUM(IF(g.id_gender IS NOT NULL, 1, 0)) as total, SUM(IF(type = 0, 1, 0)) as male, SUM(IF(type = 1, 1, 0)) as female, SUM(IF(type = 2, 1, 0)) as neutral
 		FROM `'._DB_PREFIX_.'customer` c
@@ -752,7 +756,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getAverageCustomerAge()
     {
-        $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $value = Db::readOnly()->getValue(
             '
 		SELECT AVG(DATEDIFF("'.date('Y-m-d').' 00:00:00", birthday))
 		FROM `'._DB_PREFIX_.'customer` c
@@ -789,7 +793,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getAverageMessageResponseTime($dateFrom, $dateTo)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT MIN(cm1.date_add) as question, MIN(cm2.date_add) as reply
 		FROM `'._DB_PREFIX_.'customer_message` cm1
@@ -826,7 +830,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getMessagesPerThread($dateFrom, $dateTo)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT COUNT(*) as messages
 		FROM `'._DB_PREFIX_.'customer_thread` ct
@@ -865,7 +869,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
         if (!$totalOrders) {
             return false;
         }
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             '
 		SELECT a.id_country, COUNT(*) as orders
 		FROM `'._DB_PREFIX_.'orders` o
@@ -895,9 +899,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getTotalSales($dateFrom, $dateTo, $granularity = false)
     {
         $dateColumn = static::getOrderDateColumn('o');
+        $conn = Db::readOnly();
         if ($granularity == 'day') {
             $sales = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = $conn->getArray(
                 '
 			SELECT LEFT('.$dateColumn.', 10) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
@@ -913,7 +918,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
             return $sales;
         } elseif ($granularity == 'month') {
             $sales = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = $conn->getArray(
                 '
 			SELECT LEFT('.$dateColumn.', 7) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
@@ -928,7 +933,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
             return $sales;
         } else {
-            return (float)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (float)$conn->getValue(
                 '
 			SELECT SUM(total_paid_tax_excl / o.conversion_rate)
 			FROM `'._DB_PREFIX_.'orders` o
@@ -956,7 +961,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
         $dateColumn = static::getOrderDateColumn('o');
         $expenses = $granularity == 'day' ? [] : 0.0;
 
-        $orders = Db::getInstance()->getArray(
+        $orders = Db::readOnly()->getArray(
             '
 		SELECT
 			LEFT('.$dateColumn.', 10) as date,
@@ -1024,9 +1029,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getPurchases($dateFrom, $dateTo, $granularity = false)
     {
         $dateColumn = static::getOrderDateColumn('o');
+        $conn = Db::readOnly();
         if ($granularity == 'day') {
             $purchases = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = $conn->getArray(
                 '
 			SELECT
 				LEFT('.$dateColumn.', 10) as date,
@@ -1048,7 +1054,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
             return $purchases;
         } else {
-            return (float)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (float)$conn->getValue(
                 '
 			SELECT SUM(od.`product_quantity` * IF(
 				od.`purchase_supplier_price` > 0,
@@ -1074,7 +1080,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getTotalCategories()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'category` c
@@ -1095,7 +1101,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getBestCategory($dateFrom, $dateTo)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT ca.`id_category`
 		FROM `'._DB_PREFIX_.'category` ca

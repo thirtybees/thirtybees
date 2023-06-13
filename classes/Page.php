@@ -93,7 +93,7 @@ class PageCore extends ObjectModel
             $insertData['id_object'] = (int) $objectId;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_page`')
                 ->from('page')
@@ -103,9 +103,10 @@ class PageCore extends ObjectModel
             return (int)$result['id_page'];
         }
 
-        Db::getInstance()->insert('page', $insertData, true);
+        $conn = Db::getInstance();
+        $conn->insert('page', $insertData, true);
 
-        return Db::getInstance()->Insert_ID();
+        return $conn->Insert_ID();
     }
 
     /**
@@ -118,7 +119,7 @@ class PageCore extends ObjectModel
      */
     public static function getPageTypeByName($name)
     {
-        if ($value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if ($value = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_page_type`')
                 ->from('page_type')
@@ -127,9 +128,10 @@ class PageCore extends ObjectModel
             return $value;
         }
 
-        Db::getInstance()->insert('page_type', ['name' => pSQL($name)]);
+        $conn = Db::getInstance();
+        $conn->insert('page_type', ['name' => pSQL($name)]);
 
-        return Db::getInstance()->Insert_ID();
+        return $conn->Insert_ID();
     }
 
     /**
@@ -148,11 +150,12 @@ class PageCore extends ObjectModel
 				WHERE `id_date_range` = '.(int) $idDateRange.'
 					AND `id_page` = '.(int) $idPage.'
 					AND `id_shop` = '.(int) $context->shop->id;
-        Db::getInstance()->execute($sql);
+        $conn = Db::getInstance();
+        $conn->execute($sql);
 
         // If no one has seen the page in this date range, it is added
-        if (Db::getInstance()->Affected_Rows() == 0) {
-            Db::getInstance()->insert(
+        if ($conn->Affected_Rows() == 0) {
+            $conn->insert(
                 'page_viewed',
                 [
                     'id_date_range' => (int) $idDateRange,

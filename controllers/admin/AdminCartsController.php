@@ -317,8 +317,9 @@ class AdminCartsControllerCore extends AdminController
                 $product['product_total'] = $product['total_wt'];
             }
             $image = 0;
+            $conn = Db::readOnly();
             if (isset($product['id_product_attribute']) && (int) $product['id_product_attribute']) {
-                $image = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $image = (int)$conn->getValue(
                     (new DbQuery())
                     ->select('`id_image`')
                     ->from('product_attribute_image')
@@ -326,7 +327,7 @@ class AdminCartsControllerCore extends AdminController
                 );
             }
             if (! $image) {
-                $image = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $image = (int)$conn->getValue(
                     (new DbQuery())
                     ->select('`id_image`')
                     ->from('image')

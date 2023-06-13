@@ -117,7 +117,7 @@ class OrderPaymentCore extends ObjectModel
     {
         return ObjectModel::hydrateCollection(
             'OrderPayment',
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('op.*')
                     ->from('order_payment', 'op')
@@ -141,7 +141,7 @@ class OrderPaymentCore extends ObjectModel
     {
         return ObjectModel::hydrateCollection(
             'OrderPayment',
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('*')
                     ->from('order_payment')
@@ -161,7 +161,7 @@ class OrderPaymentCore extends ObjectModel
      */
     public static function getByInvoiceId($idInvoice)
     {
-        $payments = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        $payments = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order_payment`')
                 ->from('order_invoice_payment')
@@ -187,7 +187,7 @@ class OrderPaymentCore extends ObjectModel
      */
     public function getOrderInvoice($idOrder)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $res = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_invoice`')
                 ->from('order_invoice_payment')

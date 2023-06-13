@@ -149,7 +149,7 @@ class SupplyOrderStateCore extends ObjectModel
             }
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**
@@ -183,6 +183,6 @@ class SupplyOrderStateCore extends ObjectModel
 
         $query->orderBy('sl.name ASC');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 }

@@ -81,7 +81,7 @@ class OrderReturnStateCore extends ObjectModel
      */
     public static function getOrderReturnStates($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_return_state', 'ors')

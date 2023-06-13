@@ -754,7 +754,7 @@ class AdminFeaturesControllerCore extends AdminController
 						FROM `'._DB_PREFIX_.'feature`
 						ORDER BY position DESC';
                 // set the position of the new feature in $_POST for postProcess() method
-                $_POST['position'] = DB::getInstance()->getValue($sql);
+                $_POST['position'] = Db::readOnly()->getValue($sql);
             }
             // clean \n\r characters
             foreach ($_POST as $key => $value) {
@@ -798,7 +798,7 @@ class AdminFeaturesControllerCore extends AdminController
                 ];
             }
 
-            $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $conn = Db::readOnly();
 
             // count feature values
             $valuesQuery = new DbQuery();
@@ -924,7 +924,7 @@ class AdminFeaturesControllerCore extends AdminController
             ->groupBy('id_product')
             ->having('count(1) > 1');
 
-        return !!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return !!Db::readOnly()->getValue($sql);
     }
 
     /**

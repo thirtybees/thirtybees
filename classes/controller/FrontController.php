@@ -177,7 +177,7 @@ class FrontControllerCore extends Controller
 
         if (!is_array(static::$currentCustomerGroups)) {
             static::$currentCustomerGroups = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`id_group`')
                     ->from('customer_group')

@@ -156,7 +156,7 @@ class ThemeCore extends ObjectModel
      */
     public static function getByName($name)
     {
-        $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idTheme = (int) Db::readOnly()->getValue(
             (new DbQuery())
             ->select('`id_theme`')
             ->from('theme')
@@ -182,7 +182,7 @@ class ThemeCore extends ObjectModel
     public static function getByDirectory($directory)
     {
         if (is_string($directory) && strlen($directory) > 0 && file_exists(_PS_ALL_THEMES_DIR_.$directory) && is_dir(_PS_ALL_THEMES_DIR_.$directory)) {
-            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idTheme = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_theme`')
                     ->from('theme')
@@ -272,7 +272,7 @@ class ThemeCore extends ObjectModel
     public static function getInstalledThemeDirectories()
     {
         $list = [];
-        $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $tmp = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`directory`')
                 ->from('theme')
@@ -293,7 +293,7 @@ class ThemeCore extends ObjectModel
      */
     public function isUsed()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('shop')
@@ -333,15 +333,16 @@ class ThemeCore extends ObjectModel
      */
     public function updateMetas($metas, $fullUpdate = false)
     {
+        $conn = Db::getInstance();
         if ($fullUpdate) {
-            Db::getInstance()->delete('theme_meta', 'id_theme='.(int) $this->id);
+            $conn->delete('theme_meta', 'id_theme='.(int) $this->id);
         }
 
         $values = [];
         if ($this->id > 0) {
             foreach ($metas as $meta) {
                 if (!$fullUpdate) {
-                    Db::getInstance()->delete('theme_meta', 'id_theme='.(int) $this->id.' AND id_meta='.(int) $meta['id_meta']);
+                    $conn->delete('theme_meta', 'id_theme='.(int) $this->id.' AND id_meta='.(int) $meta['id_meta']);
                 }
 
                 $values[] = [
@@ -351,7 +352,7 @@ class ThemeCore extends ObjectModel
                     'right_column' => (int) $meta['right'],
                 ];
             }
-            Db::getInstance()->insert('theme_meta', $values);
+            $conn->insert('theme_meta', $values);
         }
     }
 
@@ -365,7 +366,7 @@ class ThemeCore extends ObjectModel
      */
     public function hasColumns($page)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('IFNULL(`left_column`, `default_left_column`) AS `left_column`, IFNULL(`right_column`, `default_right_column`) AS `right_column`')
                 ->from('theme', 't')
@@ -385,7 +386,7 @@ class ThemeCore extends ObjectModel
      */
     public function hasColumnsSettings($page)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('m.`id_meta`')
                 ->from('theme', 't')
@@ -405,7 +406,7 @@ class ThemeCore extends ObjectModel
      */
     public function hasLeftColumn($page = null)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('IFNULL(`left_column`, `default_left_column`)')
                 ->from('theme', 't')
@@ -425,7 +426,7 @@ class ThemeCore extends ObjectModel
      */
     public function hasRightColumn($page = null)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('IFNULL(`right_column`, `default_right_column`)')
                 ->from('theme', 't')
@@ -448,7 +449,7 @@ class ThemeCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('theme_meta')
@@ -746,7 +747,7 @@ class ThemeCore extends ObjectModel
             // Collect defined metas.
             if ($xml->metas->meta) {
                 foreach ($xml->metas->meta as $meta) {
-                    $metaId = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    $metaId = Db::readOnly()->getValue(
                         (new DbQuery())
                             ->select('`id_meta`')
                             ->from('meta')

@@ -64,7 +64,8 @@ class AdminPaymentControllerCore extends AdminController
                     $sql->where('`id_module` = '.(int) $module->id);
                     $sql->where('`id_shop` = '.(int) $idShop);
 
-                    $countries = DB::getInstance()->executeS($sql);
+                    $conn = Db::readOnly();
+                    $countries = $conn->getArray($sql);
                     foreach ($countries as $country) {
                         $module->country[] = $country['id_country'];
                     }
@@ -78,7 +79,7 @@ class AdminPaymentControllerCore extends AdminController
                     $sql->where('`id_module` = '.(int) $module->id);
                     $sql->where('`id_shop` = '.(int) $idShop);
 
-                    $currencies = DB::getInstance()->executeS($sql);
+                    $currencies = $conn->getArray($sql);
                     foreach ($currencies as $currency) {
                         $module->currency[] = $currency['id_currency'];
                     }
@@ -92,7 +93,7 @@ class AdminPaymentControllerCore extends AdminController
                     $sql->where('`id_module` = '.(int) $module->id);
                     $sql->where('`id_shop` = '.(int) $idShop);
 
-                    $groups = DB::getInstance()->executeS($sql);
+                    $groups = $conn->getArray($sql);
                     foreach ($groups as $group) {
                         $module->group[] = $group['id_group'];
                     }
@@ -106,7 +107,7 @@ class AdminPaymentControllerCore extends AdminController
                     $sql->where('`id_module` = '.(int) $module->id);
                     $sql->where('`id_shop` = '.(int) $idShop);
 
-                    $carriers = Db::getInstance()->executeS($sql);
+                    $carriers = $conn->getArray($sql);
                     foreach ($carriers as $carrier) {
                         $module->reference[] = $carrier['id_reference'];
                     }
@@ -185,7 +186,8 @@ class AdminPaymentControllerCore extends AdminController
             }
         }
 
-        Db::getInstance()->execute('
+        $conn = Db::getInstance();
+        $conn->execute('
 			DELETE FROM `'._DB_PREFIX_.'module_'.bqSQL($type).'`
 			WHERE id_shop = '.$this->context->shop->id.'
 			AND `id_module` IN ('.implode(', ', $modules).')'
@@ -202,7 +204,7 @@ class AdminPaymentControllerCore extends AdminController
                 }
             }
             if (count($values)) {
-                Db::getInstance()->execute('
+                $conn->execute('
 				INSERT INTO `'._DB_PREFIX_.'module_carrier`
 				(`id_module`, `id_shop`, `id_reference`)
 				VALUES '.implode(',', $values));
@@ -218,7 +220,7 @@ class AdminPaymentControllerCore extends AdminController
                 }
             }
             if (count($values)) {
-                Db::getInstance()->execute('
+                $conn->execute('
 				INSERT INTO `'._DB_PREFIX_.'module_'.bqSQL($type).'`
 				(`id_module`, `id_shop`, `id_'.bqSQL($type).'`)
 				VALUES '.implode(',', $values));

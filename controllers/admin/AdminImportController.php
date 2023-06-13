@@ -843,7 +843,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $this->tpl_view_vars = [
-            'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
+            'import_matchs'    => Db::readOnly()->getArray((new DbQuery())->select('*')->from('import_match')),
             'fields_value'     => [
                 'filename'                 => Tools::getValue('filename'),
                 'importer'                 => Tools::getValue('importer'),
@@ -1375,10 +1375,11 @@ class AdminImportControllerCore extends AdminController
         }
 
         // fallback to core types / old implementation
+        $conn = Db::getInstance();
         switch ($entityType) {
             case static::ENTITY_TYPE_CATEGORIES:
                 try {
-                    Db::getInstance()->delete(
+                    $conn->delete(
                         'category',
                         '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                     );
@@ -1386,7 +1387,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'category');
                 }
                 try {
-                    Db::getInstance()->delete(
+                    $conn->delete(
                         'category_lang',
                         '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                     );
@@ -1394,7 +1395,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'category_lang');
                 }
                 try {
-                    Db::getInstance()->delete(
+                    $conn->delete(
                         'category_shop',
                         '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                     );
@@ -1402,7 +1403,7 @@ class AdminImportControllerCore extends AdminController
                     $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'category_shop');
                 }
                 try {
-                    Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'category` AUTO_INCREMENT = 3');
+                    $conn->execute('ALTER TABLE `'._DB_PREFIX_.'category` AUTO_INCREMENT = 3');
                 } catch (PrestaShopException $e) {
                     $this->errors[] = $this->l('Failed to reset auto increment');
 
@@ -1431,17 +1432,10 @@ class AdminImportControllerCore extends AdminController
                              'cart_product',
                          ] as $table) {
                     try {
-                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                        $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {
                         $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
                     }
-                }
-                try {
-                    if (count(Db::getInstance()->executeS('SHOW TABLES LIKE \''._DB_PREFIX_.'favorite_product\' '))) { //check if table exist
-                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'favorite_product`');
-                    }
-                } catch (PrestaShopException $e) {
-                    $this->errors[] = sprintf($this->l('Unable to truncate table `%s`'), 'favorite_product');
                 }
                 foreach ([
                              'product_attachment',
@@ -1465,7 +1459,7 @@ class AdminImportControllerCore extends AdminController
                              'pack',
                          ] as $table) {
                     try {
-                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                        $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {
                         $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
                     }
@@ -1490,45 +1484,45 @@ class AdminImportControllerCore extends AdminController
                              'product_attribute_image',
                          ] as $table) {
                     try {
-                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                        $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {
                         $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
                     }
                 }
 
                 try {
-                    Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'stock_available` WHERE id_product_attribute != 0');
+                    $conn->execute('DELETE FROM `'._DB_PREFIX_.'stock_available` WHERE id_product_attribute != 0');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to delete from table `%s`'), 'stock_available');
                 }
                 break;
             case static::ENTITY_TYPE_CUSTOMERS:
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customer`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customer`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'customer', $e->getMessage());
                 }
                 break;
             case static::ENTITY_TYPE_ADDRESSES:
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'address`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'address`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'address', $e->getMessage());
                 }
                 break;
             case static::ENTITY_TYPE_MANUFACTURERS:
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer', $e->getMessage());
                 }
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_lang`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_lang`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_lang', $e->getMessage());
                 }
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_shop`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_shop`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_shop', $e->getMessage());
                 }
@@ -1540,17 +1534,17 @@ class AdminImportControllerCore extends AdminController
                 break;
             case static::ENTITY_TYPE_SUPPLIERS:
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier', $e->getMessage());
                 }
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_lang`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_lang`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_lang', $e->getMessage());
                 }
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_shop`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_shop`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_shop', $e->getMessage());
                 }
@@ -1562,7 +1556,7 @@ class AdminImportControllerCore extends AdminController
                 break;
             case static::ENTITY_TYPE_ALIAS:
                 try {
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'alias`');
+                    $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'alias`');
                 } catch (PrestaShopException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'alias', $e->getMessage());
                 }
@@ -2318,7 +2312,7 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
         try {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $results = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('DISTINCT `id_product`')
                     ->from('product', 'p')
@@ -2376,15 +2370,15 @@ class AdminImportControllerCore extends AdminController
     protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false, $forceCat = false)
     {
         $idProduct = null;
+        $conn = Db::getInstance();
         // Use product reference as key.
         if ($matchRef && array_key_exists('reference', $info)) {
-            $idReference = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idReference = $conn->getValue(
                 (new DbQuery())
                     ->select('p.`id_product`')
                     ->from('product', 'p')
                     ->join(Shop::addSqlAssociation('product', 'p'))
-                    ->where('p.`reference` = \''.pSQL($info['reference']).'\''),
-                false
+                    ->where('p.`reference` = \''.pSQL($info['reference']).'\'')
             );
             if ($idReference) {
                 $idProduct = $idReference;
@@ -2473,7 +2467,7 @@ class AdminImportControllerCore extends AdminController
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').$conn->getMsgError();
                     }
                 }
             }
@@ -2505,7 +2499,7 @@ class AdminImportControllerCore extends AdminController
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').$conn->getMsgError();
                     }
                 }
             }
@@ -2563,7 +2557,7 @@ class AdminImportControllerCore extends AdminController
                                 );
                             }
                             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
+                                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').$conn->getMsgError();
                             }
                         }
                     }
@@ -2664,26 +2658,24 @@ class AdminImportControllerCore extends AdminController
 
             // If match ref is specified && ref product && ref product already in base, trying to update
             if ($matchRef && $product->reference && $product->existsRefInDatabase($product->reference)) {
-                $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $datas = $conn->getRow(
                     (new DbQuery())
                         ->select('`product_shop`.`date_add`, p.`id_product`')
                         ->from('product', 'p')
                         ->join(Shop::addSqlAssociation('product', 'p'))
-                        ->where('p.`reference` = \''.pSQL($product->reference).'\''),
-                    false
+                        ->where('p.`reference` = \''.pSQL($product->reference).'\'')
                 );
                 $product->id = (int) $datas['id_product'];
                 $product->date_add = pSQL($datas['date_add']);
                 $res = ($validateOnly || $product->update());
             } // Else If id product && id product already in base, trying to update
             elseif ($productExistsInDatabase) {
-                $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $datas = $conn->getRow(
                     (new DbQuery())
                         ->select('`product_shop`.`date_add`')
                         ->from('product', 'p')
                         ->join(shop::addSqlAssociation('product', 'p'))
-                        ->where('p.`id_product` = '.(int) $product->id),
-                    false
+                        ->where('p.`id_product` = '.(int) $product->id)
                 );
                 $product->date_add = pSQL($datas['date_add']);
                 $res = ($validateOnly || $product->update());
@@ -3303,6 +3295,7 @@ class AdminImportControllerCore extends AdminController
             ($langFieldError = $customer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             $res = true;
+            $conn = Db::getInstance();
             foreach ($customersShop as $idShop => $idGroup) {
                 $customer->force_id = (bool) $forceIds;
                 if ($idShop == 'shared') {
@@ -3318,7 +3311,7 @@ class AdminImportControllerCore extends AdminController
                                 foreach ($addresses as $address) {
                                     $address['id_customer'] = $customer->id;
                                     unset($address['country'], $address['state'], $address['state_iso'], $address['id_address']);
-                                    Db::getInstance()->insert('address', $address, false, false);
+                                    $conn->insert('address', $address, false, false);
                                 }
                             }
                         }
@@ -3338,7 +3331,7 @@ class AdminImportControllerCore extends AdminController
                             foreach ($addresses as $address) {
                                 $address['id_customer'] = $customer->id;
                                 unset($address['country'], $address['state'], $address['state_iso'], $address['id_address']);
-                                Db::getInstance()->insert('address', $address, false, false);
+                                $conn->insert('address', $address, false, false);
                             }
                         }
                     }
@@ -3769,13 +3762,12 @@ class AdminImportControllerCore extends AdminController
         if (isset($info['id_product']) && $info['id_product']) {
             $product = new Product((int) $info['id_product'], false, $defaultLanguage);
         } elseif (Tools::getValue('match_ref') && isset($info['product_reference']) && $info['product_reference']) {
-            $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $datas = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('p.`id_product`')
                     ->from('product', 'p')
                     ->join(Shop::addSqlAssociation('product', 'p'))
-                    ->where('p.`reference` = \''.pSQL($info['product_reference']).'\''),
-                false
+                    ->where('p.`reference` = \''.pSQL($info['product_reference']).'\'')
             );
             if (isset($datas['id_product']) && $datas['id_product']) {
                 $product = new Product((int) $datas['id_product'], false, $defaultLanguage);
@@ -4071,16 +4063,17 @@ class AdminImportControllerCore extends AdminController
         }
         if ($idProductAttribute) {
             if (!$validateOnly) {
+                $conn = Db::getInstance();
                 // now adds the attributes in the attribute_combination table
                 if ($idProductAttributeUpdate) {
-                    Db::getInstance()->delete(
+                    $conn->delete(
                         'product_attribute_combination',
                         '`id_product_attribute` = '.(int) $idProductAttribute
                     );
                 }
 
                 foreach ($attributesToAdd as $attributeToAdd) {
-                    Db::getInstance()->insert(
+                    $conn->insert(
                         'product_attribute_combination',
                         [
                             'id_attribute' => (int) $attributeToAdd,
@@ -4759,7 +4752,7 @@ class AdminImportControllerCore extends AdminController
         $sql->from('store');
         $sql->where('`id_store` = '.(int) $idStore);
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (bool) Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -5059,7 +5052,7 @@ class AdminImportControllerCore extends AdminController
                 $query->leftJoin('product_attribute', 'pa', 'pa.id_product = p.id_product AND id_product_attribute = '.(int) $idProductAttribute);
                 $query->where('p.id_product = '.(int) $idProduct);
                 $query->where('p.is_virtual = 0 AND p.cache_is_pack = 0');
-                $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+                $res = Db::readOnly()->getArray($query);
                 $productInfos = $res['0'];
 
                 $supplyOrderDetail->reference = $productInfos['reference'];
@@ -5085,8 +5078,9 @@ class AdminImportControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $match = implode('|', Tools::getValue('type_value'));
+            $conn = Db::getInstance();
             try {
-                Db::getInstance()->insert(
+                $conn->insert(
                     'import_match',
                     [
                         'name'  => pSQL(Tools::getValue('newImportMatchs')),
@@ -5100,7 +5094,7 @@ class AdminImportControllerCore extends AdminController
                 $this->ajaxDie(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
             }
 
-            $this->ajaxDie(json_encode(['id' => (int) Db::getInstance()->Insert_ID()]));
+            $this->ajaxDie(json_encode(['id' => (int) $conn->Insert_ID()]));
         }
     }
 
@@ -5114,7 +5108,7 @@ class AdminImportControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             try {
-                $return = Db::getInstance()->executeS(
+                $return = Db::readOnly()->getArray(
                     (new DbQuery())
                         ->select('*')
                         ->from('import_match')

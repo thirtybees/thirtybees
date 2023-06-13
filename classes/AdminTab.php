@@ -378,7 +378,7 @@ abstract class AdminTabCore
         foreach ($this->_includeTab as $subtab => $extraVars) {
             /* New tab loading */
             $classname = 'Admin'.$subtab;
-            if (($module = Db::getInstance()->getValue('SELECT `module` FROM `'._DB_PREFIX_.'tab` WHERE `class_name` = \''.pSQL($classname).'\'')) && file_exists(_PS_MODULE_DIR_.'/'.$module.'/'.$classname.'.php')) {
+            if (($module = Db::readOnly()->getValue('SELECT `module` FROM `'._DB_PREFIX_.'tab` WHERE `class_name` = \''.pSQL($classname).'\'')) && file_exists(_PS_MODULE_DIR_.'/'.$module.'/'.$classname.'.php')) {
                 include_once(_PS_MODULE_DIR_.'/'.$module.'/'.$classname.'.php');
             } elseif (file_exists(_PS_ADMIN_DIR_.'/tabs/'.$classname.'.php')) {
                 include_once('tabs/'.$classname.'.php');
@@ -610,8 +610,9 @@ abstract class AdminTabCore
 			ORDER BY '.(($orderBy == $this->identifier) ? 'a.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay).
             ($this->_tmpTableFilter ? ') tmpTable WHERE 1'.$this->_tmpTableFilter : '').'
 			LIMIT '.(int) $start.','.(int) $limit;
-        $this->_list = Db::getInstance()->executeS($sql);
-        $this->_listTotal = Db::getInstance()->getValue('SELECT FOUND_ROWS() as `'._DB_PREFIX_.$this->table.'`');
+        $connection = Db::readOnly();
+        $this->_list = $connection->getArray($sql);
+        $this->_listTotal = $connection->getValue('SELECT FOUND_ROWS() as `'._DB_PREFIX_.$this->table.'`');
     }
 
     /**
@@ -1369,7 +1370,7 @@ abstract class AdminTabCore
             $requiredFields[(int) $row['id_required_field']] = $row['field_name'];
         }
 
-        $tableFields = Db::getInstance()->executeS('SHOW COLUMNS FROM '.pSQL(_DB_PREFIX_.$this->table));
+        $tableFields = Db::readOnly()->getArray('SHOW COLUMNS FROM '.pSQL(_DB_PREFIX_.$this->table));
         $irow = 0;
         foreach ($tableFields as $field) {
             if (in_array($field['Field'], $requiredClassFields)) {
@@ -2740,7 +2741,7 @@ abstract class AdminTabCore
         $assos = [];
         $sql = 'SELECT id_shop, `'.bqSQL($this->identifier).'`
 				FROM `'._DB_PREFIX_.bqSQL($this->table).'_shop`';
-        foreach (Db::getInstance()->executeS($sql) as $row) {
+        foreach (Db::readOnly()->getArray($sql) as $row) {
             $assos[$row['id_shop']][] = $row[$this->identifier];
         }
 

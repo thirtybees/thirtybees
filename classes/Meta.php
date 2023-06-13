@@ -208,13 +208,13 @@ class MetaCore extends ObjectModel
      */
     public static function getMetas()
     {
-        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('meta')
                 ->orderBy('`page` ASC')
         );
-        return is_array($ret) ? $ret : [];
+        return $ret;
     }
 
     /**
@@ -227,7 +227,7 @@ class MetaCore extends ObjectModel
      */
     public static function getMetasByIdLang($idLang)
     {
-        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.id_meta, m.page, m.configurable, ml.title, ml.description, ml.keywords, ml.url_rewrite')
                 ->from('meta', 'm')
@@ -235,7 +235,7 @@ class MetaCore extends ObjectModel
                 ->orderBy('m.page ASC')
         );
 
-        return is_array($ret) ? $ret : [];
+        return $ret;
     }
 
     /**
@@ -256,7 +256,7 @@ class MetaCore extends ObjectModel
             ->where('`id_lang` = '.(int) $idLang)
             ->where('`id_shop` = '.(int) Context::getContext()->shop->id);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('url_rewrite')
                 ->from('meta_lang')
@@ -312,7 +312,7 @@ class MetaCore extends ObjectModel
      */
     public static function getProductMetas($idProduct, $idLang, $pageName)
     {
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`, `description_short`')
                 ->from('product', 'p')
@@ -394,7 +394,7 @@ class MetaCore extends ObjectModel
      */
     public static function getMetaByPage($page, $idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('meta', 'm')
@@ -424,7 +424,7 @@ class MetaCore extends ObjectModel
         $pageNumber = Tools::getIntValue('p');
         $cacheId = 'Meta::getCategoryMetas'.(int) $idCategory.'-'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            if ($row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`, `description`')
                     ->from('category_lang', 'cl')
@@ -475,7 +475,7 @@ class MetaCore extends ObjectModel
     public static function getManufacturerMetas($idManufacturer, $idLang, $pageName)
     {
         $pageNumber = Tools::getIntValue('p');
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
                 ->from('manufacturer_lang', 'ml')
@@ -509,7 +509,7 @@ class MetaCore extends ObjectModel
      */
     public static function getSupplierMetas($idSupplier, $idLang, $pageName)
     {
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
             ->from('supplier_lang', 'sl')
@@ -544,7 +544,7 @@ class MetaCore extends ObjectModel
      */
     public static function getCmsMetas($idCms, $idLang, $pageName)
     {
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`meta_title`, `meta_description`, `meta_keywords`')
                 ->from('cms_lang')
@@ -574,7 +574,7 @@ class MetaCore extends ObjectModel
      */
     public static function getCmsCategoryMetas($idCmsCategory, $idLang, $pageName)
     {
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`meta_title`, `meta_description`, `meta_keywords`')
             ->from('cms_category_lang')

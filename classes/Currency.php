@@ -139,14 +139,14 @@ class CurrencyCore extends ObjectModel
     /**
      * @param int $idShop
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getCurrenciesByIdShop($idShop = 0)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('currency', 'c')
@@ -171,7 +171,7 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('module_currency')
@@ -184,7 +184,7 @@ class CurrencyCore extends ObjectModel
      * @param int $idModule
      * @param int|null $idShop
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -195,7 +195,7 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.*')
                 ->from('module_currency', 'mc')
@@ -227,7 +227,7 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        $ret = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $ret = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('module_currency')
@@ -235,7 +235,7 @@ class CurrencyCore extends ObjectModel
                 ->where('`id_shop` = '.(int) $idShop)
         );
 
-        return is_array($ret) ? $ret : [];
+        return $ret;
     }
 
     /**
@@ -248,7 +248,7 @@ class CurrencyCore extends ObjectModel
      */
     public static function getCurrency($idCurrency)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('currency')
@@ -338,7 +338,7 @@ class CurrencyCore extends ObjectModel
      */
     public static function getCurrencies($object = false, $active = true, $groupBy = false)
     {
-        $tab = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $tab = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('currency', 'c')
@@ -464,7 +464,7 @@ class CurrencyCore extends ObjectModel
         }
 
         if (!isset(static::$countActiveCurrencies[$idShop])) {
-            static::$countActiveCurrencies[$idShop] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$countActiveCurrencies[$idShop] = Db::readOnly()->getValue(
                 (new DbQuery())
                 ->select('COUNT(DISTINCT c.`id_currency`)')
                 ->from('currency', 'c')
@@ -537,7 +537,7 @@ class CurrencyCore extends ObjectModel
         $query = Currency::getIdByQuery($idShop);
         $query->where('iso_code_num = \''.pSQL($isoCodeNum).'\'');
 
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query->build());
+        return (int) Db::readOnly()->getValue($query->build());
     }
 
     /**
@@ -577,7 +577,7 @@ class CurrencyCore extends ObjectModel
             $query = Currency::getIdByQuery($idShop);
             $query->where('iso_code = \''.pSQL($isoCode).'\'');
 
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query->build());
+            $result = (int) Db::readOnly()->getValue($query->build());
             Cache::store($cacheId, $result);
 
             return $result;
@@ -624,7 +624,7 @@ class CurrencyCore extends ObjectModel
     public function delete()
     {
         if ($this->id == Configuration::get('PS_CURRENCY_DEFAULT')) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`id_currency`')
                     ->from('currency')
@@ -638,9 +638,10 @@ class CurrencyCore extends ObjectModel
         }
         $this->deleted = 1;
 
-        $res = (bool) Db::getInstance()->delete('module_currency', '`id_currency` = '.(int) $this->id);
+        $conn = Db::getInstance();
+        $res = (bool) $conn->delete('module_currency', '`id_currency` = '.(int) $this->id);
 
-        Db::getInstance()->delete('currency_module', '`id_currency` = '.(int) $this->id);
+        $conn->delete('currency_module', '`id_currency` = '.(int) $this->id);
 
         return $res && $this->update();
     }

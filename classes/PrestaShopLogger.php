@@ -164,7 +164,7 @@ class PrestaShopLoggerCore extends ObjectModel
     {
         $key = $this->getHash();
         if (! isset(static::$is_present[$key])) {
-            static::$is_present[$key] = Db::getInstance()->getValue(
+            static::$is_present[$key] = Db::readOnly()->getValue(
                 'SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'log`
 				WHERE

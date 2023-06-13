@@ -209,7 +209,7 @@ class ShopUrlCore extends ObjectModel
             $virtualUri = preg_replace('#/+#', '/', trim($virtualUri, '/')).'/';
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_shop_url`')
                 ->from('shop_url')
@@ -229,7 +229,7 @@ class ShopUrlCore extends ObjectModel
     public static function cacheMainDomainForShop($idShop)
     {
         if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
-            $row = Db::getInstance()->getRow(
+            $row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`domain`, `domain_ssl`')
                     ->from('shop_url')

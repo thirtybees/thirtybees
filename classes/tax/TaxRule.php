@@ -134,7 +134,7 @@ class TaxRuleCore extends ObjectModel
      */
     public static function retrieveById($idTaxRule)
     {
-        return Db::getInstance()->getRow(
+        return Db::readOnly()->getRow(
             '
 			SELECT * FROM `'._DB_PREFIX_.'tax_rule`
 			WHERE `id_tax_rule` = '.(int) $idTaxRule
@@ -145,14 +145,14 @@ class TaxRuleCore extends ObjectModel
      * @param int $idLang
      * @param int $idGroup
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getTaxRulesByGroupId($idLang, $idGroup)
     {
-        return Db::getInstance()->executeS(
+        return Db::readOnly()->getArray(
             '
 		SELECT g.`id_tax_rule`,
 				 c.`name` AS country_name,
@@ -199,7 +199,7 @@ class TaxRuleCore extends ObjectModel
     {
         $cacheId = 'TaxRule::isTaxInUse_'.(int) $idTax;
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax` = '.(int) $idTax);
+            $result = (int) Db::readOnly()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax` = '.(int) $idTax);
             Cache::store($cacheId, $result);
 
             return $result;

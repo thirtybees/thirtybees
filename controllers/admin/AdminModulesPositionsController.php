@@ -327,7 +327,7 @@ class AdminModulesPositionsControllerCore extends AdminController
 					WHERE id_module = '.$idModule.'
 						AND id_hook = '.$idHook.'
 						AND id_shop IN('.implode(', ', Shop::getContextListShopID()).')';
-            if (!Db::getInstance()->getValue($sql)) {
+            if (!Db::readOnly()->getValue($sql)) {
                 Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
 
@@ -660,7 +660,7 @@ class AdminModulesPositionsControllerCore extends AdminController
 
             $hookName = Tools::getValue('hook');
             $hookableModulesList = [];
-            $modules = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $modules = Db::readOnly()->getArray(
                 (new DbQuery())
                 ->select('`id_module`, `name`')
                 ->from('module')

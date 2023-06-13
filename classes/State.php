@@ -101,14 +101,14 @@ class StateCore extends ObjectModel
      * @param bool $idLang
      * @param bool $active
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getStates($idLang = false, $active = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_state`, `id_country`, `id_zone`, `iso_code`, `name`, `active`')
                 ->from('state', 's')
@@ -133,7 +133,7 @@ class StateCore extends ObjectModel
         }
         $cacheId = 'State::getNameById_'.(int) $idState;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`name`')
                     ->from('state')
@@ -163,7 +163,7 @@ class StateCore extends ObjectModel
         }
         $cacheId = 'State::getIdByName_'.pSQL($state);
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance()->getValue(
+            $result = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_state`')
                     ->from('state')
@@ -189,7 +189,7 @@ class StateCore extends ObjectModel
      */
     public static function getIdByIso($isoCode, $idCountry = null)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_state`')
                 ->from('state')
@@ -208,7 +208,7 @@ class StateCore extends ObjectModel
      */
     public static function getStatesByIdCountry($idCountry)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('state', 's')
@@ -238,7 +238,7 @@ class StateCore extends ObjectModel
      */
     public static function getIdZone($idState)
     {
-        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_zone`')
                 ->from('state')
@@ -258,14 +258,15 @@ class StateCore extends ObjectModel
     {
         if (!$this->isUsed()) {
             // Database deletion
-            $result = Db::getInstance()->delete($this->def['table'], '`'.$this->def['primary'].'` = '.(int) $this->id);
+            $conn = Db::getInstance();
+            $result = $conn->delete($this->def['table'], '`'.$this->def['primary'].'` = '.(int) $this->id);
             if (!$result) {
                 return false;
             }
 
             // Database deletion for multilingual fields related to the object
             if (!empty($this->def['multilang'])) {
-                Db::getInstance()->delete(bqSQL($this->def['table']).'_lang', '`'.$this->def['primary'].'` = '.(int) $this->id);
+                $conn->delete(bqSQL($this->def['table']).'_lang', '`'.$this->def['primary'].'` = '.(int) $this->id);
             }
 
             return $result;
@@ -295,7 +296,7 @@ class StateCore extends ObjectModel
      */
     public function countUsed()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('address')

@@ -285,7 +285,7 @@ class AdminModulesControllerCore extends AdminController
 
         // Retrieve Modules Preferences
         $modulesPreferences = [];
-        $modulesPreferencesTmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $modulesPreferencesTmp = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('*')
             ->from('module_preference')
@@ -581,7 +581,7 @@ class AdminModulesControllerCore extends AdminController
             if ($module->interest === '0') {
                 return true;
             }
-        } elseif ((int) Db::getInstance()->getValue(
+        } elseif ((int) Db::readOnly()->getValue(
             (new DbQuery())
             ->select('`id_module_preference`')
             ->from('module_preference')
@@ -595,7 +595,7 @@ class AdminModulesControllerCore extends AdminController
         // Filter on favorites
         $selectedCategory = $this->getCategoryFilter();
         if ($selectedCategory === static::CATEGORY_FAVORITES) {
-            if ((int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            if ((int) Db::readOnly()->getValue(
                 (new DbQuery())
                 ->select('`id_module_preference`')
                 ->from('module_preference')
@@ -847,7 +847,7 @@ class AdminModulesControllerCore extends AdminController
         $action = Tools::getValue('action_pref');
         $value = Tools::getValue('value_pref');
         $module = Tools::getValue('module_pref');
-        $idModulePreference = (int) Db::getInstance()->getValue(
+        $idModulePreference = (int) Db::readOnly()->getValue(
             (new DbQuery())
             ->select('`id_module_preference`')
             ->from('module_preference')

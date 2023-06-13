@@ -329,7 +329,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
             }
             //Creating an md5 to check if message has been allready processed
             $md5 = md5($overview->date.$overview->from.$subject.$overview->msgno);
-            $exist = Db::getInstance()->getValue(
+            $exist = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`md5_header`')
                     ->from('customer_message_sync_imap')
@@ -496,7 +496,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 );
             }
             if (isset($_POST['id_employee_forward'])) {
-                $messages = Db::getInstance()->getRow(
+                $messages = Db::readOnly()->getRow(
                     '
 					SELECT ct.*, cm.*, cl.name subject, CONCAT(e.firstname, \' \', e.lastname) employee_name,
 						CONCAT(c.firstname, \' \', c.lastname) customer_name, c.firstname

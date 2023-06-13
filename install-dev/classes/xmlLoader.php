@@ -419,7 +419,7 @@ class InstallXmlLoader
 
         if (is_null($tables)) {
             $tables = [];
-            foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
+            foreach (Db::readOnly()->getArray('SHOW TABLES') as $row) {
                 $table = current($row);
                 if (preg_match('#^'._DB_PREFIX_.'(.+?)(_lang)?$#i', $table, $m)) {
                     $tables[$m[1]] = (isset($m[2]) && $m[2]) ? true : false;
@@ -451,7 +451,7 @@ class InstallXmlLoader
         if (!isset($columns[$table])) {
             $columns[$table] = [];
             $sql = 'SHOW COLUMNS FROM `'._DB_PREFIX_.bqSQL($table).'`';
-            foreach (Db::getInstance()->executeS($sql) as $row) {
+            foreach (Db::readOnly()->getArray($sql) as $row) {
                 $columns[$table][$row['Field']] = $this->checkIfTypeIsText($row['Type']);
             }
         }
@@ -609,7 +609,7 @@ class InstallXmlLoader
     public function generatePrimary($entity, $primary)
     {
         if (!isset($this->primaries[$entity])) {
-            $this->primaries[$entity] = (int) Db::getInstance()->getValue('SELECT '.$primary.' FROM '._DB_PREFIX_.$entity.' ORDER BY '.$primary.' DESC');
+            $this->primaries[$entity] = (int) Db::readOnly()->getValue('SELECT '.$primary.' FROM '._DB_PREFIX_.$entity.' ORDER BY '.$primary.' DESC');
         }
 
         return ++$this->primaries[$entity];
@@ -711,8 +711,9 @@ class InstallXmlLoader
                 $type = Db::REPLACE;
             }
 
-            if (!Db::getInstance()->insert($entity, $queries, false, true, $type)) {
-                $this->setError($this->language->l('An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>', $entity, Db::getInstance()->getMsgError()));
+            $conn = Db::getInstance();
+            if (!$conn->insert($entity, $queries, false, true, $type)) {
+                $this->setError($this->language->l('An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>', $entity, $conn->getMsgError()));
             }
             unset($this->delayed_inserts[$entity]);
         }
@@ -766,7 +767,7 @@ class InstallXmlLoader
      */
     public function createEntityConfiguration($identifier, array $data, array $dataLang)
     {
-        if (Db::getInstance()->getValue('SELECT id_configuration FROM '._DB_PREFIX_.'configuration WHERE name = \''.pSQL($data['name']).'\'')) {
+        if (Db::readOnly()->getValue('SELECT id_configuration FROM '._DB_PREFIX_.'configuration WHERE name = \''.pSQL($data['name']).'\'')) {
             return;
         }
 
@@ -963,7 +964,7 @@ class InstallXmlLoader
      */
     public function hasElements($table)
     {
-        return (bool) Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.$table);
+        return (bool) Db::readOnly()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.$table);
     }
 
     /**
@@ -1337,8 +1338,9 @@ class InstallXmlLoader
 
         // Get all results
         $nodes = $nodesLang = [];
-        $results = Db::getInstance()->executeS($sql);
-        if (Db::getInstance()->getNumberError()) {
+        $conn = Db::getInstance();
+        $results =$conn->getArray($sql);
+        if ($conn->getNumberError()) {
             $this->setError($this->language->l('SQL error on query <i>%s</i>', $sql));
         } else {
             foreach ($results as $row) {
@@ -1360,7 +1362,7 @@ class InstallXmlLoader
                             $sql = 'SELECT `id_'.bqSQL($field['relation']).'`
 									FROM `'.bqSQL(_DB_PREFIX_.$field['relation']).'`
 									WHERE `id_'.bqSQL($field['relation']).'` = '.(int) $row[$column];
-                            $node[$column] = $this->generateId((string) $field['relation'], Db::getInstance()->getValue($sql));
+                            $node[$column] = $this->generateId((string) $field['relation'], $conn->getValue($sql));
 
                             // A little trick to allow storage of some hard values, like '-1' for tab.id_parent
                             if (!$node[$column] && $row[$column]) {
@@ -1516,7 +1518,7 @@ class InstallXmlLoader
 				FROM '._DB_PREFIX_.'tag t
 				LEFT JOIN '._DB_PREFIX_.'product_tag pt ON t.id_tag = pt.id_tag
 				ORDER BY id_lang';
-        foreach (Db::getInstance()->executeS($sql) as $row) {
+        foreach (Db::readOnly()->getArray($sql) as $row) {
             $identifier = $this->generateId('tag', $row['id_tag']);
             if (!isset($nodesLang[$row['id_lang']])) {
                 $nodesLang[$row['id_lang']] = [];

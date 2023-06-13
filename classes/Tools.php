@@ -1050,10 +1050,6 @@ class ToolsCore
             static::displayParameterAsDeprecated('round');
         }
 
-        if ($currencyFrom == $currencyTo) {
-            return $amount;
-        }
-
         $defaultCurrencyId = (int)Configuration::get('PS_CURRENCY_DEFAULT');
 
         if ($currencyFrom === null) {
@@ -1778,7 +1774,7 @@ class ToolsCore
 							AND category_shop.active = 1
 							AND c.level_depth > '.(int) $intervalRoot['level_depth'].'
 						ORDER BY c.level_depth ASC';
-                $categories = Db::getInstance()->executeS($sql);
+                $categories = Db::readOnly()->getArray($sql);
 
                 $n = 1;
                 $nCategories = count($categories);
@@ -5238,7 +5234,7 @@ FileETag none
         $sql = $productRefs . " UNION " . $attributeRefs;
 
         $max = 0;
-        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $rows = Db::readOnly()->getArray($sql);
         if ($rows) {
             foreach ($rows as $row) {
                 if (preg_match('/^' . preg_quote($baseReference) . '_([0-9]+)$/', $row['reference'], $matches)) {

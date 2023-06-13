@@ -102,7 +102,7 @@ class TranslatedConfigurationCore extends Configuration
         // Check if the id configuration is set in the configuration_lang table.
         // Otherwise configuration is not set as translated configuration.
         if ($id !== null) {
-            $idTranslated = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $idTranslated = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select(bqSQL(static::$definition['primary']))
                     ->from(bqSQL(static::$definition['table']).'_lang')
@@ -149,7 +149,7 @@ class TranslatedConfigurationCore extends Configuration
         }
         Configuration::updateValue($this->name, $this->value, $ishtml);
 
-        $lastInsert = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $lastInsert = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_configuration` AS `id`')
                 ->from('configuration')
@@ -168,7 +168,7 @@ class TranslatedConfigurationCore extends Configuration
      * @param string $sqlSort
      * @param string $sqlLimit
      *
-     * @return array|false
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -186,6 +186,6 @@ class TranslatedConfigurationCore extends Configuration
 		'.($sqlLimit != '' ? $sqlLimit : '').'
 		';
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 }

@@ -705,7 +705,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     protected function getCustomizations()
     {
         $customizations = [];
-        if (!$results = Db::getInstance()->executeS(
+        if (!$results = Db::readOnly()->getArray(
             '
 			SELECT DISTINCT c.`id_customization`
 			FROM `'._DB_PREFIX_.'customization` c
@@ -732,8 +732,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     protected function manageCustomizationImages()
     {
         $normalImageSizes = ImageType::getImagesTypes($this->imageType);
+        $connection = Db::readOnly();
         if (empty($this->wsObject->urlSegment[2])) {
-            $results = Db::getInstance()->executeS('SELECT DISTINCT `id_cart` FROM `'._DB_PREFIX_.'customization`');
+            $results = $connection->getArray('SELECT DISTINCT `id_cart` FROM `'._DB_PREFIX_.'customization`');
             $ids = [];
             foreach ($results as $result) {
                 $ids[] = $result['id_cart'];
@@ -757,7 +758,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             return true;
         } elseif (empty($this->wsObject->urlSegment[4])) {
             if ($this->wsObject->method == 'GET') {
-                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $results = $connection->getArray(
                     (new DbQuery())
                         ->select('*')
                         ->from('customized_data')
@@ -775,7 +776,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             }
         } else {
             if ($this->wsObject->method == 'GET') {
-                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $results = $connection->getArray(
                     (new DbQuery())
                         ->select('*')
                         ->from('customized_data')
@@ -794,7 +795,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 if (!in_array((int) $this->wsObject->urlSegment[3], $customizations)) {
                     throw new WebserviceException('Customization does not exist', [61, 500]);
                 }
-                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $results = $connection->getArray(
                     (new DbQuery())
                         ->select('`id_customization_field`')
                         ->from('customization_field')
@@ -804,7 +805,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 if (empty($results)) {
                     throw new WebserviceException('Customization field does not exist.', [61, 500]);
                 }
-                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $results = $connection->getArray(
                     (new DbQuery())
                         ->select('*')
                         ->from('customized_data')
@@ -818,7 +819,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
                 return $this->manageDeclinatedImagesCRUD(false, '', $normalImageSizes, _PS_UPLOAD_DIR_);
             }
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $results = $connection->getArray(
                 (new DbQuery())
                     ->select('*')
                     ->from('customized_data')

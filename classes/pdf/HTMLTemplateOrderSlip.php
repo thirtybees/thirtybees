@@ -124,7 +124,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
                 $product['total_price_tax_incl'] = $product['unit_price_tax_incl'] * $product['product_quantity'];
 
                 if ($this->order_slip->partial == 1) {
-                    $orderSlipDetail = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    $orderSlipDetail = Db::readOnly()->getRow(
                         (new DbQuery())
                             ->select('*')
                             ->from('order_slip_detail')

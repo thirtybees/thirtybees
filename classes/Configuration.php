@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Database\ReadOnlyConnection;
+
 /**
  * Class ConfigurationCore
  */
@@ -438,13 +440,13 @@ class ConfigurationCore extends ObjectModel
      */
     public static function loadConfiguration()
     {
-        static::loadConfigurationFromDB(Db::getInstance(_PS_USE_SQL_SLAVE_));
+        static::loadConfigurationFromDB(Db::readOnly());
     }
 
     /**
      * Load all configuration data, using an existing database connection.
      *
-     * @param Db $connection Database connection to be used for data retrieval.
+     * @param ReadOnlyConnection $connection Database connection to be used for data retrieval.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -453,16 +455,12 @@ class ConfigurationCore extends ObjectModel
     {
         static::$_cache[static::$definition['table']] = [];
 
-        $rows = $connection->executeS(
+        $rows = $connection->getArray(
             (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value`, c.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
                 ->from(static::$definition['table'], 'c')
                 ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.static::$definition['primary'].'` = cl.`'.static::$definition['primary'].'`')
         );
-
-        if (!is_array($rows)) {
-            return;
-        }
 
         foreach ($rows as $row) {
             $lang = ($row['id_lang']) ? $row['id_lang'] : 0;
@@ -796,7 +794,7 @@ class ConfigurationCore extends ObjectModel
                 WHERE name = \''.$key.'\'
                 '.Configuration::sqlRestriction($idShopGroup, $idShop);
 
-        return (int) Db::getInstance()->getValue($sql);
+        return (int) Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -855,7 +853,8 @@ class ConfigurationCore extends ObjectModel
     {
         static::validateKey($key);
 
-        $result = Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $result = $conn->execute(
             '
         DELETE FROM `'._DB_PREFIX_.static::$definition['table'].'_lang`
         WHERE `'.static::$definition['primary'].'` IN (
@@ -865,7 +864,7 @@ class ConfigurationCore extends ObjectModel
         )'
         );
 
-        $result2 = Db::getInstance()->delete(static::$definition['table'], '`name` = "'.$key.'"');
+        $result2 = $conn->delete(static::$definition['table'], '`name` = "'.$key.'"');
 
         static::$_cache[static::$definition['table']] = null;
 
@@ -893,11 +892,12 @@ class ConfigurationCore extends ObjectModel
         }
 
         $id = Configuration::getIdByName($key, $idShopGroup, $idShop);
-        Db::getInstance()->delete(
+        $conn = Db::getInstance();
+        $conn->delete(
             static::$definition['table'],
             '`'.static::$definition['primary'].'` = '.(int) $id
         );
-        Db::getInstance()->delete(
+        $conn->delete(
             static::$definition['table'].'_lang',
             '`'.static::$definition['primary'].'` = '.(int) $id
         );
@@ -1024,7 +1024,7 @@ class ConfigurationCore extends ObjectModel
         '.($sqlSort != '' ? $sqlSort : '').'
         '.($sqlLimit != '' ? $sqlLimit : '');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**

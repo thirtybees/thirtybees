@@ -115,7 +115,8 @@ abstract class PaymentModuleCore extends Module
     public static function getInstalledPaymentModules()
     {
         $hookPayment = 'Payment';
-        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $connection = Db::readOnly();
+        if ($connection->getValue(
             (new DbQuery())
                 ->select('`id_hook`')
                 ->from('hook')
@@ -124,7 +125,7 @@ abstract class PaymentModuleCore extends Module
             $hookPayment = 'displayPayment';
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return $connection->getArray(
             (new DbQuery())
                 ->select('DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`')
                 ->from('module', 'm')
@@ -343,10 +344,11 @@ abstract class PaymentModuleCore extends Module
      */
     public function uninstall()
     {
-        if (!Db::getInstance()->delete('module_country', '`id_module` = '.(int) $this->id)
-            || !Db::getInstance()->delete('module_currency', '`id_module` = '.(int) $this->id)
-            || !Db::getInstance()->delete('module_group', '`id_module` = '.(int) $this->id)
-            || !Db::getInstance()->delete('module_carrier', '`id_module` = '.(int) $this->id)
+        $conn = Db::getInstance();
+        if (!$conn->delete('module_country', '`id_module` = '.(int) $this->id)
+            || !$conn->delete('module_currency', '`id_module` = '.(int) $this->id)
+            || !$conn->delete('module_group', '`id_module` = '.(int) $this->id)
+            || !$conn->delete('module_carrier', '`id_module` = '.(int) $this->id)
         ) {
             return false;
         }
@@ -1166,7 +1168,8 @@ abstract class PaymentModuleCore extends Module
 
     /**
      * @param int|null $currentIdCurrency
-     * @return array|bool|Currency|PDOStatement
+     *
+     * @return array|Currency|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

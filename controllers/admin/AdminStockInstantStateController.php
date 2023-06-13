@@ -344,7 +344,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                 $query->where('s.id_product = '.$idProduct.' AND s.id_product_attribute = '.$idProductAttribute);
                 $query->where('s.id_warehouse = '.$idWarehouse);
                 $query->groupBy('s.price_te');
-                $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+                $datas = Db::readOnly()->getArray($query);
 
                 // puts data
                 foreach ($datas as $data) {
@@ -447,6 +447,7 @@ class AdminStockInstantStateControllerCore extends AdminController
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
+        $conn = Db::readOnly();
         if (Tools::isSubmit('id_stock')) {
             parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
@@ -469,7 +470,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                     $query->where('id_warehouse = '.(int) $this->getCurrentCoverageWarehouse());
                 }
 
-                $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+                $res = $conn->getRow($query);
 
                 $item['physical_quantity'] = $res['physical_quantity'];
                 $item['usable_quantity'] = $res['usable_quantity'];
@@ -524,7 +525,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                     $query->where('id_warehouse = '.(int) $this->getCurrentCoverageWarehouse());
                 }
 
-                $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+                $res = $conn->getRow($query);
 
                 $item['physical_quantity'] = $res['physical_quantity'];
                 $item['usable_quantity'] = $res['usable_quantity'];

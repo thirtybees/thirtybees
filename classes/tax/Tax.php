@@ -169,7 +169,7 @@ class TaxCore extends ObjectModel
      */
     public function isUsed()
     {
-        return Db::getInstance()->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT `id_tax`
 		FROM `'._DB_PREFIX_.'order_detail_tax`
@@ -205,7 +205,7 @@ class TaxCore extends ObjectModel
             $sql->where('t.`active` = 1');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -231,7 +231,7 @@ class TaxCore extends ObjectModel
      */
     public static function getTaxIdByName($taxName, $active = 1)
     {
-        $tax = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $tax = Db::readOnly()->getRow(
             '
 			SELECT t.`id_tax`
 			FROM `'._DB_PREFIX_.'tax` t

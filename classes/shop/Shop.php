@@ -162,7 +162,7 @@ class ShopCore extends ObjectModel
     {
         $cacheId = 'Shop::setUrl_'.(int) $this->id;
         if (!Cache::isStored($cacheId)) {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('su.physical_uri, su.virtual_uri, su.domain, su.domain_ssl, t.id_theme, t.name, t.directory')
                     ->from('shop', 's')
@@ -292,7 +292,8 @@ class ShopCore extends ObjectModel
     public static function hasDependency($idShop)
     {
         $hasDependency = false;
-        $nbrCustomer = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $connection = Db::readOnly();
+        $nbrCustomer = (int) $connection->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('customer')
@@ -301,7 +302,7 @@ class ShopCore extends ObjectModel
         if ($nbrCustomer) {
             $hasDependency = true;
         } else {
-            $nbrOrder = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $nbrOrder = (int) $connection->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('orders')
@@ -330,7 +331,7 @@ class ShopCore extends ObjectModel
             $host = Tools::getHttpHost();
             $requestUri = rawurldecode($_SERVER['REQUEST_URI']);
 
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('s.`id_shop`, CONCAT(su.`physical_uri`, su.`virtual_uri`) AS `uri`, su.`domain`, su.`main`')
                     ->from('shop_url', 'su')
@@ -566,7 +567,7 @@ class ShopCore extends ObjectModel
      */
     public function getUrls()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('shop_url')
@@ -703,7 +704,7 @@ class ShopCore extends ObjectModel
             $sql->where('es.`id_employee` = '.(int) $employee->id);
         }
 
-        if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
+        if ($results = Db::readOnly()->getArray($sql)) {
             foreach ($results as $row) {
                 if (!isset(static::$shops[$row['id_shop_group']])) {
                     static::$shops[$row['id_shop_group']] = [
@@ -742,7 +743,7 @@ class ShopCore extends ObjectModel
         $cacheId = 'Shop::getCompleteListOfShopsID';
         if (!Cache::isStored($cacheId)) {
             $list = [];
-            foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('`id_shop`')->from('shop')) as $row) {
+            foreach (Db::readOnly()->getArray((new DbQuery())->select('`id_shop`')->from('shop')) as $row) {
                 $list[] = $row['id_shop'];
             }
 
@@ -805,7 +806,7 @@ class ShopCore extends ObjectModel
         $query->where('active = 1');
         $query .= $this->addSqlRestriction(self::SHARE_ORDER);
         $domains = [];
-        foreach (Db::getInstance()->executeS($query) as $row) {
+        foreach (Db::readOnly()->getArray($query) as $row) {
             $domains[] = $row['domain'];
         }
 
@@ -980,7 +981,7 @@ class ShopCore extends ObjectModel
      */
     public static function getShopById($id, $identifier, $table)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_shop`, `'.bqSQL($identifier).'`')
                 ->from(bqSQL($table).'_shop')
@@ -1212,8 +1213,11 @@ class ShopCore extends ObjectModel
         static $featureActive = null;
 
         if ($featureActive === null) {
-            $featureActive = Db::getInstance()->getValue('SELECT value FROM `'._DB_PREFIX_.'configuration` WHERE `name` = "PS_MULTISHOP_FEATURE_ACTIVE"')
-                && (Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'shop') > 1);
+            $connection = Db::readOnly();
+            $featureActive = (
+                $connection->getValue('SELECT value FROM `'._DB_PREFIX_.'configuration` WHERE `name` = "PS_MULTISHOP_FEATURE_ACTIVE"') &&
+                ($connection->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'shop') > 1)
+            );
         }
 
         return $featureActive;
@@ -1292,7 +1296,7 @@ class ShopCore extends ObjectModel
             }
 
             if (!$deleted) {
-                $res = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.$tableName.'` WHERE `'.$id.'` = '.(int) $oldId);
+                $res = Db::readOnly()->getRow('SELECT * FROM `'._DB_PREFIX_.$tableName.'` WHERE `'.$id.'` = '.(int) $oldId);
                 if ($res) {
                     unset($res[$id]);
                     if (isset($row['primary'])) {
@@ -1356,7 +1360,7 @@ class ShopCore extends ObjectModel
         $query->from('category_shop', 'cs');
         $query->leftJoin('category_lang', 'cl', 'cl.`id_category` = cs.`id_category` AND cl.`id_lang` = '.(int) Context::getContext()->language->id);
         $query->where('cs.`id_shop` = '.(int) $id);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $result = Db::readOnly()->getArray($query);
 
         if ($onlyId) {
             $array = [];
@@ -1397,7 +1401,7 @@ class ShopCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('entity.`id_'.bqSQL($entity).'`')
                 ->from(bqSQL($entity).'_shop', 'es')

@@ -389,7 +389,7 @@ class HelperFormCore extends Helper
 
         $assos = [];
         if ((int) $this->id) {
-            foreach (Db::getInstance()->executeS(
+            foreach (Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`id_shop`, `'.bqSQL($this->identifier).'`')
                     ->from(bqSQL($this->table).'_shop')

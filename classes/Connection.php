@@ -148,7 +148,7 @@ class ConnectionCore extends ObjectModel
                 ->addCurrentShopRestriction('c')
                 ->where('`c`.`id_guest` = ' . $guestId )
                 ->where('`c`.`date_add` > \'' . pSQL(date('Y-m-d H:i:00', time() - 1800)) . '\'');
-            $exists = Db::getInstance()->getRow($sql);
+            $exists = Db::readOnly()->getRow($sql);
 
             if (!$exists) {
                 // The old connections details are removed from the database in order to spare some memory

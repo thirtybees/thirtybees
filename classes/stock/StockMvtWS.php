@@ -225,7 +225,7 @@ class StockMvtWSCore extends ObjectModelCore
      * @param string $limit
      * @param bool $full
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -271,7 +271,7 @@ class StockMvtWSCore extends ObjectModelCore
             $query .= $limit.' ';
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**

@@ -100,7 +100,7 @@ abstract class ImportModuleCore extends Module
      */
     public function executeS($query)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**

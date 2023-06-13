@@ -107,7 +107,7 @@ class ModuleGridEngineCore extends Module
      */
     public static function getGridEngines()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.`name`')
                 ->from('module', 'm')

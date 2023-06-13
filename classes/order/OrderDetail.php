@@ -287,7 +287,7 @@ class OrderDetailCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail', 'od')
@@ -344,7 +344,7 @@ class OrderDetailCore extends ObjectModel
     {
         $computationMethod = 1;
         $taxes = [];
-        if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if ($results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.*, d.`tax_computation_method`')
                 ->from('order_detail_tax', 't')
@@ -418,11 +418,13 @@ class OrderDetailCore extends ObjectModel
             ];
         }
 
+        $conn = Db::getInstance();
+
         if ($replace) {
-            Db::getInstance()->delete('order_detail_tax', '`id_order_detail` = '.(int) $this->id);
+            $conn->delete('order_detail_tax', '`id_order_detail` = '.(int) $this->id);
         }
 
-        return Db::getInstance()->insert('order_detail_tax', $values);
+        return $conn->insert('order_detail_tax', $values);
     }
 
     /**
@@ -455,7 +457,7 @@ class OrderDetailCore extends ObjectModel
      */
     public static function getList($idOrder)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail')
@@ -464,7 +466,7 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -477,14 +479,14 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param int $idOrderDetail
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getTaxListStatic($idOrderDetail)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail_tax')
@@ -574,7 +576,7 @@ class OrderDetailCore extends ObjectModel
      */
     public function getWsTaxes()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('id_tax as id')
                 ->from('order_detail_tax', 'tax')
@@ -594,7 +596,7 @@ class OrderDetailCore extends ObjectModel
             ->select('odp.id_product AS id, odp.quantity, odp.id_product_attribute AS combination_id')
             ->from('order_detail_pack', 'odp')
             ->where('odp.`id_order_detail` = '.(int) $this->id_order_detail);
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -618,7 +620,8 @@ class OrderDetailCore extends ObjectModel
             $front = false;
         }
 
-        $orders = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $connection = Db::readOnly();
+        $orders = $connection->getArray(
             (new DbQuery())
                 ->select('o.`id_order`')
                 ->from('orders', 'o')
@@ -634,7 +637,7 @@ class OrderDetailCore extends ObjectModel
             }
             $list = rtrim($list, ',');
 
-            $orderProducts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $orderProducts = $connection->getArray(
                 (new DbQuery())
                     ->select('DISTINCT od.`product_id`, p.`id_product`, pl.`name`, pl.`link_rewrite`, p.`reference`, i.`id_image`, product_shop.`show_price`')
                     ->select('cl.`link_rewrite` AS `category`, p.`ean13`, p.`out_of_stock`, p.`id_category_default`')
@@ -650,34 +653,30 @@ class OrderDetailCore extends ObjectModel
                     ->where('od.`product_id` != '.(int) $idProduct)
                     ->where($front ? '`product_shop`.`visibility` IN ("both", "catalog")' : '')
                     ->orderBy('RAND()')
-                    ->limit((int) $limit),
-                true,
-                false
+                    ->limit((int) $limit)
             );
 
             $taxCalc = Product::getTaxCalculationMethod();
-            if (is_array($orderProducts)) {
-                foreach ($orderProducts as &$orderProduct) {
-                    $orderProduct['image'] = Context::getContext()->link->getImageLink(
-                        $orderProduct['link_rewrite'],
-                        (int) $orderProduct['product_id'].'-'.(int) $orderProduct['id_image'],
-                        ImageType::getFormatedName('medium')
-                    );
-                    $orderProduct['link'] = Context::getContext()->link->getProductLink(
-                        (int) $orderProduct['product_id'],
-                        $orderProduct['link_rewrite'],
-                        $orderProduct['category'],
-                        $orderProduct['ean13']
-                    );
-                    if ($taxCalc == 0 || $taxCalc == 2) {
-                        $orderProduct['displayed_price'] = Product::getPriceStatic((int) $orderProduct['product_id'], true, null);
-                    } elseif ($taxCalc == 1) {
-                        $orderProduct['displayed_price'] = Product::getPriceStatic((int) $orderProduct['product_id'], false, null);
-                    }
+            foreach ($orderProducts as &$orderProduct) {
+                $orderProduct['image'] = Context::getContext()->link->getImageLink(
+                    $orderProduct['link_rewrite'],
+                    (int) $orderProduct['product_id'].'-'.(int) $orderProduct['id_image'],
+                    ImageType::getFormatedName('medium')
+                );
+                $orderProduct['link'] = Context::getContext()->link->getProductLink(
+                    (int) $orderProduct['product_id'],
+                    $orderProduct['link_rewrite'],
+                    $orderProduct['category'],
+                    $orderProduct['ean13']
+                );
+                if ($taxCalc == 0 || $taxCalc == 2) {
+                    $orderProduct['displayed_price'] = Product::getPriceStatic((int) $orderProduct['product_id'], true, null);
+                } elseif ($taxCalc == 1) {
+                    $orderProduct['displayed_price'] = Product::getPriceStatic((int) $orderProduct['product_id'], false, null);
                 }
-
-                return Product::getProductsProperties($idLang, $orderProducts);
             }
+
+            return Product::getProductsProperties($idLang, $orderProducts);
         }
 
         return [];

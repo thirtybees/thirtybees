@@ -316,7 +316,7 @@ class AdminInvoicesControllerCore extends AdminController
             ],
         ];
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 			SELECT COUNT( o.id_order ) AS nbOrders, o.current_state as id_order_state
 			FROM `'._DB_PREFIX_.'order_invoice` oi

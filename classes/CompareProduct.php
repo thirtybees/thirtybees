@@ -71,7 +71,7 @@ class CompareProductCore extends ObjectModel
      */
     public static function getCompareProducts($idCompare)
     {
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('DISTINCT `id_product`')
                 ->from('compare', 'c')
@@ -106,7 +106,7 @@ class CompareProductCore extends ObjectModel
 
         // Check if compare row exists
         if ($idCompare) {
-            $idCompare = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCompare = (int)Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_compare`')
                     ->from('compare')
@@ -115,19 +115,20 @@ class CompareProductCore extends ObjectModel
         }
 
         // Create new compare record if it does not exists yet
+        $conn = Db::getInstance();
         if (! $idCompare) {
             $context = Context::getContext();
             $customer = $context->customer;
             $idCustomer  = Validate::isLoadedObject($customer) ? (int)$customer->id : 0;
-            if (! Db::getInstance()->insert('compare', [ 'id_customer' => (int) $idCustomer ])) {
+            if (! $conn->insert('compare', [ 'id_customer' => (int) $idCustomer ])) {
                 return false;
             }
-            $idCompare = (int)Db::getInstance()->Insert_ID();
+            $idCompare = (int)$conn->Insert_ID();
             $context->cookie->id_compare = $idCompare;
         }
 
         if ($idCompare && $idProduct) {
-            return Db::getInstance()->insert(
+            return $conn->insert(
                 'compare_product',
                 [
                     'id_compare' => (int)$idCompare,
@@ -174,7 +175,7 @@ class CompareProductCore extends ObjectModel
      */
     public static function getNumberProducts($idCompare)
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(`id_compare`)')
                 ->from('compare_product')
@@ -215,7 +216,7 @@ class CompareProductCore extends ObjectModel
      */
     public static function getIdCompareByIdCustomer($idCustomer)
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_compare`')
                 ->from('compare')

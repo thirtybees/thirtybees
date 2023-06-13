@@ -293,7 +293,7 @@ class AdminStatesControllerCore extends AdminController
      */
     protected function displayAjaxStates()
     {
-        $states = Db::getInstance()->executeS(
+        $states = Db::readOnly()->getArray(
             '
 		SELECT s.id_state, s.name
 		FROM '._DB_PREFIX_.'state s
@@ -302,7 +302,7 @@ class AdminStatesControllerCore extends AdminController
 		ORDER BY s.`name` ASC'
         );
 
-        if (is_array($states) and !empty($states)) {
+        if (!empty($states)) {
             $list = '';
             if ((bool) Tools::getValue('no_empty') != true) {
                 $emptyValue = (Tools::isSubmit('empty_value')) ? Tools::getValue('empty_value') : '-';

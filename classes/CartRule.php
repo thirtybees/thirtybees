@@ -305,27 +305,28 @@ class CartRuleCore extends ObjectModel
      */
     public static function copyConditions($idCartRuleSource, $idCartRuleDestination)
     {
-        Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $conn->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_shop` (`id_cart_rule`, `id_shop`)
 		(SELECT '.(int) $idCartRuleDestination.', id_shop FROM `'._DB_PREFIX_.'cart_rule_shop` WHERE `id_cart_rule` = '.(int) $idCartRuleSource.')'
         );
-        Db::getInstance()->execute(
+        $conn->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_carrier` (`id_cart_rule`, `id_carrier`)
 		(SELECT '.(int) $idCartRuleDestination.', id_carrier FROM `'._DB_PREFIX_.'cart_rule_carrier` WHERE `id_cart_rule` = '.(int) $idCartRuleSource.')'
         );
-        Db::getInstance()->execute(
+        $conn->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_group` (`id_cart_rule`, `id_group`)
 		(SELECT '.(int) $idCartRuleDestination.', id_group FROM `'._DB_PREFIX_.'cart_rule_group` WHERE `id_cart_rule` = '.(int) $idCartRuleSource.')'
         );
-        Db::getInstance()->execute(
+        $conn->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_country` (`id_cart_rule`, `id_country`)
 		(SELECT '.(int) $idCartRuleDestination.', id_country FROM `'._DB_PREFIX_.'cart_rule_country` WHERE `id_cart_rule` = '.(int) $idCartRuleSource.')'
         );
-        Db::getInstance()->execute(
+        $conn->execute(
             '
 		INSERT INTO `'._DB_PREFIX_.'cart_rule_combination` (`id_cart_rule_1`, `id_cart_rule_2`)
 		(SELECT DISTINCT '.(int) $idCartRuleDestination.', IF(id_cart_rule_1 != '.(int) $idCartRuleSource.', id_cart_rule_1, id_cart_rule_2) FROM `'._DB_PREFIX_.'cart_rule_combination`
@@ -341,19 +342,19 @@ class CartRuleCore extends ObjectModel
         $sql->select('`id_product_rule_group`, `quantity`');
         $sql->from('cart_rule_product_rule_group');
         $sql->where('`id_cart_rule` = '.(int) $idCartRuleSource);
-        $productsRulesGroupSource = Db::getInstance()->ExecuteS($sql);
+        $productsRulesGroupSource = $conn->getArray($sql);
 
         foreach ($productsRulesGroupSource as $productRuleGroupSource) {
-            Db::getInstance()->insert(
+            $conn->insert(
                 'cart_rule_product_rule_group',
                 [
                     'id_cart_rule' => (int) $idCartRuleDestination,
                     'quantity'     => (int) $productRuleGroupSource['quantity'],
                 ]
             );
-            $idProductRuleGroupDestination = Db::getInstance()->Insert_ID();
+            $idProductRuleGroupDestination = $conn->Insert_ID();
 
-            $productsRulesSource = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $productsRulesSource = $conn->getArray(
                 (new DbQuery())
                     ->select('`id_product_rule`, `type`')
                     ->from('cart_rule_product_rule')
@@ -361,16 +362,16 @@ class CartRuleCore extends ObjectModel
             );
 
             foreach ($productsRulesSource as $productRuleSource) {
-                Db::getInstance()->insert(
+                $conn->insert(
                     'cart_rule_product_rule',
                     [
                         'id_product_rule_group' => (int) $idProductRuleGroupDestination,
                         'type'                  => pSQL($productRuleSource['type']),
                     ]
                 );
-                $idProductRuleDestination = Db::getInstance()->Insert_ID();
+                $idProductRuleDestination = $conn->Insert_ID();
 
-                $productsRulesValuesSource = Db::getInstance()->executeS(
+                $productsRulesValuesSource = $conn->getArray(
                     (new DbQuery())
                         ->select('`id_item`')
                         ->from('cart_rule_product_rule_value')
@@ -378,7 +379,7 @@ class CartRuleCore extends ObjectModel
                 );
 
                 foreach ($productsRulesValuesSource as $productRuleValueSource) {
-                    Db::getInstance()->insert(
+                    $conn->insert(
                         'cart_rule_product_rule_value',
                         [
                             'id_product_rule' => (int) $idProductRuleDestination,
@@ -406,7 +407,7 @@ class CartRuleCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart_rule`')
                 ->from('cart_rule')
@@ -457,7 +458,8 @@ class CartRuleCore extends ObjectModel
         }
         $sql->where('cr.`id_customer` = '.(int) $idCustomer.' OR (cr.`group_restriction` = 1 AND cr.`id_customer` = 0)'.(($includeGeneric && (int) $idCustomer !== 0) ? ' OR cr.`id_customer` = 0' : ''));
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true);
+        $conn = Db::readOnly();
+        $result = $conn->getArray($sql);
 
         if (empty($result)) {
             return [];
@@ -468,7 +470,7 @@ class CartRuleCore extends ObjectModel
 
         foreach ($result as $key => $cartRule) {
             if ($cartRule['group_restriction']) {
-                $cartRuleGroups = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $cartRuleGroups = $conn->getArray(
                     (new DbQuery())
                         ->select('`id_group`')
                         ->from('cart_rule_group')
@@ -518,7 +520,7 @@ class CartRuleCore extends ObjectModel
 
         foreach ($result as $key => $cartRule) {
             if ($cartRule['shop_restriction']) {
-                $cartRuleShops = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $cartRuleShops = $conn->getArray(
                     (new DbQuery())
                         ->select('`id_shop`')
                         ->from('cart_rule_shop')
@@ -552,7 +554,7 @@ class CartRuleCore extends ObjectModel
         foreach ($resultBak as $key => $cartRule) {
             if ($cartRule['country_restriction']) {
                 $countryRestriction = true;
-                $countries = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $countries = $conn->getArray(
                     (new DbQuery())
                         ->select('`id_country`')
                         ->from('address')
@@ -560,19 +562,17 @@ class CartRuleCore extends ObjectModel
                         ->where('`deleted` = 0')
                 );
 
-                if (is_array($countries) && !empty($countries)) {
-                    foreach ($countries as $country) {
-                        $idCartRule = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                            (new DbQuery())
-                                ->select('crc.`id_cart_rule`')
-                                ->from('cart_rule_country', 'crc')
-                                ->where('crc.`id_cart_rule` = '.(int) $cartRule['id_cart_rule'])
-                                ->where('crc.`id_country` = '.(int) $country['id_country'])
-                        );
-                        if ($idCartRule) {
-                            $result[] = $resultBak[$key];
-                            break;
-                        }
+                foreach ($countries as $country) {
+                    $idCartRule = (bool) $conn->getValue(
+                        (new DbQuery())
+                            ->select('crc.`id_cart_rule`')
+                            ->from('cart_rule_country', 'crc')
+                            ->where('crc.`id_cart_rule` = '.(int) $cartRule['id_cart_rule'])
+                            ->where('crc.`id_country` = '.(int) $country['id_country'])
+                    );
+                    if ($idCartRule) {
+                        $result[] = $resultBak[$key];
+                        break;
                     }
                 }
             } else {
@@ -619,6 +619,7 @@ class CartRuleCore extends ObjectModel
 
         // Check if the products chosen by the customer are usable with the cart rule
         if ($this->product_restriction) {
+            $conn = Db::readOnly();
             $productRuleGroups = $this->getProductRuleGroups();
             foreach ($productRuleGroups as $idProductRuleGroup => $productRuleGroup) {
                 $eligibleProductsList = [];
@@ -635,7 +636,7 @@ class CartRuleCore extends ObjectModel
                 foreach ($productRules as $productRule) {
                     switch ($productRule['type']) {
                         case 'attributes':
-                            $cartAttributes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                            $cartAttributes = $conn->getArray(
                                 (new DbQuery())
                                     ->select('cp.`quantity`, cp.`id_product`, pac.`id_attribute`, cp.`id_product_attribute`')
                                     ->from('cart_product', 'cp')
@@ -663,7 +664,7 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'products':
-                            $cartProducts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                            $cartProducts = $conn->getArray(
                                 (new DbQuery())
                                     ->select('cp.`quantity`, cp.`id_product`')
                                     ->from('cart_product', 'cp')
@@ -687,7 +688,7 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'categories':
-                            $cartCategories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                            $cartCategories = $conn->getArray(
                                 (new DbQuery())
                                     ->select('cp.quantity, cp.`id_product`, cp.`id_product_attribute`, catp.`id_category`')
                                     ->from('cart_product', 'cp')
@@ -720,7 +721,7 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'manufacturers':
-                            $cartManufacturers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                            $cartManufacturers = $conn->getArray(
                                 (new DbQuery())
                                     ->select('cp.quantity, cp.`id_product`, p.`id_manufacturer`')
                                     ->from('cart_product', 'cp')
@@ -742,7 +743,7 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'suppliers':
-                            $cartSuppliers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                            $cartSuppliers = $conn->getArray(
                                 (new DbQuery())
                                     ->select('cp.`quantity`, cp.`id_product`, p.`id_supplier`')
                                     ->from('cart_product', 'cp')
@@ -793,7 +794,7 @@ class CartRuleCore extends ObjectModel
         }
 
         $productRuleGroups = [];
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('cart_rule_product_rule_group')
@@ -823,7 +824,7 @@ class CartRuleCore extends ObjectModel
         }
 
         $productRules = [];
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('cart_rule_product_rule', 'pr')
@@ -895,7 +896,7 @@ class CartRuleCore extends ObjectModel
             return false;
         }
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart_rule`')
                 ->from('cart_rule')
@@ -1025,7 +1026,7 @@ class CartRuleCore extends ObjectModel
 		AND NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'cart_cart_rule WHERE cr.id_cart_rule = '._DB_PREFIX_.'cart_cart_rule.id_cart_rule
 																			AND id_cart = '.(int) $context->cart->id.')
 		ORDER BY priority';
-        $result = Db::getInstance()->executeS($sql, true, false);
+        $result = Db::readOnly()->getArray($sql);
         if ($result) {
             $cartRules = ObjectModel::hydrateCollection('CartRule', $result);
             if ($cartRules) {
@@ -1070,8 +1071,9 @@ class CartRuleCore extends ObjectModel
             return (!$displayError) ? false : Tools::displayError('This voucher has expired');
         }
 
+        $conn = Db::readOnly();
         if ($context->cart->id_customer) {
-            $quantityUsed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $quantityUsed = $conn->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('orders', 'o')
@@ -1087,7 +1089,7 @@ class CartRuleCore extends ObjectModel
 
         // Get an intersection of the customer groups and the cart rule groups (if the customer is not logged in, the default group is Visitors)
         if ($this->group_restriction) {
-            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCartRule = (int) $conn->getValue(
                 (new DbQuery())
                     ->select('crg.`id_cart_rule`')
                     ->from('cart_rule_group', 'crg')
@@ -1104,7 +1106,7 @@ class CartRuleCore extends ObjectModel
             if (!$context->cart->id_address_delivery) {
                 return (!$displayError) ? false : Tools::displayError('You must choose a delivery address before applying this voucher to your order');
             }
-            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCartRule = (int) $conn->getValue(
                 (new DbQuery())
                     ->select('crc.`id_cart_rule`')
                     ->from('cart_rule_country', 'crc')
@@ -1121,7 +1123,7 @@ class CartRuleCore extends ObjectModel
             if (!$context->cart->id_carrier) {
                 return (!$displayError) ? false : Tools::displayError('You must choose a carrier before applying this voucher to your order');
             }
-            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCartRule = (int) $conn->getValue(
                 (new DbQuery())
                     ->select('crc.`id_cart_rule`')
                     ->from('cart_rule_carrier', 'crc')
@@ -1136,7 +1138,7 @@ class CartRuleCore extends ObjectModel
 
         // Check if the cart rules appliy to the shop browsed by the customer
         if ($this->shop_restriction && $context->shop->id && Shop::isFeatureActive()) {
-            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCartRule = (int) $conn->getValue(
                 (new DbQuery())
                     ->select('crs.`id_cart_rule`')
                     ->from('cart_rule_shop', 'crs')
@@ -1235,7 +1237,7 @@ class CartRuleCore extends ObjectModel
                 }
 
                 if ($this->cart_rule_restriction && $otherCartRule['cart_rule_restriction'] && $otherCartRule['id_cart_rule'] != $this->id) {
-                    $combinable = Db::getInstance()->getValue(
+                    $combinable = $conn->getValue(
                         '
 					SELECT id_cart_rule_1
 					FROM '._DB_PREFIX_.'cart_rule_combination
@@ -1288,7 +1290,8 @@ class CartRuleCore extends ObjectModel
         }
 
         // Delete associated restrictions on cart rules
-        Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $conn->execute(
             '
 		DELETE crprv
 		FROM `'._DB_PREFIX_.'cart_rule_product_rule` crpr
@@ -1298,23 +1301,23 @@ class CartRuleCore extends ObjectModel
         ); // $list is checked a few lines above
 
         // Delete the product rules that does not have any values
-        if (Db::getInstance()->Affected_Rows() > 0) {
-            Db::getInstance()->delete(
+        if ($conn->Affected_Rows() > 0) {
+            $conn->delete(
                 'cart_rule_product_rule', 'NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'cart_rule_product_rule_value`
 																							WHERE `'._DB_PREFIX_.'cart_rule_product_rule`.`id_product_rule` = `'._DB_PREFIX_.'cart_rule_product_rule_value`.`id_product_rule`)'
             );
         }
         // If the product rules were the only conditions of a product rule group, delete the product rule group
-        if (Db::getInstance()->Affected_Rows() > 0) {
-            Db::getInstance()->delete(
+        if ($conn->Affected_Rows() > 0) {
+            $conn->delete(
                 'cart_rule_product_rule_group', 'NOT EXISTS (SELECT 1 FROM `'._DB_PREFIX_.'cart_rule_product_rule`
 																						WHERE `'._DB_PREFIX_.'cart_rule_product_rule`.`id_product_rule_group` = `'._DB_PREFIX_.'cart_rule_product_rule_group`.`id_product_rule_group`)'
             );
         }
 
         // If the product rule group were the only restrictions of a cart rule, update de cart rule restriction cache
-        if (Db::getInstance()->Affected_Rows() > 0) {
-            Db::getInstance()->execute(
+        if ($conn->Affected_Rows() > 0) {
+            $conn->execute(
                 '
 				UPDATE `'._DB_PREFIX_.'cart_rule` cr
 				LEFT JOIN `'._DB_PREFIX_.'cart_rule_product_rule_group` crprg ON cr.id_cart_rule = crprg.id_cart_rule
@@ -1341,10 +1344,11 @@ class CartRuleCore extends ObjectModel
         $sqlBase = 'SELECT cr.*, crl.*
 						FROM '._DB_PREFIX_.'cart_rule cr
 						LEFT JOIN '._DB_PREFIX_.'cart_rule_lang crl ON (cr.id_cart_rule = crl.id_cart_rule AND crl.id_lang = '.(int) $idLang.')';
+        $conn = Db::readOnly();
         if ($extended) {
-            return Db::getInstance()->executeS('('.$sqlBase.' WHERE code LIKE \'%'.pSQL($name).'%\') UNION ('.$sqlBase.' WHERE name LIKE \'%'.pSQL($name).'%\')');
+            return $conn->getArray('('.$sqlBase.' WHERE code LIKE \'%'.pSQL($name).'%\') UNION ('.$sqlBase.' WHERE name LIKE \'%'.pSQL($name).'%\')');
         } else {
-            return Db::getInstance()->executeS($sqlBase.' WHERE code LIKE \'%'.pSQL($name).'%\'');
+            return $conn->getArray($sqlBase.' WHERE code LIKE \'%'.pSQL($name).'%\'');
         }
     }
 
@@ -1424,7 +1428,7 @@ class CartRuleCore extends ObjectModel
      */
     public function usedByCustomer($idCustomer)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart_rule`')
                 ->from('order_cart_rule', 'ocr')
@@ -1488,7 +1492,7 @@ class CartRuleCore extends ObjectModel
             if (!$this->carrier_restriction) {
                 $reductionValue += $context->cart->getOrderTotal($useTax, Cart::ONLY_SHIPPING, is_null($package) ? null : $package['products'], is_null($package) ? null : $package['id_carrier']);
             } else {
-                $data = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $data = Db::readOnly()->getArray(
                     (new DbQuery())
                         ->select('crc.`id_cart_rule`, c.`id_carrier`')
                         ->from('cart_rule_carrier', 'crc')
@@ -1845,7 +1849,7 @@ class CartRuleCore extends ObjectModel
         }
 
         if (!Validate::isLoadedObject($this) || $this->{$type.'_restriction'} == 0) {
-            $array['selected'] = Db::getInstance()->executeS(
+            $array['selected'] = Db::readOnly()->getArray(
                 '
 			SELECT t.*'.($i18n ? ', tl.*' : '').', 1 as selected
 			FROM `'._DB_PREFIX_.$type.'` t
@@ -1863,7 +1867,7 @@ class CartRuleCore extends ObjectModel
             if ($type == 'cart_rule') {
                 $array = $this->getCartRuleCombinations($offset, $limit, $searchCartRuleName);
             } else {
-                $resource = Db::getInstance()->executeS(
+                $resource = Db::readOnly()->getArray(
                     '
 				SELECT t.*'.($i18n ? ', tl.*' : '').', IF(crt.id_'.$type.' IS NULL, 0, 1) as selected
 				FROM `'._DB_PREFIX_.$type.'` t
@@ -1874,8 +1878,7 @@ class CartRuleCore extends ObjectModel
                     .(in_array($type, ['carrier', 'shop']) ? ' AND t.deleted = 0' : '').
                     (in_array($type, ['carrier', 'shop']) ? ' ORDER BY t.name ASC ' : '').
                     (in_array($type, ['country', 'group', 'cart_rule']) && $i18n ? ' ORDER BY tl.name ASC ' : '').
-                    $sqlLimit,
-                    false
+                    $sqlLimit
                 );
                 foreach ($resource as $row) {
                     $array[($row['selected'] || $this->{$type.'_restriction'} == 0) ? 'selected' : 'unselected'][] = $row;
@@ -1942,7 +1945,8 @@ class CartRuleCore extends ObjectModel
             $sqlLimit = '';
         }
 
-        $array['selected'] = Db::getInstance()->executeS(
+        $conn = Db::readOnly();
+        $array['selected'] = $conn->getArray(
             '
 		SELECT cr.*, crl.*, 1 AS selected
 		FROM '._DB_PREFIX_.'cart_rule cr
@@ -1963,7 +1967,7 @@ class CartRuleCore extends ObjectModel
 		) ORDER BY cr.id_cart_rule'.$sqlLimit
         );
 
-        $array['unselected'] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $array['unselected'] = $conn->getArray(
             (new DbQuery())
                 ->select('cr.*, crl.*, 1 AS `selected`')
                 ->from('cart_rule', 'cr')

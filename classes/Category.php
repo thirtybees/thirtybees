@@ -203,7 +203,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function getCategories($idLang = false, $active = true, $order = true, $sqlFilter = '', $sqlSort = '', $sqlLimit = '')
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 			SELECT *
 			FROM `'._DB_PREFIX_.'category` c
@@ -215,10 +215,6 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 			'.($sqlSort != '' ? $sqlSort : 'ORDER BY c.`level_depth` ASC, category_shop.`position` ASC').'
 			'.($sqlLimit != '' ? $sqlLimit : '')
         );
-
-        if (! is_array($result)) {
-            return [];
-        }
 
         if (!$order) {
             return $result;
@@ -287,7 +283,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         );
 
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 '
 				SELECT c.id_category, cl.name
 				FROM `'._DB_PREFIX_.'category` c
@@ -347,7 +343,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             );
 
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 '
 				SELECT c.*, cl.*
 				FROM `'._DB_PREFIX_.'category` c
@@ -434,7 +430,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Category::getCategoriesWithoutParent_'.(int) Context::getContext()->language->id;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 '
 			SELECT DISTINCT c.*
 			FROM `'._DB_PREFIX_.'category` c
@@ -463,7 +459,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
         $cacheId = 'Category::getTopCategory_'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            $idCategory = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idCategory = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_category`')
                     ->from('category')
@@ -481,14 +477,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getSimpleCategories($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_category`, cl.`name`')
                 ->from('category', 'c')
@@ -543,7 +539,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 			'.static::getActiveColumnCondition($active, true).'
 			GROUP BY c.`id_category`
 			ORDER BY category_shop.`position` ASC';
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $result = Db::readOnly()->getArray($query);
             Cache::store($cacheId, $result);
 
             return $result;
@@ -575,7 +571,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 			AND c.`id_parent` = '.(int) $idParent.'
 			'.static::getActiveColumnCondition($active, true).'
 			LIMIT 1';
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $result = Db::readOnly()->getArray($query);
             Cache::store($cacheId, $result);
 
             return $result;
@@ -631,7 +627,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             $sql .= ' ORDER BY cs.`position` ASC';
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -650,7 +646,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $sql = 'SELECT `id_category`
 				FROM `'._DB_PREFIX_.'category_product`
 				WHERE `id_product` = '.(int) $idOld;
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = Db::readOnly()->getArray($sql);
 
         if ($result) {
             $row = [];
@@ -699,7 +695,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $i = (int) $idParent;
 
         while (42) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'category` WHERE `id_category` = '.(int) $i);
+            $result = Db::readOnly()->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'category` WHERE `id_category` = '.(int) $i);
             if (!isset($result['id_parent'])) {
                 return false;
             }
@@ -728,7 +724,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         if (!isset(static::$_links[$idCategory.'-'.$idLang])) {
-            static::$_links[$idCategory.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$_links[$idCategory.'-'.$idLang] = Db::readOnly()->getValue(
                 '
 			SELECT cl.`link_rewrite`
 			FROM `'._DB_PREFIX_.'category_lang` cl
@@ -794,7 +790,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function searchByNameAndParentCategoryId($idLang, $categoryName, $idParentCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             '
 		SELECT c.*, cl.*
 		FROM `'._DB_PREFIX_.'category` c
@@ -825,7 +821,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         if ($unrestricted === true) {
             $key = 'Category::searchByName_'.$query;
             if ($skipCache || !Cache::isStored($key)) {
-                $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $categories = Db::readOnly()->getRow(
                     (new DbQuery())
                         ->select('c.*, cl.*')
                         ->from('category', 'c')
@@ -841,7 +837,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
             return Cache::retrieve($key);
         } else {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            return Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('c.*, cl.*')
                     ->from('category', 'c')
@@ -864,7 +860,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function categoryExists($idCategory)
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category', 'c')
@@ -903,14 +899,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     /**
      * @param int $idCategory
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getUrlRewriteInformations($idCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('l.`id_lang`, c.`link_rewrite`')
                 ->from('category_lang', 'c')
@@ -938,7 +934,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             return false;
         }
         try {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`nleft`, `nright`')
                     ->from('category')
@@ -964,15 +960,12 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Category::getInterval_'.(int) $id;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`nleft`, `nright`, `level_depth`')
                     ->from('category')
                     ->where('`id_category` = '.(int) $id)
             );
-            if (! is_array($result)) {
-                $result = false;
-            }
             Cache::store($cacheId, $result);
 
             return $result;
@@ -1000,7 +993,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         $categories = [];
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_category`, cl.`name`, cl.`link_rewrite`, cl.`id_lang`')
                 ->from('category', 'c')
@@ -1030,30 +1023,25 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             $idLang = Context::getContext()->language->id;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('DISTINCT(c.`id_category`), cl.`name`')
                 ->from('category', 'c')
                 ->leftJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category` AND cl.`id_lang`='.(int) $idLang)
                 ->where('`is_root_category` = 1 ' . static::getActiveColumnCondition($active, false))
         );
-
-        if (is_array($result)) {
-            return $result;
-        }
-        return [];
     }
 
     /**
      * @param int $idCategory
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopException
      */
     public static function getShopsByCategory($idCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_shop`')
                 ->from('category_shop')
@@ -1140,10 +1128,11 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public function addPosition($position, $idShop = null)
     {
         $return = true;
+        $conn = Db::getInstance();
         if (is_null($idShop)) {
             if (Shop::getContext() != Shop::CONTEXT_SHOP) {
                 foreach (Shop::getContextListShopID() as $idShop) {
-                    $return = Db::getInstance()->execute(
+                    $return = $conn->execute(
                         '
 						INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 						('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
@@ -1153,7 +1142,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             } else {
                 $id = Context::getContext()->shop->id;
                 $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
-                $return = Db::getInstance()->execute(
+                $return = $conn->execute(
                     '
 					INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 					('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
@@ -1161,7 +1150,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 );
             }
         } else {
-            $return = Db::getInstance()->execute(
+            $return = $conn->execute(
                 '
 			INSERT INTO `'._DB_PREFIX_.'category_shop` (`id_category`, `id_shop`, `position`) VALUES
 			('.(int) $this->id.', '.(int) $idShop.', '.(int) $position.')
@@ -1185,7 +1174,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public static function getLastPosition($idCategoryParent, $idShop)
     {
-        if ((int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if ((int) Db::readOnly()->getValue(
                 '
 				SELECT COUNT(c.`id_category`)
 				FROM `'._DB_PREFIX_.'category` c
@@ -1196,7 +1185,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         ) {
             return 0;
         } else {
-            return (1 + (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (1 + (int) Db::readOnly()->getValue(
                     '
 				SELECT MAX(cs.`position`)
 				FROM `'._DB_PREFIX_.'category` c
@@ -1283,7 +1272,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     {
         $id = Context::getContext()->shop->id;
         $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
-        $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $categories = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_category`, c.`id_parent`')
                 ->from('category', 'c')
@@ -1466,7 +1455,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function getDuplicatePosition()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 		SELECT c.`id_category`
 		FROM `'._DB_PREFIX_.'category` c
@@ -1496,7 +1485,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         $return = true;
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_category`')
                 ->from('category', 'c')
@@ -1533,14 +1522,15 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             throw new PrestaShopException('id category is not numeric');
         }
         /* Gets all children */
-        $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $conn = Db::getInstance();
+        $categories = $conn->getArray(
             (new DbQuery())
                 ->select('`id_category`, `id_parent`, `level_depth`')
                 ->from('category')
                 ->where('`id_parent` = '.(int) $idCategory)
         );
         /* Gets level_depth */
-        $level = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $level = $conn->getRow(
             (new DbQuery())
                 ->select('level_depth')
                 ->from('category')
@@ -1548,7 +1538,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         );
         /* Updates level_depth for all children */
         foreach ($categories as $subCategory) {
-            Db::getInstance()->execute(
+            $conn->execute(
                 '
 				UPDATE '._DB_PREFIX_.'category
 				SET level_depth = '.(int) ($level['level_depth'] + 1).'
@@ -1638,7 +1628,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             $sqlGroupsWhere = 'AND cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '='.(int) Group::getCurrent()->id);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT c.*, cl.id_lang, cl.name, cl.description, cl.link_rewrite, cl.meta_title, cl.meta_keywords, cl.meta_description
 		FROM `'._DB_PREFIX_.'category` c
@@ -1699,7 +1689,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function isRootCategoryForAShop()
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_shop`')
                 ->from('shop')
@@ -1860,7 +1850,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 ($active ? ' AND product_shop.`active` = 1' : '').
                 ($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : '');
 
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            return (int) Db::readOnly()->getValue($sql);
         }
 
         if ($p < 1) {
@@ -1932,7 +1922,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 			LIMIT '.(((int) $p - 1) * (int) $n).','.(int) $n;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        $result = Db::readOnly()->getArray($sql);
 
         if (!$result) {
             return [];
@@ -1960,15 +1950,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Category::checkAccess_'.(int) $this->id.'-'.$idCustomer.(!$idCustomer ? '-'.(int) Group::getCurrent()->id : '');
         if (!Cache::isStored($cacheId)) {
+            $connection = Db::readOnly();
             if (!$idCustomer) {
-                $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $result = (bool) $connection->getValue(
                     '
 				SELECT ctg.`id_group`
 				FROM '._DB_PREFIX_.'category_group ctg
 				WHERE ctg.`id_category` = '.(int) $this->id.' AND ctg.`id_group` = '.(int) Group::getCurrent()->id
                 );
             } else {
-                $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $result = (bool) $connection->getValue(
                     '
 				SELECT ctg.`id_group`
 				FROM '._DB_PREFIX_.'category_group ctg
@@ -2091,18 +2082,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             }
 
             // object was loaded in different language context than requested, we need to load names from db
-            $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $connection = Db::readOnly();
             $nameArray = [];
-            $rows = $connection->executeS((new DbQuery())
+            $rows = $connection->getArray((new DbQuery())
                 ->select('id_lang, name')
                 ->from('category_lang')
                 ->where('id_category = ' . (int)$this->id)
                 ->where(Shop::getSqlRestriction())
             );
-            if ($rows) {
-                foreach ($rows as $row) {
-                    $nameArray[(int)$row['id_lang']] = $row['name'];
-                }
+            foreach ($rows as $row) {
+                $nameArray[(int)$row['id_lang']] = $row['name'];
             }
         }
 
@@ -2177,7 +2166,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                     $sql->where('c.`id_parent` != 0');
                 }
 
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+                $result = Db::readOnly()->getRow($sql);
                 $parentCategoryCache[$idShop][$idLang][$idCurrent] = $result;
             }
 
@@ -2224,7 +2213,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         if ($categoryId) {
             $cache_id = 'Category::getGroups_' . $categoryId;
             if (!Cache::isStored($cache_id)) {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $result = Db::readOnly()->getArray(
                     (new DbQuery())
                         ->select('cg.`id_group`')
                         ->from('category_group', 'cg')
@@ -2255,7 +2244,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cp.`id_category`, category_shop.`position`, cp.`id_parent`')
                 ->from('category', 'cp')
@@ -2278,7 +2267,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        $result = (Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $result = ($conn->execute(
                 '
             UPDATE `'._DB_PREFIX_.'category` c '.Shop::addSqlAssociation('category', 'c').'
             SET c.`position`= c.`position` '.($way ? '- 1' : '+ 1').',
@@ -2290,7 +2280,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                     : '< '.(int) $moved_category['position'].' AND category_shop.`position` >= '.(int) $position).'
             AND c.`id_parent`='.(int) $moved_category['id_parent']
             )
-            && Db::getInstance()->execute(
+            && $conn->execute(
                 '
             UPDATE `'._DB_PREFIX_.'category` c '.Shop::addSqlAssociation('category', 'c').'
             SET c.`position` = '.(int) $position.',
@@ -2327,14 +2317,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getChildrenWs()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT c.`id_category` AS id
 		FROM `'._DB_PREFIX_.'category` c
@@ -2357,17 +2347,14 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function getAssociatedProducts()
     {
-        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $result = $connection->executeS((new DbQuery())
+        $connection = Db::readOnly();
+        $result = $connection->getArray((new DbQuery())
             ->select('id_product')
             ->from('category_product')
             ->where('id_category = ' . (int) $this->id)
             ->orderBy('`position` ASC, `id_product`')
         );
-        if (is_array($result)) {
-            return array_map('intval', array_column($result, 'id_product'));
-        }
-        return [];
+        return array_map('intval', array_column($result, 'id_product'));
     }
 
     /**
@@ -2378,7 +2365,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function getProductsWs()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 		SELECT cp.`id_product` AS id
 		FROM `'._DB_PREFIX_.'category_product` cp
@@ -2396,7 +2383,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function getWsNbProductsRecursive()
     {
-        $nb_product_recursive = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $nb_product_recursive = Db::readOnly()->getValue(
             '
 			SELECT COUNT(DISTINCT(id_product))
 			FROM  `'._DB_PREFIX_.'category_product`
@@ -2431,7 +2418,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $id = Context::getContext()->shop->id;
         $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('c.`id_category`')
                 ->from('category', 'c')
@@ -2482,7 +2469,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function existsInShop($id_shop)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category_shop')
@@ -2525,7 +2512,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             PageCache::invalidateEntity('category', $this->id);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category')
@@ -2546,7 +2533,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function getAllSubcategories()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category')

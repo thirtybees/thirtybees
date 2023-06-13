@@ -362,7 +362,8 @@ class StockManagerCore implements StockManagerInterface
                             continue;
                         }
 
-                        $resource = Db::getInstance(_PS_USE_SQL_SLAVE_)->query(
+                        $conn = Db::getInstance();
+                        $resource = $conn->query(
                             '
 							SELECT sm.`id_stock_mvt`, sm.`date_add`, sm.`physical_quantity`,
 								IF ((sm2.`physical_quantity` is null), sm.`physical_quantity`, (sm.`physical_quantity` - SUM(sm2.`physical_quantity`))) as qty
@@ -374,7 +375,7 @@ class StockManagerCore implements StockManagerInterface
 							ORDER BY sm.`date_add` DESC'
                         );
 
-                        while ($row = Db::getInstance()->nextRow($resource)) {
+                        while ($row = $conn->nextRow($resource)) {
                             // continue - in FIFO mode, we have to retreive the oldest positive mvts for which there are left quantities
                             if ($warehouse->management_type == 'FIFO') {
                                 if ($row['qty'] == 0) {
@@ -564,7 +565,7 @@ class StockManagerCore implements StockManagerInterface
             $query->where('s.id_warehouse IN('.implode(', ', $idsWarehouse).')');
         }
 
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        return (int) Db::readOnly()->getValue($query);
     }
 
     /**
@@ -665,7 +666,8 @@ class StockManagerCore implements StockManagerInterface
         $clientOrdersQty = 0;
 
         // check if product is present in a pack
-        if (!Pack::isPack($idProduct) && $inPack = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $conn = Db::readOnly();
+        if (!Pack::isPack($idProduct) && $inPack = $conn->getArray(
                 'SELECT id_product_pack, quantity FROM '._DB_PREFIX_.'pack
 			WHERE id_product_item = '.(int) $idProduct.'
 			AND id_product_attribute_item = '.($idProductAttribute ? (int) $idProductAttribute : '0')
@@ -691,7 +693,7 @@ class StockManagerCore implements StockManagerInterface
                     if ($idsWarehouse) {
                         $query->where('od.id_warehouse IN('.implode(', ', $idsWarehouse).')');
                     }
-                    $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+                    $res = $conn->getArray($query);
                     if (count($res)) {
                         foreach ($res as $row) {
                             $clientOrdersQty += ($row['product_quantity'] - $row['product_quantity_refunded']) * $row['quantity'];
@@ -729,7 +731,7 @@ class StockManagerCore implements StockManagerInterface
             if ($idsWarehouse) {
                 $query->where('od.id_warehouse IN('.implode(', ', $idsWarehouse).')');
             }
-            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $res = $conn->getArray($query);
             if (count($res)) {
                 foreach ($res as $row) {
                     $clientOrdersQty += ($row['product_quantity'] - $row['product_quantity_refunded']);
@@ -749,7 +751,7 @@ class StockManagerCore implements StockManagerInterface
             $query->where('so.id_warehouse IN('.implode(', ', $idsWarehouse).')');
         }
 
-        $supplyOrdersQties = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $supplyOrdersQties = $conn->getArray($query);
 
         $supplyOrdersQty = 0;
         foreach ($supplyOrdersQties as $qty) {
@@ -871,7 +873,7 @@ class StockManagerCore implements StockManagerInterface
 				AND s.`id_product_attribute` = '.(int) $idProductAttribute.
             ($idWarehouse ? ' AND s.`id_warehouse` = '.(int) $idWarehouse : '');
 
-        $quantityOut = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $quantityOut = (int)Db::readOnly()->getValue($query);
 
         if (!$quantityOut) {
             return -1;
@@ -968,6 +970,7 @@ class StockManagerCore implements StockManagerInterface
         $results = Warehouse::getWarehousesByProductId($idProduct, $idProductAttribute);
         $stockQuantity = 0;
 
+        $connection = Db::readOnly();
         foreach ($results as $result) {
             if (isset($result['id_warehouse']) && (int) $result['id_warehouse']) {
                 $warehouseId = (int)$result['id_warehouse'];
@@ -976,7 +979,7 @@ class StockManagerCore implements StockManagerInterface
 
                 if (is_array($carriers) && !empty($carriers)) {
                     if ($carrierList) {
-                        $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue((new DbQuery())
+                        $stockQuantity += $connection->getValue((new DbQuery())
                             ->select('SUM(s.`usable_quantity`) as quantity')
                             ->from('stock', 's')
                             ->leftJoin('warehouse_carrier', 'wc', '(wc.`id_warehouse` = s.`id_warehouse`)')
@@ -989,7 +992,7 @@ class StockManagerCore implements StockManagerInterface
                         );
                     }
                 } else {
-                    $stockQuantity += Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue((new DbQuery())
+                    $stockQuantity += $connection->getValue((new DbQuery())
                         ->select('SUM(s.`usable_quantity`) as quantity')
                         ->from('stock', 's')
                         ->where('s.`id_product` = '.(int) $idProduct)

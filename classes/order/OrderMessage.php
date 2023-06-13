@@ -70,14 +70,14 @@ class OrderMessageCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrderMessages($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        return Db::readOnly()->getArray('
 		SELECT om.id_order_message, oml.name, oml.message
 		FROM '._DB_PREFIX_.'order_message om
 		LEFT JOIN '._DB_PREFIX_.'order_message_lang oml ON (oml.id_order_message = om.id_order_message)

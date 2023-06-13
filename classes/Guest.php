@@ -182,7 +182,7 @@ class GuestCore extends ObjectModel
             return null;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_guest`')
                 ->from('guest')
@@ -254,7 +254,7 @@ class GuestCore extends ObjectModel
 
         foreach ($osArray as $k => $value) {
             if (strstr($userAgent, $value)) {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $result = Db::readOnly()->getRow(
                     (new DbQuery())
                         ->select('`id_operating_system`')
                         ->from('operating_system', 'os')
@@ -293,7 +293,7 @@ class GuestCore extends ObjectModel
         ];
         foreach ($browserArray as $k => $value) {
             if (strstr($userAgent, $value)) {
-                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $result = Db::readOnly()->getRow(
                     (new DbQuery())
                         ->select('`id_web_browser`')
                         ->from('web_browser', 'wb')

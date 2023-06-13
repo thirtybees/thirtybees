@@ -135,8 +135,10 @@ class SmartyCustomCore extends Smarty
      */
     public function delete_from_lazy_cache($template, $cacheId, $compileId)
     {
+        $conn = Db::getInstance();
+
         if (!$template) {
-            return Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'smarty_lazy_cache`', false);
+            return $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.'smarty_lazy_cache`', false);
         }
 
         $templateMd5 = md5($template);
@@ -153,9 +155,9 @@ class SmartyCustomCore extends Smarty
             }
             $sql .= ' AND compile_id="'.pSQL((string) $compileId).'"';
         }
-        Db::getInstance()->execute($sql, false);
+        $conn->execute($sql, false);
 
-        return Db::getInstance()->Affected_Rows();
+        return $conn->Affected_Rows();
     }
 
     /**
@@ -209,7 +211,7 @@ class SmartyCustomCore extends Smarty
                 parent::clearCompiledTemplate();
             } else {
                 $sql = 'SELECT UNIX_TIMESTAMP(last_flush) AS last_flush FROM `' . _DB_PREFIX_ . 'smarty_last_flush` WHERE type=\'compile\'';
-                $lastFlush = (int) Db::getInstance()->getValue($sql, false);
+                $lastFlush = (int) Db::readOnly()->getValue($sql);
                 if ($lastFlush && @filemtime($filename) < $lastFlush) {
                     Tools::changeFileMTime($filename);
                     parent::clearCompiledTemplate();
@@ -266,7 +268,7 @@ class SmartyCustomCore extends Smarty
         } else {
             if ($lastFlush === null) {
                 $sql = 'SELECT UNIX_TIMESTAMP(last_flush) AS last_flush FROM `'._DB_PREFIX_.'smarty_last_flush` WHERE type=\'template\'';
-                $lastFlush = Db::getInstance()->getValue($sql, false);
+                $lastFlush = Db::readOnly()->getValue($sql);
             }
 
             if ((int) $lastFlush && @filemtime($filename) < $lastFlush) {
@@ -339,7 +341,7 @@ class SmartyCustomCore extends Smarty
         $sql .= ',"'.pSQL((string) $compileId).'"';
         $sql .= ', FROM_UNIXTIME('.time().'))';
 
-        return Db::getInstance()->execute($sql, false);
+        return Db::getInstance()->execute($sql);
     }
 
     /**
@@ -365,7 +367,7 @@ class SmartyCustomCore extends Smarty
             $compileId = md5($compileId);
         }
         $sql .= ' AND compile_id="'.pSQL((string) $compileId).'"';
-        Db::getInstance()->execute($sql, false);
+        Db::getInstance()->execute($sql);
     }
 
     /**
@@ -468,7 +470,7 @@ class SmartyCustomCore extends Smarty
             ->where('cache_id="' . pSQL((string)$cacheId) . '"')
             ->where('compile_id="' . pSQL((string)$compileId) . '"');
 
-        $result = Db::getInstance()->getRow($sql);
+        $result = Db::readOnly()->getRow($sql);
 
         if ($result === false) {
             return false;

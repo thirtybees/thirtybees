@@ -144,7 +144,7 @@ class OrderStateCore extends ObjectModel
     {
         $cacheId = 'OrderState::getOrderStates_'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('*')
                     ->from('order_state', 'os')
@@ -175,7 +175,7 @@ class OrderStateCore extends ObjectModel
     {
         $result = false;
         if (Configuration::get('PS_INVOICE')) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`invoice`')
                     ->from('order_state')

@@ -86,7 +86,8 @@ $sql = 'SELECT p.`id_product`, pl.`link_rewrite`, p.`reference`, pl.`name`, imag
         ($exclude_packs ? 'AND (p.cache_is_pack IS NULL OR p.cache_is_pack = 0)' : '').
         ' GROUP BY p.id_product';
 
-$items = Db::getInstance()->executeS($sql);
+$conn = Db::readOnly();
+$items = $conn->getArray($sql);
 
 if ($items && ($excludeIds || strpos(Tools::getHttpReferer(), 'AdminScenes') !== false)) {
     foreach ($items as $item) {
@@ -112,7 +113,7 @@ if ($items && ($excludeIds || strpos(Tools::getHttpReferer(), 'AdminScenes') !==
 					GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 					ORDER BY pa.`id_product_attribute`';
 
-            $combinations = Db::getInstance()->executeS($sql);
+            $combinations = $conn->getArray($sql);
             if (!empty($combinations)) {
                 foreach ($combinations as $k => $combination) {
                     $results[$combination['id_product_attribute']]['id'] = $item['id_product'];

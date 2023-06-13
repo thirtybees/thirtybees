@@ -73,8 +73,8 @@ class DbExtractorCore extends DataExtractor
     protected function getVersionComment($connection)
     {
         try {
-            $result = $connection->executeS("SHOW VARIABLES LIKE 'version_comment'");
-            if (is_array($result) && isset($result[0]['Value'])) {
+            $result = $connection->getArray("SHOW VARIABLES LIKE 'version_comment'");
+            if (isset($result[0]['Value'])) {
                 return $result[0]['Value'];
             }
         } catch (\Exception $ignored) {}

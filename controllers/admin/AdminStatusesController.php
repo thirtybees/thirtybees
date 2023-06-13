@@ -120,7 +120,7 @@ class AdminStatusesControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $unremovableOs = [];
-        $buf = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $buf = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('`id_order_state`')
             ->from('order_state')

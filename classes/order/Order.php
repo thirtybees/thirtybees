@@ -526,15 +526,16 @@ class OrderCore extends ObjectModel
             return false;
         }
 
+        $conn = Db::getInstance();
         if ($this->hasBeenDelivered()) {
-            return Db::getInstance()->update('customization', ['quantity_returned' => ['type' => 'sql', 'value' => '`quantity_returned` + '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id);
+            return $conn->update('customization', ['quantity_returned' => ['type' => 'sql', 'value' => '`quantity_returned` + '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id);
         } elseif ($this->hasBeenPaid()) {
-            return Db::getInstance()->update('customization', ['quantity_refunded' => ['type' => 'sql' , 'value' => '`quantity_refunded` + '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id);
+            return $conn->update('customization', ['quantity_refunded' => ['type' => 'sql' , 'value' => '`quantity_refunded` + '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id);
         }
-        if (!Db::getInstance()->update('customization', ['quantity' => ['type' => 'sql' , 'value' => '`quantity` - '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id)) {
+        if (!$conn->update('customization', ['quantity' => ['type' => 'sql' , 'value' => '`quantity` - '.(int) $quantity]], '`id_customization` = '.(int) $idCustomization.' AND `id_cart` = '.(int) $this->id_cart.' AND `id_product` = '.(int) $orderDetail->product_id)) {
             return false;
         }
-        if (!Db::getInstance()->delete('customization', '`quantity` = 0')) {
+        if (!$conn->delete('customization', '`quantity` = 0')) {
             return false;
         }
 
@@ -584,7 +585,7 @@ class OrderCore extends ObjectModel
 
         if (!isset(static::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters]) || $noHidden) {
             $idLang = $idLang ? (int) $idLang : 'o.`id_lang`';
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('os.*, oh.*, e.`firstname` AS `employee_firstname`, e.`lastname` AS `employee_lastname`, osl.`name` AS `ostate_name`')
                     ->from('orders', 'o')
@@ -611,14 +612,14 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getProductsDetail()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail', 'od')
@@ -635,7 +636,7 @@ class OrderCore extends ObjectModel
      */
     public function getFirstMessage()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`message`')
                 ->from('message')
@@ -751,7 +752,7 @@ class OrderCore extends ObjectModel
      */
     public static function getIdOrderProduct($idCustomer, $idProduct)
     {
-        return (int) Db::getInstance()->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('o.`id_order`')
                 ->from('orders', 'o')
@@ -806,8 +807,9 @@ class OrderCore extends ObjectModel
      */
     protected function setProductImageInformations(&$product)
     {
+        $connection = Db::readOnly();
         if (isset($product['product_attribute_id']) && $product['product_attribute_id']) {
-            $idImage = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idImage = (int) $connection->getValue(
                 (new DbQuery())
                     ->select('image_shop.`id_image`')
                     ->from('product_attribute_image', 'pai')
@@ -819,7 +821,7 @@ class OrderCore extends ObjectModel
         }
 
         if (!isset($idImage) || !$idImage) {
-            $idImage = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idImage = $connection->getValue(
                 (new DbQuery())
                     ->select('image_shop.`id_image`')
                     ->from('image', 'i')
@@ -849,14 +851,14 @@ class OrderCore extends ObjectModel
     /**
      * Count virtual products in order
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getVirtualProducts()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`product_id`, `product_attribute_id`, `download_hash`, `download_deadline`')
                 ->from('order_detail', 'od')
@@ -899,7 +901,7 @@ class OrderCore extends ObjectModel
     /**
      * @param bool $details
      *
-     * @return array|bool|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *@deprecated 2.0.0
@@ -912,14 +914,14 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getCartRules()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_cart_rule', 'ocr')
@@ -939,7 +941,7 @@ class OrderCore extends ObjectModel
     {
         $cacheId = 'Order::getDiscountsCustomer_'.(int) $idCustomer.'-'.(int) $idCartRule;
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from(bqSQL(static::$definition['table']), 'o')
@@ -977,7 +979,7 @@ class OrderCore extends ObjectModel
      */
     public function getCurrentStateFull($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('os.`id_order_state`, osl.`name`, os.`logable`, os.`shipped`')
                 ->from('order_state', 'os')
@@ -1004,7 +1006,7 @@ class OrderCore extends ObjectModel
      */
     public function hasProductReturned()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('IFNULL(SUM(ord.`product_quantity`), SUM(`product_quantity_return`))')
                 ->from('orders', 'o')
@@ -1083,7 +1085,8 @@ class OrderCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $connection = Db::readOnly();
+        $res = $connection->getArray(
             (new DbQuery())
                 ->select('o.*, COALESCE((SELECT SUM(od.`product_quantity`) FROM `'._DB_PREFIX_.'order_detail` od WHERE od.`id_order` = o.`id_order`), 0) nb_products')
                 ->from('orders', 'o')
@@ -1096,7 +1099,7 @@ class OrderCore extends ObjectModel
         }
 
         foreach ($res as $key => $val) {
-            $res2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $res2 = $connection->getArray(
                 (new DbQuery())
                     ->select('os.`id_order_state`, osl.`name` AS `order_state`, os.`invoice`, os.`color` AS `order_state_color`')
                     ->from('order_history', 'oh')
@@ -1129,7 +1132,7 @@ class OrderCore extends ObjectModel
      */
     public static function getOrdersIdByDate($dateFrom, $dateTo, $idCustomer = null, $type = null)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -1151,7 +1154,7 @@ class OrderCore extends ObjectModel
      * @param int|null $limit
      * @param Context|null $context
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1170,7 +1173,7 @@ class OrderCore extends ObjectModel
             ->limit(1)
         ;
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*, ('.$stateNameSql->build().') AS `state_name`, o.`date_add` AS `date_add`, o.`date_upd` AS `date_upd`')
                 ->from('orders', 'o')
@@ -1194,7 +1197,7 @@ class OrderCore extends ObjectModel
      */
     public static function getOrdersIdInvoiceByDate($dateFrom, $dateTo, $idCustomer = null, $type = null)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -1222,7 +1225,7 @@ class OrderCore extends ObjectModel
      */
     public static function getOrderIdsByStatus($idOrderState)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders', 'o')
@@ -1320,7 +1323,7 @@ class OrderCore extends ObjectModel
      */
     public static function getCustomerNbOrders($idCustomer)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('COUNT(`id_order`) AS `nb`')
                 ->from('orders')
@@ -1341,7 +1344,7 @@ class OrderCore extends ObjectModel
      */
     public static function getOrderByCartId($idCart)
     {
-        $result = Db::getInstance()->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -1412,7 +1415,7 @@ class OrderCore extends ObjectModel
         if (!$nbReturnDays) {
             return true;
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(`delivery_date`) AS `days`')
                 ->from('orders')
@@ -1456,7 +1459,7 @@ class OrderCore extends ObjectModel
             $sql->where('DATE_FORMAT(`date_add`, "%Y") = '.(int) date('Y'));
         }
 
-        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (int)Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -1487,7 +1490,7 @@ class OrderCore extends ObjectModel
             $newNumberSql = 'SELECT (MAX(`number`) + 1) AS new_number
                 FROM `'._DB_PREFIX_.'order_invoice`'.(Configuration::get('PS_INVOICE_RESET') ?
                 ' WHERE DATE_FORMAT(`date_add`, "%Y") = '.(int) date('Y') : '');
-            $newNumber = DB::getInstance()->getValue($newNumberSql);
+            $newNumber = Db::readOnly()->getValue($newNumberSql);
 
             $sql .= (int) $newNumber;
         }
@@ -1509,7 +1512,7 @@ class OrderCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`number`')
                 ->from('order_invoice')
@@ -1545,8 +1548,9 @@ class OrderCore extends ObjectModel
                 $this->setLastInvoiceNumber($orderInvoice->id, $this->id_shop);
             }
 
+            $conn = Db::getInstance();
             // Update order_carrier
-            $idOrderCarrier = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idOrderCarrier = $conn->getValue(
                 (new DbQuery())
                     ->Select('`id_order_carrier`')
                     ->from('order_carrier')
@@ -1561,7 +1565,7 @@ class OrderCore extends ObjectModel
             }
 
             // Update order detail
-            Db::getInstance()->update(
+            $conn->update(
                 'order_detail',
                 [
                     'id_order_invoice' => (int) $orderInvoice->id,
@@ -1570,7 +1574,7 @@ class OrderCore extends ObjectModel
             );
             Cache::clean('objectmodel_OrderDetail_*');
 
-            $idOrderPayments = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $idOrderPayments = $conn->getArray(
                 (new DbQuery())
                     ->select('DISTINCT op.`id_order_payment`')
                     ->from('order_payment', 'op')
@@ -1581,7 +1585,7 @@ class OrderCore extends ObjectModel
             // Update order payment
             if ($useExistingPayment && !empty($idOrderPayments)) {
                 foreach ($idOrderPayments as $orderPayment) {
-                    Db::getInstance()->insert(
+                    $conn->insert(
                         'order_invoice_payment',
                         [
                             'id_order_invoice' => (int) $orderInvoice->id,
@@ -1601,7 +1605,7 @@ class OrderCore extends ObjectModel
 
                 $orderPayment->add();
 
-                Db::getInstance()->insert(
+                $conn->insert(
                     'order_invoice_payment',
                     [
                         'id_order_invoice' => (int) $orderInvoice->id,
@@ -1616,7 +1620,7 @@ class OrderCore extends ObjectModel
             Cache::clean('order_invoice_paid_*');
 
             // Update order cart rule
-            Db::getInstance()->update(
+            $conn->update(
                 'order_cart_rule',
                 [
                     'id_order_invoice' => (int) $orderInvoice->id,
@@ -1760,7 +1764,7 @@ class OrderCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`delivery_number`')
                 ->from('order_invoice')
@@ -1807,7 +1811,7 @@ class OrderCore extends ObjectModel
      */
     public static function getByDelivery($idDelivery)
     {
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $res = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -1841,7 +1845,7 @@ class OrderCore extends ObjectModel
      */
     public function getTotalWeight()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('SUM(`product_weight` * `product_quantity`)')
                 ->from('order_detail')
@@ -1863,7 +1867,7 @@ class OrderCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`invoice_number`, `id_order`')
                 ->from('orders')
@@ -1884,7 +1888,7 @@ class OrderCore extends ObjectModel
             return false;
         }
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('orders', 'o')
@@ -1905,7 +1909,7 @@ class OrderCore extends ObjectModel
      */
     public static function getCartIdStatic($idOrder, $idCustomer = 0)
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart`')
                 ->from('orders')
@@ -1940,7 +1944,7 @@ class OrderCore extends ObjectModel
                 ->leftJoin('order_detail_pack', 'odp', 'od.id_order_detail = odp.id_order_detail')
                 ->where('`id_order` = '.(int) $this->id)
                 ->groupBy('od.id_order_detail');
-        return Db::getInstance()->getArray($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /** Set current order status
@@ -1962,7 +1966,7 @@ class OrderCore extends ObjectModel
         $history->id_order = (int) $this->id;
         $history->id_employee = (int) $idEmployee;
         $history->changeIdOrderState((int) $idOrderState, $this);
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $res = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`invoice_number`, `invoice_date`, `delivery_number`, `delivery_date`')
                 ->from('orders')
@@ -2036,7 +2040,7 @@ class OrderCore extends ObjectModel
      */
     public function getPreviousOrderId()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -2054,7 +2058,7 @@ class OrderCore extends ObjectModel
      */
     public function getNextOrderId()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
@@ -2117,7 +2121,7 @@ class OrderCore extends ObjectModel
     public function useOneAfterAnotherTaxComputationMethod()
     {
         // if one of the order details use the tax computation method the display will be different
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('od.`tax_computation_method`')
                 ->from('order_detail_tax', 'odt')
@@ -2241,7 +2245,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2260,7 +2264,7 @@ class OrderCore extends ObjectModel
      */
     public function getShipping()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('DISTINCT oc.`id_order_invoice`, oc.`weight`, oc.`shipping_cost_tax_excl`')
                 ->select('oc.`shipping_cost_tax_incl`, c.`url`, oc.`id_carrier`, c.`name` AS `carrier_name`')
@@ -2392,7 +2396,7 @@ class OrderCore extends ObjectModel
      */
     public function getOrdersTotalPaid()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('SUM(`total_paid_tax_incl`)')
                 ->from('orders')
@@ -2437,9 +2441,10 @@ class OrderCore extends ObjectModel
      */
     public function getProductTaxesBreakdown()
     {
+        $connection = Db::readOnly();
         if ($this->useOneAfterAnotherTaxComputationMethod()) {
             // sum by taxes
-            $taxesByTax = Db::getInstance()->executeS('
+            $taxesByTax = $connection->getArray('
 			SELECT odt.`id_order_detail`, t.`name`, t.`rate`, SUM(`total_amount`) AS `total_amount`
 			FROM `'._DB_PREFIX_.'order_detail_tax` odt
 			LEFT JOIN `'._DB_PREFIX_.'tax` t ON (t.`id_tax` = odt.`id_tax`)
@@ -2456,7 +2461,7 @@ class OrderCore extends ObjectModel
             }
         } else {
             // sum by order details in order to retrieve real taxes rate
-            $taxesInfos = Db::getInstance()->executeS('
+            $taxesInfos = $connection->getArray('
 			SELECT odt.`id_order_detail`, t.`rate` AS `name`, SUM(od.`total_price_tax_excl`) AS total_price_tax_excl, SUM(t.`rate`) AS rate, SUM(`total_amount`) AS `total_amount`
 			FROM `'._DB_PREFIX_.'order_detail_tax` odt
 			LEFT JOIN `'._DB_PREFIX_.'tax` t ON (t.`id_tax` = odt.`id_tax`)
@@ -2528,7 +2533,7 @@ class OrderCore extends ObjectModel
      */
     public function getEcoTaxTaxesBreakdown()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`eco_tax_rate`, SUM(`ecotax`) AS `ecotax_tax_excl`, SUM(`ecotax`) AS `ecotax_tax_incl`')
                 ->from('order_detail')
@@ -2545,7 +2550,7 @@ class OrderCore extends ObjectModel
      */
     public function hasInvoice()
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_invoice`')
                 ->from('order_invoice')
@@ -2575,7 +2580,7 @@ class OrderCore extends ObjectModel
      */
     public function getOrderInvoiceIdIfHasDelivery()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_invoice`')
                 ->from('order_invoice')
@@ -2594,7 +2599,7 @@ class OrderCore extends ObjectModel
      */
     public function getWarehouseList()
     {
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_warehouse`')
                 ->from('order_detail')
@@ -2688,7 +2693,7 @@ class OrderCore extends ObjectModel
         $query->from('orders');
         $query->where('id_cart = '.(int) $this->id_cart);
 
-        $order = Db::getInstance()->getRow($query);
+        $order = Db::readOnly()->getRow($query);
 
         if ($order['min'] == $order['max']) {
             return $this->reference;
@@ -2721,7 +2726,7 @@ class OrderCore extends ObjectModel
      */
     public function getIdOrderCarrier()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_carrier`')
                 ->from('order_carrier')
@@ -2751,7 +2756,7 @@ class OrderCore extends ObjectModel
      */
     public function getWsShippingNumber()
     {
-        $idOrderCarrier = Db::getInstance()->getValue(
+        $idOrderCarrier = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_carrier`')
                 ->from('order_carrier')
@@ -2776,7 +2781,7 @@ class OrderCore extends ObjectModel
      */
     public function setWsShippingNumber($shippingNumber)
     {
-        $idOrderCarrier = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idOrderCarrier = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_carrier`')
                 ->from('order_carrier')
@@ -2975,23 +2980,25 @@ class OrderCore extends ObjectModel
             ];
         }
 
+        $conn = Db::getInstance();
+
         // Remove current order_detail_tax'es
-        Db::getInstance()->delete('order_detail_tax', '`id_order_detail` IN ('.implode(', ', $oldIdOrderDetails).')');
+        $conn->delete('order_detail_tax', '`id_order_detail` IN ('.implode(', ', $oldIdOrderDetails).')');
 
         // Insert the adjusted ones instead
-        Db::getInstance()->insert('order_detail_tax', $values);
+        $conn->insert('order_detail_tax', $values);
     }
 
     /**
      * Get order detail taxes breakdown
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getOrderDetailTaxes()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('od.`id_tax_rules_group`, od.`product_quantity`, odt.*, t.*')
                 ->from('orders', 'o')

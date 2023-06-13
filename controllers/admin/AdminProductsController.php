@@ -843,7 +843,7 @@ class AdminProductsControllerCore extends AdminController
                     Product::updateDefaultAttribute($product->id);
                 } else {
 	                // Set stock quantity
-	                $quantityAttributeOld = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+	                $quantityAttributeOld = Db::readOnly()->getValue(
 		                (new DbQuery())
 			                ->select('`quantity`')
 			                ->from('stock_available')
@@ -1522,17 +1522,18 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessUpdateProductImageShopAsso()
     {
         $idProduct = Tools::getIntValue('id_product');
+        $conn = Db::getInstance();
         if (($idImage = Tools::getIntValue('id_image')) && ($idShop = Tools::getIntValue('id_shop'))) {
             if (Tools::getValue('active') == 'true') {
-                $res = Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'image_shop (`id_product`, `id_image`, `id_shop`, `cover`) VALUES('.(int) $idProduct.', '.(int) $idImage.', '.(int) $idShop.', NULL)');
+                $res = $conn->execute('INSERT INTO '._DB_PREFIX_.'image_shop (`id_product`, `id_image`, `id_shop`, `cover`) VALUES('.(int) $idProduct.', '.(int) $idImage.', '.(int) $idShop.', NULL)');
             } else {
-                $res = Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'image_shop WHERE `id_image` = '.(int) $idImage.' AND `id_shop` = '.(int) $idShop);
+                $res = $conn->execute('DELETE FROM '._DB_PREFIX_.'image_shop WHERE `id_image` = '.(int) $idImage.' AND `id_shop` = '.(int) $idShop);
             }
         }
 
         // Clean covers in image table
         if (isset($idShop)) {
-            $countCoverImage = Db::getInstance()->getValue(
+            $countCoverImage = $conn->getValue(
                 '
 			SELECT COUNT(*) FROM '._DB_PREFIX_.'image i
 			INNER JOIN '._DB_PREFIX_.'image_shop ish ON (i.id_image = ish.id_image AND ish.id_shop = '.(int) $idShop.')
@@ -1540,7 +1541,7 @@ class AdminProductsControllerCore extends AdminController
             );
 
             if (!$idImage) {
-                $idImage = Db::getInstance()->getValue(
+                $idImage = $conn->getValue(
                     '
                     SELECT i.`id_image` FROM '._DB_PREFIX_.'image i
                     INNER JOIN '._DB_PREFIX_.'image_shop ish ON (i.id_image = ish.id_image AND ish.id_shop = '.(int) $idShop.')
@@ -1549,18 +1550,18 @@ class AdminProductsControllerCore extends AdminController
             }
 
             if ($countCoverImage < 1) {
-                Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'image i SET i.cover = 1 WHERE i.id_image = '.(int) $idImage.' AND i.`id_product` = '.(int) $idProduct.' LIMIT 1');
+                $conn->execute('UPDATE '._DB_PREFIX_.'image i SET i.cover = 1 WHERE i.id_image = '.(int) $idImage.' AND i.`id_product` = '.(int) $idProduct.' LIMIT 1');
             }
 
             // Clean covers in image_shop table
-            $countCoverImageShop = Db::getInstance()->getValue(
+            $countCoverImageShop = $conn->getValue(
                 '
                 SELECT COUNT(*)
                 FROM '._DB_PREFIX_.'image_shop ish
                 WHERE ish.`id_product` = '.(int) $idProduct.' AND ish.id_shop = '.(int) $idShop.' AND ish.cover = 1'
             );
             if ($countCoverImageShop < 1) {
-                Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'image_shop ish SET ish.cover = 1 WHERE ish.id_image = '.(int) $idImage.' AND ish.`id_product` = '.(int) $idProduct.' AND ish.id_shop =  '.(int) $idShop.' LIMIT 1');
+                $conn->execute('UPDATE '._DB_PREFIX_.'image_shop ish SET ish.cover = 1 WHERE ish.id_image = '.(int) $idImage.' AND ish.`id_product` = '.(int) $idProduct.' AND ish.id_shop =  '.(int) $idShop.' LIMIT 1');
             }
         }
 
@@ -1589,6 +1590,7 @@ class AdminProductsControllerCore extends AdminController
             $res = true;
             $json = stripslashes($json);
             $images = json_decode($json, true);
+            $conn = Db::readOnly();
             foreach ($images as $id => $position) {
                 /*
                  * If the image is not associated with the currently
@@ -1599,7 +1601,7 @@ class AdminProductsControllerCore extends AdminController
                 $img = new Image((int) $id);
                 $def = $img::$definition;
                 $sql = 'SELECT * FROM `' . _DB_PREFIX_ . $def['table'] . '` WHERE `' . $def['primary'] . '` = ' . (int) $id;
-                $fields_from_table = Db::getInstance()->getRow($sql);
+                $fields_from_table = $conn->getRow($sql);
                 foreach ($def['fields'] as $key => $value) {
                     if (!isset($value['lang']) || !$value['lang']) {
                         $img->{$key} = $fields_from_table[$key];
@@ -1637,7 +1639,7 @@ class AdminProductsControllerCore extends AdminController
         $img = new Image($id_image);
         $def = $img::$definition;
         $sql = 'SELECT * FROM `' . _DB_PREFIX_ . $def['table'] . '` WHERE `' . $def['primary'] . '` = ' . $id_image;
-        $fields_from_table = Db::getInstance()->getRow($sql);
+        $fields_from_table = Db::readOnly()->getRow($sql);
         foreach ($def['fields'] as $key => $value) {
             if (!isset($value['lang']) || !$value['lang']) {
                 $img->{$key} = $fields_from_table[$key];
@@ -1665,8 +1667,9 @@ class AdminProductsControllerCore extends AdminController
         $this->content['id'] = $image->id;
         $res = $image->delete();
         // if deleted image was the cover, change it to the first one
+        $conn = Db::getInstance();
         if (!Image::getCover($image->id_product)) {
-            $res = Db::getInstance()->execute(
+            $res = $conn->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'image_shop` image_shop
 			SET image_shop.`cover` = 1
@@ -1676,7 +1679,7 @@ class AdminProductsControllerCore extends AdminController
         }
 
         if (!Image::getGlobalCover($image->id_product)) {
-            $res = Db::getInstance()->execute(
+            $res = $conn->execute(
                 '
 			UPDATE `'._DB_PREFIX_.'image` i
 			SET i.`cover` = 1
@@ -3286,6 +3289,7 @@ class AdminProductsControllerCore extends AdminController
     public function processImageLegends()
     {
         if (Tools::getValue('key_tab') == 'Images' && Tools::getValue('submitAddproductAndStay') == 'update_legends' && Validate::isLoadedObject($product = new Product(Tools::getIntValue('id_product')))) {
+            $conn = Db::getInstance();
             $idImage = Tools::getIntValue('id_caption');
             $idImages = [];
             if ($idImage) {
@@ -3307,7 +3311,7 @@ class AdminProductsControllerCore extends AdminController
                                 // Insert missing entries, update already
                                 // existing ones. As SQL features no 'insert if
                                 // missing, update otherwise', try both.
-                                Db::getInstance(_PS_USE_SQL_SLAVE_)->insert(
+                                $conn->insert(
                                     'image_lang',
                                     [
                                         'id_image'  => $idImage,
@@ -3318,7 +3322,7 @@ class AdminProductsControllerCore extends AdminController
                                     true,
                                     Db::INSERT_IGNORE
                                 );
-                                Db::getInstance(_PS_USE_SQL_SLAVE_)->update(
+                                $conn->update(
                                     'image_lang',
                                     [
                                         'legend'    => $val,
@@ -4949,7 +4953,7 @@ class AdminProductsControllerCore extends AdminController
                 ];
             }
             if ($productId) {
-                $active = Db::getInstance()->getArray((new DbQuery())
+                $active = Db::readOnly()->getArray((new DbQuery())
                     ->select('id_shop, active')
                     ->from('product_shop')
                     ->where('id_product = ' . $productId)
@@ -5522,7 +5526,7 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('has_attribute', $obj->hasAttributes());
                 // Check if product has combination, to display the available date only for the product or for each combination
                 if (Combination::isFeatureActive()) {
-                    $data->assign('countAttributes', (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    $data->assign('countAttributes', (int) Db::readOnly()->getValue(
                         (new DbQuery())
                         ->select('COUNT(`id_product`)')
                         ->from('product_attribute')
@@ -5997,7 +6001,7 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormModules($obj)
     {
-        $idModule = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idModule = (int)Db::readOnly()->getValue(
             (new DbQuery())
             ->select('`id_module`')
             ->from('module')
@@ -6038,7 +6042,7 @@ class AdminProductsControllerCore extends AdminController
             if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP) {
                 $result = false;
             } else {
-                $result = Db::getInstance()->executeS(
+                $result = Db::readOnly()->getArray(
                     '
 					SELECT DISTINCT pl.`name`, p.`id_product`, pl.`id_shop`
 					FROM `'._DB_PREFIX_.'product` p
@@ -6401,11 +6405,11 @@ class AdminProductsControllerCore extends AdminController
      */
     protected static function getUniqueLinkRewrites($rewrites)
     {
-        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $conn = Db::readOnly();
         foreach ($rewrites as $langId => &$rewrite) {
             $base = static::getBaseIdentifier($rewrite);
             $langId = (int)$langId;
-            $candidates = array_column($conn->executeS((new DbQuery())
+            $candidates = array_column($conn->getArray((new DbQuery())
                 ->select('DISTINCT link_rewrite')
                 ->from('product_lang')
                 ->where('id_lang = ' . $langId)

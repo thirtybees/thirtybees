@@ -79,7 +79,7 @@ class AdminSearchConfControllerCore extends AdminController
         $cronUrl = Tools::getHttpHost(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/searchcron.php?full=1&token='.substr(_COOKIE_KEY_, 34, 8).(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) $this->context->shop->id : '');
 
         try {
-            list($total, $indexed) = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            list($total, $indexed) = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('COUNT(*) as "0", SUM(product_shop.`indexed`) as "1"')
                     ->from('product', 'p')

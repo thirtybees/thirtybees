@@ -1132,14 +1132,9 @@ class AdminControllerCore extends Controller
                 }
             }
 
-            $this->_list = Db::getInstance()->executeS($this->_listsql, true, false);
-
-            if ($this->_list === false) {
-                $this->_list_error = Db::getInstance()->getMsgError();
-                break;
-            }
-
-            $this->_listTotal = Db::getInstance()->getValue($listCount, false);
+            $conn = Db::readOnly();
+            $this->_list = $conn->getArray($this->_listsql);
+            $this->_listTotal = $conn->getValue($listCount);
 
             if ($useLimit === true) {
                 $start = (int) $start - (int) $limit;
@@ -1513,12 +1508,13 @@ class AdminControllerCore extends Controller
 
         // Get list of shop id we want to exclude from asso deletion
         $excludeIds = $assosData;
-        foreach (Db::getInstance()->executeS('SELECT id_shop FROM '._DB_PREFIX_.'shop') as $row) {
+        $conn = Db::getInstance();
+        foreach ($conn->getArray('SELECT id_shop FROM '._DB_PREFIX_.'shop') as $row) {
             if (!$this->context->employee->hasAuthOnShop($row['id_shop'])) {
                 $excludeIds[] = $row['id_shop'];
             }
         }
-        Db::getInstance()->delete($this->table.'_shop', '`'.bqSQL($this->identifier).'` = '.(int) $idObject.($excludeIds ? ' AND id_shop NOT IN ('.implode(', ', array_map('intval', $excludeIds)).')' : ''));
+        $conn->delete($this->table.'_shop', '`'.bqSQL($this->identifier).'` = '.(int) $idObject.($excludeIds ? ' AND id_shop NOT IN ('.implode(', ', array_map('intval', $excludeIds)).')' : ''));
 
         $insert = [];
         foreach ($assosData as $idShop) {
@@ -1528,7 +1524,7 @@ class AdminControllerCore extends Controller
             ];
         }
 
-        return Db::getInstance()->insert($this->table.'_shop', $insert, false, true, Db::INSERT_IGNORE);
+        return $conn->insert($this->table.'_shop', $insert, false, true, Db::INSERT_IGNORE);
     }
 
     /**

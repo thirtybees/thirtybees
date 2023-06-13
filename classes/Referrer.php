@@ -220,13 +220,13 @@ class ReferrerCore extends ObjectModel
      *
      * @param int $idCustomer
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getReferrers($idCustomer)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('DISTINCT c.`date_add`, r.`name`, s.`name` AS `shop_name`')
                 ->from('guest', 'g')
@@ -296,7 +296,7 @@ class ReferrerCore extends ObjectModel
      */
     public function getStatsVisits($idProduct, $employee)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('COUNT(DISTINCT cs.`id_connections_source`) AS `visits`')
                 ->select('COUNT(DISTINCT cs.`id_connections`) AS `visitors`')
@@ -350,7 +350,7 @@ class ReferrerCore extends ObjectModel
             $sql->where('pt.`name` = \'product\'');
             $sql->where('p.`id_object` = '.(int) $idProduct);
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        $result = Db::readOnly()->getRow($sql);
 
         return (int) $result['registrations'];
     }
@@ -385,7 +385,7 @@ class ReferrerCore extends ObjectModel
             $sql->where('od.`product_id` = '.(int) $idProduct);
         }
 
-        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $conn = Db::readOnly();
         $orderIds = array_map('intval', array_column($conn->getArray($sql), 'id_order'));
 
         $orders = 0;
@@ -444,7 +444,7 @@ class ReferrerCore extends ObjectModel
     public static function refreshCache($referrers = null, $employee = null)
     {
         if (!$referrers || !is_array($referrers)) {
-            $referrers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('`id_referrer`')->from('referrer'));
+            $referrers = Db::readOnly()->getArray((new DbQuery())->select('`id_referrer`')->from('referrer'));
         }
         foreach ($referrers as $row) {
             $referrer = new Referrer($row['id_referrer']);
@@ -490,9 +490,10 @@ class ReferrerCore extends ObjectModel
      */
     public static function refreshIndex($referrers = null)
     {
+        $conn = Db::getInstance();
         if (!$referrers || !is_array($referrers)) {
-            Db::getInstance()->execute('TRUNCATE '._DB_PREFIX_.'referrer_cache');
-            Db::getInstance()->execute(
+            $conn->execute('TRUNCATE '._DB_PREFIX_.'referrer_cache');
+            $conn->execute(
                 '
 			INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
 				SELECT id_referrer, id_connections_source
@@ -502,8 +503,8 @@ class ReferrerCore extends ObjectModel
             );
         } else {
             foreach ($referrers as $row) {
-                Db::getInstance()->delete('referrer_cache', '`id_referrer` = '.(int) $row['id_referrer']);
-                Db::getInstance()->execute(
+                $conn->delete('referrer_cache', '`id_referrer` = '.(int) $row['id_referrer']);
+                $conn->execute(
                     '
 				INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
 					SELECT id_referrer, id_connections_source

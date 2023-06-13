@@ -118,14 +118,14 @@ class OrderReturnCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
-     * @return array|false|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getProductReturnDetail($idOrderDetail)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`product_quantity`, `date_add`, orsl.`name` AS `state`')
                 ->from('order_return_detail', 'ord')
@@ -146,7 +146,7 @@ class OrderReturnCore extends ObjectModel
      */
     public static function addReturnedQuantity(&$products, $idOrder)
     {
-        $details = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $details = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('od.`id_order_detail`, GREATEST(od.`product_quantity_return`, IFNULL(SUM(ord.`product_quantity`),0)) AS `qty_returned`')
                 ->from('order_detail', 'od')
@@ -182,10 +182,11 @@ class OrderReturnCore extends ObjectModel
     public function addReturnDetail($orderDetailList, $productQtyList, $customizationIds, $customizationQtyInput)
     {
         /* Classic product return */
+        $conn = Db::getInstance();
         if ($orderDetailList) {
             foreach ($orderDetailList as $key => $orderDetail) {
                 if ($qty = (int) $productQtyList[$key]) {
-                    Db::getInstance()->insert('order_return_detail', ['id_order_return' => (int) $this->id, 'id_order_detail' => (int) $orderDetail, 'product_quantity' => $qty, 'id_customization' => 0]);
+                    $conn->insert('order_return_detail', ['id_order_return' => (int) $this->id, 'id_order_detail' => (int) $orderDetail, 'product_quantity' => $qty, 'id_customization' => 0]);
                 }
             }
         }
@@ -194,7 +195,7 @@ class OrderReturnCore extends ObjectModel
             foreach ($customizationIds as $orderDetailId => $customizations) {
                 foreach ($customizations as $customizationId) {
                     if ($quantity = (int) $customizationQtyInput[(int) $customizationId]) {
-                        Db::getInstance()->insert('order_return_detail', ['id_order_return' => (int) $this->id, 'id_order_detail' => (int) $orderDetailId, 'product_quantity' => $quantity, 'id_customization' => (int) $customizationId]);
+                        $conn->insert('order_return_detail', ['id_order_return' => (int) $this->id, 'id_order_detail' => (int) $orderDetailId, 'product_quantity' => $quantity, 'id_customization' => (int) $customizationId]);
                     }
                 }
             }
@@ -264,7 +265,7 @@ class OrderReturnCore extends ObjectModel
      * @param bool $noDenied
      * @param Context|null $context
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -274,7 +275,7 @@ class OrderReturnCore extends ObjectModel
         if (!$context) {
             $context = Context::getContext();
         }
-        $data = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $data = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_return')
@@ -328,14 +329,14 @@ class OrderReturnCore extends ObjectModel
     /**
      * @param int $idOrderReturn
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrdersReturnDetail($idOrderReturn)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_return_detail')
@@ -351,7 +352,7 @@ class OrderReturnCore extends ObjectModel
      */
     public function countProduct()
     {
-        if (!$data = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if (!$data = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('COUNT(`id_order_return`) AS `total`')
                 ->from('order_return_detail')

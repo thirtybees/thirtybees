@@ -73,9 +73,10 @@ class ContactControllerCore extends FrontController
 
                 $idOrder = (int) $this->getOrder();
 
+                $conn = Db::readOnly();
                 if (!((
                         ($idCustomerThread = Tools::getIntValue('id_customer_thread'))
-                        && (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        && (int) $conn->getValue(
                             (new DbQuery())
                                 ->select('ct.`id_customer_thread`')
                                 ->from('customer_thread', 'ct')
@@ -87,7 +88,7 @@ class ContactControllerCore extends FrontController
                     $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($from, $idOrder)
                     ))
                 ) {
-                    $fields = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    $fields = $conn->getArray(
                         (new DbQuery())
                             ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`email`')
                             ->from('customer_thread', 'ct')
@@ -119,7 +120,7 @@ class ContactControllerCore extends FrontController
                         }
                     }
                 }
-                $oldMessage = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $oldMessage = $conn->getValue(
                     (new DbQuery())
                         ->select('cm.`message`')
                         ->from('customer_message', 'cm')
@@ -255,7 +256,7 @@ class ContactControllerCore extends FrontController
         );
 
         if (($idCustomerThread = Tools::getIntValue('id_customer_thread')) && $token = Tools::getValue('token')) {
-            $customerThread = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $customerThread = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('cm.*')
                     ->from('customer_thread', 'cm')
@@ -295,7 +296,7 @@ class ContactControllerCore extends FrontController
             $this->context->smarty->assign('isLogged', 1);
 
             $products = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`id_order`')
                     ->from('orders')

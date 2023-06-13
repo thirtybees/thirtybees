@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Database\ReadOnlyConnection;
+
 if (file_exists(_PS_ROOT_DIR_ . '/config/settings.inc.php')) {
     include_once(_PS_ROOT_DIR_ . '/config/settings.inc.php');
 }
@@ -36,7 +38,7 @@ if (file_exists(_PS_ROOT_DIR_ . '/config/settings.inc.php')) {
 /**
  * Class DbCore
  */
-class DbCore
+class DbCore implements ReadOnlyConnection
 {
     /**
      * @var int Constant used by insert() method
@@ -248,11 +250,9 @@ class DbCore
     /**
      * Returns the text of the error message from previous database operation
      *
-     * @param bool $query
-     *
      * @return string
      */
-    public function getMsgError($query = false)
+    public function getMsgError()
     {
         $error = $this->link->errorInfo();
 
@@ -596,6 +596,24 @@ class DbCore
     }
 
     /**
+     * Returns read-only dataase connection
+     *
+     * If only single database server exists, the same connection is used for read and write access.
+     *
+     * If multiple database server exists (MASTER -> SLAVE replication), then this method returns connection
+     * to SLAVE server
+     *
+     * @return ReadOnlyConnection
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function readOnly(): ReadOnlyConnection
+    {
+        return static::getInstance(false);
+    }
+
+    /**
      * Returns database object instance.
      *
      * @param bool $master Decides whether the connection to be returned by the master server or the slave server
@@ -738,14 +756,13 @@ class DbCore
      * Returns a value from the first row, first column of a SELECT query
      *
      * @param string|DbQuery $sql
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
      * @return mixed|false
      * @throws PrestaShopException
      */
-    public function getValue($sql, $useCache = true)
+    public function getValue($sql)
     {
-        if (!$result = $this->getRow($sql, $useCache)) {
+        if (!$result = $this->getRow($sql)) {
             return false;
         }
 
@@ -757,13 +774,13 @@ class DbCore
      * This function automatically adds "LIMIT 1" to the query
      *
      * @param string|DbQuery $sql the select query (without "LIMIT 1")
-     * @param bool $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|false
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getRow($sql, $useCache = true)
+    public function getRow($sql)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
@@ -1086,7 +1103,7 @@ class DbCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getArray($sql)
+    public function getArray($sql): array
     {
         $result = $this->executeS($sql);
         return is_array($result)
@@ -1246,7 +1263,7 @@ class DbCore
      * @param string $sql
      * @param int $useCache
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopException
      * @deprecated 2.0.0
@@ -1254,7 +1271,7 @@ class DbCore
     public static function ps($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        return static::getInstance()->executeS($sql, true, $useCache);
+        return static::readOnly()->getArray($sql);
     }
 
     /**
@@ -1263,7 +1280,7 @@ class DbCore
      * @param string|DbQuery $sql
      * @param bool $useCache
      *
-     * @return array|bool|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      *
      * @throws PrestaShopException
@@ -1272,7 +1289,7 @@ class DbCore
     public static function s($sql, $useCache = true)
     {
         Tools::displayAsDeprecated();
-        return static::getInstance()->executeS($sql, true, $useCache);
+        return static::readOnly()->getArray($sql);
     }
 
     /**

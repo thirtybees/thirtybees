@@ -231,11 +231,9 @@ class NotificationCore
                 ->from('employee_notification')
                 ->where('id_employee = ' . $this->employeeId)
                 ->where('type IN (' . $types . ')');
-            $employeeInfos = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-            if (is_array($employeeInfos)) {
-                foreach ($employeeInfos as $row) {
-                    $this->lastSeenIds[$row['type']] = (int)$row['last_id'];
-                }
+            $employeeInfos = Db::readOnly()->getArray($sql);
+            foreach ($employeeInfos as $row) {
+                $this->lastSeenIds[$row['type']] = (int)$row['last_id'];
             }
         }
         return $this->lastSeenIds[$type] ?? 0;
@@ -333,9 +331,9 @@ class NotificationCore
             ->orderBy('`id_order` DESC')
             ->limit($limit);
 
-        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $connection = Db::readOnly();
 
-        $result = $connection->executeS($detailSql);
+        $result = $connection->getArray($detailSql);
         $total = (int)$connection->getValue($totalSql);
 
         $results = [];
@@ -386,9 +384,9 @@ class NotificationCore
             ->orderBy('`id_customer` DESC')
             ->limit($limit);
 
-        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $connection = Db::readOnly();
 
-        $result = $connection->executeS($detailSql);
+        $result = $connection->getArray($detailSql);
         $total = (int)$connection->getValue($totalSql);
 
         $results = [];
@@ -442,9 +440,9 @@ class NotificationCore
             ->orderBy('c.`id_customer_message` DESC')
             ->limit($limit);
 
-        $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $connection = Db::readOnly();
 
-        $result = $connection->executeS($detailSql);
+        $result = $connection->getArray($detailSql);
         $total = (int)$connection->getValue($totalSql);
 
         $results = [];

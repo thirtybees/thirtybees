@@ -403,7 +403,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             // for attributes that the selected attribute group don't support
             $sql = 'SELECT id_attribute_group, id_shop FROM '._DB_PREFIX_.'attribute_group_shop';
             $associations = [];
-            foreach (Db::getInstance()->executeS($sql) as $row) {
+            foreach (Db::readOnly()->getArray($sql) as $row) {
                 $associations[$row['id_attribute_group']][] = $row['id_shop'];
             }
 
@@ -758,7 +758,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 							WHERE `id_attribute_group` = '.Tools::getIntValue('id_attribute_group').'
 							ORDER BY position DESC';
                     // set the position of the new group attribute in $_POST for postProcess() method
-                    $_POST['position'] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+                    $_POST['position'] = Db::readOnly()->getValue($sql);
                 }
                 $_POST['id_parent'] = 0;
                 $this->processSave();
@@ -797,7 +797,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 							FROM `'._DB_PREFIX_.'attribute_group`
 							ORDER BY position DESC';
                     // set the position of the new group attribute in $_POST for postProcess() method
-                    $_POST['position'] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+                    $_POST['position'] = Db::readOnly()->getValue($sql);
                 }
                 // clean \n\r characters
                 foreach ($_POST as $key => $value) {
@@ -935,7 +935,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             return;
         }
 
-        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $conn = Db::readOnly();
 
         if ($this->display == 'view') {
 

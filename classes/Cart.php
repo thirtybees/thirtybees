@@ -474,7 +474,7 @@ class CartCore extends ObjectModel
         $sql->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop='.(int) $this->id_shop);
         $sql->leftJoin('image_lang', 'il', 'il.`id_image` = image_shop.`id_image` AND il.`id_lang` = '.(int) $this->id_lang);
 
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::readOnly()->getArray($sql);
 
         // Reset the cache before the following return, or else an empty cart will add dozens of queries
         $productsIds = [];
@@ -743,7 +743,7 @@ class CartCore extends ObjectModel
             return;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('pac.`id_product_attribute`, agl.`public_name` AS `public_group_name`, al.`name` AS `attribute_name`')
                 ->from('product_attribute_combination', 'pac')
@@ -1535,19 +1535,14 @@ class CartCore extends ObjectModel
         /** @var Cart $this */
         $cartRules = CartRule::getCustomerCartRules(Context::getContext()->cookie->id_lang, Context::getContext()->cookie->id_customer, true, true, false, $this, true);
 
-        $result = false;
+        $cartRulesInCart = [];
         if ($this->id) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                 ->select('*')
                 ->from('cart_cart_rule')
                 ->where('`id_cart` = '.(int) $this->id)
             );
-        }
-
-        $cartRulesInCart = [];
-
-        if (is_array($result)) {
             foreach ($result as $row) {
                 $cartRulesInCart[] = $row['id_cart_rule'];
             }
@@ -2276,7 +2271,7 @@ class CartCore extends ObjectModel
             $sql->from('cart_product', 'cp');
             $sql->where('id_cart = '.(int) $this->id);
 
-            $cache[$this->id] = Db::getInstance()->getValue($sql) > 1;
+            $cache[$this->id] = Db::readOnly()->getValue($sql) > 1;
         }
 
         return $cache[$this->id];
@@ -2352,8 +2347,9 @@ class CartCore extends ObjectModel
         }
 
         if (!isset(static::$_totalWeight[$this->id])) {
+            $connection = Db::readOnly();
             if (Combination::isFeatureActive()) {
-                $weightProductWithAttribute = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $weightProductWithAttribute = $connection->getValue(
                     (new DbQuery())
                         ->select('SUM((p.`weight` + pa.`weight`) * cp.`quantity`) AS `nb`')
                         ->from('cart_product', 'cp')
@@ -2367,7 +2363,7 @@ class CartCore extends ObjectModel
                 $weightProductWithAttribute = 0;
             }
 
-            $weightProductWithoutAttribute = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $weightProductWithoutAttribute = $connection->getValue(
                 (new DbQuery())
                     ->select('SUM(p.`weight` * cp.`quantity`) AS `nb`')
                     ->from('cart_product', 'cp')
@@ -2474,7 +2470,7 @@ class CartCore extends ObjectModel
 
         $cacheKey = 'static::getCartRules_'.$this->id.'-'.$filter;
         if (!Cache::isStored($cacheKey)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`')
                     ->from('cart_cart_rule', 'cd')
@@ -2604,7 +2600,7 @@ class CartCore extends ObjectModel
      */
     public static function lastNoneOrderedCart($idCustomer)
     {
-        if (!$idCart = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!$idCart = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('c.`id_cart`')
                 ->from('cart', 'c')
@@ -2647,7 +2643,7 @@ class CartCore extends ObjectModel
      */
     public static function getCartIdByOrderId($idOrder)
     {
-        return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart`')
                 ->from('orders')
@@ -2660,14 +2656,14 @@ class CartCore extends ObjectModel
      * @param bool $dontRejectOrdered if true, all carts will be returned, otherwise
      *             already ordered carts will be filtered out
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getCustomerCarts($idCustomer, $dontRejectOrdered = true)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('cart', 'c')
@@ -2705,7 +2701,7 @@ class CartCore extends ObjectModel
             return false;
         }
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`is_guest`')
                 ->from('customer', 'cu')
@@ -2756,7 +2752,7 @@ class CartCore extends ObjectModel
         $collection = [];
         $cacheId = 'static::getAddressCollection'.(int) $this->id;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance()->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('DISTINCT `id_address_delivery`')
                     ->from('cart_product')
@@ -2802,7 +2798,8 @@ class CartCore extends ObjectModel
             $this->update();
         }
 
-        Db::getInstance()->update(
+        $conn = Db::getInstance();
+        $conn->update(
             'cart_product',
             [
                 'id_address_delivery' => (int) $idAddressNew,
@@ -2810,7 +2807,7 @@ class CartCore extends ObjectModel
             '`id_cart` = '.(int) $this->id.' AND `id_address_delivery` = '.(int) $idAddress
         );
 
-        Db::getInstance()->update(
+        $conn->update(
             'customization',
             [
                 'id_address_delivery' => (int) $idAddressNew,
@@ -2859,7 +2856,7 @@ class CartCore extends ObjectModel
             return false;
         }
 
-        $uploadedFiles = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $uploadedFiles = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cd.`value`')
                 ->from('customized_data', 'cd')
@@ -2873,18 +2870,19 @@ class CartCore extends ObjectModel
             unlink(_PS_UPLOAD_DIR_.$mustUnlink['value']);
         }
 
-        Db::getInstance()->delete(
+        $conn = Db::getInstance();
+        $conn->delete(
             'customized_data',
             '`id_customization` IN (SELECT `id_customization` FROM `'._DB_PREFIX_.'customization` WHERE `id_cart`='.(int) $this->id.')'
         );
 
-        Db::getInstance()->delete(
+        $conn->delete(
             'customization',
             '`id_cart` = '.(int) $this->id
         );
 
-        if (!Db::getInstance()->delete('cart_cart_rule', '`id_cart` = '.(int) $this->id)
-            || !Db::getInstance()->delete('cart_product', '`id_cart` = '.(int) $this->id)
+        if (!$conn->delete('cart_cart_rule', '`id_cart` = '.(int) $this->id)
+            || !$conn->delete('cart_product', '`id_cart` = '.(int) $this->id)
         ) {
             return false;
         }
@@ -2903,7 +2901,7 @@ class CartCore extends ObjectModel
     {
         $cacheId = 'static::orderExists_'.(int) $this->id;
         if (!Cache::isStored($cacheId)) {
-            $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = (bool) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('orders')
@@ -2948,7 +2946,7 @@ class CartCore extends ObjectModel
     {
         $cacheKey = 'static::getOrderedCartRulesIds_'.$this->id.'-'.$filter.'-ids';
         if (!Cache::isStored($cacheKey)) {
-            $result = Db::getInstance()->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('cr.`id_cart_rule`')
                     ->from('cart_cart_rule', 'cd')
@@ -2982,7 +2980,7 @@ class CartCore extends ObjectModel
         }
         $cacheId = 'static::getDiscountsCustomer_'.(int) $this->id.'-'.(int) $idCartRule;
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('cart_cart_rule')
@@ -3005,7 +3003,7 @@ class CartCore extends ObjectModel
      */
     public function getLastProduct()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_product`, `id_product_attribute`, `id_shop`')
                 ->from('cart_product', 'cp')
@@ -3058,7 +3056,7 @@ class CartCore extends ObjectModel
             return static::$_nbProducts[$id];
         }
 
-        static::$_nbProducts[$id] = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        static::$_nbProducts[$id] = (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('SUM(`quantity`)')
                 ->from('cart_product')
@@ -3099,7 +3097,7 @@ class CartCore extends ObjectModel
             return false;
         }
 
-        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_cart_rule`')
                 ->from('cart_cart_rule')
@@ -3232,9 +3230,10 @@ class CartCore extends ObjectModel
             $result = $this->containsProduct($idProduct, $idProductAttribute, (int) $idCustomization, (int) $idAddressDelivery);
 
             /* Update quantity if product already exist */
+            $conn = Db::getInstance();
             if ($result) {
                 if ($operator == 'up') {
-                    $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    $result2 =$conn->getRow(
                         (new DbQuery())
                             ->select('stock.`out_of_stock`, IFNULL(stock.`quantity`, 0) AS `quantity`')
                             ->from('product', 'p')
@@ -3270,7 +3269,7 @@ class CartCore extends ObjectModel
                 } elseif ($newQty < $minimalQuantity) {
                     return -1;
                 } else {
-                    Db::getInstance()->update(
+                    $conn->update(
                         'cart_product',
                         [
                             'quantity' => ['type' => 'sql', 'value' => '`quantity` '.$qty],
@@ -3282,7 +3281,7 @@ class CartCore extends ObjectModel
                 }
             } elseif ($operator == 'up') {
                 /* Add product to the cart */
-                $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                $result2 = $conn->getRow(
                     (new DbQuery())
                         ->select('stock.`out_of_stock`, IFNULL(stock.`quantity`, 0) AS `quantity`')
                         ->from('product', 'p')
@@ -3305,7 +3304,7 @@ class CartCore extends ObjectModel
                     return -1;
                 }
 
-                $resultAdd = Db::getInstance()->insert(
+                $resultAdd = $conn->insert(
                     'cart_product',
                     [
                         'id_product'           => (int) $idProduct,
@@ -3364,8 +3363,9 @@ class CartCore extends ObjectModel
             unset(static::$_totalWeight[$this->id]);
         }
 
+        $readConn = Db::readOnly();
         if ((int) $idCustomization) {
-            $productTotalQuantity = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $productTotalQuantity = (int) $readConn->getValue(
                 (new DbQuery())
                     ->select('`quantity`')
                     ->from('cart_product')
@@ -3374,7 +3374,7 @@ class CartCore extends ObjectModel
                     ->where('`id_product_attribute` = '.(int) $idProductAttribute)
             );
 
-            $customizationQuantity = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $customizationQuantity = (int) $readConn->getValue(
                 (new DbQuery())
                     ->select('`quantity`')
                     ->from('customization')
@@ -3395,7 +3395,7 @@ class CartCore extends ObjectModel
         }
 
         /* Get customization quantity */
-        $quantity = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $quantity = (int)$readConn->getValue(
             (new DbQuery())
                 ->select('SUM(`quantity`) AS quantity')
                 ->from('customization')
@@ -3416,12 +3416,13 @@ class CartCore extends ObjectModel
         }
 
         /* If the product still possesses customization it does not have to be deleted */
+        $writeCon = Db::getInstance();
         if ($quantity) {
-            return Db::getInstance()->update( 'cart_product', ['quantity' => $quantity], $conditions);
+            return $writeCon->update( 'cart_product', ['quantity' => $quantity], $conditions);
         }
 
         /* Product deletion */
-        $result = Db::getInstance()->delete('cart_product', $conditions);
+        $result = $writeCon->delete('cart_product', $conditions);
 
         // Remove any specific price for this cart/product combination
         SpecificPrice::deleteByIdCart((int) $this->id, (int) $idProduct, (int) $idProductAttribute);
@@ -3527,7 +3528,7 @@ class CartCore extends ObjectModel
             $sql->where('c.`id_customization` = '.(int) $idCustomization);
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        return Db::readOnly()->getRow($sql);
     }
 
     /**
@@ -3547,11 +3548,12 @@ class CartCore extends ObjectModel
     protected function _updateCustomizationQuantity($quantityChange, $idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery, $operator = 'up')
     {
         // Link customization to product combination when it is first added to cart
+        $conn = Db::getInstance();
         if (empty($idCustomization) && $operator === 'up') {
             $customization = $this->getProductCustomization($idProduct, null, true);
             foreach ($customization as $field) {
                 if ((int) $field['quantity'] === 0) {
-                    Db::getInstance()->update(
+                    $conn->update(
                         'customization',
                         [
                             'quantity'             => (int) $quantityChange,
@@ -3568,7 +3570,7 @@ class CartCore extends ObjectModel
 
         /* Quantity update */
         if (!empty($idCustomization)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`quantity`')
                     ->from('customization')
@@ -3576,10 +3578,10 @@ class CartCore extends ObjectModel
             );
 
             if ($operator === 'down' && ((int) $result - (int) $quantityChange) < 1) {
-                return Db::getInstance()->delete('customization', '`id_customization` = '.(int) $idCustomization);
+                return $conn->delete('customization', '`id_customization` = '.(int) $idCustomization);
             }
 
-            return Db::getInstance()->update(
+            return $conn->update(
                 'customization',
                 [
                     'quantity'            => ['type' => 'sql', 'value' => '`quantity` '.($operator === 'up' ? '+' : '-').(int) $quantityChange],
@@ -3614,7 +3616,7 @@ class CartCore extends ObjectModel
             return [];
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cu.`id_customization`, cd.`index`, cd.`value`, cd.`type`, cu.`in_cart`, cu.`quantity`')
                 ->from('customization', 'cu')
@@ -4275,7 +4277,7 @@ class CartCore extends ObjectModel
      */
     public function _addCustomization($idProduct, $idProductAttribute, $index, $type, $field, $quantity)
     {
-        $exisingCustomization = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $exisingCustomization = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cu.`id_customization`, cd.`index`, cd.`value`, cd.`type`')
                 ->from('customization', 'cu')
@@ -4285,11 +4287,12 @@ class CartCore extends ObjectModel
                 ->where('`in_cart` = 0')
         );
 
+        $conn = Db::getInstance();
         if ($exisingCustomization) {
             // If the customization field is already filled, delete it
             foreach ($exisingCustomization as $customization) {
                 if ($customization['type'] == $type && $customization['index'] == $index) {
-                    Db::getInstance()->delete(
+                    $conn->delete(
                         'customized_data',
                         'id_customization = '.(int) $customization['id_customization'].' AND type = '.(int) $customization['type'].' AND `index` = '.(int) $customization['index']
 
@@ -4303,7 +4306,7 @@ class CartCore extends ObjectModel
             }
             $idCustomization = $exisingCustomization[0]['id_customization'];
         } else {
-            Db::getInstance()->insert(
+            $conn->insert(
                 'customization',
                 [
                     'id_cart'              => (int) $this->id,
@@ -4312,10 +4315,10 @@ class CartCore extends ObjectModel
                     'quantity'             => (int) $quantity,
                 ]
             );
-            $idCustomization = Db::getInstance()->Insert_ID();
+            $idCustomization = $conn->Insert_ID();
         }
 
-        if (!Db::getInstance()->insert(
+        if (!$conn->insert(
             'customized_data',
             [
                 'id_customization' => (int) $idCustomization,
@@ -4378,7 +4381,7 @@ class CartCore extends ObjectModel
     {
         $result = true;
 
-        $custData = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $custData = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('cu.`id_customization`, cd.`index`, cd.`value`, cd.`type`')
                 ->from('customization', 'cu')
@@ -4440,15 +4443,16 @@ class CartCore extends ObjectModel
             return false;
         }
 
+        $conn = Db::getInstance();
         $success = true;
-        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $products = $conn->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('cart_product')
                 ->where('`id_cart` = '.(int) $this->id)
         );
 
-        $productGift = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $productGift = $conn->getArray(
             (new DbQuery())
                 ->select('cr.`gift_product`, cr.`gift_product_attribute`')
                 ->from('cart_rule', 'cr')
@@ -4484,7 +4488,7 @@ class CartCore extends ObjectModel
         }
 
         // Customized products
-        $customs = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $customs = $conn->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('customization', 'c')
@@ -4507,7 +4511,7 @@ class CartCore extends ObjectModel
         // Insert new customizations
         $customIds = [];
         foreach ($customsById as $customizationId => $val) {
-            Db::getInstance()->insert(
+            $conn->insert(
                 'customization',
                 [
                     'id_cart'              => (int) $cart->id,
@@ -4520,7 +4524,7 @@ class CartCore extends ObjectModel
                     'in_cart'              => 1,
                 ]
             );
-            $customIds[$customizationId] = Db::getInstance(_PS_USE_SQL_SLAVE_)->Insert_ID();
+            $customIds[$customizationId] = $conn->Insert_ID();
         }
 
         // Insert customized_data
@@ -4542,7 +4546,7 @@ class CartCore extends ObjectModel
                     'value'            => pSQL($customizedValue),
                 ];
             }
-            Db::getInstance()->insert('customized_data', $insert);
+            $conn->insert('customized_data', $insert);
         }
 
         return ['cart' => $cart, 'success' => $success];
@@ -4579,7 +4583,7 @@ class CartCore extends ObjectModel
      */
     public function getWsCartRows()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_product`, `id_product_attribute`, `quantity`, `id_address_delivery`')
                 ->from('cart_product')
@@ -4650,6 +4654,7 @@ class CartCore extends ObjectModel
         if ($newIdAddressDelivery == $oldIdAddressDelivery) {
             return false;
         }
+        $conn = Db::getInstance();
 
         // Checking if the product with the old address delivery exists
         $sql = new DbQuery();
@@ -4659,7 +4664,7 @@ class CartCore extends ObjectModel
         $sql->where('id_product_attribute = '.(int) $idProductAttribute);
         $sql->where('id_address_delivery = '.(int) $oldIdAddressDelivery);
         $sql->where('id_cart = '.(int) $this->id);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $result = $conn->getValue($sql);
 
         if ($result == 0) {
             return false;
@@ -4673,17 +4678,17 @@ class CartCore extends ObjectModel
         $sql->where('id_product_attribute = '.(int) $idProductAttribute);
         $sql->where('id_address_delivery = '.(int) $newIdAddressDelivery);
         $sql->where('id_cart = '.(int) $this->id);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $result = $conn->getValue($sql);
 
         // Removing similar products with this new address delivery
-        Db::getInstance()->delete(
+        $conn->delete(
             'cart_product',
             'id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute.' AND id_address_delivery = '.(int) $newIdAddressDelivery.' AND id_cart = '.(int) $this->id,
             1
         );
 
         // Changing the address
-        Db::getInstance()->update(
+        $conn->update(
             'cart_product',
             [
                 'id_address_delivery' => (int) $newIdAddressDelivery,
@@ -4722,8 +4727,9 @@ class CartCore extends ObjectModel
             return false;
         }
 
+        $conn = Db::getInstance();
         // Checking the product do not exist with the new address
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = $conn->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('cart_product', 'c')
@@ -4737,7 +4743,7 @@ class CartCore extends ObjectModel
             return false;
         }
 
-        Db::getInstance()->insert(
+        $conn->insert(
             'cart_product',
             [
                 'id_cart'              => (int) $this->id,
@@ -4751,7 +4757,7 @@ class CartCore extends ObjectModel
         );
 
         if (!$keepQuantity) {
-            $duplicatedQuantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $duplicatedQuantity = $conn->getValue(
                 (new DbQuery())
                     ->select('quantity')
                     ->from('cart_product', 'c')
@@ -4762,7 +4768,7 @@ class CartCore extends ObjectModel
             );
 
             if ($duplicatedQuantity > $quantity) {
-                Db::getInstance()->update(
+                $conn->update(
                     'cart_product',
                     [
                         'quantity'             => ['type' => 'sql', 'value' => '`quantity - `'.(int) $quantity],
@@ -4777,7 +4783,7 @@ class CartCore extends ObjectModel
         }
 
         // Checking if there is customizations
-        $results = Db::getInstance()->executeS(
+        $results = $conn->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('customization', 'c')
@@ -4789,7 +4795,7 @@ class CartCore extends ObjectModel
 
         foreach ($results as $customization) {
             // Duplicate customization
-            Db::getInstance()->insert(
+            $conn->insert(
                 'customization',
                 [
                     'id_product_attribute' => (int) $customization['id_product_attribute'],
@@ -4802,10 +4808,10 @@ class CartCore extends ObjectModel
             );
 
             // Save last insert ID before doing another query
-            $lastId = (int) Db::getInstance()->Insert_ID();
+            $lastId = (int) $conn->Insert_ID();
 
             // Get data from duplicated customizations
-            $lastRow = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $lastRow = $conn->getRow(
                 (new DbQuery())
                     ->select('`type`, `index`, `value`')
                     ->from('customized_data')
@@ -4814,12 +4820,12 @@ class CartCore extends ObjectModel
 
             // Insert new copied data with new customization ID into customized_data table
             $lastRow['id_customization'] = $lastId;
-            Db::getInstance()->insert('customized_data', $lastRow);
+            $conn->insert('customized_data', $lastRow);
         }
 
         $customizationCount = count($results);
         if ($customizationCount > 0) {
-            Db::getInstance()->update(
+            $conn->update(
                 'cart_product',
                 [
                     'quantity' => ['type' => 'sql', 'value' => '`quantity` + '.(int) $customizationCount * $quantity],
@@ -4839,9 +4845,10 @@ class CartCore extends ObjectModel
     public function setNoMultishipping()
     {
         $emptyCache = false;
+        $conn = Db::getInstance();
         if (Configuration::get('PS_ALLOW_MULTISHIPPING')) {
             // Upgrading quantities
-            $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $products = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('SUM(`quantity`) AS `quantity`, `id_product`, `id_product_attribute`, COUNT(*) AS `count`')
                     ->from('cart_product')
@@ -4851,17 +4858,15 @@ class CartCore extends ObjectModel
                     ->having('`count` > 1')
             );
 
-            if (is_array($products)) {
-                foreach ($products as $product) {
-                    if (Db::getInstance()->update(
-                        'cart_product',
-                        [
-                            'quantity' => (int) $product['quantity'],
-                        ],
-                        '`id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.' AND id_product = '.$product['id_product'].' AND id_product_attribute = '.$product['id_product_attribute']
-                    )) {
-                        $emptyCache = true;
-                    }
+            foreach ($products as $product) {
+                if ($conn->update(
+                    'cart_product',
+                    [
+                        'quantity' => (int) $product['quantity'],
+                    ],
+                    '`id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.' AND id_product = '.$product['id_product'].' AND id_product_attribute = '.$product['id_product_attribute']
+                )) {
+                    $emptyCache = true;
                 }
             }
 
@@ -4876,13 +4881,13 @@ class CartCore extends ObjectModel
 						AND (cp1.id_address_delivery <> cp2.id_address_delivery)
 						AND (cp1.date_add > cp2.date_add)
 					)';
-            Db::getInstance()->execute($sql);
+            $conn->execute($sql);
         }
 
         // Update delivery address for each product line
         $cacheId = 'static::setNoMultishipping'.(int) $this->id.'-'.(int) $this->id_shop.((isset($this->id_address_delivery) && $this->id_address_delivery) ? '-'.(int) $this->id_address_delivery : '');
         if (!Cache::isStored($cacheId)) {
-            if ($result = (bool) Db::getInstance()->update(
+            if ($result = (bool) $conn->update(
                 'cart_product',
                 [
                     'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.' LIMIT 1)'],
@@ -4895,7 +4900,7 @@ class CartCore extends ObjectModel
         }
 
         if (Customization::isFeatureActive()) {
-            Db::getInstance()->update(
+            $conn->update(
                 'customization',
                 [
                     'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' LIMIT 1)'],
@@ -4928,7 +4933,8 @@ class CartCore extends ObjectModel
         }
 
         // Update
-        Db::getInstance()->update(
+        $conn = Db::getInstance();
+        $conn->update(
             'cart_product',
             [
                 'id_address_delivery' => (int) $idAddressDelivery,
@@ -4936,7 +4942,7 @@ class CartCore extends ObjectModel
             '`id_cart` = '.(int) $this->id.' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL) AND `id_shop` = '.(int) $this->id_shop
         );
 
-        Db::getInstance()->update(
+        $conn->update(
             'customization',
             [
                 'id_address_delivery' => (int) $idAddressDelivery,

@@ -757,7 +757,7 @@ class AdminImagesControllerCore extends AdminController
         );
         $type = ImageType::getImagesTypes($entityType);
 
-        $watermarkModules = Db::getInstance()->executeS(
+        $watermarkModules = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.`name`')
                 ->from('module', 'm')
@@ -924,7 +924,7 @@ class AdminImagesControllerCore extends AdminController
 
         $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_'.strtoupper($entityType));
 
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MIN(`'.bqSQL($primary).'`)')
                 ->from($table)
@@ -1046,7 +1046,7 @@ class AdminImagesControllerCore extends AdminController
      */
     protected function _regenerateWatermark($dir, $type = null)
     {
-        $result = Db::getInstance()->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.`name`')
                 ->from('module', 'm')
@@ -1241,80 +1241,81 @@ class AdminImagesControllerCore extends AdminController
     protected function getIndexationStatus()
     {
         try {
+            $conn = Db::readOnly();
             return [
                 'products'      => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Product::$definition['table']))
                             ->where('`'.bqSQL(Product::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS'))
                     ),
-                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Product::$definition['table']))
                     ),
                 ],
                 'categories'    => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Category::$definition['table']))
                             ->where('`'.bqSQL(Category::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_CATEGORIES'))
                     ),
-                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Category::$definition['table']))
                     ),
                 ],
                 'suppliers'     => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Supplier::$definition['table']))
                             ->where('`'.bqSQL(Supplier::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_SUPPLIERS'))
                     ),
-                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Supplier::$definition['table']))
                     ),
                 ],
                 'manufacturers' => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Manufacturer::$definition['table']))
                             ->where('`'.bqSQL(Manufacturer::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_MANUFACTURERS'))
                     ),
-                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Manufacturer::$definition['table']))
                     ),
                 ],
                 'scenes'        => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from('scene_category')
                             ->where('`id_scene` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_SCENES'))
                     ),
-                    'total'   => (int) Db::getInstance()->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from('scene_category')
                     ),
                 ],
                 'stores'        => [
-                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    'indexed' => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Store::$definition['table']))
                             ->where('`'.bqSQL(Store::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_STORES'))
                     ),
-                    'total'   => (int) Db::getInstance()->getValue(
+                    'total'   => (int) $conn->getValue(
                         (new DbQuery())
                             ->select('COUNT(*)')
                             ->from(bqSQL(Store::$definition['table']))

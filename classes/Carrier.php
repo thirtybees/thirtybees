@@ -340,7 +340,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
         $key = 'carrier_id_tax_rules_group_'.(int) $idCarrier.'_'.(int) $context->shop->id;
         if (!Cache::isStored($key)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_tax_rules_group`')
                     ->from('carrier_tax_rules_group_shop')
@@ -385,7 +385,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getDeliveryPriceByRanges($rangeTable, $idCarrier)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('d.`id_'.bqSQL($rangeTable).'`, d.`id_carrier`, d.`id_zone`, d.`price`')
                 ->from('delivery', 'd')
@@ -439,7 +439,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getIdTaxRulesGroupMostUsed()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('COUNT(*) AS `n`, c.`id_tax_rules_group`')
                 ->from('carrier', 'c')
@@ -464,14 +464,15 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getDeliveredCountries($idLang, $activeCountries = false, $activeCarriers = false, $containStates = null)
     {
-        $states = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $conn = Db::readOnly();
+        $states = $conn->getArray(
             (new DbQuery())
                 ->select('s.*')
                 ->from('state', 's')
                 ->orderBy('s.`name` ASC')
         );
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = $conn->getArray(
             (new DbQuery())
                 ->select('cl.*, c.*, cl.`name` as `country`, z.`name` as `zone`')
                 ->from('country', 'c')
@@ -545,7 +546,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getCarrierByReference($idReference)
     {
-        $carrierData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $carrierData = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('carrier', 'c')
@@ -626,7 +627,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             $query->where('pc.`id_product` = '.(int) $product->id);
             $query->where('pc.`id_shop` = '.(int) $idShop);
 
-            $carriersForProduct = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $carriersForProduct = Db::readOnly()->getArray($query);
             Cache::store($cacheId, $carriersForProduct);
         } else {
             $carriersForProduct = Cache::retrieve($cacheId);
@@ -748,7 +749,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Carrier::checkCarrierZone_'.(int) $idCarrier.'-'.(int) $idZone;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('c.`id_carrier`')
                     ->from('carrier', 'c')
@@ -936,7 +937,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
         $cacheId = 'Carrier::getCarriers_'.md5($sql->build());
         if (!Cache::isStored($cacheId)) {
-            $carriers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $carriers = Db::readOnly()->getArray($sql);
             Cache::store($cacheId, $carriers);
         } else {
             $carriers = Cache::retrieve($cacheId);
@@ -988,7 +989,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Carrier::getMaxDeliveryPriceByWeight_'.(int) $this->id.'-'.(int) $idZone;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1016,7 +1017,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     {
         $cacheId = 'Carrier::getMaxDeliveryPriceByPrice_'.(int) $this->id.'-'.(int) $idZone;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1046,7 +1047,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         $idCarrier = (int) $idCarrier;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
         if (!isset(static::$price_by_weight2[$cacheKey])) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1092,7 +1093,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
 
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1138,7 +1139,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             '`id_group` IN ('.join(',', $idGroupList).')'
         );
 
-        $carrierList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $carrierList = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_carrier`')
                 ->from('carrier')
@@ -1182,7 +1183,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
-        if (!$count = Db::getInstance()->getValue('SELECT count(`id_carrier`) FROM `'._DB_PREFIX_.$this->def['table'].'` WHERE `deleted` = 0')) {
+        if (!$count = Db::readOnly()->getValue('SELECT count(`id_carrier`) FROM `'._DB_PREFIX_.$this->def['table'].'` WHERE `deleted` = 0')) {
             return false;
         }
         if ($count == 1) {
@@ -1218,7 +1219,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public static function getHigherPosition()
     {
-        $position = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $position = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`)')
                 ->from('carrier')
@@ -1241,8 +1242,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
         static::cleanPositions();
 
-        return (Db::getInstance()->delete('cart_rule_carrier', '`id_carrier` = '.(int) $this->id)
-            && Db::getInstance()->delete('module_carrier', '`id_reference` = '.(int) $this->id_reference)
+        $conn = Db::getInstance();
+        return ($conn->delete('cart_rule_carrier', '`id_carrier` = '.(int) $this->id)
+            && $conn->delete('module_carrier', '`id_reference` = '.(int) $this->id_reference)
             && $this->deleteTaxRulesGroup(Shop::getShops(true, null, true)));
     }
 
@@ -1259,7 +1261,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
     {
         $return = true;
 
-        $result = Db::getInstance()->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_carrier`')
                 ->from('carrier')
@@ -1338,7 +1340,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         $idCarrier = (int) $this->id;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
         if (!isset(static::$price_by_weight[$cacheKey])) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1387,7 +1389,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             if (!empty($idCurrency)) {
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('d.`price`')
                     ->from('delivery', 'd')
@@ -1426,7 +1428,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function getZones()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('carrier_zone', 'cz')
@@ -1447,7 +1449,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function getZone($idZone)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('carrier_zone')
@@ -1467,7 +1469,8 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function addZone($idZone)
     {
-        if (Db::getInstance()->insert(
+        $conn = Db::getInstance();
+        if ($conn->insert(
             'carrier_zone',
             [
                 'id_carrier' => (int) $this->id,
@@ -1504,7 +1507,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                     }
                 }
 
-                return Db::getInstance()->insert('delivery', $insert);
+                return $conn->insert('delivery', $insert);
             }
 
             return true;
@@ -1548,7 +1551,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function getGroups()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_group`')
                 ->from('carrier_group')
@@ -1606,6 +1609,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
 
         $sql = 'INSERT INTO `'._DB_PREFIX_.'delivery` ('.implode(', ', $keys).') VALUES ';
+        $db = Db::getInstance();
         foreach ($priceList as $values) {
             if (!isset($values['id_shop'])) {
                 $values['id_shop'] = (Shop::getContext() == Shop::CONTEXT_SHOP) ? Shop::getContextShopID() : null;
@@ -1615,7 +1619,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
 
             if ($delete) {
-                Db::getInstance()->execute(
+                $db->execute(
                     'DELETE FROM `'._DB_PREFIX_.'delivery`
                     WHERE '.(is_null($values['id_shop']) ? 'ISNULL(`id_shop`) ' : 'id_shop = '.(int) $values['id_shop']).'
                     AND '.(is_null($values['id_shop_group']) ? 'ISNULL(`id_shop`) ' : 'id_shop_group='.(int) $values['id_shop_group']).'
@@ -1641,7 +1645,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
         $sql = rtrim($sql, ', ');
 
-        return Db::getInstance()->execute($sql);
+        return $db->execute($sql);
     }
 
     /**
@@ -1676,8 +1680,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
 
         // Copy existing ranges price
+        $conn = Db::getInstance();
         foreach (['range_price', 'range_weight'] as $range) {
-            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $res = $conn->getArray(
                 (new DbQuery())
                     ->select('`id_'.$range.'` as `id_range`, `delimiter1`, `delimiter2`')
                     ->from($range)
@@ -1685,7 +1690,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             );
             if (count($res)) {
                 foreach ($res as $val) {
-                    Db::getInstance()->insert(
+                    $conn->insert(
                         $range,
                         [
                             'id_carrier' => (int) $this->id,
@@ -1693,12 +1698,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                             'delimiter2' => (float) $val['delimiter2'],
                         ]
                     );
-                    $idRange = (int) Db::getInstance()->Insert_ID();
+                    $idRange = (int) $conn->Insert_ID();
 
                     $idRangePrice = ($range == 'range_price') ? $idRange : 'NULL';
                     $idRangeWeight = ($range == 'range_weight') ? $idRange : 'NULL';
 
-                    Db::getInstance()->execute(
+                    $conn->execute(
                         '
 						INSERT INTO `'._DB_PREFIX_.'delivery` (`id_carrier`, `id_shop`, `id_shop_group`, `id_range_price`, `id_range_weight`, `id_zone`, `price`) (
 							SELECT '.(int) $this->id.', `id_shop`, `id_shop_group`, '.(int) $idRangePrice.', '.(int) $idRangeWeight.', `id_zone`, `price`
@@ -1713,14 +1718,14 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
 
         // Copy existing zones
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $res = $conn->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('carrier_zone')
                 ->where('`id_carrier` = '.(int) $oldId)
         );
         foreach ($res as $val) {
-            Db::getInstance()->insert(
+            $conn->insert(
                 'carrier_zone',
                 [
                     'id_carrier' => (int) $this->id,
@@ -1735,13 +1740,13 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         }
 
         // Copy reference
-        $idReference = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idReference = $conn->getValue(
             (new DbQuery())
                 ->select('`id_reference`')
                 ->from(bqSQL(static::$definition['table']))
                 ->where('`id_carrier` = '.(int) $oldId)
         );
-        Db::getInstance()->update(
+        $conn->update(
             bqSQL(static::$definition['table']),
             [
                 'id_reference' => (int) $idReference,
@@ -1752,7 +1757,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         $this->id_reference = (int) $idReference;
 
         // Copy tax rules group
-        Db::getInstance()->execute(
+        $conn->execute(
             'INSERT INTO `'._DB_PREFIX_.'carrier_tax_rules_group_shop` (`id_carrier`, `id_tax_rules_group`, `id_shop`)
 												(SELECT '.(int) $this->id.', `id_tax_rules_group`, `id_shop`
 													FROM `'._DB_PREFIX_.'carrier_tax_rules_group_shop`
@@ -1769,7 +1774,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function isUsed()
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $row = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(`id_carrier`) as `total`')
                 ->from('orders')
@@ -1924,7 +1929,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_carrier`, `position`')
                 ->from('carrier')
@@ -1946,13 +1951,14 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return Db::getInstance()->update(
+        $conn = Db::getInstance();
+        return $conn->update(
             'carrier',
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
             '`position` '.($way ? '> '.(int) $movedCarrier['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCarrier['position'].' AND `position` >= '.(int) $position.' AND `deleted` = 0')
-        ) && Db::getInstance()->update(
+        ) && $conn->update(
             'carrier',
             [
                 'position' => (int) $position,

@@ -134,7 +134,7 @@ class CMSCore extends ObjectModel
         if (!$link) {
             $link = Context::getContext()->link;
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_cms`, cl.`link_rewrite`, cl.`meta_title`')
                 ->from('cms', 'c')
@@ -162,7 +162,7 @@ class CMSCore extends ObjectModel
      * @param bool $idBlock
      * @param bool $active
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -173,7 +173,7 @@ class CMSCore extends ObjectModel
             $idLang = (int) Configuration::get('PS_LANG_DEFAULT');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_cms`, l.`meta_title`')
                 ->from('cms', 'c')
@@ -193,7 +193,7 @@ class CMSCore extends ObjectModel
      * @param bool $active
      * @param int|null $idShop
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -226,20 +226,20 @@ class CMSCore extends ObjectModel
 
         $sql->orderBy('position');
 
-        return Db::getInstance()->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
      * @param int $idCms
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getUrlRewriteInformations($idCms)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('l.`id_lang`, c.`link_rewrite`')
                 ->from('cms_lang', 'c')
@@ -268,7 +268,7 @@ class CMSCore extends ObjectModel
             $idShop = (int) Configuration::get('PS_SHOP_DEFAULT');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`content`')
                 ->from('cms_lang')
@@ -310,7 +310,7 @@ class CMSCore extends ObjectModel
      */
     public static function getLastPosition($idCategory)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`) + 1')
                 ->from('cms')
@@ -349,7 +349,7 @@ class CMSCore extends ObjectModel
      */
     public static function cleanPositions($idCategory)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_cms`')
                 ->from('cms')
@@ -400,7 +400,7 @@ class CMSCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cp.`id_cms`, cp.`position`, cp.`id_cms_category`')
                 ->from('cms', 'cp')
@@ -422,13 +422,14 @@ class CMSCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->update(
+        $conn = Db::getInstance();
+        return ($conn->update(
             'cms',
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
             '`position` '.($way ? '> '.(int) $movedCms['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCms['position'].' AND `position` >= '.(int) $position).' AND `id_cms_category`='.(int) $movedCms['id_cms_category']
-        ) && Db::getInstance()->update(
+        ) && $conn->update(
             'cms',
             [
                 'position' => (int) $position,

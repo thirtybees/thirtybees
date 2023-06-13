@@ -86,7 +86,7 @@ class MessageCore extends ObjectModel
      */
     public static function getMessageByCartId($idCart)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*')
                 ->from('message')
@@ -112,7 +112,7 @@ class MessageCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.*')
                 ->select('c.`firstname` AS `cfirstname`, c.`lastname` AS `clastname`')
@@ -146,7 +146,7 @@ class MessageCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.*')
                 ->select('c.`firstname` AS `cfirstname`, c.`lastname` AS `clastname`')

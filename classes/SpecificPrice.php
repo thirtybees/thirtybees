@@ -143,14 +143,14 @@ class SpecificPriceCore extends ObjectModel
      * @param int|bool $idProductAttribute
      * @param int|bool $idCart
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getByProductId($idProduct, $idProductAttribute = false, $idCart = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('specific_price')
@@ -186,14 +186,14 @@ class SpecificPriceCore extends ObjectModel
      * @param int|bool $idProductAttribute
      * @param int $idCart
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getIdsByProductId($idProduct, $idProductAttribute = false, $idCart = 0)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_specific_price`')
                 ->from('specific_price')
@@ -235,7 +235,7 @@ class SpecificPriceCore extends ObjectModel
             $queryExtra = static::computeExtraConditions($idProduct, $idProductAttribute, $idCustomer, $idCart);
             $fromQuantity = (Configuration::get('PS_QTY_DISCOUNT_ON_COMBINATION') || !$idCart || !$realQuantity) ? (int) $quantity : max(1, (int) $realQuantity);
 
-            static::$_specificPriceCache[$key] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            static::$_specificPriceCache[$key] = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('*, '.static::_getScoreQuery($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idCustomer))
                     ->from(bqSQL(static::$definition['table']))
@@ -320,13 +320,14 @@ class SpecificPriceCore extends ObjectModel
         if ($ending == $now && $beginning == $now) {
             $key = __FUNCTION__.'-'.$firstDate.'-'.$lastDate;
             if (!array_key_exists($key, static::$_filterOutCache)) {
-                $fromSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $conn = Db::readOnly();
+                $fromSpecificCount = $conn->getValue(
                     (new DbQuery())
                         ->select('1')
                         ->from('specific_price')
                         ->where('`from` BETWEEN \''.$firstDate.'\' AND \''.$lastDate.'\'')
                 );
-                $toSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $toSpecificCount = $conn->getValue(
                     (new DbQuery())
                         ->select('1')
                         ->from('specific_price')
@@ -372,7 +373,8 @@ class SpecificPriceCore extends ObjectModel
         $specificList = [];
         if (!array_key_exists($keyCache, static::$_filterOutCache)) {
             $queryCount = 'SELECT COUNT(DISTINCT `'.$fieldName.'`) FROM `'._DB_PREFIX_.'specific_price` WHERE `'.$fieldName.'` != 0';
-            $specificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($queryCount);
+            $conn = Db::readOnly();
+            $specificCount = $conn->getValue($queryCount);
             if ($specificCount == 0) {
                 static::$_no_specific_values[$fieldName] = true;
 
@@ -380,7 +382,7 @@ class SpecificPriceCore extends ObjectModel
             }
             if ($specificCount < $threshold) {
                 $query = 'SELECT DISTINCT `'.$fieldName.'` FROM `'._DB_PREFIX_.'specific_price` WHERE `'.$fieldName.'` != 0';
-                $tmpSpecificList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+                $tmpSpecificList = $conn->getArray($query);
                 foreach ($tmpSpecificList as $key => $value) {
                     $specificList[] = $value[$fieldName];
                 }
@@ -450,7 +452,7 @@ class SpecificPriceCore extends ObjectModel
         }
 
         if (!isset(static::$_cache_priorities[(int) $idProduct])) {
-            static::$_cache_priorities[(int) $idProduct] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$_cache_priorities[(int) $idProduct] = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`priority`, `id_specific_price_priority`')
                     ->from('specific_price_priority')
@@ -547,7 +549,7 @@ class SpecificPriceCore extends ObjectModel
         }
 
         $queryExtra = static::computeExtraConditions($idProduct, ((!$allCombinations) ? $idProductAttribute : null), $idCustomer, null);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*, '.static::_getScoreQuery($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idCustomer))
                 ->from('specific_price')
@@ -555,9 +557,7 @@ class SpecificPriceCore extends ObjectModel
                 ->where('`id_currency` '.static::formatIntInQuery(0, $idCurrency))
                 ->where('`id_country` '.static::formatIntInQuery(0, $idCountry))
                 ->where('`id_group` '.static::formatIntInQuery(0, $idGroup).' '.$queryExtra)
-                ->orderBy('`from_quantity` ASC, `id_specific_price_rule` ASC, `score` DESC, `to` DESC, `from` DESC'),
-            false,
-            false
+                ->orderBy('`from_quantity` ASC, `id_specific_price_rule` ASC, `score` DESC, `to` DESC, `from` DESC')
         );
 
         $targetedPrices = [];
@@ -602,7 +602,7 @@ class SpecificPriceCore extends ObjectModel
 
         $queryExtra = static::computeExtraConditions($idProduct, $idProductAttribute, $idCustomer, null);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('*, '.static::_getScoreQuery($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idCustomer))
                 ->from('specific_price')
@@ -637,7 +637,7 @@ class SpecificPriceCore extends ObjectModel
         }
 
         $queryExtra = static::computeExtraConditions(null, null, $idCustomer, null, $beginning, $ending);
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_product`, `id_product_attribute`')
                 ->from('specific_price')
@@ -697,7 +697,7 @@ class SpecificPriceCore extends ObjectModel
     {
         $rule = ' AND `id_specific_price_rule`'.(!$rule ? ' = 0' : ' != 0');
 
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_specific_price`')
                 ->from('specific_price')

@@ -119,7 +119,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
                 ->select('id_webservice_account')
                 ->from('webservice_account')
                 ->where('`key` = "' . pSQL($key) . '"');
-            $connection = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $connection = Db::readOnly();
             $id = (int)$connection->getValue($query);
             if ($id) {
                 $cache[$key] = new static($id);
@@ -173,7 +173,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
      */
     public static function getPermissionForAccount($authKey)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             '
 			SELECT p.*
 			FROM `'._DB_PREFIX_.'webservice_permission` p
@@ -236,7 +236,8 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
     {
         $ok = true;
         $sql = 'DELETE FROM `'._DB_PREFIX_.'webservice_permission` WHERE `id_webservice_account` = '.(int) $idAccount;
-        if (!Db::getInstance()->execute($sql)) {
+        $conn = Db::getInstance();
+        if (!$conn->execute($sql)) {
             $ok = false;
         }
         if (isset($permissionsToSet)) {
@@ -259,7 +260,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
                     $sql .= '(NULL , \''.pSQL($permission[1]).'\', \''.pSQL($permission[0]).'\', '.(int) $idAccount.'), ';
                 }
                 $sql = rtrim($sql, ', ');
-                if (!Db::getInstance()->execute($sql)) {
+                if (!$conn->execute($sql)) {
                     $ok = false;
                 }
             }

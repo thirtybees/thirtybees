@@ -122,14 +122,14 @@ class OrderSlipCore extends ObjectModel
      * @param int $customerId
      * @param bool $orderId
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrdersSlip($customerId, $orderId = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select(' *')
                 ->from('order_slip')
@@ -173,14 +173,14 @@ class OrderSlipCore extends ObjectModel
      * @param bool $idOrderSlip
      * @param bool $idOrderDetail
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrdersSlipDetail($idOrderSlip = false, $idOrderDetail = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select($idOrderDetail ? 'SUM(`product_quantity`) AS `total`' : '*')
                 ->from('order_slip_detail')
@@ -194,13 +194,13 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getProductSlipDetail($idOrderDetail)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`product_quantity`, `amount_tax_excl`, `amount_tax_incl`, `date_add`')
                 ->from('order_slip_detail', 'osd')
@@ -220,7 +220,7 @@ class OrderSlipCore extends ObjectModel
      */
     public static function getSlipsIdByDate($dateFrom, $dateTo)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order_slip`')
                 ->from('order_slip', 'os')
@@ -421,7 +421,7 @@ class OrderSlipCore extends ObjectModel
      */
     public static function getProductSlipResume($idOrderDetail)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('SUM(`product_quantity`) AS `product_quantity`, SUM(`amount_tax_excl`) AS `amount_tax_excl`, SUM(`amount_tax_incl`) AS `amount_tax_incl`')
                 ->from('order_slip_detail')
@@ -493,7 +493,8 @@ class OrderSlipCore extends ObjectModel
 
             $tab['amount_tax_excl'] = $tab['amount_tax_incl'] = $tab['amount'];
 
-            $idTax = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $connection = Db::readOnly();
+            $idTax = (int) $connection->getValue(
                 (new DbQuery())
                     ->select('`id_tax`')
                     ->from('order_detail_tax')
@@ -501,7 +502,7 @@ class OrderSlipCore extends ObjectModel
             );
 
             if ($idTax > 0) {
-                $rate = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $rate = (float) $connection->getValue(
                     (new DbQuery())
                         ->select('`rate`')
                         ->from('tax')
@@ -579,7 +580,7 @@ class OrderSlipCore extends ObjectModel
      */
     public function getProducts()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_slip_detail', 'osd')
@@ -607,7 +608,7 @@ class OrderSlipCore extends ObjectModel
     {
         $ecotaxDetail = [];
         foreach ($this->getOrdersSlipDetail((int) $this->id) as $orderSlipDetails) {
-            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $row = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('`ecotax_tax_rate` AS `rate`, `ecotax` AS `ecotax_tax_excl`, `ecotax` AS `ecotax_tax_incl`, `product_quantity`')
                     ->from('order_detail')
@@ -642,7 +643,7 @@ class OrderSlipCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        $result = Db::getInstance()->getArray(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_order_slip` AS `id`, `id_order_detail`, `product_quantity`, `amount_tax_excl`, `amount_tax_incl`')
                 ->from('order_slip_detail')
@@ -664,7 +665,8 @@ class OrderSlipCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        if (Db::getInstance()->delete('order_slip_detail', '`id_order_slip` = '.(int) $this->id)) {
+        $conn = Db::getInstance();
+        if ($conn->delete('order_slip_detail', '`id_order_slip` = '.(int) $this->id)) {
             $insert = [];
             foreach ($values as $value) {
                 $insert[] = [
@@ -675,7 +677,7 @@ class OrderSlipCore extends ObjectModel
                     'amount_tax_incl' => ['type' => 'sql', 'value' => isset($value['amount_tax_incl']) ? (float) $value['amount_tax_incl'] : 'NULL'],
                 ];
             }
-            Db::getInstance()->insert('order_slip_detail', $insert);
+            $conn->insert('order_slip_detail', $insert);
         }
 
         return true;

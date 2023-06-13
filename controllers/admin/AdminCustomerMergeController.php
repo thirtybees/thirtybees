@@ -226,13 +226,11 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
      */
     protected function getTables()
     {
-        $results = Db::getInstance()->executeS("SELECT TABLE_NAME AS n FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=database() AND COLUMN_NAME = 'id_customer'");
+        $results = Db::readOnly()->getArray("SELECT TABLE_NAME AS n FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=database() AND COLUMN_NAME = 'id_customer'");
         $tables = [];
-        if (is_array($results)) {
-            foreach ($results as $row) {
-                $table = preg_replace('/^' . _DB_PREFIX_ .'/', '', $row['n']);
-                $tables[] = $table;
-            }
+        foreach ($results as $row) {
+            $table = preg_replace('/^' . _DB_PREFIX_ .'/', '', $row['n']);
+            $tables[] = $table;
         }
         sort($tables);
         return $tables;

@@ -72,7 +72,7 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
      */
     protected function fetch($id, $name, $cacheId, $compileId, &$content, &$mtime)
     {
-        $row = Db::getInstance()->getRow('SELECT modified, content FROM '._DB_PREFIX_.'smarty_cache WHERE id_smarty_cache = "'.pSQL($id, true).'"');
+        $row = Db::readOnly()->getRow('SELECT modified, content FROM '._DB_PREFIX_.'smarty_cache WHERE id_smarty_cache = "'.pSQL($id, true).'"');
         if ($row) {
             $encoded = $row['content'];
             if ($encoded) {
@@ -103,7 +103,7 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
      */
     protected function fetchTimestamp($id, $name, $cacheId, $compileId)
     {
-        $value = Db::getInstance()->getValue('SELECT modified FROM '._DB_PREFIX_.'smarty_cache WHERE id_smarty_cache = "'.pSQL($id, true).'"');
+        $value = Db::readOnly()->getValue('SELECT modified FROM '._DB_PREFIX_.'smarty_cache WHERE id_smarty_cache = "'.pSQL($id, true).'"');
         $mtime = strtotime($value);
 
         return $mtime;
@@ -125,7 +125,8 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
      */
     protected function save($id, $name, $cacheId, $compileId, $expTime, $content)
     {
-        Db::getInstance()->execute(
+        $conn = Db::getInstance();
+        $conn->execute(
             '
 		REPLACE INTO '._DB_PREFIX_.'smarty_cache (id_smarty_cache, name, cache_id, content)
 		VALUES (
@@ -136,7 +137,7 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
 		)'
         );
 
-        return (bool) Db::getInstance()->Affected_Rows();
+        return (bool) $conn->Affected_Rows();
     }
 
     /**
@@ -153,10 +154,12 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
      */
     protected function delete($name, $cacheId, $compileId, $expTime)
     {
+        $conn = Db::getInstance();
+
         // delete the whole cache
         if ($name === null && $cacheId === null && $compileId === null && $expTime === null) {
             // returning the number of deleted caches would require a second query to count them
-            Db::getInstance()->execute('TRUNCATE TABLE '._DB_PREFIX_.'smarty_cache');
+            $conn->execute('TRUNCATE TABLE '._DB_PREFIX_.'smarty_cache');
 
             return -1;
         }
@@ -172,8 +175,8 @@ class CacheResourceMysqlCore extends Smarty_CacheResource_Custom
             $where[] = '(cache_id  = "'.pSQL($cacheId, true).'" OR cache_id LIKE "'.pSQL($cacheId.'|%', true).'")';
         }
 
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'smarty_cache WHERE '.implode(' AND ', $where));
+        $conn->execute('DELETE FROM '._DB_PREFIX_.'smarty_cache WHERE '.implode(' AND ', $where));
 
-        return Db::getInstance()->Affected_Rows();
+        return $conn->Affected_Rows();
     }
 }

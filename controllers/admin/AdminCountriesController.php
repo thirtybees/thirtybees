@@ -480,7 +480,7 @@ class AdminCountriesControllerCore extends AdminController
             $sql->select('id_state');
             $sql->from('state');
             $sql->where('`id_country` = '.(int) $country->id.' AND `id_zone` = '.(int) $oldIdZone);
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $results = Db::readOnly()->getArray($sql);
 
             if ($results && count($results)) {
                 $ids = [];

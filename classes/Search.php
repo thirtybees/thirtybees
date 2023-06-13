@@ -134,7 +134,7 @@ class SearchCore
         if (!$context) {
             $context = Context::getContext();
         }
-        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $db = Db::readOnly();
 
         // TODO : smart page management
         if ($pageNumber < 1) {
@@ -220,7 +220,7 @@ class SearchCore
             $searchSql->innerJoin('stock_available', 'sa', $on);
         }
 
-        $results = $db->executeS($searchSql, true, false);
+        $results = $db->getArray($searchSql);
 
         $eligibleProducts = [];
         foreach ($results as $row) {
@@ -229,7 +229,7 @@ class SearchCore
 
         $eligibleProducts2 = [];
         foreach ($intersectArray as $query) {
-            foreach ($db->executeS($query, true, false) as $row) {
+            foreach ($db->getArray($query) as $row) {
                 $eligibleProducts2[] = $row['id_product'];
             }
         }
@@ -265,7 +265,7 @@ class SearchCore
 					WHERE p.`id_product` '.$productPool.'
 					ORDER BY position DESC LIMIT 10';
 
-            return $db->executeS($sql, true, false);
+            return $db->getArray($sql);
         }
 
         if (strpos($orderBy, '.') > 0) {
@@ -305,7 +305,7 @@ class SearchCore
 				GROUP BY product_shop.id_product
 				'.($orderBy ? 'ORDER BY  '.$alias.$orderBy : '').($orderWay ? ' '.$orderWay : '').'
 				LIMIT '.(int) (($pageNumber - 1) * $pageSize).','.(int) $pageSize;
-        $result = $db->executeS($sql, true, false);
+        $result = $db->getArray($sql);
 
         $sql = 'SELECT COUNT(*)
 				FROM '._DB_PREFIX_.'product p
@@ -316,7 +316,7 @@ class SearchCore
 				)
 				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON m.`id_manufacturer` = p.`id_manufacturer`
 				WHERE p.`id_product` '.$productPool;
-        $total = $db->getValue($sql, false);
+        $total = $db->getValue($sql);
 
         if (!$result) {
             $resultProperties = false;
@@ -558,14 +558,13 @@ class SearchCore
                     $wordIdsByWord = [];
                     if (is_array($queryArray2) && !empty($queryArray2)) {
                         // ...then their IDs are retrieved
-                        $addedWords = $db->executeS(
+                        $addedWords = $db->getArray(
                             '
 						SELECT sw.id_word, sw.word
 						FROM '._DB_PREFIX_.'search_word sw
 						WHERE sw.word IN ('.implode(',', $queryArray2).')
 						AND sw.id_lang = '.(int) $product['id_lang'].'
-						AND sw.id_shop = '.(int) $product['id_shop'], true, false
-                        );
+						AND sw.id_shop = '.(int) $product['id_shop']);
                         foreach ($addedWords as $wordId) {
                             $wordIdsByWord['_'.$wordId['word']] = (int) $wordId['id_word'];
                         }
@@ -641,7 +640,7 @@ class SearchCore
      * @param int $limit
      * @param array $weightArray
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -649,6 +648,7 @@ class SearchCore
     protected static function getProductsToIndex($totalLanguages, $idProduct = false, $limit = 50, $weightArray = [])
     {
         $ids = null;
+        $conn = Db::readOnly();
         if (!$idProduct) {
             // Limit products for each step but be sure that each attribute is taken into account
             $sql = 'SELECT p.id_product FROM '._DB_PREFIX_.'product p
@@ -659,10 +659,7 @@ class SearchCore
 				ORDER BY product_shop.`id_product` ASC
 				LIMIT '.(int) $limit;
 
-            $res = Db::getInstance()->executeS($sql, false);
-            while ($row = Db::getInstance()->nextRow($res)) {
-                $ids[] = $row['id_product'];
-            }
+            $ids = array_column($conn->getArray($sql), 'id_product');
         }
 
         // Now get every attribute in every language
@@ -721,7 +718,7 @@ class SearchCore
 			AND product_shop.`active` = 1
 			AND pl.`id_shop` = product_shop.`id_shop`';
 
-        return Db::getInstance()->executeS($sql, true, false);
+        return $conn->getArray($sql);
     }
 
     /**
@@ -737,12 +734,11 @@ class SearchCore
     public static function getTags($db, $idProduct, $idLang)
     {
         $tags = '';
-        $tagsArray = $db->executeS(
+        $tagsArray = $db->getArray(
             '
 		SELECT t.name FROM '._DB_PREFIX_.'product_tag pt
 		LEFT JOIN '._DB_PREFIX_.'tag t ON (pt.id_tag = t.id_tag AND t.id_lang = '.(int) $idLang.')
-		WHERE pt.id_product = '.(int) $idProduct, true, false
-        );
+		WHERE pt.id_product = '.(int) $idProduct);
         foreach ($tagsArray as $tag) {
             $tags .= $tag['name'].' ';
         }
@@ -767,14 +763,13 @@ class SearchCore
         }
 
         $attributes = '';
-        $attributesArray = $db->executeS(
+        $attributesArray = $db->getArray(
             '
 		SELECT al.name FROM '._DB_PREFIX_.'product_attribute pa
 		INNER JOIN '._DB_PREFIX_.'product_attribute_combination pac ON pa.id_product_attribute = pac.id_product_attribute
 		INNER JOIN '._DB_PREFIX_.'attribute_lang al ON (pac.id_attribute = al.id_attribute AND al.id_lang = '.(int) $idLang.')
 		'.Shop::addSqlAssociation('product_attribute', 'pa').'
-		WHERE pa.id_product = '.(int) $idProduct, true, false
-        );
+		WHERE pa.id_product = '.(int) $idProduct);
         foreach ($attributesArray as $attribute) {
             $attributes .= $attribute['name'].' ';
         }
@@ -799,12 +794,11 @@ class SearchCore
         }
 
         $features = '';
-        $featuresArray = $db->executeS(
+        $featuresArray = $db->getArray(
             '
 		SELECT fvl.value FROM '._DB_PREFIX_.'feature_product fp
 		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fp.id_feature_value = fvl.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
-		WHERE fp.id_product = '.(int) $idProduct, true, false
-        );
+		WHERE fp.id_product = '.(int) $idProduct);
         foreach ($featuresArray as $feature) {
             $features .= $feature['value'].' ';
         }
@@ -817,17 +811,16 @@ class SearchCore
      * @param int $idProduct
      * @param string $sqlAttribute
      *
-     * @return array|null
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     protected static function getAttributesFields($db, $idProduct, $sqlAttribute)
     {
-        return $db->executeS(
+        return $db->getArray(
             'SELECT id_product '.$sqlAttribute.' FROM '.
-            _DB_PREFIX_.'product_attribute pa WHERE pa.id_product = '.(int) $idProduct, true, false
-        );
+            _DB_PREFIX_.'product_attribute pa WHERE pa.id_product = '.(int) $idProduct);
     }
 
     /**
@@ -959,8 +952,9 @@ class SearchCore
             $sqlGroups = 'AND cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
         }
 
+        $conn = Db::readOnly();
         if ($count) {
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int) $conn->getValue(
                 'SELECT COUNT(DISTINCT pt.`id_product`) nb
 			FROM
 			`'._DB_PREFIX_.'tag` t
@@ -1014,7 +1008,7 @@ class SearchCore
 					GROUP BY product_shop.id_product
 				ORDER BY position DESC'.($orderBy ? ', '.$orderBy : '').($orderWay ? ' '.$orderWay : '').'
 				LIMIT '.(int) (($pageNumber - 1) * $pageSize).','.(int) $pageSize;
-        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false)) {
+        if (!$result = $conn->getArray($sql)) {
             return false;
         }
 

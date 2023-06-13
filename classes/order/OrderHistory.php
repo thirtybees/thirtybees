@@ -387,7 +387,7 @@ class OrderHistoryCore extends ObjectModel
     public static function getLastOrderState($idOrder)
     {
         Tools::displayAsDeprecated();
-        $idOrderState = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idOrderState = (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_state`')
                 ->from('order_history')
@@ -448,7 +448,7 @@ class OrderHistoryCore extends ObjectModel
      */
     public function sendEmail($order, $templateVars = false)
     {
-        $result = Db::getInstance()->getRow('
+        $result = Db::readOnly()->getRow('
 			SELECT osl.`template`, c.`lastname`, c.`firstname`, osl.`name` AS osname, c.`email`, os.`module_name`, os.`id_order_state`, os.`pdf_invoice`, os.`pdf_delivery`
 			FROM `'._DB_PREFIX_.'order_history` oh
 				LEFT JOIN `'._DB_PREFIX_.'orders` o ON oh.`id_order` = o.`id_order`
@@ -566,7 +566,7 @@ class OrderHistoryCore extends ObjectModel
      */
     public function isValidated()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(oh.`id_order_history` AS `nb`')
                 ->from('order_state', 'os')

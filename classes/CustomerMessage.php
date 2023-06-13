@@ -99,14 +99,14 @@ class CustomerMessageCore extends ObjectModel
      * @param int $idOrder
      * @param bool $hidePrivate
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getMessagesByOrderId($idOrder, $hidePrivate = true)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cm.*')
                 ->select('c.`firstname` AS `cfirstname`')
@@ -134,8 +134,9 @@ class CustomerMessageCore extends ObjectModel
      */
     public static function getTotalCustomerMessages($where = null)
     {
+        $conn = Db::readOnly();
         if (is_null($where)) {
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            return (int) $conn->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('customer_message')
@@ -143,7 +144,7 @@ class CustomerMessageCore extends ObjectModel
                     ->where('1 '.Shop::addSqlRestriction())
             );
         } else {
-            return (int) Db::getInstance()->getValue(
+            return (int) $conn->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('customer_message', 'cm')

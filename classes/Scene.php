@@ -112,7 +112,7 @@ class SceneCore extends ObjectModel
         }
         $idLang = is_null($idLang) ? $context->language->id : $idLang;
 
-        $products = Db::getInstance()->executeS(
+        $products = Db::readOnly()->getArray(
             '
 		SELECT s.*
 		FROM `'._DB_PREFIX_.'scene_products` s
@@ -207,7 +207,7 @@ class SceneCore extends ObjectModel
 						AND sl.id_lang = '.(int) $idLang
                 .($onlyActive ? ' AND s.active = 1' : '').'
 					ORDER BY sl.name ASC';
-            $scenes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $scenes = Db::readOnly()->getArray($sql);
 
             if (!$liteResult && $scenes) {
                 foreach ($scenes as &$scene) {
@@ -234,7 +234,7 @@ class SceneCore extends ObjectModel
      */
     public static function getIndexedCategories($idScene)
     {
-        return Db::getInstance()->executeS(
+        return Db::readOnly()->getArray(
             '
 		SELECT `id_category`
 		FROM `'._DB_PREFIX_.'scene_category`

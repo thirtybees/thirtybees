@@ -146,18 +146,14 @@ class TabCore extends ObjectModel
         }
         if (static::$_getIdFromClassName === null) {
             static::$_getIdFromClassName = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`id_tab`, `class_name`')
-                    ->from('tab'),
-                true,
-                false
+                    ->from('tab')
             );
 
-            if (is_array($result)) {
-                foreach ($result as $row) {
-                    static::$_getIdFromClassName[strtolower($row['class_name'])] = (int)$row['id_tab'];
-                }
+            foreach ($result as $row) {
+                static::$_getIdFromClassName[strtolower($row['class_name'])] = (int)$row['id_tab'];
             }
         }
 
@@ -176,7 +172,7 @@ class TabCore extends ObjectModel
     {
         $cacheId = 'getCurrentParentId_'.mb_strtolower(Tools::getValue('controller'));
         if (!Cache::isStored($cacheId)) {
-            $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $value = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_parent`')
                     ->from('tab')
@@ -204,7 +200,7 @@ class TabCore extends ObjectModel
     {
         $list = [];
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.`class_name`, t.`module`')
                 ->from('tab', 't')
@@ -212,10 +208,8 @@ class TabCore extends ObjectModel
                 ->where('t.`module` != ""')
         );
 
-        if (is_array($result)) {
-            foreach ($result as $detail) {
-                $list[strtolower($detail['class_name'])] = $detail;
-            }
+        foreach ($result as $detail) {
+            $list[strtolower($detail['class_name'])] = $detail;
         }
 
         return $list;
@@ -235,7 +229,7 @@ class TabCore extends ObjectModel
         if (!isset(static::$_cache_tabs[$idLang])) {
             static::$_cache_tabs[$idLang] = [];
             // Keep t.*, tl.name instead of only * because if translations are missing, the join on tab_lang will overwrite the id_tab in the results
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('t.*, COALESCE(NULLIF(tl.`name`, ""), tl_def.`name`) AS `name`')
                     ->from('tab', 't')
@@ -244,13 +238,11 @@ class TabCore extends ObjectModel
                     ->orderBy('t.`position` ASC')
             );
 
-            if (is_array($result)) {
-                foreach ($result as $row) {
-                    if (!isset(static::$_cache_tabs[$idLang][$row['id_parent']])) {
-                        static::$_cache_tabs[$idLang][$row['id_parent']] = [];
-                    }
-                    static::$_cache_tabs[$idLang][$row['id_parent']][] = $row;
+            foreach ($result as $row) {
+                if (!isset(static::$_cache_tabs[$idLang][$row['id_parent']])) {
+                    static::$_cache_tabs[$idLang][$row['id_parent']] = [];
                 }
+                static::$_cache_tabs[$idLang][$row['id_parent']][] = $row;
             }
         }
         if ($idParent === null) {
@@ -412,7 +404,7 @@ class TabCore extends ObjectModel
         $cacheId = 'Tab::getTab_'.(int) $idLang.'-'.(int) $idTab;
         if (!Cache::isStored($cacheId)) {
             /* Tabs selection */
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $result = Db::readOnly()->getRow(
                 (new DbQuery())
                     ->select('*')
                     ->from('tab', 't')
@@ -431,14 +423,14 @@ class TabCore extends ObjectModel
      * @param int $idParent
      * @param int $idProfile
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getTabByIdProfile($idParent, $idProfile)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.`id_tab`, t.`id_parent`, tl.`name`, a.`id_profile`')
                 ->from('tab', 't')
@@ -522,7 +514,7 @@ class TabCore extends ObjectModel
      */
     public static function getClassNameById($idTab)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`class_name`')
                 ->from('tab')
@@ -541,7 +533,7 @@ class TabCore extends ObjectModel
      */
     public static function getNewLastPosition($idParent)
     {
-        return (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('IFNULL(MAX(`position`), 0) + 1')
                 ->from('tab')
@@ -570,7 +562,7 @@ class TabCore extends ObjectModel
         }
 
         /* Profile selection */
-        $profiles = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $profiles = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_profile`')
                 ->from('profile')
@@ -646,7 +638,7 @@ class TabCore extends ObjectModel
      */
     public function cleanPositions($idParent)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_tab`')
                 ->from('tab')
@@ -712,7 +704,7 @@ class TabCore extends ObjectModel
      */
     public static function getNbTabs($idParent = null)
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('tab', 't')
@@ -754,7 +746,7 @@ class TabCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.`id_tab`, t.`position`, t.`id_parent`')
                 ->from('tab', 't')
@@ -775,7 +767,8 @@ class TabCore extends ObjectModel
         }
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        $result = (Db::getInstance()->update(
+        $conn = Db::getInstance();
+        $result = ($conn->update(
             'tab',
             [
 
@@ -783,7 +776,7 @@ class TabCore extends ObjectModel
             ],
             '`position` '.($way ? '> '.(int) $movedTab['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedTab['position'].' AND `position` >= '.(int) $position).' AND `id_parent`='.(int) $movedTab['id_parent']
         )
-        && Db::getInstance()->update(
+        && $conn->update(
             'tab',
             [
                 'position' => (int) $position,

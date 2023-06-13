@@ -146,7 +146,7 @@ class ShopGroupCore extends ObjectModel
      */
     public function getTotalShops()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(*)')
                 ->from('shop', 's')
@@ -157,14 +157,14 @@ class ShopGroupCore extends ObjectModel
     /**
      * @param int $idGroup
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getShopsFromGroup($idGroup)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('s.`id_shop`')
                 ->from('shop', 's')
@@ -183,7 +183,7 @@ class ShopGroupCore extends ObjectModel
      */
     public static function getIdByName($name)
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_shop_group`')
                 ->from('shop_group')
@@ -208,8 +208,9 @@ class ShopGroupCore extends ObjectModel
             return false;
         }
 
+        $connection = Db::readOnly();
         if ($check == 'all' || $check == 'customer') {
-            $totalCustomer = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $totalCustomer = (int) $connection->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('customer')
@@ -221,7 +222,7 @@ class ShopGroupCore extends ObjectModel
         }
 
         if ($check == 'all' || $check == 'order') {
-            $totalOrder = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $totalOrder = (int) $connection->getValue(
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('orders')
@@ -245,7 +246,7 @@ class ShopGroupCore extends ObjectModel
      */
     public function shopNameExists($name, $idShop = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_shop`')
                 ->from('shop')

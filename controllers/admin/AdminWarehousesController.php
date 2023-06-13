@@ -181,7 +181,7 @@ class AdminWarehousesControllerCore extends AdminController
         $query->select('id_employee, CONCAT(lastname," ",firstname) as name');
         $query->from('employee');
         $query->where('active = 1');
-        $employeesArray = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $employeesArray = Db::readOnly()->getArray($query);
 
         // sets the title of the toolbar
         if (Tools::isSubmit('add'.$this->table)) {

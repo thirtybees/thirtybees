@@ -460,7 +460,7 @@ class AdminRequestSqlControllerCore extends AdminController
         }
 
         try {
-            if ($results = Db::getInstance()->executeS($obj->sql)) {
+            if ($results = Db::readOnly()->getArray($obj->sql)) {
                 foreach (array_keys($results[0]) as $key) {
                     $tabKey[] = $key;
                 }
@@ -512,7 +512,7 @@ class AdminRequestSqlControllerCore extends AdminController
             $sql = RequestSql::getRequestSqlById($id);
 
             if ($sql) {
-                $results = Db::getInstance()->executeS($sql[0]['sql']);
+                $results = Db::readOnly()->getArray($sql[0]['sql']);
                 foreach (array_keys($results[0]) as $key) {
                     $tabKey[] = $key;
                     fputs($csv, $key.';');

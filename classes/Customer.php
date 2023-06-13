@@ -259,7 +259,7 @@ class CustomerCore extends ObjectModel
         }
         $sql->orderBy('`id_customer` ASC');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -279,7 +279,7 @@ class CustomerCore extends ObjectModel
         $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
 
-        return Db::getInstance()->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -305,7 +305,7 @@ class CustomerCore extends ObjectModel
             $sql->where('`id_customer` = '.(int) $idCustomer);
             $sql->where('`active` = 1');
             $sql->where('`deleted` = 0');
-            $result = (bool) !Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+            $result = (bool) !Db::readOnly()->getRow($sql);
             Cache::store($cacheId, $result);
 
             return $result;
@@ -338,7 +338,7 @@ class CustomerCore extends ObjectModel
         if ($ignoreGuest) {
             $sql->where('`is_guest` = 0');
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        $result = Db::readOnly()->getValue($sql);
 
         return ($returnId ? (int) $result : (bool) $result);
     }
@@ -356,7 +356,7 @@ class CustomerCore extends ObjectModel
     {
         $key = (int) $idCustomer.'-'.(int) $idAddress;
         if (!array_key_exists($key, static::$_customerHasAddress)) {
-            static::$_customerHasAddress[$key] = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$_customerHasAddress[$key] = (bool) Db::readOnly()->getValue(
                 '
 			SELECT `id_address`
 			FROM `'._DB_PREFIX_.'address`
@@ -392,7 +392,7 @@ class CustomerCore extends ObjectModel
      */
     public static function getAddressesTotalById($idCustomer)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             '
 			SELECT COUNT(`id_address`)
 			FROM `'._DB_PREFIX_.'address`
@@ -407,7 +407,7 @@ class CustomerCore extends ObjectModel
      * @param string $query Searched string
      * @param int|null $limit Limit query results
      *
-     * @return array|bool|PDOStatement Corresponding customers
+     * @return array Corresponding customers
      * @throws PrestaShopDatabaseException
      *
      * @throws PrestaShopException
@@ -425,7 +425,7 @@ class CustomerCore extends ObjectModel
             $sql .= ' LIMIT 0, '.(int) $limit;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -433,13 +433,13 @@ class CustomerCore extends ObjectModel
      *
      * @param string $ip Searched string
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function searchByIp($ip)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             '
 		SELECT DISTINCT c.*
 		FROM `'._DB_PREFIX_.'customer` c
@@ -468,7 +468,7 @@ class CustomerCore extends ObjectModel
         }
 
         if (!isset(static::$_defaultGroupId[(int) $idCustomer])) {
-            static::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue(
+            static::$_defaultGroupId[(int) $idCustomer] = Db::readOnly()->getValue(
                 '
 				SELECT `id_default_group`
 				FROM `'._DB_PREFIX_.'customer`
@@ -494,7 +494,7 @@ class CustomerCore extends ObjectModel
             $cart = Context::getContext()->cart;
         }
         if (!$cart || !$cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) {
-            $idAddress = (int) Db::getInstance()->getValue(
+            $idAddress = (int) Db::readOnly()->getValue(
                 '
 				SELECT `id_address`
 				FROM `'._DB_PREFIX_.'address`
@@ -612,32 +612,25 @@ class CustomerCore extends ObjectModel
                 $obj->delete();
             }
         }
-        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'customer_group` WHERE `id_customer` = '.(int) $this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'message WHERE id_customer='.(int) $this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_customer='.(int) $this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'compare WHERE id_customer='.(int) $this->id);
+        $conn = Db::getInstance();
+        $conn->execute('DELETE FROM `'._DB_PREFIX_.'customer_group` WHERE `id_customer` = '.(int) $this->id);
+        $conn->execute('DELETE FROM '._DB_PREFIX_.'message WHERE id_customer='.(int) $this->id);
+        $conn->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_customer='.(int) $this->id);
+        $conn->execute('DELETE FROM '._DB_PREFIX_.'compare WHERE id_customer='.(int) $this->id);
 
-        $carts = Db::getInstance()->executes(
-            'SELECT id_cart
-															FROM '._DB_PREFIX_.'cart
-															WHERE id_customer='.(int) $this->id
-        );
+        $carts = $conn->getArray('SELECT id_cart FROM '._DB_PREFIX_.'cart WHERE id_customer='.(int) $this->id);
         if ($carts) {
             foreach ($carts as $cart) {
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart WHERE id_cart='.(int) $cart['id_cart']);
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart_product WHERE id_cart='.(int) $cart['id_cart']);
+                $conn->execute('DELETE FROM '._DB_PREFIX_.'cart WHERE id_cart='.(int) $cart['id_cart']);
+                $conn->execute('DELETE FROM '._DB_PREFIX_.'cart_product WHERE id_cart='.(int) $cart['id_cart']);
             }
         }
 
-        $cts = Db::getInstance()->executes(
-            'SELECT id_customer_thread
-															FROM '._DB_PREFIX_.'customer_thread
-															WHERE id_customer='.(int) $this->id
-        );
+        $cts = $conn->getArray('SELECT id_customer_thread FROM '._DB_PREFIX_.'customer_thread WHERE id_customer='.(int) $this->id);
         if ($cts) {
             foreach ($cts as $ct) {
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_thread WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_message WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
+                $conn->execute('DELETE FROM '._DB_PREFIX_.'customer_thread WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
+                $conn->execute('DELETE FROM '._DB_PREFIX_.'customer_message WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
             }
         }
 
@@ -661,7 +654,7 @@ class CustomerCore extends ObjectModel
         $shareOrder = (bool) Context::getContext()->shop->getGroup()->share_order;
         $cacheId = 'Customer::getAddresses'.(int) $this->id.'-'.(int) $idLang.'-'.$shareOrder;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('DISTINCT a.*, cl.`name` AS `country`, s.`name` AS `state`, s.`iso_code` AS `state_iso`')
                     ->from('address', 'a')
@@ -706,7 +699,7 @@ class CustomerCore extends ObjectModel
         if ($ignoreGuest) {
             $sql->where('`is_guest` = 0');
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        $result = Db::readOnly()->getRow($sql);
 
         if (!$result) {
             return false;
@@ -759,7 +752,7 @@ class CustomerCore extends ObjectModel
         ];
 
         if ($id) {
-            $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $conn = Db::readOnly();
             $res = $conn->getRow(
                 (new DbQuery())
                     ->select('COUNT(`id_order`) AS `nb_orders`, SUM(`total_paid` / o.`conversion_rate`) AS `total_orders`')
@@ -794,7 +787,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -805,7 +798,7 @@ class CustomerCore extends ObjectModel
             return [];
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('m.*, l.`name` as `language`')
                 ->from('mail', 'm')
@@ -817,7 +810,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -828,7 +821,7 @@ class CustomerCore extends ObjectModel
             return [];
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('c.`id_connections`, c.`date_add`, COUNT(cp.`id_page`) AS `pages`')
                 ->select('TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress')
@@ -865,7 +858,7 @@ class CustomerCore extends ObjectModel
     {
         $cacheId = 'Customer::customerIdExistsStatic'.(int) $idCustomer;
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $result = (int) Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`id_customer`')
                     ->from('customer', 'c')
@@ -910,7 +903,7 @@ class CustomerCore extends ObjectModel
 
         if (!isset(static::$_customer_groups[$idCustomer])) {
             static::$_customer_groups[$idCustomer] = [];
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('cg.`id_group`')
                     ->from('customer_group', 'cg')
@@ -937,14 +930,14 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getBoughtProducts()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('orders', 'o')
@@ -1136,7 +1129,7 @@ class CustomerCore extends ObjectModel
             $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`id_customer` = '.(int) $idCustomer);
 
-            $hashedPassword = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            $hashedPassword = Db::readOnly()->getValue($sql);
 
             return password_verify($plaintextOrHashedPassword, $hashedPassword);
         }
@@ -1161,7 +1154,7 @@ class CustomerCore extends ObjectModel
             $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`id_customer` = '.(int) $idCustomer);
             $sql->where('`passwd` = \''.pSQL($hashedPassword).'\'');
-            $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            $result = (bool) Db::readOnly()->getValue($sql);
             Cache::store($cacheId, $result);
 
             return $result;
@@ -1234,7 +1227,8 @@ class CustomerCore extends ObjectModel
      */
     public function getOutstanding()
     {
-        $totalPaid = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $conn = Db::readOnly();
+        $totalPaid = (float) $conn->getValue(
             (new DbQuery())
                 ->select('SUM(oi.`total_paid_tax_incl`)')
                 ->from('order_invoice', 'oi')
@@ -1243,7 +1237,7 @@ class CustomerCore extends ObjectModel
                 ->where('o.`id_customer` = '.(int) $this->id)
         );
 
-        $totalRest = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $totalRest = (float) $conn->getValue(
             (new DbQuery())
                 ->select('SUM(op.`amount`)')
                 ->from('order_payment', 'op')
@@ -1267,7 +1261,8 @@ class CustomerCore extends ObjectModel
      */
     public function getBestCustomerRank()
     {
-        $totalPaid = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $conn = Db::readOnly();
+        $totalPaid = $conn->getValue(
             (new DbQuery())
                 ->select('SUM(`total_paid` / `conversion_rate`)')
                 ->from('orders')
@@ -1276,7 +1271,7 @@ class CustomerCore extends ObjectModel
         );
 
         if ($totalPaid) {
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $conn->getValue(
                 (new DbQuery())
                     ->select('SQL_CALC_FOUND_ROWS COUNT(*)')
                     ->from('orders')
@@ -1285,7 +1280,7 @@ class CustomerCore extends ObjectModel
                     ->groupBy('id_customer')
                     ->having('SUM(`total_paid` / `conversion_rate`) > ' . $totalPaid)
             );
-            return (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()') + 1;
+            return (int)$conn->getValue('SELECT FOUND_ROWS()') + 1;
         }
 
         return null;
@@ -1301,7 +1296,7 @@ class CustomerCore extends ObjectModel
      */
     public function getWsGroups()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cg.`id_group` AS `id`')
                 ->from('customer_group', 'cg')

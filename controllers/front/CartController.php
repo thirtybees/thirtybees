@@ -282,7 +282,7 @@ class CartControllerCore extends FrontController
      */
     protected function processDeleteProductInCart()
     {
-        $customizationProduct = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $customizationProduct = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('customization')

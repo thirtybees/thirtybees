@@ -119,7 +119,7 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getIdFromIdProduct($idProduct, $active = true)
     {
-        $id = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $id = (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
                 ->from('product_download')
@@ -157,7 +157,7 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getIdFromFilename($filename)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
                 ->from('product_download')
@@ -176,7 +176,7 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getFilenameFromIdProduct($idProduct)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`filename`')
                 ->from('product_download')
@@ -196,7 +196,7 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getFilenameFromFilename($filename)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`display_filename`')
                 ->from('product_download')

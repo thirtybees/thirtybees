@@ -1027,7 +1027,7 @@ class AdminMetaControllerCore extends AdminController
 					WHERE l.active = 1
 					  AND m.page IN (\''.implode('\', \'', $disallowControllers).'\')
 					  AND TRIM(IFNULL(ml.url_rewrite, "")) != ""';
-            if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
+            if ($results = Db::readOnly()->getArray($sql)) {
                 foreach ($results as $row) {
                     $tab['Files'][$row['iso_code']][] = $row['url_rewrite'];
                 }

@@ -109,7 +109,7 @@ class WarehouseProductLocationCore extends ObjectModel
 			AND wpl.id_warehouse = '.(int) $idWarehouse
         );
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        return Db::readOnly()->getValue($query);
     }
 
     /**
@@ -135,7 +135,7 @@ class WarehouseProductLocationCore extends ObjectModel
 			AND wpl.id_warehouse = '.(int) $idWarehouse
         );
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        return Db::readOnly()->getValue($query);
     }
 
     /**
@@ -158,13 +158,13 @@ class WarehouseProductLocationCore extends ObjectModel
     /**
      * @param int $idWarehouse
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getProducts($idWarehouse)
     {
-        return Db::getInstance()->executeS('SELECT DISTINCT id_product FROM '._DB_PREFIX_.'warehouse_product_location WHERE id_warehouse='.(int) $idWarehouse);
+        return Db::readOnly()->getArray('SELECT DISTINCT id_product FROM '._DB_PREFIX_.'warehouse_product_location WHERE id_warehouse='.(int) $idWarehouse);
     }
 }

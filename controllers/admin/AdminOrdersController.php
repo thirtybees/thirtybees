@@ -165,7 +165,7 @@ class AdminOrdersControllerCore extends AdminController
         );
 
         if (Country::isCurrentlyUsed('country', true)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+            $result = Db::readOnly()->getArray(
                 '
 			SELECT DISTINCT c.id_country, cl.`name`
 			FROM `'._DB_PREFIX_.'orders` o
@@ -2736,10 +2736,11 @@ class AdminOrdersControllerCore extends AdminController
 
         // If multiple product_quantity, the order details concern a product customized
         $productQuantity = 0;
+        $conn = Db::getInstance();
         if (is_array(Tools::getValue('product_quantity'))) {
             foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
                 // Update quantity of each customization
-                Db::getInstance()->update('customization', ['quantity' => (int) $qty], 'id_customization = '.(int) $idCustomization);
+                $conn->update('customization', ['quantity' => (int) $qty], 'id_customization = '.(int) $idCustomization);
                 // Calculate the real quantity of the product
                 $productQuantity += $qty;
             }
@@ -2759,7 +2760,7 @@ class AdminOrdersControllerCore extends AdminController
             foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
                 $qty = (int)$qty;
                 // Update quantity of each customization
-                Db::getInstance()->update(
+                $conn->update(
                     'customization',
                     [
                         'quantity' => $qty,

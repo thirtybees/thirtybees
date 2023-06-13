@@ -25,6 +25,7 @@ use DbQuery;
 use ObjectModel;
 use PrestaShopDatabaseException;
 use PrestaShopException;
+use Thirtybees\Core\Database\ReadOnlyConnection;
 use Thirtybees\Core\InitializationCallback;
 
 /**
@@ -93,7 +94,7 @@ class ConsentCore extends ObjectModel implements InitializationCallback
      */
     public static function getAllowedExtractors()
     {
-        $consents = static::getConsents(Db::getInstance(_PS_USE_SQL_SLAVE_));
+        $consents = static::getConsents(Db::readOnly());
         $groups = DataExtractor::getGroups();
         $allowed = [];
         foreach ($groups as $groupId => $group) {
@@ -109,23 +110,21 @@ class ConsentCore extends ObjectModel implements InitializationCallback
     /**
      * Return all consents
      *
-     * @param Db $conn
+     * @param ReadOnlyConnection $conn
      *
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getConsents(Db $conn)
+    public static function getConsents(ReadOnlyConnection $conn)
     {
         $consents = [];
-        $result = $conn->executeS((new DbQuery())
+        $result = $conn->getArray((new DbQuery())
             ->select('identifier, consent')
             ->from(static::$definition['table'])
         );
-        if (is_array($result)) {
-            foreach ($result as $row) {
-                $consents[$row['identifier']] = (bool)$row['consent'];
-            }
+        foreach ($result as $row) {
+            $consents[$row['identifier']] = (bool)$row['consent'];
         }
         return $consents;
     }

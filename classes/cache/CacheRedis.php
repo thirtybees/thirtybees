@@ -195,7 +195,7 @@ class CacheRedisCore extends Cache
         $sql->where('`port` = '.(int) $port);
         $sql->where('`auth` = \''.pSQL($auth).'\'');
         $sql->where('`db` = '.(int) $db);
-        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql, false)) {
+        if (Db::readOnly()->getValue($sql)) {
             return false;
         }
 
@@ -225,7 +225,7 @@ class CacheRedisCore extends Cache
         $sql->select('*');
         $sql->from('redis_servers');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**

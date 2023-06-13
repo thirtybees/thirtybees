@@ -166,14 +166,14 @@ class ConnectionsSourceCore extends ObjectModel
     /**
      * @param int $idOrder
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrderSources($idOrder)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             '
 		SELECT cos.http_referer, cos.request_uri, cos.keywords, cos.date_add
 		FROM '._DB_PREFIX_.'orders o

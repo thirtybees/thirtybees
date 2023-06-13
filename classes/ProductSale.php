@@ -60,7 +60,7 @@ class ProductSaleCore
      */
     public static function getNbSales()
     {
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('COUNT(ps.`id_product`) AS `nb`')
                 ->from('product_sale', 'ps')
@@ -143,7 +143,7 @@ class ProductSaleCore
             $sql->limit((int) $nbProducts, (int) ($pageNumber * $nbProducts));
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = Db::readOnly()->getArray($sql);
 
         if ($orderBy === 'price') {
             Tools::orderbyPrice($result, $orderWay);
@@ -219,7 +219,7 @@ class ProductSaleCore
 		ORDER BY ps.quantity DESC
 		LIMIT '.(int) ($pageNumber * $nbProducts).', '.(int) $nbProducts;
 
-        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
+        if (!$result = Db::readOnly()->getArray($sql)) {
             return false;
         }
 
@@ -257,15 +257,16 @@ class ProductSaleCore
     public static function removeProductSale($idProduct, $qty = 1)
     {
         $totalSales = ProductSale::getNbrSales($idProduct);
+        $conn = Db::getInstance();
         if ($totalSales > 1) {
-            return Db::getInstance()->execute(
+            return $conn->execute(
                 '
 				UPDATE '._DB_PREFIX_.'product_sale
 				SET `quantity` = CAST(`quantity` AS SIGNED) - '.(int) $qty.', `sale_nbr` = CAST(`sale_nbr` AS SIGNED) - 1, `date_upd` = NOW()
 				WHERE `id_product` = '.(int) $idProduct
             );
         } elseif ($totalSales == 1) {
-            return Db::getInstance()->delete('product_sale', 'id_product = '.(int) $idProduct);
+            return $conn->delete('product_sale', 'id_product = '.(int) $idProduct);
         }
 
         return true;
@@ -281,7 +282,7 @@ class ProductSaleCore
      */
     public static function getNbrSales($idProduct)
     {
-        $result = Db::getInstance()->getRow('SELECT `sale_nbr` FROM '._DB_PREFIX_.'product_sale WHERE `id_product` = '.(int) $idProduct);
+        $result = Db::readOnly()->getRow('SELECT `sale_nbr` FROM '._DB_PREFIX_.'product_sale WHERE `id_product` = '.(int) $idProduct);
         if (empty($result) || !array_key_exists('sale_nbr', $result)) {
             return -1;
         }

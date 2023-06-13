@@ -138,7 +138,7 @@ class OrderInvoiceCore extends ObjectModel
             return false;
         }
 
-        $idOrderInvoice = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idOrderInvoice = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order_invoice`')
                 ->from('order_invoice')
@@ -161,7 +161,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public static function getByDateInterval($dateFrom, $dateTo)
     {
-        $orderInvoiceList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $orderInvoiceList = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('oi.*')
                 ->from('order_invoice', 'oi')
@@ -185,7 +185,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public static function getByStatus($idOrderState)
     {
-        $orderInvoiceList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $orderInvoiceList = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('oi.*')
                 ->from('order_invoice', 'oi')
@@ -209,7 +209,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public static function getByDeliveryDateInterval($dateFrom, $dateTo)
     {
-        $orderInvoiceList = Db::getInstance()->executeS(
+        $orderInvoiceList = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('oi.*')
                 ->from('order_invoice', 'oi')
@@ -248,7 +248,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public static function getCarrierId($idOrderInvoice)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_carrier`')
                 ->from('order_carrier')
@@ -419,7 +419,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function getProductsDetail()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail', 'od')
@@ -452,7 +452,7 @@ class OrderInvoiceCore extends ObjectModel
     public function useOneAfterAnotherTaxComputationMethod()
     {
         // if one of the order details use the tax computation method the display will be different
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('od.`tax_computation_method`')
                 ->from('order_detail_tax', 'odt')
@@ -568,7 +568,7 @@ class OrderInvoiceCore extends ObjectModel
         $shippingTaxAmount = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
 
         if (Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') || Carrier::useProportionateTax()) {
-            $shippingBreakdown = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $shippingBreakdown = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('t.`id_tax`, t.`rate`, oit.`amount` AS `total_amount`')
                     ->from('tax', 't')
@@ -639,7 +639,7 @@ class OrderInvoiceCore extends ObjectModel
 
         $wrappingTaxAmount = $this->total_wrapping_tax_incl - $this->total_wrapping_tax_excl;
 
-        $wrappingBreakdown = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $wrappingBreakdown = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('t.`id_tax`, t.`rate`, oit.`amount` AS `total_amount`')
                 ->from('tax', 't')
@@ -706,7 +706,7 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function getEcoTaxTaxesBreakdown()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`ecotax_tax_rate` AS `rate`, `ecotax` AS `ecotax_tax_excl`, `product_quantity`')
                 ->from('order_detail')
@@ -780,7 +780,7 @@ class OrderInvoiceCore extends ObjectModel
         );
         $query->where('oip1.id_order_invoice = '.$this->id);
 
-        $row = Db::getInstance()->getRow($query);
+        $row = Db::readOnly()->getRow($query);
 
         switch ($mod) {
             case static::TAX_EXCL:
@@ -839,7 +839,7 @@ class OrderInvoiceCore extends ObjectModel
         );
         $query->where('oip1.id_order_invoice = '.$this->id);
 
-        $invoices = Db::getInstance()->executeS($query);
+        $invoices = Db::readOnly()->getArray($query);
         if (!$invoices) {
             return [];
         }
@@ -870,7 +870,7 @@ class OrderInvoiceCore extends ObjectModel
         static $cache;
 
         if (!isset($cache[$this->id])) {
-            $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            $res = Db::readOnly()->getRow(
                 'SELECT SUM(sub.paid) paid, SUM(sub.to_paid) to_paid
 			FROM (
 				SELECT
@@ -1018,8 +1018,9 @@ class OrderInvoiceCore extends ObjectModel
      */
     protected function setProductImageInformations(&$product)
     {
+        $connection = Db::readOnly();
         if (isset($product['product_attribute_id']) && $product['product_attribute_id']) {
-            $idImage = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idImage = $connection->getValue(
                 (new DbQuery())
                     ->select('image_shop.`id_image`')
                     ->from('product_attribute_image', 'pai')
@@ -1029,7 +1030,7 @@ class OrderInvoiceCore extends ObjectModel
         }
 
         if (!isset($idImage) || !$idImage) {
-            $idImage = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $idImage = $connection->getValue(
                 (new DbQuery())
                     ->select('image_shop.`id_image`')
                     ->from('image', 'i')

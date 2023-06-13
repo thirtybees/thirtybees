@@ -664,9 +664,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 }
                 $query->where('sod.id_supply_order = '.(int) $id);
                 $query->orderBy('sod.id_supply_order_detail DESC');
-                $resource = Db::getInstance()->query($query);
+                $conn = Db::getInstance();
+                $resource = $conn->query($query);
                 // gets details
-                while ($row = Db::getInstance()->nextRow($resource)) {
+                while ($row = $conn->nextRow($resource)) {
                     echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $row)));
                 }
             }
@@ -1638,7 +1639,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $query->where('ps.`id_supplier` = '.(int) $supplyOrder->id_supplier);
 
         // gets items
-        $items = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $items = Db::readOnly()->getArray($query);
 
         // loads order currency
         $orderCurrency = new Currency($supplyOrder->id_currency);
@@ -2111,7 +2112,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         }
 
         $query->groupBy('p.`id_product`, pa.`id_product_attribute`');
-        $items = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $items = Db::readOnly()->getArray($query);
 
         foreach ($items as &$item) {
             $ids = explode('_', $item['id']);

@@ -859,7 +859,7 @@ class AdminShopControllerCore extends AdminController
 				LEFT JOIN  '._DB_PREFIX_.'shop s ON g.id_shop_group = s.id_shop_group
 				LEFT JOIN  '._DB_PREFIX_.'shop_url u ON u.id_shop = s.id_shop
 				ORDER BY g.name, s.name, u.domain';
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
         foreach ($results as $row) {
             $idShopGroup = $row['id_shop_group'];
             $idShop = $row['id_shop'];

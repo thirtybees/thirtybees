@@ -116,11 +116,9 @@ class PackCore extends Product
 					GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 					ORDER BY pa.`id_product_attribute`';
 
-                $combinations = Db::getInstance()->executeS($sql);
-                if (is_array($combinations)) {
-                    foreach ($combinations as $combination) {
-                        $p->name .= ' ' . $combination['group_name'] . '-' . $combination['attribute_name'];
-                    }
+                $combinations = Db::readOnly()->getArray($sql);
+                foreach ($combinations as $combination) {
+                    $p->name .= ' ' . $combination['group_name'] . '-' . $combination['attribute_name'];
                 }
             }
             $arrayResult[] = $p;
@@ -168,15 +166,13 @@ class PackCore extends Product
             ->from('pack')
             ->where('id_product_pack = ' . $idProduct)
             ->orderBy('id_product_item, id_product_attribute_item');
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-        if (is_array($result)) {
-            foreach ($result as $row) {
-                $content[] = [
-                    'id_product' => (int)$row['id_product'],
-                    'id_product_attribute' => (int)$row['id_product_attribute'],
-                    'quantity' => (int)$row['quantity']
-                ];
-            }
+        $result = Db::readOnly()->getArray($sql);
+        foreach ($result as $row) {
+            $content[] = [
+                'id_product' => (int)$row['id_product'],
+                'id_product_attribute' => (int)$row['id_product_attribute'],
+                'quantity' => (int)$row['quantity']
+            ];
         }
         return $content;
     }
@@ -265,7 +261,8 @@ class PackCore extends Product
 				AND product_shop.visibility IN ("both", "catalog")
 				GROUP BY a.`id_product_item`, a.`id_product_attribute_item`';
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $connection = Db::readOnly();
+        $result = $connection->getArray($sql);
 
         foreach ($result as &$line) {
             if (Combination::isFeatureActive() && isset($line['id_product_attribute_item']) && $line['id_product_attribute_item']) {
@@ -284,7 +281,7 @@ class PackCore extends Product
 				GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 				ORDER BY pa.`id_product_attribute`';
 
-                $attrName = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                $attrName = $connection->getArray($sql);
 
                 if (isset($attrName[0]['id_product_attribute_image']) && $attrName[0]['id_product_attribute_image']) {
                     $line['id_image'] = $attrName[0]['id_product_attribute_image'];
@@ -331,7 +328,7 @@ class PackCore extends Product
      * @param bool $full
      * @param int|null $limit
      *
-     * @return array|false|PDOStatement
+     * @return array
      * @throws PrestaShopException
      */
     public static function getPacksTable($idProduct, $idLang, $full = false, $limit = null)
@@ -340,7 +337,8 @@ class PackCore extends Product
             return [];
         }
 
-        $packs = Db::getInstance()->getValue(
+        $connection = Db::readOnly();
+        $packs = $connection->getValue(
             '
 		SELECT GROUP_CONCAT(a.`id_product_pack`)
 		FROM `' . _DB_PREFIX_ . 'pack` a
@@ -370,7 +368,7 @@ class PackCore extends Product
         if ($limit) {
             $sql .= ' LIMIT ' . (int)$limit;
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = $connection->getArray($sql);
         if (!$full) {
             return $result;
         }
@@ -429,7 +427,7 @@ class PackCore extends Product
             ->select("COUNT(1)")
             ->from('pack')
             ->where('id_product_item = ' . $idProduct);
-        return (bool)Db::getInstance()->getValue($sql);
+        return (bool)Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -464,7 +462,7 @@ class PackCore extends Product
         $sql = (new DbQuery())
             ->select(1)
             ->from('pack');
-        return (bool)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (bool)Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -483,8 +481,9 @@ class PackCore extends Product
     {
         $idAttributeItem = (int)$idAttributeItem ? (int)$idAttributeItem : Product::getDefaultAttribute((int)$idItem);
 
-        return Db::getInstance()->update('product', ['cache_is_pack' => 1], 'id_product = ' . (int)$idProduct) &&
-            Db::getInstance()->insert(
+        $conn = Db::getInstance();
+        return $conn->update('product', ['cache_is_pack' => 1], 'id_product = ' . (int)$idProduct) &&
+            $conn->insert(
                 'pack',
                 [
                     'id_product_pack' => (int)$idProduct,
@@ -634,14 +633,12 @@ class PackCore extends Product
             ->where("p.id_product_item = $idItem")
             ->where("p.id_product_attribute_item = $idAttributeItem");
 
-        $result = Db::getInstance()->executeS($query);
+        $result = Db::readOnly()->getArray($query);
         $ret = [];
-        if (is_array($result)) {
-            foreach ($result as $row) {
-                $packId = (int)$row['id_product_pack'];
-                $quantity = (int)$row['quantity'];
-                $ret[$packId] = $quantity;
-            }
+        foreach ($result as $row) {
+            $packId = (int)$row['id_product_pack'];
+            $quantity = (int)$row['quantity'];
+            $ret[$packId] = $quantity;
         }
         return $ret;
     }
@@ -695,12 +692,8 @@ class PackCore extends Product
             ->select('DISTINCT id_product')
             ->from('product_shop')
             ->where('pack_dynamic');
-        $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
-        $result = $conn->executeS($sql);
-        if (is_array($result))  {
-            return array_map('intval', array_column($result, 'id_product'));
-        } else {
-            return [];
-        }
+        $conn = Db::readOnly();
+        $result = $conn->getArray($sql);
+        return array_map('intval', array_column($result, 'id_product'));
     }
 }

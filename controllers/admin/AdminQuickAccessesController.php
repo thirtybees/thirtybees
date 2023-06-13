@@ -237,7 +237,7 @@ class AdminQuickAccessesControllerCore extends AdminController
         if (count($this->errors) <= 0) {
             $this->object = new $this->className();
             $this->copyFromPost($this->object, $this->table);
-            $exists = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $exists = Db::readOnly()->getValue(
                 (new DbQuery())
                 ->select('`id_quick_access`')
                 ->from('quick_access')

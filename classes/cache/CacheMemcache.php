@@ -341,7 +341,7 @@ class CacheMemcacheCore extends Cache
      */
     public static function getMemcachedServers()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM '._DB_PREFIX_.'memcached_servers', true, false);
+        return Db::readOnly()->getArray('SELECT * FROM '._DB_PREFIX_.'memcached_servers');
     }
 
     /**

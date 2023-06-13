@@ -811,7 +811,7 @@ class WebserviceRequestCore
             $OR[] = ' wsas.id_shop = '.(int) $id_shop.' ';
         }
         $sql .= ' AND ('.implode('OR', $OR).') ';
-        if (!Db::getInstance()->getValue($sql)) {
+        if (!Db::readOnly()->getValue($sql)) {
             $this->setError(403, 'No permission for this key on this shop', 132);
 
             return false;
@@ -1340,7 +1340,7 @@ class WebserviceRequestCore
                 }
 
                 $check = ' WHERE ('.implode('OR', $OR).') AND `'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'` = '.(int) $this->urlSegment[1];
-                if (!Db::getInstance()->getValue($sql.$check)) {
+                if (!Db::readOnly()->getValue($sql.$check)) {
                     $this->setError(404, 'This '.$this->resourceConfiguration['retrieveData']['className'].' ('.(int) $this->urlSegment[1].') does not exists on this shop', 131);
                 }
             }

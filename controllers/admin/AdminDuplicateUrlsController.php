@@ -152,7 +152,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         }
 
         $sql = 'SELECT `id_category` FROM `'._DB_PREFIX_.'category` WHERE `active` = 1';
-        $categories = Db::getInstance()->executeS($sql);
+        $categories = Db::readOnly()->getArray($sql);
         if (empty($categories)) {
             return [];
         }
@@ -185,7 +185,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         }
 
         $sql = 'SELECT `id_cms` FROM `'._DB_PREFIX_.'cms`';
-        $cmss = Db::getInstance()->executeS($sql);
+        $cmss = Db::readOnly()->getArray($sql);
         if (empty($cmss)) {
             return [];
         }
@@ -218,7 +218,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         }
 
         $sql = 'SELECT `id_cms_category` FROM `'._DB_PREFIX_.'cms_category`';
-        $categories = Db::getInstance()->executeS($sql);
+        $categories = Db::readOnly()->getArray($sql);
         if (empty($categories)) {
             return [];
         }
@@ -251,7 +251,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         }
 
         $sql = 'SELECT `id_supplier` FROM `'._DB_PREFIX_.'supplier`';
-        $suppliers = Db::getInstance()->executeS($sql);
+        $suppliers = Db::readOnly()->getArray($sql);
         if (empty($suppliers)) {
             return [];
         }
@@ -284,7 +284,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         }
 
         $sql = 'SELECT `id_manufacturer` FROM `'._DB_PREFIX_.'manufacturer`';
-        $manufacturers = Db::getInstance()->executeS($sql);
+        $manufacturers = Db::readOnly()->getArray($sql);
         if (empty($manufacturers)) {
             return [];
         }

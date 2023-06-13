@@ -91,7 +91,7 @@ class FeatureValueCore extends ObjectModel
      */
     public static function getFeatureValues($idFeature)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('feature_value')
@@ -113,7 +113,7 @@ class FeatureValueCore extends ObjectModel
      */
     public static function getFeatureValuesWithLang($idLang, $idFeature, $custom = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('v.*, vl.*, COALESCE(NULLIF(vl.displayable, ""), vl.value) AS value')
                 ->from('feature_value', 'v')
@@ -149,7 +149,7 @@ class FeatureValueCore extends ObjectModel
         $query->where('vl.`id_feature_value` = '.(int) $id_feature_value);
         $query->orderBy('vl.`id_lang`, vl.`id_feature_value`');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        return Db::readOnly()->getArray($query);
     }
 
     /**
@@ -165,7 +165,7 @@ class FeatureValueCore extends ObjectModel
     public static function addFeatureValueImport($idFeature, $value, $idLang)
     {
 
-        $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $idFeatureValue = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('fv.`id_feature_value`')
                 ->from('feature_value', 'fv')
@@ -294,7 +294,7 @@ class FeatureValueCore extends ObjectModel
         }
 
         $id = (int) $this->id;
-        if (!$movedFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        if (!$movedFeatureValue = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`position`, `id_feature_value`')
                 ->from('feature_value')
@@ -306,14 +306,15 @@ class FeatureValueCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->update(
+        $conn = Db::getInstance();
+        return ($conn->update(
                 'feature_value',
                 [
                     'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
                 ],
                 '`position`'.($way ? '> '.(int) $movedFeatureValue['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedFeatureValue['position'].' AND `position` >= '.(int) $position)
             )
-            && Db::getInstance()->update(
+            && $conn->update(
                 'feature_value',
                 [
                     'position' => (int) $position,
@@ -354,7 +355,7 @@ class FeatureValueCore extends ObjectModel
      */
     public static function getHighestPosition($idFeature)
     {
-        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $position = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`)')
                 ->from('feature_value')

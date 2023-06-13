@@ -424,7 +424,7 @@ class AdminStockCoverControllerCore extends AdminController
         $query->where('o.valid = 1');
         $query->where('os.logable = 1 AND os.delivery = 1 AND os.shipped = 1');
 
-        $quantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $quantity = Db::readOnly()->getValue($query);
 
         return $quantity;
     }

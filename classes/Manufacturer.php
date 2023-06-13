@@ -187,7 +187,7 @@ class ManufacturerCore extends ObjectModel
      *
      * @param bool $groupBy
      *
-     * @return false|array Manufacturers
+     * @return array Manufacturers
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -204,7 +204,8 @@ class ManufacturerCore extends ObjectModel
             $allGroup = true;
         }
 
-        $manufacturers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $conn = Db::readOnly();
+        $manufacturers = $conn->getArray(
             (new DbQuery())
                 ->select('m.*, ml.`description`, ml.`short_description`')
                 ->from('manufacturer', 'm')
@@ -216,9 +217,6 @@ class ManufacturerCore extends ObjectModel
                 ->orderBy('m.`name` ASC')
                 ->limit($p ? (int) $n : 0, $p ? ((int) $p - 1) * (int) $n : 0)
         );
-        if ($manufacturers === false) {
-            return false;
-        }
 
         if ($getNbProducts) {
             $sqlGroups = '';
@@ -233,7 +231,7 @@ class ManufacturerCore extends ObjectModel
                 ->leftJoin('category_product', 'cp', 'cp.`id_category` = cg.`id_category`')
                 ->where('p.`id_product` = cp.`id_product`')
                 ->where('cg.`id_group` '.$sqlGroups);
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $results = $conn->getArray(
                 (new DbQuery())
                     ->select('p.`id_manufacturer`, COUNT(DISTINCT p.`id_product`) AS `nb_products`')
                     ->from('product', 'p')
@@ -247,7 +245,7 @@ class ManufacturerCore extends ObjectModel
             );
 
             $counts = [];
-            if (is_array($results) && !empty($results)) {
+            if (!empty($results)) {
                 foreach ($results as $result) {
                     $counts[(int) $result['id_manufacturer']] = (int) $result['nb_products'];
                 }
@@ -283,7 +281,7 @@ class ManufacturerCore extends ObjectModel
     public static function getNameById($idManufacturer)
     {
         if (!isset(static::$cacheName[$idManufacturer])) {
-            static::$cacheName[$idManufacturer] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$cacheName[$idManufacturer] = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('name')
                     ->from('manufacturer')
@@ -305,7 +303,7 @@ class ManufacturerCore extends ObjectModel
      */
     public static function getIdByName($name)
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $result = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_manufacturer`')
                 ->from('manufacturer')
@@ -377,6 +375,7 @@ class ManufacturerCore extends ObjectModel
         $sqlGroups = count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1';
 
         /* Return only the number of products */
+        $connection = Db::readOnly();
         if ($getTotal) {
             $categoryGroupSql = (new DbQuery())
                 ->select('1')
@@ -385,7 +384,7 @@ class ManufacturerCore extends ObjectModel
                 ->join($activeCategory ? 'INNER JOIN `'._DB_PREFIX_.'category` ca ON (cp.`id_category` = ca.`id_category` AND ca.`active` = 1)' : '')
                 ->where('p.`id_product` = cp.`id_product`')
                 ->where('cg.`id_group` '.$sqlGroups);
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $result = $connection->getArray(
                 (new DbQuery())
                     ->select('p.`id_product`')
                     ->from('product', 'p')
@@ -450,7 +449,7 @@ class ManufacturerCore extends ObjectModel
         $sql->groupBy('p.`id_product`');
         $sql->orderBy($aliasWithDot.'`'.bqSQL($orderBy).'` '.pSQL($orderWay));
         $sql->limit((int) $n, ((int) $p - 1) * (int) $n);
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $result = $connection->getArray($sql);
 
         if (!$result) {
             return false;
@@ -475,7 +474,7 @@ class ManufacturerCore extends ObjectModel
      */
     public static function manufacturerExists($idManufacturer)
     {
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`id_manufacturer`')
                 ->from('manufacturer', 'm')
@@ -555,7 +554,7 @@ class ManufacturerCore extends ObjectModel
             $front = false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('p.`id_product`, pl.`name`')
                 ->from('product', 'p')
@@ -570,14 +569,14 @@ class ManufacturerCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool|PDOStatement
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getAddresses($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.*, cl.`name` AS `country`, s.`name` AS `state`')
                 ->from('address', 'a')
@@ -597,7 +596,7 @@ class ManufacturerCore extends ObjectModel
      */
     public function getWsAddresses()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.`id_address` AS `id`')
                 ->from('address', 'a')
@@ -623,7 +622,8 @@ class ManufacturerCore extends ObjectModel
             $ids[] = (int) $id['id'];
         }
 
-        $result1 = Db::getInstance()->update(
+        $conn = Db::getInstance();
+        $result1 = $conn->update(
             'address',
             [
                 'id_manufacturer' => 0,
@@ -633,7 +633,7 @@ class ManufacturerCore extends ObjectModel
 
         $result2 = true;
         if (count($ids)) {
-            $result2 = Db::getInstance()->update(
+            $result2 = $conn->update(
                 'address',
                 [
                     'id_customer'     => 0,
@@ -674,7 +674,7 @@ class ManufacturerCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_address`')
                 ->from('address')

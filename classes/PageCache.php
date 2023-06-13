@@ -166,6 +166,7 @@ class PageCacheCore
     {
         $keysToInvalidate = [];
 
+        $conn = Db::getInstance();
         if ($entityType === 'product') {
             // Refresh the homepage
             $keysToInvalidate = array_merge(
@@ -173,7 +174,7 @@ class PageCacheCore
                 static::getKeysToInvalidate('index')
             );
 
-            Db::getInstance()->delete(
+            $conn->delete(
                 'page_cache',
                 '`entity_type` = \'index\''
             );
@@ -187,7 +188,7 @@ class PageCacheCore
                             $keysToInvalidate,
                             static::getKeysToInvalidate('category', $idCategory)
                         );
-                        Db::getInstance()->delete(
+                        $conn->delete(
                             'page_cache',
                             '`entity_type` = \'category\' AND `id_entity` = '.(int) $idCategory
                         );
@@ -199,7 +200,7 @@ class PageCacheCore
                     $keysToInvalidate,
                     static::getKeysToInvalidate('category')
                 );
-                 Db::getInstance()->delete(
+                 $conn->delete(
                     'page_cache',
                     '`entity_type` = \'category\''
                 );
@@ -210,7 +211,7 @@ class PageCacheCore
             $keysToInvalidate,
             static::getKeysToInvalidate($entityType, $idEntity)
         );
-        Db::getInstance()->delete(
+        $conn->delete(
             'page_cache',
             '`entity_type` = \''.pSQL($entityType).'\''.($idEntity ? ' AND `id_entity` = '.(int) $idEntity : '')
         );
@@ -257,10 +258,7 @@ class PageCacheCore
             $sql->where('`id_entity` = '.(int) $idEntity);
         }
 
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-        if (!is_array($results)) {
-            return [];
-        }
+        $results = Db::readOnly()->getArray($sql);
 
         return array_column($results, 'cache_hash');
     }

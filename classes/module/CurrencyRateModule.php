@@ -145,7 +145,7 @@ abstract class CurrencyRateModuleCore extends Module
             $sql->where('c.`deleted` = 0');
         }
 
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $results = Db::readOnly()->getArray($sql);
 
         if (!$results) {
             return false;
@@ -245,7 +245,7 @@ abstract class CurrencyRateModuleCore extends Module
         $sql->where('ms.`id_shop` = '.(int) Context::getContext()->shop->id);
         $sql->where('h.`name` = \'actionRetrieveCurrencyRates\'');
 
-        return Db::getInstance()->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -367,7 +367,7 @@ abstract class CurrencyRateModuleCore extends Module
         $sql->from('currency_module');
         $sql->where('`id_currency` = '.(int) $idCurrency);
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -381,13 +381,14 @@ abstract class CurrencyRateModuleCore extends Module
      */
     public static function setModule($idCurrency, $idModule)
     {
-        Db::getInstance()->delete(
+        $conn = Db::getInstance();
+        $conn->delete(
             'currency_module',
             '`id_currency` = '.(int) $idCurrency,
             1,
             false
         );
-        Db::getInstance()->insert(
+        $conn->insert(
             'currency_module',
             [
                 'id_currency' => (int) $idCurrency,

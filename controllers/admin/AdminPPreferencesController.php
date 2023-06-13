@@ -346,9 +346,10 @@ class AdminPPreferencesControllerCore extends AdminController
             $sql = 'UPDATE `'._DB_PREFIX_.'product` SET `advanced_stock_management` = 0 WHERE
 			`advanced_stock_management` = 1 AND (`id_shop_default` = '.implode(' OR `id_shop_default` = ', $idShopList).')';
 
-            Db::getInstance()->execute($sqlShop);
-            Db::getInstance()->execute($sqlStock);
-            Db::getInstance()->execute($sql);
+            $conn = Db::getInstance();
+            $conn->execute($sqlShop);
+            $conn->execute($sqlStock);
+            $conn->execute($sql);
         }
 
         if (Tools::getIsset('PS_CATALOG_MODE')) {

@@ -112,7 +112,8 @@ class ProductAttributeCore extends ObjectModel
     public function delete()
     {
         if (!$this->hasMultishopEntries() || Shop::getContext() == Shop::CONTEXT_ALL) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $conn = Db::readOnly();
+            $result = $conn->getArray(
                 (new DbQuery())
                     ->select('`id_product_attribute`')
                     ->from('product_attribute_combination')
@@ -122,7 +123,7 @@ class ProductAttributeCore extends ObjectModel
 
             foreach ($result as $row) {
                 $combination = new Combination($row['id_product_attribute']);
-                $newRequest = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                $newRequest = $conn->getArray(
                     (new DbQuery())
                         ->select('`id_product`, `default_on`')
                         ->from('product_attribute')
@@ -137,7 +138,7 @@ class ProductAttributeCore extends ObjectModel
             }
 
             foreach ($products as $product) {
-                $idProductAttribute = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                $idProductAttribute = (int) $conn->getValue(
                     (new DbQuery())
                         ->select('`id_product_attribute`')
                         ->from('product_attribute')
@@ -224,7 +225,7 @@ class ProductAttributeCore extends ObjectModel
             return [];
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
             ->select('DISTINCT ag.*, agl.*, a.`id_attribute`, al.`name`, agl.`name` AS `attribute_group`')
             ->from('attribute_group', 'ag')
@@ -253,7 +254,7 @@ class ProductAttributeCore extends ObjectModel
             return [];
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = Db::readOnly()->getValue(
             (new DbQuery())
             ->select('COUNT(*)')
             ->from('attribute_group', 'ag')
@@ -337,7 +338,7 @@ class ProductAttributeCore extends ObjectModel
      */
     public function isColorAttribute()
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('ag.`group_type`')
                 ->from('attribute_group', 'ag')
@@ -357,7 +358,7 @@ class ProductAttributeCore extends ObjectModel
      */
     public static function getAttributeMinimalQty($idProductAttribute)
     {
-        $minimalQuantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $minimalQuantity = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`minimal_quantity`')
                 ->from('product_attribute_shop', 'pas')
@@ -389,7 +390,7 @@ class ProductAttributeCore extends ObjectModel
             $idAttributeGroup = (int) $this->id_attribute_group;
         }
 
-        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$res = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('a.`id_attribute`, a.`position`, a.`id_attribute_group`')
                 ->from('attribute', 'a')
@@ -412,7 +413,8 @@ class ProductAttributeCore extends ObjectModel
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
 
-        $res1 = Db::getInstance()->update(
+        $conn = Db::getInstance();
+        $res1 = $conn->update(
             'attribute',
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
@@ -420,7 +422,7 @@ class ProductAttributeCore extends ObjectModel
             '`position`'.($way ? '> '.(int) $movedAttribute['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedAttribute['position'].' AND `position` >= '.(int) $position).' AND `id_attribute_group`='.(int) $movedAttribute['id_attribute_group']
         );
 
-        $res2 = Db::getInstance()->update(
+        $res2 = $conn->update(
             'attribute',
             [
                 'position' => (int) $position,
@@ -444,7 +446,8 @@ class ProductAttributeCore extends ObjectModel
      */
     public function cleanPositions($idAttributeGroup, $useLastAttribute = true)
     {
-        Db::getInstance()->execute('SET @i = -1', false);
+        $conn = Db::getInstance();
+        $conn->execute('SET @i = -1', false);
         $sql = 'UPDATE `'._DB_PREFIX_.'attribute` SET `position` = @i:=@i+1 WHERE';
 
         if ($useLastAttribute) {
@@ -453,7 +456,7 @@ class ProductAttributeCore extends ObjectModel
 
         $sql .= ' `id_attribute_group` = '.(int) $idAttributeGroup.' ORDER BY `position` ASC';
 
-        return Db::getInstance()->execute($sql);
+        return $conn->execute($sql);
     }
 
     /**
@@ -469,7 +472,7 @@ class ProductAttributeCore extends ObjectModel
      */
     public static function getHigherPosition($idAttributeGroup)
     {
-        $position = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $position = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('MAX(`position`)')
                 ->from('attribute')

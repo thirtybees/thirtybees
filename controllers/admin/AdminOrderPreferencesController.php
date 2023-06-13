@@ -225,7 +225,7 @@ class AdminOrderPreferencesControllerCore extends AdminController
         $sql->select('`id_cms`');
         $sql->from('cms');
         $sql->where('`id_cms` = '.Tools::getIntValue('PS_CONDITIONS_CMS_ID'));
-        if (Tools::getValue('PS_CONDITIONS') && (Tools::getValue('PS_CONDITIONS_CMS_ID') == 0 || !Db::getInstance()->getValue($sql))) {
+        if (Tools::getValue('PS_CONDITIONS') && (Tools::getValue('PS_CONDITIONS_CMS_ID') == 0 || !Db::readOnly()->getValue($sql))) {
             $this->errors[] = Tools::displayError('Assign a valid CMS page if you want it to be read.');
         }
     }

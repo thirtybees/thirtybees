@@ -124,7 +124,7 @@ class CustomizationCore extends ObjectModel
      */
     public static function getReturnedCustomizations($idOrder)
     {
-        if (($result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (($result = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('ore.`id_order_return`, ord.`id_order_detail`, ord.`id_customization`, ord.`product_quantity`')
             ->from('order_return', 'ore')
@@ -152,7 +152,7 @@ class CustomizationCore extends ObjectModel
      */
     public static function getOrderedCustomizations($idCart)
     {
-        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!$result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_customization`, `quantity`')
                 ->from('customization')
@@ -201,7 +201,7 @@ class CustomizationCore extends ObjectModel
             $idShop = (int) Context::getContext()->shop->id;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        $result = Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`name`')
                 ->from('customization_field_lang')
@@ -234,7 +234,7 @@ class CustomizationCore extends ObjectModel
         }
 
         if (!empty($inValues)) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $results = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`id_customization`, `id_product`, `quantity`, `quantity_refunded`, `quantity_returned`')
                     ->from('customization')
@@ -261,7 +261,7 @@ class CustomizationCore extends ObjectModel
     {
         $quantity = [];
 
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $results = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_product`, `id_product_attribute`, SUM(`quantity`) AS quantity')
                 ->from('customization')
@@ -300,7 +300,7 @@ class CustomizationCore extends ObjectModel
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_customization_field`')
                 ->from('customization_field')
@@ -317,7 +317,7 @@ class CustomizationCore extends ObjectModel
     {
         $id = (int) $this->id;
         if ($id) {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray((new DbQuery())
+            return Db::readOnly()->getArray((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
@@ -339,7 +339,7 @@ class CustomizationCore extends ObjectModel
     {
         $id = (int) $this->id;
         if ($id) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray((new DbQuery())
+            $results = Db::readOnly()->getArray((new DbQuery())
                 ->select('`id_customization_field`, `value`')
                 ->from('customization_field', 'cf')
                 ->leftJoin('customized_data', 'cd', 'cf.`id_customization_field` = cd.`index`')
@@ -369,9 +369,10 @@ class CustomizationCore extends ObjectModel
 
             return false;
         }
-        Db::getInstance()->delete('customized_data', 'id_customization = '.(int) $this->id.' AND type = 1');
+        $conn = Db::getInstance();
+        $conn->delete('customized_data', 'id_customization = '.(int) $this->id.' AND type = 1');
         foreach ($values as $value) {
-            if (!Db::getInstance()->insert(
+            if (!$conn->insert(
                 'customized_data',
                 [
                     'id_customization' => $this->id,

@@ -747,7 +747,7 @@ class AdminStockManagementControllerCore extends AdminController
 							LEFT JOIN '._DB_PREFIX_.'attribute_group_lang agl ON (agl.`id_attribute_group` = atr.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang.')'
                         );
                         $query->where('a.`id_product_attribute` = '.$idProductAttribute);
-                        $name = Db::getInstance()->getValue($query);
+                        $name = Db::readOnly()->getValue($query);
                         $p = new Product($idProduct, false, $idLang);
                         $defaultWholesalePrice = $combination->wholesale_price > 0 ? $combination->wholesale_price : $p->wholesale_price;
                     }

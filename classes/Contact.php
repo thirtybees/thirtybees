@@ -111,7 +111,7 @@ class ContactCore extends ObjectModel
      */
     public static function getContacts($idLang, $onlyActive = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('contact', 'c')
@@ -134,7 +134,7 @@ class ContactCore extends ObjectModel
      */
     public static function getCategoriesContacts()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('cl.*')
                 ->from('contact', 'ct')

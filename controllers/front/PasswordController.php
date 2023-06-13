@@ -183,7 +183,7 @@ class PasswordControllerCore extends FrontController
         $token = Tools::getValue('token');
         $idCustomer = Tools::getIntValue('id_customer');
         if ($token && $idCustomer) {
-            $email = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            $email = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('c.`email`')
                     ->from('customer', 'c')

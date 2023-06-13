@@ -629,17 +629,18 @@ class AdminCarriersControllerCore extends AdminController
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
+        $conn = Db::getInstance();
         if ($delete) {
-            Db::getInstance()->delete('carrier_group', '`id_carrier` = '.(int) $idCarrier);
+            $conn->delete('carrier_group', '`id_carrier` = '.(int) $idCarrier);
         }
-        $groups = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $groups = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('`id_group`')
             ->from('group')
         );
         foreach ($groups as $group) {
             if (Tools::getIsset('groupBox') && in_array($group['id_group'], Tools::getValue('groupBox'))) {
-                Db::getInstance()->insert(
+                $conn->insert(
                     'carrier_group',
                     [
                         'id_group'   => (int) $group['id_group'],

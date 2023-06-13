@@ -255,7 +255,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
      *
      * @param bool $activeOnly Filter employee by active status
      *
-     * @return array|false Employees or false
+     * @return array Employees
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -270,7 +270,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
         }
         $sql->orderBy('`lastname` ASC');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -282,7 +282,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
      */
     public static function employeeExists($email)
     {
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        return (bool) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_employee`')
                 ->from('employee')
@@ -309,7 +309,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
             $sql->where('`active` = 1');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
+        return Db::readOnly()->getArray($sql);
     }
 
     /**
@@ -543,7 +543,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
         if ($activeOnly) {
             $sql->where('`active` = 1');
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        $result = Db::readOnly()->getRow($sql);
 
         if (!$result) {
             return false;
@@ -632,7 +632,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
             $sql->where('`active` = 1');
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -695,7 +695,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
         $sql->where('`active` = 1');
         $sql->where('`passwd` = \''.pSQL($hashedPassword).'\'');
 
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (bool) Db::readOnly()->getValue($sql);
     }
 
     /**
@@ -720,7 +720,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
      */
     public function favoriteModulesList()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('module')
                 ->from('module_preference')

@@ -171,7 +171,7 @@ class StockCore extends ObjectModel
             return false;
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return (bool)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_stock`')
                 ->from('stock')
@@ -179,8 +179,6 @@ class StockCore extends ObjectModel
                 ->where('`id_product` = '.(int) $idProduct)
                 ->where((int) $idProductAttribute ? '`id_product_attribute` = '.$idProductAttribute : '')
         );
-
-        return (is_array($result) && !empty($result) ? true : false);
     }
 
     /**
@@ -193,17 +191,13 @@ class StockCore extends ObjectModel
     {
         // if combinations
         if ((int) $this->id_product_attribute > 0) {
-            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $rows = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('reference, ean13, upc')
                     ->from('product_attribute')
                     ->where('id_product = '.(int) $this->id_product)
                     ->where('id_product_attribute = '.(int) $this->id_product_attribute)
             );
-
-            if (!is_array($rows)) {
-                return;
-            }
 
             foreach ($rows as $row) {
                 $this->reference = $row['reference'];

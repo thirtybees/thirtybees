@@ -68,7 +68,7 @@ class QuickAccessCore extends ObjectModel
      */
     public static function getQuickAccesses($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from(bqSQL(static::$definition['table']), 'qa')

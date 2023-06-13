@@ -165,7 +165,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     /**
      * Get order taxes summary
      *
-     * @return array|bool|PDOStatement
+     * @return array
      * @throws PrestaShopDatabaseException
      *
      * @throws PrestaShopException
@@ -180,7 +180,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $query->where('`id_supply_order` = '.(int) $this->supply_order->id);
         $query->groupBy('`tax_rate`');
 
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $results = Db::readOnly()->getArray($query);
 
         $decimals = 0;
         if ($this->currency->decimals) {

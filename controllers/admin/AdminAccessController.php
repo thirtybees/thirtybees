@@ -144,7 +144,7 @@ class AdminAccessControllerCore extends AdminController
 
         $modules = [];
         foreach ($profiles as $profile) {
-            $modules[$profile['id_profile']] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            $modules[$profile['id_profile']] = Db::readOnly()->getArray(
                 '
 				SELECT ma.`id_module`, m.`name`, ma.`view`, ma.`configure`, ma.`uninstall`
 				FROM '._DB_PREFIX_.'module_access ma

@@ -102,7 +102,7 @@ class RequestSqlCore extends ObjectModel
     public static function getRequestSql()
     {
         try {
-            if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            if (!$result = Db::readOnly()->getArray(
                 (new Dbquery())
                     ->select('*')
                     ->from(bqSQL(static::$definition['table']))
@@ -132,7 +132,7 @@ class RequestSqlCore extends ObjectModel
     public static function getRequestSqlById($id)
     {
         try {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            return Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`sql`')
                     ->from(bqSQL(static::$definition['table']))
@@ -225,7 +225,7 @@ class RequestSqlCore extends ObjectModel
         }
 
         try {
-            if (empty($this->_errors) && !Db::getInstance()->executeS($sql)) {
+            if (empty($this->_errors) && !Db::readOnly()->getArray($sql)) {
                 return false;
             }
         } catch (PrestaShopException $e) {
@@ -332,7 +332,7 @@ class RequestSqlCore extends ObjectModel
     {
         $tables = [];
         try {
-            $results = Db::getInstance()->executeS('SHOW TABLES');
+            $results = Db::readOnly()->getArray('SHOW TABLES');
         } catch (PrestaShopException $e) {
             return $tables;
         }
@@ -486,7 +486,7 @@ class RequestSqlCore extends ObjectModel
     public function getAttributesByTable($table)
     {
         try {
-            return Db::getInstance()->executeS('DESCRIBE '.pSQL($table));
+            return Db::readOnly()->getArray('DESCRIBE '.pSQL($table));
         } catch (PrestaShopException $e) {
             return [];
         }

@@ -940,7 +940,7 @@ class AdminCustomersControllerCore extends AdminController
 							JOIN '._DB_PREFIX_.'order_detail od ON (o.id_order = od.id_order)
 							WHERE product_id = cp.id_product AND o.valid = 1 AND o.id_customer = '.(int) $customer->id.'
 						)';
-        $interested = Db::getInstance()->executeS($sql);
+        $interested = Db::readOnly()->getArray($sql);
         $totalInterested = count($interested);
         for ($i = 0; $i < $totalInterested; $i++) {
             $product = new Product($interested[$i]['id_product'], false, $this->default_form_language, $interested[$i]['id_shop']);

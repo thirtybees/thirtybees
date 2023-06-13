@@ -81,7 +81,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->from('product_shop')
                 ->where('pack_dynamic')
                 ->where('id_product IN (' .implode(',', $productIds). ')');
-            $productIds = array_map('intval', array_column($conn->executeS($productIdsSql), 'id_product'));
+            $productIds = array_map('intval', array_column($conn->getArray($productIdsSql), 'id_product'));
         } else {
             $productIds = Pack::getDynamicPacks();
         }
@@ -99,7 +99,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             ->where("s.id_product IN ($productIds)");
 
         $currentQuantities = [];
-        foreach ($conn->executeS($currentStockSql) as $row) {
+        foreach ($conn->getArray($currentStockSql) as $row) {
             $productId = (int)$row['id_product'];
             $productAttributeId = (int)$row['id_product_attribute'];
             $shopId = (int)$row['id_shop'];
@@ -127,7 +127,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
 
         $cnt = 0;
         // update stock
-        foreach ($conn->executeS($dynamicStockSql) as $row) {
+        foreach ($conn->getArray($dynamicStockSql) as $row) {
             $productId = (int)$row['id_product'];
             $productAttributeId = (int)$row['id_product_attribute'];
             $shopId = (int)$row['id_shop'];
@@ -159,7 +159,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         // delete all residual stock
         if ($currentQuantities) {
             $ids = implode(',', array_column($currentQuantities, 'id'));
-            Db::getInstance()->delete('stock_available', "id_stock_available IN ($ids)");
+            $conn->delete('stock_available', "id_stock_available IN ($ids)");
         }
 
         return $cnt;
