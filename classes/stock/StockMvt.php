@@ -238,7 +238,7 @@ class StockMvtCore extends ObjectModel
      * @param int $idProduct
      * @param int $idProductAttribute Use 0 if the product does not have attributes
      *
-     * @return bool|array
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -258,12 +258,6 @@ class StockMvtCore extends ObjectModel
         }
         $query->orderBy('date_add DESC');
 
-        $res = Db::readOnly()->getArray($query);
-
-        if ($res != false) {
-            return $res['0'];
-        }
-
-        return false;
+        return Db::readOnly()->getRow($query);
     }
 }
