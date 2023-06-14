@@ -2996,7 +2996,7 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @return bool|array
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

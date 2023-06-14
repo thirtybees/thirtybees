@@ -276,7 +276,7 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param string $hash
      *
-     * @return array|bool|null
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

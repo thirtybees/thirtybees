@@ -574,7 +574,7 @@ class WarehouseCore extends ObjectModel
      *
      * @param int|null $idShop
      *
-     * @return array|bool id_warehouse or false
+     * @return array|false id_warehouse or false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

@@ -228,7 +228,7 @@ class InstallLanguages
     /**
      * Parse HTTP_ACCEPT_LANGUAGE and get first data matching list of available languages
      *
-     * @return bool|array
+     * @return array|false
      */
     public function detectLanguage()
     {

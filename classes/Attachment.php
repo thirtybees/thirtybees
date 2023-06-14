@@ -273,7 +273,7 @@ class AttachmentCore extends ObjectModel
      * @param int $idLang
      * @param array $list
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

@@ -1821,7 +1821,7 @@ class CartRuleCore extends ObjectModel
      * @param int $limit
      * @param string $searchCartRuleName
      *
-     * @return array|bool
+     * @return array|false
      * @throws PrestaShopDatabaseException
      *
      * @throws PrestaShopException

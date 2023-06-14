@@ -275,7 +275,7 @@ class ImageCore extends ObjectModel
      *
      * @param int $idProduct Product ID
      *
-     * @return array|bool result
+     * @return array|false result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

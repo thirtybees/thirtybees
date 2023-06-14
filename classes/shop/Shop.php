@@ -788,7 +788,7 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1391,7 +1391,7 @@ class ShopCore extends ObjectModel
      * @param bool $active
      * @param bool $delete
      *
-     * @return array|bool
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

@@ -903,7 +903,7 @@ class SearchCore
      * @param bool $useCookie
      * @param Context|null $context
      *
-     * @return array|bool|int
+     * @return array|false|int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

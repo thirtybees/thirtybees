@@ -557,7 +557,7 @@ class MediaCore
      * @param string $name
      * @param string|null $folder
      *
-     * @return bool|array
+     * @return array|false
      */
     public static function getJqueryPluginCSSPath($name, $folder = null)
     {

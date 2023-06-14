@@ -1302,7 +1302,7 @@ class WebserviceRequestCore
     }
 
     /**
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopException
      */
@@ -1708,7 +1708,7 @@ class WebserviceRequestCore
     }
 
     /**
-     * @return array|bool
+     * @return array|false
      */
     public function filterLanguage()
     {

@@ -720,7 +720,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * Get customer main gender
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

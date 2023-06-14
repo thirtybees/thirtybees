@@ -329,7 +329,7 @@ class ManufacturerCore extends ObjectModel
      * @param bool $activeCategory
      * @param Context|null $context
      *
-     * @return array|bool
+     * @return array|false|int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

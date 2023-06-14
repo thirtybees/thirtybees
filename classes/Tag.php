@@ -307,7 +307,7 @@ class TagCore extends ObjectModel
     /**
      * @param int $idProduct
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

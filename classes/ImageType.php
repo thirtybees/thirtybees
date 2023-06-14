@@ -334,7 +334,7 @@ class ImageTypeCore extends ObjectModel
      * @param string $type
      * @param int $order Deprecated.
      *
-     * @return bool|array
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

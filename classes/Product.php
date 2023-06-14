@@ -2280,7 +2280,7 @@ class ProductCore extends ObjectModel
      * @param bool $ending
      * @param Context|null $context
      *
-     * @return array|bool Special
+     * @return array|false Special
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2725,7 +2725,7 @@ class ProductCore extends ObjectModel
      * @param array $products
      * @param bool $haveStock
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -3386,7 +3386,7 @@ class ProductCore extends ObjectModel
      * @param int $productId
      * @param int|null $idShop
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -5787,7 +5787,7 @@ class ProductCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -6521,7 +6521,7 @@ class ProductCore extends ObjectModel
      * @param string $field
      * @param string $value
      *
-     * @return array|bool
+     * @return array|false
      */
     protected function _checkLabelField($field, $value)
     {
@@ -6610,7 +6610,7 @@ class ProductCore extends ObjectModel
      * @param int|bool $idLang
      * @param int|null $idShop
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

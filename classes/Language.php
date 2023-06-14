@@ -194,7 +194,7 @@ class LanguageCore extends ObjectModel
     /**
      * @param int $idLang
      *
-     * @return bool | array
+     * @return array|false
      */
     public static function getLanguage($idLang)
     {

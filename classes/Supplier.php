@@ -310,7 +310,7 @@ class SupplierCore extends ObjectModel
      * @param bool $active
      * @param bool $activeCategory
      *
-     * @return array|bool
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

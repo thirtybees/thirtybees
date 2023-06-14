@@ -97,7 +97,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Get list of request SQL
      *
-     * @return array|bool
+     * @return array|false
      */
     public static function getRequestSql()
     {
@@ -376,7 +376,7 @@ class RequestSqlCore extends ObjectModel
      * @param string $attr
      * @param array $from
      *
-     * @return array|bool
+     * @return array|false
      */
     public function cutAttribute($attr, $from)
     {
