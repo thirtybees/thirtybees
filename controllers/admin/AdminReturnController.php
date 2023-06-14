@@ -175,10 +175,9 @@ class AdminReturnControllerCore extends AdminController
         $order = new Order($this->object->id_order);
         $quantityDisplayed = [];
         // Customized products */
-        if ($returnedCustomizations = OrderReturn::getReturnedCustomizedProducts((int) ($this->object->id_order))) {
-            foreach ($returnedCustomizations as $returnedCustomization) {
-                $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] = isset($quantityDisplayed[(int) $returnedCustomization['id_order_detail']]) ? $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] + (int) $returnedCustomization['product_quantity'] : (int) $returnedCustomization['product_quantity'];
-            }
+        $returnedCustomizations = OrderReturn::getReturnedCustomizedProducts((int) ($this->object->id_order));
+        foreach ($returnedCustomizations as $returnedCustomization) {
+            $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] = isset($quantityDisplayed[(int) $returnedCustomization['id_order_detail']]) ? $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] + (int) $returnedCustomization['product_quantity'] : (int) $returnedCustomization['product_quantity'];
         }
 
         // Classic products

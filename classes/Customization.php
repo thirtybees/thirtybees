@@ -117,23 +117,21 @@ class CustomizationCore extends ObjectModel
     /**
      * @param int $idOrder
      *
-     * @return array|bool
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getReturnedCustomizations($idOrder)
     {
-        if (($result = Db::readOnly()->getArray(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('ore.`id_order_return`, ord.`id_order_detail`, ord.`id_customization`, ord.`product_quantity`')
             ->from('order_return', 'ore')
             ->innerJoin('order_return_detail', 'ord', 'ord.`id_order_return` = ore.`id_order_return`')
             ->where('ore.`id_order` = '.(int) $idOrder)
             ->where('ord.`id_customization` != 0')
-        )) === false) {
-            return false;
-        }
+        );
         $customizations = [];
         foreach ($result as $row) {
             $customizations[(int) ($row['id_customization'])] = $row;

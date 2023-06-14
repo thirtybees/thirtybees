@@ -246,9 +246,6 @@ class AttributeGroupCore extends ObjectModel
                     ->from('attribute')
                     ->where('`id_attribute_group` = '.(int) $this->id)
             );
-            if ($attributeIds === false) {
-                return false;
-            }
             /* Removing attributes to the found combinations */
             $toRemove = [];
             foreach ($attributeIds as $attribute) {

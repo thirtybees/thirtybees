@@ -6549,15 +6549,12 @@ class ProductCore extends ObjectModel
         ];
 
         /* Get customization field ids */
-        if (($result = Db::readOnly()->getArray(
+        $result = Db::readOnly()->getArray(
                 'SELECT `id_customization_field`, `type`
 			FROM `'._DB_PREFIX_.'customization_field`
 			WHERE `id_product` = '.(int) $this->id.'
 			ORDER BY `id_customization_field`'
-            )) === false
-        ) {
-            return false;
-        }
+        );
 
         if (empty($result)) {
             return true;
@@ -6691,20 +6688,16 @@ class ProductCore extends ObjectModel
         }
 
         $fields = $context->cart->getProductCustomization($this->id, null, true);
-        if (($requiredFields = $this->getRequiredCustomizableFields()) === false) {
-            return false;
-        }
+        $requiredFields = $this->getRequiredCustomizableFields();
 
         $fieldsPresent = [];
         foreach ($fields as $field) {
             $fieldsPresent[] = ['id_customization_field' => $field['index'], 'type' => $field['type']];
         }
 
-        if (is_array($requiredFields) && count($requiredFields)) {
-            foreach ($requiredFields as $requiredField) {
-                if (!in_array($requiredField, $fieldsPresent)) {
-                    return false;
-                }
+        foreach ($requiredFields as $requiredField) {
+            if (!in_array($requiredField, $fieldsPresent)) {
+                return false;
             }
         }
 

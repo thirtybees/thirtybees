@@ -73,7 +73,7 @@ class OrderReturnCore extends ObjectModel
     /**
      * @param int $idOrder
      *
-     * @return array|bool
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
