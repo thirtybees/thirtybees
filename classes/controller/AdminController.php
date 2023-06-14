@@ -939,7 +939,7 @@ class AdminControllerCore extends Controller
      * @param string|null $orderBy ORDER BY clause
      * @param string|null $orderWay Order way (ASC, DESC)
      * @param int $start Offset in LIMIT clause
-     * @param int|null $limit Row count in LIMIT clause
+     * @param int|false|null $limit Row count in LIMIT clause
      * @param int|bool $idLangShop
      *
      * @throws PrestaShopException
@@ -962,9 +962,9 @@ class AdminControllerCore extends Controller
             $useLimit = false;
         } elseif (empty($limit)) {
             if (isset($this->context->cookie->{$this->list_id.'_pagination'}) && $this->context->cookie->{$this->list_id.'_pagination'}) {
-                $limit = $this->context->cookie->{$this->list_id.'_pagination'};
+                $limit = (int)$this->context->cookie->{$this->list_id.'_pagination'};
             } else {
-                $limit = $this->_default_pagination;
+                $limit = (int)$this->_default_pagination;
             }
         }
 
