@@ -244,7 +244,7 @@ class DbCore implements ReadOnlyConnection
     {
         $error = $this->link->errorInfo();
 
-        return isset($error[1]) ? $error[1] : 0;
+        return isset($error[1]) ? (int)$error[1] : 0;
     }
 
     /**
@@ -425,20 +425,19 @@ class DbCore implements ReadOnlyConnection
      */
     public function query($sql)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
+        $sqlString = $this->getSqlString($sql);
 
-        $this->result = $this->link->query($sql);
+        $this->last_query = $sqlString;
+        $this->result = $this->link->query($sqlString);
 
-        if ($this->result === false && $this->getNumberError() == 2006) {
+        if ($this->result === false && $this->getNumberError() === 2006) {
             if ($this->connect()) {
-                $this->result = $this->link->query($sql);
+                $this->result = $this->link->query($sqlString);
             }
         }
 
         if ($this->result === false && $this->throwOnError) {
-            $this->displayError($sql);
+            $this->displayError($sqlString);
         }
 
         return $this->result;
@@ -518,41 +517,36 @@ class DbCore implements ReadOnlyConnection
      */
     public function executeS($sql, $array = true, $useCache = true)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
-        $this->result = false;
-        $this->last_query = $sql;
+        $sqlString = $this->getSqlString($sql);
 
         // This method must be used only with queries which display results
-        if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
+        if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sqlString)) {
             if ($this->throwOnError) {
-                throw new PrestaShopDatabaseException("Db::executeS method should be used for SELECT queries only.", $sql);
+                $this->last_query = $sqlString;
+                $this->result = false;
+                throw new PrestaShopDatabaseException("Db::executeS method should be used for SELECT queries only.", $sqlString);
             } else {
                 $callPoint = Tools::getCallPoint([Db::class]);
                 $error = 'Db::executeS method should be used for SELECT queries only. ';
                 $error .= 'Calling this method with other SQL statements will raise exception in the future. ';
                 $error .= 'Called from: ' . $callPoint['description'] . '. ';
-                $error .= 'Illegal SQL: [' . $sql . ']';
+                $error .= 'Illegal SQL: [' . $sqlString . ']';
                 trigger_error($error, E_USER_DEPRECATED);
-                return $this->execute($sql, $useCache);
+                return $this->execute($sqlString, $useCache);
             }
         }
 
-        $this->result = $this->query($sql);
+        $this->result = $this->query($sqlString);
 
         if (!$this->result) {
-            $result = false;
+            return false;
         } else {
             if (!$array) {
-                $result = $this->result;
+                return $this->result;
             } else {
-                $result = $this->getAll($this->result);
+                return $this->result->fetchAll(PDO::FETCH_ASSOC);
             }
         }
-
-        return $result;
     }
 
     /**
@@ -566,10 +560,6 @@ class DbCore implements ReadOnlyConnection
      */
     public function execute($sql, $useCache = true)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
-
         $this->result = $this->query($sql);
 
         return (bool)$this->result;
@@ -782,15 +772,11 @@ class DbCore implements ReadOnlyConnection
      */
     public function getRow($sql)
     {
-        if ($sql instanceof DbQuery) {
-            $sql = $sql->build();
-        }
+        $sqlString = $this->getSqlString($sql);
 
-        $sql = rtrim($sql, " \t\n\r\0\x0B;") . ' LIMIT 1';
-        $this->result = false;
-        $this->last_query = $sql;
+        $sqlString = rtrim($sqlString, " \t\n\r\0\x0B;") . ' LIMIT 1';
 
-        $this->result = $this->query($sql);
+        $this->result = $this->query($sqlString);
         if (!$this->result) {
             $result = false;
         } else {
@@ -1105,9 +1091,16 @@ class DbCore implements ReadOnlyConnection
      */
     public function getArray($sql): array
     {
-        $result = $this->executeS($sql);
-        return is_array($result)
-            ? $result
+        $sqlString = $this->getSqlString($sql);
+        // This method must be used only with queries which display results
+        if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sqlString)) {
+            $this->result = false;
+            $this->last_query = $sqlString;
+            throw new PrestaShopDatabaseException("Db::getArrray method can be used for SELECT queries only.", $sqlString);
+        }
+        $this->result = $this->query($sqlString);
+        return $this->result
+            ? $this->result->fetchAll(PDO::FETCH_ASSOC)
             : [];
     }
 
@@ -1305,8 +1298,23 @@ class DbCore implements ReadOnlyConnection
     public static function ds($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        static::getInstance()->executeS($sql, true, $useCache);
+        static::getInstance()->execute($sql);
         exit;
+    }
+
+    /**
+     * @param string|DbQuery $sql
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getSqlString($sql): string
+    {
+        if ($sql instanceof DbQuery) {
+            return $sql->build();
+        }
+
+        return (string)$sql;
     }
 
 
