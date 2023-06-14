@@ -504,8 +504,8 @@ class ManufacturerCore extends ObjectModel
         $result = true;
         foreach ($selection as $id) {
             $this->id = (int) $id;
-            $this->id_address = Manufacturer::getManufacturerAddress();
-            $result = $result && $this->delete();
+            $this->id_address = $this->getManufacturerAddress();
+            $result = $this->delete() && $result;
         }
 
         return $result;
@@ -664,17 +664,17 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @return bool|false|null|string
+     * @return int
      *
      * @throws PrestaShopException
      */
     protected function getManufacturerAddress()
     {
         if (!(int) $this->id) {
-            return false;
+            return 0;
         }
 
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_address`')
                 ->from('address')
