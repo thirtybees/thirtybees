@@ -244,14 +244,14 @@ class ProductAttributeCore extends ObjectModel
      * @param string $name
      * @param int $idLang
      *
-     * @return array|bool
+     * @return bool
      *
      * @throws PrestaShopException
      */
     public static function isAttribute($idAttributeGroup, $name, $idLang)
     {
         if (!Combination::isFeatureActive()) {
-            return [];
+            return false;
         }
 
         $result = Db::readOnly()->getValue(
