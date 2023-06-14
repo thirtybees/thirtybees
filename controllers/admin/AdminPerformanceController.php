@@ -453,12 +453,23 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function initFieldsetCCC()
     {
+        $cssMinifierWarning = '';
+        if (! Hook::getHookModuleExecList('actionMinifyCss')) {
+            $cssMinifierWarning = $this->l('You don\'t have any CSS Minification module installed. Combined CSS bundle will not be minified!');
+        }
+        $inlineJsMinifierWarning = '';
+        $jsMinifierWarning = '';
+        if (! Hook::getHookModuleExecList('actionMinifyJs')) {
+            $jsMinifierWarning = $this->l('You don\'t have any JS Minification module installed. Combined JS bundle will not be minified!');
+            $inlineJsMinifierWarning = $this->l('You don\'t have any JS Minification module installed!');
+        }
+
         $this->fields_form[3]['form'] = [
             'legend'      => [
                 'title' => $this->l('CCC (Combine, Compress and Cache)'),
                 'icon'  => 'icon-fullscreen',
             ],
-            'description' => $this->l('CCC allows you to reduce the loading time of your page. With these settings you will gain performance without even touching the code of your theme. Make sure, however, that your theme is compatible with thirty bees 1.0.x. Otherwise, CCC will cause problems.'),
+            'description' => $this->l('CCC allows you to reduce the loading time of your page. With these settings you will gain performance without even touching the code of your theme.'),
             'input'       => [
                 [
                     'type' => 'hidden',
@@ -467,6 +478,8 @@ class AdminPerformanceControllerCore extends AdminController
                 [
                     'type'   => 'switch',
                     'label'  => $this->l('Smart cache for CSS'),
+                    'hint'   => $this->l('All css files will be combined into single css bundle.'),
+                    'desc'   => $cssMinifierWarning,
                     'name'   => 'PS_CSS_THEME_CACHE',
                     'values' => [
                         [
@@ -485,6 +498,8 @@ class AdminPerformanceControllerCore extends AdminController
                     'type'   => 'switch',
                     'label'  => $this->l('Smart cache for JavaScript'),
                     'name'   => 'PS_JS_THEME_CACHE',
+                    'hint'   => $this->l('All javascript files will be combined into single javascript bundle.'),
+                    'desc'   => $jsMinifierWarning,
                     'values' => [
                         [
                             'id'    => 'PS_JS_THEME_CACHE_1',
@@ -502,6 +517,9 @@ class AdminPerformanceControllerCore extends AdminController
                     'type'   => 'switch',
                     'label'  => $this->l('Compress inline JavaScript in HTML'),
                     'name'   => 'PS_JS_HTML_THEME_COMPRESSION',
+                    'hint'   => $this->l('Javascript blocks in page body will be compressed'),
+                    'desc'   => $inlineJsMinifierWarning,
+                    'disabled' => !!$inlineJsMinifierWarning,
                     'values' => [
                         [
                             'id'    => 'PS_JS_HTML_THEME_COMPRESSION_1',

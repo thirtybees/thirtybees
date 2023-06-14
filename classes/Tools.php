@@ -2667,6 +2667,7 @@ class ToolsCore
     }
 
     /**
+     * @throws PrestaShopException
      * @deprecated as of 1.0.0 use Media::minifyHTML()
      */
     public static function minifyHTML($htmlContent)
@@ -2804,6 +2805,11 @@ class ToolsCore
     }
 
     /**
+     * @param string $html_content
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
      * @deprecated as of 1.0.0 use Media::packJSinHTML()
      */
     public static function packJSinHTML($html_content)
@@ -2814,6 +2820,11 @@ class ToolsCore
     }
 
     /**
+     * @param array $preg_matches
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
      * @deprecated as of 1.0.0 use Media::packJSinHTMLpregCallback()
      */
     public static function packJSinHTMLpregCallback($preg_matches)
@@ -2824,6 +2835,11 @@ class ToolsCore
     }
 
     /**
+     * @param string $js_content
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
      * @deprecated as of 1.0.0 use Media::packJS()
      */
     public static function packJS($js_content)
@@ -2851,6 +2867,13 @@ class ToolsCore
     }
 
     /**
+     * @param string $css_content
+     * @param bool $fileuri
+     *
+     * @return string|false
+     *
+     * @throws PrestaShopException
+     *
      * @deprecated 1.0.0 use Media::minifyCSS()
      */
     public static function minifyCSS($css_content, $fileuri = false)
@@ -2862,7 +2885,9 @@ class ToolsCore
 
     /**
      * @param array $matches
-     * @return bool|string
+     *
+     * @return string|false
+     *
      * @throws PrestaShopException
      */
     public static function replaceByAbsoluteURL($matches)

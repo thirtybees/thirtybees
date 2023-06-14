@@ -29,8 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use JSMin\JSMin;
-
 /**
  * Class MediaCore
  */
@@ -123,23 +121,20 @@ class MediaCore
      * @param string $htmlContent
      *
      * @return false|string
+     *
+     * @throws PrestaShopException
      */
     public static function minifyHTML($htmlContent)
     {
         if (strlen($htmlContent) > 0) {
-            //set an alphabetical order for args
-            // $html_content = preg_replace_callback(
-            // '/(<[a-zA-Z0-9]+)((\s*[a-zA-Z0-9]+=[\"\\\'][^\"\\\']*[\"\\\']\s*)*)>/',
-            // array('Media', 'minifyHTMLpregCallback'),
-            // $html_content,
-            // Media::getBackTrackLimit());
-
+            // replace UTF-8 encoding of a NO-BREAK SPACE  with html entity &nbsp;
             $htmlContent = str_replace(chr(194).chr(160), '&nbsp;', $htmlContent);
-            if (trim($minifiedContent = Minify_HTML::minify($htmlContent, ['cssMinifier', 'jsMinifier'])) != '') {
-                $htmlContent = $minifiedContent;
-            }
 
-            return $htmlContent;
+            // invoke minifier module
+            $minifiedContent = (string)Hook::getFirstResponse('actionMinifyHtml', [ 'html' => $htmlContent ]);
+            $minifiedContent = trim($minifiedContent);
+
+            return $minifiedContent ? $minifiedContent : $htmlContent;
         }
 
         return false;
@@ -168,10 +163,22 @@ class MediaCore
 
     /**
      * @param string $htmlContent
+     *
      * @return string
+     *
+     * @throws PrestaShopException
      */
     public static function packJSinHTML($htmlContent)
     {
+        // continue only if some javascript minification module is installed
+        static $enabled = null;
+        if (is_null($enabled)) {
+            $enabled = !!Hook::getHookModuleExecList('actionMinifyJs');
+        }
+        if (! $enabled) {
+            return $htmlContent;
+        }
+
         if (strlen($htmlContent) > 0) {
             $htmlContentCopy = $htmlContent;
             if (!preg_match('/'.Media::$pattern_keepinline.'/', $htmlContent)) {
@@ -216,6 +223,7 @@ class MediaCore
      * @param array $pregMatches
      *
      * @return string
+     * @throws PrestaShopException
      */
     public static function packJSinHTMLpregCallback($pregMatches)
     {
@@ -235,15 +243,16 @@ class MediaCore
      * @param string $jsContent
      *
      * @return string
+     *
+     * @throws PrestaShopException
      */
     public static function packJS($jsContent)
     {
         if (!empty($jsContent)) {
-            try {
-                $jsContent = JSMin::minify($jsContent);
-            } catch (Exception $e) {
-                trigger_error($e->getMessage(), E_USER_NOTICE);
-                return ';'.trim($jsContent, ';').';';
+            // invoke minifier module
+            $minifiedContent = (string)Hook::getFirstResponse('actionMinifyJs', [ 'js' => $jsContent ]);
+            if ($minifiedContent) {
+                return ';'.trim($minifiedContent, ';').';';
             }
         }
 
@@ -253,7 +262,7 @@ class MediaCore
     /**
      * @param array $matches
      *
-     * @return bool|string
+     * @return string|false
      *
      * @throws PrestaShopException
      */
@@ -598,7 +607,6 @@ class MediaCore
         $protocolLink = Tools::getCurrentUrlProtocolPrefix();
         //if cache_path not specified, set curent theme cache folder
         $cachePath = $cachePath ? $cachePath : _PS_THEME_DIR_.'cache/';
-        $cssSplitNeedRefresh = false;
 
         // group css files by media
         foreach ($cssFiles as $filename => $media) {
@@ -703,26 +711,29 @@ class MediaCore
      * @param bool $fileuri
      * @param array $importUrl
      *
-     * @return bool|string
+     * @return string|false
+     *
+     * @throws PrestaShopException
      */
     public static function minifyCSS($cssContent, $fileuri = false, &$importUrl = [])
     {
         Media::$current_css_file = $fileuri;
 
         if (strlen($cssContent) > 0) {
+            $minifiedContent = (string)Hook::getFirstResponse('actionMinifyCss', [
+                'css' => $cssContent,
+                'fileuri' => $fileuri,
+                'importUrl' => &$importUrl,
+            ]);
+            if ($minifiedContent) {
+                $cssContent = $minifiedContent;
+            }
+
             $limit = Media::getBackTrackLimit();
-            $cssContent = preg_replace('#/\*.*?\*/#s', '', $cssContent, $limit);
             $cssContent = preg_replace_callback(Media::$pattern_callback, ['Media', 'replaceByAbsoluteURL'], $cssContent, $limit);
-            $cssContent = preg_replace('#\s+#', ' ', $cssContent, $limit);
-            $cssContent = str_replace(["\t", "\n", "\r"], '', $cssContent);
-            $cssContent = str_replace(['; ', ': '], [';', ':'], $cssContent);
-            $cssContent = str_replace([' {', '{ '], '{', $cssContent);
-            $cssContent = str_replace(', ', ',', $cssContent);
-            $cssContent = str_replace(['} ', ' }', ';}'], '}', $cssContent);
-            $cssContent = str_replace([':0px', ':0em', ':0pt', ':0%'], ':0', $cssContent);
-            $cssContent = str_replace([' 0px', ' 0em', ' 0pt', ' 0%'], ' 0', $cssContent);
             $cssContent = str_replace('\'images_ie/', '\'images/', $cssContent);
             $cssContent = preg_replace_callback('#(AlphaImageLoader\(src=\')([^\']*\',)#s', ['Media', 'replaceByAbsoluteURL'], $cssContent);
+
             // Store all import url
             preg_match_all('#@(import|charset) .*?;#i', $cssContent, $m);
             for ($i = 0, $total = count($m[0]); $i < $total; $i++) {

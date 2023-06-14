@@ -239,7 +239,9 @@ function smarty_modifier_htmlentitiesUTF8($string)
 /**
  * @param string $tplOutput
  * @param Smarty_Internal_Template $smarty
+ *
  * @return string
+ * @throws PrestaShopException
  */
 function smartyMinifyHTML($tplOutput, $smarty)
 {
@@ -253,7 +255,10 @@ function smartyMinifyHTML($tplOutput, $smarty)
 /**
  * @param string $tplOutput
  * @param Smarty_Internal_Template $smarty
+ *
  * @return string
+ *
+ * @throws PrestaShopException
  */
 function smartyPackJSinHTML($tplOutput, $smarty)
 {
