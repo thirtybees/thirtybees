@@ -143,21 +143,19 @@ class CustomizationCore extends ObjectModel
     /**
      * @param int $idCart
      *
-     * @return array|bool
+     * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getOrderedCustomizations($idCart)
     {
-        if (!$result = Db::readOnly()->getArray(
+        $result = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_customization`, `quantity`')
                 ->from('customization')
                 ->where('`id_cart` = '.(int) $idCart)
-        )) {
-            return false;
-        }
+        );
         $customizations = [];
         foreach ($result as $row) {
             $customizations[(int) ($row['id_customization'])] = $row;
