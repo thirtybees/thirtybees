@@ -66,7 +66,6 @@ return [
     'statsdata',
     'statsmodule',
     'tbhtmlblock',
-    'tbupdater',
     'themeconfigurator',
     'thememanager',
 ];

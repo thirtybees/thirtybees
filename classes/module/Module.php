@@ -29,11 +29,18 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class ModuleCore
  */
 abstract class ModuleCore
 {
+    const MODULES_CACHE_FILE = _PS_CACHE_DIR_ . 'api.thirtybees.com.modules.json';
+    const LAST_MODULES_CHECK = 'TB_LAST_MODULES_CHECK';
+    const MODULES_CHECK_INTERVAL = 'TB_MODULES_CHECK_INTERVAL';
+
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
 
     /** @var array used by AdminTab to determine which lang file to use (admin.php or module lang file) */
@@ -963,8 +970,6 @@ abstract class ModuleCore
         }
 
         // Get native and partner modules
-        /** @var TbUpdater $updater */
-        $updater = Module::getInstanceByName('tbupdater');
         $languageCode = str_replace('_', '-', mb_strtolower(Context::getContext()->language->language_code));
 
         // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
@@ -974,7 +979,7 @@ abstract class ModuleCore
             'timeout'     => 20,
         ]);
 
-        if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
+        if ($modules = static::getApiModulesInfo()) {
             foreach ($modules as $name => $module) {
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
@@ -1188,8 +1193,7 @@ abstract class ModuleCore
             'opcachemanager',
             'overridecheck',
             'sitemap',
-            'tbcleaner',
-            'tbupdater',
+            'tbcleaner'
         ];
     }
 
@@ -3587,6 +3591,130 @@ abstract class ModuleCore
     public function isModuleConfigurable()
     {
         return method_exists($this, 'getContent');
+    }
+
+    /**
+     * Returns information about modules present on api server
+     *
+     * @return array|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getApiModulesInfo()
+    {
+        if (file_exists(static::MODULES_CACHE_FILE)) {
+            $content = file_get_contents(static::MODULES_CACHE_FILE);
+            $modules = json_decode($content, true);
+            if (is_array($modules)) {
+                return $modules;
+            }
+        }
+
+        return static::checkApiModulesUpdates(true);
+    }
+
+    /**
+     * Check for module updates on api server
+     *
+     * @param bool $force Force check
+     *
+     * @return false|array Indicates whether the update failed or not needed (returns `false`)
+     *                     Otherwise returns the list with modules
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function checkApiModulesUpdates($force = false)
+    {
+        $lastCheck = (int) Configuration::get(static::LAST_MODULES_CHECK);
+        $checkInterval = (int)Configuration::get(static::MODULES_CHECK_INTERVAL);
+        if ($checkInterval <= 0) {
+            $checkInterval = 86400;
+        }
+
+        if ($force || $lastCheck < (time() - $checkInterval) || !file_exists(static::MODULES_CACHE_FILE)) {
+            Configuration::updateGlobalValue(static::LAST_MODULES_CHECK, time());
+
+            $guzzle = new GuzzleHttp\Client([
+                'base_uri' => Configuration::getApiServer(),
+                'verify'   => Configuration::getSslTrustStore()
+            ]);
+
+            try {
+                $response = (string)$guzzle->get("updates/modules/all.json")->getBody();
+                $modules = json_decode($response, true);
+                $cache = [];
+                if ($modules && is_array($modules)) {
+                    foreach ($modules as $moduleName => &$module) {
+                        if (isset($module['versions']['stable']) && is_array($module['versions']['stable'])) {
+                            $versions = $module['versions']['stable'];
+                            $highestVersion = static::findHighestModuleVersion($versions);
+                            if ($highestVersion) {
+                                $module['version'] = $highestVersion;
+                                $module['binary'] = $versions[$highestVersion]['binary'];
+                                unset($module['versions']);
+                                $cache[$moduleName] = $module;
+                            }
+                        }
+                    }
+                }
+                if (!empty($cache)) {
+                    file_put_contents(static::MODULES_CACHE_FILE, json_encode($cache, JSON_PRETTY_PRINT));
+                    return $cache;
+                }
+            } catch (Throwable $e) {
+                $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+                $errorHandler->logFatalError(ErrorUtils::describeException($e));
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find the highest version of a module
+     *
+     * @param array $moduleVersions Module version info
+     *
+     * @return string|false Version number, `false` if not found
+     *
+     * @since 1.0.0
+     */
+    protected static function findHighestModuleVersion(array $moduleVersions)
+    {
+        $highest = '0.0.0';
+        foreach ($moduleVersions as $versionNumber => $versionInfo) {
+            if (static::checkModuleVersionCompatibility($versionInfo)) {
+                $versionNumber = (string)$versionNumber;
+                if (version_compare($versionNumber, $highest, '>')) {
+                    $highest = $versionNumber;
+                }
+            }
+        }
+        return $highest === '0.0.0' ? false : $highest;
+    }
+
+    /**
+     * @param array $versionInfo
+     *
+     * @return bool
+     */
+    protected static function checkModuleVersionCompatibility($versionInfo)
+    {
+        if (! is_array($versionInfo)) {
+            return false;
+        }
+        if (! isset($versionInfo['compatibility'])) {
+            return true;
+        }
+        $compatibility = $versionInfo['compatibility'];
+        $split = explode(' ', $compatibility);
+        if (count($split) === 2) {
+            $operator = trim($split[0]);
+            $operand = trim($split[1]);
+            return version_compare(_TB_VERSION_, $operand, $operator);
+        }
+        return false;
     }
 }
 

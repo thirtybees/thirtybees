@@ -210,10 +210,6 @@
 	path = modules/tbhtmlblock
 	url = https://github.com/thirtybees/tbhtmlblock.git
 	ignore = dirty
-[submodule "modules/tbupdater"]
-	path = modules/tbupdater
-	url = https://github.com/thirtybees/tbupdater.git
-	ignore = dirty
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git

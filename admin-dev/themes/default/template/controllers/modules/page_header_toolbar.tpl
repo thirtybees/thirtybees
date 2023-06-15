@@ -36,28 +36,26 @@
 <div class="page-bar toolbarBox">
 	<div class="btn-toolbar">
 		<ul class="nav nav-pills pull-right">
-			{if Module::isEnabled('tbupdater')}
-				{if isset($upgrade_available) && $upgrade_available|@count}
-				{assign var='modules' value=''}
-				{foreach from=$upgrade_available item='module'}
-					{assign var='modules' value=$modules|cat:$module.name:'|'}
-				{/foreach}
-				{assign var='modules' value=$modules|substr:0:-1}
-					<li>
-						<a id="desc-module-update-all" class="toolbar_btn" href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;updateAll=1" title="{l s='Update all'}">
-							<i class="process-icon-refresh"></i>
-							<div>{l s='Update all'}</div>
-						</a>
-					</li>
-				{else}
-					<li>
-						<a id="desc-module-check-and-update-all" class="toolbar_btn" href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;check=1" title="{l s='Check for update'}">
-							<i class="process-icon-refresh"></i>
-							<div>{l s='Check for update'}</div>
-						</a>
-					</li>
-				{/if}
-            {/if}
+			{if isset($upgrade_available) && $upgrade_available|@count}
+			{assign var='modules' value=''}
+			{foreach from=$upgrade_available item='module'}
+				{assign var='modules' value=$modules|cat:$module.name:'|'}
+			{/foreach}
+			{assign var='modules' value=$modules|substr:0:-1}
+				<li>
+					<a id="desc-module-update-all" class="toolbar_btn" href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;updateAll=1" title="{l s='Update all'}">
+						<i class="process-icon-refresh"></i>
+						<div>{l s='Update all'}</div>
+					</a>
+				</li>
+			{else}
+				<li>
+					<a id="desc-module-check-and-update-all" class="toolbar_btn" href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;check=1" title="{l s='Check for update'}">
+						<i class="process-icon-refresh"></i>
+						<div>{l s='Check for update'}</div>
+					</a>
+				</li>
+			{/if}
 			{if $add_permission}
 			<li>
 				<a id="desc-module-new" class="toolbar_btn anchor" href="#" onclick="$('#module_install').slideToggle();" title="{l s='Add a new module'}">
