@@ -1030,7 +1030,7 @@ abstract class ModuleCore
         }
         // Download images simultaneously
         if ($imagePromises) {
-            GuzzleHttp\Promise\settle($imagePromises)->wait();
+            GuzzleHttp\Promise\Utils::settle($imagePromises)->wait();
         }
 
         foreach ($moduleList as $key => &$module) {
