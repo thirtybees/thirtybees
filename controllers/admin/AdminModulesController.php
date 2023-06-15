@@ -1416,7 +1416,7 @@ class AdminModulesControllerCore extends AdminController
                         foreach (Module::getApiModulesInfo() as $moduleInfoName => $moduleInfo) {
                             if (mb_strtolower($name) == mb_strtolower($moduleInfoName)) {
                                 if (!$this->downloadModuleFromApi(mb_strtolower($name), $moduleInfo)) {
-                                    $this->errors[] = sprintf(Tools::displayError('Module %s cannot be upgraded: Error while downloading the latest version from api server.'), '<strong>'.$attr['displayName'].'</strong>');
+                                    $this->errors[] = sprintf(Tools::displayError('Failed to download module "%s" from api server'), $name);
                                 }
                             }
                         }
