@@ -594,7 +594,7 @@ class AdminWarehousesControllerCore extends AdminController
     public function processAdd()
     {
         if (Tools::isSubmit('submitAdd'.$this->table)) {
-            if (!($obj = $this->loadObject(true))) {
+            if (!$this->loadObject(true)) {
                 return;
             }
 

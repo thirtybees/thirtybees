@@ -407,7 +407,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             /** @var SpecificPriceRule $object */
             $object->deleteConditions();
             foreach ($_POST as $key => $values) {
-                if (preg_match('/^condition_group_([0-9]+)$/Ui', $key, $conditionGroup)) {
+                if (preg_match('/^condition_group_([0-9]+)$/Ui', $key)) {
                     $conditions = [];
                     foreach ($values as $value) {
                         $condition = explode('_', $value);

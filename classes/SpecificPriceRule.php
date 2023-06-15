@@ -191,7 +191,7 @@ class SpecificPriceRuleCore extends ObjectModel
         $result = [];
 
         if ($conditionsGroup) {
-            foreach ($conditionsGroup as $idConditionGroup => $conditionGroup) {
+            foreach ($conditionsGroup as $conditionGroup) {
                 // Base request
                 $query = (new DbQuery())
                     ->select('DISTINCT p.`id_product`')

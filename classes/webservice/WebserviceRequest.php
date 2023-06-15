@@ -993,7 +993,6 @@ class WebserviceRequestCore
             }
             if (strpos($str, '[') !== false) {
                 $sub_fields = substr($str, strpos($str, '[') + 1, strlen($str) - strpos($str, '[') - 2);
-                $tmp_array = [];
                 if (strpos($sub_fields, ',') !== false) {
                     $tmp_array = explode(',', $sub_fields);
                 } else {
@@ -1149,7 +1148,7 @@ class WebserviceRequestCore
                                         $urlParam = [$urlParam];
                                     }
                                     $sqlJoin .= 'LEFT JOIN `'.bqSQL(_DB_PREFIX_.$this->resourceConfiguration['retrieveData']['table']).'_lang` AS main_i18n ON (main.`'.pSQL($this->resourceConfiguration['fields']['id']['sqlId']).'` = main_i18n.`'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'`)'."\n";
-                                    foreach ($urlParam as $field2 => $value) {
+                                    foreach ($urlParam as $value) {
                                         $linkedField = $this->resourceConfiguration['fields'][$field];
                                         $sqlFilter .= $this->getSQLRetrieveFilter($linkedField['sqlId'], $value, 'main_i18n.');
                                         $languageFilter = '['.implode('|', $this->_available_languages).']';
@@ -1576,7 +1575,7 @@ class WebserviceRequestCore
             }
 
             // Apply the modifiers if they exist
-            foreach ($this->resourceConfiguration['fields'] as $fieldName => $fieldProperties) {
+            foreach ($this->resourceConfiguration['fields'] as $fieldProperties) {
                 if (isset($fieldProperties['modifier']) && isset($fieldProperties['modifier']['modifier']) && $fieldProperties['modifier']['http_method'] & constant('WebserviceRequest::HTTP_'.$this->method)) {
                     $object->{$fieldProperties['modifier']['modifier']}();
                 }

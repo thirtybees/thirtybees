@@ -1381,7 +1381,7 @@ class AdminModulesControllerCore extends AdminController
                 $this->ajaxProcessRefreshModuleList(true);
                 $modulesOnDisk = Module::getModulesOnDisk(true, false, $this->id_employee);
                 // Browse modules list
-                foreach ($modulesOnDisk as $km => $moduleOnDisk) {
+                foreach ($modulesOnDisk as $moduleOnDisk) {
                     if (!Tools::getValue('module_name') && isset($moduleOnDisk->version_addons) && $moduleOnDisk->version_addons) {
                         $modules[] = $moduleOnDisk->name;
                     }
@@ -1392,7 +1392,7 @@ class AdminModulesControllerCore extends AdminController
             } elseif ($key == 'updateAll') {
                 $allModules = Module::getModulesOnDisk(true, false, $this->context->employee->id);
                 $modules = [];
-                foreach ($allModules as $km => $moduleToUpdate) {
+                foreach ($allModules as $moduleToUpdate) {
                     if ($moduleToUpdate->installed && isset($moduleToUpdate->version_addons) && $moduleToUpdate->version_addons) {
                         $modules[] = (string) $moduleToUpdate->name;
                     }

@@ -1058,7 +1058,7 @@ class AdminMetaControllerCore extends AdminController
         preg_match_all('#\{([^{}]*:)?([a-zA-Z]+)(:[^{}]*)?\}#', $rule, $matches);
 
         if (isset($matches[2]) && is_array($matches[2])) {
-            foreach (array_count_values($matches[2]) as $val => $c) {
+            foreach (array_count_values($matches[2]) as $c) {
                 if ($c > 1) {
                     return false;
                 }

@@ -80,7 +80,7 @@ class AdminEmployeesControllerCore extends AdminController
         if ($superAdmin == 1) {
             $superAdminArray = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_, true);
             $superAdminId = [];
-            foreach ($superAdminArray as $key => $val) {
+            foreach ($superAdminArray as $val) {
                 $superAdminId[] = $val['id_employee'];
             }
             $this->addRowActionSkipList('delete', $superAdminId);

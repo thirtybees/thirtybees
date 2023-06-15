@@ -1882,7 +1882,7 @@ class AdminProductsControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('An error occurred while copying the image.');
             } elseif ($method == 'auto') {
                 $imagesTypes = ImageType::getImagesTypes('products');
-                foreach ($imagesTypes as $k => $imageType) {
+                foreach ($imagesTypes as $imageType) {
                     if (!ImageManager::resize(
                         $tmpName,
                         $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
@@ -4125,7 +4125,7 @@ class AdminProductsControllerCore extends AdminController
         $data->assign(
             [
                 'link'                    => $this->context->link,
-                'currency'                => $currency = $this->context->currency,
+                'currency'                => $this->context->currency,
                 'tax_rules_groups'        => $taxRulesGroups,
                 'taxesRatesByGroup'       => $taxRates,
                 'ecotaxTaxRate'           => Tax::getProductEcotaxRate(),
@@ -5325,7 +5325,7 @@ class AdminProductsControllerCore extends AdminController
             if ($this->product_exists_in_shop) {
                 $attributeJs = [];
                 $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
-                foreach ($attributes as $k => $attribute) {
+                foreach ($attributes as $attribute) {
                     $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
                 }
                 foreach ($attributeJs as $k => $ajs) {
@@ -5340,8 +5340,8 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('ps_weight_unit', Configuration::get('PS_WEIGHT_UNIT'));
                 $data->assign('ps_use_ecotax', Configuration::get('PS_USE_ECOTAX'));
                 $data->assign('field_value_unity', $this->getFieldValue($product, 'unity'));
-                $data->assign('reasons', $reasons = StockMvtReason::getStockMvtReasons($this->context->language->id));
-                $data->assign('ps_stock_mvt_reason_default', $psStockMvtReasonDefault = Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
+                $data->assign('reasons', StockMvtReason::getStockMvtReasons($this->context->language->id));
+                $data->assign('ps_stock_mvt_reason_default', Configuration::get('PS_STOCK_MVT_REASON_DEFAULT'));
                 $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
                 $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
                 $data->assign('imageType', ImageType::getFormatedName('small'));

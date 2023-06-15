@@ -367,7 +367,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function manageGeneralImages()
     {
-        $path = '';
         $alternativePath = '';
         switch ($this->wsObject->urlSegment[2]) {
             // Set the image path on display in relation to the header image
@@ -441,7 +440,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 if ($this->writePostedImageOnDisk($path, null, null)) {
                     if ($this->wsObject->urlSegment[2] == 'header') {
                         $logoName = Configuration::get('PS_LOGO') ? Configuration::get('PS_LOGO') : 'logo.jpg';
-                        list($width, $height, $type, $attr) = getimagesize(_PS_IMG_DIR_.$logoName);
+                        list($width, $height) = getimagesize(_PS_IMG_DIR_.$logoName);
                         Configuration::updateValue('SHOP_LOGO_WIDTH', (int) round($width));
                         Configuration::updateValue('SHOP_LOGO_HEIGHT', (int) round($height));
                     }
@@ -968,7 +967,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function writeImageOnDisk($basePath, $newPath, $destWidth = null, $destHeight = null, $imageTypes = null, $parentPath = null)
     {
-        list($sourceWidth, $sourceHeight, $type, $attr) = getimagesize($basePath);
+        list($sourceWidth, $sourceHeight, $type) = getimagesize($basePath);
         if (!$sourceWidth) {
             throw new WebserviceException('Image width was null', [68, 400]);
         }

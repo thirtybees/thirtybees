@@ -160,7 +160,7 @@ class ParentOrderControllerCore extends FrontController
                 }
             }
             /* Is there only virtual product in cart */
-            if ($isVirtualCart = $this->context->cart->isVirtualCart()) {
+            if ($this->context->cart->isVirtualCart()) {
                 $this->setNoCarrier();
             }
         }
@@ -395,7 +395,7 @@ class ParentOrderControllerCore extends FrontController
         }
 
         $cartProductContext = $this->context->cloneContext();
-        foreach ($summary['products'] as $key => &$product) {
+        foreach ($summary['products'] as &$product) {
             if ($cartProductContext->shop->id != $product['id_shop']) {
                 $cartProductContext->shop = new Shop((int) $product['id_shop']);
             }

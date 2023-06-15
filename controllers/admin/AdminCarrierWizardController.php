@@ -581,7 +581,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $tmpRange = $rangeObj->getRanges((int) $carrier->id);
         $tplVars['ranges'] = [];
         if ($shippingMethod != Carrier::SHIPPING_METHOD_FREE) {
-            foreach ($tmpRange as $id => $range) {
+            foreach ($tmpRange as $range) {
                 $tplVars['ranges'][$range['id_'.$rangeTable]] = $range;
                 $tplVars['ranges'][$range['id_'.$rangeTable]]['id_range'] = $range['id_'.$rangeTable];
             }

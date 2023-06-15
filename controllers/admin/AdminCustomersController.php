@@ -1400,7 +1400,7 @@ class AdminCustomersControllerCore extends AdminController
     {
         $customer = new Customer($oldId);
         $addresses = $customer->getAddresses($this->default_form_language);
-        foreach ($addresses as $k => $v) {
+        foreach ($addresses as $v) {
             $address = new Address($v['id_address']);
             $address->id_customer = $object->id;
             $address->save();

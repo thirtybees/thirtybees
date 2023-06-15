@@ -226,7 +226,7 @@ class TranslateCore
      */
     public static function checkAndReplaceArgs($string, $args)
     {
-        if (preg_match_all('#(?:%%|%(?:[0-9]+\$)?[+-]?(?:[ 0]|\'.)?-?[0-9]*(?:\.[0-9]+)?[bcdeufFosxX])#', $string, $matches) && !is_null($args)) {
+        if (preg_match_all('#(?:%%|%(?:[0-9]+\$)?[+-]?(?:[ 0]|\'.)?-?[0-9]*(?:\.[0-9]+)?[bcdeufFosxX])#', $string) && !is_null($args)) {
             if (!is_array($args)) {
                 $args = [$args];
             }

@@ -1172,10 +1172,10 @@ class AdminOrdersControllerCore extends AdminController
 
                             $chosen = false;
                             if (Tools::getIntValue('refund_total_voucher_off') === 1) {
-                                $amount -= $voucher = Tools::getNumberValue('order_discount_price');
+                                $amount -= Tools::getNumberValue('order_discount_price');
                             } elseif (Tools::getIntValue('refund_total_voucher_off') === 2) {
                                 $chosen = true;
-                                $amount = $voucher = Tools::getNumberValue('refund_total_voucher_choose');
+                                $amount = Tools::getNumberValue('refund_total_voucher_choose');
                             }
                             foreach ($fullProductList as $idOrderDetail) {
                                 $orderDetail = new OrderDetail((int) $idOrderDetail);
@@ -1459,7 +1459,7 @@ class AdminOrdersControllerCore extends AdminController
 
                     $idOrderCarrier = (int) $order->getIdOrderCarrier();
                     if ($idOrderCarrier) {
-                        $orderCarrier = $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
+                        $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
                         $orderCarrier->shipping_cost_tax_excl = Tools::convertPriceFull($orderCarrier->shipping_cost_tax_excl, $oldCurrency, $currency);
                         $orderCarrier->shipping_cost_tax_incl = Tools::convertPriceFull($orderCarrier->shipping_cost_tax_incl, $oldCurrency, $currency);
                         $orderCarrier->update();
@@ -3361,7 +3361,7 @@ class AdminOrdersControllerCore extends AdminController
 
         if (is_array($product) && is_array($product['customizedDatas'])) {
             foreach ($product['customizedDatas'] as $customizationPerAddress) {
-                foreach ($customizationPerAddress as $customizationId => $customization) {
+                foreach ($customizationPerAddress as $customization) {
                     $customizedProductQuantity += (int)$customization['quantity'];
                 }
             }

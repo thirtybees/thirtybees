@@ -5495,7 +5495,7 @@ class ProductCore extends ObjectModel
     ) {
         Tools::displayAsDeprecated();
 
-        $return = $this->updateAttribute($idProductAttribute, $wholesalePrice, $price, $weight, $unit, $ecotax, $idImages, $reference, $ean13, $default, $location = null, $upc = null, $minimalQuantity, $availableDate);
+        $return = $this->updateAttribute($idProductAttribute, $wholesalePrice, $price, $weight, $unit, $ecotax, $idImages, $reference, $ean13, $default, null, null, $minimalQuantity, $availableDate);
         $this->addSupplierReference($idSupplier, $idProductAttribute);
 
         return $return;

@@ -274,7 +274,7 @@ class CacheMemcacheCore extends Cache
             }
 
             if (isset($allSlabs) && is_array($allSlabs)) {
-                foreach ($allSlabs as $server => $slabs) {
+                foreach ($allSlabs as $slabs) {
                     if (is_array($slabs)) {
                         foreach (array_keys($slabs) as $i => $slabId) // $slab_id is not an int but a string, using the key instead ?
                         {

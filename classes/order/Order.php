@@ -2851,19 +2851,15 @@ class OrderCore extends ObjectModel
         // We add $free_shipping_tax because when there is free shipping, the tax that would
         // be paid if there wasn't is included in $discounts_tax.
         $expectedTotalTax = $this->total_products_wt - $this->total_products;
-        $actualTotalTax = 0;
-        $actualTotalBase = 0;
 
         $orderDetailTaxRows = [];
 
         $breakdown = [];
 
         foreach ($this->getCartRules() as $orderCartRule) {
-            $expectedTotalTax -= ($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
             if ($orderCartRule['free_shipping'] && $freeShippingTax === 0) {
                 $freeShippingTax = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
                 $orderDiscountTaxExcl -= $this->total_shipping_tax_excl;
-                $expectedTotalBase += $this->total_shipping_tax_excl;
             }
 
             $cartRule = new CartRule($orderCartRule['id_cart_rule']);
@@ -2897,7 +2893,6 @@ class OrderCore extends ObjectModel
                 $orderDetail['ecotax'] * $orderDetail['ecotax_tax_rate'] / 100.0,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-            $orderEcotaxTax += $orderDetail['product_quantity'] * $unitEcotaxTax;
 
             $discountRatio = 0;
             if ($this->total_products > 0) {

@@ -336,7 +336,7 @@ class AdminModulesPositionsControllerCore extends AdminController
             $exceptsDiff = false;
             if ($exceptsList) {
                 $first = current($exceptsList);
-                foreach ($exceptsList as $k => $v) {
+                foreach ($exceptsList as $v) {
                     if (array_diff($v, $first) || array_diff($first, $v)) {
                         $exceptsDiff = true;
                     }
@@ -425,7 +425,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         $controllers = Dispatcher::getControllers(_PS_FRONT_CONTROLLER_DIR_);
         ksort($controllers);
 
-        foreach ($fileList as $k => $v) {
+        foreach ($fileList as $v) {
             if (!array_key_exists($v, $controllers)) {
                 $content .= '<option value="'.$v.'">'.$v.'</option>';
             }

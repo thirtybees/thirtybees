@@ -123,7 +123,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $carrier = new Carrier((int) $this->order->id_carrier);
 
         $orderDetails = $this->order_invoice->getProducts();
-        $order = new Order($this->order_invoice->id_order);
 
         $hasDiscount = false;
         foreach ($orderDetails as $id => &$orderDetail) {

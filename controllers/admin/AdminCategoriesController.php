@@ -552,7 +552,7 @@ class AdminCategoriesControllerCore extends AdminController
         $thumb = $thumbUrl = '';
         $formattedCategory = ImageType::getFormatedName('category');
         $formattedMedium = ImageType::getFormatedName('medium');
-        foreach ($imagesTypes as $k => $imageType) {
+        foreach ($imagesTypes as $imageType) {
             if ($formattedCategory == $imageType['name']) {
                 $format['category'] = $imageType;
             } elseif ($formattedMedium == $imageType['name']) {
@@ -856,7 +856,7 @@ class AdminCategoriesControllerCore extends AdminController
 
             $imagesTypes = ImageType::getImagesTypes('categories');
             $formattedMedium = ImageType::getFormatedName('medium');
-            foreach ($imagesTypes as $k => $imageType) {
+            foreach ($imagesTypes as $imageType) {
                 if ($formattedMedium == $imageType['name'] &&
                     file_exists(_PS_CAT_IMG_DIR_.$category->id.'-'.$imageType['name'].'.'.$this->imageType) &&
                     !unlink(_PS_CAT_IMG_DIR_.$category->id.'-'.$imageType['name'].'.'.$this->imageType)
@@ -1027,7 +1027,7 @@ class AdminCategoriesControllerCore extends AdminController
 
             if (parent::processBulkDelete()) {
                 $this->setDeleteMode();
-                foreach ($categories as $id => $info) {
+                foreach ($categories as $info) {
                     $parentCategoryId = (int)$info['parentCategoryId'];
                     $products = $info['products'];
                     $this->processFatherlessProducts($parentCategoryId, $products);
@@ -1136,7 +1136,7 @@ class AdminCategoriesControllerCore extends AdminController
 
                     return false;
                 }
-                foreach ($imagesTypes as $k => $imageType) {
+                foreach ($imagesTypes as $imageType) {
                     $success = ImageManager::resize(
                         _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                         _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
@@ -1198,7 +1198,7 @@ class AdminCategoriesControllerCore extends AdminController
 
                     return false;
                 }
-                foreach ($imagesTypes as $k => $imageType) {
+                foreach ($imagesTypes as $imageType) {
                     if ($formattedMedium == $imageType['name']) {
                         if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize())) {
                             $this->errors[] = $error;

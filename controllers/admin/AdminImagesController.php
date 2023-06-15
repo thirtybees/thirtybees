@@ -768,7 +768,7 @@ class AdminImagesControllerCore extends AdminController
         );
 
         if ($entityType !== 'products') {
-            foreach ($type as $k => $imageType) {
+            foreach ($type as $imageType) {
                 // Customizable writing dir
                 $dir = $newDir = $process[$entityType];
                 $image = $idEntity.'.jpg';
@@ -959,7 +959,7 @@ class AdminImagesControllerCore extends AdminController
             $formattedMedium = ImageType::getFormatedName('medium');
             foreach (scandir($dir) as $image) {
                 if (preg_match('/^[0-9]*\.jpg$/', $image)) {
-                    foreach ($type as $k => $imageType) {
+                    foreach ($type as $imageType) {
                         // Customizable writing dir
                         $newDir = $dir;
                         if ($imageType['name'] == $formattedThumbScene) {

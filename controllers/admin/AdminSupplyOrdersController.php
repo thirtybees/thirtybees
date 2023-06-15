@@ -493,7 +493,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
         }
 
         // second list : templates
-        $secondList = null;
         $this->is_template_list = true;
         unset($this->tpl_list_vars['warehouses']);
         unset($this->tpl_list_vars['current_warehouse']);

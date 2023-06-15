@@ -376,7 +376,7 @@ class AdminScenesControllerCore extends AdminController
             $baseImgPath = _PS_SCENE_IMG_DIR_.$obj->id.'.jpg';
             $imagesTypes = ImageType::getImagesTypes('scenes');
 
-            foreach ($imagesTypes as $k => $imageType) {
+            foreach ($imagesTypes as $imageType) {
                 if ($imageType['name'] == 'm_scene_default') {
                     if (isset($_FILES['thumb']) && !$_FILES['thumb']['error']) {
                         $baseThumbPath = _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'.jpg';

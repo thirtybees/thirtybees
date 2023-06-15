@@ -525,7 +525,7 @@ abstract class AdminTabCore
     {
         /* Manage default params values */
         if (empty($limit)) {
-            $limit = ((!isset($this->context->cookie->{$this->table.'_pagination'})) ? $this->_pagination[1] : $limit = $this->context->cookie->{$this->table.'_pagination'});
+            $limit = ((!isset($this->context->cookie->{$this->table.'_pagination'})) ? $this->_pagination[1] : $this->context->cookie->{$this->table.'_pagination'});
         }
 
         if (!Validate::isTableOrIdentifier($this->table)) {
@@ -1657,7 +1657,6 @@ abstract class AdminTabCore
                                 // assign group access to every categories
                                 $categories = Category::getCategories($this->context->language->id, true);
                                 $rowList = [];
-                                $a = 0;
                                 foreach ($categories as $category) {
                                     foreach ($category as $categId => $categ) {
                                         if ($categId != 1) {
@@ -2172,7 +2171,7 @@ abstract class AdminTabCore
             $this->beforeUpdateOptions();
 
             $languageIds = Language::getIDs(false);
-            foreach ($this->optionsList as $category => $categoryData) {
+            foreach ($this->optionsList as $categoryData) {
                 $fields = $categoryData['fields'];
 
                 /* Check required fields */
@@ -2377,7 +2376,7 @@ abstract class AdminTabCore
     public function displayOptionTypeSelect($key, $field, $value)
     {
         echo '<select name="'.$key.'"'.(isset($field['js']) === true ? ' onchange="'.$field['js'].'"' : '').' id="'.$key.'">';
-        foreach ($field['list'] as $k => $option) {
+        foreach ($field['list'] as $option) {
             echo '<option value="'.(isset($option['cast']) ? $option['cast']($option[$field['identifier']]) : $option[$field['identifier']]).'"'.(($value == $option[$field['identifier']]) ? ' selected="selected"' : '').'>'.$option['name'].'</option>';
         }
         echo '</select>';
@@ -2608,7 +2607,7 @@ abstract class AdminTabCore
         foreach ($languages as $language) {
             echo '<div id="'.$key.'_'.$language['id_lang'].'" style="margin-bottom:8px; display: '.($language['id_lang'] == $this->context->language->id ? 'block' : 'none').'; float: left; vertical-align: top;">';
             echo '<select name="'.$key.'_'.mb_strtoupper($language['iso_code']).'">';
-            foreach ($field['list'] as $k => $v) {
+            foreach ($field['list'] as $v) {
                 echo '<option value="'.(isset($v['cast']) ? $v['cast']($v[$field['identifier']]) : $v[$field['identifier']]).'"'.((htmlentities(Tools::getValue($key.'_'.mb_strtoupper($language['iso_code']), (Configuration::get($key.'_'.mb_strtoupper($language['iso_code'])) ? Configuration::get($key.'_'.mb_strtoupper($language['iso_code'])) : '')), ENT_COMPAT, 'UTF-8') == $v[$field['identifier']]) ? ' selected="selected"' : '').'>'.$v['name'].'</option>';
             }
             echo '</select>';

@@ -191,7 +191,6 @@ class AdminCmsCategoriesControllerCore extends AdminController
             if ($this->hasDeletePermission()) {
                 if (Tools::isSubmit($this->table.'Box')) {
                     $cmsCategory = new CMSCategory();
-                    $result = true;
                     $result = $cmsCategory->deleteSelection(Tools::getValue($this->table.'Box'));
                     if ($result) {
                         $cmsCategory->cleanPositions(Tools::getIntValue('id_cms_category'));

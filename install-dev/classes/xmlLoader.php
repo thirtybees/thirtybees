@@ -217,7 +217,7 @@ class InstallXmlLoader
         do {
             $current = (isset($sortEntities)) ? $sortEntities : [];
             $sortEntities = [];
-            foreach ($entities as $key => $entity) {
+            foreach ($entities as $entity) {
                 if (isset($dependencies[$entity])) {
                     $min = count($entities) - 1;
                     foreach ($dependencies[$entity] as $item) {
@@ -1207,7 +1207,7 @@ class InstallXmlLoader
 
         $dependencies = [];
         foreach ($entities as $entity => $info) {
-            foreach ($info['fields'] as $field => $infoField) {
+            foreach ($info['fields'] as $infoField) {
                 if (isset($infoField['relation']) && $infoField['relation'] != $entity) {
                     if (!isset($dependencies[$infoField['relation']])) {
                         $dependencies[$infoField['relation']] = [];

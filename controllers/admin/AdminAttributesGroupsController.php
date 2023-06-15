@@ -347,7 +347,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             'title' => $this->l('Save'),
         ];
 
-        if (!($obj = $this->loadObject(true))) {
+        if (!($this->loadObject(true))) {
             return null;
         }
 
@@ -1047,7 +1047,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
         $positions = Tools::getValue('attribute_group');
 
         $newPositions = [];
-        foreach ($positions as $k => $v) {
+        foreach ($positions as $v) {
             if (count(explode('_', $v)) == 4) {
                 $newPositions[] = $v;
             }

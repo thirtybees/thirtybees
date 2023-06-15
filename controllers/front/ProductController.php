@@ -692,7 +692,7 @@ class ProductControllerCore extends FrontController
         if (isset($images[0])) {
             $this->context->smarty->assign('mainImage', $images[0]);
         }
-        foreach ($images as $k => $image) {
+        foreach ($images as $image) {
             if ($image['cover']) {
                 $this->context->smarty->assign('mainImage', $image);
                 $cover = $image;
@@ -751,7 +751,7 @@ class ProductControllerCore extends FrontController
         if (is_array($attributesGroups) && $attributesGroups) {
             $combinationImages = $this->product->getCombinationImages($this->context->language->id);
             $combinationPricesSet = [];
-            foreach ($attributesGroups as $k => $row) {
+            foreach ($attributesGroups as $row) {
                 // Color management
                 if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (file_exists(_PS_COL_IMG_DIR_.$row['id_attribute'].'.jpg'))) {
                     $colors[$row['id_attribute']]['value'] = $row['attribute_color'];

@@ -923,13 +923,6 @@ class SearchCore
             $context = Context::getContext();
         }
 
-        // Only use cookie if id_customer is not present
-        if ($useCookie) {
-            $idCustomer = (int) $context->customer->id;
-        } else {
-            $idCustomer = 0;
-        }
-
         if (!is_numeric($pageNumber) || !is_numeric($pageSize) || !Validate::isBool($count) || !Validate::isValidSearch($tag)
             || $orderBy && !$orderWay || ($orderBy && !Validate::isOrderBy($orderBy)) || ($orderWay && !Validate::isOrderBy($orderWay))
         ) {

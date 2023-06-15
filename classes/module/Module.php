@@ -1038,7 +1038,7 @@ abstract class ModuleCore
             GuzzleHttp\Promise\Utils::settle($imagePromises)->wait();
         }
 
-        foreach ($moduleList as $key => &$module) {
+        foreach ($moduleList as &$module) {
             if (isset($modulesInstalled[$module->name])) {
                 $module->installed = true;
                 $module->database_version = $modulesInstalled[$module->name]['version'];

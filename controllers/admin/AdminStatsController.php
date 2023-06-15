@@ -535,7 +535,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
         $context = Context::getContext();
         $modules = Module::getModulesOnDisk(true, false, $context->employee->id);
         $upgradeAvailable = 0;
-        foreach ($modules as $km => $module) {
+        foreach ($modules as $module) {
             if ($module->installed && isset($module->version_addons) && $module->version_addons) { // SimpleXMLElement
                 ++$upgradeAvailable;
             }

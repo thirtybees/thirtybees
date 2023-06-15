@@ -1449,7 +1449,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     {
         $assoc = Shop::getAssoTable($this->def['table']);
         $className = WebserviceRequest::$ws_current_classname;
-        $vars = get_class_vars($className);
         if ($assoc !== false) {
             if ($assoc['type'] !== 'fk_shop') {
                 $multiShopJoin = ' LEFT JOIN `'._DB_PREFIX_.bqSQL($this->def['table']).'_'.bqSQL($assoc['type']).'`
@@ -2214,8 +2213,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public static function createDatabase($className = null)
     {
-        $success = true;
-
         if (empty($className)) {
             $className = get_called_class();
         }

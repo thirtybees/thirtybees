@@ -684,7 +684,7 @@ class AdminStoresControllerCore extends AdminController
 
         if (($idStore = Tools::getIntValue('id_store')) && isset($_FILES) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
             $imageTypes = ImageType::getImagesTypes('stores');
-            foreach ($imageTypes as $k => $imageType) {
+            foreach ($imageTypes as $imageType) {
                 ImageManager::resize(
                     _PS_STORE_IMG_DIR_.$idStore.'.jpg',
                     _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.jpg',

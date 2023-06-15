@@ -660,7 +660,7 @@ class AdminTranslationsControllerCore extends AdminController
         $arrReplace = [];
         $boolFlag = true;
         if (preg_match_all('#\$_MODULE\[\'([^\']+)\'\]#Ui', $content, $matches)) {
-            foreach ($matches[1] as $key => $value) {
+            foreach ($matches[1] as $value) {
                 $arrReplace[$value] = str_replace($themeFrom, $themeTo, $value);
             }
             $content = str_replace(array_keys($arrReplace), array_values($arrReplace), $content);
@@ -1024,7 +1024,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         // Get all email files
         foreach ($filesList as $file) {
-            if (preg_match('#^(\.\/)?mails\/([a-z0-9]+)\/#Ui', $file['filename'], $matches)) {
+            if (preg_match('#^(\.\/)?mails\/([a-z0-9]+)\/#Ui', $file['filename'])) {
                 $slashPos = strrpos($file['filename'], '/');
                 $mailsNewLang[] = substr($file['filename'], -(strlen($file['filename']) - $slashPos - 1));
             }
@@ -2520,7 +2520,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         $filesByDirectory = $this->getFileToParseByTypeTranslation();
 
-        foreach ($filesByDirectory['php'] as $dir => $files) {
+        foreach ($filesByDirectory['php'] as $files) {
             foreach ($files as $file) {
                 $excludeFiles = ['index.php', 'PrestaShopAutoload.php', 'StockManagerInterface.php', 'TaxManagerInterface.php', 'WebserviceOutputInterface.php', 'WebserviceSpecificManagementInterface.php'];
 
@@ -2670,7 +2670,7 @@ class AdminTranslationsControllerCore extends AdminController
         $currentTheme = Tools::safeOutput($this->context->theme->directory);
         $languages = Language::getLanguages();
 
-        foreach ($languages as $key => $lang) {
+        foreach ($languages as $lang) {
             $dirToCopyIso = [];
             $filesToCopyIso = [];
             $currentIsoCode = $lang['iso_code'];
@@ -2678,7 +2678,7 @@ class AdminTranslationsControllerCore extends AdminController
             $dirToCopyIso[] = _PS_MAIL_DIR_.$currentIsoCode.'/';
 
             $modulesHasMails = $this->getModulesHasMails(true);
-            foreach ($modulesHasMails as $moduleName => $modulePath) {
+            foreach ($modulesHasMails as $modulePath) {
                 if ($pos = strpos($modulePath, '/modules')) {
                     $dir = _PS_ROOT_DIR_.substr($modulePath, $pos).'mails/'.$currentIsoCode.'/';
                     if (@is_dir($dir)) {
@@ -3031,7 +3031,6 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $title = [];
         $this->cleanMailContent($content, $lang, $title);
-        $nameForModule = $nameForModule ? $nameForModule.'|' : '';
 
         return '<div class="block-mail" >
                     <div class="mail-form">

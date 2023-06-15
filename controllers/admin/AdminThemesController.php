@@ -170,7 +170,6 @@ class AdminThemesControllerCore extends AdminController
 
         // Employee languages used for link and utm_source
         $lang = new Language($this->context->language->id);
-        $isoLangUc = strtoupper($lang->iso_code);
 
         $this->fields_options = [
             'appearance' => [

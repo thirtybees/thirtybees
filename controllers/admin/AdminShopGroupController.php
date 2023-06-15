@@ -135,12 +135,12 @@ class AdminShopGroupControllerCore extends AdminController
         $this->addJqueryPlugin('cooki-plugin');
         $data = Shop::getTree();
 
-        foreach ($data as $keyGroup => &$group) {
-            foreach ($group['shops'] as $keyShop => &$shop) {
+        foreach ($data as &$group) {
+            foreach ($group['shops'] as &$shop) {
                 $currentShop = new Shop($shop['id_shop']);
                 $urls = $currentShop->getUrls();
 
-                foreach ($urls as $keyUrl => &$url) {
+                foreach ($urls as &$url) {
                     $title = $url['domain'].$url['physical_uri'].$url['virtual_uri'];
                     if (strlen($title) > 23) {
                         $title = substr($title, 0, 23).'...';

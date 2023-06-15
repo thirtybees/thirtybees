@@ -483,7 +483,7 @@ class AdminGroupsControllerCore extends AdminController
             $auth_modules = $modules;
         }
         $auth_modules_tmp = [];
-        foreach ($auth_modules as $key => $val) {
+        foreach ($auth_modules as $val) {
             if ($module = Module::getInstanceById($val['id_module'])) {
                 $auth_modules_tmp[] = $module;
             }
@@ -492,7 +492,7 @@ class AdminGroupsControllerCore extends AdminController
         $auth_modules = $auth_modules_tmp;
 
         $unauth_modules_tmp = [];
-        foreach ($unauth_modules as $key => $val) {
+        foreach ($unauth_modules as $val) {
             if (($tmp_obj = Module::getInstanceById($val['id_module']))) {
                 $unauth_modules_tmp[] = $tmp_obj;
             }

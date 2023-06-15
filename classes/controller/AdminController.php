@@ -2252,7 +2252,7 @@ class AdminControllerCore extends Controller
                 .'&id_shop='.(int) $this->context->shop->id
                 .(Configuration::get('PS_TC_THEME') != '' ? '&theme='.Configuration::get('PS_TC_THEME') : '')
                 .(Configuration::get('PS_TC_FONT') != '' ? '&theme_font='.Configuration::get('PS_TC_FONT') : '');
-            $this->context->smarty->assign('base_url_tc', $this->context->link->getPageLink('index', null, $idLang = null, $request));
+            $this->context->smarty->assign('base_url_tc', $this->context->link->getPageLink('index', null, null, $request));
         }
     }
 

@@ -850,7 +850,7 @@ class ShopCore extends ObjectModel
     public static function getShop($shopId)
     {
         static::cacheShops();
-        foreach (static::$shops as $idGroup => $groupData) {
+        foreach (static::$shops as $groupData) {
             if (array_key_exists($shopId, $groupData['shops'])) {
                 return $groupData['shops'][$shopId];
             }

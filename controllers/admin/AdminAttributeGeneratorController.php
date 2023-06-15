@@ -257,7 +257,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
         $attributeJs = [];
 
-        foreach ($attributes as $k => $attribute) {
+        foreach ($attributes as $attribute) {
             $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
         }
 

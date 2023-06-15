@@ -459,7 +459,7 @@ class AdminCountriesControllerCore extends AdminController
         $htmlTabnav .= '</ul>';
         $htmlTabcontent .= '</div>';
 
-        return $html = $htmlTabnav.$htmlTabcontent;
+        return $htmlTabnav.$htmlTabcontent;
     }
 
     /**
@@ -549,7 +549,7 @@ class AdminCountriesControllerCore extends AdminController
 
         if (!$tmpAddrFormat->checkFormatFields()) {
             $errorList = $tmpAddrFormat->getErrorList();
-            foreach ($errorList as $numError => $error) {
+            foreach ($errorList as $error) {
                 $this->errors[] = $error;
             }
         }

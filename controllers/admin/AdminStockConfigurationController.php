@@ -419,7 +419,6 @@ class AdminStockConfigurationControllerCore extends AdminController
          * First list
          * Stock Mvt Labels/Reasons
          */
-        $firstList = null;
         $this->list_no_link = true;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -434,7 +433,6 @@ class AdminStockConfigurationControllerCore extends AdminController
          * Second list
          * Supply Order Status/State
          */
-        $secondList = null;
         unset($this->_select, $this->_where, $this->_join, $this->_group, $this->_filterHaving, $this->_filter, $this->list_skip_actions['delete'], $this->list_skip_actions['edit'], $this->list_id);
 
         // generates the actual second list

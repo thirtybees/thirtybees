@@ -1200,7 +1200,7 @@ class CartRuleCore extends ObjectModel
 
             foreach ($cartRules as $cartRule) {
                 if ($cartRule['gift_product']) {
-                    foreach ($products as $key => &$product) {
+                    foreach ($products as &$product) {
                         if (empty($product['gift'])
                             && $product['id_product'] == $cartRule['gift_product']
                             && $product['id_product_attribute'] == $cartRule['gift_product_attribute']

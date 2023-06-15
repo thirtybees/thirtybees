@@ -98,7 +98,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
             return false;
         }
 
-        return parent::add($autoDate = true, $nullValues = false);
+        return parent::add(true, false);
     }
 
     /**

@@ -534,7 +534,7 @@ class OrderOpcControllerCore extends ParentOrderController
             'customizedDatas' => Product::getAllCustomizedDatas($this->context->cart->id, null, true),
         ];
 
-        foreach ($result['summary']['products'] as $key => &$product) {
+        foreach ($result['summary']['products'] as &$product) {
             $product['quantity_without_customization'] = $product['quantity'];
             if ($result['customizedDatas']) {
                 if (isset($result['customizedDatas'][(int) $product['id_product']][(int) $product['id_product_attribute']])) {

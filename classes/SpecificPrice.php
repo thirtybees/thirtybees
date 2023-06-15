@@ -383,7 +383,7 @@ class SpecificPriceCore extends ObjectModel
             if ($specificCount < $threshold) {
                 $query = 'SELECT DISTINCT `'.$fieldName.'` FROM `'._DB_PREFIX_.'specific_price` WHERE `'.$fieldName.'` != 0';
                 $tmpSpecificList = $conn->getArray($query);
-                foreach ($tmpSpecificList as $key => $value) {
+                foreach ($tmpSpecificList as $value) {
                     $specificList[] = $value[$fieldName];
                 }
             }
@@ -649,7 +649,7 @@ class SpecificPriceCore extends ObjectModel
                 ->where('`reduction` > 0 '.$queryExtra)
         );
         $idsProduct = [];
-        foreach ($results as $key => $value) {
+        foreach ($results as $value) {
             $idsProduct[] = $withCombinationId ? ['id_product' => (int) $value['id_product'], 'id_product_attribute' => (int) $value['id_product_attribute']] : (int) $value['id_product'];
         }
 

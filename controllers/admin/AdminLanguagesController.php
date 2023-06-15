@@ -385,7 +385,7 @@ class AdminLanguagesControllerCore extends AdminController
         $imageTypes = ImageType::getImagesTypes('products');
         $dirs = [_PS_PROD_IMG_DIR_, _PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_SUPP_IMG_DIR_, _PS_MANU_IMG_DIR_];
         foreach ($dirs as $dir) {
-            foreach ($imageTypes as $k => $imageType) {
+            foreach ($imageTypes as $imageType) {
                 if (file_exists($dir.$language.'-default-'.stripslashes($imageType['name']).'.jpg')) {
                     if (!unlink($dir.$language.'-default-'.stripslashes($imageType['name']).'.jpg')) {
                         $this->errors[] = Tools::displayError('An error occurred during image deletion process.');
@@ -529,7 +529,7 @@ class AdminLanguagesControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('An error occurred while copying "No picture" image to your manufacturer folder.');
                 } else {
                     $imageTypes = ImageType::getImagesTypes('products');
-                    foreach ($imageTypes as $k => $imageType) {
+                    foreach ($imageTypes as $imageType) {
                         if (!ImageManager::resize($tmpName, _PS_IMG_DIR_.'p/'.$language.'-default-'.stripslashes($imageType['name']).'.jpg', $imageType['width'], $imageType['height'])) {
                             $this->errors[] = Tools::displayError('An error occurred while resizing "No picture" image to your product directory.');
                         }

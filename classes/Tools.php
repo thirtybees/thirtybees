@@ -1394,7 +1394,7 @@ class ToolsCore
 		<div style="margin:10px;padding:10px;border:1px solid #666666">
 			<ul>';
         $i = 0;
-        foreach ($backtrace as $id => $trace) {
+        foreach ($backtrace as $trace) {
             if ((int) $limit && (++$i > $limit)) {
                 break;
             }
@@ -3535,8 +3535,6 @@ FileETag none
      */
     public static function checkPhpVersion()
     {
-        $version = null;
-
         if (defined('PHP_VERSION')) {
             $version = PHP_VERSION;
         } else {

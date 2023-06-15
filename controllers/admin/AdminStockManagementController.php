@@ -522,8 +522,6 @@ class AdminStockManagementControllerCore extends AdminController
             $stockAttributes = $this->getStockAttributes();
             // if all is ok, remove stock
             if (count($this->errors) == 0) {
-                $warehouse = new Warehouse($idWarehouse);
-
                 // remove stock
                 $stockManager = StockManagerFactory::getManager();
                 $removedProducts = $stockManager->removeProduct(
@@ -533,9 +531,9 @@ class AdminStockManagementControllerCore extends AdminController
                     $quantity,
                     $idStockMvtReason,
                     $usable,
-                    $id_order = null,
-                    $ignore_pack = 0,
-                    $employee = null,
+                    null,
+                    0,
+                    null,
                     $stockAttributes['stock']
                 );
 

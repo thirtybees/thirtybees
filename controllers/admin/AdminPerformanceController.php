@@ -1259,7 +1259,7 @@ class AdminPerformanceControllerCore extends AdminController
         $controllers = Dispatcher::getControllers(_PS_FRONT_CONTROLLER_DIR_);
         ksort($controllers);
 
-        foreach ($fileList as $k => $v) {
+        foreach ($fileList as $v) {
             if (! array_key_exists($v, $controllers)) {
                 $content .= '<option value="'.$v.'">'.$v.'</option>';
             }

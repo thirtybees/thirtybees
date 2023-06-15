@@ -1011,7 +1011,7 @@ class CartCore extends ObjectModel
             );
         }
 
-        foreach ($productsTotal as $key => $price) {
+        foreach ($productsTotal as $price) {
             $orderTotal += $price;
         }
 
@@ -1686,7 +1686,7 @@ class CartCore extends ObjectModel
                 $warehouseInStock = [];
                 $manager = StockManagerFactory::getManager();
 
-                foreach ($warehouseList as $key => $warehouse) {
+                foreach ($warehouseList as $warehouse) {
                     $productRealQuantities = $manager->getProductRealQuantities(
                         $product['id_product'],
                         $product['id_product_attribute'],
@@ -1824,7 +1824,7 @@ class CartCore extends ObjectModel
                 }
                 // Count occurance of each carriers to minimize the number of packages
                 $carrierCount = [];
-                foreach ($warehouseList as $idWarehouse => $productsGroupedByCarriers) {
+                foreach ($warehouseList as $productsGroupedByCarriers) {
                     foreach ($productsGroupedByCarriers as $data) {
                         foreach ($data['carrier_list'] as $idCarrier) {
                             if (!isset($carrierCount[$idCarrier])) {
@@ -1869,7 +1869,7 @@ class CartCore extends ObjectModel
                 $finalPackageList[$idAddressDelivery] = [];
             }
 
-            foreach ($productsInStockList as $key => $warehouseList) {
+            foreach ($productsInStockList as $warehouseList) {
                 foreach ($warehouseList as $idWarehouse => $productsGroupedByCarriers) {
                     foreach ($productsGroupedByCarriers as $data) {
                         $finalPackageList[$idAddressDelivery][] = [
@@ -3976,7 +3976,7 @@ class CartCore extends ObjectModel
 
         $products = $this->getProducts($refresh);
 
-        foreach ($products as $key => &$product) {
+        foreach ($products as &$product) {
             $product['price_without_quantity_discount'] = Product::getPriceStatic(
                 $product['id_product'],
                 !Product::getTaxCalculationMethod(),
