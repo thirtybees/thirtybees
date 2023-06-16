@@ -812,7 +812,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
                     // if multishop db entry doesnt exist yet, we use $insertFields array to create it
                     $insertFields['id_shop'] = (int) $idShop;
-                    $static = $conn->insert($this->def['table'].'_shop', $insertFields, $nullValues) && $result;
+                    $result = $conn->insert($this->def['table'].'_shop', $insertFields, $nullValues) && $result;
                 }
             }
         }
