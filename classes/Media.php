@@ -261,7 +261,7 @@ class MediaCore
         if ($jsContent && $addSeparators) {
             return ';' . $jsContent . ';';
         }
-        return '';
+        return $jsContent;
     }
 
     /**
