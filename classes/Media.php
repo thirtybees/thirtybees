@@ -241,22 +241,27 @@ class MediaCore
 
     /**
      * @param string $jsContent
+     * @param bool $addSeparators
      *
      * @return string
      *
      * @throws PrestaShopException
      */
-    public static function packJS($jsContent)
+    public static function packJS($jsContent, $addSeparators = true)
     {
-        if (!empty($jsContent)) {
+        if ($jsContent) {
             // invoke minifier module
-            $minifiedContent = (string)Hook::getFirstResponse('actionMinifyJs', [ 'js' => $jsContent ]);
-            if ($minifiedContent) {
-                return ';'.trim($minifiedContent, ';').';';
+            $minifiedContent = Hook::getFirstResponse('actionMinifyJs', [ 'js' => $jsContent ]);
+            if ($minifiedContent !== null) {
+                $jsContent = (string)$minifiedContent;
             }
         }
 
-        return ';'.trim($jsContent, ';').';';
+        $jsContent = trim($jsContent, "; \t\n\r\0\x0B");
+        if ($jsContent && $addSeparators) {
+            return ';' . $jsContent . ';';
+        }
+        return '';
     }
 
     /**
@@ -823,12 +828,20 @@ class MediaCore
             $compressedJsPath = $cachePath.'v_'.$version.'_'.$compressedJsFilename.'.js';
             $content = '';
             foreach ($jsFilesInfos as $fileInfos) {
-                if (file_exists($fileInfos['path'])) {
+                $filePath = $fileInfos['path'];
+                if (file_exists($filePath)) {
                     $tmpContent = file_get_contents($fileInfos['path']);
                     if (preg_match('@\.(min|pack)\.[^/]+$@', $fileInfos['path'], $matches)) {
-                        $content .= preg_replace('/\/\/@\ssourceMappingURL\=[_a-zA-Z0-9-.]+\.'.$matches[1].'\.map\s+/', '', $tmpContent);
+                        $contentToAdd = preg_replace('/\/\/@\ssourceMappingURL\=[_a-zA-Z0-9-.]+\.'.$matches[1].'\.map\s+/', '', $tmpContent);
+                        $contentToAdd = trim($contentToAdd, "; \t\n\r\0\x0B");
                     } else {
-                        $content .= Media::packJS($tmpContent);
+                        $contentToAdd = Media::packJS($tmpContent, false);
+                    }
+                    if ($contentToAdd) {
+                        if ($content) {
+                            $content .= ";\n";
+                        }
+                        $content .= $contentToAdd;
                     }
                 } else {
                     $compressedJsFilesNotFound[] = $fileInfos['path'];
