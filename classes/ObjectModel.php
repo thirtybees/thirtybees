@@ -2104,39 +2104,51 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         // Retrocompatibility with $fieldsValidate, $fieldsRequired and $fieldsSize properties ($definition['fields'])
         if (isset($this->def['fields'])) {
             foreach ($this->def['fields'] as $field => $data) {
-                $suffix = (isset($data['lang']) && $data['lang']) ? 'Lang' : '';
+                $isLang = (isset($data['lang']) && $data['lang']);
                 if (isset($data['validate'])) {
-                    $this->{'fieldsValidate'.$suffix}[$field] = $data['validate'];
+                    if ($isLang) {
+                        $this->fieldsValidateLang[$field] = $data['validate'];
+                    } else {
+                        $this->fieldsValidate[$field] = $data['validate'];
+                    }
                 }
                 if (isset($data['required']) && $data['required']) {
-                    $this->{'fieldsRequired'.$suffix}[] = $field;
+                    if ($isLang) {
+                        $this->fieldsRequiredLang[] = $field;
+                    } else {
+                        $this->fieldsRequired[] = $field;
+                    }
                 }
                 if (isset($data['size'])) {
-                    $this->{'fieldsSize'.$suffix}[$field] = $data['size'];
+                    if ($isLang) {
+                        $this->fieldsSizeLang[$field] = $data['size'];
+                    } else {
+                        $this->fieldsSize[$field] = $data['size'];
+                    }
                 }
             }
         } else {
             $this->def['fields'] = [];
-            $suffixs = ['', 'Lang'];
-            foreach ($suffixs as $suffix) {
-                foreach ($this->{'fieldsValidate'.$suffix} as $field => $validate) {
-                    $this->def['fields'][$field]['validate'] = $validate;
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-                }
-                foreach ($this->{'fieldsRequired'.$suffix} as $field) {
-                    $this->def['fields'][$field]['required'] = true;
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-                }
-                foreach ($this->{'fieldsSize'.$suffix} as $field => $size) {
-                    $this->def['fields'][$field]['size'] = $size;
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-                }
+            foreach ($this->fieldsValidate as $field => $validate) {
+                $this->def['fields'][$field]['validate'] = $validate;
+            }
+            foreach ($this->fieldsRequired as $field) {
+                $this->def['fields'][$field]['required'] = true;
+            }
+            foreach ($this->fieldsSize as $field => $size) {
+                $this->def['fields'][$field]['size'] = $size;
+            }
+            foreach ($this->fieldsValidateLang as $field => $validate) {
+                $this->def['fields'][$field]['validate'] = $validate;
+                $this->def['fields'][$field]['lang'] = true;
+            }
+            foreach ($this->fieldsRequiredLang as $field) {
+                $this->def['fields'][$field]['required'] = true;
+                $this->def['fields'][$field]['lang'] = true;
+            }
+            foreach ($this->fieldsSizeLang as $field => $size) {
+                $this->def['fields'][$field]['size'] = $size;
+                $this->def['fields'][$field]['lang'] = true;
             }
         }
     }
