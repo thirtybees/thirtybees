@@ -17,7 +17,7 @@
  * @license   Open Software License (OSL 3.0)
  */
 
-use \Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamInterface;
 
 class AdminAddonsCatalogControllerCore extends AdminController
 {

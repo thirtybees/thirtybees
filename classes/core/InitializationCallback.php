@@ -19,7 +19,7 @@
 
 namespace Thirtybees\Core;
 
-use \Db;
+use Db;
 
 /**
  * Interface InitializationCallback

@@ -17,7 +17,7 @@
  * @license   Open Software License (OSL 3.0)
  */
 
-use \Thirtybees\Core\InitializationCallback;
+use Thirtybees\Core\InitializationCallback;
 
 /**
  * Class AdminCustomerMergeControllerCore
