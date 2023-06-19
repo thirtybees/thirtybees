@@ -171,11 +171,8 @@ class AddressFormatCore extends ObjectModel
      * if the separator is overview
      *
      * @param string $patternName is the composition of the class and field name
-     * @param array $fieldsValidate contains the list of available field for the Address class
-     *
-     * @deprecated 2.0.0
      */
-    protected function _checkLiableAssociation($patternName, $fieldsValidate)
+    protected function _checkLiableAssociation($patternName)
     {
         $patternName = trim($patternName);
 
@@ -222,7 +219,6 @@ class AddressFormatCore extends ObjectModel
     public function checkFormatFields()
     {
         $this->_errorFormatList = [];
-        $fieldsValidate = Address::getFieldsValidate();
         $usedKeyList = [];
 
         $multipleLineFields = explode("\n", $this->format);
@@ -232,7 +228,7 @@ class AddressFormatCore extends ObjectModel
                     if (is_array($patternsName)) {
                         foreach ($patternsName as $patternName) {
                             if (!in_array($patternName, $usedKeyList)) {
-                                $this->_checkLiableAssociation($patternName, $fieldsValidate);
+                                $this->_checkLiableAssociation($patternName);
                                 $usedKeyList[] = $patternName;
                             } else {
                                 $this->_errorFormatList[] = Tools::displayError('This key has already been used.').': '.$patternName;

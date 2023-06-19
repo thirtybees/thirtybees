@@ -242,16 +242,13 @@ class AddressCore extends ObjectModel
     /**
      * Returns fields required for an address in an array hash
      *
-     * @return array hash values.
+     * @return array
      */
     public static function getFieldsValidate()
     {
-        $tmpAddr = new Address();
-        $out = $tmpAddr->fieldsValidate;
-
-        unset($tmpAddr);
-
-        return $out;
+        return array_filter(array_map(function($field) {
+            return $field['validate'] ?? null;
+        }, static::$definition['fields']));
     }
 
     /**
