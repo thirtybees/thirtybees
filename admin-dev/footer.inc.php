@@ -30,6 +30,11 @@
  */
 /** @noinspection PhpUnhandledExceptionInspection */
 
+if (! defined('_TB_VERSION_')) {
+    exit;
+}
+Tools::displayFileAsDeprecated();
+
 $overrideFolder = '';
 if (isset($con)) {
     $overrideFolder = $con->override_folder;

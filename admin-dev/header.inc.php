@@ -31,6 +31,11 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
+if (! defined('_TB_VERSION_')) {
+    exit;
+}
+Tools::displayFileAsDeprecated();
+
 $con = new AdminController();
 $tab = new Tab((int)Tab::getIdFromClassName(Tools::getValue('controller')));
 $con->id = $tab->id;
