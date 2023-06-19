@@ -251,6 +251,8 @@ class CategoryControllerCore extends FrontController
     public function assignProductList()
     {
         $hookExecuted = false;
+
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         Hook::triggerEvent(
             'actionProductListOverride',
             [
