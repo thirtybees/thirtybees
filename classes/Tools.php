@@ -5344,14 +5344,17 @@ FileETag none
             $locale = strtolower(Configuration::get('PS_LOCALE_LANGUAGE')).'-'.strtoupper(Configuration::get('PS_LOCALE_COUNTRY'));
         }
         $locale = substr((string) $locale, 0, 5);
-        $intlFormats = [
-            '%a' => 'EEE',
-            '%A' => 'EEEE',
-            '%b' => 'MMM',
-            '%B' => 'MMMM',
-            '%h' => 'MMM'
-        ];
-        $intlFormatter = function (DateTimeInterface $timestamp, string $format) use ($intlFormats, $locale) {
+
+        $intlFormatter = function (DateTimeInterface $timestamp, string $format) use ($locale) {
+
+            $intlFormats = [
+                '%a' => 'EEE',
+                '%A' => 'EEEE',
+                '%b' => 'MMM',
+                '%B' => 'MMMM',
+                '%h' => 'MMM'
+            ];
+
             $timeZone = $timestamp->getTimezone();
             $dateType = IntlDateFormatter::FULL;
             $timeType = IntlDateFormatter::FULL;
@@ -5365,7 +5368,7 @@ FileETag none
             } elseif ($format == '%X') {
                 $dateType = IntlDateFormatter::NONE;
                 $timeType = IntlDateFormatter::MEDIUM;
-            } else {
+            } elseif (isset($intlFormats[$format])) {
                 $pattern = $intlFormats[$format];
             }
             return (new IntlDateFormatter($locale, $dateType, $timeType, $timeZone, null, $pattern))->format($timestamp);

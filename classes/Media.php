@@ -257,7 +257,7 @@ class MediaCore
             }
         }
 
-        $jsContent = trim($jsContent, "; \t\n\r\0\x0B");
+        $jsContent = trim((string)$jsContent, "; \t\n\r\0\x0B");
         if ($jsContent && $addSeparators) {
             return ';' . $jsContent . ';';
         }
