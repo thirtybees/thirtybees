@@ -1451,7 +1451,7 @@ class AdminThemesControllerCore extends AdminController
                 if (Tools::getValue('filename') != '') {
                     $uploader = new Uploader('themearchive');
                     $uploader->setCheckFileSize(false);
-                    $uploader->setAcceptTypes(array('zip'));
+                    $uploader->setAcceptTypes(['zip']);
                     $uploader->setSavePath($sandbox);
                     $file = $uploader->process(Theme::UPLOADED_THEME_DIR_NAME.'.zip');
                     if ($file[0]['error'] === 0) {

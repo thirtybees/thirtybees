@@ -99,7 +99,7 @@ class AdminPaymentControllerCore extends AdminController
                     }
 
                     if (!get_class($module) == 'SimpleXMLElement') {
-                        $module->reference = array();
+                        $module->reference = [];
                     }
                     $sql = new DbQuery();
                     $sql->select('`id_reference`');
@@ -195,7 +195,7 @@ class AdminPaymentControllerCore extends AdminController
 
         if ($type === 'carrier') {
             // Fill the new restriction selection for active module.
-            $values = array();
+            $values = [];
             foreach ($this->payment_modules as $module) {
                 if ($module->active && isset($_POST[$module->name.'_reference'])) {
                     foreach ($_POST[$module->name.'_reference'] as $selected) {
@@ -211,7 +211,7 @@ class AdminPaymentControllerCore extends AdminController
             }
         } else {
             // Fill the new restriction selection for active module.
-            $values = array();
+            $values = [];
             foreach ($this->payment_modules as $module) {
                 if ($module->active && isset($_POST[$module->name.'_'.$type.''])) {
                     foreach ($_POST[$module->name.'_'.$type.''] as $selected) {

@@ -2565,7 +2565,7 @@ class ToolsCore
                 }
             }
             $opts['http']['header'] = implode("\r\n", $headers);
-            stream_context_set_option($streamContext, array('http' => $opts['http']));
+            stream_context_set_option($streamContext, ['http' => $opts['http']]);
         }
 
         if (!preg_match('/^https?:\/\//', $url)) {

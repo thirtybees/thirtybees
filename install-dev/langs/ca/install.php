@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'No es pot crear la imatge "%1$s" per a l\'entitat "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'No es pot crear la imatge "%1$s" (permisos inadequats a la carpeta "%2$s")',
     'Cannot create image "%s"' => 'No es pot crear la imatge "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instal·lar el thirty bees és ràpid i fàcil. En tan sols uns moments, esdevindreu part d\'una comunitat de multitud de venedors. Esteu en el camí a crear la vostra pròpia botiga on-line única que podreu gestionar fàcilment cada dia.',
     'Continue the installation in:' => 'Continuar la instal·lació a:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'La secció d\'idiomes anterior només s\'aplica a l\'Assistent d\'Instal·lació. Quan la vostra botiga estigui instal·lada, podeu triar la llengua de la vostra botiga entre més de %d traduccions, totes de franc!',
-  ),
-);
+  ],
+];

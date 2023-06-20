@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Ne morem ustvariti slike "%1$s" za entiteto "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Ne morem ustvariti slike "%1$s" (nezadostne pravice za mapo "%2$s")',
     'Cannot create image "%s"' => 'Ne morem ustvariti slike "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
     'Continue the installation in:' => 'Nadaljuj namestitev v:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Zgornja izbira jezika je samo za namestitev. Ko je tvoja trgovina nameščena, lahko izbereš jezik tvoje trgovine med več kot %d prevodi, brezplačno!',
-  ),
-);
+  ],
+];

@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'כשלון ביצירת תמונה "%1$s" עבור "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'כשלון ביצירת תמונה "%1$s" (הרשאות שגויות עבור התקייה "%2$s")',
     'Cannot create image "%s"' => 'כשלון ביצירת תמונה "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'התקנת thirty bees היא קלה ופשוטה. תוך מספר דקות תהפוך לחלק מקהילה הכוללת יותר מסוחר אחד. אתה נמצא בדרכך ליצירת חנות וירטואלית ייחודית שתוכל לנהלה בקלות על בסיס יומי.',
     'Continue the installation in:' => 'המשך התקנה בשפה:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'בחירת השפה למעלה חלה על תהליך ההתקנה בלבד. לאחר שהחנות מותקנת, באפשרותך לבחור שפה עבור ממשק החנות מתוך מעל %d תרגומים, והכל בחינם!',
-  ),
-);
+  ],
+];

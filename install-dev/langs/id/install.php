@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Tidak dapat membuat image "%1$s" untuk objek "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Tidak dapat membuat image "%1$s" (masalah hak akses di "%2$s")',
     'Cannot create image "%s"' => 'Tidak dapat membuat image "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
     'Continue the installation in:' => 'Lanjutkan instalasi di:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Pilihan bahasa diatas hanya berlaku ketika proses instalasi. Setelah terinstall, Anda dapat memilih bahasa untuk toko Anda dari lebih %d bahasa yang tersedia secara gratis!',
-  ),
-);
+  ],
+];

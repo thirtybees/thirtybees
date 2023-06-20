@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Nu pot crea copie "%1$s" pentru obiectul "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nu se poate crea imaginea ”%1$s” (nu este permis pe folder "%2$s")',
     'Cannot create image "%s"' => 'Nu pot crea copie "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
     'Continue the installation in:' => 'Continuați instalarea în:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Selecția limbii de mai sus se aplică numai Asistentului de instalare. Odată ce magazinul dvs. a fost instalat, puteți alege pentru magazinul dvs. dintre peste %d traduceri, toate gratuite!',
-  ),
-);
+  ],
+];

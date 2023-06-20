@@ -391,7 +391,7 @@ class AdminDashboardControllerCore extends AdminController
      */
     public function ajaxProcessGetBlogRss()
     {
-        $return = array('has_errors' => false, 'rss' => array());
+        $return = ['has_errors' => false, 'rss' => []];
         if (!$this->isFresh('/config/xml/blog-'.$this->context->language->iso_code.'.xml', 86400)) {
             if (!$this->refresh('/config/xml/blog-'.$this->context->language->iso_code.'.xml', 'https://thirtybees.com/feed/')) {
                 $return['has_errors'] = true;
@@ -411,12 +411,12 @@ class AdminDashboardControllerCore extends AdminController
                         && Validate::isCleanHtml((string) $item->title)
                         && Validate::isCleanHtml((string) $item->description)
                     ) {
-                        $return['rss'][] = array(
+                        $return['rss'][] = [
                             'date'       => Tools::displayDate(date('Y-m-d', strtotime((string) $item->pubDate))),
                             'title'      => (string) Tools::htmlentitiesUTF8($item->title),
                             'short_desc' => Tools::truncateString(strip_tags((string) $item->description), 150),
                             'link'       => $this->getArticleLink($item),
-                        );
+                        ];
                     } else {
                         break;
                     }

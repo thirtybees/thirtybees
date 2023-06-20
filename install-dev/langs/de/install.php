@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Bild "%1$s" für "%2$s" kann nicht erstellt werden',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Bild "%1$s"kann nicht erstellt werden (keine Schreibrechte für Ordner "%2$s" vorhanden)',
     'Cannot create image "%s"' => 'Bild  "%s" kann nicht erstell werden',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'thirty bees lässt sich einfach und schnell installieren. In wenigen Momenten sind Sie Teil einer ganzen Gemeinschaft von Shopbesitzern. Sie sind gerade dabei, Ihren eigenen, einzigartigen Shop zu erstellen, den Sie täglich leicht verwalten können.',
     'Continue the installation in:' => 'Installation fortführen in:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Die obige Sprachauswahl bezieht sich auf den Installationsassistenten. Sobald Ihr Shop installiert ist, können Sie aus %d Sprachen Ihre Shopsprache wählen!',
-  ),
-);
+  ],
+];

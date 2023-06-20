@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'এনটিটি "%2$s"এর জন্য চিত্র "%1$s" তৈরি করা যায় নি',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'চিত্র "%1$s" তৈরি করা যায় নি (ফোল্ডার  "%2$s"এ অনুমতি জনিত সমস্যা)',
     'Cannot create image "%s"' => 'চিত্র  "%s" তৈরি করা যায় নি ',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
     'Continue the installation in:' => 'এ ইনস্টলেশন চালিয়ে যান: ',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'উপরোক্ত ভাষা নির্বাচন শুধুমাত্র ইনস্টলেশনের সহকারীর জন্য প্রযোজ্য।আপনার দোকান ইনস্টল করা হলে,আপনি উপর থেকে আপনার দোকানের ভাষা নির্বাচন করতে পারবেন একদম বিনামূল্যে!',
-  ),
-);
+  ],
+];

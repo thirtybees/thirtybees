@@ -506,14 +506,14 @@ class AdminImagesControllerCore extends AdminController
         $indexationStatus = $this->getIndexationStatus();
         if (!$indexationStatus || !array_sum(array_column(array_values($indexationStatus), 'indexed'))) {
             // First run, regenerate no picture images, too
-            $process = array(
+            $process = [
                 'categories'    => _PS_CAT_IMG_DIR_,
                 'manufacturers' => _PS_MANU_IMG_DIR_,
                 'suppliers'     => _PS_SUPP_IMG_DIR_,
                 'scenes'        => _PS_SCENE_IMG_DIR_,
                 'products'      => _PS_PROD_IMG_DIR_,
                 'stores'        => _PS_STORE_IMG_DIR_,
-            );
+            ];
 
             foreach ($process as $type => $dir) {
                 $this->_regenerateNoPictureImages(
@@ -747,14 +747,14 @@ class AdminImagesControllerCore extends AdminController
      */
     protected function regenerateNewImage($entityType, $idEntity)
     {
-        $process = array(
+        $process = [
             'categories'    => _PS_CAT_IMG_DIR_,
             'manufacturers' => _PS_MANU_IMG_DIR_,
             'suppliers'     => _PS_SUPP_IMG_DIR_,
             'scenes'        => _PS_SCENE_IMG_DIR_,
             'products'      => _PS_PROD_IMG_DIR_,
             'stores'        => _PS_STORE_IMG_DIR_,
-        );
+        ];
         $type = ImageType::getImagesTypes($entityType);
 
         $watermarkModules = Db::readOnly()->getArray(

@@ -169,8 +169,8 @@ class ErrorUtilsCore
      */
     public static function displayArgument($variable, $strlen = 80, $width = 50, $depth = 2, $i = 0, $objects = [])
     {
-        $search = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
-        $replace = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
+        $search = ["\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v"];
+        $replace = ['\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v'];
 
         switch (gettype($variable)) {
             case 'boolean':

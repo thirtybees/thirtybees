@@ -90,7 +90,7 @@ class DiscountControllerCore extends FrontController
                         (int) $discount['gift_product_attribute'],
                         (int) $this->context->language->id
                     );
-                    $giftAttributes = array();
+                    $giftAttributes = [];
                     foreach ($attributes as $attribute) {
                         $giftAttributes[] = $attribute['group_name'].' : '.$attribute['attribute_name'];
                     }

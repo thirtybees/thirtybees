@@ -139,10 +139,10 @@ class OrderFollowControllerCore extends FrontController
             $this->context->smarty->assign('errorNotReturnable', true);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign([
             'PS_RETURN_PREFIX' => Configuration::get('PS_RETURN_PREFIX', $this->context->language->id),
             'ordersReturn' => $ordersReturn
-        ));
+        ]);
         
 
         $this->setTemplate(_PS_THEME_DIR_.'order-follow.tpl');

@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Nepavyko sukurti paveiksliuko "%1$s" subjektui "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nepavyko sukurti paveiksliuko "%1$s" (blogi leidimai katalogui "%2$s")',
     'Cannot create image "%s"' => 'Negalima sukurti paveiksliuko "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'ThirtyBees diegimas yra greitas ir paprastas. Netrukus tapsite dalimi bendruomenės, susidedančios iš daugiau nei 250 000 pardavėjų. Jūs kuriate savo unikalią elektroninę parduotuvę, kurią galite paprastai valdyti kasdien.',
     'Continue the installation in:' => 'Tęsti įdiegimą:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Kalbos pasirinkimas taikomas tik diegimo asistentui. Kai jūsų parduotuvė bus įdiegta, galėsite savo parduotuvei parinkti kalbą iš daugiau nei %d vertimų, ir visa tai nemokamai!',
-  ),
-);
+  ],
+];

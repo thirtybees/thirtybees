@@ -30,7 +30,7 @@
  */
 
 require_once(__DIR__ . '/install_version.php');
-$errors = array();
+$errors = [];
 
 // Check PHP version
 if (version_compare(PHP_VERSION, _TB_INSTALL_BUILD_PHP_, '<')) {

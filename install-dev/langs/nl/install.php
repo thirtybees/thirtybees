@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Kan afbeelding "%1$s" voor entiteit "%2$s" niet creëren',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Kan afbeelding "%1$s" (verkeerde rechten op map "%2$s") niet creëren',
     'Cannot create image "%s"' => 'Kan afbeelding "%s" niet aanmaken',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'De installatie van thirty bees is snel en eenvoudig. In slechts enkele ogenblikken wordt u deelgenoot van een community van meer dan 200.000 verkopers. U heeft nu bijna uw eigen unieke Webwinkel gecreëerd die u elke dag eenvoudig kunt onderhouden.',
     'Continue the installation in:' => 'Ga door met de installatie in:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'De talenselectie hierboven geldt alleen voor de installatie assistent. Zodra uw webwinkel is geïnstalleerd, kunt u geheel gratis de taal voor uw webwinkel uit meer dan %d vertalingen kiezen.',
-  ),
-);
+  ],
+];

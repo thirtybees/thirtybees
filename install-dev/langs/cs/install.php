@@ -1,16 +1,16 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'Cannot create image "%1$s" for entity "%2$s"' => 'Není možné vytvořit obrázek "%1$s" pro "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Není možné vytvořit obrázek "%1$s" (složka "%2$s" nemá nastavena potřebná práva)',
     'Cannot create image "%s"' => 'Není možné vytvořit obrázek "%s"',
@@ -194,5 +194,5 @@ return array (
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
     'Continue the installation in:' => 'Pokračovat v instalaci v:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Výběr jazyka výše slouží pouze pro Instalačního Asistenta. Jakmile bude váš obchod nainstalován, můžete si vybrat váš jazyk z více než %d překladů, zdarma!',
-  ),
-);
+  ],
+];
