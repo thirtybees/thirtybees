@@ -319,7 +319,7 @@ class StockManagerCore implements StockManagerInterface
                 $stock
             );
 
-            /** @var \Countable $stockCollection */
+            /** @var Countable $stockCollection */
             if (count($stockCollection) <= 0) {
                 return $removedProducts;
             }

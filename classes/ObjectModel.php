@@ -2280,7 +2280,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $conn = Db::getInstance();
         try {
             $success = $conn->execute($sql);
-        } catch (\PrestaShopDatabaseException $exception) {
+        } catch (PrestaShopDatabaseException $exception) {
             static::dropDatabase($className);
 
             return false;
@@ -2318,7 +2318,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             try {
                 $success = $conn->execute($sql) && $success;
-            } catch (\PrestaShopDatabaseException $exception) {
+            } catch (PrestaShopDatabaseException $exception) {
                 static::dropDatabase($className);
 
                 return false;
@@ -2353,7 +2353,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             try {
                 $success = $conn->execute($sql) && $success;
-            } catch (\PrestaShopDatabaseException $exception) {
+            } catch (PrestaShopDatabaseException $exception) {
                 static::dropDatabase($className);
 
                 return false;
@@ -2378,7 +2378,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $className = get_called_class();
         }
 
-        $definition = \ObjectModel::getDefinition($className);
+        $definition = ObjectModel::getDefinition($className);
 
         $conn = Db::getInstance();
         $success = $conn->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'`');
@@ -2412,7 +2412,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $className = get_called_class();
         }
 
-        $definition = \ObjectModel::getDefinition($className);
+        $definition = ObjectModel::getDefinition($className);
 
         $sql = 'SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=\''._DB_NAME_.'\' AND TABLE_NAME=\''._DB_PREFIX_.pSQL($definition['table']).'\'';
 

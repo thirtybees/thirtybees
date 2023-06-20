@@ -1152,7 +1152,7 @@ class ThemeCore extends ObjectModel
                 throw new PrestaShopException("Api error: " . file_get_contents($archiveFile));
             }
 
-            $archive = new \Archive_Tar($archiveFile, 'gz');
+            $archive = new Archive_Tar($archiveFile, 'gz');
             $archivePaths = $archive->listContent();
             if ($archive->error_object) {
                 throw new PrestaShopException("Failed to open archive: " . $archive->error_object->message);

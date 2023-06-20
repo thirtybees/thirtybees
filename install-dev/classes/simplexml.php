@@ -42,7 +42,7 @@ class InstallSimplexmlElement extends SimpleXMLElement
      *
      * @return SimpleXMLElement|null
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function addChild($name, $value = null, $namespace = null)
     {
         $content = trim((string) $value);
@@ -75,7 +75,7 @@ class InstallSimplexmlElement extends SimpleXMLElement
      *
      * @return bool|string
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function asXML($filename = null)
     {
         $dom = new DOMDocument('1.0');
