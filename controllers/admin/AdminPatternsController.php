@@ -74,37 +74,6 @@ class AdminPatternsControllerCore extends AdminController
     }
 
     /**
-     * Render list model
-     *
-     * @return string
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
-     */
-    public function renderListModel()
-    {
-        $content = [];
-
-        $fieldsList = [];
-
-        $helper = new HelperList();
-        $helper->shopLinkType = '';
-        $helper->simple_header = true;
-        $helper->actions = null;
-        $helper->show_toolbar = false;
-        $helper->module = $this;
-        $helper->listTotal = count($content);
-        $helper->identifier = 'id_product_comment';
-        $helper->title = 'Moderate Comments';
-        $helper->table = $this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
-
-        return $helper->generateList($content, $fieldsList);
-    }
-
-    /**
      * Initialize content
      *
      * @return void
