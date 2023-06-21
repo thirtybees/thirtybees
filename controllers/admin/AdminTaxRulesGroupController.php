@@ -619,7 +619,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
      */
     protected function processBulkDeleteTaxRules()
     {
-        $this->deleteTaxRule(Tools::getValue('tax_ruleBox'));
+        $this->deleteTaxRule(Tools::getArrayValue('tax_ruleBox'));
     }
 
     /**

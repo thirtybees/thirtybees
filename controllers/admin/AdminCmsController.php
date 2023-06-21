@@ -384,7 +384,7 @@ class AdminCmsControllerCore extends AdminController
             if ($this->hasDeletePermission()) {
                 if (Tools::isSubmit($this->table.'Box')) {
                     $cms = new CMS();
-                    $result = $cms->deleteSelection(Tools::getValue($this->table.'Box'));
+                    $result = $cms->deleteSelection(Tools::getArrayValue($this->table.'Box'));
                     if ($result) {
                         $cms->cleanPositions(Tools::getIntValue('id_cms_category'));
                         $token = Tools::getAdminTokenLite('AdminCmsContent');
@@ -455,8 +455,8 @@ class AdminCmsControllerCore extends AdminController
         } elseif (Tools::isSubmit('submitBulkdeletecms')) {
             if ($this->hasDeletePermission()) {
                 $this->action = 'bulkdelete';
-                $this->boxes = Tools::getValue($this->table.'Box');
-                if (is_array($this->boxes) && array_key_exists(0, $this->boxes)) {
+                $this->boxes = Tools::getArrayValue($this->table.'Box');
+                if (array_key_exists(0, $this->boxes)) {
                     $firstCms = new CMS((int) $this->boxes[0]);
                     $idCmsCategory = (int) $firstCms->id_cms_category;
                     if (!$res = parent::postProcess()) {

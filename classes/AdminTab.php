@@ -1547,7 +1547,7 @@ abstract class AdminTabCore
                     } else {
                         /** @var ObjectModel $object */
                         $object = new $this->className();
-                        $result = $object->deleteSelection(Tools::getValue($this->table.'Box'));
+                        $result = $object->deleteSelection(Tools::getArrayValue($this->table.'Box'));
                     }
 
                     if ($result) {
@@ -1764,9 +1764,7 @@ abstract class AdminTabCore
                 }
             }
         } elseif (Tools::isSubmit('submitFields') && $this->requiredDatabase && $this->tabAccess[Profile::PERMISSION_ADD] && $this->tabAccess[Profile::PERMISSION_DELETE]) {
-            if (!is_array($fields = Tools::getValue('fieldsBox'))) {
-                $fields = [];
-            }
+            $fields = Tools::getArrayValue('fieldsBox');
 
             /** @var ObjectModel $object */
             $object = new $this->className();

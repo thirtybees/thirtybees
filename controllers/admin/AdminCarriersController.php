@@ -606,10 +606,8 @@ class AdminCarriersControllerCore extends AdminController
                 // Delete from the reference_id and not from the carrier id
                 $carrier = new Carrier((int) $id);
                 Warehouse::removeCarrier($carrier->id_reference);
-            } elseif (Tools::isSubmit($this->table.'Box') && count(Tools::getValue($this->table.'Box')) > 0) {
-                $ids = Tools::getValue($this->table.'Box');
-                array_walk($ids, 'intval');
-                foreach ($ids as $id) {
+            } elseif (Tools::isSubmit($this->table.'Box')) {
+                foreach (Tools::getArrayValue($this->table.'Box') as $id) {
                     // Delete from the reference_id and not from the carrier id
                     $carrier = new Carrier((int) $id);
                     Warehouse::removeCarrier($carrier->id_reference);
@@ -629,22 +627,26 @@ class AdminCarriersControllerCore extends AdminController
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
+        $idCarrier = (int)$idCarrier;
         $conn = Db::getInstance();
         if ($delete) {
-            $conn->delete('carrier_group', '`id_carrier` = '.(int) $idCarrier);
+            $conn->delete('carrier_group', '`id_carrier` = '.$idCarrier);
         }
         $groups = Db::readOnly()->getArray(
             (new DbQuery())
             ->select('`id_group`')
             ->from('group')
         );
+
+        $selectedGroups = array_map('intval', Tools::getArrayValue('groupBox'));
         foreach ($groups as $group) {
-            if (Tools::getIsset('groupBox') && in_array($group['id_group'], Tools::getValue('groupBox'))) {
+            $groupId = (int)$group['id_group'];
+            if (in_array($groupId, $selectedGroups)) {
                 $conn->insert(
                     'carrier_group',
                     [
-                        'id_group'   => (int) $group['id_group'],
-                        'id_carrier' => (int) $idCarrier,
+                        'id_group'   => $groupId,
+                        'id_carrier' => $idCarrier,
                     ]
                 );
             }

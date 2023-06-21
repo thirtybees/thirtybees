@@ -1698,10 +1698,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
     protected function postProcessUpdateReceipt()
     {
         // gets all box selected
-        $rows = Tools::getValue('supply_order_detailBox');
+        $rows = Tools::getArrayValue('supply_order_detailBox');
         if (!$rows) {
             $this->errors[] = Tools::displayError('You did not select any products to update.');
-
             return;
         }
 

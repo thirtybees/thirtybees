@@ -358,7 +358,7 @@ class AdminTabsControllerCore extends AdminController
                 if (Tools::isSubmit('submitBulk'.$bulkAction.$this->table) || Tools::isSubmit('submitBulk'.$bulkAction)) {
                     if ($this->hasEditPermission()) {
                         $this->action = 'bulk'.$bulkAction;
-                        $this->boxes = Tools::getValue($this->list_id.'Box');
+                        $this->boxes = Tools::getArrayValue($this->list_id.'Box');
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to edit this.');
                     }
@@ -366,7 +366,7 @@ class AdminTabsControllerCore extends AdminController
                 } elseif (Tools::isSubmit('submitBulk')) {
                     if ($this->hasEditPermission()) {
                         $this->action = 'bulk'.Tools::getValue('select_submitBulk');
-                        $this->boxes = Tools::getValue($this->list_id.'Box');
+                        $this->boxes = Tools::getArrayValue($this->list_id.'Box');
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to edit this.');
                     }

@@ -1146,7 +1146,7 @@ class AdminCustomersControllerCore extends AdminController
     public function processSave()
     {
         // Check that default group is selected
-        if (!is_array(Tools::getValue('groupBox')) || !in_array(Tools::getIntValue('id_default_group'), Tools::getValue('groupBox'))) {
+        if (! in_array(Tools::getIntValue('id_default_group'), Tools::getArrayValue('groupBox'))) {
             $this->errors[] = Tools::displayError('A default customer group must be selected in group box.');
         }
 

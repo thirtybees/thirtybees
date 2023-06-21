@@ -680,7 +680,7 @@ class AdminShopControllerCore extends AdminController
      */
     public function processAdd()
     {
-        if (!Tools::getValue('categoryBox') || !in_array(Tools::getIntValue('id_category'), Tools::getValue('categoryBox'))) {
+        if (!in_array(Tools::getIntValue('id_category'), Tools::getArrayValue('categoryBox'))) {
             $this->errors[] = $this->l('You need to select at least the root category.');
         }
 
@@ -728,7 +728,7 @@ class AdminShopControllerCore extends AdminController
 
         $object->associateSuperAdmins();
 
-        $categories = Tools::getValue('categoryBox');
+        $categories = Tools::getArrayValue('categoryBox');
         array_unshift($categories, Configuration::get('PS_ROOT_CATEGORY'));
         Category::updateFromShop($categories, $object->id);
         if (Tools::getValue('useImportData') && ($importData = Tools::getValue('importData')) && is_array($importData) && isset($importData['product'])) {
@@ -972,9 +972,9 @@ class AdminShopControllerCore extends AdminController
      */
     protected function afterUpdate($newShop)
     {
-        $categories = Tools::getValue('categoryBox');
+        $categories = Tools::getArrayValue('categoryBox');
 
-        if (!is_array($categories)) {
+        if (! $categories) {
             $this->errors[] = $this->l('Please create some sub-categories for this root category.');
 
             return false;

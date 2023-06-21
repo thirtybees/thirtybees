@@ -738,7 +738,7 @@ class HelperListCore extends Helper
                     'list_skip_actions'         => $this->list_skip_actions,
                     'row_hover'                 => $this->row_hover,
                     'list_id'                   => $this->list_id ?? $this->table,
-                    'checked_boxes'             => Tools::getValue(($this->list_id ?? $this->table).'Box'),
+                    'checked_boxes'             => Tools::getArrayValue(($this->list_id ?? $this->table).'Box'),
                 ]
             )
         );

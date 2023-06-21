@@ -320,7 +320,7 @@ class AdminStatusesControllerCore extends AdminController
         if (Tools::isSubmit('submitBulkdeleteorder_return_state')) {
             $this->className = 'OrderReturnState';
             $this->table = 'order_return_state';
-            $this->boxes = Tools::getValue('order_return_stateBox');
+            $this->boxes = Tools::getArrayValue('order_return_stateBox');
             parent::processBulkDelete();
         }
 

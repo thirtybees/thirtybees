@@ -1099,7 +1099,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             return false;
         }
 
-        return $carrier->setGroups(Tools::getValue('groupBox'));
+        return $carrier->setGroups(Tools::getArrayValue('groupBox'));
     }
 
     /**

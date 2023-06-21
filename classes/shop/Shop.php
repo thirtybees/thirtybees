@@ -1303,7 +1303,7 @@ class ShopCore extends ObjectModel
                         unset($res[$row['primary']]);
                     }
 
-                    $categories = Tools::getValue('categoryBox');
+                    $categories = Tools::getArrayValue('categoryBox');
                     if ($tableName == 'product_shop' && count($categories) == 1) {
                         unset($res['id_category_default']);
                         $keys = implode('`, `', array_keys($res));

@@ -1974,7 +1974,7 @@ class AdminProductsControllerCore extends AdminController
 
             if (empty($this->errors)) {
                 $languages = Language::getLanguages(false);
-                if ($this->isProductFieldUpdated('category_box') && !$this->object->updateCategories(Tools::getValue('categoryBox'))) {
+                if ($this->isProductFieldUpdated('category_box') && !$this->object->updateCategories(Tools::getArrayValue('categoryBox'))) {
                     $this->errors[] = Tools::displayError('An error occurred while linking the object.').' <b>'.$this->table.'</b> '.Tools::displayError('To categories');
                 } elseif (!$this->updateTags($languages, $this->object)) {
                     $this->errors[] = Tools::displayError('An error occurred while adding tags.');
@@ -2150,11 +2150,11 @@ class AdminProductsControllerCore extends AdminController
         }
 
         // Categories
-        if ($this->isProductFieldUpdated('id_category_default') && (!Tools::isSubmit('categoryBox') || !count(Tools::getValue('categoryBox')))) {
+        if ($this->isProductFieldUpdated('id_category_default') && !Tools::getArrayValue('categoryBox')) {
             $this->errors[] = $this->l('Products must be in at least one category.');
         }
 
-        if ($this->isProductFieldUpdated('id_category_default') && (!is_array(Tools::getValue('categoryBox')) || !in_array(Tools::getIntValue('id_category_default'), Tools::getValue('categoryBox')))) {
+        if ($this->isProductFieldUpdated('id_category_default') && !in_array(Tools::getIntValue('id_category_default'), Tools::getArrayValue('categoryBox'))) {
             $this->errors[] = $this->l('This product must be in the default category.');
         }
 
@@ -2607,7 +2607,7 @@ class AdminProductsControllerCore extends AdminController
                         $this->updateDownloadProduct($object);
                         $this->updateTags(Language::getLanguages(false), $object);
 
-                        if ($this->isProductFieldUpdated('category_box') && !$object->updateCategories(Tools::getValue('categoryBox'))) {
+                        if ($this->isProductFieldUpdated('category_box') && !$object->updateCategories(Tools::getArrayValue('categoryBox'))) {
                             $this->errors[] = Tools::displayError('An error occurred while linking the object.').' <b>'.$this->table.'</b> '.Tools::displayError('To categories');
                         }
                     }
@@ -3948,10 +3948,10 @@ class AdminProductsControllerCore extends AdminController
         $root = Category::getRootCategory();
         $defaultCategory = $this->context->cookie->id_category_products_filter ? $this->context->cookie->id_category_products_filter : $this->context->shop->id_category;
         if (!$product->id || !$product->isAssociatedToShop()) {
-            $selectedCat = Category::getCategoryInformations(Tools::getValue('categoryBox', [$defaultCategory]), $this->default_form_language);
+            $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]), $this->default_form_language);
         } else {
             if (Tools::isSubmit('categoryBox')) {
-                $selectedCat = Category::getCategoryInformations(Tools::getValue('categoryBox', [$defaultCategory]), $this->default_form_language);
+                $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]), $this->default_form_language);
             } else {
                 $selectedCat = Product::getProductCategoriesFull($product->id, $this->default_form_language);
             }
@@ -6185,13 +6185,8 @@ class AdminProductsControllerCore extends AdminController
         if ($this->hasDeletePermission()) {
             if (is_array($this->boxes) && !empty($this->boxes)) {
                 $success = 1;
-                $products = Tools::getValue($this->table.'Box');
-                if (is_array($products) && ($count = count($products))) {
-                    // Deleting products can be quite long on a cheap server. Let's say 1.5 seconds by product (I've seen it!).
-                    if (intval(ini_get('max_execution_time')) < round($count * 1.5)) {
-                        ini_set('max_execution_time', round($count * 1.5));
-                    }
-
+                $products = Tools::getArrayValue($this->table.'Box');
+                if ($products) {
                     if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
                         $stockManager = StockManagerFactory::getManager();
                     }

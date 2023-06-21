@@ -1742,9 +1742,7 @@ class AdminControllerCore extends Controller
      */
     public function processUpdateFields()
     {
-        if (!is_array($fields = Tools::getValue('fieldsBox'))) {
-            $fields = [];
-        }
+        $fields = Tools::getArrayValue('fieldsBox');
 
         /** @var ObjectModel $object */
         $object = new $this->className();
@@ -3910,9 +3908,9 @@ class AdminControllerCore extends Controller
                     if ($bulk_action === 'delete') {
                         if ($this->hasDeletePermission()) {
                             $this->action = 'bulk'.$bulk_action;
-                            $this->boxes = Tools::getValue($this->table.'Box');
+                            $this->boxes = Tools::getArrayValue($this->table.'Box');
                             if (empty($this->boxes) && $this->table == 'attribute') {
-                                $this->boxes = Tools::getValue($this->table.'_valuesBox');
+                                $this->boxes = Tools::getArrayValue($this->table.'_valuesBox');
                             }
                         } else {
                             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
@@ -3920,7 +3918,7 @@ class AdminControllerCore extends Controller
                         break;
                     } elseif ($this->hasEditPermission()) {
                         $this->action = 'bulk'.$bulk_action;
-                        $this->boxes = Tools::getValue($this->table.'Box');
+                        $this->boxes = Tools::getArrayValue($this->table.'Box');
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to edit this.');
                     }
@@ -3929,14 +3927,14 @@ class AdminControllerCore extends Controller
                     if ($bulk_action === 'delete') {
                         if ($this->hasDeletePermission()) {
                             $this->action = 'bulk'.$bulk_action;
-                            $this->boxes = Tools::getValue($this->table.'Box');
+                            $this->boxes = Tools::getArrayValue($this->table.'Box');
                         } else {
                             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
                         }
                         break;
                     } elseif ($this->hasEditPermission()) {
                         $this->action = 'bulk'.Tools::getValue('select_submitBulk');
-                        $this->boxes = Tools::getValue($this->table.'Box');
+                        $this->boxes = Tools::getArrayValue($this->table.'Box');
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to edit this.');
                     }
@@ -4463,7 +4461,7 @@ class AdminControllerCore extends Controller
         if (is_array($this->boxes) && !empty($this->boxes)) {
             /** @var Country|State $object */
             $object = new $this->className();
-            $result = $object->affectZoneToSelection(Tools::getValue($this->table.'Box'), Tools::getValue('zone_to_affect'));
+            $result = $object->affectZoneToSelection(Tools::getArrayValue($this->table.'Box'), Tools::getIntValue('zone_to_affect'));
 
             if ($result) {
                 $this->redirect_after = static::$currentIndex.'&conf=28&token='.$this->token;

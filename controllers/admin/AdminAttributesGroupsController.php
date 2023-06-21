@@ -1024,7 +1024,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
         if (Tools::getIsset('attributeBox')) {
             $this->className = ProductAttribute::class;
             $this->table = 'attribute';
-            $this->boxes = Tools::getValue($this->table.'Box');
+            $this->boxes = Tools::getArrayValue($this->table.'Box');
         }
 
         $result = parent::processBulkDelete();
