@@ -1632,7 +1632,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 			 IFNULL(pa.`upc`, IFNULL(p.`upc`, \'\')) as `upc`'
         );
         $query->from('product_supplier', 'ps');
-        $query->innerJoin('warehouse_product_location', 'wpl', 'wpl.`id_product` = ps.`id_product` AND wpl.`id_product_attribute` = ps.`id_product_attribute` AND wpl.`id_warehouse` = '.(int) $supplyOrder->id_warehouse.'');
+        $query->innerJoin('warehouse_product_location', 'wpl', 'wpl.`id_product` = ps.`id_product` AND wpl.`id_product_attribute` = ps.`id_product_attribute` AND wpl.`id_warehouse` = '.(int) $supplyOrder->id_warehouse);
         $query->leftJoin('product', 'p', 'p.`id_product` = ps.`id_product`');
         $query->leftJoin('product_attribute', 'pa', 'pa.`id_product_attribute` = ps.`id_product_attribute` AND p.`id_product` = ps.`id_product`');
         $query->where('ps.`id_supplier` = '.(int) $supplyOrder->id_supplier);

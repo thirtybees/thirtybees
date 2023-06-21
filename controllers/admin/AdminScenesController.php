@@ -178,16 +178,15 @@ class AdminScenesControllerCore extends AdminController
         ];
         $this->fields_form = $fieldsForm;
 
-        $imageToMapDesc = '';
-        $imageToMapDesc .= '<div class="help-block">'.$this->l('Format:').' JPG, GIF, PNG. '.$this->l('File size:').' '
-            .(Tools::getMaxUploadSize() / 1024).''.$this->l('Kb max.').' '
-            .sprintf(
+        $imageToMapDesc = '<div class="help-block">' . $this->l('Format:') . ' JPG, GIF, PNG. ' . $this->l('File size:') . ' '
+            . (Tools::getMaxUploadSize() / 1024) . $this->l('Kb max.') . ' '
+            . sprintf(
                 $this->l('If an image is too large, it will be reduced to %1$d x %2$dpx (width x height).'),
                 $largeSceneImageType['width'], $largeSceneImageType['height']
             )
-            .$this->l('If an image is deemed too small, a white background will be added in order to achieve the correct image size.').'<br />'.
+            . $this->l('If an image is deemed too small, a white background will be added in order to achieve the correct image size.') . '<br />' .
             $this->l('Note: To change image dimensions, please change the \'large_scene\' image type settings to the desired size (in Back Office > Preferences > Images).')
-            .'</div>';
+            . '</div>';
 
         if ($obj->id && file_exists(_PS_SCENE_IMG_DIR_.$obj->id.'-scene_default.jpg')) {
             $this->addJqueryPlugin('autocomplete');
@@ -218,15 +217,14 @@ class AdminScenesControllerCore extends AdminController
                 $imageToMapDesc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'._THEME_SCENE_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg?rand='.(int) rand().'" />';
             }
 
-            $imgAltDesc = '';
-            $imgAltDesc .= $this->l('If you want to use a thumbnail other than one generated from simply reducing the mapped image, please upload it here.')
-                .'<br />'.$this->l('Format:').' JPG, GIF, PNG. '
-                .$this->l('File size:').' '.(Tools::getMaxUploadSize() / 1024).''.$this->l('Kb max.').' '
-                .sprintf(
+            $imgAltDesc = $this->l('If you want to use a thumbnail other than one generated from simply reducing the mapped image, please upload it here.')
+                . '<br />' . $this->l('Format:') . ' JPG, GIF, PNG. '
+                . $this->l('File size:') . ' ' . (Tools::getMaxUploadSize() / 1024) . $this->l('Kb max.') . ' '
+                . sprintf(
                     $this->l('Automatically resized to %1$d x %2$dpx (width x height).'),
                     $thumbSceneImageType['width'], $thumbSceneImageType['height']
-                ).'.<br />'
-                .$this->l('Note: To change image dimensions, please change the \'m_scene_default\' image type settings to the desired size (in Back Office > Preferences > Images).');
+                ) . '.<br />'
+                . $this->l('Note: To change image dimensions, please change the \'m_scene_default\' image type settings to the desired size (in Back Office > Preferences > Images).');
 
             $inputImgAlt = [
                 'type'  => 'file',

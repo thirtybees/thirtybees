@@ -234,7 +234,7 @@ class Curve
             $string .= '['.addslashes((string) $key).($time_mode ? '000' : '').','.(float) $value.'],';
         }
 
-        return '{data:['.rtrim($string, ',').']'.(!empty($this->label) ? ',label:"'.$this->label.'"' : '').''.(!empty($this->type) ? ','.$this->type : '').'}';
+        return '{data:['.rtrim($string, ',').']'.(!empty($this->label) ? ',label:"'.$this->label.'"' : '') .(!empty($this->type) ? ','.$this->type : '').'}';
     }
 
     /**

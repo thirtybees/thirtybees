@@ -2456,7 +2456,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         $definition = static::getDefinition($className);
         $sql = 'ALTER TABLE `'._DB_PREFIX_.bqSQL($definition['table']).'`';
-        $sql .= ' ADD COLUMN `'.bqSQL($name).'` '.bqSQL($columnDefinition['db_type']).'';
+        $sql .= ' ADD COLUMN `'.bqSQL($name).'` '.bqSQL($columnDefinition['db_type']);
         if ($name === $definition['primary']) {
             $sql .= ' INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT';
         } else {

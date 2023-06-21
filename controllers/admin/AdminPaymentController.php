@@ -213,8 +213,8 @@ class AdminPaymentControllerCore extends AdminController
             // Fill the new restriction selection for active module.
             $values = [];
             foreach ($this->payment_modules as $module) {
-                if ($module->active && isset($_POST[$module->name.'_'.$type.''])) {
-                    foreach ($_POST[$module->name.'_'.$type.''] as $selected) {
+                if ($module->active && isset($_POST[$module->name.'_'.$type])) {
+                    foreach ($_POST[$module->name.'_'.$type] as $selected) {
                         $values[] = '('.(int) $module->id.', '.(int) $this->context->shop->id.', '.(int) $selected.')';
                     }
                 }

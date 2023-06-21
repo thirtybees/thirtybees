@@ -553,9 +553,8 @@ class AdminPatternsControllerCore extends AdminController
      */
     public function renderList()
     {
-        $return = '';
 
-        $return .= $this->renderListSimpleHeader();
+        $return = $this->renderListSimpleHeader();
         $return .= $this->renderListSmallColumns();
         $return .= $this->renderListWithParentClass();
 
