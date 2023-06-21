@@ -1698,6 +1698,7 @@ class AdminOrdersControllerCore extends AdminController
                             break;
                         }
                     }
+                    unset($cartRule);
 
                     if ($res) {
                         foreach ($cartRules as $idOrderInvoice => $cartRule) {

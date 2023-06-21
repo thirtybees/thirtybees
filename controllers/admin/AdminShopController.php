@@ -229,8 +229,10 @@ class AdminShopControllerCore extends AdminController
         if ($this->display == 'edit') {
             $this->toolbar_title[] = $this->object->name;
         } elseif (!$this->display && $this->id_shop_group) {
-            $group = new ShopGroup($this->id_shop_group);
-            $this->toolbar_title[] = $group->name;
+            $shopGroup = new ShopGroup($this->id_shop_group);
+            if (Validate::isLoadedObject($shopGroup)) {
+                $this->toolbar_title[] = $shopGroup->name;
+            }
         }
 
         $this->context->smarty->assign(
