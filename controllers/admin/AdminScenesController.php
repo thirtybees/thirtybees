@@ -237,7 +237,7 @@ class AdminScenesControllerCore extends AdminController
 
             $selectedCat = [];
             if (Tools::isSubmit('categories')) {
-                foreach (Tools::getValue('categories') as $row) {
+                foreach (Tools::getArrayValue('categories') as $row) {
                     $selectedCat[] = $row;
                 }
             } else {

@@ -562,6 +562,26 @@ class ToolsCore
     }
 
     /**
+     * @param string $key
+     * @param array $defaultValue
+     *
+     * @return array
+     */
+    public static function getArrayValue(string $key, array $defaultValue = []): array
+    {
+        $value = static::getValueRaw($key, $defaultValue);
+        if (is_array($value)) {
+            return $value;
+        }
+        if (_PS_MODE_DEV_) {
+            $type = gettype($value);
+            trigger_error(sprintf('Tools::getArrayValue(): passed value should be array, %s given', $type), E_USER_WARNING);
+        }
+        return $defaultValue;
+    }
+
+
+    /**
      * Set cookie id_lang
      *
      * @param Context|null $context

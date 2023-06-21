@@ -364,7 +364,7 @@ class AdminStatusesControllerCore extends AdminController
                 return parent::postProcess();
             }
         } elseif (Tools::isSubmit('submitBulkdelete'.$this->table)) {
-            foreach (Tools::getValue($this->table.'Box') as $selection) {
+            foreach (Tools::getArrayValue($this->table.'Box') as $selection) {
                 $orderState = new OrderState((int) $selection, $this->context->language->id);
                 if (!$orderState->isRemovable()) {
                     $this->errors[] = $this->l('For security reasons, you cannot delete default order statuses.');

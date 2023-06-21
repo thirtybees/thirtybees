@@ -481,7 +481,7 @@ class AdminOrdersControllerCore extends AdminController
                 if (!Validate::isLoadedObject($orderState)) {
                     $this->errors[] = sprintf(Tools::displayError('Order status #%d cannot be loaded'), $idOrderState);
                 } else {
-                    foreach (Tools::getValue('orderBox') as $idOrder) {
+                    foreach (Tools::getArrayValue('orderBox') as $idOrder) {
                         $order = new Order((int) $idOrder);
                         if (!Validate::isLoadedObject($order)) {
                             $this->errors[] = sprintf(Tools::displayError('Order #%d cannot be loaded'), $idOrder);
@@ -2734,18 +2734,20 @@ class AdminOrdersControllerCore extends AdminController
             $orderInvoice = new OrderInvoice(Tools::getIntValue('product_invoice'));
         }
 
+        $conn = Db::getInstance();
+
         // If multiple product_quantity, the order details concern a product customized
         $productQuantity = 0;
-        $conn = Db::getInstance();
-        if (is_array(Tools::getValue('product_quantity'))) {
-            foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
+        $quantityParam = Tools::getValue('product_quantity');
+        if (is_array($quantityParam)) {
+            foreach ($quantityParam as $idCustomization => $qty) {
                 // Update quantity of each customization
                 $conn->update('customization', ['quantity' => (int) $qty], 'id_customization = '.(int) $idCustomization);
                 // Calculate the real quantity of the product
-                $productQuantity += $qty;
+                $productQuantity += (int)$qty;
             }
         } else {
-            $productQuantity = Tools::getValue('product_quantity');
+            $productQuantity = (int)$quantityParam;
         }
 
         $this->checkStockAvailable($orderDetail, ($productQuantity - $orderDetail->product_quantity));
@@ -2756,8 +2758,8 @@ class AdminOrdersControllerCore extends AdminController
 
         // If multiple product_quantity, the order details concern a product customized
         $productQuantity = 0;
-        if (is_array(Tools::getValue('product_quantity'))) {
-            foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
+        if (is_array($quantityParam)) {
+            foreach ($quantityParam as $idCustomization => $qty) {
                 $qty = (int)$qty;
                 // Update quantity of each customization
                 $conn->update(
@@ -2772,7 +2774,7 @@ class AdminOrdersControllerCore extends AdminController
                 $productQuantity += $qty;
             }
         } else {
-            $productQuantity = Tools::getIntValue('product_quantity');
+            $productQuantity = (int)$quantityParam;
         }
 
         $productPriceTaxIncl = Tools::getNumberValue('product_price_tax_incl', _TB_PRICE_DATABASE_PRECISION_);
@@ -2911,7 +2913,7 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        if (is_array(Tools::getValue('product_quantity'))) {
+        if (is_array($quantityParam)) {
             $view = $this->createTemplate('_customized_data.tpl')->fetch();
         } else {
             $view = $this->createTemplate('_product_line.tpl')->fetch();
@@ -2927,7 +2929,7 @@ class AdminOrdersControllerCore extends AdminController
             'invoices'            => $invoices,
             'documents_html'      => $this->renderDocuments($order),
             'shipping_html'       => $this->createTemplate('_shipping.tpl')->fetch(),
-            'customized_product'  => is_array(Tools::getValue('product_quantity')),
+            'customized_product'  => is_array($quantityParam),
         ]));
     }
 
@@ -3160,13 +3162,14 @@ class AdminOrdersControllerCore extends AdminController
             ]));
         }
 
-        if (!is_array(Tools::getValue('product_quantity')) && !Validate::isUnsignedInt(Tools::getValue('product_quantity'))) {
+        $quantityParam = Tools::getValue('product_quantity');
+        if (!is_array($quantityParam) && !Validate::isUnsignedInt($quantityParam)) {
             $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('Invalid quantity'),
             ]));
-        } elseif (is_array(Tools::getValue('product_quantity'))) {
-            foreach (Tools::getValue('product_quantity') as $qty) {
+        } elseif (is_array($quantityParam)) {
+            foreach ($quantityParam as $qty) {
                 if (!Validate::isUnsignedInt($qty)) {
                     $this->ajaxDie(json_encode([
                         'result' => false,

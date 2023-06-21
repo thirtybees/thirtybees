@@ -1538,7 +1538,7 @@ abstract class AdminTabCore
                 if (isset($_POST[$this->table.'Box'])) {
                     $result = true;
                     if ($this->deleted) {
-                        foreach (Tools::getValue($this->table.'Box') as $id) {
+                        foreach (Tools::getArrayValue($this->table.'Box') as $id) {
                             /** @var ObjectModel $toDelete */
                             $toDelete = new $this->className($id);
                             $toDelete->deleted = 1;

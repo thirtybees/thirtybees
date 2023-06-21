@@ -1217,7 +1217,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         $ret = parent::add($autoDate, $nullValues);
 
         if (Tools::isSubmit('checkBoxShopAsso_category')) {
-            foreach (Tools::getValue('checkBoxShopAsso_category') as $idShop => $value) {
+            foreach (Tools::getArrayValue('checkBoxShopAsso_category') as $idShop => $value) {
                 $position = (int) Category::getLastPosition((int) $this->id_parent, $idShop);
                 $this->addPosition($position, $idShop);
             }
@@ -1422,7 +1422,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
         if ($changed) {
             if (Tools::isSubmit('checkBoxShopAsso_category')) {
-                foreach (Tools::getValue('checkBoxShopAsso_category') as $row) {
+                foreach (Tools::getArrayValue('checkBoxShopAsso_category') as $row) {
                     foreach ($row as $idShop => $value) {
                         $this->addPosition((int) Category::getLastPosition((int) $this->id_parent, (int) $idShop), (int) $idShop);
                     }

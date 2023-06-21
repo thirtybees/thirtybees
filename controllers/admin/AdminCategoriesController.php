@@ -1015,7 +1015,7 @@ class AdminCategoriesControllerCore extends AdminController
     {
         if ($this->hasDeletePermission()) {
             $categories = [];
-            foreach (Tools::getValue($this->table.'Box') as $idCategory) {
+            foreach (Tools::getArrayValue($this->table.'Box') as $idCategory) {
                 $category = new Category((int) $idCategory);
                 if (!$category->isRootCategoryForAShop()) {
                     $categories[$category->id] = [

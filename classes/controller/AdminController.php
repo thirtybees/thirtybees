@@ -1550,7 +1550,7 @@ class AdminControllerCore extends Controller
 
         $assos = [];
         if (Tools::isSubmit('checkBoxShopAsso_'.$table)) {
-            foreach (Tools::getValue('checkBoxShopAsso_'.$table) as $idShop => $value) {
+            foreach (Tools::getArrayValue('checkBoxShopAsso_'.$table) as $idShop => $value) {
                 $assos[] = (int) $idShop;
             }
         } elseif (Shop::getTotalShops(false) == 1) {

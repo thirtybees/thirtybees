@@ -822,7 +822,7 @@ class AdminCartRulesControllerCore extends AdminController
                         $idProductRule = $conn->Insert_ID();
 
                         $values = [];
-                        foreach (Tools::getValue('product_rule_select_'.$ruleGroupId.'_'.$ruleId) as $id) {
+                        foreach (Tools::getArrayValue('product_rule_select_'.$ruleGroupId.'_'.$ruleId) as $id) {
                             $values[] = '('.(int) $idProductRule.','.(int) $id.')';
                         }
                         $values = array_unique($values);
