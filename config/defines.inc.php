@@ -48,7 +48,7 @@ if (!defined('_TB_DB_STRINGIFY_FETCHES_')) {
 }
 
 if (!defined('_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_')) {
-    define('_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_', false);
+    define('_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_', true);
 }
 
 if (!defined('_PS_DEBUG_PROFILING_')) {
