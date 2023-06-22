@@ -52,7 +52,6 @@ if (!isset($_REQUEST['controller']) && isset($_REQUEST['tab']) && is_string($_RE
 }
 
 require(_PS_ADMIN_DIR_.'/../config/config.inc.php');
-require(_PS_ADMIN_DIR_.'/functions.php');
 
 // Prepare and trigger admin dispatcher
 Dispatcher::getInstance()->dispatch();

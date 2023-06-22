@@ -894,7 +894,7 @@ class AdminProductsControllerCore extends AdminController
                 if ($object->delete()) {
                     $idCategory = Tools::getIntValue('id_category');
                     $categoryUrl = empty($idCategory) ? '' : '&id_category='.(int) $idCategory;
-                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
+                    Logger::addLog(sprintf($this->l('%s deletion', null, false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
                     $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token.$categoryUrl;
                 } else {
                     $this->errors[] = Tools::displayError('An error occurred during deletion.');
@@ -1956,7 +1956,7 @@ class AdminProductsControllerCore extends AdminController
         $this->_removeTaxFromEcotax();
         $this->copyFromPost($this->object, $this->table);
         if ($this->object->add()) {
-            Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+            Logger::addLog(sprintf($this->l('%s addition', null, false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
             $this->updateAssoShop($this->object->id);
             $this->updatePerStoreFields($this->object->id);
             $this->addCarriers($this->object);
@@ -2567,7 +2567,7 @@ class AdminProductsControllerCore extends AdminController
                         StockAvailable::setProductDependsOnStock((int) $this->object->id, $dependsOnStock, $this->context->shop->id);
                     }
 
-                    Logger::addLog(sprintf($this->l('%s modification', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+                    Logger::addLog(sprintf($this->l('%s modification', null, false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                     $this->updatePerStoreFields($object->id);
                     if (in_array($this->context->shop->getContext(), [Shop::CONTEXT_SHOP, Shop::CONTEXT_ALL])) {
                         if ($this->isTabSubmitted('Shipping')) {
@@ -6208,7 +6208,7 @@ class AdminProductsControllerCore extends AdminController
                         }
                         if (!count($this->errors)) {
                             if ($product->delete()) {
-                                Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $product->id, true, (int) $this->context->employee->id);
+                                Logger::addLog(sprintf($this->l('%s deletion', null, false, false), $this->className), 1, null, $this->className, (int) $product->id, true, (int) $this->context->employee->id);
                             } else {
                                 $success = false;
                             }

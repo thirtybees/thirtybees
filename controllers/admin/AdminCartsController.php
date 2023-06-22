@@ -854,7 +854,7 @@ class AdminCartsControllerCore extends AdminController
             if (!$idCartRule = CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id)) {
                 $cartRule = new CartRule();
                 $cartRule->code = CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id;
-                $cartRule->name = [Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', 'AdminTab', false, false)];
+                $cartRule->name = [Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', null, false, false)];
                 $cartRule->id_customer = (int) $this->context->cart->id_customer;
                 $cartRule->free_shipping = true;
                 $cartRule->quantity = 1;

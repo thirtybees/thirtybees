@@ -1144,7 +1144,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 if ($file['size'] > $imgMaxUploadSize) {
                     throw new WebserviceException(sprintf('The image size is too large (maximum allowed is %d KB)', ($imgMaxUploadSize / 1000)), [72, 400]);
                 }
-                require_once(_PS_CORE_DIR_.'/images.inc.php');
                 if ($error = ImageManager::validateUpload($file)) {
                     throw new WebserviceException('Image upload error : '.$error, [76, 400]);
                 }

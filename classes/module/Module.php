@@ -43,8 +43,11 @@ abstract class ModuleCore
 
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
 
-    /** @var array used by AdminTab to determine which lang file to use (admin.php or module lang file) */
+    /**
+     * @var array Cache used by getModuleNameFromClass to resolve module name from class
+     */
     public static $classInModule = [];
+
     /** @var bool Define if we will log modules performances for this session */
     public static $_log_modules_perfs = null;
     /** @var array $hosted_modules_blacklist */
@@ -633,9 +636,8 @@ abstract class ModuleCore
     }
 
     /**
-     * This function is used to determine the module name
-     * of an AdminTab which belongs to a module, in order to keep translation
-     * related to a module in its directory (instead of $_LANGADM)
+     * This function is used to determine the module name for class, in order to
+     * keep translation related to a module in its directory (instead of $_LANGADM)
      *
      * @param string $currentClass
      *

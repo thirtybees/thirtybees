@@ -253,7 +253,7 @@ class AdminQuickAccessesControllerCore extends AdminController
                     ' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
             } /* voluntary do affectation here */
             elseif (($_POST[$this->identifier] = $this->object->id) && $this->postImage($this->object->id) && !count($this->errors) && $this->_redirect) {
-                Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+                Logger::addLog(sprintf($this->l('%s addition', null, false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 $this->afterAdd($this->object);
             }
         }

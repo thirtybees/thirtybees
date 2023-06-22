@@ -368,7 +368,7 @@ class TabCore extends ObjectModel
      * @param int $idTab
      * @param array $tabs
      *
-     * @return array
+     * @return array[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -377,10 +377,10 @@ class TabCore extends ObjectModel
     {
         $idTab = (int)$idTab;
         while ($idTab) {
-            $adminTab = Tab::getTab((int)Context::getContext()->language->id, $idTab);
-            if ($adminTab) {
-                $tabs[] = $adminTab;
-                $idTab = (int)$adminTab['id_parent'];
+            $tab = Tab::getTab((int)Context::getContext()->language->id, $idTab);
+            if ($tab) {
+                $tabs[] = $tab;
+                $idTab = (int)$tab['id_parent'];
             } else {
                 $idTab = 0;
             }

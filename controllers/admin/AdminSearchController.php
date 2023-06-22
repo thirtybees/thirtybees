@@ -201,23 +201,11 @@ class AdminSearchControllerCore extends AdminController
             $tabs[strtolower($row['class_name'])] = $row['name'];
             $keyMatch[strtolower($row['class_name'])] = $row['class_name'];
         }
-        foreach (AdminTab::$tabParenting as $key => $value) {
-            $value = stripslashes($value);
-            if (!isset($tabs[strtolower($key)]) || !isset($tabs[strtolower($value)])) {
-                continue;
-            }
-            $tabs[strtolower($key)] = $tabs[strtolower($value)];
-            $keyMatch[strtolower($key)] = $key;
-        }
-
         $this->_list['features'] = [];
         foreach ($_LANGADM as $key => $value) {
             if (stripos($value, $this->query) !== false) {
                 $value = stripslashes($value);
                 $key = strtolower(substr($key, 0, -32));
-                if (in_array($key, ['AdminTab', 'index'])) {
-                    continue;
-                }
                 // if class name doesn't exists, just ignore it
                 if (!isset($tabs[$key])) {
                     continue;
@@ -225,7 +213,10 @@ class AdminSearchControllerCore extends AdminController
                 if (!isset($this->_list['features'][$tabs[$key]])) {
                     $this->_list['features'][$tabs[$key]] = [];
                 }
-                $this->_list['features'][$tabs[$key]][] = ['link' => $this->context->link->getAdminLink($keyMatch[$key]), 'value' => Tools::safeOutput($value)];
+                $this->_list['features'][$tabs[$key]][] = [
+                    'link' => $this->context->link->getAdminLink($keyMatch[$key]),
+                    'value' => Tools::safeOutput($value)
+                ];
             }
         }
     }

@@ -1993,10 +1993,7 @@ class AdminTranslationsControllerCore extends AdminController
                     'tpl'      => $this->listFiles(_PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes/'),
                     'specific' => [
                         _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR => [
-                            'header.inc.php',
-                            'footer.inc.php',
                             'index.php',
-                            'functions.php',
                         ],
                     ],
                 ];

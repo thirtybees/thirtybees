@@ -72,8 +72,6 @@ class ContextCore
     public $language;
     /** @var Currency */
     public $currency;
-    /** @var AdminTab */
-    public $tab;
     /** @var Shop */
     public $shop;
     /** @var Theme */

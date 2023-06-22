@@ -245,7 +245,7 @@ class AdminLoginControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('The employee does not exist, or the password provided is incorrect.');
                 $this->context->employee->logout();
             } else {
-                Logger::addLog(sprintf($this->l('Back Office connection from %s', 'AdminTab', false, false), Tools::getRemoteAddr()), 1, null, '', 0, true, (int) $this->context->employee->id);
+                Logger::addLog(sprintf($this->l('Back Office connection from %s', null, false, false), Tools::getRemoteAddr()), 1, null, '', 0, true, (int) $this->context->employee->id);
 
                 // Update cookie
                 $cookie = $this->context->cookie;
@@ -329,7 +329,7 @@ class AdminLoginControllerCore extends AdminController
         if (!count($this->errors)) {
             $this->ajaxDie(json_encode([
                 'hasErrors' => false,
-                'confirm'   => sprintf($this->l('A new password has been emailed to the given email address, if it wasn\'t done within the last %s minutes before.', 'AdminTab', false, false), Configuration::get('PS_PASSWD_TIME_BACK')),
+                'confirm'   => sprintf($this->l('A new password has been emailed to the given email address, if it wasn\'t done within the last %s minutes before.', null, false, false), Configuration::get('PS_PASSWD_TIME_BACK')),
             ]));
         } elseif (Tools::isSubmit('ajax')) {
             $this->ajaxDie(json_encode(['hasErrors' => true, 'errors' => $this->errors]));

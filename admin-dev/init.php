@@ -54,7 +54,6 @@ $currentIndex = $_SERVER['SCRIPT_NAME'].(($controller = Tools::getValue('control
 if ($back = Tools::getValue('back')) {
     $currentIndex .= '&back='.urlencode($back);
 }
-AdminTab::$currentIndex = $currentIndex;
 
 $iso = $context->language->iso_code;
 if (file_exists(_PS_TRANSLATIONS_DIR_.$iso.'/errors.php')) {

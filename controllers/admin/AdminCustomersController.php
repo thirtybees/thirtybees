@@ -798,8 +798,8 @@ class AdminCustomersControllerCore extends AdminController
         $helper->id = 'box-age';
         $helper->icon = 'icon-calendar';
         $helper->color = 'color2';
-        $helper->title = $this->l('Average Age', 'AdminTab', null, false);
-        $helper->subtitle = $this->l('All Time', null, null, false);
+        $helper->title = $this->l('Average Age', null, false, false);
+        $helper->subtitle = $this->l('All Time', null, false, false);
         if (ConfigurationKPI::get('AVG_CUSTOMER_AGE', $this->context->language->id) !== false) {
             $helper->value = ConfigurationKPI::get('AVG_CUSTOMER_AGE', $this->context->language->id);
         }
@@ -811,8 +811,8 @@ class AdminCustomersControllerCore extends AdminController
         $helper->id = 'box-orders';
         $helper->icon = 'icon-retweet';
         $helper->color = 'color3';
-        $helper->title = $this->l('Orders per Customer', null, null, false);
-        $helper->subtitle = $this->l('All Time', null, null, false);
+        $helper->title = $this->l('Orders per Customer', null, false, false);
+        $helper->subtitle = $this->l('All Time', null, false, false);
         if (ConfigurationKPI::get('ORDERS_PER_CUSTOMER') !== false) {
             $helper->value = ConfigurationKPI::get('ORDERS_PER_CUSTOMER');
         }
@@ -824,8 +824,8 @@ class AdminCustomersControllerCore extends AdminController
         $helper->id = 'box-newsletter';
         $helper->icon = 'icon-envelope';
         $helper->color = 'color4';
-        $helper->title = $this->l('Newsletter Registrations', null, null, false);
-        $helper->subtitle = $this->l('All Time', null, null, false);
+        $helper->title = $this->l('Newsletter Registrations', null, false, false);
+        $helper->subtitle = $this->l('All Time', null, false, false);
         if (ConfigurationKPI::get('NEWSLETTER_REGISTRATIONS') !== false) {
             $helper->value = ConfigurationKPI::get('NEWSLETTER_REGISTRATIONS');
         }

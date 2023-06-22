@@ -792,25 +792,20 @@ class DispatcherCore
                 }
 
                 $tab = Tab::getInstanceFromClassName($this->controller, Configuration::get('PS_LANG_DEFAULT'));
-                $retrocompatibilityAdminTab = null;
 
                 if ($tab->module) {
-                    if (file_exists(_PS_MODULE_DIR_.$tab->module.'/'.$tab->class_name.'.php')) {
-                        $retrocompatibilityAdminTab = _PS_MODULE_DIR_.$tab->module.'/'.$tab->class_name.'.php';
+                    $controllers = Dispatcher::getControllers(_PS_MODULE_DIR_.$tab->module.'/controllers/admin/');
+                    if (!isset($controllers[strtolower($this->controller)])) {
+                        $this->controller = $this->controller_not_found;
+                        $controllerClass = 'AdminNotFoundController';
                     } else {
-                        $controllers = Dispatcher::getControllers(_PS_MODULE_DIR_.$tab->module.'/controllers/admin/');
-                        if (!isset($controllers[strtolower($this->controller)])) {
-                            $this->controller = $this->controller_not_found;
-                            $controllerClass = 'AdminNotFoundController';
-                        } else {
-                            // Controllers in modules can be named AdminXXX.php or AdminXXXController.php
-                            include_once(_PS_MODULE_DIR_.$tab->module.'/controllers/admin/'.$controllers[strtolower($this->controller)].'.php');
-                            $controllerClass = $controllers[strtolower($this->controller)].(strpos($controllers[strtolower($this->controller)], 'Controller') ? '' : 'Controller');
-                        }
+                        // Controllers in modules can be named AdminXXX.php or AdminXXXController.php
+                        include_once(_PS_MODULE_DIR_.$tab->module.'/controllers/admin/'.$controllers[strtolower($this->controller)].'.php');
+                        $controllerClass = $controllers[strtolower($this->controller)].(strpos($controllers[strtolower($this->controller)], 'Controller') ? '' : 'Controller');
                     }
                     $paramsHookActionDispatcher = ['controller_type' => static::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 1];
                 } else {
-                    $controllers = Dispatcher::getControllers([_PS_ADMIN_DIR_.'/tabs/', _PS_ADMIN_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/admin/']);
+                    $controllers = Dispatcher::getControllers([ _PS_ADMIN_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/admin/']);
                     if (!isset($controllers[strtolower($this->controller)])) {
                         // If this is a parent tab, load the first child
                         if (Validate::isLoadedObject($tab) && $tab->id_parent == 0 && ($tabs = Tab::getTabs(Context::getContext()->language->id, $tab->id)) && isset($tabs[0])) {
@@ -821,19 +816,6 @@ class DispatcherCore
 
                     $controllerClass = $controllers[strtolower($this->controller)];
                     $paramsHookActionDispatcher = ['controller_type' => static::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 0];
-
-                    if (file_exists(_PS_ADMIN_DIR_.'/tabs/'.$controllerClass.'.php')) {
-                        $retrocompatibilityAdminTab = _PS_ADMIN_DIR_.'/tabs/'.$controllerClass.'.php';
-                    }
-                }
-
-                // @retrocompatibility with admin/tabs/ old system
-                if ($retrocompatibilityAdminTab) {
-                    include_once($retrocompatibilityAdminTab);
-                    include_once(_PS_ADMIN_DIR_.'/functions.php');
-                    runAdminTab($this->controller, !empty($_REQUEST['ajaxMode']));
-
-                    return;
                 }
                 break;
 

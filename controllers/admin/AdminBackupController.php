@@ -146,7 +146,7 @@ class AdminBackupControllerCore extends AdminController
     /**
      * Load class object using identifier in $_GET (if possible)
      * otherwise return an empty object
-     * This method overrides the one in AdminTab because AdminTab assumes the id is a UnsignedInt
+     *
      * "Backups" Directory in admin directory must be writeable (CHMOD 777)
      *
      * @param bool $opt Return an empty object if load fail
@@ -326,14 +326,14 @@ class AdminBackupControllerCore extends AdminController
             $date = date('Y-m-d H:i:s', $timestamp);
             $age = time() - $timestamp;
             if ($age < 3600) {
-                $age = '< 1 '.$this->l('Hour', 'AdminTab', false, false);
+                $age = '< 1 '.$this->l('Hour', null, false, false);
             } elseif ($age < 86400) {
                 $age = floor($age / 3600);
-                $age = $age.' '.(($age == 1) ? $this->l('Hour', 'AdminTab', false, false) :
-                        $this->l('Hours', 'AdminTab', false, false));
+                $age = $age.' '.(($age == 1) ? $this->l('Hour', null, false, false) :
+                        $this->l('Hours', null, false, false));
             } else {
                 $age = floor($age / 86400);
-                $age = $age.' '.(($age == 1) ? $this->l('Day') : $this->l('Days', 'AdminTab', false, false));
+                $age = $age.' '.(($age == 1) ? $this->l('Day') : $this->l('Days', null, false, false));
             }
             $size = filesize(PrestaShopBackup::getBackupPath($file));
             $this->_list[] = [

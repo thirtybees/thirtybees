@@ -567,7 +567,6 @@ class AdminLanguagesControllerCore extends AdminController
             if ($_FILES['no_picture']['error'] == UPLOAD_ERR_OK) {
                 $this->copyNoPictureImage(strtolower(Tools::getValue('iso_code')));
             }
-            // class AdminTab deal with every $_FILES content, don't do that for no_picture
             unset($_FILES['no_picture']);
         }
 

@@ -450,13 +450,7 @@ class AdminControllerCore extends Controller
      */
     protected function l($string, $class = null, $addslashes = false, $htmlentities = true)
     {
-        if ($class === null || $class == 'AdminTab') {
-            $class = substr(get_class($this), 0, -10);
-        } elseif (strtolower(substr($class, -10)) == 'controller') {
-            /* classname has changed, from AdminXXX to AdminXXXController, so we remove 10 characters and we keep same keys */
-            $class = substr($class, 0, -10);
-        }
-
+        $class = Translate::resolveAdminClassForTranslation($class, $this);
         return Translate::getAdminTranslation($string, $class, $addslashes, $htmlentities);
     }
 
@@ -1205,7 +1199,7 @@ class AdminControllerCore extends Controller
                     $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 }
                 if ($res) {
-                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+                    Logger::addLog(sprintf($this->l('%s deletion', null, false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 }
             }
         } else {
@@ -1305,7 +1299,7 @@ class AdminControllerCore extends Controller
                             $this->redirect_after = static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$this->token;
                         }
                     }
-                    Logger::addLog(sprintf($this->l('%s modification', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
+                    Logger::addLog(sprintf($this->l('%s modification', null, false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
                 } else {
                     $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
@@ -1680,7 +1674,7 @@ class AdminControllerCore extends Controller
             if (method_exists($this->object, 'add') && !$this->object->add()) {
                 $this->errors[] = Tools::displayError('An error occurred while creating an object.').' <strong>'.$this->table.' ('.Db::getInstance()->getMsgError().')</strong>';
             } elseif (($_POST[$this->identifier] = $this->object->id /* voluntary do affectation here */) && $this->postImage($this->object->id) && !count($this->errors) && $this->_redirect) {
-                Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
+                Logger::addLog(sprintf($this->l('%s addition', null, false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 $parentId = Tools::getIntValue('id_parent', 1);
                 $this->afterAdd($this->object);
                 $this->updateAssoShop($this->object->id);
@@ -1768,7 +1762,7 @@ class AdminControllerCore extends Controller
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             if (property_exists($object, 'active') && $object->toggleStatus()) {
                 Logger::addLog(
-                    sprintf($this->l('%s status switched to %s', 'AdminTab', false, false), $this->className, $object->active ? 'enable' : 'disable'),
+                    sprintf($this->l('%s status switched to %s', null, false, false), $this->className, $object->active ? 'enable' : 'disable'),
                     1,
                     null,
                     $this->className,
@@ -2118,14 +2112,14 @@ class AdminControllerCore extends Controller
                     }
                     $quickAccess[$index]['link'] = $url;
                 } else {
-                    preg_match('/controller=(.+)(&.+)?$/', $quick['link'], $adminTab);
-                    if (isset($adminTab[1])) {
-                        if (strpos($adminTab[1], '&')) {
-                            $adminTab[1] = substr($adminTab[1], 0, strpos($adminTab[1], '&'));
+                    preg_match('/controller=(.+)(&.+)?$/', $quick['link'], $matches);
+                    if (isset($matches[1])) {
+                        if (strpos($matches[1], '&')) {
+                            $matches[1] = substr($matches[1], 0, strpos($matches[1], '&'));
                         }
 
-                        $token = Tools::getAdminToken($adminTab[1].(int) Tab::getIdFromClassName($adminTab[1]).(int) $this->context->employee->id);
-                        $quickAccess[$index]['target'] = $adminTab[1];
+                        $token = Tools::getAdminToken($matches[1].(int) Tab::getIdFromClassName($matches[1]).(int) $this->context->employee->id);
+                        $quickAccess[$index]['target'] = $matches[1];
                         $quickAccess[$index]['link'] .= '&token='.$token;
                     }
                 }
@@ -4342,7 +4336,7 @@ class AdminControllerCore extends Controller
                 }
 
                 if ($deleted) {
-                    Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$objectToDelete->id, true, (int)$this->context->employee->id);
+                    Logger::addLog(sprintf($this->l('%s deletion', null, false, false), $this->className), 1, null, $this->className, (int)$objectToDelete->id, true, (int)$this->context->employee->id);
                 } else {
                     $result = false;
                     $this->errors[] = sprintf(Tools::displayError('Can\'t delete #%d'), $id);

@@ -38,14 +38,15 @@ class TranslateCore
      * Get a translation for an admin controller
      *
      * @param string $string
-     * @param string $class
+     * @param string|null $class
      * @param bool $addslashes
      * @param bool $htmlentities
      *
      * @return string
      */
-    public static function getAdminTranslation($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true, $sprintf = null)
+    public static function getAdminTranslation($string, $class = null, $addslashes = false, $htmlentities = true, $sprintf = null)
     {
+        $class = (string)$class;
         static $modulesTabs = null;
 
         global $_LANGADM;
@@ -72,7 +73,7 @@ class TranslateCore
             }
         }
 
-        if (isset($modulesTabs[strtolower($class)])) {
+        if ($class && isset($modulesTabs[strtolower($class)])) {
             $classNameController = $class . 'Controller';
             // if this is module admin controller, use module translation
             if (class_exists($classNameController)) {
@@ -85,7 +86,7 @@ class TranslateCore
 
         $string = preg_replace("/\\\*'/", "\'", $string);
         $key = md5($string);
-        if (isset($_LANGADM[$class.$key]) && $_LANGADM[$class.$key] !== '') {
+        if ($class && isset($_LANGADM[$class.$key]) && $_LANGADM[$class.$key] !== '') {
             $str = $_LANGADM[$class.$key];
         } else {
             $str = static::getGenericAdminTranslation($string, $key, $_LANGADM);
@@ -245,29 +246,35 @@ class TranslateCore
      *
      * @param string $string string to translate
      * @param string|null $key md5 key if already calculated (optional)
-     * @param array $langArray Global array of admin translations
+     * @param array|null $langArray Global array of admin translations
      *
      * @return string translation
      */
-    public static function getGenericAdminTranslation($string, $key, &$langArray)
+    public static function getGenericAdminTranslation($string, $key, $langArray)
     {
         $string = preg_replace("/\\\*'/", "\'", $string);
         if (is_null($key)) {
             $key = md5($string);
         }
 
-        if (isset($langArray['AdminController'.$key])) {
-            $str = $langArray['AdminController'.$key];
-        } elseif (isset($langArray['Helper'.$key])) {
-            $str = $langArray['Helper'.$key];
-        } elseif (isset($langArray['AdminTab'.$key])) {
-            $str = $langArray['AdminTab'.$key];
-        } else {
-            // note in 1.5, some translations has moved from AdminXX to helper/*.tpl
-            $str = $string;
+        $prefixes = [
+            'AdminController',
+            'Helper',
+            'AdminTab',
+            'index'
+        ];
+
+        foreach ($prefixes as $prefix) {
+            $langKey = $prefix . $key;
+            if (array_key_exists($langKey, $langArray)) {
+                $str = (string)$langArray[$langKey];
+                if ($str !== '') {
+                    return $str;
+                }
+            }
         }
 
-        return $str !== '' ? $str : $string;
+        return $string;
     }
 
     /**
@@ -493,5 +500,27 @@ class TranslateCore
         }
 
         return static::postProcessTranslation(Translate::getAdminTranslation($params['s'], $class, $addslashes, $htmlentities, $sprintf), $params);
+    }
+
+
+    /**
+     * @param string|null $class
+     * @param AdminController|AdminControllerCore $currentController
+     *
+     * @return string
+     */
+    public static function resolveAdminClassForTranslation($class, $currentController): string
+    {
+        $class = trim((string)$class);
+        if (!$class || $class === 'AdminTab') {
+            $class = get_class($currentController);
+        }
+
+        // remove controller suffix
+        if (strtolower(substr($class, -10)) === 'controller') {
+            $class = substr($class, 0, -10);
+        }
+
+        return $class;
     }
 }
