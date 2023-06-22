@@ -7804,13 +7804,14 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param int $value
+     * @param bool $value
      *
      * @throws PrestaShopException
      */
     public function setAdvancedStockManagement($value)
     {
-        $this->advanced_stock_management = (int) $value;
+        $value = (bool)$value;
+        $this->advanced_stock_management = $value;
         if (Context::getContext()->shop->getContext() == Shop::CONTEXT_GROUP && Context::getContext()->shop->getContextShopGroup()->share_stock == 1) {
             Db::getInstance()->execute(
                 '

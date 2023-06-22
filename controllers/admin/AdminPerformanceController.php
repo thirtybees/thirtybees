@@ -1212,9 +1212,9 @@ class AdminPerformanceControllerCore extends AdminController
             Configuration::updateGlobalValue('PS_DISABLE_OVERRIDES', Tools::getIntValue('overrides'));
 
             $this->updateCustomDefines([
-                '_PS_MODE_DEV_' => (bool)Tools::getValue('debug_mode'),
-                '_PS_DEBUG_PROFILING_' => (bool)Tools::getValue('profiling'),
-                '_PS_DEBUG_SQL_' => !Tools::getValue('ignore_sql_errors'),
+                '_PS_MODE_DEV_' => Tools::getBoolValue('debug_mode'),
+                '_PS_DEBUG_PROFILING_' => Tools::getBoolValue('profiling'),
+                '_PS_DEBUG_SQL_' => !Tools::getBoolValue('ignore_sql_errors'),
             ]);
 
             Tools::generateIndex();

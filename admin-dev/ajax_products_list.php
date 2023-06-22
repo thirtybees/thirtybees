@@ -67,8 +67,8 @@ if ($excludeIds && $excludeIds != 'NaN') {
 }
 
 // Excluding downloadable products from packs because download from pack is not supported
-$excludeVirtuals = (bool)Tools::getValue('excludeVirtuals', true);
-$exclude_packs = (bool)Tools::getValue('exclude_packs', true);
+$excludeVirtuals = Tools::getBoolValue('excludeVirtuals', true);
+$exclude_packs = Tools::getBoolValue('exclude_packs', true);
 
 $context = Context::getContext();
 

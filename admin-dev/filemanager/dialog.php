@@ -19,7 +19,7 @@ if (Tools::isSubmit('submit')) {
         create_folder(false, $thumbs_path.$subdir);
     }
 
-    $popup = (bool)Tools::getValue('popup', 0);
+    $popup = Tools::getIntValue('popup');
 
     // resolve view type
     $view = Tools::getIsset('view')

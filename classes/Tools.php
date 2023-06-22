@@ -563,9 +563,25 @@ class ToolsCore
 
     /**
      * @param string $key
+     * @param bool $defaultValue
+     *
+     * @return bool
+     *
+     * @since 1.5.0
+     */
+    public static function getBoolValue(string $key, bool $defaultValue = false): bool
+    {
+        return (bool)static::getValueRaw($key, $defaultValue);
+    }
+
+
+    /**
+     * @param string $key
      * @param array $defaultValue
      *
      * @return array
+     *
+     * @since 1.5.0
      */
     public static function getArrayValue(string $key, array $defaultValue = []): array
     {

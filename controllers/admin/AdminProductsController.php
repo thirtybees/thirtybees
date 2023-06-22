@@ -5910,8 +5910,9 @@ class AdminProductsControllerCore extends AdminController
                     $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
                 }
 
-                $product->setAdvancedStockManagement(Tools::getIntValue('value'));
-                if (StockAvailable::dependsOnStock($product->id) && Tools::getIntValue('value') === 0) {
+                $useAdvancedStockManagement = Tools::getBoolValue('value');
+                $product->setAdvancedStockManagement($useAdvancedStockManagement);
+                if (StockAvailable::dependsOnStock($product->id) && !$useAdvancedStockManagement) {
                     StockAvailable::setProductDependsOnStock($product->id, 0);
                 }
                 break;
