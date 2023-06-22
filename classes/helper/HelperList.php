@@ -262,7 +262,7 @@ class HelperListCore extends Helper
     {
         // Append when we get a syntax error in SQL query
         if ($list === false) {
-            $this->getController()->warnings[] = $this->l('Bad SQL query', 'Helper');
+            $this->getController()->warnings[] = $this->l('Bad SQL query');
 
             return false;
         }
@@ -816,11 +816,11 @@ class HelperListCore extends Helper
     {
         $tpl = $this->createTemplate('list_action_duplicate.tpl');
         if (!array_key_exists('Bad SQL query', static::$cache_lang)) {
-            static::$cache_lang['Duplicate'] = $this->l('Duplicate', 'Helper');
+            static::$cache_lang['Duplicate'] = $this->l('Duplicate');
         }
 
         if (!array_key_exists('Copy images too?', static::$cache_lang)) {
-            static::$cache_lang['Copy images too?'] = $this->l('This will copy the images too. If you wish to proceed, click "Yes". If not, click "No".', 'Helper');
+            static::$cache_lang['Copy images too?'] = $this->l('This will copy the images too. If you wish to proceed, click "Yes". If not, click "No".');
         }
 
         $duplicate = $this->currentIndex.'&'.$this->identifier.'='.$id.'&duplicate'.$this->table;
@@ -876,7 +876,7 @@ class HelperListCore extends Helper
     {
         $tpl = $this->createTemplate('list_action_details.tpl');
         if (!array_key_exists('Details', static::$cache_lang)) {
-            static::$cache_lang['Details'] = $this->l('Details', 'Helper');
+            static::$cache_lang['Details'] = $this->l('Details');
         }
 
         $ajaxParams = $this->ajax_params;
@@ -914,7 +914,7 @@ class HelperListCore extends Helper
     {
         $tpl = $this->createTemplate('list_action_view.tpl');
         if (!array_key_exists('View', static::$cache_lang)) {
-            static::$cache_lang['View'] = $this->l('View', 'Helper');
+            static::$cache_lang['View'] = $this->l('View');
         }
         $tpl->assign(
             [
@@ -941,7 +941,7 @@ class HelperListCore extends Helper
     {
         $tpl = $this->createTemplate('list_action_edit.tpl');
         if (!array_key_exists('Edit', static::$cache_lang)) {
-            static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
+            static::$cache_lang['Edit'] = $this->l('Edit');
         }
         $tpl->assign(
             [
@@ -969,7 +969,7 @@ class HelperListCore extends Helper
         $tpl = $this->createTemplate('list_action_delete.tpl');
 
         if (!array_key_exists('Delete', static::$cache_lang)) {
-            static::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
+            static::$cache_lang['Delete'] = $this->l('Delete');
         }
         if (!array_key_exists('DeleteItem', static::$cache_lang)) {
             static::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper', true, false);
@@ -1010,7 +1010,7 @@ class HelperListCore extends Helper
     {
         $tpl = $this->createTemplate('list_action_default.tpl');
         if (!array_key_exists('Default', static::$cache_lang)) {
-            static::$cache_lang['Default'] = $this->l('Default', 'Helper');
+            static::$cache_lang['Default'] = $this->l('Default');
         }
         $tpl->assign(
             [

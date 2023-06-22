@@ -467,21 +467,15 @@ class HelperCore
      * use translations files to replace english expression.
      *
      * @param string $string term or expression in english
-     * @param string $class
+     * @param string $class deprecated
      * @param bool $addslashes if set to true, the return value will pass through addslashes(). Otherwise, stripslashes().
      * @param bool $htmlentities if set to true(default), the return value will pass through htmlentities($string, ENT_QUOTES, 'utf-8')
      *
      * @return string the translation if available, or the english default text.
      */
-    protected function l($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true)
+    protected function l($string, $class = 'Helper', $addslashes = false, $htmlentities = true)
     {
-        // if the class is extended by a module, use modules/[module_name]/xx.php lang file
-        $currentClass = get_class($this);
-        if (Module::getModuleNameFromClass($currentClass)) {
-            return Translate::getModuleTranslation(Module::$classInModule[$currentClass], $string, $currentClass);
-        }
-
-        return Translate::getAdminTranslation($string, get_class($this), $addslashes, $htmlentities);
+        return Translate::getAdminTranslation($string, $class, $addslashes, $htmlentities);
     }
 
     /**
