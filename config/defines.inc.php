@@ -43,6 +43,10 @@ if (!defined('_PS_DEBUG_SQL_')) {
     define('_PS_DEBUG_SQL_', true);
 }
 
+if (!defined('_TB_DB_STRINGIFY_FETCHES_')) {
+    define('_TB_DB_STRINGIFY_FETCHES_', true);
+}
+
 if (!defined('_PS_DEBUG_PROFILING_')) {
     define('_PS_DEBUG_PROFILING_', false);
 }

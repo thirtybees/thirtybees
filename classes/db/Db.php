@@ -216,7 +216,7 @@ class DbCore implements ReadOnlyConnection
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
             PDO::ATTR_TIMEOUT => $timeout,
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-            PDO::ATTR_STRINGIFY_FETCHES => true,
+            PDO::ATTR_STRINGIFY_FETCHES => _TB_DB_STRINGIFY_FETCHES_,
         ]);
     }
 
