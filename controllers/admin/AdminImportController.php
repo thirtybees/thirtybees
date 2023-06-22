@@ -2960,7 +2960,7 @@ class AdminImportControllerCore extends AdminController
                     $product->setAdvancedStockManagement($product->advanced_stock_management);
                 }
                 // automatically disable depends on stock, if a_s_m set to disabled
-                if (StockAvailable::dependsOnStock($product->id) == 1 && $product->advanced_stock_management == 0) {
+                if (StockAvailable::dependsOnStock($product->id) && $product->advanced_stock_management == 0) {
                     StockAvailable::setProductDependsOnStock($product->id, 0);
                 }
             }
@@ -4096,7 +4096,7 @@ class AdminImportControllerCore extends AdminController
                     $product->setAdvancedStockManagement($info['advanced_stock_management']);
                 }
                 // automatically disable depends on stock, if a_s_m set to disabled
-                if (!$validateOnly && StockAvailable::dependsOnStock($product->id) == 1 && $info['advanced_stock_management'] == 0) {
+                if (!$validateOnly && StockAvailable::dependsOnStock($product->id) && $info['advanced_stock_management'] == 0) {
                     StockAvailable::setProductDependsOnStock($product->id, 0, null, $idProductAttribute);
                 }
             }
