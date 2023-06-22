@@ -111,7 +111,7 @@ class GenderCore extends ObjectModel
         $gendersIcon = [
             'default' => [
                 'src' => static::getGenderImage(null),
-                'alt' => Translate::getAdminTranslation('Unknown gender', 'Gender')
+                'alt' => 'Unknown gender',
             ]
         ];
         foreach (GenderCore::getGenders() as $gender) {
