@@ -105,19 +105,20 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function renderForm()
     {
-        $this->initFieldsetSmarty();
-        $this->initFieldsetDebugMode();
-        $this->initFieldsetFeaturesDetachables();
-        $this->initFieldsetCCC();
 
-        $this->initFieldsetMediaServer();
-        $this->initFieldsetCiphering();
-
-        $this->initFieldsetCaching();
-        $this->initFieldsetFullPageCache();
 
         // Reindex fields
-        $this->fields_form = array_values($this->fields_form);
+        $this->fields_form = [
+            $this->initFieldsetSmarty(),
+            $this->initFieldsetDebugMode(),
+            $this->initFieldsetDatabase(),
+            $this->initFieldsetFeaturesDetachables(),
+            $this->initFieldsetCCC(),
+            $this->initFieldsetMediaServer(),
+            $this->initFieldsetCiphering(),
+            $this->initFieldsetCaching(),
+            $this->initFieldsetFullPageCache(),
+        ];
 
         // Activate multiple fieldset
         $this->multiple_fieldsets = true;
@@ -126,11 +127,13 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetSmarty()
     {
-        $this->fields_form[0]['form'] = [
+        $form = [
             'legend' => [
                 'title' => $this->l('Smarty - Application Cache'),
                 'icon'  => 'icon-briefcase',
@@ -235,14 +238,18 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['smarty_clear_cache'] = Configuration::get('PS_SMARTY_CLEAR_CACHE');
         $this->fields_value['smarty_console'] = Configuration::get('PS_SMARTY_CONSOLE');
         $this->fields_value['smarty_console_key'] = Configuration::get('PS_SMARTY_CONSOLE_KEY');
+
+        return ['form' => $form ];
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetDebugMode()
     {
-        $this->fields_form[1]['form'] = [
+        $form = [
             'legend' => [
                 'title' => $this->l('Debug mode'),
                 'icon'  => 'icon-bug',
@@ -328,6 +335,31 @@ class AdminPerformanceControllerCore extends AdminController
                     ],
                     'hint'    => $this->l('Enable or disable profiling.'),
                 ],
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
+
+        $this->fields_value['native_module'] = Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
+        $this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
+        $this->fields_value['debug_mode'] = $this->isDebugModeEnabled();
+        $this->fields_value['profiling'] = $this->isProfilingEnabled();
+
+        return ['form' => $form];
+    }
+
+
+    /**
+     */
+    public function initFieldsetDatabase()
+    {
+        $form = [
+            'legend' => [
+                'title' => $this->l('Database settings'),
+                'icon'  => 'icon-database',
+            ],
+            'input'  => [
                 [
                     'type'    => 'switch',
                     'label'   => $this->l('Ignore SQL errors'),
@@ -341,12 +373,52 @@ class AdminPerformanceControllerCore extends AdminController
                             'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id'    => 'ignore_sql_errors_on',
+                            'id'    => 'ignore_sql_errors_off',
                             'value' => 0,
                             'label' => $this->l('Disabled'),
                         ],
                     ],
                     'hint'    => $this->l('Silently ignore errors raised by database when executing SQL queries. Not recommended.'),
+                ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Allow multi statements queries'),
+                    'hint'    => $this->l('When enabled, multiple sql queries can be executed in one request. This significantly increases the risk of SQL injection vulnerabilities being exploited. Unfortunately, some modules can depend on this functionality.'),
+                    'name'    => 'allow_multi_queries',
+                    'class'   => 't',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'allow_multi_queries_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'allow_multi_queries_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Stringify fetches'),
+                    'hint'    => $this->l('When enabled, database will return string instead of native data types. For backwards compatibility reasons we suggest to keep this enabled.'),
+                    'name'    => 'stringify_fetches',
+                    'class'   => 't',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'stringify_fetches_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'stringify_fetches_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
                 ],
             ],
             'submit' => [
@@ -354,19 +426,21 @@ class AdminPerformanceControllerCore extends AdminController
             ],
         ];
 
-        $this->fields_value['native_module'] = Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
-        $this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
-        $this->fields_value['debug_mode'] = $this->isDebugModeEnabled();
-        $this->fields_value['profiling'] = $this->isProfilingEnabled();
         $this->fields_value['ignore_sql_errors'] = !$this->isDebugSqlEnabled();
+        $this->fields_value['allow_multi_queries'] = $this->areMultiQueriesEnabled();
+        $this->fields_value['stringify_fetches'] = $this->isStringifyFetchesEnabled();
+
+        return ['form' => $form];
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetFeaturesDetachables()
     {
-        $this->fields_form[2]['form'] = [
+        $form = [
             'legend'      => [
                 'title' => $this->l('Optional features'),
                 'icon'  => 'icon-puzzle-piece',
@@ -446,9 +520,13 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['combination'] = Combination::isFeatureActive();
         $this->fields_value['feature'] = Feature::isFeatureActive();
         $this->fields_value['customer_group'] = Group::isFeatureActive();
+
+        return ['form' => $form];
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetCCC()
@@ -464,7 +542,7 @@ class AdminPerformanceControllerCore extends AdminController
             $inlineJsMinifierWarning = $this->l('You don\'t have any JS Minification module installed!');
         }
 
-        $this->fields_form[3]['form'] = [
+        $form = [
             'legend'      => [
                 'title' => $this->l('CCC (Combine, Compress and Cache)'),
                 'icon'  => 'icon-fullscreen',
@@ -550,44 +628,44 @@ class AdminPerformanceControllerCore extends AdminController
                         ],
                     ],
                 ],
+                [
+
+                    'type'   => 'switch',
+                    'label'  => $this->l('Apache optimization'),
+                    'name'   => 'PS_HTACCESS_CACHE_CONTROL',
+                    'hint'   => $this->l('This will add directives to your .htaccess file, which should improve caching and compression.'),
+                    'values' => [
+                        [
+                            'id'    => 'PS_HTACCESS_CACHE_CONTROL_1',
+                            'value' => 1,
+                            'label' => $this->l('Yes'),
+                        ],
+                        [
+                            'id'    => 'PS_HTACCESS_CACHE_CONTROL_0',
+                            'value' => 0,
+                            'label' => $this->l('No'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'   => 'switch',
+                    'label'  => $this->l('Keep JS and CSS files'),
+                    'desc'  => $this->l('Keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders correctly (improves SEO).'),
+                    'name'   => 'TB_KEEP_CCC_FILES',
+                    'values' => [
+                        [
+                            'id'    => 'TB_KEEP_CCC_FILES_1',
+                            'value' => 1,
+                        ],
+                        [
+                            'id'    => 'TB_KEEP_CCC_FILES_0',
+                            'value' => 0,
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ],
-        ];
-        $this->fields_form[3]['form']['input'][] = [
-            'type'   => 'switch',
-            'label'  => $this->l('Apache optimization'),
-            'name'   => 'PS_HTACCESS_CACHE_CONTROL',
-            'hint'   => $this->l('This will add directives to your .htaccess file, which should improve caching and compression.'),
-            'values' => [
-                [
-                    'id'    => 'PS_HTACCESS_CACHE_CONTROL_1',
-                    'value' => 1,
-                    'label' => $this->l('Yes'),
-                ],
-                [
-                    'id'    => 'PS_HTACCESS_CACHE_CONTROL_0',
-                    'value' => 0,
-                    'label' => $this->l('No'),
-                ],
-            ],
-        ];
-
-        $this->fields_form[3]['form']['input'][] = [
-            'type'   => 'switch',
-            'label'  => $this->l('Keep JS and CSS files'),
-            'desc'  => $this->l('Keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders correctly (improves SEO).'),
-            'name'   => 'TB_KEEP_CCC_FILES',
-            'values' => [
-                [
-                    'id'    => 'TB_KEEP_CCC_FILES_1',
-                    'value' => 1,
-                ],
-                [
-                    'id'    => 'TB_KEEP_CCC_FILES_0',
-                    'value' => 0,
-                ],
             ],
         ];
 
@@ -598,14 +676,18 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['PS_JS_DEFER'] = Configuration::get('PS_JS_DEFER');
         $this->fields_value['TB_KEEP_CCC_FILES'] = Configuration::get('TB_KEEP_CCC_FILES');
         $this->fields_value['ccc_up'] = 1;
+
+        return ['form' => $form];
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetMediaServer()
     {
-        $this->fields_form[4]['form'] = [
+        $form = [
             'legend'      => [
                 'title' => $this->l('Media servers (use only with CCC)'),
                 'icon'  => 'icon-link',
@@ -643,14 +725,16 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['_MEDIA_SERVER_1_'] = Configuration::get('PS_MEDIA_SERVER_1');
         $this->fields_value['_MEDIA_SERVER_2_'] = Configuration::get('PS_MEDIA_SERVER_2');
         $this->fields_value['_MEDIA_SERVER_3_'] = Configuration::get('PS_MEDIA_SERVER_3');
+
+        return ['form' => $form];
     }
 
     /**
-     * @return void
+     * @return array
      */
     public function initFieldsetCiphering()
     {
-        $this->fields_form[5]['form'] = [
+        $form = [
 
             'legend'      => [
                 'title' => $this->l('Ciphering'),
@@ -686,14 +770,19 @@ class AdminPerformanceControllerCore extends AdminController
         ];
 
         $this->fields_value['PS_CIPHER_ALGORITHM'] = Encryptor::getAlgorithm();
+
+        return ['form' => $form];
     }
 
     /**
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function initFieldsetCaching()
     {
-        $this->fields_form[6]['form'] = [
+        $form = [
             'legend'           => [
                 'title' => $this->l('Server Side Caching'),
                 'icon'  => 'icon-desktop',
@@ -773,9 +862,12 @@ class AdminPerformanceControllerCore extends AdminController
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
         $this->tpl_form_vars['cacheDisabled'] = !Cache::isEnabled();
+        return ['form' => $form];
     }
 
     /**
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public function initFieldsetFullPageCache()
@@ -811,7 +903,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        $this->fields_form[7]['form'] = [
+        $form = [
             'legend'       => [
                 'title' => $this->l('Full page cache'),
                 'icon'  => 'icon-rocket',
@@ -882,6 +974,8 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['TB_PAGE_CACHE_ENABLED'] = PageCache::isEnabled();
         $this->fields_value['TB_PAGE_CACHE_DEBUG'] = (bool) Configuration::get('TB_PAGE_CACHE_DEBUG');
         $this->fields_value['TB_PAGE_CACHE_IGNOREPARAMS'] = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+
+        return ['form' => $form];
     }
 
     /**
@@ -1215,6 +1309,8 @@ class AdminPerformanceControllerCore extends AdminController
                 '_PS_MODE_DEV_' => Tools::getBoolValue('debug_mode'),
                 '_PS_DEBUG_PROFILING_' => Tools::getBoolValue('profiling'),
                 '_PS_DEBUG_SQL_' => !Tools::getBoolValue('ignore_sql_errors'),
+                '_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_' => Tools::getBoolValue('allow_multi_queries'),
+                '_TB_DB_STRINGIFY_FETCHES_' => Tools::getBoolValue('stringify_fetches'),
             ]);
 
             Tools::generateIndex();
@@ -1316,6 +1412,26 @@ class AdminPerformanceControllerCore extends AdminController
     public function isDebugSqlEnabled()
     {
         return defined('_PS_DEBUG_SQL_') && _PS_DEBUG_SQL_;
+    }
+
+    /**
+     * Are multi-queries enabled
+     *
+     * @return bool Whether debug mode is enabled
+     */
+    public function areMultiQueriesEnabled()
+    {
+        return defined('_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_') && _TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_;
+    }
+
+    /**
+     * Are multi-queries enabled
+     *
+     * @return bool Whether debug mode is enabled
+     */
+    public function isStringifyFetchesEnabled()
+    {
+        return defined('_TB_DB_STRINGIFY_FETCHES_') && _TB_DB_STRINGIFY_FETCHES_;
     }
 
     /**
