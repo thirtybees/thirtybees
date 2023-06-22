@@ -334,9 +334,10 @@ class FeatureValueCore extends ObjectModel
      */
     public static function cleanPositions($idFeature)
     {
+        $conn = Db::getInstance();
+        $conn->execute('SET @rank:=-1');
         // reset positions of all featureValues within feature
-        return Db::getInstance()->execute('
-            SET @rank:=-1;
+        return $conn->execute('
             UPDATE `'._DB_PREFIX_.'feature_value`
             SET position = @rank:=@rank+1
             WHERE `id_feature` = '.(int)$idFeature.'

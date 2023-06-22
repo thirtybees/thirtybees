@@ -4368,8 +4368,8 @@ class ProductCore extends ObjectModel
 
         // reset positions of all products within category
         $conn = Db::getInstance();
+        $return = $conn->execute('SET @rank:=-1');
         $return = $conn->execute('
-            SET @rank:=-1;
             UPDATE `'._DB_PREFIX_.'category_product`
             SET position = @rank:=@rank+1
             WHERE `id_category` = '.$idCategory.'
