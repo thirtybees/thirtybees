@@ -335,6 +335,26 @@ class AdminPerformanceControllerCore extends AdminController
                     ],
                     'hint'    => $this->l('Enable or disable profiling.'),
                 ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Display deprecation warnings'),
+                    'name'    => 'display_deprecation_warnings',
+                    'class'   => 't',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'display_deprecation_warnings_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'display_deprecation_warnings_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                    'hint'    => $this->l('When enabled, you will see deprecation notices. Otherwise, only errors and warnings will be displayed'),
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -345,6 +365,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
         $this->fields_value['debug_mode'] = $this->isDebugModeEnabled();
         $this->fields_value['profiling'] = $this->isProfilingEnabled();
+        $this->fields_value['display_deprecation_warnings'] = $this->shouldDisplayDeprecationWarnings();
 
         return ['form' => $form];
     }
@@ -1311,6 +1332,7 @@ class AdminPerformanceControllerCore extends AdminController
                 '_PS_DEBUG_SQL_' => !Tools::getBoolValue('ignore_sql_errors'),
                 '_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_' => Tools::getBoolValue('allow_multi_queries'),
                 '_TB_DB_STRINGIFY_FETCHES_' => Tools::getBoolValue('stringify_fetches'),
+                '_PS_DISPLAY_COMPATIBILITY_WARNING_' => Tools::getBoolValue('display_deprecation_warnings'),
             ]);
 
             Tools::generateIndex();
@@ -1422,6 +1444,16 @@ class AdminPerformanceControllerCore extends AdminController
     public function areMultiQueriesEnabled()
     {
         return defined('_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_') && _TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_;
+    }
+
+    /**
+     * Returns true, if compatibility warnings should be displayed
+     *
+     * @return bool
+     */
+    public function shouldDisplayDeprecationWarnings()
+    {
+        return defined('_PS_DISPLAY_COMPATIBILITY_WARNING_') && _PS_DISPLAY_COMPATIBILITY_WARNING_;
     }
 
     /**
