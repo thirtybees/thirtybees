@@ -643,21 +643,17 @@ abstract class ModuleCore
      */
     public static function getModuleNameFromClass($currentClass)
     {
-        // Module can now define AdminTab keeping the module translations method,
-        // i.e. in modules/[module name]/[iso_code].php
+        // check if class file is inside module
         if (!isset(static::$classInModule[$currentClass])) {
             $moduleName = false;
             if (class_exists($currentClass)) {
                 $reflectionClass = new ReflectionClass($currentClass);
                 $filePath = realpath($reflectionClass->getFileName());
                 $realpathModuleDir = realpath(_PS_MODULE_DIR_);
-                if (substr($filePath, 0, strlen($realpathModuleDir)) === $realpathModuleDir) {
-                    // For controllers in module/controllers path
-                    if (basename(dirname($filePath, 2)) === 'controllers') {
-                        $moduleName = basename(dirname($filePath, 3));
-                    } else {
-                        // For old AdminTab controllers
-                        $moduleName = substr(dirname($filePath), strlen($realpathModuleDir) + 1);
+                if (strpos($filePath, $realpathModuleDir) === 0) {
+                    $moduleRelativePath = trim(substr($filePath, strlen($realpathModuleDir)), '/\\');
+                    if (preg_match('/^([a-zA-Z0-9_-]+)/', $moduleRelativePath, $matches)) {
+                        $moduleName = $matches[1];
                     }
                 }
             }
