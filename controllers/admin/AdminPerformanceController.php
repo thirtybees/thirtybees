@@ -118,6 +118,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->initFieldsetCiphering(),
             $this->initFieldsetCaching(),
             $this->initFieldsetFullPageCache(),
+            $this->initFieldsetExperimental(),
         ];
 
         // Activate multiple fieldset
@@ -372,6 +373,7 @@ class AdminPerformanceControllerCore extends AdminController
 
 
     /**
+     * @return array
      */
     public function initFieldsetDatabase()
     {
@@ -421,26 +423,6 @@ class AdminPerformanceControllerCore extends AdminController
                         ],
                     ],
                 ],
-                [
-                    'type'    => 'switch',
-                    'label'   => $this->l('Stringify fetches'),
-                    'hint'    => $this->l('When enabled, database will return string instead of native data types. For backwards compatibility reasons we suggest to keep this enabled.'),
-                    'name'    => 'stringify_fetches',
-                    'class'   => 't',
-                    'is_bool' => true,
-                    'values'  => [
-                        [
-                            'id'    => 'stringify_fetches_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled'),
-                        ],
-                        [
-                            'id'    => 'stringify_fetches_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled'),
-                        ],
-                    ],
-                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -449,7 +431,6 @@ class AdminPerformanceControllerCore extends AdminController
 
         $this->fields_value['ignore_sql_errors'] = !$this->isDebugSqlEnabled();
         $this->fields_value['allow_multi_queries'] = $this->areMultiQueriesEnabled();
-        $this->fields_value['stringify_fetches'] = $this->isStringifyFetchesEnabled();
 
         return ['form' => $form];
     }
@@ -798,7 +779,6 @@ class AdminPerformanceControllerCore extends AdminController
     /**
      * @return array
      *
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function initFieldsetCaching()
@@ -995,6 +975,53 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['TB_PAGE_CACHE_ENABLED'] = PageCache::isEnabled();
         $this->fields_value['TB_PAGE_CACHE_DEBUG'] = (bool) Configuration::get('TB_PAGE_CACHE_DEBUG');
         $this->fields_value['TB_PAGE_CACHE_IGNOREPARAMS'] = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+
+        return ['form' => $form];
+    }
+
+
+
+    /**
+     * @return array[]
+     */
+    public function initFieldsetExperimental()
+    {
+        $form = [
+            'legend' => [
+                'title' => $this->l('Experimental features'),
+                'icon'  => 'icon-database',
+            ],
+            'error' => Translate::ppTags($this->l('[1]Danger zone![/1]'), ['<b>']),
+            'warning' => $this->l('These are experimental features. Do not change anything unless you know what you are doing!'),
+            'input'  => [
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Use native data types for fetches'),
+                    'hint'    => $this->l('When enabled, database will return numeric data types instead of strings. When disabled, PDO driwer will convert numeric values to strings when fetching.'),
+                    'desc'    => $this->l('We suggest to keep this option disabled for compatibility reasons.'),
+                    'name'    => 'db_use_native_types',
+                    'class'   => 't',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'db_use_native_types_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'db_use_native_types_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
+
+        $this->fields_value['db_use_native_types'] = !$this->isStringifyFetchesEnabled();
 
         return ['form' => $form];
     }
@@ -1331,7 +1358,7 @@ class AdminPerformanceControllerCore extends AdminController
                 '_PS_DEBUG_PROFILING_' => Tools::getBoolValue('profiling'),
                 '_PS_DEBUG_SQL_' => !Tools::getBoolValue('ignore_sql_errors'),
                 '_TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_' => Tools::getBoolValue('allow_multi_queries'),
-                '_TB_DB_STRINGIFY_FETCHES_' => Tools::getBoolValue('stringify_fetches'),
+                '_TB_DB_STRINGIFY_FETCHES_' => !Tools::getBoolValue('db_use_native_types'),
                 '_PS_DISPLAY_COMPATIBILITY_WARNING_' => Tools::getBoolValue('display_deprecation_warnings'),
             ]);
 
