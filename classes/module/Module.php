@@ -639,34 +639,29 @@ abstract class ModuleCore
      *
      * @param string $currentClass
      *
-     * @return bool|string if the class belongs to a module, will return the module name. Otherwise, return false.
+     * @return string|false if the class belongs to a module, will return the module name. Otherwise, return false.
      */
     public static function getModuleNameFromClass($currentClass)
     {
         // Module can now define AdminTab keeping the module translations method,
         // i.e. in modules/[module name]/[iso_code].php
-        if (!isset(static::$classInModule[$currentClass]) && class_exists($currentClass)) {
-            global $_MODULES;
-            $_MODULE = [];
-            $reflectionClass = new ReflectionClass($currentClass);
-            $filePath = realpath($reflectionClass->getFileName());
-            $realpathModuleDir = realpath(_PS_MODULE_DIR_);
-            if (substr(realpath($filePath), 0, strlen($realpathModuleDir)) == $realpathModuleDir) {
-                // For controllers in module/controllers path
-                if (basename(dirname(dirname($filePath))) == 'controllers') {
-                    static::$classInModule[$currentClass] = basename(dirname(dirname(dirname($filePath))));
-                } else {
-                    // For old AdminTab controllers
-                    static::$classInModule[$currentClass] = substr(dirname($filePath), strlen($realpathModuleDir) + 1);
+        if (!isset(static::$classInModule[$currentClass])) {
+            $moduleName = false;
+            if (class_exists($currentClass)) {
+                $reflectionClass = new ReflectionClass($currentClass);
+                $filePath = realpath($reflectionClass->getFileName());
+                $realpathModuleDir = realpath(_PS_MODULE_DIR_);
+                if (substr($filePath, 0, strlen($realpathModuleDir)) === $realpathModuleDir) {
+                    // For controllers in module/controllers path
+                    if (basename(dirname($filePath, 2)) === 'controllers') {
+                        $moduleName = basename(dirname($filePath, 3));
+                    } else {
+                        // For old AdminTab controllers
+                        $moduleName = substr(dirname($filePath), strlen($realpathModuleDir) + 1);
+                    }
                 }
-
-                $file = _PS_MODULE_DIR_.static::$classInModule[$currentClass].'/'.Context::getContext()->language->iso_code.'.php';
-                if (file_exists($file) && include_once($file)) {
-                    $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
-                }
-            } else {
-                static::$classInModule[$currentClass] = false;
             }
+            static::$classInModule[$currentClass] = $moduleName;
         }
 
         // return name of the module, or false
@@ -739,15 +734,6 @@ abstract class ModuleCore
         }
         libxml_clear_errors();
 
-        // Find translations
-        global $_MODULES;
-        $file = _PS_MODULE_DIR_.$module.'/'.Context::getContext()->language->iso_code.'.php';
-        if (file_exists($file) && include_once($file)) {
-            if (isset($_MODULE) && is_array($_MODULE)) {
-                $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
-            }
-        }
-
         // Return Name
         return Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->displayName), (string) $xmlModule->name);
     }
@@ -776,8 +762,6 @@ abstract class ModuleCore
      */
     public static function getModulesOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false)
     {
-        global $_MODULES;
-
         // Init var
         $moduleList = [];
         $moduleNameList = [];
@@ -835,13 +819,6 @@ abstract class ModuleCore
 
                 // If no errors in Xml, no need instance and no need new config.xml file, we load only translations
                 if (!count($errors) && (int) $xmlModule->need_instance == 0) {
-                    $file = _PS_MODULE_DIR_.$module.'/'.Context::getContext()->language->iso_code.'.php';
-                    if (file_exists($file) && include_once($file)) {
-                        if (isset($_MODULE) && is_array($_MODULE)) {
-                            $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
-                        }
-                    }
-
                     $item = [
                         'id' => 0,
                         'warning' => '',

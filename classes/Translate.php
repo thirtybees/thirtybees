@@ -73,10 +73,13 @@ class TranslateCore
         }
 
         if (isset($modulesTabs[strtolower($class)])) {
-            $classNameController = $class.'controller';
-            // if the class is extended by a module, use modules/[module_name]/xx.php lang file
-            if (class_exists($classNameController) && Module::getModuleNameFromClass($classNameController)) {
-                return static::getModuleTranslation(Module::$classInModule[$classNameController], $string, $classNameController, $sprintf, $addslashes);
+            $classNameController = $class . 'Controller';
+            // if this is module admin controller, use module translation
+            if (class_exists($classNameController)) {
+                $moduleName = Module::getModuleNameFromClass($classNameController);
+                if ($moduleName) {
+                    return static::getModuleTranslation($moduleName, $string, $classNameController, $sprintf, $addslashes);
+                }
             }
         }
 
