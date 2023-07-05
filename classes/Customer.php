@@ -605,36 +605,39 @@ class CustomerCore extends ObjectModel
      */
     public function delete()
     {
-        if (!count(Order::getCustomerOrders((int) $this->id))) {
-            $addresses = $this->getAddresses((int) Configuration::get('PS_LANG_DEFAULT'));
-            foreach ($addresses as $address) {
-                $obj = new Address((int) $address['id_address']);
-                $obj->delete();
-            }
-        }
-        $conn = Db::getInstance();
-        $conn->execute('DELETE FROM `'._DB_PREFIX_.'customer_group` WHERE `id_customer` = '.(int) $this->id);
-        $conn->execute('DELETE FROM '._DB_PREFIX_.'message WHERE id_customer='.(int) $this->id);
-        $conn->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_customer='.(int) $this->id);
-        $conn->execute('DELETE FROM '._DB_PREFIX_.'compare WHERE id_customer='.(int) $this->id);
+        if (Validate::isLoadedObject($this)) {
+            $customerId = (int)$this->id;
 
-        $carts = $conn->getArray('SELECT id_cart FROM '._DB_PREFIX_.'cart WHERE id_customer='.(int) $this->id);
-        if ($carts) {
+            if (! Order::getCustomerOrders($customerId)) {
+                $addresses = $this->getAddresses((int)Configuration::get('PS_LANG_DEFAULT'));
+                foreach ($addresses as $address) {
+                    $obj = new Address((int)$address['id_address']);
+                    $obj->delete();
+                }
+            }
+
+            $conn = Db::getInstance();
+            $conn->delete('customer_group', 'id_customer = ' . $customerId);
+            $conn->delete('message', 'id_customer = ' . $customerId);
+            $conn->delete('specific_price', 'id_customer = ' . $customerId);
+            $conn->delete('compare', 'id_customer = ' . $customerId);
+
+            $carts = $conn->getArray('SELECT id_cart FROM ' . _DB_PREFIX_ . 'cart WHERE id_customer=' . $customerId);
             foreach ($carts as $cart) {
-                $conn->execute('DELETE FROM '._DB_PREFIX_.'cart WHERE id_cart='.(int) $cart['id_cart']);
-                $conn->execute('DELETE FROM '._DB_PREFIX_.'cart_product WHERE id_cart='.(int) $cart['id_cart']);
+                $cartId = (int)$cart['id_cart'];
+                $conn->delete('cart', 'id_cart = ' . $cartId);
+                $conn->delete('cart_product', 'id_cart = ' . $cartId);
             }
-        }
 
-        $cts = $conn->getArray('SELECT id_customer_thread FROM '._DB_PREFIX_.'customer_thread WHERE id_customer='.(int) $this->id);
-        if ($cts) {
+            $cts = $conn->getArray('SELECT id_customer_thread FROM ' . _DB_PREFIX_ . 'customer_thread WHERE id_customer=' . $customerId);
             foreach ($cts as $ct) {
-                $conn->execute('DELETE FROM '._DB_PREFIX_.'customer_thread WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
-                $conn->execute('DELETE FROM '._DB_PREFIX_.'customer_message WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
+                $customerThreadId = (int)$ct['id_customer_thread'];
+                $conn->delete('customer_thread', 'id_customer_thread = ' . $customerThreadId);
+                $conn->delete('customer_message', 'id_customer_thread = ' . $customerThreadId);
             }
-        }
 
-        CartRule::deleteByIdCustomer((int) $this->id);
+            CartRule::deleteByIdCustomer($customerId);
+        }
 
         return parent::delete();
     }
