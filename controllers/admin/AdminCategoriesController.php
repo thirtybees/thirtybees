@@ -915,15 +915,19 @@ class AdminCategoriesControllerCore extends AdminController
         if ($this->hasDeletePermission()) {
             /** @var Category $category */
             $category = $this->loadObject();
-            if ($category->isRootCategoryForAShop()) {
-                $this->errors[] = Tools::displayError('You cannot remove this category because one of your shops uses it as a root category.');
-            } else {
-                $categoryProducts = $category->getAssociatedProducts();
-                if (parent::processDelete()) {
-                    $this->setDeleteMode();
-                    $this->processFatherlessProducts((int)$category->id_parent, $categoryProducts);
-                    return true;
+            if (Validate::isLoadedObject($category)) {
+                if ($category->isRootCategoryForAShop()) {
+                    $this->errors[] = Tools::displayError('You cannot remove this category because one of your shops uses it as a root category.');
+                } else {
+                    $categoryProducts = $category->getAssociatedProducts();
+                    if (parent::processDelete()) {
+                        $this->setDeleteMode();
+                        $this->processFatherlessProducts((int)$category->id_parent, $categoryProducts);
+                        return true;
+                    }
                 }
+            } else {
+                $this->errors[] = Tools::displayError('Category not found');
             }
         } else {
             $this->errors[] = Tools::displayError('You do not have permission to delete this.');
