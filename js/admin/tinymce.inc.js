@@ -74,7 +74,8 @@ function tinySetup(config) {
       },
       table: { title: 'Table', items: 'inserttable tableprops deletetable | cell row column' },
       tools: { title: 'Tools', items: 'code' }
-    }
+    },
+    autoresize_min_height: 100
   };
 
   // allow extending default config
