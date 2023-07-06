@@ -28,7 +28,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/* global jQuery, $, window, showSuccessMessage, showErrorMessage, tinyMCE */
+/* global window, tinyMCE, tinymce_override_config, ad, iso */
 
 function tinySetup(config) {
   if (typeof tinyMCE === 'undefined') {
@@ -42,11 +42,11 @@ function tinySetup(config) {
     config = {};
   }
 
-  if (typeof config.editor_selector !== 'undefined') {
-    config.selector = '.' + config.editor_selector;
+  if (typeof config['editor_selector'] !== 'undefined') {
+    config.selector = '.' + config['editor_selector'];
   }
 
-  window.default_config = {
+  let defaultConfig = {
     selector: ".rte",
     plugins: "colorpicker link image paste pagebreak table contextmenu filemanager table code media autoresize textcolor anchor directionality",
     browser_spellcheck: true,
@@ -77,11 +77,18 @@ function tinySetup(config) {
     }
   };
 
-  $.each(window.default_config, function (index, el) {
-    if (typeof config[index] === 'undefined') {
-      config[index] = el;
-    }
-  });
+  // allow extending default config
+  if (typeof window['tinymce_override_config'] !== 'undefined') {
+    defaultConfig = {
+      ...defaultConfig,
+      ...window['tinymce_override_config']
+    };
+  }
+
+  config = {
+    ...defaultConfig,
+    ...config
+  };
 
   tinyMCE.init(config);
 }
