@@ -4882,7 +4882,7 @@ class CartCore extends ObjectModel
 						AND (cp1.id_product = cp2.id_product)
 						AND (cp1.id_product_attribute = cp2.id_product_attribute)
 						AND (cp1.id_address_delivery <> cp2.id_address_delivery)
-						AND (cp1.date_upd > cp2.date_upd)
+						AND ((cp1.date_upd > cp2.date_upd) OR (cp1.date_upd=cp2.date_upd AND cp1.date_add > cp2.date_add))
 					)';
             $conn->execute($sql);
         }

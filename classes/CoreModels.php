@@ -144,7 +144,7 @@ class CoreModelsCore
                 'id_product_attribute' => ['type' => ObjectModel::TYPE_INT, 'required' => true, 'default' => '0'],
                 'quantity'             => ['type' => ObjectModel::TYPE_INT, 'default' => '0'],
                 'date_add'             => ['type' => ObjectModel::TYPE_DATE, 'required' => true],
-                'date_upd'             => ['type' => ObjectModel::TYPE_DATE, 'required' => true],
+                'date_upd'             => ['type' => ObjectModel::TYPE_DATE, 'default' => '0000-00-00 00:00:00'],
             ],
             'keys' => [
                 'cart_product' => [
