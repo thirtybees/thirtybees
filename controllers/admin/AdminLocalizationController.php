@@ -265,7 +265,7 @@ class AdminLocalizationControllerCore extends AdminController
     }
 
     /**
-     * @return string|null
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -303,7 +303,7 @@ class AdminLocalizationControllerCore extends AdminController
 
                     $xmlPack = @simplexml_load_file(_PS_ROOT_DIR_.'/localization/'.$entry);
                     if (!$xmlPack) {
-                        return $this->displayWarning($this->l(sprintf('%1s could not be loaded', $entry)));
+                        $this->displayWarning($this->l(sprintf('%1s could not be loaded', $entry)));
                     }
                     $localizationsPack[$i]['iso_localization_pack'] = $iso;
                     $localizationsPack[$i]['name'] = sprintf($this->l('%s (local)'), (string) $xmlPack['name']);

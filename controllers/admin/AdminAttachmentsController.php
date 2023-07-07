@@ -137,6 +137,8 @@ class AdminAttachmentsControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @throws PrestaShopException
      */
     public function renderView()
@@ -146,7 +148,7 @@ class AdminAttachmentsControllerCore extends AdminController
             Tools::redirectLink($link);
         }
 
-        return $this->displayWarning($this->l('File not found'));
+        $this->displayWarning($this->l('File not found'));
     }
 
     /**
