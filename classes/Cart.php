@@ -3008,7 +3008,7 @@ class CartCore extends ObjectModel
                 ->select('`id_product`, `id_product_attribute`, `id_shop`')
                 ->from('cart_product', 'cp')
                 ->where('`id_cart` = '.(int) $this->id)
-                ->orderBy('`date_add` DESC')
+                ->orderBy('`date_upd` DESC, `date_add` DESC')
         );
         if ($result && isset($result['id_product']) && $result['id_product']) {
             foreach ($this->getProducts() as $product) {
@@ -3273,7 +3273,7 @@ class CartCore extends ObjectModel
                         'cart_product',
                         [
                             'quantity' => ['type' => 'sql', 'value' => '`quantity` '.$qty],
-                            'date_add' => ['type' => 'sql', 'value' => 'NOW()'],
+                            'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
                         ],
                         '`id_product` = '.(int) $idProduct.(!empty($idProductAttribute) ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_cart` = '.(int) $this->id.(Configuration::get('PS_ALLOW_MULTISHIPPING') && $this->isMultiAddressDelivery() ? ' AND `id_address_delivery` = '.(int) $idAddressDelivery : ''),
                         1
@@ -3314,6 +3314,7 @@ class CartCore extends ObjectModel
                         'id_shop'              => $shop->id,
                         'quantity'             => (int) $quantity,
                         'date_add'             => date('Y-m-d H:i:s'),
+                        'date_upd'             => date('Y-m-d H:i:s'),
                     ]
                 );
 
@@ -4612,6 +4613,7 @@ class CartCore extends ObjectModel
                     'id_address_delivery'  => isset($value['id_address_delivery']) ? (int) $value['id_address_delivery'] : 0,
                     'quantity'             => (int) $value['quantity'],
                     'date_add'             => ['type' => 'sql', 'value' => 'NOW()'],
+                    'date_upd'             => ['type' => 'sql', 'value' => 'NOW()'],
                     'id_shop'              => (int) Context::getContext()->shop->id,
                 ];
             }
@@ -4752,6 +4754,7 @@ class CartCore extends ObjectModel
                 'id_product_attribute' => (int) $idProductAttribute,
                 'quantity'             => (int) $quantity,
                 'date_add'             => ['type' => 'sql', 'value' => 'NOW()'],
+                'date_upd'             => ['type' => 'sql', 'value' => 'NOW()'],
                 'id_address_delivery'  => (int) $newIdAddressDelivery,
             ]
         );
@@ -4879,7 +4882,7 @@ class CartCore extends ObjectModel
 						AND (cp1.id_product = cp2.id_product)
 						AND (cp1.id_product_attribute = cp2.id_product_attribute)
 						AND (cp1.id_address_delivery <> cp2.id_address_delivery)
-						AND (cp1.date_add > cp2.date_add)
+						AND ((cp1.date_upd > cp2.date_upd) OR (cp1.date_upd=cp2.date_upd AND cp1.date_add > cp2.date_add))
 					)';
             $conn->execute($sql);
         }
