@@ -141,7 +141,7 @@ class GuestTrackingControllerCore extends FrontController
             $orderList[] = $order;
         }
 
-        foreach ($orderList as &$order) {
+        foreach ($orderList as $order) {
             /** @var Order $order */
             $order->id_order_state = (int) $order->getCurrentState();
             $order->invoice = (OrderState::invoiceAvailable((int) $order->id_order_state) && $order->invoice_number);
