@@ -663,7 +663,7 @@ class AdminCartsControllerCore extends AdminController
                 ]
             );
 
-            return $this->smartyOutputContent('controllers/orders/form_customization_feedback.tpl');
+            $this->smartyOutputContent('controllers/orders/form_customization_feedback.tpl');
         }
     }
 
@@ -674,43 +674,52 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->hasEditPermission()) {
             $errors = [];
-            if (!$this->context->cart->id) {
+            $cart = $this->context->cart;
+
+            if (! Validate::isLoadedObject($cart)) {
                 return;
             }
-            if ($this->context->cart->OrderExists()) {
+
+            $idProduct = Tools::getIntValue('id_product');
+            $idProductAttribute = Tools::getIntValue('id_product_attribute');
+            $idCustomization = Tools::getIntValue('id_customization', 0);
+            $qty = Tools::getIntValue('qty');
+
+            if ($cart->orderExists()) {
                 $errors[] = Tools::displayError('An order has already been placed with this cart.');
-            } elseif (!($idProduct = Tools::getIntValue('id_product')) || !($product = new Product((int) $idProduct, true, $this->context->language->id))) {
-                $errors[] = Tools::displayError('Invalid product');
-            } elseif (!($qty = Tools::getValue('qty')) || $qty == 0) {
+            }
+            if (! $qty) {
                 $errors[] = Tools::displayError('Invalid quantity');
             }
 
-            // Don't try to use a product if not instanciated before due to errors
-            if (isset($product) && $product->id) {
-                if (($idProductAttribute = Tools::getIntValue('id_product_attribute')) !== 0) {
-                    if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !ProductAttribute::checkAttributeQty((int) $idProductAttribute, (int) $qty)) {
+            $product = new Product($idProduct, true, $this->context->language->id);
+            if (Validate::isLoadedObject($product)) {
+                if ($idProductAttribute) {
+                    if (! Product::isAvailableWhenOutOfStock($product->out_of_stock) && !ProductAttribute::checkAttributeQty($idProductAttribute, $qty)) {
                         $errors[] = Tools::displayError('There is not enough product in stock.');
                     }
-                } elseif (!$product->checkQty((int) $qty)) {
-                    $errors[] = Tools::displayError('There is not enough product in stock.');
+                } else {
+                    if (! $product->checkQty($qty)) {
+                        $errors[] = Tools::displayError('There is not enough product in stock.');
+                    }
                 }
-                if (!($idCustomization = Tools::getIntValue('id_customization', 0)) && !$product->hasAllRequiredCustomizableFields()) {
+                if (!$idCustomization && !$product->hasAllRequiredCustomizableFields()) {
                     $errors[] = Tools::displayError('Please fill in all the required fields.');
                 }
-                $this->context->cart->save();
             } else {
                 $errors[] = Tools::displayError('This product cannot be added to the cart.');
             }
 
-            if (!count($errors)) {
-                if ((int) $qty < 0) {
-                    $qty = str_replace('-', '', $qty);
+            if (! $errors) {
+                if ($qty < 0) {
+                    $qty = (int)abs($qty);
                     $operator = 'down';
                 } else {
                     $operator = 'up';
                 }
 
-                if (!($qtyUpd = $this->context->cart->updateQty($qty, $idProduct, (int) $idProductAttribute, (int) $idCustomization, $operator))) {
+                $qtyUpd = $cart->updateQty($qty, $idProduct, $idProductAttribute, $idCustomization, $operator);
+                if (! $qtyUpd) {
                     $errors[] = Tools::displayError('You already have the maximum quantity available for this product.');
                 } elseif ($qtyUpd < 0) {
                     $minimalQty = $idProductAttribute ? ProductAttribute::getAttributeMinimalQty((int) $idProductAttribute) : $product->minimal_quantity;

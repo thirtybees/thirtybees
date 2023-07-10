@@ -3148,7 +3148,8 @@ class CartCore extends ObjectModel
      * @param Shop|null $shop
      * @param bool $autoAddCartRule
      *
-     * @return bool
+     * @return bool|int
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
