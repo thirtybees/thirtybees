@@ -412,7 +412,7 @@ class AuthControllerCore extends FrontController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function processCustomerNewsletter(&$customer)
+    protected function processCustomerNewsletter($customer)
     {
         $blocknewsletter = Module::isInstalled('blocknewsletter');
         $moduleNewsletter = Module::getInstanceByName('blocknewsletter');
