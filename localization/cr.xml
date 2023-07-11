@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <localizationPack name="Costa Rica" version="1.0">
   <currencies>
-    <currency name="Colón" iso_code="CRC" iso_code_num="188" sign="₡" blank="1" conversion_rate="560" format="1" decimals="1"/>
+    <currency name="Colón" iso_code="CRC" iso_code_num="188" sign="₡" blank="1" conversion_rate="560" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Español (Spanish)" iso_code="es" language_code="es-es" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>

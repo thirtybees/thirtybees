@@ -47,34 +47,74 @@ class CurrencyCore extends ObjectModel
      */
     protected static $currencyFormatters = null;
 
-    /** @var int|null Object ID */
+    /**
+     * @var int|null Object ID
+     */
     public $id;
-    /** @var string Name */
+
+    /**
+     * @var string Name
+     */
     public $name;
-    /** @var string Iso code */
+
+    /**
+     * @var string Iso code
+     */
+
     public $iso_code;
-    /** @var string Iso code numeric */
+
+    /**
+     * @var string Iso code numeric
+     */
     public $iso_code_num;
-    /** @var string Symbol for short display */
+
+    /**
+     * @var string Symbol for short display
+     */
     public $sign;
-    /** @var bool used for displaying blank between sign and price */
+
+    /**
+     * @var bool used for displaying blank between sign and price
+     */
     public $blank;
-    /** @var float exchange rate from euros */
+
+    /**
+     * @var float exchange rate from euros
+     */
     public $conversion_rate;
-    /** @var bool True if currency has been deleted (staying in database as deleted) */
+
+    /**
+     * @var bool True if currency has been deleted (staying in database as deleted)
+     */
     public $deleted = 0;
-    /** @var int ID used for displaying prices */
+
+    /**
+     * @var int ID used for displaying prices
+     */
     public $format;
-    /** @var bool Display decimals on prices */
+
+    /**
+     * @var bool Display decimals on prices
+     */
     public $decimals;
-    /** @var bool active */
+
+    /**
+     * @var int Display precision
+     */
+    public $decimal_places;
+
+    /**
+     * @var bool active
+     */
     public $active;
+
     /**
      * contains the sign to display before price, according to its format
      *
      * @var string
      */
     public $prefix = null;
+
     /**
      * contains the sign to display after price, according to its format
      *
@@ -97,6 +137,7 @@ class CurrencyCore extends ObjectModel
             'blank'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'format'          => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'size' => 1, 'dbDefault' => '0'],
             'decimals'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'decimal_places'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'dbDefault' => '2'],
             'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true, 'size' => 13],
             'deleted'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'active'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
@@ -812,16 +853,11 @@ class CurrencyCore extends ObjectModel
      * Returns currency display precision
      *
      * @return int
-     * @throws PrestaShopException
      */
     public function getDisplayPrecision()
     {
         if ($this->decimals) {
-            static $pricePrecision = null;
-            if (is_null($pricePrecision)) {
-                $pricePrecision = (int)Configuration::getDeprecatedKey(Configuration::PRICE_DISPLAY_PRECISION);
-            }
-            return $pricePrecision;
+            return $this->decimal_places;
         }
         return 0;
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="China" version="1.0">
   <currencies>
-    <currency name="Yuan" iso_code="CNY" iso_code_num="156" sign="¥" blank="1" conversion_rate="9.13916" format="1" decimals="1"/>
+    <currency name="Yuan" iso_code="CNY" iso_code_num="156" sign="¥" blank="1" conversion_rate="9.13916" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="中文 (Simplified Chinese)" iso_code="zh" language_code="zh-zh" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

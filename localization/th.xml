@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Thailand" version="1.0">
   <currencies>
-    <currency name="Baht" iso_code="THB" iso_code_num="978" sign="฿" blank="1" conversion_rate="41.4441" format="2" decimals="1"/>
+    <currency name="Baht" iso_code="THB" iso_code_num="978" sign="฿" blank="1" conversion_rate="41.4441" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="ภาษาไทย (Thai)" iso_code="th" language_code="th-th" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

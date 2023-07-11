@@ -212,6 +212,14 @@ class AdminCurrenciesControllerCore extends AdminController
                     'desc'     => $this->l('Display decimals in prices.'),
                 ],
                 [
+                    'type'      => 'text',
+                    'label'     => $this->l('Decimal places'),
+                    'name'      => 'decimal_places',
+                    'maxlength' => 8,
+                    'disabled'  => !$this->object->decimals,
+                    'desc'      => $this->l('Number of decimal places to be displayed.'),
+                ],
+                [
                     'type'     => 'switch',
                     'label'    => $this->l('Spacing'),
                     'name'     => 'blank',

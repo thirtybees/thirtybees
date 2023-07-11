@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Jersey" version="1.0">
   <currencies>
-    <currency name="Pound" iso_code="GBP" iso_code_num="826" sign="£" blank="1" conversion_rate="0.865759" format="1" decimals="1"/>
+    <currency name="Pound" iso_code="GBP" iso_code_num="826" sign="£" blank="1" conversion_rate="0.865759" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Français (French)" iso_code="fr" language_code="fr-fr" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>

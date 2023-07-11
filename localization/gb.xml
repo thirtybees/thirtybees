@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="United Kingdom" version="1.0">
   <currencies>
-    <currency name="Pound" iso_code="GBP" iso_code_num="826" sign="£" blank="1" conversion_rate="0.8633100" format="1" decimals="1"/>
+    <currency name="Pound" iso_code="GBP" iso_code_num="826" sign="£" blank="1" conversion_rate="0.8633100" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="English GB (English)" iso_code="gb" language_code="en-gb" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

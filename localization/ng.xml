@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Nigeria">
   <currencies>
-    <currency name="Nigerian naira" iso_code="NGN" iso_code_num="566" sign="₦" blank="1" conversion_rate="1.000000" format="1" decimals="0"/>
+    <currency name="Nigerian naira" iso_code="NGN" iso_code_num="566" sign="₦" blank="1" conversion_rate="1.000000" format="1" decimals="0" decimal_places="0"/>
   </currencies>
   <languages>
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>

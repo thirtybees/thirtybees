@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Mexico" version="1.0">
   <currencies>
-    <currency name="Peso" iso_code="MXN" iso_code_num="484" sign="$" blank="1" conversion_rate="17.1304" format="2" decimals="1"/>
+    <currency name="Peso" iso_code="MXN" iso_code_num="484" sign="$" blank="1" conversion_rate="17.1304" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Español MX (Spanish)" iso_code="mx" language_code="es-mx" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

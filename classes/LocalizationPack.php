@@ -345,8 +345,9 @@ class LocalizationPackCore
                 $currency->conversion_rate = 1; // This value will be updated if the store is online
                 $currency->format = (int) $attributes['format'];
                 $currency->decimals = (int) $attributes['decimals'];
+                $currency->decimal_places = (int) $attributes['decimal_places'];
                 $currency->active = true;
-                if (!$currency->validateFields()) {
+                if (!$currency->validateFields(false)) {
                     $this->_errors[] = Tools::displayError('Invalid currency properties.');
 
                     return false;

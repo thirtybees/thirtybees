@@ -4,7 +4,7 @@
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
   </languages>
   <currencies>
-    <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="1"/>
+    <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <taxes>
     <tax id="1" name="VAT MT 18%" rate="18" eu-tax-group="virtual"/>

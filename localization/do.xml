@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Dominican Republic" version="1.0">
   <currencies>
-    <currency name="Peso" iso_code="DOP" iso_code_num="214" sign="RD$" blank="0" conversion_rate="47.3150" format="1" decimals="0"/>
+    <currency name="Peso" iso_code="DOP" iso_code_num="214" sign="RD$" blank="0" conversion_rate="47.3150" format="1" decimals="0" decimal_places="0"/>
   </currencies>
   <languages>
     <language iso_code="es"/>

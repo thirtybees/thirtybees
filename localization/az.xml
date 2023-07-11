@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Azerbaijan" version="1.0">
   <currencies>
-    <currency name="Manat" iso_code="AZN" iso_code_num="944" sign="AZN" blank="1" conversion_rate="1.09237" format="2" decimals="1"/>
+    <currency name="Manat" iso_code="AZN" iso_code_num="944" sign="AZN" blank="1" conversion_rate="1.09237" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Azərbaycan dili" iso_code="az" language_code="az-az" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

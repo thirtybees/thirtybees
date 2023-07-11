@@ -661,6 +661,7 @@ CREATE TABLE `PREFIX_currency` (
   `blank` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `format` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `decimals` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `decimal_places` int(11) unsigned NOT NULL DEFAULT '2',
   `conversion_rate` decimal(13,6) NOT NULL,
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',

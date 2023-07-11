@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <localizationPack name="Croatia">
   <currencies>
-    <currency name="Croatian Kuna" iso_code="HRK" iso_code_num="191" sign="kn" blank="1" conversion_rate="1.000000" format="2" decimals="1"/>
+    <currency name="Croatian Kuna" iso_code="HRK" iso_code_num="191" sign="kn" blank="1" conversion_rate="1.000000" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Hrvatski (Croatian)" iso_code="hr" language_code="hr-hr" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

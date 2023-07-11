@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Saudi Arabia" version="1.0">
   <currencies>
-    <currency name="Riyal" iso_code="SAR" iso_code_num="682" sign="﷼" blank="1" conversion_rate="5.10682" format="2" decimals="1"/>
+    <currency name="Riyal" iso_code="SAR" iso_code_num="682" sign="﷼" blank="1" conversion_rate="5.10682" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="اللغة العربية (Arabic)" iso_code="ar" language_code="ar-sa" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Georgia" version="1.0">
   <currencies>
-    <currency name="Lari" iso_code="GEL" iso_code_num="981" sign="ლ" blank="1" conversion_rate="2.46684" format="2" decimals="1"/>
+    <currency name="Lari" iso_code="GEL" iso_code_num="981" sign="ლ" blank="1" conversion_rate="2.46684" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="ქართული (Georgian)" iso_code="ka" language_code="ka-ge" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

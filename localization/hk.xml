@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Hong Kong" version="1.0">
   <currencies>
-    <currency name="Hong Kong Dollar" iso_code="HKD" iso_code_num="344" sign="$" blank="1" conversion_rate="11.0512" format="2" decimals="1"/>
+    <currency name="Hong Kong Dollar" iso_code="HKD" iso_code_num="344" sign="$" blank="1" conversion_rate="11.0512" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="繁體中文 (Traditional Chinese)" iso_code="tw" language_code="zh-tw" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

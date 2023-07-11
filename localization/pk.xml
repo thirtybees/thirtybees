@@ -5,7 +5,7 @@
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
   </languages>
   <currencies>
-    <currency name="Rupee" iso_code="PKR" iso_code_num="586" sign="₨" blank="1" conversion_rate="117.289" format="2" decimals="1"/>
+    <currency name="Rupee" iso_code="PKR" iso_code_num="586" sign="₨" blank="1" conversion_rate="117.289" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <taxes>
     <tax id="1" name="GST PK 16%" rate="16"/>

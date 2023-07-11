@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <localizationPack name="Philippines">
   <currencies>
-    <currency name="Philippine Peso" iso_code="PHP" iso_code_num="608" sign="PHP" blank="1" conversion_rate="1.000000" format="1" decimals="1"/>
+    <currency name="Philippine Peso" iso_code="PHP" iso_code_num="608" sign="PHP" blank="1" conversion_rate="1.000000" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
