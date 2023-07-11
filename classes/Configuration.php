@@ -274,6 +274,11 @@ class ConfigurationCore extends ObjectModel
     const MAIL_TRANSPORT = 'TB_MAIL_TRANSPORT';
 
     /**
+     * List of configuration keys that will raise warnings
+     */
+    const DEPRECATED_CONFIG_KEYS = [];
+
+    /**
      * @var array Object model definition
      */
     public static $definition = [
@@ -313,6 +318,11 @@ class ConfigurationCore extends ObjectModel
      * @var array Vars types
      */
     protected static $types = [];
+
+    /**
+     * @var mixed
+     */
+    protected static $checkDeprecatedKeys = true;
 
     /**
      * @var string Key
@@ -430,6 +440,53 @@ class ConfigurationCore extends ObjectModel
         }
 
         return false;
+    }
+
+    /**
+     * Get a single configuration value for a get that has been deprecated.
+     *
+     * @param string $key Key wanted
+     * @param int $idLang Language ID
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
+     *
+     * @return string|null|false Value
+     *
+     * @throws PrestaShopException
+     */
+    public static function getDeprecatedKey($key, $idLang = null, $idShopGroup = null, $idShop = null)
+    {
+        $save = static::$checkDeprecatedKeys;
+        static::$checkDeprecatedKeys = false;
+        try {
+            return static::get($key);
+        } finally {
+            static::$checkDeprecatedKeys = $save;
+        }
+    }
+
+    /**
+     * Update deprecated configuration key and value into database
+     *
+     * @param string $key Key
+     * @param mixed $values $values is an array if the configuration is multilingual, a single string else.
+     * @param bool $html Specify if html is authorized in value
+     * @param int $idShopGroup
+     * @param int $idShop
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public static function updateDeprecatedKey($key, $values, $html = false, $idShopGroup = null, $idShop = null)
+    {
+        $save = static::$checkDeprecatedKeys;
+        static::$checkDeprecatedKeys = false;
+        try {
+            return static::updateValue($key, $values, $html, $idShopGroup, $idShop);
+        } finally {
+            static::$checkDeprecatedKeys = $save;
+        }
     }
 
     /**
@@ -1043,6 +1100,14 @@ class ConfigurationCore extends ObjectModel
             );
             trigger_error($message, E_USER_WARNING);
             throw new PrestaShopException($message);
+        }
+
+        if (static::$checkDeprecatedKeys && array_key_exists($key, static::DEPRECATED_CONFIG_KEYS)) {
+            $callPoint = Tools::getCallPoint([Configuration::class]);
+            $message = sprintf(Tools::displayError("Configuration key [%s] is deprecated."), $key) . ' ';
+            $message .= trim(static::DEPRECATED_CONFIG_KEYS[$key]) . '. ';
+            $message .= 'Called from: ' . $callPoint['description'];
+            trigger_error($message, E_USER_DEPRECATED);
         }
     }
 
