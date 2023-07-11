@@ -817,7 +817,11 @@ class CurrencyCore extends ObjectModel
     public function getDisplayPrecision()
     {
         if ($this->decimals) {
-            return (int)Configuration::get(Configuration::PRICE_DISPLAY_PRECISION);
+            static $pricePrecision = null;
+            if (is_null($pricePrecision)) {
+                $pricePrecision = (int)Configuration::getDeprecatedKey(Configuration::PRICE_DISPLAY_PRECISION);
+            }
+            return $pricePrecision;
         }
         return 0;
     }

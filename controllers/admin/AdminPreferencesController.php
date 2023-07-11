@@ -181,13 +181,15 @@ class AdminPreferencesControllerCore extends AdminController
                         ],
                         'identifier' => 'id',
                     ],
-                    'PS_PRICE_DISPLAY_PRECISION'  => [
+                    'DISPLAY_PRECISION'  => [
                         'title'      => $this->l('Number of decimals'),
                         'desc'       => $this->l('Choose how many decimals you want to display'),
                         'validation' => 'isUnsignedInt',
                         'cast'       => 'intval',
                         'type'       => 'text',
                         'class'      => 'fixed-width-xxl',
+                        'auto_value' => false,
+                        'value'      => Tools::getValue('DISPLAY_PRECISION', Configuration::getDeprecatedKey(Configuration::PRICE_DISPLAY_PRECISION))
                     ],
                     'PS_DISPLAY_SUPPLIERS'        => [
                         'title'      => $this->l('Display suppliers and manufacturers'),
@@ -270,5 +272,16 @@ class AdminPreferencesControllerCore extends AdminController
         $tab = Tab::getInstanceFromClassName('AdminShopGroup');
         $tab->active = (bool) Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE');
         $tab->update();
+    }
+
+    /**
+     * @param int $value
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function updateOptionDisplayPrecision($value)
+    {
+        Configuration::updateDeprecatedKey(Configuration::PRICE_DISPLAY_PRECISION, (int)$value);
     }
 }

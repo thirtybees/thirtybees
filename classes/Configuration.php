@@ -276,7 +276,9 @@ class ConfigurationCore extends ObjectModel
     /**
      * List of configuration keys that will raise warnings
      */
-    const DEPRECATED_CONFIG_KEYS = [];
+    const DEPRECATED_CONFIG_KEYS = [
+        self::PRICE_DISPLAY_PRECISION => 'Use Currency::getDisplayPrecision() method instead'
+    ];
 
     /**
      * @var array Object model definition
