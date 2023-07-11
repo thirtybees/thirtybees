@@ -100,9 +100,9 @@ class CartCore extends ObjectModel
     protected static $_totalWeight = [];
 
     /**
-     * @var Carrier[]|
+     * @var Carrier[]
      */
-    protected static $_carriers = null;
+    protected static $_carriers = [];
 
     /**
      * @var array
@@ -2014,7 +2014,6 @@ class CartCore extends ObjectModel
                     static::$_carriers[$row['id_carrier']] = new Carrier((int) $row['id_carrier']);
                 }
 
-                /** @var Carrier $carrier */
                 $carrier = static::$_carriers[$row['id_carrier']];
 
                 $shippingMethod = $carrier->getShippingMethod();
