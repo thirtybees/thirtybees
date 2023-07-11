@@ -822,7 +822,7 @@ class ToolsCore
         // fallback to default currency formatting
         $cChar = $tbCurrency->sign;
         $cFormat = $tbCurrency->format;
-        $cDecimals = (int) $tbCurrency->decimals ? Configuration::get('PS_PRICE_DISPLAY_PRECISION') : 0;
+        $cDecimals = $tbCurrency->getDisplayPrecision();
         $cBlank = $tbCurrency->blank;
         $blank = ($cBlank ? ' ' : '');
         $ret = 0;

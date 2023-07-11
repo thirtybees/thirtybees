@@ -531,32 +531,23 @@ class ProductControllerCore extends FrontController
             $groupReduction = Group::getReduction((int) $this->context->cookie->id_customer) / 100;
         }
 
-        $idCurrency = (int) $this->context->cookie->id_currency;
+        $currency = $this->context->currency;
+        $idCurrency = (int) $currency->id;
         $idProduct = (int) $this->product->id;
         $idShop = $this->context->shop->id;
-        $decimals = 0;
-        if (Currency::getCurrencyInstance($idCurrency)->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = $currency->getDisplayPrecision();
 
         // Tax
         $tax = (float) $this->product->getTaxesRate(new Address((int) $this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
         $this->context->smarty->assign('tax_rate', $tax);
 
-        $productPriceWithoutEcoTax = $this->product->getPrice()
-                                     - $this->product->ecotax;
+        $productPriceWithoutEcoTax = $this->product->getPrice() - $this->product->ecotax;
 
         $ecotaxRate = (float) Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         if (Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX')) {
-            $ecotaxTaxAmount = Tools::ps_round(
-                $this->product->ecotax * (1 + $ecotaxRate / 100),
-                $decimals
-            );
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax * (1 + $ecotaxRate / 100), $decimals);
         } else {
-            $ecotaxTaxAmount = Tools::ps_round(
-                $this->product->ecotax,
-                $decimals
-            );
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, $decimals);
         }
 
         $quantityDiscounts = SpecificPrice::getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, null, true, (int) $this->context->customer->id);
@@ -573,7 +564,7 @@ class ProductControllerCore extends FrontController
                 $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC);
             }
             if ((int) $quantityDiscount['id_currency'] == 0 && $quantityDiscount['reduction_type'] == 'amount') {
-                $quantityDiscount['reduction'] = Tools::convertPriceFull($quantityDiscount['reduction'], null, $this->context->currency);
+                $quantityDiscount['reduction'] = Tools::convertPriceFull($quantityDiscount['reduction'], null, $currency);
             }
         }
 
@@ -582,10 +573,7 @@ class ProductControllerCore extends FrontController
             [
                 'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, null, (float) $tax, $ecotaxTaxAmount),
                 'ecotax_tax_inc'             => $ecotaxTaxAmount,
-                'ecotax_tax_exc'             => Tools::ps_round(
-                    $this->product->ecotax,
-                    $decimals
-                ),
+                'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, $decimals),
                 'ecotaxTax_rate'             => $ecotaxRate,
                 'productPriceWithoutEcoTax'  => $productPriceWithoutEcoTax,
                 'group_reduction'            => $groupReduction,

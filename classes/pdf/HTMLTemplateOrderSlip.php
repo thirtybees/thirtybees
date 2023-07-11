@@ -295,10 +295,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplate
             $breakdown[$rate]['total_amount'] += $row['total_amount'];
         }
 
-        $decimals = 0;
-        if ((new Currency($this->order->id_currency))->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = Currency::getCurrencyInstance($this->order->id_currency)->getDisplayPrecision();
         foreach ($breakdown as $rate => $data) {
             $breakdown[$rate]['total_price_tax_excl'] = Tools::ps_round(
                 $data['total_price_tax_excl'],

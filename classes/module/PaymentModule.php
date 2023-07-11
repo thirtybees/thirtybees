@@ -530,11 +530,9 @@ abstract class PaymentModuleCore extends Module
                     $order->gift_message = $this->context->cart->gift_message;
                     $order->mobile_theme = $this->context->cart->mobile_theme;
                     $order->conversion_rate = $this->context->currency->conversion_rate;
-                    $displayDecimals = 0;
-                    if ($this->context->currency->decimals) {
-                        $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-                    }
-                    $amountPaid = $dontTouchAmount ? $amountPaid : Tools::ps_round($amountPaid, $displayDecimals);
+                    $amountPaid = $dontTouchAmount
+                        ? $amountPaid
+                        : Tools::ps_round($amountPaid, $this->context->currency->getDisplayPrecision());
 
                     $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $productList, $idCarrier);
                     $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $productList, $idCarrier);

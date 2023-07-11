@@ -661,17 +661,9 @@ class CartCore extends ObjectModel
      * @return float|int
      * @throws PrestaShopException
      */
-    protected function roundPrice($priceWithoutTax, $priceWithTax,
-                                  $quantity, $withTax)
+    protected function roundPrice($priceWithoutTax, $priceWithTax, $quantity, $withTax)
     {
-        static $displayPrecision = false;
-        if ($displayPrecision === false) {
-            $displayPrecision = 0;
-            if (Currency::getCurrencyInstance($this->id_currency)->decimals) {
-                $displayPrecision =
-                    Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-            }
-        }
+        $displayPrecision = Currency::getCurrencyInstance($this->id_currency)->getDisplayPrecision();
 
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
 
@@ -679,35 +671,22 @@ class CartCore extends ObjectModel
         if ($this->_taxCalculationMethod === PS_TAX_INC) {
             $price = $priceWithTax;
         }
-        $price = round($price, _TB_PRICE_DATABASE_PRECISION_);
+        $price = Tools::roundPrice($price);
 
-        switch ($roundType) {
-            case Order::ROUND_ITEM:
-                $price = Tools::ps_round($price, $displayPrecision);
-                // Intentionally fall through.
-            case Order::ROUND_LINE:
-            case Order::ROUND_TOTAL:
-                $total = $price * (int) $quantity;
+        if ($roundType === Order::ROUND_ITEM) {
+            $price = Tools::ps_round($price, $displayPrecision);
         }
+
+        $total = $price * (int) $quantity;
 
         // Add/remove taxes as appropriate. Ignore the obvious calculation
         // precision limitation, please, it should be negligible.
-        if ($priceWithTax
-            && $this->_taxCalculationMethod === PS_TAX_INC
-            && ! $withTax) {
+        if ($priceWithTax && $this->_taxCalculationMethod === PS_TAX_INC && ! $withTax) {
             // Remove taxes.
-            $total = round(
-                $total / $priceWithTax * $priceWithoutTax,
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-        } elseif ($priceWithoutTax
-                  && $this->_taxCalculationMethod === PS_TAX_EXC
-                  && $withTax) {
+            $total = Tools::roundPrice($total / $priceWithTax * $priceWithoutTax);
+        } elseif ($priceWithoutTax && $this->_taxCalculationMethod === PS_TAX_EXC && $withTax) {
             // Add taxes.
-            $total = round(
-                $total * $priceWithTax / $priceWithoutTax,
-                _TB_PRICE_DATABASE_PRECISION_
-            );
+            $total = Tools::roundPrice($total * $priceWithTax / $priceWithoutTax);
         } // else nothing to change.
 
         if ($roundType === Order::ROUND_LINE) {
@@ -832,14 +811,7 @@ class CartCore extends ObjectModel
      */
     public function getOrderTotal($withTaxes = true, $type = self::BOTH, $products = null, $idCarrier = null, $useCache = true)
     {
-        static $displayPrecision = false;
-        if ($displayPrecision === false) {
-            $displayPrecision = 0;
-            if (Currency::getCurrencyInstance($this->id_currency)->decimals) {
-                $displayPrecision =
-                    Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-            }
-        }
+        $displayPrecision = Currency::getCurrencyInstance($this->id_currency)->getDisplayPrecision();
 
         // Dependencies
         /** @var Adapter_AddressFactory $addressFactory */
@@ -3973,8 +3945,6 @@ class CartCore extends ObjectModel
             $totalTax = 0;
         }
 
-        $currency = new Currency($this->id_currency);
-
         $products = $this->getProducts($refresh);
 
         foreach ($products as &$product) {
@@ -4004,10 +3974,7 @@ class CartCore extends ObjectModel
         $totalDiscountsTaxExc = $this->getOrderTotal(false, static::ONLY_DISCOUNTS);
 
         // The cart content is altered for display
-        $decimals = 0;
-        if ($currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = Currency::getCurrencyInstance($this->id_currency)->getDisplayPrecision();
         foreach ($cartRules as &$cartRule) {
             // If the cart rule is automatic (wihtout any code) and include free shipping, it should not be displayed as a cart rule but only set the shipping cost to 0
             if ($cartRule['free_shipping'] && (empty($cartRule['code']) || preg_match('/^'.CartRule::BO_ORDER_CODE_PREFIX.'[0-9]+/', $cartRule['code']))) {

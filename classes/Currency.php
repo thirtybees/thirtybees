@@ -807,4 +807,18 @@ class CurrencyCore extends ObjectModel
         }
         return $formatters;
     }
+
+    /**
+     * Returns currency display precision
+     *
+     * @return int
+     * @throws PrestaShopException
+     */
+    public function getDisplayPrecision()
+    {
+        if ($this->decimals) {
+            return (int)Configuration::get(Configuration::PRICE_DISPLAY_PRECISION);
+        }
+        return 0;
+    }
 }

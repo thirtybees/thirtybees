@@ -643,10 +643,6 @@ class FrontControllerCore extends Controller
      */
     public function initHeader()
     {
-        $decimals = 0;
-        if (Context::getContext()->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
         // Added powered by for builtwith.com
         header('Powered-By: thirty bees');
         // Hooks are voluntary out the initialize array (need those variables already assigned)
@@ -656,7 +652,7 @@ class FrontControllerCore extends Controller
                 'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'static_token'          => Tools::getToken(false),
                 'token'                 => Tools::getToken(),
-                'priceDisplayPrecision' => $decimals,
+                'priceDisplayPrecision' => Context::getContext()->currency->getDisplayPrecision(),
                 'content_only'          => Tools::getIntValue('content_only'),
             ]
         );

@@ -1309,7 +1309,7 @@ class AdminOrdersControllerCore extends AdminController
         } elseif (Tools::isSubmit('submitAddPayment') && isset($order)) {
             if ($this->hasEditPermission()) {
                 $amount = Tools::getNumberValue('payment_amount');
-                $currency = new Currency(Tools::getValue('payment_currency'));
+                $currency = Currency::getCurrencyInstance(Tools::getIntValue('payment_currency'));
                 $orderHasInvoice = $order->hasInvoice();
                 if ($orderHasInvoice) {
                     $orderInvoice = new OrderInvoice(Tools::getValue('payment_invoice'));
@@ -2088,10 +2088,7 @@ class AdminOrdersControllerCore extends AdminController
         $this->context->customer = new Customer(Tools::getIntValue('id_customer'));
         $currency = new Currency(Tools::getIntValue('id_currency'));
         if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
-            $decimals = 0;
-            if ($currency->decimals) {
-                $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-            }
+            $decimals = $currency->getDisplayPrecision();
             foreach ($products as &$product) {
                 // Formatted price
                 $product['formatted_price'] = Tools::displayPrice(Tools::convertPrice($product['price_tax_incl'], $currency), $currency);
@@ -2691,10 +2688,7 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        $decimals = 0;
-        if ($this->context->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = $this->context->currency->getDisplayPrecision();
         $this->ajaxDie(json_encode([
             'result'            => true,
             'product'           => $product,
@@ -2893,7 +2887,7 @@ class AdminOrdersControllerCore extends AdminController
             [
                 'product'             => $product,
                 'order'               => $order,
-                'currency'            => new Currency($order->id_currency),
+                'currency'            => Currency::getCurrencyInstance($order->id_currency),
                 'can_edit'            => $this->hasEditPermission(),
                 'invoices'            => $invoices,
                 'current_id_lang'     => $this->context->language->id,
@@ -3016,7 +3010,7 @@ class AdminOrdersControllerCore extends AdminController
         // Assign to smarty informations in order to show the new product line
         $this->context->smarty->assign([
             'order'               => $order,
-            'currency'            => new Currency($order->id_currency),
+            'currency'            => Currency::getCurrencyInstance($order->id_currency),
             'invoices'            => $invoices,
             'current_id_lang'     => $this->context->language->id,
             'link'                => $this->context->link,

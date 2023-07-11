@@ -1463,10 +1463,7 @@ class CartRuleCore extends ObjectModel
             $filter = static::FILTER_ACTION_ALL;
         }
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
-        $displayDecimals = 0;
-        if ($context->currency->decimals) {
-            $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $displayDecimals = $context->currency->getDisplayPrecision();
 
         $allProducts = $context->cart->getProducts();
         $packageProducts = (is_null($package) ? $allProducts : $package['products']);

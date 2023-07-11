@@ -513,10 +513,7 @@ class AdminProductsControllerCore extends AdminController
                     $context->shop = new Shop((int) $this->_list[$i]['id_shop_default']);
                 }
 
-                $decimals = 0;
-                if ($this->context->currency->decimals) {
-                    $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-                }
+                $decimals = $this->context->currency->getDisplayPrecision();
                 // convert price with the currency from context
                 $this->_list[$i]['price'] = Tools::convertPrice($this->_list[$i]['price'], $this->context->currency, true, $this->context);
                 $this->_list[$i]['price_final'] = Product::getPriceStatic(
@@ -6305,15 +6302,10 @@ class AdminProductsControllerCore extends AdminController
     {
         Tools::displayAsDeprecated('Use Product->getPrice() directly.');
 
-        $decimals = 0;
-        if ($this->context->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
-
         return $this->object->getPrice(
             false,
             $specificPrice['id_product_attribute'],
-            $decimals
+            $this->context->currency->getDisplayPrecision()
         );
     }
 

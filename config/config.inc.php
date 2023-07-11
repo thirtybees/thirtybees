@@ -133,7 +133,7 @@ require_once($currentDir.'/defines_uri.inc.php');
 global $_MODULES;
 $_MODULES = [];
 
-define('_PS_PRICE_DISPLAY_PRECISION_', (int) Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
+define('_PS_PRICE_DISPLAY_PRECISION_', (int) Configuration::get(Configuration::PRICE_DISPLAY_PRECISION));
 // For retrocompatibility with PS 1.6.1 (which messed up in this area).
 define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
 

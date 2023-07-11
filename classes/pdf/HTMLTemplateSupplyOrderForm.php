@@ -78,7 +78,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $this->warehouse = new Warehouse((int) $supplyOrder->id_warehouse);
         $this->address_warehouse = new Address((int) $this->warehouse->id_address);
         $this->address_supplier = new Address(Address::getAddressIdBySupplierId((int) $supplyOrder->id_supplier));
-        $this->currency = new Currency((int) $this->supply_order->id_currency);
+        $this->currency = Currency::getCurrencyInstance((int) $this->supply_order->id_currency);
 
         // Header informations
         $this->date = Tools::displayDate($supplyOrder->date_add);
@@ -182,10 +182,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
         $results = Db::readOnly()->getArray($query);
 
-        $decimals = 0;
-        if ($this->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = $this->currency->getDisplayPrecision();
         foreach ($results as &$result) {
             $result['base_te'] = Tools::ps_round(
                 $result['base_te'],
@@ -274,10 +271,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     protected function roundSupplyOrderDetails(&$collection)
     {
-        $decimals = 0;
-        if ($this->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = $this->currency->getDisplayPrecision();
         foreach ($collection as $supplyOrderDetail) {
             /** @var SupplyOrderDetail $supplyOrderDetail */
             $supplyOrderDetail->unit_price_te = Tools::ps_round(
@@ -316,10 +310,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     protected function roundSupplyOrder(SupplyOrder &$supplyOrder)
     {
-        $decimals = 0;
-        if ($this->currency->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = $this->currency->getDisplayPrecision();
         $supplyOrder->total_te = Tools::ps_round(
             $supplyOrder->total_te,
             $decimals

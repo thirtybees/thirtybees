@@ -1020,12 +1020,7 @@ abstract class AdminTabCore
                                     $tr['id_currency']
                                 );
                             }
-                            if ($currency->decimals) {
-                                $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-                            } else {
-                                $decimals = 0;
-                            }
-                            $echo = Tools::ps_round($tr[$key], $decimals);
+                            $echo = Tools::ps_round($tr[$key], $currency->getDisplayPrecision());
                         } elseif (isset($params['maxlength']) && mb_strlen($tr[$key]) > $params['maxlength']) {
                             $echo = '<span title="'.$tr[$key].'">'.mb_substr($tr[$key], 0, $params['maxlength']).'...</span>';
                         } else {

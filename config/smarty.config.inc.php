@@ -368,10 +368,7 @@ function toolsConvertPrice($params, $smarty)
  */
 function displayPriceValue($params, $smarty)
 {
-    $displayDecimals = 0;
-    if (Context::getContext()->currency->decimals) {
-        $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-    }
+    $displayDecimals = Context::getContext()->currency->getDisplayPrecision();
 
     // String -> float -> string gets rid of trailing zeros.
     $price = (float) $params['price'];

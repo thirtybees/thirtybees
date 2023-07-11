@@ -239,10 +239,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'total_paid_tax_incl'                => $this->order_invoice->total_paid_tax_incl,
         ];
 
-        $decimals = 0;
-        if ((new Currency($this->order->id_currency))->decimals) {
-            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        }
+        $decimals = Currency::getCurrencyInstance($this->order->id_currency)->getDisplayPrecision();
         foreach ($footer as $key => $value) {
             $footer[$key] = Tools::ps_round(
                 $value,
