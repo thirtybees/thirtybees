@@ -169,7 +169,7 @@ class AdminCurrenciesControllerCore extends AdminController
                     'name'      => 'conversion_rate',
                     'maxlength' => 11,
                     'required'  => true,
-                    'desc'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
+                    'desc'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (€1 = $1.20).'),
                 ],
                 [
                     'type'      => 'select',
@@ -189,7 +189,7 @@ class AdminCurrenciesControllerCore extends AdminController
                         'name'  => 'name',
                         'id'    => 'key',
                     ],
-                    'desc'      => $this->l('Applies to all prices (e.g. $1,240.15). Works with Auto Format turned off, only.'),
+                    'desc'      => $this->l('Applies to all prices (e.g. $1,240.15).'),
                 ],
                 [
                     'type'     => 'switch',
@@ -209,7 +209,7 @@ class AdminCurrenciesControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
-                    'desc'     => $this->l('Display decimals in prices. Works with Auto Format turned off, only.'),
+                    'desc'     => $this->l('Display decimals in prices.'),
                 ],
                 [
                     'type'     => 'switch',
@@ -229,7 +229,7 @@ class AdminCurrenciesControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
-                    'desc'     => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15). Works with Auto Format turned off, only.'),
+                    'desc'     => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15).'),
                 ],
                 [
                     'type'     => 'switch',
