@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Package\PackageExtractor;
+
 /**
  * Class AdminModulesControllerCore
  */
@@ -977,9 +979,6 @@ class AdminModulesControllerCore extends AdminController
      * Post process download
      *
      * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     public function postProcessDownload()
     {
@@ -1017,107 +1016,87 @@ class AdminModulesControllerCore extends AdminController
      * @param bool $redirect
      *
      * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     protected function extractArchive($file, $redirect = true)
     {
-        $oldUmask = @umask(0000);
+        try {
+            $packageExtractor = new PackageExtractor(_PS_MODULE_DIR_);
 
-        $tmpFolder = _PS_MODULE_DIR_.md5(time());
+            // inspect package and find module directory
+            $directories = $packageExtractor->getPackageTopLevelDirectories($file);
 
-        $success = false;
-        if (substr($file, -4) == '.zip') {
-            $zip = new ZipArchive();
-            $zip->open($file);
-            $dirs = [];
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                // Zip = *NIX style
-                $filePath = explode('/', $zip->getNameIndex($i));
-
-                if (!empty($filePath)) {
-                    $dirs[] = $filePath[0];
+            $packageName = htmlentities(basename($file));
+            if (count($directories) > 1) {
+                $errorMessage = sprintf(Tools::displayError('Package %1$s contains multiple top-level entries: '), $packageName);
+                $errorMessage .= '<ul>';
+                foreach ($directories as $directory) {
+                    $errorMessage .= '<li>' . htmlentities($directory) . '</li>';
                 }
+                $errorMessage .= '</ul>';
+                $this->errors[] = $errorMessage;
+                return false;
             }
-            $zipFolders = array_unique($dirs);
-            foreach ($zipFolders as $zipFolder) {
-                if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                    if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
-                        $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
 
-                        return false;
+            if (count($directories) !== 1) {
+                $this->errors[] = sprintf(Tools::displayError('Package %1$s does not contain valid module directory'), $packageName);
+                return false;
+            }
+            $moduleName = $directories[0];
+
+            // check module directory
+            if (!Validate::isModuleName($moduleName)) {
+                $this->errors[] = sprintf(Tools::displayError('Package %1$s does not contain valid module'), $packageName);
+                return false;
+            }
+
+            // add package validator
+            $packageExtractor->setPackageValidator([ $this, 'validatePackage' ]);
+
+            // extract package
+            if (!$packageExtractor->extractPackage($file, $moduleName)) {
+                $errors = $packageExtractor->getErrors();
+                if ($errors) {
+                    foreach ($errors as $error) {
+                        $this->errors[] = $error['message'];
                     }
+                } else {
+                    $this->errors[] = Tools::displayError('There was an error while extracting the module (file may be corrupted).');
                 }
+                return false;
             }
 
-            // Set permissions to the default 0777
-            if (Tools::ZipExtract($file, _PS_MODULE_DIR_)) {
-                $success = true;
-
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    @chmod(_PS_MODULE_DIR_.$zip->getNameIndex($i), 0777);
-                }
-                foreach ($zipFolders as $zipFolder) {
-                    @chmod(_PS_MODULE_DIR_.$zipFolder, 0777);
-                }
+            if ($redirect) {
+                // redirect halts the script execution, finally block won't get a chance to run. We need to clean up upfront
+                @unlink($file);
+                Tools::redirectAdmin(static::$currentIndex . '&conf=8&anchor=' . ucfirst($moduleName) . '&token=' . $this->token);
             }
+
+            return true;
+        } finally {
+            @unlink($file);
+        }
+    }
+
+    /**
+     * @param array $packageContent
+     * @param string $moduleName
+     *
+     * @return string[]
+     */
+    public function validatePackage($packageContent, $moduleName)
+    {
+        $errors = [] ;
+        $files = array_keys($packageContent);
+        if (! $files) {
+            $errors[] = Tools::displayError('Empty package');
         } else {
-            $archive = new Archive_Tar($file);
-            $dirs = $archive->listContent();
-            $zipFolders = [];
-            for ($i = 0; $i < count($dirs); $i++) {
-                $filePath = explode(DIRECTORY_SEPARATOR, $dirs[$i]);
-                if (!empty($filePath)) {
-                    $zipFolders[] = $filePath[0];
-                }
-            }
-            $zipFolders = array_unique($dirs);
-            foreach ($zipFolders as $zipFolder) {
-                if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                    if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
-                        $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
-
-                        return false;
-                    }
-                }
-            }
-            if ($archive->extract(_PS_MODULE_DIR_)) {
-                $success = true;
-
-                for ($i = 0; $i < count($dirs); $i++) {
-                    @chmod(_PS_MODULE_DIR_.$dirs[$i], 0777);
-                }
-                foreach ($zipFolders as $zipFolder) {
-                    @chmod(_PS_MODULE_DIR_.$zipFolder, 0777);
-                }
+            $moduleMainFile = $moduleName . '/' . $moduleName . '.php';
+            if (!isset($packageContent[$moduleMainFile])) {
+                $errors[] = sprintf(Tools::displayError('Module main file %1$s not found in the package'), $moduleMainFile);
             }
         }
 
-        if (!$success) {
-            $this->errors[] = Tools::displayError('There was an error while extracting the module (file may be corrupted).');
-        } else {
-            //check if it's a real module
-            foreach ($zipFolders as $folder) {
-                if (!in_array($folder, ['.', '..', '.svn', '.git', '__MACOSX']) && !Module::getInstanceByName($folder)) {
-                    $this->errors[] = sprintf(Tools::displayError('The module %1$s that you uploaded is not a valid module.'), $folder);
-                    $this->recursiveDeleteOnDisk(_PS_MODULE_DIR_.$folder);
-                }
-            }
-        }
-
-        @unlink($file);
-        $this->recursiveDeleteOnDisk($tmpFolder);
-
-        @umask($oldUmask);
-
-        Tools::clearOpCache();
-
-        if ($success && $redirect && isset($folder)) {
-            Tools::redirectAdmin(static::$currentIndex.'&conf=8&anchor='.ucfirst($folder).'&token='.$this->token);
-        }
-
-        return $success;
+        return $errors;
     }
 
     /**
