@@ -1546,30 +1546,34 @@ class AdminModulesControllerCore extends AdminController
                 $this->context->smarty->assign('error_module', 'true');
             }
         }
-        if ($return) {
-            $params = (count($installedModules)) ? '&installed_modules='.implode('|', $installedModules) : '';
-            // If redirect parameter is present and module installed with success, we redirect on configuration module page
-            if (Tools::getValue('redirect') == 'config' && Tools::getValue('module_name') != '' && $return == '12' && Module::isInstalled(pSQL(Tools::getValue('module_name')))) {
-                Tools::redirectAdmin('index.php?controller=adminmodules&configure='.Tools::getValue('module_name').'&token='.Tools::getValue('token').'&module_name='.Tools::getValue('module_name').$params);
-            }
-            if (isset($module)) {
-                Tools::redirectAdmin(static::$currentIndex.'&conf='.$return.'&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : '').$params);
-            }
-        }
-        if (Tools::getValue('update') || Tools::getValue('updateAll') || Tools::getValue('checkAndUpdate')) {
-            $updated = '&updated=1';
-            if (Tools::getValue('checkAndUpdate')) {
-                $updated = '&check=1';
-                if (Tools::getValue('module_name')) {
-                    $module = Module::getInstanceByName(Tools::getValue('module_name'));
-                    if (!Validate::isLoadedObject($module)) {
-                        unset($module);
-                    }
+
+        if (! $this->errors) {
+            // optional redirect, but only if no errors occured
+            if ($return) {
+                $params = (count($installedModules)) ? '&installed_modules=' . implode('|', $installedModules) : '';
+                // If redirect parameter is present and module installed with success, we redirect on configuration module page
+                if (Tools::getValue('redirect') == 'config' && Tools::getValue('module_name') != '' && $return == '12' && Module::isInstalled(pSQL(Tools::getValue('module_name')))) {
+                    Tools::redirectAdmin('index.php?controller=adminmodules&configure=' . Tools::getValue('module_name') . '&token=' . Tools::getValue('token') . '&module_name=' . Tools::getValue('module_name') . $params);
+                }
+                if (isset($module)) {
+                    Tools::redirectAdmin(static::$currentIndex . '&conf=' . $return . '&token=' . $this->token . '&tab_module=' . $module->tab . '&module_name=' . $module->name . '&anchor=' . ucfirst($module->name) . (isset($modulesListSave) ? '&modules_list=' . $modulesListSave : '') . $params);
                 }
             }
+            if (Tools::getValue('update') || Tools::getValue('updateAll') || Tools::getValue('checkAndUpdate')) {
+                $updated = '&updated=1';
+                if (Tools::getValue('checkAndUpdate')) {
+                    $updated = '&check=1';
+                    if (Tools::getValue('module_name')) {
+                        $module = Module::getInstanceByName(Tools::getValue('module_name'));
+                        if (!Validate::isLoadedObject($module)) {
+                            unset($module);
+                        }
+                    }
+                }
 
-            if (isset($module)) {
-                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token.$updated.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : ''));
+                if (isset($module)) {
+                    Tools::redirectAdmin(static::$currentIndex . '&token=' . $this->token . $updated . '&tab_module=' . $module->tab . '&module_name=' . $module->name . '&anchor=' . ucfirst($module->name) . (isset($modulesListSave) ? '&modules_list=' . $modulesListSave : ''));
+                }
             }
         }
     }
