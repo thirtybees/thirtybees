@@ -359,12 +359,10 @@ function toolsConvertPrice($params, $smarty)
  * Formatting should match JavaScript function displayPriceValue (in admin.js).
  * Which means: don't forget to transport any changes made here to there.
  *
- * @param float|string $params['price'] Raw price in context currency.
+ * @param array $params parameters, key 'price' contains raw price in context currency.
  * @param Smarty_Internal_Template $smarty Unused.
  *
  * @return string Price prettified, without currency sign.
- *
- * @throws PrestaShopException
  */
 function displayPriceValue($params, $smarty)
 {

@@ -266,8 +266,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      * Rounds values of a SupplyOrderDetail object
      *
      * @param array|PrestaShopCollection $collection
-     *
-     * @throws PrestaShopException
      */
     protected function roundSupplyOrderDetails(&$collection)
     {
@@ -305,8 +303,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      * Rounds values of a SupplyOrder object
      *
      * @param SupplyOrder $supplyOrder
-     *
-     * @throws PrestaShopException
      */
     protected function roundSupplyOrder(SupplyOrder &$supplyOrder)
     {
