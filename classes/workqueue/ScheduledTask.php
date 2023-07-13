@@ -262,12 +262,14 @@ class ScheduledTaskCore extends ObjectModel
     {
         $matchers = static::parseCronExpression($expression);
         try {
-            $minute = new DateInterval('PT1M');
-            while ($from <= $to) {
-                if (static::cronExpressionMatches($matchers, $from)) {
+            $ts = $from->getTimestamp();
+            $toTs = $to->getTimestamp();
+
+            while ($ts <= $toTs) {
+                if (static::cronExpressionMatches($matchers, static::fromTimestamp($ts))) {
                     return true;
                 }
-                $from->add($minute);
+                $ts += 60;
             }
         } catch (Exception $e) {
             throw new PrestaShopException("Error occurred when checking cron range", 0, $e);
