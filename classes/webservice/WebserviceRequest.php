@@ -334,6 +334,7 @@ class WebserviceRequestCore
             'languages'                      => ['description' => 'Shop languages', 'class' => 'Language'],
             'manufacturers'                  => ['description' => 'The product manufacturers', 'class' => 'Manufacturer'],
             'order_carriers'                 => ['description' => 'The Order carriers', 'class' => 'OrderCarrier'],
+            'order_cart_rules'               => ['description' => 'The Order cart rules', 'class' => 'OrderCartRule'],
             'order_details'                  => ['description' => 'Details of an order', 'class' => 'OrderDetail'],
             'order_histories'                => ['description' => 'The Order histories', 'class' => 'OrderHistory'],
             'order_invoices'                 => ['description' => 'The Order invoices', 'class' => 'OrderInvoice'],
