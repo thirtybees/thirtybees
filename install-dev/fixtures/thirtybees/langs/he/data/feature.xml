@@ -2,23 +2,30 @@
 <entity_feature>
   <feature id="Height">
     <name>גובה</name>
+    <public_name>גובה</public_name>
   </feature>
   <feature id="Width">
     <name>רוחב</name>
+    <public_name>רוחב</public_name>
   </feature>
   <feature id="Depth">
     <name>עומק</name>
+    <public_name>עומק</public_name>
   </feature>
   <feature id="Weight">
     <name>משקל</name>
+    <public_name>משקל</public_name>
   </feature>
   <feature id="Organic">
     <name>אורגני</name>
+    <public_name>אורגני</public_name>
   </feature>
   <feature id="Vegan">
     <name>טבעוני</name>
+    <public_name>טבעוני</public_name>
   </feature>
   <feature id="Exclusive_Buy">
     <name>קניה אקסקלוסיבית</name>
+    <public_name>קניה אקסקלוסיבית</public_name>
   </feature>
 </entity_feature>

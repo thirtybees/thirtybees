@@ -2,23 +2,30 @@
 <entity_feature>
   <feature id="Height">
     <name>Height</name>
+    <public_name>Height</public_name>
   </feature>
   <feature id="Width">
     <name>Width</name>
+    <public_name>Width</public_name>
   </feature>
   <feature id="Depth">
     <name>Depth</name>
+    <public_name>Depth</public_name>
   </feature>
   <feature id="Weight">
     <name>Weight</name>
+    <public_name>Weight</public_name>
   </feature>
   <feature id="Organic">
     <name>Organic</name>
+    <public_name>Organic</public_name>
   </feature>
   <feature id="Vegan">
     <name>Vegan</name>
+    <public_name>Vegan</public_name>
   </feature>
   <feature id="Exclusive_Buy">
     <name>Exclusive Buy</name>
+    <public_name>Exclusive Buy</public_name>
   </feature>
 </entity_feature>

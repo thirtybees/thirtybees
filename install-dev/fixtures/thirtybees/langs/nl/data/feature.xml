@@ -2,23 +2,30 @@
 <entity_feature>
   <feature id="Height">
     <name>Hoogte</name>
+    <public_name>Hoogte</public_name>
   </feature>
   <feature id="Width">
     <name>Breedte</name>
+    <public_name>Breedte</public_name>
   </feature>
   <feature id="Depth">
     <name>Diepte</name>
+    <public_name>Diepte</public_name>
   </feature>
   <feature id="Weight">
     <name>Gewicht</name>
+    <public_name>Gewicht</public_name>
   </feature>
   <feature id="Organic">
     <name>Biologisch</name>
+    <public_name>Biologisch</public_name>
   </feature>
   <feature id="Vegan">
     <name>Geschikt voor veganisten</name>
+    <public_name>Geschikt voor veganisten</public_name>
   </feature>
   <feature id="Exclusive_Buy">
     <name>Exclusief</name>
+    <public_name>Exclusief</public_name>
   </feature>
 </entity_feature>
