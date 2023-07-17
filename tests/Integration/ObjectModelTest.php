@@ -5,19 +5,13 @@ namespace Tests\Integration;
 use Codeception\Test\Unit;
 use ObjectModel;
 use PrestaShopException;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use ReflectionClass;
 use ReflectionException;
 use Tests\Support\UnitTester;
+use Tests\Support\Utils\ObjectModelUtils;
 
 class ObjectModelTest extends Unit
 {
-    /**
-     * @var ObjectModel[]
-     */
-    private static $models = null;
-
     /**
      * @var UnitTester
      */
@@ -71,6 +65,7 @@ class ObjectModelTest extends Unit
      * This tests verifies ObjectModel class contains properties for all fields in $definition
      *
      * @dataProvider getObjectModels
+     *
      * @param string $className object model class name
      * @param array $definition object model definition
      */
@@ -125,30 +120,7 @@ class ObjectModelTest extends Unit
      */
     public function getObjectModels()
     {
-        if (is_null(static::$models)) {
-            $directory = new RecursiveDirectoryIterator(_PS_ROOT_DIR_ . DIRECTORY_SEPARATOR . 'classes');
-            $iterator = new RecursiveIteratorIterator($directory);
-            foreach ($iterator as $path) {
-                $file = basename($path);
-                if (preg_match("/^.+\.php$/i", $file)) {
-                    $className = str_replace(".php", "", $file);
-                    if ($className !== "index") {
-                        if (!class_exists($className)) {
-                            require_once($path);
-                        }
-                        if (class_exists($className)) {
-                            $reflection = new ReflectionClass($className);
-                            if ($reflection->isSubclassOf('ObjectModelCore') && !$reflection->isAbstract()) {
-                                $definition = ObjectModel::getDefinition($className);
-                                static::$models[$className] = [$className, $definition, $reflection];
-                            }
-                        }
-                    }
-                }
-            }
-            ksort(static::$models);
-        }
-        return static::$models;
+        return ObjectModelUtils::getObjectModels();
     }
 
     /**
