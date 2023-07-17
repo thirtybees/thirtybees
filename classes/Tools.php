@@ -3184,10 +3184,6 @@ class ToolsCore
             return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
         }, '');
 
-        if (Configuration::get('PS_WEBSERVICE_CGI_HOST')) {
-            fwrite($write_fd, "RewriteCond %{HTTP:Authorization} ^(.*)\nRewriteRule . - [E=HTTP_AUTHORIZATION:%1]\n\n");
-        }
-
         foreach ($domains as $domain => $list_uri) {
             foreach ($list_uri as $uri) {
                 fwrite($write_fd, PHP_EOL.PHP_EOL.'# Domain: '.$domain.PHP_EOL);

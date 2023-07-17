@@ -37,16 +37,6 @@
 class AdminWebserviceControllerCore extends AdminController
 {
     /**
-     * @var array $fields_form
-     */
-    public $fields_form = ['webservice form'];
-
-    /**
-     * @var bool $toolbar_scroll
-     */
-    protected $toolbar_scroll = false;
-
-    /**
      * AdminWebserviceControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -98,11 +88,6 @@ class AdminWebserviceControllerCore extends AdminController
                 'fields' => [
                     'PS_WEBSERVICE' => [
                         'title' => $this->l('Enable thirty bees\' webservice'),
-                        'desc'  => $this->l('Before activating the webservice, you must be sure to: ').
-                            '<ol>
-                                <li>'.$this->l('Check that URL rewriting is available on this server.').'</li>
-                                <li>'.$this->l('Check that the five methods GET, POST, PUT, DELETE and HEAD are supported by this server.').'</li>
-                            </ol>',
                         'cast'  => 'intval',
                         'type'  => 'bool',
                     ],
@@ -111,13 +96,7 @@ class AdminWebserviceControllerCore extends AdminController
                         'desc'  => Translate::ppTags(sprintf($this->l('All webservice requests and responses will be saved in directory [1]%s[/1]'), WebserviceLogger::getDirectory()), ['<code>']),
                         'cast'  => 'intval',
                         'type'  => 'bool',
-                    ],
-                    'PS_WEBSERVICE_CGI_HOST' => [
-                        'title' => $this->l('Enable CGI mode for PHP'),
-                        'desc'  => $this->l('Before choosing "Yes", check that PHP is not configured as an Apache module on your server.'),
-                        'cast'  => 'intval',
-                        'type'  => 'bool',
-                    ],
+                    ]
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
@@ -288,25 +267,8 @@ class AdminWebserviceControllerCore extends AdminController
      */
     public function checkForWarning()
     {
-        if (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === false) {
-            $this->warnings[] = $this->l('To avoid operating problems, please use an Apache server.');
-            if (function_exists('apache_get_modules')) {
-                $apacheModules = apache_get_modules();
-                if (!in_array('mod_auth_basic', $apacheModules)) {
-                    $this->warnings[] = $this->l('Please activate the \'mod_auth_basic\' Apache module to allow authentication of thirty bees\' webservice.');
-                }
-                if (!in_array('mod_rewrite', $apacheModules)) {
-                    $this->warnings[] = $this->l('Please activate the \'mod_rewrite\' Apache module to allow the thirty bees webservice.');
-                }
-            } else {
-                $this->warnings[] = $this->l('We could not check to see if basic authentication and rewrite extensions have been activated. Please manually check if they\'ve been activated in order to use the thirty bees webservice.');
-            }
-        }
         if (!extension_loaded('SimpleXML')) {
-            $this->warnings[] = $this->l('Please activate the \'SimpleXML\' PHP extension to allow testing of thirty bees\' webservice.');
-        }
-        if (!configuration::get('PS_SSL_ENABLED')) {
-            $this->warnings[] = $this->l('It is preferable to use SSL (https:) for webservice calls, as it avoids the "man in the middle" type security issues.');
+            $this->warnings[] = $this->l('Please activate the \'SimpleXML\' PHP extension.');
         }
 
         foreach ($this->_list as $k => $item) {
