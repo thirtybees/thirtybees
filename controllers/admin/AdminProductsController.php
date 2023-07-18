@@ -1463,6 +1463,7 @@ class AdminProductsControllerCore extends AdminController
             if (Validate::isLoadedObject($product = new Product(Tools::getIntValue('id_product')))) {
                 $product->deleteDefaultAttributes();
                 $product->setDefaultAttribute(Tools::getIntValue('id_product_attribute'));
+                $product->checkDefaultAttributes();
                 $json = [
                     'status'  => 'ok',
                     'message' => $this->_conf[4],
