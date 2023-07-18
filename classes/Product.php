@@ -5112,7 +5112,6 @@ class ProductCore extends ObjectModel
     public function generateMultipleCombinations($combinations, $attributes)
     {
         $res = true;
-        $defaultOn = 1;
         foreach ($combinations as $key => $combination) {
             $idCombination = (int) $this->productAttributeExists($attributes[$key], false, null, true, true);
             $obj = new Combination($idCombination);
@@ -5126,8 +5125,6 @@ class ProductCore extends ObjectModel
                 $obj->$field = $value;
             }
 
-            $obj->default_on = $defaultOn;
-            $defaultOn = 0;
             $this->setAvailableDate();
 
             $obj->save();
@@ -5143,6 +5140,7 @@ class ProductCore extends ObjectModel
                 $res = Db::getInstance()->insert('product_attribute_combination', $attributeList) && $res;
             }
         }
+        $res = $this->checkDefaultAttributes() && $res;
 
         return $res;
     }
