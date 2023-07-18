@@ -6107,51 +6107,46 @@ class ProductCore extends ObjectModel
         if (!$this->id) {
             return false;
         }
+        $productId = (int)$this->id;
+        $conn = Db::getInstance();
+        $result = true;
 
-        $conn = Db::readOnly();
-        if ($conn->getValue(
-                'SELECT COUNT(*)
-				FROM `'._DB_PREFIX_.'product_attribute` pa
-				'.Shop::addSqlAssociation('product_attribute', 'pa').'
-				WHERE product_attribute_shop.`default_on` = 1
-				AND pa.`id_product` = '.(int) $this->id
-            ) > Shop::getTotalShops(true)
-        ) {
-            Db::getInstance()->execute(
-                'UPDATE '._DB_PREFIX_.'product_attribute_shop product_attribute_shop, '._DB_PREFIX_.'product_attribute pa
-					SET product_attribute_shop.default_on=NULL, pa.default_on = NULL
-					WHERE product_attribute_shop.id_product_attribute=pa.id_product_attribute AND pa.id_product='.(int) $this->id.Shop::addSqlRestriction(false, 'product_attribute_shop')
-            );
-        }
 
-        $row = $conn->getRow(
-            '
-			SELECT pa.id_product
-			FROM `'._DB_PREFIX_.'product_attribute` pa
-			'.Shop::addSqlAssociation('product_attribute', 'pa').'
-			WHERE product_attribute_shop.`default_on` = 1
-				AND pa.`id_product` = '.(int) $this->id
+        // update shop data
+        $data = $conn->getArray((new DbQuery)
+            ->select('pas.id_shop')
+            ->select('SUM(CASE WHEN pas.default_on THEN 1 ELSE 0 END) AS has_default_on')
+            ->select('MIN(pas.id_product_attribute) AS min_id_product_attribute')
+            ->from('product_attribute_shop', 'pas')
+            ->where('pas.id_product = ' . $productId)
+            ->groupBy('pas.id_shop')
         );
-        if ($row) {
-            return true;
+        foreach ($data as $row) {
+            if (! $row['has_default_on']) {
+                $shopId = (int)$row['id_shop'];
+                $min = (int)$row['min_id_product_attribute'];
+                if ($min) {
+                    $result = $conn->update('product_attribute_shop', ['default_on' => 1], 'id_shop = '.$shopId.' AND id_product_attribute = ' . $min) && $result;
+                }
+            }
         }
 
-        $mini = $conn->getRow(
-            '
-		SELECT MIN(pa.id_product_attribute) AS `id_attr`
-		FROM `'._DB_PREFIX_.'product_attribute` pa
-			'.Shop::addSqlAssociation('product_attribute', 'pa').'
-			WHERE pa.`id_product` = '.(int) $this->id
+        // update base table entry
+        $row = $conn->getRow((new DbQuery)
+            ->select('SUM(CASE WHEN pa.default_on THEN 1 ELSE 0 END) AS has_default_on')
+            ->select('MIN(pa.id_product_attribute) AS min_id_product_attribute')
+            ->from('product_attribute', 'pa')
+            ->where('pa.id_product = ' . $productId)
         );
-        if (!$mini) {
-            return false;
+
+        if ($row && !$row['has_default_on']) {
+            $min = (int)$row['min_id_product_attribute'];
+            if ($min) {
+                $result = $conn->update('product_attribute', ['default_on' => 1], 'id_product_attribute = ' . $min) && $result;
+            }
         }
 
-        if (!ObjectModel::updateMultishopTable('Combination', ['default_on' => 1], 'a.id_product_attribute = '.(int) $mini['id_attr'])) {
-            return false;
-        }
-
-        return true;
+        return $result;
     }
 
     /**
