@@ -117,6 +117,7 @@ class ConfigurationTestCore
         return [
             'Gz' => false,
             'Intl' => false,
+            'Soap' => false,
         ];
     }
 
@@ -266,6 +267,14 @@ class ConfigurationTestCore
     public static function testIntl()
     {
         return extension_loaded('intl');
+    }
+
+    /**
+     * @return bool
+     */
+    public static function testSoap()
+    {
+        return extension_loaded('soap');
     }
 
     /**

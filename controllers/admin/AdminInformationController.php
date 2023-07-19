@@ -166,6 +166,7 @@ class AdminInformationControllerCore extends AdminController
             'Bcmath'                  => $this->l('Install the `bcmath` PHP extension on your server.'),
             'Gd'                      => $this->l('Enable the GD library on your server.'),
             'Intl'                    => $this->l('Install the \'intl\' PHP extension on your server.'),
+            'Soap'                    => $this->l('Install the \'soap\' PHP extension on your server.'),
             'Json'                    => $this->l('Install the `json` PHP extension on your server.'),
             'Mbstring'                => $this->l('The `mbstring` extension has not been installed/enabled. This has a severe impact on the store\'s performance.'),
             'OpenSSL'                 => $this->l('The `openssl` extension has not been installed/enabled.'),
