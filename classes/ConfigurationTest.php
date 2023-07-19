@@ -34,6 +34,36 @@
  */
 class ConfigurationTestCore
 {
+    const NO_ARGUMENTS = false;
+    const TEST_UPLOAD = 'Upload';
+    const TEST_IMG_DIR = 'ImgDir';
+    const TEST_LOG_DIR = 'LogDir';
+    const TEST_CACHE_DIR = 'CacheDir';
+    const TEST_MODULES_DIR = 'ModuleDir';
+    const TEST_THEME_LANG_DIR = 'ThemeLangDir';
+    const TEST_THEME_PDF_LANG_DIR = 'ThemePdfLangDir';
+    const TEST_THEME_CACHE_DIR = 'ThemeCacheDir';
+    const TEST_TRANSLATIONS_DIR = 'TranslationsDir';
+    const TEST_CUSTOMIZABLE_PRODUCTS_DIR = 'CustomizableProductsDir';
+    const TEST_VIRTUAL_PRODUCTS_DIR = 'VirtualProductsDir';
+    const TEST_SYSTEM = 'System';
+    const TEST_FOPEN = 'Fopen';
+    const TEST_CONFIG_DIR = 'ConfigDir';
+    const TEST_FILES = 'Files';
+    const TEST_MAILS_DIR = 'MailsDir';
+    const TEST_MAX_EXECUTION_TIME = 'MaxExecutionTime';
+    const TEST_BCMATH = 'Bcmath';
+    const TEST_GD = 'Gd';
+    const TEST_JSON = 'Json';
+    const TEST_MBSTRING = 'Mbstring';
+    const TEST_OPENSSL = 'OpenSSL';
+    const TEST_PDO_MYSQL = 'PdoMysql';
+    const TEST_XML = 'Xml';
+    const TEST_ZIP = 'Zip';
+    const TEST_GZ = 'Gz';
+    const TEST_INTL = 'Intl';
+    const TEST_SOAP = 'Soap';
+
     /**
      * @var array $testFiles
      */
@@ -67,57 +97,51 @@ class ConfigurationTestCore
      */
     public static function getDefaultTests()
     {
-        $tests = [
-            // Changing this list also requires ajusting the list of matching
-            // error messages in install-dev/controllers/http/system.php
-            'Upload'                  => false,
-            'CacheDir'                => 'cache',
-            'LogDir'                  => 'log',
-            'ImgDir'                  => 'img',
-            'ModuleDir'               => 'modules',
-            'ThemeLangDir'            => 'themes/'._THEME_NAME_.'/lang/',
-            'ThemePdfLangDir'         => 'themes/'._THEME_NAME_.'/pdf/lang/',
-            'ThemeCacheDir'           => 'themes/'._THEME_NAME_.'/cache/',
-            'TranslationsDir'         => 'translations',
-            'CustomizableProductsDir' => 'upload',
-            'VirtualProductsDir'      => 'download',
-            'System'                  => [
+        return[
+            static::TEST_UPLOAD => static::NO_ARGUMENTS,
+            static::TEST_CACHE_DIR => 'cache',
+            static::TEST_LOG_DIR => 'log',
+            static::TEST_IMG_DIR => 'img',
+            static::TEST_MODULES_DIR => 'modules',
+            static::TEST_THEME_LANG_DIR => 'themes/' . _THEME_NAME_ . '/lang/',
+            static::TEST_THEME_PDF_LANG_DIR => 'themes/' . _THEME_NAME_ . '/pdf/lang/',
+            static::TEST_THEME_CACHE_DIR => 'themes/' . _THEME_NAME_ . '/cache/',
+            static::TEST_TRANSLATIONS_DIR => 'translations',
+            static::TEST_CUSTOMIZABLE_PRODUCTS_DIR => 'upload',
+            static::TEST_VIRTUAL_PRODUCTS_DIR => 'download',
+            static::TEST_SYSTEM => [
                 'fopen', 'fclose', 'fread', 'fwrite',
                 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
                 'getcwd', 'chdir', 'chmod',
             ],
-            'Fopen'                   => false,
-            'ConfigDir'               => 'config',
-            'Files'                   => false,
-            'MailsDir'                => 'mails',
-            'MaxExecutionTime'        => false,
-            'MysqlVersion'            => false,
-            // PHP extensions.
-            'Bcmath'                  => false,
-            'Gd'                      => false,
-            'Json'                    => false,
-            'Mbstring'                => false,
-            'OpenSSL'                 => false,
-            'PdoMysql'                => false,
-            'Xml'                     => false,
-            'Zip'                     => false,
+            static::TEST_FOPEN => static::NO_ARGUMENTS,
+            static::TEST_CONFIG_DIR => 'config',
+            static::TEST_FILES => static::NO_ARGUMENTS,
+            static::TEST_MAILS_DIR => 'mails',
+            static::TEST_MAX_EXECUTION_TIME => static::NO_ARGUMENTS,
+            static::TEST_BCMATH => static::NO_ARGUMENTS,
+            static::TEST_GD => static::NO_ARGUMENTS,
+            static::TEST_JSON => static::NO_ARGUMENTS,
+            static::TEST_MBSTRING => static::NO_ARGUMENTS,
+            static::TEST_OPENSSL => static::NO_ARGUMENTS,
+            static::TEST_PDO_MYSQL => static::NO_ARGUMENTS,
+            static::TEST_XML => static::NO_ARGUMENTS,
+            static::TEST_ZIP => static::NO_ARGUMENTS,
         ];
-
-        return $tests;
     }
 
     /**
      * getDefaultTestsOp return an array of tests to executes.
-     * key are method name, value are parameters (false for no parameter)
+     * key are method name, value are parameters (static::NO_ARGUMENTS for no parameter)
      *
      * @return array
      */
     public static function getDefaultTestsOp()
     {
         return [
-            'Gz' => false,
-            'Intl' => false,
-            'Soap' => false,
+            static::TEST_GZ => static::NO_ARGUMENTS,
+            static::TEST_INTL => static::NO_ARGUMENTS,
+            static::TEST_SOAP => static::NO_ARGUMENTS,
         ];
     }
 
@@ -170,30 +194,6 @@ class ConfigurationTestCore
     public static function testPdoMysql()
     {
         return extension_loaded('pdo_mysql');
-    }
-
-    /**
-     * @param string|null $report
-     * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public static function testMysqlVersion(&$report = null)
-    {
-        if (defined('_DB_SERVER_') && defined('_DB_USER_')
-            && defined('_DB_PASSWD_') && defined('_DB_NAME_')) {
-            $version = Db::getInstance()->getVersion();
-
-            if (version_compare($version, '5.5', '<')) {
-                $report = sprintf('DB server is v%s, should be at least MySQL v5.5.3 or MariaDB v5.5.', $version);
-
-                return false;
-            }
-        }
-        // Else probably installation time.
-
-        return true;
     }
 
     /**

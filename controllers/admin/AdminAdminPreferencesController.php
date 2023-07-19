@@ -95,7 +95,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
-            'upload'        => [
+           ConfigurationTest::TEST_UPLOAD       => [
                 'title'  => $this->l('Upload quota'),
                 'icon'   => 'icon-cloud-upload',
                 'fields' => [
