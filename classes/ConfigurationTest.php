@@ -115,7 +115,8 @@ class ConfigurationTestCore
     public static function getDefaultTestsOp()
     {
         return [
-            'Gz' => false
+            'Gz' => false,
+            'Intl' => false,
         ];
     }
 
@@ -257,6 +258,14 @@ class ConfigurationTestCore
         }
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function testIntl()
+    {
+        return extension_loaded('intl');
     }
 
     /**

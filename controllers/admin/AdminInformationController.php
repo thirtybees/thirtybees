@@ -165,6 +165,7 @@ class AdminInformationControllerCore extends AdminController
             'MysqlVersion'            => $this->l('Update your database server to at least MySQL v5.5.3 or MariaDB v5.5.'),
             'Bcmath'                  => $this->l('Install the `bcmath` PHP extension on your server.'),
             'Gd'                      => $this->l('Enable the GD library on your server.'),
+            'Intl'                    => $this->l('Install the \'intl\' PHP extension on your server.'),
             'Json'                    => $this->l('Install the `json` PHP extension on your server.'),
             'Mbstring'                => $this->l('The `mbstring` extension has not been installed/enabled. This has a severe impact on the store\'s performance.'),
             'OpenSSL'                 => $this->l('The `openssl` extension has not been installed/enabled.'),

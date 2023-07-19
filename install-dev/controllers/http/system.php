@@ -164,6 +164,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'checks'  => [
                         'Gz'              => $this->l('GZIP compression is not activated'),
                         'Tlsv12'          => $this->l('Could not make a secure connection with PayPal. Your store might not be able to process payments.'),
+                        'Intl'            => $this->l('The PHP intl extension is enabled'),
                     ],
                 ],
             ],
