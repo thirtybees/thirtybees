@@ -3259,10 +3259,12 @@ abstract class ModuleCore
      */
     public function adminDisplayWarning($msg)
     {
-        if (!($this->context->controller instanceof AdminController)) {
-            return;
+        $controller = $this->context->controller;
+        if ($controller instanceof AdminController) {
+            $controller->warnings[] = $msg;
+        } else {
+            trigger_error("Method adminDisplayWarning can be called in back-office context only", E_USER_NOTICE);
         }
-        $this->context->controller->warnings[] = $msg;
     }
 
     /**
@@ -3476,10 +3478,12 @@ abstract class ModuleCore
      */
     protected function adminDisplayInformation($msg)
     {
-        if (!($this->context->controller instanceof AdminController)) {
-            return;
+        $controller = $this->context->controller;
+        if ($controller instanceof AdminController) {
+            $controller->informations[] = $msg;
+        } else {
+            trigger_error("Method adminDisplayInformation can be called in back-office context only", E_USER_NOTICE);
         }
-        $this->context->controller->informations[] = $msg;
     }
 
     /**
