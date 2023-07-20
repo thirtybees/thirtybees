@@ -4561,35 +4561,13 @@ FileETag none
      *
      * @param array $base The array in which elements are replaced.
      * @param array $replacements The array from which elements will be extracted.
+     *
+     * @deprecated 1.5.0
      */
     public static function arrayReplaceRecursive($base, $replacements)
     {
-        if (function_exists('array_replace_recursive')) {
-            return array_replace_recursive($base, $replacements);
-        }
-
-        foreach (array_slice(func_get_args(), 1) as $replacements) {
-            $brefStack = [&$base];
-            $headStack = [$replacements];
-
-            do {
-                end($brefStack);
-
-                $bref = &$brefStack[key($brefStack)];
-                $head = array_pop($headStack);
-                unset($brefStack[key($brefStack)]);
-                foreach (array_keys($head) as $key) {
-                    if (isset($key, $bref) && is_array($bref[$key]) && is_array($head[$key])) {
-                        $brefStack[] = &$bref[$key];
-                        $headStack[] = $head[$key];
-                    } else {
-                        $bref[$key] = $head[$key];
-                    }
-                }
-            } while (count($headStack));
-        }
-
-        return $base;
+        Tools::displayAsDeprecated('Use function array_replace_recursive() instead');
+        return array_replace_recursive($base, $replacements);
     }
 
     /**
