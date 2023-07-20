@@ -128,13 +128,13 @@ class ConnectionCore extends ObjectModel
     /**
      * @param Cookie $cookie
      *
-     * @return int
+     * @return int|false returns page id if connection has been set up, or false otherwise
      *
      * @throws PrestaShopException
      */
     public static function setNewConnection($cookie)
     {
-		$detect = new CrawlerDetect;
+		$detect = new CrawlerDetect();
 		if ($detect->isCrawler()) {
 			return false;
 		}
@@ -172,9 +172,10 @@ class ConnectionCore extends ObjectModel
                 $connection->add();
                 $cookie->id_connections = $connection->id;
 
-                return $connection->id_page;
+                return (int)$connection->id_page;
             }
         }
+        return false;
     }
 
     /**
