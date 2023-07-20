@@ -681,9 +681,9 @@ class OrderCore extends ObjectModel
     /**
      * Get order products
      *
-     * @param array|bool $products
-     * @param array|bool $selectedProducts
-     * @param array|bool $selectedQty
+     * @param array|false $products
+     * @param array|false $selectedProducts
+     * @param array|false $selectedQty
      *
      * @return array Products with price, quantity (with taxe and without)
      * @throws PrestaShopDatabaseException
@@ -902,9 +902,10 @@ class OrderCore extends ObjectModel
      * @param bool $details
      *
      * @return array
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *@deprecated 2.0.0
+     * @deprecated 2.0.0
      */
     public function getDiscounts($details = false)
     {
@@ -1339,6 +1340,7 @@ class OrderCore extends ObjectModel
      * @param int $idCart Cart id
      *
      * @return false|array Order details
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1355,7 +1357,6 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @deprecated 2.0.0
      * @see Order::addCartRule()
      *
      * @param int $idCartRule
@@ -1363,8 +1364,11 @@ class OrderCore extends ObjectModel
      * @param float $value
      *
      * @return bool
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     *
+     * @deprecated
      */
     public function addDiscount($idCartRule, $name, $value)
     {
@@ -1404,6 +1408,8 @@ class OrderCore extends ObjectModel
     }
 
     /**
+     * Returns true, if customer can return items
+     *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
@@ -1467,6 +1473,7 @@ class OrderCore extends ObjectModel
      * @param int $idShop
      *
      * @return bool
+     *
      * @throws PrestaShopException
      */
     public static function setLastInvoiceNumber($orderInvoiceId, $idShop)
@@ -1503,7 +1510,7 @@ class OrderCore extends ObjectModel
     /**
      * @param int $orderInvoiceId
      *
-     * @return bool|false|null|string
+     * @return false|null|string
      * @throws PrestaShopException
      */
     public function getInvoiceNumber($orderInvoiceId)
@@ -1754,7 +1761,7 @@ class OrderCore extends ObjectModel
     /**
      * @param int $orderInvoiceId
      *
-     * @return bool|false|null|string
+     * @return false|null|string
      *
      * @throws PrestaShopException
      */
@@ -1953,6 +1960,7 @@ class OrderCore extends ObjectModel
      * @param int $idEmployee (/!\ not optional except for Webservice.
      *
      * @return bool
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -2409,6 +2417,7 @@ class OrderCore extends ObjectModel
      * This method allows to change the shipping cost of the current order
      *
      * @param float $amount
+     *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
@@ -2642,6 +2651,7 @@ class OrderCore extends ObjectModel
      * @param string $sqlLimit
      *
      * @return array|null
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
