@@ -2802,9 +2802,9 @@ class OrderCore extends ObjectModel
             $orderCarrier = new OrderCarrier($idOrderCarrier);
             $orderCarrier->tracking_number = $shippingNumber;
             $orderCarrier->update();
-        } else {
-            $this->shipping_number = $shippingNumber;
         }
+
+        $this->shipping_number = $shippingNumber;
 
         return true;
     }
