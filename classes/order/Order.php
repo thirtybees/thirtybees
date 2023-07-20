@@ -1003,11 +1003,13 @@ class OrderCore extends ObjectModel
     /**
      * Has products returned by the merchant or by the customer?
      *
+     * @return int
+     *
      * @throws PrestaShopException
      */
     public function hasProductReturned()
     {
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('IFNULL(SUM(ord.`product_quantity`), SUM(`product_quantity_return`))')
                 ->from('orders', 'o')
@@ -1421,13 +1423,13 @@ class OrderCore extends ObjectModel
         if (!$nbReturnDays) {
             return true;
         }
-        $result = Db::readOnly()->getRow(
+        $days = (int)Db::readOnly()->getValue(
             (new DbQuery())
-                ->select('TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(`delivery_date`) AS `days`')
+                ->select('TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(`delivery_date`)')
                 ->from('orders')
                 ->where('`id_order` = '.(int) $this->id)
         );
-        if ($result['days'] <= $nbReturnDays) {
+        if ($days <= $nbReturnDays) {
             return true;
         }
 
@@ -1986,7 +1988,7 @@ class OrderCore extends ObjectModel
         $this->delivery_number = $res['delivery_number'];
         $this->update();
 
-        $history->addWithemail();
+        return $history->addWithemail();
     }
 
     /**
@@ -2522,14 +2524,13 @@ class OrderCore extends ObjectModel
 
     /**
      * Returns the wrapping taxes breakdown
-     * @todo
+     *
      * @return array
      */
     public function getWrappingTaxesBreakdown()
     {
-        $taxesBreakdown = [];
-
-        return $taxesBreakdown;
+        Tools::displayAsDeprecated();
+        return [];
     }
 
     /**
