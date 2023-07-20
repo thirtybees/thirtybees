@@ -73,6 +73,8 @@ class TreeToolbarCore implements ITreeToolbarCore
     /**
      * @param ITreeToolbarButtonCore[] $actions
      *
+     * @return static
+     *
      * @throws PrestaShopException
      */
     public function setActions($actions)
@@ -84,6 +86,8 @@ class TreeToolbarCore implements ITreeToolbarCore
         foreach ($actions as $action) {
             $this->addAction($action);
         }
+
+        return $this;
     }
 
     /**
