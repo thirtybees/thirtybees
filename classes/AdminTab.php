@@ -1316,7 +1316,7 @@ abstract class AdminTabCore
      */
     public function displayOptionTypeText($key, $field, $value)
     {
-        echo '<input type="'.$field['type'].'"'.(isset($field['id']) ? ' id="'.$field['id'].'"' : '').' size="'.(isset($field['size']) ? (int) $field['size'] : 5).'" name="'.$key.'" value="'.htmlentities($value, ENT_COMPAT, 'UTF-8').'" />'.(isset($field['next']) ? '&nbsp;'.(string) $field['next'] : '');
+        echo '<input type="'.$field['type'].'"'.(isset($field['id']) ? ' id="'.$field['id'].'"' : '').' size="'.(isset($field['size']) ? (int) $field['size'] : 5).'" name="'.$key.'" value="'.htmlentities($value, ENT_COMPAT, 'UTF-8').'" />'.(isset($field['next']) ? '&nbsp;'. $field['next'] : '');
     }
 
     /**

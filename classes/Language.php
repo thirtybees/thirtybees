@@ -1110,11 +1110,11 @@ class LanguageCore extends ObjectModel
 
         // Theme files
         if (!$check || $isoFrom != 'en') {
-            $filesTheme[$tPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $tPathTo.'lang/'. $isoTo .'.php' : ++$number);
+            $filesTheme[$tPathFrom.'lang/'. $isoFrom .'.php'] = ($copy ? $tPathTo.'lang/'. $isoTo .'.php' : ++$number);
 
             // Override for pdf files in the theme
-            if (file_exists($pPathFrom.'lang/'.(string) $isoFrom.'.php')) {
-                $filesTheme[$pPathFrom.'lang/'.(string) $isoFrom.'.php'] = ($copy ? $pPathTo.'lang/'. $isoTo .'.php' : ++$number);
+            if (file_exists($pPathFrom.'lang/'. $isoFrom .'.php')) {
+                $filesTheme[$pPathFrom.'lang/'. $isoFrom .'.php'] = ($copy ? $pPathTo.'lang/'. $isoTo .'.php' : ++$number);
             }
 
             $moduleThemeFiles = (file_exists($tPathFrom.'modules/') ? scandir($tPathFrom.'modules/') : []);

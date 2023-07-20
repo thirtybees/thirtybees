@@ -242,7 +242,7 @@ class LocalizationPackCore
                 }
 
                 if (!$tax->add()) {
-                    $this->_errors[] = Tools::displayError('An error occurred while importing the tax: ').(string) $attributes['name'];
+                    $this->_errors[] = Tools::displayError('An error occurred while importing the tax: '). $attributes['name'];
 
                     return false;
                 }
@@ -354,7 +354,7 @@ class LocalizationPackCore
                 }
                 if (!Currency::exists($currency->iso_code, $currency->iso_code_num)) {
                     if (!$currency->add()) {
-                        $this->_errors[] = Tools::displayError('An error occurred while importing the currency: ').strval($attributes['name']);
+                        $this->_errors[] = Tools::displayError('An error occurred while importing the currency: '). $attributes['name'];
 
                         return false;
                     }
