@@ -4546,7 +4546,7 @@ FileETag none
             $adjustment_factor = $amount_to_spread;
 
             if ($position < abs($remainder)) {
-                $adjustment_factor += $sign * 1 / $unit;
+                $adjustment_factor += $sign / $unit;
             }
 
             $row[$column] += $adjustment_factor;
