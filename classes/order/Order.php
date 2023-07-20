@@ -2857,12 +2857,6 @@ class OrderCore extends ObjectModel
         $productSpecificDiscounts = [];
         $cheapestProductDiscounts = [];
 
-        $expectedTotalBase = $this->total_products - $this->total_discounts_tax_excl;
-
-        // We add $free_shipping_tax because when there is free shipping, the tax that would
-        // be paid if there wasn't is included in $discounts_tax.
-        $expectedTotalTax = $this->total_products_wt - $this->total_products;
-
         $orderDetailTaxRows = [];
 
         $breakdown = [];
@@ -2894,16 +2888,10 @@ class OrderCore extends ObjectModel
 
         // Get order_details
         $orderDetails = $limitToOrderDetails ? $limitToOrderDetails : $this->getOrderDetailList();
-        $orderEcotaxTax = 0;
         $taxRates = [];
         foreach ($orderDetails as $orderDetail) {
             $idOrderDetail = $orderDetail['id_order_detail'];
             $taxCalculator = OrderDetail::getTaxCalculatorStatic($idOrderDetail);
-
-            $unitEcotaxTax = round(
-                $orderDetail['ecotax'] * $orderDetail['ecotax_tax_rate'] / 100.0,
-                _TB_PRICE_DATABASE_PRECISION_
-            );
 
             $discountRatio = 0;
             if ($this->total_products > 0) {
