@@ -362,7 +362,7 @@ class OrderCore extends ObjectModel
      */
     public function deleteProduct(Order $order, OrderDetail $orderDetail, $quantity)
     {
-        if (!(int) $this->getCurrentState() || !validate::isLoadedObject($orderDetail)) {
+        if (!(int) $this->getCurrentState() || !Validate::isLoadedObject($orderDetail)) {
             return false;
         }
 
@@ -1739,7 +1739,7 @@ class OrderCore extends ObjectModel
             return false;
         }
 
-        $idShop = shop::getTotalShops() > 1 ? $idShop : null;
+        $idShop = Shop::getTotalShops() > 1 ? $idShop : null;
 
         $number = Configuration::get('PS_DELIVERY_NUMBER', null, null, $idShop);
         // If delivery slip start number has been set, you clean the value of this configuration

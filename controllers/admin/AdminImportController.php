@@ -2674,7 +2674,7 @@ class AdminImportControllerCore extends AdminController
                     (new DbQuery())
                         ->select('`product_shop`.`date_add`')
                         ->from('product', 'p')
-                        ->join(shop::addSqlAssociation('product', 'p'))
+                        ->join(Shop::addSqlAssociation('product', 'p'))
                         ->where('p.`id_product` = '.(int) $product->id)
                 );
                 $product->date_add = pSQL($datas['date_add']);

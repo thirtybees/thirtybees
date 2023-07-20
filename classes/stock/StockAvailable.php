@@ -233,7 +233,7 @@ class StockAvailableCore extends ObjectModel
 
                 // if it's a simple product
                 if (empty($idsProductAttribute)) {
-                    $allowedWarehouseForProduct = WareHouse::getProductWarehouseList((int) $idProduct, 0, (int) $idShop);
+                    $allowedWarehouseForProduct = Warehouse::getProductWarehouseList((int) $idProduct, 0, (int) $idShop);
                     $allowedWarehouseForProductClean = [];
                     foreach ($allowedWarehouseForProduct as $warehouse) {
                         $allowedWarehouseForProductClean[] = (int) $warehouse['id_warehouse'];
@@ -258,7 +258,7 @@ class StockAvailableCore extends ObjectModel
                 else
                 {
                     foreach ($idsProductAttribute as $idProductAttribute) {
-                        $allowedWarehouseForCombination = WareHouse::getProductWarehouseList((int) $idProduct, (int) $idProductAttribute, (int) $idShop);
+                        $allowedWarehouseForCombination = Warehouse::getProductWarehouseList((int) $idProduct, (int) $idProductAttribute, (int) $idShop);
                         $allowedWarehouseForCombinationClean = [];
                         foreach ($allowedWarehouseForCombination as $warehouse) {
                             $allowedWarehouseForCombinationClean[] = (int) $warehouse['id_warehouse'];
@@ -668,7 +668,7 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
-        if (Shop::getContext() == SHOP::CONTEXT_SHOP) {
+        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
             if (Shop::getContextShopGroup()->share_stock == 1) {
                 $paSql = '';
                 if ($idProductAttribute !== null) {
@@ -683,7 +683,7 @@ class StockAvailableCore extends ObjectModel
                         ->select('COUNT(*)')
                         ->from('product'.bqSQL($paSql).'_shop')
                         ->where('`id_product'.bqSQL($paSql).'` = '.(int) $idProductAttributeSql)
-                        ->where('`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID(SHOP::SHARE_STOCK))).')')
+                        ->where('`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID(Shop::SHARE_STOCK))).')')
                 )) {
                     return true;
                 }

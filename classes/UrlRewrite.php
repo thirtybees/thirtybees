@@ -32,7 +32,7 @@
 /**
  * Class UrlRewrite
  */
-class UrlRewriteCore extends Objectmodel
+class UrlRewriteCore extends ObjectModel
 {
     const CANONICAL = 1;
     const DIRECT_SERVE = 2;

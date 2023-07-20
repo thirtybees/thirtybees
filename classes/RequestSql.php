@@ -103,7 +103,7 @@ class RequestSqlCore extends ObjectModel
     {
         try {
             if (!$result = Db::readOnly()->getArray(
-                (new Dbquery())
+                (new DbQuery())
                     ->select('*')
                     ->from(bqSQL(static::$definition['table']))
                     ->orderBy('`'.bqSQL(static::$definition['primary']).'`')

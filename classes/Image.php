@@ -508,7 +508,7 @@ class ImageCore extends ObjectModel
             }
         }
 
-        return DB::getInstance()->insert('product_attribute_image', $insert);
+        return Db::getInstance()->insert('product_attribute_image', $insert);
     }
 
     /**
