@@ -6,7 +6,7 @@
         "ezyang/htmlpurifier": "^4.8",
         "jakeasmith/http_build_url": "^1.0",
         "greenlion/php-sql-parser": "^4.1",
-        "smarty/smarty": "4.3.1",
+        "smarty/smarty": "4.3.2",
         "pear/archive_tar": "^1.4",
         "mobiledetect/mobiledetectlib": "^3.74",
         "symfony/polyfill-mbstring": "^1.3",
