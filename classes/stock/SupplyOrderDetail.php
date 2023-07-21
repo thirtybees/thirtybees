@@ -202,23 +202,27 @@ class SupplyOrderDetailCore extends ObjectModel
     ];
 
     /**
+     * @return bool
+     *
      * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
         $this->calculatePrices();
 
-        parent::update($nullValues);
+        return parent::update($nullValues);
     }
 
     /**
+     * @return bool
+     *
      * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
         $this->calculatePrices();
 
-        parent::add($autoDate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**
