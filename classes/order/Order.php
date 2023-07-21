@@ -911,7 +911,7 @@ class OrderCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        return Order::getCartRules();
+        return $this->getCartRules();
     }
 
     /**
@@ -1376,7 +1376,7 @@ class OrderCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        return Order::addCartRule($idCartRule, $name, ['tax_incl' => $value, 'tax_excl' => '0.00']);
+        return $this->addCartRule($idCartRule, $name, ['tax_incl' => $value, 'tax_excl' => '0.00']);
     }
 
     /**
