@@ -1824,6 +1824,7 @@ class ToolsCore
 
                 return $fullPath.$path;
             }
+            return $path;
         } elseif ($categoryType === 'CMS') {
             $category = new CMSCategory($idCategory, $context->language->id);
             if (!Validate::isLoadedObject($category)) {
@@ -1838,6 +1839,9 @@ class ToolsCore
             }
 
             return Tools::getPath($category->id_parent, $fullPath, $linkOnTheItem, $categoryType);
+        } else {
+            trigger_error('Method Tools::getPath called with invalid parameter $categoryType = \''.$categoryType.'\'', E_USER_WARNING);
+            return '';
         }
     }
 
