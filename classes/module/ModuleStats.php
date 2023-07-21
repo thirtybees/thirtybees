@@ -317,9 +317,8 @@ abstract class ModuleStatsCore extends Module
     {
         $this->_sort = $datas['defaultSortColumn'];
         $this->setLang(Context::getContext()->language->id);
-        $this->getData();
-
         $layers = $datas['layers'] ?? 1;
+        $this->getData($layers);
 
         if (isset($datas['option'])) {
             $this->setOption($datas['option'], $layers);
@@ -396,7 +395,7 @@ abstract class ModuleStatsCore extends Module
         $this->_sort = $sort;
         $this->_direction = $dir;
 
-        $this->getData();
+        $this->getData(1);
 
         $this->_render->setTitle($this->_title);
         $this->_render->setSize($width, $height);
