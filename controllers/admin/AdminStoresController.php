@@ -525,19 +525,11 @@ class AdminStoresControllerCore extends AdminController
 
         $hours = json_decode($this->getFieldValue($obj, 'hours'), true);
 
-        // Retrocompatibility for thirty bees <= 1.0.4.
-        //
-        // To get rid of this, introduce a data converter executed by the
-        // upgrader over a couple of releases, making this obsolete.
-        if (!$hours) {
-            $hours = Tools::unSerialize($this->getFieldValue($obj, 'hours'));
-        }
-
         $this->fields_value = [
             'latitude'  => $this->getFieldValue($obj, 'latitude') ? $this->getFieldValue($obj, 'latitude') : Configuration::get('PS_STORES_CENTER_LAT'),
             'longitude' => $this->getFieldValue($obj, 'longitude') ? $this->getFieldValue($obj, 'longitude') : Configuration::get('PS_STORES_CENTER_LONG'),
             'days'      => $days,
-            'hours'     => isset($hours) ? $hours : false,
+            'hours'     => $hours,
         ];
 
         return parent::renderForm();
@@ -597,11 +589,11 @@ class AdminStoresControllerCore extends AdminController
             }
 
             /* Store hours */
-            $_POST['hours'] = [];
+            $hours = [];
             for ($i = 1; $i < 8; $i++) {
-                $_POST['hours'][] .= Tools::getValue('hours_'.(int) $i);
+                $hours[] = Tools::getValue('hours_'.(int) $i, '');
             }
-            $_POST['hours'] = json_encode($_POST['hours'], JSON_UNESCAPED_UNICODE);
+            $_POST['hours'] = json_encode($hours, JSON_UNESCAPED_UNICODE);
         }
 
         if (!count($this->errors)) {
