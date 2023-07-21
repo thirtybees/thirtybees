@@ -788,8 +788,6 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @param Warehouse $object
      *
-     * @return bool
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @see AdminController::afterAdd()
@@ -810,8 +808,6 @@ class AdminWarehousesControllerCore extends AdminController
         } else {
             $object->setCarriers(Tools::getValue('ids_carriers_available'));
         }
-
-        return true;
     }
 
     /**

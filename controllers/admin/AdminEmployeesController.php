@@ -828,13 +828,12 @@ class AdminEmployeesControllerCore extends AdminController
     /**
      * @param Employee $object
      *
-     * @return bool
-     *
      * @throws PrestaShopException
      */
     protected function afterUpdate($object)
     {
-        $res = parent::afterUpdate($object);
+        parent::afterUpdate($object);
+
         // Update cookie if needed
         if (Tools::getIntValue('id_employee') == $this->context->employee->id && ($passwd = Tools::getValue('passwd'))
             && $object->passwd != $this->context->employee->passwd
@@ -850,8 +849,6 @@ class AdminEmployeesControllerCore extends AdminController
                 Mail::Send($object->id_lang, 'employee_password', Mail::l('Your new password', $object->id_lang), $params, $object->email, $object->firstname.' '.$object->lastname);
             }
         }
-
-        return $res;
     }
 
     /**

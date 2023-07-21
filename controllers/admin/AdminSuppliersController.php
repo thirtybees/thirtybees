@@ -601,7 +601,6 @@ class AdminSuppliersControllerCore extends AdminController
     /**
      * @param Supplier $object
      *
-     * @return bool
      * @throws PrestaShopException
      * @see AdminController::afterAdd()
      */
@@ -613,16 +612,12 @@ class AdminSuppliersControllerCore extends AdminController
             $address->id_supplier = $object->id;
             $address->save();
         }
-
-        return true;
     }
 
     /**
      * @param Supplier $object
      *
-     * @return bool
      * @throws PrestaShopException
-     * @see AdminController::afterUpdate()
      */
     protected function afterUpdate($object)
     {
@@ -634,8 +629,6 @@ class AdminSuppliersControllerCore extends AdminController
                 $address->save();
             }
         }
-
-        return true;
     }
 
     /**

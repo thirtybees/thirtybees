@@ -2435,7 +2435,5 @@ class AdminSupplyOrdersControllerCore extends AdminController
         }
 
         $this->object = $object;
-
-        return true;
     }
 }

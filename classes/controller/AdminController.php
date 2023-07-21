@@ -1466,22 +1466,16 @@ class AdminControllerCore extends Controller
      *
      * @param ObjectModel $object Object
      * @param int $oldId
-     *
-     * @return bool
      */
     protected function afterDelete($object, $oldId)
     {
-        return true;
     }
 
     /**
      * @param ObjectModel $object
-     *
-     * @return bool
      */
     protected function afterUpdate($object)
     {
-        return true;
     }
 
     /**
@@ -1715,21 +1709,19 @@ class AdminControllerCore extends Controller
      *
      * @param ObjectModel $object Object
      *
-     * @return bool
+     * @return void
      */
     protected function beforeAdd($object)
     {
-        return true;
     }
 
     /**
      * @param ObjectModel $object
      *
-     * @return bool
+     * @return void
      */
     protected function afterAdd($object)
     {
-        return true;
     }
 
     /**

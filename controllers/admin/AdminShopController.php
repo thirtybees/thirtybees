@@ -744,8 +744,6 @@ class AdminShopControllerCore extends AdminController
     /**
      * @param Shop $newShop
      *
-     * @return bool
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -767,7 +765,7 @@ class AdminShopControllerCore extends AdminController
             Db::getInstance()->execute($sql);
         }
 
-        return parent::afterAdd($newShop);
+        parent::afterAdd($newShop);
     }
 
     /**
@@ -967,8 +965,6 @@ class AdminShopControllerCore extends AdminController
     /**
      * @param Shop $newShop
      *
-     * @return bool
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -995,6 +991,6 @@ class AdminShopControllerCore extends AdminController
             $this->redirect_after = static::$currentIndex.'&shop_id='.(int) $newShop->id.'&conf=4&token='.$this->token;
         }
 
-        return parent::afterUpdate($newShop);
+        parent::afterUpdate($newShop);
     }
 }

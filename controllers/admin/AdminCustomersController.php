@@ -1391,8 +1391,6 @@ class AdminCustomersControllerCore extends AdminController
      * @param ObjectModel $object
      * @param int $oldId
      *
-     * @return bool
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -1405,7 +1403,5 @@ class AdminCustomersControllerCore extends AdminController
             $address->id_customer = $object->id;
             $address->save();
         }
-
-        return true;
     }
 }
