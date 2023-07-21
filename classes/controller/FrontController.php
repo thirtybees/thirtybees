@@ -983,7 +983,8 @@ class FrontControllerCore extends Controller
     /**
      * Sets controller CSS and JS files.
      *
-     * @return bool
+     * @return void
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -995,8 +996,7 @@ class FrontControllerCore extends Controller
          */
         if ($this->useMobileTheme()) {
             $this->setMobileMedia();
-
-            return true;
+            return;
         }
 
         $this->addCSS(_THEME_CSS_DIR_.'grid_prestashop.css', 'all');  // retro compat themes 1.5.0.1
@@ -1050,7 +1050,6 @@ class FrontControllerCore extends Controller
         Hook::triggerEvent('actionFrontControllerSetMedia', []);
 
         $this->addSyntheticSchedulerJs();
-        return true;
     }
 
     /**

@@ -256,6 +256,8 @@ abstract class ControllerCore
     /**
      * Sets default media list for this controller
      *
+     * @return void
+     *
      * @throws PrestaShopException
      */
     abstract public function setMedia();
