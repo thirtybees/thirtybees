@@ -3699,6 +3699,9 @@ FileETag none
                 $list = [0 => 'asc', 1 => 'desc'];
 
                 return ((isset($list[$value])) ? $list[$value] : ((in_array($value, $list)) ? $value : 'asc'));
+            default:
+                trigger_error('Method Tools::getProductsOrder called with invalid parameter $type = \''.$type.'\'', E_USER_WARNING);
+                return '';
         }
     }
 
