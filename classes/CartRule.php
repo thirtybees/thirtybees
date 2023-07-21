@@ -1047,6 +1047,7 @@ class CartRuleCore extends ObjectModel
      * @param bool $alreadyInCart Check if the voucher is already on the cart
      * @param bool $displayError Display error
      * @param bool $checkCarrier
+     *
      * @return array|bool|string
      *
      * @throws PrestaShopDatabaseException
@@ -1265,6 +1266,8 @@ class CartRuleCore extends ObjectModel
         if (!$displayError) {
             return true;
         }
+
+        return false;
     }
 
     /**
