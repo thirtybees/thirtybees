@@ -231,14 +231,15 @@ class AdminPaymentControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @throws PrestaShopException
      * @throws SmartyException
      */
     public function initContent()
     {
         $this->display = 'view';
-
-        return parent::initContent();
+        parent::initContent();
     }
 
     /**

@@ -2401,19 +2401,17 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Initialize processing
      *
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopException
      */
     public function initProcess()
     {
-        if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-            $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] =
-                $this->l('You need to activate advanced stock management prior to using this feature.');
-
-            return false;
+        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+            parent::initProcess();
+        } else {
+            $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management prior to using this feature.');
         }
-        parent::initProcess();
     }
 
     /**
@@ -2423,7 +2421,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @param SupplyOrder $object
      *
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

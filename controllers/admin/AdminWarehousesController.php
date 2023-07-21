@@ -538,7 +538,7 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopException
      * @throws SmartyException
@@ -547,11 +547,7 @@ class AdminWarehousesControllerCore extends AdminController
     {
         if ($this->isAdvancedStockManagementActive()) {
             parent::initContent();
-
-            return true;
         }
-
-        return false;
     }
 
     /**
@@ -571,17 +567,15 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * @return bool|void
+     * @return void
      *
      * @throws PrestaShopException
      */
     public function initProcess()
     {
         if ($this->isAdvancedStockManagementActive()) {
-            return parent::initProcess();
+            parent::initProcess();
         }
-
-        return false;
     }
 
     /**
