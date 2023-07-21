@@ -3974,25 +3974,34 @@ FileETag none
         }
         $dir = opendir($src);
 
-        if (!file_exists($dst)) {
-            mkdir($dst);
+        if ($dir === false) {
+            return false;
         }
+
+        $result = true;
+
+        if (!file_exists($dst)) {
+            $result = mkdir($dst);
+        }
+
         while (false !== ($file = readdir($dir))) {
             if (($file != '.') && ($file != '..')) {
                 if (is_dir($src.DIRECTORY_SEPARATOR.$file)) {
-                    static::recurseCopy($src.DIRECTORY_SEPARATOR.$file, $dst.DIRECTORY_SEPARATOR.$file, $del);
+                    $result = static::recurseCopy($src.DIRECTORY_SEPARATOR.$file, $dst.DIRECTORY_SEPARATOR.$file, $del) && $result;
                 } else {
-                    copy($src.DIRECTORY_SEPARATOR.$file, $dst.DIRECTORY_SEPARATOR.$file);
+                    $result = copy($src.DIRECTORY_SEPARATOR.$file, $dst.DIRECTORY_SEPARATOR.$file) && $result;
                     if ($del && is_writable($src.DIRECTORY_SEPARATOR.$file)) {
-                        unlink($src.DIRECTORY_SEPARATOR.$file);
+                        $result = unlink($src.DIRECTORY_SEPARATOR.$file) && $result;
                     }
                 }
             }
         }
         closedir($dir);
         if ($del && is_writable($src)) {
-            rmdir($src);
+            $result = rmdir($src) && $result;
         }
+
+        return $result;
     }
 
     /**
