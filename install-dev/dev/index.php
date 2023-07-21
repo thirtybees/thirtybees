@@ -65,11 +65,14 @@ class SynchronizeController extends InstallControllerHttp
      * @param string $template
      * @param boolean $getOutput
      * @param string|null $path
+     *
+     * @return string
+     *
      * @throws PrestashopInstallerException
      */
     public function displayTemplate($template, $getOutput = false, $path = null)
     {
-        parent::displayTemplate($template, false, _TB_INSTALL_PATH_.'dev/');
+        return parent::displayTemplate($template, false, _TB_INSTALL_PATH_.'dev/');
     }
 
     /**
