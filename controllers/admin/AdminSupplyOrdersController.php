@@ -2050,6 +2050,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
             $this->_orderWay = 'DESC';
 
             return parent::renderList();
+        } else {
+            return false;
         }
     }
 

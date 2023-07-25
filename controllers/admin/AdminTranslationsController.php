@@ -998,7 +998,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param string $isoCode
      * @param array $filesList
      *
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopException
      */
@@ -1011,7 +1011,7 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         if (!$defaultLanguage || !Validate::isLanguageIsoCode($defaultLanguage)) {
-            return false;
+            return;
         }
 
         // 1 - Scan mails files

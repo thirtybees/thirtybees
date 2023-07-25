@@ -314,6 +314,7 @@ class AdminReferrersControllerCore extends AdminController
 
             return $tpl->fetch();
         }
+        return '';
     }
 
     /**

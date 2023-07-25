@@ -1431,7 +1431,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Process import theme
      *
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopException
      */
@@ -1439,8 +1439,6 @@ class AdminThemesControllerCore extends AdminController
     {
         if (!($this->hasAddPermission() && $this->hasDeletePermission()) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to add here.');
-
-            return false;
         } else {
             $this->display = 'importtheme';
             if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['themearchive']) && isset($_POST['filename']) && Tools::isSubmit('theme_archive_server')) {
@@ -2033,24 +2031,22 @@ class AdminThemesControllerCore extends AdminController
      * @param string $fieldName
      * @param string $logoPrefix
      *
-     * @return bool
+     * @return void
      *
      * @throws PrestaShopException
      */
     protected function updateLogo($fieldName, $logoPrefix)
     {
-
         $idShop = $this->context->shop->id;
         if (isset($_FILES[$fieldName]['tmp_name']) && $_FILES[$fieldName]['tmp_name'] && $_FILES[$fieldName]['size']) {
             if ($error = ImageManager::validateUpload($_FILES[$fieldName], Tools::getMaxUploadSize())) {
                 $this->errors[] = $error;
-
-                return false;
+                return;
             }
             $tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS');
 
             if (!$tmpName || !move_uploaded_file($_FILES[$fieldName]['tmp_name'], $tmpName)) {
-                return false;
+                return;
             }
 
             $ext = ($fieldName == 'PS_STORES_ICON') ? '.gif' : '.jpg';
