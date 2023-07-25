@@ -2437,25 +2437,25 @@ class AdminThemesControllerCore extends AdminController
                 'verify'      => Configuration::getSslTrustStore(),
                 'timeout'     => 20,
             ]))->get('https://raw.githubusercontent.com/thirtybees/favicons/master/template.html')->getBody();
+
+            if (!$template) {
+                $this->ajaxDie(json_encode([
+                    'hasError' => true,
+                    'error' => Tools::displayError("Failed to download favicon template"),
+                ]));
+            }
+
+            $this->ajaxDie(json_encode([
+                'hasError' => false,
+                'template' => base64_encode($template),
+                'error'    => '',
+            ]));
         } catch (Throwable $e) {
             $this->ajaxDie(json_encode([
                 'hasError' => true,
                 'error'    => $e->getMessage(),
             ]));
         }
-
-        if (!$template) {
-            $this->ajaxDie(json_encode([
-                'hasError' => true,
-                'error' => '',
-            ]));
-        }
-
-        $this->ajaxDie(json_encode([
-            'hasError' => false,
-            'template' => base64_encode($template),
-            'error'    => '',
-        ]));
     }
 
     /**
