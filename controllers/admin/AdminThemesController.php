@@ -1784,7 +1784,7 @@ class AdminThemesControllerCore extends AdminController
             $this->display = '';
         }
         if (isset($this->display) && method_exists($this, 'render'.$this->display)) {
-            $this->content .= $this->initPageHeaderToolbar();
+            $this->initPageHeaderToolbar();
 
             $this->content .= $this->{'render'.$this->display}();
             $this->context->smarty->assign(
