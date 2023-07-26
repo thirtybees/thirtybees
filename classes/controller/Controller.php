@@ -562,7 +562,7 @@ abstract class ControllerCore
      * @param int|null $offset
      * @param bool $checkPath
      *
-     * @return true
+     * @return bool
      */
     public function addCSS($cssUri, $cssMediaType = 'all', $offset = null, $checkPath = true)
     {
@@ -570,6 +570,7 @@ abstract class ControllerCore
             $cssUri = [$cssUri];
         }
 
+        $result = count($cssUri) > 0;
         foreach ($cssUri as $cssFile => $media) {
             if (is_string($cssFile) && strlen($cssFile) > 1) {
                 if ($checkPath) {
@@ -593,8 +594,11 @@ abstract class ControllerCore
                 }
 
                 $this->css_files = array_merge(array_slice($this->css_files, 0, $offset), $cssPath, array_slice($this->css_files, $offset));
+            } else {
+                $result = false;
             }
         }
+        return $result;
     }
 
     /**
