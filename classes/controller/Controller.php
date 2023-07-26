@@ -708,6 +708,7 @@ abstract class ControllerCore
             $debugJs = '<script type="text/javascript" src="' . Media::getJSPath(_PS_JS_DIR_ . 'php-debug.js') . '" async defer></script>' . "\n";
             return $messages . $debugJs;
         }
+        return '';
     }
 
 
