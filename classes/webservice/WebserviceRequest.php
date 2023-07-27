@@ -743,7 +743,7 @@ class WebserviceRequestCore
      */
     protected function authenticate()
     {
-        if (!$this->hasErrors()) {
+        if (! $this->hasErrors()) {
             if (is_null($this->_key)) {
                 $this->setError(401, 'Please enter the authentication key as the login. No password required', 16);
             } else {
@@ -775,6 +775,7 @@ class WebserviceRequestCore
                 return true;
             }
         }
+        return false;
     }
 
     /**
@@ -808,10 +809,13 @@ class WebserviceRequestCore
 				FROM '._DB_PREFIX_.'webservice_account wsa LEFT JOIN '._DB_PREFIX_.'webservice_account_shop wsas ON (wsa.id_webservice_account = wsas.id_webservice_account)
 				WHERE wsa.key = \''.pSQL($key).'\'';
 
+        $OR = [];
         foreach (static::$shopIDs as $id_shop) {
-            $OR[] = ' wsas.id_shop = '.(int) $id_shop.' ';
+            $OR[] = ' wsas.id_shop = ' . (int)$id_shop . ' ';
         }
-        $sql .= ' AND ('.implode('OR', $OR).') ';
+        if ($OR) {
+            $sql .= ' AND (' . implode('OR', $OR) . ') ';
+        }
         if (!Db::readOnly()->getValue($sql)) {
             $this->setError(403, 'No permission for this key on this shop', 132);
 
@@ -1302,7 +1306,7 @@ class WebserviceRequestCore
     }
 
     /**
-     * @return array|false
+     * @return array
      *
      * @throws PrestaShopException
      */
@@ -1335,11 +1339,14 @@ class WebserviceRequestCore
                 }
                 $sql .= '`';
 
+                $OR = [];
                 foreach (static::$shopIDs as $idShop) {
                     $OR[] = ' (id_shop = '.(int) $idShop.($checkShopGroup ? ' OR (id_shop = 0 AND id_shop_group='.(int) Shop::getGroupFromShop((int) $idShop).')' : '').') ';
                 }
 
-                $check = ' WHERE ('.implode('OR', $OR).') AND `'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'` = '.(int) $this->urlSegment[1];
+                $shopCond = $OR ? ('(' . implode('OR', $OR) . ')') : '1';
+
+                $check = ' WHERE '.$shopCond.' AND `'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'` = '.(int) $this->urlSegment[1];
                 if (!Db::readOnly()->getValue($sql.$check)) {
                     $this->setError(404, 'This '.$this->resourceConfiguration['retrieveData']['className'].' ('.(int) $this->urlSegment[1].') does not exists on this shop', 131);
                 }
@@ -1347,12 +1354,13 @@ class WebserviceRequestCore
 
             return $objects;
         }
+
         if (!count($this->errors)) {
             $this->objOutput->setStatus(404);
             $this->_outputEnabled = false;
-
-            return false;
         }
+
+        return [];
     }
 
     /**
@@ -1651,6 +1659,8 @@ class WebserviceRequestCore
 
             return true;
         }
+
+        return false;
     }
 
     /**
