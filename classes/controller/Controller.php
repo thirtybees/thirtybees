@@ -182,6 +182,8 @@ abstract class ControllerCore
     /**
      * Starts the controller process
      *
+     * @return void
+     *
      * @throws SmartyException
      * @throws PrestaShopException
      */

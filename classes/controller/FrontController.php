@@ -239,28 +239,29 @@ class FrontControllerCore extends Controller
      */
     public function run()
     {
-        if (! PageCache::isEnabled()) {
-            return parent::run();
-        }
+        if (PageCache::isEnabled()) {
+            $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
+            $cacheEntry = PageCache::get();
+            if ($cacheEntry->exists()) {
+                if ($debug) {
+                    header('X-thirtybees-PageCache: HIT');
+                }
 
-        $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
-        $cacheEntry = PageCache::get();
-        if (! $cacheEntry->exists()) {
-            if ($debug) {
-                header('X-thirtybees-PageCache: MISS');
+                $this->init();
+                $this->context->cookie->write();
+                $content = $cacheEntry->getFreshContent();
+
+                echo $content;
+
+                return;
+            } else {
+                if ($debug) {
+                    header('X-thirtybees-PageCache: MISS');
+                }
             }
-            return parent::run();
         }
 
-        if ($debug) {
-            header('X-thirtybees-PageCache: HIT');
-        }
-
-        $this->init();
-        $this->context->cookie->write();
-        $content = $cacheEntry->getFreshContent();
-
-        echo $content;
+        parent::run();
     }
 
     /**
