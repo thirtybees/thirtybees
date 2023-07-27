@@ -4373,10 +4373,6 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            if ($offset > 0) {
-                $this->toto = true;
-            }
-
             try {
                 $this->supplierImportOne(
                     $info,
