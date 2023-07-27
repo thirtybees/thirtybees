@@ -34,6 +34,7 @@
  */
 class FrontControllerCore extends Controller
 {
+    const JS_DEF_PLACEHOLDER = 'js_def';
     /**
      * True if controller has already been initialized.
      * Prevents initializing controller more than once.
@@ -757,60 +758,58 @@ class FrontControllerCore extends Controller
      */
     protected function smartyOutputContent($content)
     {
-        if (! PageCache::isEnabled()) {
-            parent::smartyOutputContent($content);
-
-            return;
-        }
-
-        $html = '';
-        $jsTag = 'js_def';
-        $this->context->smarty->assign($jsTag, $jsTag);
-
-        if (is_array($content)) {
-            foreach ($content as $tpl) {
-                $html .= $this->context->smarty->fetch($tpl);
-            }
+        if (PageCache::isEnabled()) {
+            $html = $this->getSmartyOutputContent($content);
+            PageCache::set($html);
+            echo $html;
         } else {
-            $html = $this->context->smarty->fetch($content);
+            parent::smartyOutputContent($content);
         }
+    }
 
-        $html = trim($html);
-
-        if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
+    /**
+     * Generates page content for controller templates
+     *
+     * @param array|string $content
+     *
+     * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    protected function getSmartyOutputContent($content): string
+    {
+        $this->context->smarty->assign('js_def', static::JS_DEF_PLACEHOLDER);
+        $html = parent::getSmartyOutputContent($content);
+        if ($html && $this->getLayout()) {
             $liveEditContent = '';
-
+            if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
+                $liveEditContent = $this->getLiveEditFooter();
+            }
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('PS_JS_DEFER');
-
+            $defer = (bool)Configuration::get('PS_JS_DEFER');
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
             }
-            $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
-
-            $this->context->smarty->assign([$jsTag => Media::getJsDef(), 'js_files' => $defer ? array_unique($this->js_files) : [], 'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : []]);
-
-            $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
-            // $template = ($defer ? $html.$javascript : preg_replace('/(?<!\$)'.$js_tag.'/', $javascript, $html)).$live_edit_content.((!Tools::getIsset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
-
-            if ($defer && (!Tools::getIsset($this->ajax) || !$this->ajax)) {
-                $templ = $html.$javascript;
+            $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
+            $this->context->smarty->assign(
+                [
+                    'js_def' => Media::getJsDef(),
+                    'js_files' => $defer ? array_unique($this->js_files) : [],
+                    'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
+                ]
+            );
+            $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_ . 'javascript.tpl');
+            if ($defer && (!isset($this->ajax) || !$this->ajax)) {
+                $html .= $javascript;
             } else {
-                $templ = preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
+                $html = preg_replace('/(?<!\$)'.static::JS_DEF_PLACEHOLDER.'/', $javascript, $html);
             }
 
-            $templ .= $liveEditContent.((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
-
-            // $templ = ($defer ? $html . $javascript : str_replace($js_tag, $javascript, $html)) . $live_edit_content . ((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
-        } else {
-            $templ = $html;
+            $html .= $liveEditContent . ((!isset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
         }
-
-        // cache page output
-        PageCache::set($templ);
-
-        echo $templ;
+        return $html;
     }
+
 
     /**
      * Compiles and outputs page footer section.

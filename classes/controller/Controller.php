@@ -312,11 +312,22 @@ abstract class ControllerCore
      */
     protected function smartyOutputContent($content)
     {
-
         $this->context->cookie->write();
+        echo $this->getSmartyOutputContent($content);
+    }
+
+    /**
+     * Generates page content for controller templates
+     *
+     * @param string|array $content
+     *
+     * @return string
+     *
+     * @throws SmartyException
+     */
+    protected function getSmartyOutputContent($content): string
+    {
         $html = '';
-        $jsTag = 'js_def';
-        $this->context->smarty->assign($jsTag, $jsTag);
         if (is_array($content)) {
             foreach ($content as $tpl) {
                 $html .= $this->context->smarty->fetch($tpl);
@@ -330,36 +341,8 @@ abstract class ControllerCore
         if ($debugScript) {
             $html = str_replace("</body>", $debugScript . "</body>", $html);
         }
-        if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
-            $liveEditContent = '';
-            if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
-                $liveEditContent = $this->getLiveEditFooter();
-            }
-            $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('PS_JS_DEFER');
-            if ($defer && $domAvailable) {
-                $html = Media::deferInlineScripts($html);
-            }
-            $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
-            $this->context->smarty->assign(
-                [
-                    $jsTag      => Media::getJsDef(),
-                    'js_files'  => $defer ? array_unique($this->js_files) : [],
-                    'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
-                ]
-            );
-            $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
-            if ($defer && (!isset($this->ajax) || !$this->ajax)) {
-                echo $html.$javascript;
-            } else {
-                echo preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
-            }
 
-            echo $liveEditContent.((!isset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
-        } else {
-
-            echo $html;
-        }
+        return $html;
     }
 
     /**
