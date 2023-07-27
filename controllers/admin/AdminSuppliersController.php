@@ -542,7 +542,8 @@ class AdminSuppliersControllerCore extends AdminController
 
         /* Generate image with differents size */
         if (($idSupplier = Tools::getIntValue('id_supplier')) &&
-            isset($_FILES) && count($_FILES) && file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
+            $_FILES &&
+            file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
         ) {
             $imagesTypes = ImageType::getImagesTypes('suppliers');
             foreach ($imagesTypes as $imageType) {

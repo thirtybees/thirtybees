@@ -1130,7 +1130,7 @@ class AdminCategoriesControllerCore extends AdminController
     protected function postImage($id)
     {
         $ret = parent::postImage($id);
-        if (($idCategory = Tools::getIntValue('id_category')) && isset($_FILES) && count($_FILES)) {
+        if (($idCategory = Tools::getIntValue('id_category')) && $_FILES) {
             $name = 'image';
             if ($_FILES[$name]['name'] != null && file_exists(_PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType)) {
                 try {

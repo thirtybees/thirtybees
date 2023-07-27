@@ -944,8 +944,7 @@ class AdminManufacturersControllerCore extends AdminController
 
         /* Generate image with differents size */
         if (($idManufacturer = Tools::getIntValue('id_manufacturer')) &&
-            isset($_FILES) &&
-            count($_FILES) &&
+            $_FILES &&
             file_exists(_PS_MANU_IMG_DIR_.$idManufacturer.'.jpg')
         ) {
             $imagesTypes = ImageType::getImagesTypes('manufacturers');

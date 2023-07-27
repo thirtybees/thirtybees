@@ -439,7 +439,7 @@ class SceneCore extends ObjectModel
         ) {
             return false;
         }
-        if (!(isset($_FILES) && count($_FILES))) {
+        if (! $_FILES) {
             return parent::deleteImage();
         }
 

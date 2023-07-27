@@ -592,7 +592,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 $cm->message = Tools::getValue('reply_message');
                 if (($error = $cm->validateField('message', $cm->message, null, [], true)) !== true) {
                     $this->errors[] = $error;
-                } elseif (isset($_FILES) && !empty($_FILES['joinFile']['name']) && $_FILES['joinFile']['error'] != 0) {
+                } elseif (!empty($_FILES['joinFile']['name']) && $_FILES['joinFile']['error'] != 0) {
                     $this->errors[] = Tools::displayError('An error occurred during the file upload process.');
                 } elseif ($cm->add()) {
                     $fileAttachment = null;

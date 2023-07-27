@@ -885,7 +885,8 @@ class AdminStatusesControllerCore extends AdminController
         parent::afterImageUpload();
 
         if (($idOrderState = Tools::getIntValue('id_order_state')) &&
-            isset($_FILES) && count($_FILES) && file_exists(_PS_ORDER_STATE_IMG_DIR_.$idOrderState.'.gif')
+            $_FILES &&
+            file_exists(_PS_ORDER_STATE_IMG_DIR_.$idOrderState.'.gif')
         ) {
             $currentFile = _PS_TMP_IMG_DIR_.'order_state_mini_'.$idOrderState.'_'.$this->context->shop->id.'.gif';
 

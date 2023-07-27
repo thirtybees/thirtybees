@@ -674,7 +674,7 @@ class AdminStoresControllerCore extends AdminController
     {
         $ret = parent::postImage($id);
 
-        if (($idStore = Tools::getIntValue('id_store')) && isset($_FILES) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
+        if (($idStore = Tools::getIntValue('id_store')) && $_FILES && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
             $imageTypes = ImageType::getImagesTypes('stores');
             foreach ($imageTypes as $imageType) {
                 ImageManager::resize(
