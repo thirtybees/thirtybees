@@ -62,7 +62,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     /**
      * @var array Current association
      */
-    protected $currentAssociatedEntity;
+    protected $currentAssociatedEntity = [];
 
     /**
      * @var array Json content
@@ -217,6 +217,8 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     /**
      * @param string $nodeName
      * @param array $params
+     *
+     * @return string
      */
     public function renderNodeFooter($nodeName, $params)
     {
@@ -228,15 +230,16 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
             }
             $this->currentEntity = [];
         }
-        if ($this->currentAssociatedEntity) {
+        if (count($this->currentAssociatedEntity) > 0) {
             $current = [];
+            $name = $this->currentAssociatedEntity[0]['name'];
             foreach ($this->currentAssociatedEntity as $element) {
                 $current[$element['key']] = $element['value'];
             }
-            //$this->currentEntity['associations'][$element['name']][][$element['key']] = $element['value'];
-            $this->currentEntity['associations'][$element['name']][] = $current;
+            $this->currentEntity['associations'][$name][] = $current;
             $this->currentAssociatedEntity = [];
         }
+        return '';
     }
 
     /**
