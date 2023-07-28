@@ -255,43 +255,7 @@ class ImageManagerCore
             return !($error = static::ERROR_FILE_NOT_EXIST);
         }
 
-        list($tmpWidth, $tmpHeight, $type) = getimagesize($srcFile);
-        $rotate = 0;
-        if (function_exists('exif_read_data') && function_exists('mb_strtolower')) {
-            $exif = @exif_read_data($srcFile);
-
-            if ($exif && isset($exif['Orientation'])) {
-                switch ($exif['Orientation']) {
-                    case 3:
-                        $srcWidth = $tmpWidth;
-                        $srcHeight = $tmpHeight;
-                        $rotate = 180;
-                        break;
-
-                    case 6:
-                        $srcWidth = $tmpHeight;
-                        $srcHeight = $tmpWidth;
-                        $rotate = -90;
-                        break;
-
-                    case 8:
-                        $srcWidth = $tmpHeight;
-                        $srcHeight = $tmpWidth;
-                        $rotate = 90;
-                        break;
-
-                    default:
-                        $srcWidth = $tmpWidth;
-                        $srcHeight = $tmpHeight;
-                }
-            } else {
-                $srcWidth = $tmpWidth;
-                $srcHeight = $tmpHeight;
-            }
-        } else {
-            $srcWidth = $tmpWidth;
-            $srcHeight = $tmpHeight;
-        }
+        list($srcWidth, $srcHeight, $type) = getimagesize($srcFile);
 
         // If PS_IMAGE_QUALITY is activated, the generated image will be a PNG with .jpg as a file extension.
         // This allow for higher quality and for transparency. JPG source files will also benefit from a higher quality
@@ -359,9 +323,6 @@ class ImageManagerCore
         }
 
         $srcImage = ImageManager::create($type, $srcFile);
-        if ($rotate) {
-            $srcImage = imagerotate($srcImage, $rotate, 0);
-        }
 
         if ($dstWidth >= $srcWidth && $dstHeight >= $srcHeight) {
             imagecopyresized(
