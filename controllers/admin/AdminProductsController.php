@@ -2530,7 +2530,7 @@ class AdminProductsControllerCore extends AdminController
 
                 if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
                     if ($this->allowEditPerStore()) {
-                        $object->setFieldsToUpdate((array) Tools::getValue('multishop_check', []));
+                        $object->setFieldsToUpdate(Tools::getArrayValue('multishop_check', []));
                     }
                     $this->updateAssoShop($object->id);
                 }
@@ -2679,11 +2679,6 @@ class AdminProductsControllerCore extends AdminController
             $associatedSuppliers = ProductSupplier::getSupplierCollection($product->id);
 
             $suppliersToAssociate = [];
-            $newDefaultSupplier = 0;
-
-            if (Tools::isSubmit('default_supplier')) {
-                $newDefaultSupplier = Tools::getIntValue('default_supplier');
-            }
 
             // Get new associations
             foreach ($suppliers as $supplier) {
@@ -2802,8 +2797,13 @@ class AdminProductsControllerCore extends AdminController
                     }
                 }
             }
+
             // Manage defaut supplier for product
-            if ($newDefaultSupplier != $product->id_supplier) {
+            $newDefaultSupplier = Tools::getIntValue('default_supplier');
+            if ($newDefaultSupplier !== (int)$product->id_supplier) {
+                $this->object->setFieldsToUpdate([
+                    'id_supplier' => true
+                ]);
                 $this->object->id_supplier = $newDefaultSupplier;
                 $this->object->update();
             }
