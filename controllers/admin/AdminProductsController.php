@@ -3946,12 +3946,12 @@ class AdminProductsControllerCore extends AdminController
         $root = Category::getRootCategory();
         $defaultCategory = $this->context->cookie->id_category_products_filter ? $this->context->cookie->id_category_products_filter : $this->context->shop->id_category;
         if (!$product->id || !$product->isAssociatedToShop()) {
-            $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]), $this->default_form_language);
+            $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]));
         } else {
             if (Tools::isSubmit('categoryBox')) {
-                $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]), $this->default_form_language);
+                $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]));
             } else {
-                $selectedCat = Product::getProductCategoriesFull($product->id, $this->default_form_language);
+                $selectedCat = Product::getProductCategoriesFull($product->id);
             }
         }
 
@@ -4411,20 +4411,16 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormSeo($product)
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
-
         $data = $this->createTemplate($this->tpl_form);
 
         $context = $this->context;
         $rewrittenLinks = [];
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
-            foreach ($this->_languages as $language) {
+            foreach ($this->getLanguages() as $language) {
                 $rewrittenLinks[(int) $language['id_lang']] = [$this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.')];
             }
         } else {
-            foreach ($this->_languages as $language) {
+            foreach ($this->getLanguages() as $language) {
                 $langId = (int)$language['id_lang'];
                 $rewrittenLinks[$langId] = explode(
                     '[REWRITE]',
@@ -4436,11 +4432,11 @@ class AdminProductsControllerCore extends AdminController
         $data->assign(
             [
                 'product'               => $product,
-                'languages'             => $this->_languages,
+                'languages'             => $this->getLanguages(),
                 'id_lang'               => $this->context->language->id,
                 'ps_ssl_enabled'        => Configuration::get('PS_SSL_ENABLED'),
                 'curent_shop_url'       => $this->context->shop->getBaseURL(),
-                'default_form_language' => $this->default_form_language,
+                'default_form_language' => $this->getDefaultFormLanguage(),
                 'useRoutes'             => (bool)Configuration::get('PS_REWRITING_SETTINGS'),
                 'rewritten_links'       => $rewrittenLinks,
             ]
@@ -4642,15 +4638,16 @@ class AdminProductsControllerCore extends AdminController
                 $hasFileLabels = (int) $this->getFieldValue($obj, 'uploadable_files');
                 $hasTextLabels = (int) $this->getFieldValue($obj, 'text_fields');
 
+                $languages = $this->getLanguages();
                 $data->assign(
                     [
                         'obj'                 => $obj,
                         'table'               => $this->table,
-                        'languages'           => $this->_languages,
+                        'languages'           => $languages,
                         'has_file_labels'     => $hasFileLabels,
-                        'display_file_labels' => $this->_displayLabelFields($obj, $labels, $this->_languages, Configuration::get('PS_LANG_DEFAULT'), Product::CUSTOMIZE_FILE),
+                        'display_file_labels' => $this->_displayLabelFields($obj, $labels, $languages, Configuration::get('PS_LANG_DEFAULT'), Product::CUSTOMIZE_FILE),
                         'has_text_labels'     => $hasTextLabels,
-                        'display_text_labels' => $this->_displayLabelFields($obj, $labels, $this->_languages, Configuration::get('PS_LANG_DEFAULT'), Product::CUSTOMIZE_TEXTFIELD),
+                        'display_text_labels' => $this->_displayLabelFields($obj, $labels, $languages, Configuration::get('PS_LANG_DEFAULT'), Product::CUSTOMIZE_TEXTFIELD),
                         'uploadable_files'    => (int) ($this->getFieldValue($obj, 'uploadable_files') ? (int) $this->getFieldValue($obj, 'uploadable_files') : '0'),
                         'text_fields'         => (int) ($this->getFieldValue($obj, 'text_fields') ? (int) $this->getFieldValue($obj, 'text_fields') : '0'),
                     ]
@@ -4779,18 +4776,14 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormAttachments($obj)
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
-
         $data = $this->createTemplate($this->tpl_form);
-        $data->assign('default_form_language', $this->default_form_language);
+        $data->assign('default_form_language', $this->getDefaultFormLanguage());
 
         if ($obj->id) {
             if ($this->product_exists_in_shop) {
                 $attachmentName = [];
                 $attachmentDescription = [];
-                foreach ($this->_languages as $language) {
+                foreach ($this->getLanguages() as $language) {
                     $attachmentName[$language['id_lang']] = '';
                     $attachmentDescription[$language['id_lang']] = '';
                 }
@@ -4812,11 +4805,10 @@ class AdminProductsControllerCore extends AdminController
                         'table'                  => $this->table,
                         'ad'                     => __PS_BASE_URI__.basename(_PS_ADMIN_DIR_),
                         'iso_tiny_mce'           => $isoTinyMce,
-                        'languages'              => $this->_languages,
+                        'languages'              => $this->getLanguages(),
                         'id_lang'                => $this->context->language->id,
                         'attach1'                => Attachment::getAttachments($this->context->language->id, $obj->id, true),
                         'attach2'                => Attachment::getAttachments($this->context->language->id, $obj->id, false),
-                        'default_form_language'  => (int) Configuration::get('PS_LANG_DEFAULT'),
                         'attachment_name'        => $attachmentName,
                         'attachment_description' => $attachmentDescription,
                         'attachment_uploader'    => $attachmentUploader->render(),
@@ -4841,18 +4833,14 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormInformations($product)
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
-
         $data = $this->createTemplate($this->tpl_form);
 
         $currency = $this->context->currency;
 
         $data->assign(
             [
-                'languages'             => $this->_languages,
-                'default_form_language' => $this->default_form_language,
+                'languages'             => $this->getLanguages(),
+                'default_form_language' => $this->getDefaultFormLanguage(),
                 'currency'              => $currency,
             ]
         );
@@ -5227,6 +5215,8 @@ class AdminProductsControllerCore extends AdminController
     {
         $data = $this->createTemplate($this->tpl_form);
 
+        $data->assign('default_form_language', $this->getDefaultFormLanguage());
+
         if ($obj->id) {
             if ($this->product_exists_in_shop) {
                 $data->assign('product', $this->loadObject());
@@ -5257,11 +5247,11 @@ class AdminProductsControllerCore extends AdminController
                     $currentShopId = 0;
                 }
 
-                $languages = Language::getLanguages(true);
                 $imageUploader = new HelperImageUploader('file');
                 $imageUploader->setMultiple(!(Tools::getUserBrowser() == 'Apple Safari' && Tools::getUserPlatform() == 'Windows'))
                     ->setUseAjax(true)->setUrl($this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $obj->id.'&action=addProductImage');
 
+                $languages = $this->getLanguages();
                 $data->assign(
                     [
                         'countImages'         => count($images),
@@ -5274,8 +5264,8 @@ class AdminProductsControllerCore extends AdminController
                         'max_image_size'      => $this->max_image_size / 1024 / 1024,
                         'currency'            => $this->context->currency,
                         'current_shop_id'     => $currentShopId,
-                        'languages'           => $this->_languages,
-                        'default_language'    => (int) Configuration::get('PS_LANG_DEFAULT'),
+                        'languages'           => $languages,
+                        'default_language'    => $this->getDefaultFormLanguage(),
                         'image_uploader'      => $imageUploader->render(),
                         'imageType'           => ImageType::getFormatedName('small'),
                     ]
@@ -5486,12 +5476,9 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormQuantities($obj)
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
-
         $data = $this->createTemplate($this->tpl_form);
-        $data->assign('default_form_language', $this->default_form_language);
+        $data->assign('languages', $this->getLanguages());
+        $data->assign('default_form_language', $this->getDefaultFormLanguage());
 
         if ($obj->id) {
             if ($this->product_exists_in_shop) {
@@ -5593,7 +5580,6 @@ class AdminProductsControllerCore extends AdminController
                         'pack_stock_type'         => Pack::getGlobalStockTypeSettings(),
                         'token_preferences'       => Tools::getAdminTokenLite('AdminPPreferences'),
                         'token'                   => $this->token,
-                        'languages'               => $this->_languages,
                         'id_lang'                 => $this->context->language->id,
                     ]
                 );
@@ -5764,13 +5750,9 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormFeatures($obj)
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
-
         $data = $this->createTemplate($this->tpl_form);
-        $data->assign('default_form_language', $this->default_form_language);
-        $data->assign('languages', $this->_languages);
+        $data->assign('languages', $this->getLanguages());
+        $data->assign('defaultFormLanguage', $this->getDefaultFormLanguage());
 
         if (!Feature::isFeatureActive()) {
             $this->displayWarning($this->l('This feature has been disabled. ').' <a href="index.php?tab=AdminPerformance&token='.Tools::getAdminTokenLite('AdminPerformance').'#featuresDetachables">'.$this->l('Performances').'</a>');
@@ -5810,7 +5792,6 @@ class AdminProductsControllerCore extends AdminController
                     $data->assign('available_features', $features);
                     $data->assign('product', $obj);
                     $data->assign('link', $this->context->link);
-                    $data->assign('defaultFormLanguage', $this->default_form_language);
                 } else {
                     $this->displayWarning($this->l('You must save the product in this shop before adding features.'));
                 }

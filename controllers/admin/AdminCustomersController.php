@@ -91,8 +91,6 @@ class AdminCustomersControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->default_form_language = $this->context->language->id;
-
         $titlesArray = [];
         $genders = Gender::getGenders($this->context->language->id);
         foreach ($genders as $gender) {
@@ -462,7 +460,7 @@ class AdminCustomersControllerCore extends AdminController
         $months = Tools::dateMonths();
         $days = Tools::dateDays();
 
-        $groups = Group::getGroups($this->default_form_language, true);
+        $groups = Group::getGroups($this->context->language->id, true);
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Customer'),
@@ -891,7 +889,7 @@ class AdminCustomersControllerCore extends AdminController
             $group = new Group($groups[$i]);
             $groups[$i] = [];
             $groups[$i]['id_group'] = $group->id;
-            $groups[$i]['name'] = $group->name[$this->default_form_language];
+            $groups[$i]['name'] = $group->name[$this->context->language->id];
         }
 
         $totalOk = 0;
@@ -943,14 +941,14 @@ class AdminCustomersControllerCore extends AdminController
         $interested = Db::readOnly()->getArray($sql);
         $totalInterested = count($interested);
         for ($i = 0; $i < $totalInterested; $i++) {
-            $product = new Product($interested[$i]['id_product'], false, $this->default_form_language, $interested[$i]['id_shop']);
+            $product = new Product($interested[$i]['id_product'], false, $this->context->language->id, $interested[$i]['id_shop']);
             if (!Validate::isLoadedObject($product)) {
                 continue;
             }
             $interested[$i]['url'] = $this->context->link->getProductLink(
                 $product->id,
                 $product->link_rewrite,
-                Category::getLinkRewrite($product->id_category_default, $this->default_form_language),
+                Category::getLinkRewrite($product->id_category_default, $this->context->language->id),
                 null,
                 null,
                 $interested[$i]['cp_id_shop']
@@ -1008,9 +1006,9 @@ class AdminCustomersControllerCore extends AdminController
             // Products
             'products'               => $products,
             // Addresses
-            'addresses'              => $customer->getAddresses($this->default_form_language),
+            'addresses'              => $customer->getAddresses($this->context->language->id),
             // Discounts
-            'discounts'              => CartRule::getCustomerCartRules($this->default_form_language, $customer->id, false, false),
+            'discounts'              => CartRule::getCustomerCartRules($this->context->language->id, $customer->id, false, false),
             // Carts
             'carts'                  => $carts,
             // Interested
@@ -1397,7 +1395,7 @@ class AdminCustomersControllerCore extends AdminController
     protected function afterDelete($object, $oldId)
     {
         $customer = new Customer($oldId);
-        $addresses = $customer->getAddresses($this->default_form_language);
+        $addresses = $customer->getAddresses($this->context->language->id);
         foreach ($addresses as $v) {
             $address = new Address($v['id_address']);
             $address->id_customer = $object->id;

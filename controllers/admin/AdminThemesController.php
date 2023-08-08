@@ -1360,7 +1360,6 @@ class AdminThemesControllerCore extends AdminController
             ];
         }
 
-        $defaultLanguage = (int) $this->context->language->id;
         $languages = $this->getLanguages();
 
         foreach ($languages as $language) {
@@ -1369,7 +1368,8 @@ class AdminThemesControllerCore extends AdminController
 
         $helper = new HelperForm();
         $helper->languages = $languages;
-        $helper->default_form_language = $defaultLanguage;
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
         $fieldsValue['name'] = $author;
         $fieldsValue['email'] = $mail;
         $fieldsValue['website'] = $website;
@@ -1765,7 +1765,8 @@ class AdminThemesControllerCore extends AdminController
         $helper->fields_value['theme_archive_server'] = [];
         $helper->override_folder = $this->tpl_folder;
         $helper->languages = $this->getLanguages();
-        $helper->default_form_language = (int) $this->context->language->id;
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
 
         return $helper->generateForm($fieldsForm).$createNewThemePanel;
     }

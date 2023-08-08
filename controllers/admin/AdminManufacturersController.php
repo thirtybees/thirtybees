@@ -465,7 +465,6 @@ class AdminManufacturersControllerCore extends AdminController
 
         $this->initToolbar();
         $this->fields_form[0]['form'] = $form;
-        $this->getlanguages();
         $helper = new HelperForm();
         $helper->show_cancel_button = true;
         $helper->back_url = $this->getBackUrlParameter();
@@ -476,9 +475,9 @@ class AdminManufacturersControllerCore extends AdminController
         $helper->title = $this->l('Edit Addresses');
         $helper->id = $address->id;
         $helper->toolbar_scroll = true;
-        $helper->languages = $this->_languages;
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->languages = $this->getLanguages();
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
         $helper->fields_value = $this->getFieldsValue($address);
         $helper->toolbar_btn = $this->toolbar_btn;
         $this->content .= $helper->generateForm($this->fields_form);
@@ -607,10 +606,6 @@ class AdminManufacturersControllerCore extends AdminController
             ],
         ];
 
-        if (!($manufacturer = $this->loadObject(true))) {
-            return '';
-        }
-
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
                 'type'  => 'shop',
@@ -622,32 +617,6 @@ class AdminManufacturersControllerCore extends AdminController
         $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
         ];
-
-        foreach ($this->_languages as $language) {
-            $this->fields_value['short_description_'.$language['id_lang']] = htmlentities(
-                stripslashes(
-                    $this->getFieldValue(
-                        $manufacturer,
-                        'short_description',
-                        $language['id_lang']
-                    )
-                ),
-                ENT_COMPAT,
-                'UTF-8'
-            );
-
-            $this->fields_value['description_'.$language['id_lang']] = htmlentities(
-                stripslashes(
-                    $this->getFieldValue(
-                        $manufacturer,
-                        'description',
-                        $language['id_lang']
-                    )
-                ),
-                ENT_COMPAT,
-                'UTF-8'
-            );
-        }
 
         return parent::renderForm();
     }

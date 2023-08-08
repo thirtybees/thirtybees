@@ -340,7 +340,6 @@ class AdminTaxRulesGroupControllerCore extends AdminController
             'id_tax_rule'        => '',
         ];
 
-        $this->getlanguages();
         $helper = new HelperForm();
         $helper->override_folder = $this->tpl_folder;
         $helper->currentIndex = static::$currentIndex;
@@ -350,9 +349,9 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $helper->id = $obj->id;
         $helper->toolbar_scroll = true;
         $helper->show_toolbar = true;
-        $helper->languages = $this->_languages;
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->languages = $this->getLanguages();
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
         $helper->fields_value = $this->getFieldsValue($this->object);
         $helper->toolbar_btn['save_new_rule'] = [
             'href'  => static::$currentIndex.'&amp;id_tax_rules_group='.$obj->id.'&amp;action=create_rule&amp;token='.$this->token,

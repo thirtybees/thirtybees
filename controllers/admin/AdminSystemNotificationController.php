@@ -63,8 +63,6 @@ class AdminSystemNotificationControllerCore extends AdminController implements I
 
         $this->context = Context::getContext();
 
-        $this->default_form_language = $this->context->language->id;
-
         $this->fields_list = [
             'id_system_notification' => [
                 'title' => $this->l('ID'),

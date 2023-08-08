@@ -344,7 +344,7 @@
 			$('.fancybox').fancybox();
 		});
 		if (tabs_manager.allow_hide_other_languages)
-			hideOtherLanguage(default_language);
+			hideOtherLanguage({/literal}{$default_form_language|intval}{literal});
 		{/literal}
 	</script>
 </div>

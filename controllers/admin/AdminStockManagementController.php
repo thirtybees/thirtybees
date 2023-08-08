@@ -767,7 +767,6 @@ class AdminStockManagementControllerCore extends AdminController
                 if ($productIsValid === true && $isVirtual == false) {
                     // init form
                     $this->renderForm();
-                    $this->getlanguages();
 
                     $helper = new HelperForm();
 
@@ -781,9 +780,9 @@ class AdminStockManagementControllerCore extends AdminController
                     $this->setHelperDisplay($helper);
                     $helper->submit_action = $this->display;
                     $helper->id = null; // no display standard hidden field in the form
-                    $helper->languages = $this->_languages;
-                    $helper->default_form_language = $this->default_form_language;
-                    $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+                    $helper->languages = $this->getLanguages();
+                    $helper->default_form_language = $this->getDefaultFormLanguage();
+                    $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
                     $helper->show_cancel_button = true;
                     $helper->back_url = $this->context->link->getAdminLink('AdminStockManagement');
 

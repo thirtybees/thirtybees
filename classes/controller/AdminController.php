@@ -67,7 +67,7 @@ class AdminControllerCore extends Controller
     public $_languages = [];
     /** @var int */
     public $default_form_language;
-    /** @var bool */
+    /** @var int */
     public $allow_employee_form_lang;
     /** @var string */
     public $layout = 'layout.tpl';
@@ -2339,33 +2339,95 @@ class AdminControllerCore extends Controller
     }
 
     /**
+     * @param int $defaultFormLanguage
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected static function resolveFormLanguages(int $defaultFormLanguage): array
+    {
+        $languages = Language::getLanguages(false);
+        foreach ($languages as &$language) {
+            $isDefault = $defaultFormLanguage === (int)$language['id_lang'];
+            $language['is_default'] = $isDefault ? 1 : 0;
+        }
+        return $languages;
+    }
+
+    /**
      * @return array
      *
      * @throws PrestaShopException
      */
     public function getLanguages()
     {
-        $cookie = $this->context->cookie;
-        $this->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
-        if ($this->allow_employee_form_lang && !$cookie->employee_form_lang) {
-            $cookie->employee_form_lang = (int) Configuration::get('PS_LANG_DEFAULT');
+        if (! $this->_languages) {
+            $this->_languages = static::resolveFormLanguages($this->getDefaultFormLanguage());
         }
-
-        $langExists = false;
-        $this->_languages = Language::getLanguages(false);
-        foreach ($this->_languages as $lang) {
-            if (isset($cookie->employee_form_lang) && $cookie->employee_form_lang == $lang['id_lang']) {
-                $langExists = true;
-            }
-        }
-
-        $this->default_form_language = $langExists ? (int) $cookie->employee_form_lang : (int) Configuration::get('PS_LANG_DEFAULT');
-
-        foreach ($this->_languages as $k => $language) {
-            $this->_languages[$k]['is_default'] = (int) ($language['id_lang'] == $this->default_form_language);
-        }
-
         return $this->_languages;
+    }
+
+    /**
+     * @param Cookie $cookie
+     * @param int $allowEmployeeLang
+     *
+     * @return int
+     * @throws PrestaShopException
+     */
+    protected static function resolveDefaultFormLanguage(Cookie $cookie, int $allowEmployeeLang): int
+    {
+        $languageIds = Language::getLanguages(false, false, true);
+        if ($languageIds) {
+
+            // first check last used employee language
+            if ($allowEmployeeLang) {
+                if (isset($cookie->employee_form_lang)) {
+                    $employeeLang = (int)$cookie->employee_form_lang;
+                    if (in_array($employeeLang, $languageIds)) {
+                        return $employeeLang;
+                    }
+                }
+            }
+            if (isset($cookie->employee_form_lang)) {
+                unset($cookie->employee_form_lang);
+            }
+
+            // try default language
+            $defaultLang = (int)Configuration::get('PS_LANG_DEFAULT');
+            if (in_array($defaultLang, $languageIds)) {
+                return $defaultLang;
+            }
+
+            // fallback to first language in the list
+            return $languageIds[0];
+        }
+        return 0;
+    }
+
+    /**
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    protected function getDefaultFormLanguage(): int
+    {
+        if (is_null($this->default_form_language)) {
+            $this->default_form_language = static::resolveDefaultFormLanguage($this->context->cookie, $this->getAllowEmployeeFormLanguage());
+        }
+        return (int)$this->default_form_language;
+    }
+
+    /**
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    protected function getAllowEmployeeFormLanguage(): int
+    {
+        if (is_null($this->allow_employee_form_lang)) {
+            $this->allow_employee_form_lang = (int)Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
+        }
+        return (int)$this->allow_employee_form_lang;
     }
 
     /**
@@ -2637,9 +2699,7 @@ class AdminControllerCore extends Controller
      */
     public function renderForm()
     {
-        if (!$this->default_form_language) {
-            $this->getLanguages();
-        }
+        $this->getLanguages();
 
         if (Tools::getValue('submitFormAjax')) {
             $this->content .= $this->context->smarty->fetch('form_submit_ajax.tpl');
@@ -2713,7 +2773,7 @@ class AdminControllerCore extends Controller
                                 }
                             }
                         } elseif (isset($input['lang']) && $input['lang']) {
-                            foreach ($this->_languages as $language) {
+                            foreach ($this->getLanguages() as $language) {
                                 $fieldValue = $this->getFieldValue($obj, $input['name'], $language['id_lang']);
                                 if (empty($fieldValue)) {
                                     if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
@@ -2859,9 +2919,9 @@ class AdminControllerCore extends Controller
             $helper->id = $this->object->id;
         }
         $helper->name_controller = Tools::getValue('controller');
-        $helper->languages = $this->_languages;
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->languages = $this->getLanguages();
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
     }
 
     /**

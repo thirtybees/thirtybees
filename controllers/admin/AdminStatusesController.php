@@ -717,8 +717,6 @@ class AdminStatusesControllerCore extends AdminController
         //init field form variable for order return form
         $this->fields_form = [];
 
-        //$this->initToolbar();
-        $this->getlanguages();
         $helper = new HelperForm();
         $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
@@ -726,9 +724,9 @@ class AdminStatusesControllerCore extends AdminController
         $helper->identifier = 'id_order_return_state';
         $helper->id = $orderReturnState->id;
         $helper->toolbar_scroll = false;
-        $helper->languages = $this->_languages;
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->languages = $this->getLanguages();
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
 
         if ($orderReturnState->id) {
             $helper->fields_value = [

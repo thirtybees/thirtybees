@@ -776,9 +776,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
             ++$index;
         }
 
-        // loads languages
-        $this->getlanguages();
-
         // defines the fields of the form to display
         $this->fields_form[0]['form'] = [
             'legend' => [
@@ -801,9 +798,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $helper->toolbar_scroll = false;
         $helper->token = $this->token;
         $helper->id = null; // no display standard hidden field in the form
-        $helper->languages = $this->_languages;
-        $helper->default_form_language = $this->default_form_language;
-        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->languages = $this->getLanguages();
+        $helper->default_form_language = $this->getDefaultFormLanguage();
+        $helper->allow_employee_form_lang = $this->getAllowEmployeeFormLanguage();
         $helper->title = sprintf($this->l('Stock: Change supply order status #%s'), $supplyOrder->reference);
         $helper->show_cancel_button = true;
         $helper->override_folder = 'supply_orders_change_state/';
