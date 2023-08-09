@@ -459,7 +459,7 @@ class OrderHistoryCore extends ObjectModel
             $topic = $result['osname'];
             $carrierUrl = '';
             if (Validate::isLoadedObject($carrier = new Carrier((int) $order->id_carrier, $order->id_lang))) {
-                $carrierUrl = $carrier->url;
+                $carrierUrl = (string)$carrier->url;
             }
 
             $data = [
