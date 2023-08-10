@@ -513,6 +513,8 @@ class ValidateTest extends Unit
             [false, "test>test"],
             [false, "test;test"],
             [true, "test test"],
+            [true, str_repeat('x', \ObjectModel::SIZE_REFERENCE)],
+            [false, str_repeat('x', \ObjectModel::SIZE_REFERENCE + 1)],
         ];
     }
 

@@ -69,7 +69,7 @@ class ProductSupplierCore extends ObjectModel
             'id_product'                 => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
             'id_product_attribute'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '0'],
             'id_supplier'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
-            'product_supplier_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => 32],
+            'product_supplier_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => self::SIZE_REFERENCE],
             'product_supplier_price_te'  => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'id_currency'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbNullable' => false],
         ],

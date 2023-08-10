@@ -535,7 +535,11 @@ class ValidateCore
      */
     public static function isReference($reference)
     {
-        return (bool)preg_match(Tools::cleanNonUnicodeSupport('/^[^<>;={}]*$/u'), (string)$reference);
+        $reference = (string)$reference;
+        return (
+            mb_strlen($reference) <= ObjectModel::SIZE_REFERENCE &&
+            preg_match(Tools::cleanNonUnicodeSupport('/^[^<>;={}]*$/u'), $reference)
+        );
     }
 
     /**

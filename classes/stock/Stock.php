@@ -63,7 +63,7 @@ class StockCore extends ObjectModel
             'id_warehouse'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
             'id_product'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
             'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
-            'reference'            => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => 32, 'dbNullable' => false],
+            'reference'            => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => self::SIZE_REFERENCE, 'dbNullable' => false],
             'ean13'                => ['type' => self::TYPE_STRING, 'validate' => 'isEan13', 'size' => 13],
             'upc'                  => ['type' => self::TYPE_STRING, 'validate' => 'isUpc', 'size' => 12],
             'physical_quantity'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],

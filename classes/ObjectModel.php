@@ -75,6 +75,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     const SIZE_TEXT = 65535;
     const SIZE_LONG_TEXT = 4294967295;
 
+    const SIZE_REFERENCE = 64;
+
     /**
      * List of different database key types
      */
