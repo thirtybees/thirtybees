@@ -45,7 +45,12 @@ class AttachmentControllerCore extends FrontController
     public function postProcess()
     {
         $a = new Attachment(Tools::getIntValue('id_attachment'), $this->context->language->id);
-        if (!$a->id) {
+        if (! Validate::isLoadedObject($a)) {
+            Tools::redirect('index.php');
+        }
+
+        if (! $a->fileExists()) {
+            trigger_error(sprintf("File for attachment %s not found", $a->id), E_USER_WARNING);
             Tools::redirect('index.php');
         }
 
@@ -57,10 +62,10 @@ class AttachmentControllerCore extends FrontController
 
         header('Content-Transfer-Encoding: binary');
         header('Content-Type: '.$a->mime);
-        header('Content-Length: '.filesize(_PS_DOWNLOAD_DIR_.$a->file));
+        header('Content-Length: '.filesize($a->getFilePath()));
         header('Content-Disposition: attachment; filename="'.mb_convert_encoding($a->file_name, 'ISO-8859-1', 'UTF-8').'"');
         @set_time_limit(0);
-        readfile(_PS_DOWNLOAD_DIR_.$a->file);
+        readfile($a->getFilePath());
         exit;
     }
 }

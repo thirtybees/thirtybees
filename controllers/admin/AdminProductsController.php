@@ -736,9 +736,7 @@ class AdminProductsControllerCore extends AdminController
                             number_format(($_FILES['attachment_file']['size'] / 1024), 2, '.', '')
                         );
                     } else {
-                        do {
-                            $uniqid = sha1(microtime());
-                        } while (file_exists(_PS_DOWNLOAD_DIR_.$uniqid));
+                        $uniqid = Attachment::getNewFilename();
                         if (!copy($_FILES['attachment_file']['tmp_name'], _PS_DOWNLOAD_DIR_.$uniqid)) {
                             $_FILES['attachment_file']['error'][] = $this->l('File copy failed');
                         }
@@ -2331,8 +2329,10 @@ class AdminProductsControllerCore extends AdminController
             if (isset($_FILES['virtual_product_file_uploader']) && $_FILES['virtual_product_file_uploader']['size'] > 0) {
                 $filename = ProductDownload::getNewFilename();
                 $helper = new HelperUploader('virtual_product_file_uploader');
-                $helper->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
-                    ->setSavePath(_PS_DOWNLOAD_DIR_)->upload($_FILES['virtual_product_file_uploader'], $filename);
+                $helper
+                    ->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
+                    ->setSavePath(_PS_DOWNLOAD_DIR_)
+                    ->upload($_FILES['virtual_product_file_uploader'], $filename);
             } else {
                 $filename = Tools::getValue('virtual_product_filename', ProductDownload::getNewFilename());
             }
@@ -4591,11 +4591,15 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
-        $virtualProductFileUploader = new HelperUploader('virtual_product_file_uploader');
-        $virtualProductFileUploader->setMultiple(false)->setUrl(
-            $this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $product->id
-            .'&action=AddVirtualProductFile'
-        )->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
+        $uploadUrl = $this->context->link->getAdminLink('AdminProducts', true, [
+            'ajax' => 1,
+            'action' => 'AddVirtualProductFile',
+            'id_product' => (int)$product->id,
+        ]);
+        $virtualProductFileUploader = (new HelperUploader('virtual_product_file_uploader'))
+            ->setMultiple(false)
+            ->setUrl($uploadUrl)
+            ->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
             ->setTemplate('virtual_product.tpl');
 
         if ($productDownload->date_expiration !== '0000-00-00 00:00:00') {

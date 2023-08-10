@@ -79,7 +79,7 @@ class AttachmentCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        $this->file_size = filesize(_PS_DOWNLOAD_DIR_.$this->file);
+        $this->file_size = $this->getFileSize();
 
         return parent::add($autoDate, $nullValues);
     }
@@ -94,7 +94,7 @@ class AttachmentCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        $this->file_size = filesize(_PS_DOWNLOAD_DIR_.$this->file);
+        $this->file_size = $this->getFileSize();
 
         return parent::update($nullValues);
     }
@@ -107,7 +107,10 @@ class AttachmentCore extends ObjectModel
      */
     public function delete()
     {
-        @unlink(_PS_DOWNLOAD_DIR_.$this->file);
+        $filePath = $this->getFilePath();
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
 
         $products = Db::readOnly()->getArray(
             (new DbQuery())
@@ -304,5 +307,47 @@ class AttachmentCore extends ObjectModel
         } else {
             return false;
         }
+    }
+
+    /**
+     * Return a sha1 filename
+     *
+     * @return string Sha1 unique filename
+     */
+    public static function getNewFilename()
+    {
+        do {
+            $filename = sha1(microtime());
+        } while (file_exists(_PS_DOWNLOAD_DIR_ . $filename));
+
+        return $filename;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return _PS_DOWNLOAD_DIR_ . basename($this->file);
+    }
+
+    /**
+     * @return bool
+     */
+    public function fileExists(): bool
+    {
+        return @file_exists($this->getFilePath());
+    }
+
+    /**
+     * @return int
+     */
+    protected function getFileSize(): int
+    {
+        if ($this->fileExists()) {
+            return (int)filesize($this->getFilePath());
+        }
+        return 0;
     }
 }

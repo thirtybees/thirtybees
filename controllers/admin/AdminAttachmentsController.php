@@ -164,8 +164,8 @@ class AdminAttachmentsControllerCore extends AdminController
             /** @var Attachment $obj */
             $link = $this->context->link->getPageLink('attachment', true, null, 'id_attachment='.$obj->id);
 
-            if (file_exists(_PS_DOWNLOAD_DIR_.$obj->file)) {
-                $size = round(filesize(_PS_DOWNLOAD_DIR_.$obj->file) / 1024);
+            if (file_exists($obj->getFilePath())) {
+                $size = round(filesize($obj->getFilePath()) / 1024);
             }
         }
 
@@ -279,16 +279,14 @@ class AdminAttachmentsControllerCore extends AdminController
                             number_format(($_FILES['file']['size'] / 1024), 2, '.', '')
                         );
                     } else {
-                        do {
-                            $uniqid = sha1(microtime());
-                        } while (file_exists(_PS_DOWNLOAD_DIR_.$uniqid));
+                        $uniqid = Attachment::getNewFilename();
                         if (!move_uploaded_file($_FILES['file']['tmp_name'], _PS_DOWNLOAD_DIR_.$uniqid)) {
                             $this->errors[] = $this->l('Failed to copy the file.');
                         }
                         $_POST['file_name'] = $_FILES['file']['name'];
                         @unlink($_FILES['file']['tmp_name']);
-                        if (!sizeof($this->errors) && isset($a) && file_exists(_PS_DOWNLOAD_DIR_.$a->file)) {
-                            unlink(_PS_DOWNLOAD_DIR_.$a->file);
+                        if (!sizeof($this->errors) && isset($a) && file_exists($a->getFilePath())) {
+                            @unlink($a->getFilePath());
                         }
                         $_POST['file'] = $uniqid;
                         $_POST['mime'] = $_FILES['file']['type'];
@@ -302,7 +300,7 @@ class AdminAttachmentsControllerCore extends AdminController
                         '<b>'.$_FILES['file']['name'].'</b> ',
                         '<b>'.$uploadMb.'</b>'
                     );
-                } elseif (!isset($a) || !file_exists(_PS_DOWNLOAD_DIR_.$a->file)) {
+                } elseif (!isset($a) || !file_exists($a->getFilePath())) {
                     $this->errors[] = $this->l('Upload error. Please check your server configurations for the maximum upload size allowed.');
                 }
             }
