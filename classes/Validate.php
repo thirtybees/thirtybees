@@ -506,16 +506,113 @@ class ValidateCore
         if (is_null($html)) {
             return true;
         }
-        $events = 'onmousedown|onmousemove|onmmouseup|onmouseover|onmouseout|onload|onunload|onfocus|onblur|onchange';
-        $events .= '|onsubmit|ondblclick|onclick|onkeydown|onkeyup|onkeypress|onmouseenter|onmouseleave|onerror|onselect|onreset|onabort|ondragdrop|onresize|onactivate|onafterprint|onmoveend';
-        $events .= '|onafterupdate|onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforeeditfocus|onbeforepaste|onbeforeprint|onbeforeunload|onbeforeupdate|onmove';
-        $events .= '|onbounce|oncellchange|oncontextmenu|oncontrolselect|oncopy|oncut|ondataavailable|ondatasetchanged|ondatasetcomplete|ondeactivate|ondrag|ondragend|ondragenter|onmousewheel';
-        $events .= '|ondragleave|ondragover|ondragstart|ondrop|onerrorupdate|onfilterchange|onfinish|onfocusin|onfocusout|onhashchange|onhelp|oninput|onlosecapture|onmessage|onmouseup|onmovestart';
-        $events .= '|onoffline|ononline|onpaste|onpropertychange|onreadystatechange|onresizeend|onresizestart|onrowenter|onrowexit|onrowsdelete|onrowsinserted|onscroll|onsearch|onselectionchange';
-        $events .= '|onselectstart|onstart|onstop';
-        $events .= '|onanimationstart|onanimationiteration|onanimationend|onanimationcancel';
 
-        if (preg_match('/<[\s]*script/ims', $html) || preg_match('/('.$events.')[\s]*=/ims', $html) || preg_match('/.*script\:/ims', $html)) {
+        static $forbiddenEvents = null;
+        if (is_null($forbiddenEvents)) {
+            $forbiddenEvents = implode('|', [
+                'onabort',
+                'onactivate',
+                'onafterprint',
+                'onafterupdate',
+                'onanimationcancel',
+                'onanimationend',
+                'onanimationiteration',
+                'onanimationstart',
+                'onbeforeactivate',
+                'onbeforecopy',
+                'onbeforecut',
+                'onbeforedeactivate',
+                'onbeforeeditfocus',
+                'onbeforepaste',
+                'onbeforeprint',
+                'onbeforeunload',
+                'onbeforeupdate',
+                'onblur',
+                'onbounce',
+                'oncellchange',
+                'onchange',
+                'onclick',
+                'oncontextmenu',
+                'oncontrolselect',
+                'oncopy',
+                'oncut',
+                'ondataavailable',
+                'ondatasetchanged',
+                'ondatasetcomplete',
+                'ondblclick',
+                'ondeactivate',
+                'ondrag',
+                'ondragdrop',
+                'ondragend',
+                'ondragenter',
+                'ondragleave',
+                'ondragover',
+                'ondragstart',
+                'ondrop',
+                'onerror',
+                'onerrorupdate',
+                'onfilterchange',
+                'onfinish',
+                'onfocus',
+                'onfocusin',
+                'onfocusout',
+                'ongotpointercapture',
+                'onhashchange',
+                'onhelp',
+                'oninput',
+                'onkeydown',
+                'onkeypress',
+                'onkeyup',
+                'onload',
+                'onlosecapture',
+                'onlostpointercapture',
+                'onmessage',
+                'onmmouseup',
+                'onmousedown',
+                'onmouseenter',
+                'onmouseleave',
+                'onmousemove',
+                'onmouseout',
+                'onmouseover',
+                'onmouseup',
+                'onmousewheel',
+                'onmove',
+                'onmoveend',
+                'onmovestart',
+                'onoffline',
+                'ononline',
+                'onpaste',
+                'onpointercancel',
+                'onpointerdown',
+                'onpointerenter',
+                'onpointerleave',
+                'onpointermove',
+                'onpointerout',
+                'onpointerover',
+                'onpointerup',
+                'onpropertychange',
+                'onreadystatechange',
+                'onreset',
+                'onresize',
+                'onresizeend',
+                'onresizestart',
+                'onrowenter',
+                'onrowexit',
+                'onrowsdelete',
+                'onrowsinserted',
+                'onscroll',
+                'onsearch',
+                'onselect',
+                'onselectionchange',
+                'onselectstart',
+                'onstart',
+                'onstop',
+                'onsubmit',
+                'onunload',
+            ]);
+        }
+
+        if (preg_match('/<[\s]*script/ims', $html) || preg_match('/('.$forbiddenEvents.')[\s]*=/ims', $html) || preg_match('/.*script\:/ims', $html)) {
             return false;
         }
 
