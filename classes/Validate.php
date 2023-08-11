@@ -608,6 +608,10 @@ class ValidateCore
                 'onstart',
                 'onstop',
                 'onsubmit',
+                'ontouchcancel',
+                'ontouchend',
+                'ontouchmove',
+                'ontouchstart',
                 'onunload',
             ]);
         }
