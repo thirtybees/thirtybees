@@ -34,25 +34,54 @@
  */
 class CustomerMessageCore extends ObjectModel
 {
-    /** @var int $id_customer_thread */
+    /**
+     * @var int $id_customer_thread
+     */
     public $id_customer_thread;
-    /** @var int $id_employee */
+
+    /**
+     * @var int $id_employee
+     */
     public $id_employee;
-    /** @var string $message */
+
+    /**
+     * @var string $message
+     */
     public $message;
-    /** @var string $file_name */
+
+    /**
+     * @var string|null $file_name
+     */
     public $file_name;
-    /** @var string $ip_address */
+
+    /**
+     * @var string $ip_address
+     */
     public $ip_address;
-    /** @var string $user_agent */
+
+    /**
+     * @var string $user_agent
+     */
     public $user_agent;
-    /** @var int $private */
+
+    /**
+     * @var int $private
+     */
     public $private;
-    /** @var string $date_add */
+
+    /**
+     * @var string $date_add
+     */
     public $date_add;
-    /** @var string $date_upd*/
+
+    /**
+     * @var string $date_upd
+     */
     public $date_upd;
-    /** @var bool $read */
+
+    /**
+     * @var bool $read
+     */
     public $read;
 
     /**
@@ -161,10 +190,35 @@ class CustomerMessageCore extends ObjectModel
      */
     public function delete()
     {
-        if (!empty($this->file_name)) {
-            @unlink(_PS_UPLOAD_DIR_.$this->file_name);
+        if ($this->fileExists()) {
+            unlink($this->getFilePath());
         }
 
         return parent::delete();
     }
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        if ($this->file_name) {
+            return _PS_UPLOAD_DIR_ . basename($this->file_name);
+        }
+        return '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function fileExists(): bool
+    {
+        $filePath = $this->getFilePath();
+        return (
+            $filePath &&
+            file_exists($filePath) &&
+            is_file($filePath)
+        );
+    }
+
 }

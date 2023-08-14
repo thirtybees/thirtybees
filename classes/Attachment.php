@@ -107,9 +107,8 @@ class AttachmentCore extends ObjectModel
      */
     public function delete()
     {
-        $filePath = $this->getFilePath();
-        if (file_exists($filePath)) {
-            @unlink($filePath);
+        if ($this->fileExists()) {
+            unlink($this->getFilePath());
         }
 
         $products = Db::readOnly()->getArray(
@@ -337,7 +336,10 @@ class AttachmentCore extends ObjectModel
      */
     public function fileExists(): bool
     {
-        return @file_exists($this->getFilePath());
+        return (
+            file_exists($this->getFilePath()) &&
+            is_file($this->getFilePath())
+        );
     }
 
     /**
