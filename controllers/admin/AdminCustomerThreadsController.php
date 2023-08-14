@@ -674,11 +674,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
         $contacts = $contactArray;
 
-        if (!$email) {
-            if (!empty($message['id_product']) && empty($message['employee_name'])) {
-                $idOrderProduct = Order::getIdOrderProduct((int) $message['id_customer'], (int) $message['id_product']);
-            }
-        }
         $message['date_add'] = Tools::displayDate($message['date_add'], null, true);
         $message['user_agent'] = strip_tags($message['user_agent']);
         $message['message'] = preg_replace(
@@ -705,11 +700,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 'current'           => static::$currentIndex,
                 'token'             => $this->token,
                 'message'           => $message,
-                'id_order_product'  => isset($idOrderProduct) ? $idOrderProduct : null,
                 'email'             => Tools::convertEmailFromIdn($email),
                 'id_employee'       => $idEmployee,
                 'PS_SHOP_NAME'      => Configuration::get('PS_SHOP_NAME'),
-                'file_name'         => file_exists(_PS_UPLOAD_DIR_.$message['file_name']),
                 'contacts'          => $contacts,
                 'is_valid_order_id' => $isValidOrderId,
             ]
@@ -728,8 +721,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
      */
     public function initContent()
     {
-        if (isset($_GET['filename']) && file_exists(_PS_UPLOAD_DIR_.$_GET['filename']) && Validate::isFileName($_GET['filename'])) {
-            static::openUploadedFile();
+        if ($messageId = Tools::getIntValue('showMessageAttachment')) {
+            static::openUploadedFile($messageId);
         }
 
         parent::initContent();
@@ -825,11 +818,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
             if ($mess['id_employee']) {
                 $employee = new Employee($mess['id_employee']);
                 $messages[$key]['employee_image'] = $employee->getImage();
-            }
-            if (isset($mess['file_name']) && $mess['file_name'] != '') {
-                $messages[$key]['file_name'] = _THEME_PROD_PIC_DIR_.$mess['file_name'];
-            } else {
-                unset($messages[$key]['file_name']);
             }
 
             if ($mess['id_product']) {
@@ -1074,13 +1062,30 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
+     * @param int $customerMessageId
      * @return void
      * @throws PrestaShopException
      */
-    protected function openUploadedFile()
+    protected function openUploadedFile(int $customerMessageId)
     {
-        $filename = $_GET['filename'];
+        if (ob_get_level() && ob_get_length() > 0) {
+            ob_end_clean();
+        }
 
+        $customerMessage = new CustomerMessage($customerMessageId);
+        if (! Validate::isLoadedObject($customerMessage)) {
+            die('Customer message not found');
+        }
+
+        if (! $customerMessage->file_name) {
+            die('This customer message do not have file attachement');
+        }
+
+        if (! $customerMessage->fileExists()) {
+            die('File not found');
+        }
+
+        $filename = basename($customerMessage->file_name);
         $extensions = [
             '.txt'  => 'text/plain',
             '.rtf'  => 'application/rtf',
@@ -1094,24 +1099,17 @@ class AdminCustomerThreadsControllerCore extends AdminController
             '.jpg'  => 'image/jpeg',
         ];
 
-        $extension = false;
+        $contentType = 'application/octet-stream';
         foreach ($extensions as $key => $val) {
             if (substr(mb_strtolower($filename), -4) == $key || substr(mb_strtolower($filename), -5) == $key) {
-                $extension = $val;
+                $contentType = $val;
                 break;
             }
         }
 
-        if (!$extension || !Validate::isFileName($filename)) {
-            throw new PrestaShopException(Tools::displayError("Invalid parameters"));
-        }
-
-        if (ob_get_level() && ob_get_length() > 0) {
-            ob_end_clean();
-        }
-        header('Content-Type: '.$extension);
+        header('Content-Type: '.$contentType);
         header('Content-Disposition:attachment;filename="'.$filename.'"');
-        readfile(_PS_UPLOAD_DIR_.$filename);
+        readfile($customerMessage->getFilePath());
         die;
     }
 
