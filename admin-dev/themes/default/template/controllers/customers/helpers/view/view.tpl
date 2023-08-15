@@ -699,14 +699,19 @@
 								<td>{$address['firstname']} {$address['lastname']}</td>
 								<td>{$address['address1']} {if $address['address2']}{$address['address2']}{/if} {$address['postcode']} {$address['city']}</td>
 								<td>{$address['country']}</td>
-								<td>
+								<td>{strip}
 									{if $address['phone']}
 										{$address['phone']}
-										{if $address['phone_mobile']}<br />{$address['phone_mobile']}{/if}
+										{if $address['phone_mobile']}
+											<br />
+											{$address['phone_mobile']}
+										{/if}
+									{elseif $address['phone_mobile']}
+										{$address['phone_mobile']}
 									{else}
-										{if $address['phone_mobile']}<br />{$address['phone_mobile']}{else}--{/if}
+										--
 									{/if}
-								</td>
+								{/strip}</td>
 								<td class="text-right">
 									<div class="btn-group">
 										<a class="btn btn-default" href="?tab=AdminAddresses&amp;id_address={$address['id_address']}&amp;addaddress=1&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
