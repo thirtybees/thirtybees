@@ -273,6 +273,8 @@ class ConfigurationCore extends ObjectModel
     const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
     const MAIL_TRANSPORT = 'TB_MAIL_TRANSPORT';
+    const BACKER_URL = 'TB_BACKER_URL';
+    const BACKER = 'TB_BACKER';
 
     /**
      * List of configuration keys that will raise warnings
@@ -1178,5 +1180,29 @@ class ConfigurationCore extends ObjectModel
             static::updateGlobalValue(Configuration::TRACKING_ID, $trackingId);
         }
         return $trackingId;
+    }
+
+    /**
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public static function getBackerUrl()
+    {
+        $url = static::getGlobalValue(static::BACKER_URL);
+        if (! $url) {
+            $url = "https://forum.thirtybees.com/support-thirty-bees/?sid=@SID@";
+        }
+        return str_replace("@SID@", static::getServerTrackingId(), $url);
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public static function isBacker()
+    {
+        return (bool)static::getGlobalValue(static::BACKER);
     }
 }

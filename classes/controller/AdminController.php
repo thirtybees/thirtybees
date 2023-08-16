@@ -3629,6 +3629,7 @@ class AdminControllerCore extends Controller
      * Assign smarty variables for the footer
      *
      * @throws SmartyException
+     * @throws PrestaShopException
      */
     public function initFooter()
     {
@@ -3646,10 +3647,12 @@ class AdminControllerCore extends Controller
 
         $this->context->smarty->assign(
             [
-                'ps_version'  => _TB_VERSION_,
-                'timer_start' => $this->timer_start,
-                'iso_is_fr'   => strtoupper($this->context->language->iso_code) == 'FR',
-                'modals'      => $this->renderModal(),
+                'ps_version'   => _TB_VERSION_,
+                'timer_start'  => $this->timer_start,
+                'iso_is_fr'    => strtoupper($this->context->language->iso_code) == 'FR',
+                'modals'       => $this->renderModal(),
+                'backerButton' => !Configuration::isBacker(),
+                'backerUrl'    => Configuration::getBackerUrl(),
             ]
         );
     }

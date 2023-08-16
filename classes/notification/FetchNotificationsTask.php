@@ -71,7 +71,10 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
         $data = $this->fetch($lastUuid);
         $cnt = 0;
         if ($data) {
-            foreach ($data as $entry) {
+            $config = static::getProperty('config', $data);
+            $installationInfo = static::getProperty('installationInfo', $data);
+            $notifications = static::getProperty('notifications', $data);
+            foreach ($notifications as $entry) {
                 $cnt++;
                 $uuid = static::getProperty('uuid', $entry);
                 $conditions = static::getProperty('conditions', $entry, []);
@@ -90,6 +93,16 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
                 }
             }
             $this->setLastSeenNotificationUuid($lastUuid);
+
+            // update configurations
+            Configuration::updateGlobalValue(Configuration::BACKER_URL, $config['backerUrl']);
+
+            // update installation info
+            Configuration::updateGlobalValue(Configuration::BACKER, $installationInfo['isBacker'] ? 1 : 0);
+            if ($installationInfo['sid'] !== Configuration::getServerTrackingId()) {
+                Configuration::updateGlobalValue(Configuration::TRACKING_ID, $installationInfo['sid']);
+            }
+
         }
         return "Retrieved $cnt notifications";
     }
