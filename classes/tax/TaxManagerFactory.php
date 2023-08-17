@@ -79,7 +79,7 @@ class TaxManagerFactoryCore
     public static function execHookTaxManagerFactory(Address $address, $type)
     {
         $hookName = 'taxManager';
-        $modules = Hook::getModulesFromHook($hookName);
+        $modules = Hook::getModulesFromHook(Hook::getIdByName($hookName));
 
         foreach ($modules as $module) {
             $moduleId = (int)$module['id_module'];
