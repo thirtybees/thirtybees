@@ -11,3 +11,6 @@ Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
 // Enable Smarty cache
 Configuration::updateValue('PS_SMARTY_CACHE', 1);
 Configuration::updateValue('PS_SMARTY_FORCE_COMPILE', 1);
+
+// SET tracking id
+Configuration::updateValue(Configuration::TRACKING_ID, 'test-runner');
