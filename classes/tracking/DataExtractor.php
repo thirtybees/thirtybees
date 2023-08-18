@@ -55,6 +55,7 @@ abstract class DataExtractorCore
             static::GROUP_ENVIRONMENT => [
                 'name' => Translate::getAdminTranslation('Environment', 'AdminDataCollection'),
                 'extractors' => [
+                    'system',
                     'phpVersion',
                     'phpExtensions',
                     'serverSettings',
