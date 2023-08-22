@@ -379,9 +379,14 @@ class AdminEmailsControllerCore extends AdminController
                 throw new PrestaShopException("Failed to send email");
             }
         } catch (Throwable $throwable) {
+            $message = $throwable->getMessage();
+            $previous = $throwable->getPrevious();
+            if ($previous) {
+                $message .= ": " . $previous->getMessage();
+            }
             $this->ajaxDie(json_encode([
                 'status' => 'error',
-                'message' => $throwable->getMessage()
+                'message' => $message
             ]));
         }
     }
