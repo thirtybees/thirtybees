@@ -96,17 +96,37 @@ class AdminEmployeesControllerCore extends AdminController
         }
 
         $this->fields_list = [
-            'id_employee' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'firstname'   => ['title' => $this->l('First Name')],
-            'lastname'    => ['title' => $this->l('Last Name')],
-            'email'       => ['title' => $this->l('Email address')],
+            'id_employee' => [
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs'
+            ],
+            'firstname'   => [
+                'title' => $this->l('First Name')
+            ],
+            'lastname'    => [
+                'title' => $this->l('Last Name')
+            ],
+            'email'       => [
+                'title' => $this->l('Email address')
+            ],
             'profile'     => [
-                'title'      => $this->l('Profile'), 'type' => 'select', 'list' => $this->profiles_array,
-                'filter_key' => 'pl!name', 'class' => 'fixed-width-lg',
+                'title'      => $this->l('Profile'),
+                'type' => 'select',
+                'list' => $this->profiles_array,
+                'filter_key' => 'pl!name',
+                'class' => 'fixed-width-lg',
+            ],
+            'last_connection_date' => [
+                'title' => $this->l('Last seen'),
+                'align' => 'center',
             ],
             'active'      => [
-                'title' => $this->l('Active'), 'align' => 'center', 'active' => 'status',
-                'type'  => 'bool', 'class' => 'fixed-width-sm',
+                'title' => $this->l('Active'),
+                'align' => 'center',
+                'active' => 'status',
+                'type'  => 'bool',
+                'class' => 'fixed-width-sm',
             ],
         ];
 

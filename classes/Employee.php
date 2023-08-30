@@ -195,7 +195,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
             'bo_menu'                  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
             'active'                   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'optin'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
-            'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbDefault' => '1970-01-01', 'dbNullable' => true, 'dbType' => 'date'],
+            'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => true],
             'signature'                => ['type' => self::TYPE_STRING, 'validate' => 'isSha256', 'size' => 64, 'copy_post' => false],
         ],
         'keys' => [
@@ -322,13 +322,17 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
      */
     public static function setLastConnectionDate($idEmployee)
     {
-        return Db::getInstance()->update(
-            bqSQL(static::$definition['table']),
-            [
-                'last_connection_date' => ['type' => 'sql', 'value' => 'CURRENT_DATE()'],
-            ],
-            '`id_employee` = '.(int) $idEmployee.' AND `last_connection_date` < CURRENT_DATE()'
-        );
+        $idEmployee = (int)$idEmployee;
+        if ($idEmployee) {
+            return Db::getInstance()->update(
+                bqSQL(static::$definition['table']),
+                [
+                    'last_connection_date' => date('Y-m-d H:i:s')
+                ],
+                '`id_employee` = ' . (int)$idEmployee
+            );
+        }
+        return false;
     }
 
     /**

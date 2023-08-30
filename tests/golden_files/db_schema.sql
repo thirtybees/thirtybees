@@ -861,7 +861,7 @@ CREATE TABLE `PREFIX_employee` (
   `bo_menu` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `optin` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `last_connection_date` date DEFAULT '1970-01-01',
+  `last_connection_date` datetime DEFAULT NULL,
   `signature` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_employee`),
   KEY `employee_login` (`email`,`passwd`),
