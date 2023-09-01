@@ -574,7 +574,7 @@ class WarehouseCore extends ObjectModel
      *
      * @param int|null $idShop
      *
-     * @return array|false id_warehouse or false
+     * @return array id_warehouse
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -582,7 +582,7 @@ class WarehouseCore extends ObjectModel
     public static function getPackWarehouses($idProduct, $idShop = null)
     {
         if (!Pack::isPack($idProduct)) {
-            return false;
+            return [];
         }
 
         if (is_null($idShop)) {
@@ -595,7 +595,9 @@ class WarehouseCore extends ObjectModel
         $products = Pack::getItems((int) $idProduct, Configuration::get('PS_LANG_DEFAULT'));
 
         // array with all warehouses id to check
-        $list = [];
+        $list = [
+            'pack_warehouses' => []
+        ];
 
         // fills $list
         foreach ($packWarehouses as $pack_warehouse) {
@@ -616,13 +618,12 @@ class WarehouseCore extends ObjectModel
             }
         }
 
-        $res = false;
         // returns final list
         if (count($list) > 1) {
-            $res = call_user_func_array('array_intersect', $list);
+            return call_user_func_array('array_intersect', array_values($list));
         }
 
-        return $res;
+        return [];
     }
 
     /**
