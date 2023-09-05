@@ -73,4 +73,12 @@ class TriggerControllerCore extends FrontController
             'error' => 'Forbidden'
         ]));
     }
+
+    /**
+     * @return void
+     */
+    protected function displayMaintenancePage()
+    {
+        // no-op
+    }
 }
