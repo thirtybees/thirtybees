@@ -165,7 +165,7 @@ class AdminThemesControllerCore extends AdminController
 
         $faviconUrl = Media::getMediaPath(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
         if ($faviconUrl) {
-            $faviconUrl .= '?'.time();
+            $faviconUrl = Media::getUriWithVersion($faviconUrl);
         }
 
         $this->fields_options = [

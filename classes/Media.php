@@ -317,14 +317,11 @@ class MediaCore
         //check if file exists
         $file = $folder.'jquery-'.$version.($minifier ? '.min.js' : '.js');
 
-        // remove PS_BASE_URI on _PS_ROOT_DIR_ for the following
-        $urlData = parse_url($file);
-        $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
-        // check if js files exists, if not try to load query from ajax.googleapis.com
+        $filePath = static::getLocalMediaFilePath($file);
 
         $return = [];
 
-        if (@filemtime($fileUri)) {
+        if ($filePath) {
             $return[] = Media::getJSPath($file);
         } else {
             $return[] = Media::getJSPath(
@@ -419,22 +416,13 @@ class MediaCore
             return false;
         }
 
-        $urlData = parse_url($mediaUri);
-        if (!is_array($urlData)) {
+        $filePath = static::getLocalMediaFilePath($mediaUri);
+        if (! $filePath) {
             return false;
         }
 
-        if (!array_key_exists('host', $urlData)) {
-            $mediaUri = '/'.ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
-            // remove PS_BASE_URI on _PS_ROOT_DIR_ for the following
-            $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
-
-            if (!(file_exists($fileUri) && is_file($fileUri)) || filesize($fileUri) === 0) {
-                return false;
-            }
-
-            $mediaUri = str_replace('//', '/', $mediaUri);
-        }
+        $mediaUri = '/'.ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
+        $mediaUri = str_replace('//', '/', $mediaUri);
 
         if ($cssMediaType) {
             return [$mediaUri => $cssMediaType];
@@ -457,8 +445,6 @@ class MediaCore
         $uiPath = ['js' => [], 'css' => []];
         $folder = _PS_JS_DIR_.'jquery/ui/';
         $file = 'jquery.'.$component.'.min.js';
-        $urlData = parse_url($folder.$file);
-        $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         $uiTmp = [];
         if (isset(Media::$jquery_ui_dependencies[$component]) && Media::$jquery_ui_dependencies[$component]['theme'] && $checkDependencies) {
             $themeCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.ui.theme.css');
@@ -482,7 +468,9 @@ class MediaCore
                 }
             }
         }
-        if (@filemtime($fileUri)) {
+
+        $filePath = static::getLocalMediaFilePath($folder.$file);
+        if ($filePath) {
             if (!empty($uiTmp)) {
                 foreach ($uiTmp as $ui) {
                     if (!empty($ui['js'])) {
@@ -547,15 +535,13 @@ class MediaCore
         $pluginPath = ['js' => [], 'css' => []];
         if ($folder === null) {
             $folder = _PS_JS_DIR_.'jquery/plugins/';
-        } //set default folder
+        }
 
         $file = 'jquery.'.$name.'.js';
-        $urlData = parse_url($folder);
-        $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
-        if (@file_exists($fileUri.$file)) {
+        if (static::getLocalMediaFilePath($folder.$file)) {
             $pluginPath['js'] = Media::getJSPath($folder.$file);
-        } elseif (@file_exists($fileUri.$name.'/'.$file)) {
+        } elseif (static::getLocalMediaFilePath($folder.$name.'/'.$file)) {
             $pluginPath['js'] = Media::getJSPath($folder.$name.'/'.$file);
         } else {
             return false;
@@ -579,12 +565,10 @@ class MediaCore
             $folder = _PS_JS_DIR_.'jquery/plugins/';
         } //set default folder
         $file = 'jquery.'.$name.'.css';
-        $urlData = parse_url($folder);
-        $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
-        if (@file_exists($fileUri.$file)) {
+        if (static::getLocalMediaFilePath($folder.$file)) {
             return Media::getCSSPath($folder.$file);
-        } elseif (@file_exists($fileUri.$name.'/'.$file)) {
+        } elseif (static::getLocalMediaFilePath($folder.$name.'/'.$file)) {
             return Media::getCSSPath($folder.$name.'/'.$file);
         } else {
             return false;
@@ -1060,5 +1044,63 @@ class MediaCore
         /* return original string because no match was found */
 
         return "\n".$original;
+    }
+
+    /**
+     * Returns full path to local file for $uri, or false if file does not exists
+     *
+     * @param string $uri
+     *
+     * @return string|false
+     */
+    public static function getLocalMediaFilePath($uri)
+    {
+        if (! $uri) {
+            return false;
+        }
+
+        $uri = (string)$uri;
+
+        // if file exists locally, include its modification timestamp into uri as a version parameter
+        $parsed = parse_url($uri);
+        if (!array_key_exists('host', $parsed) && isset($parsed['path'])) {
+            $path = $parsed['path'];
+            $rootDir = rtrim(str_replace('\\', '/', _PS_ROOT_DIR_), '/');
+            $filePath = $rootDir . '/' . $path;
+            if (file_exists($filePath) && is_file($filePath)) {
+                return $filePath;
+            }
+            $mediaUri = '/' . ltrim(str_replace($rootDir, __PS_BASE_URI__, $path), '/\\');
+            $filePath = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, '/', $mediaUri);
+            if (file_exists($filePath) && is_file($filePath)) {
+                return $filePath;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * If $uri parameter refers to local asset, return uri with cache control parameter
+     *
+     * @param string $uri
+     * @param string|null $parameter
+     *
+     * @return string
+     */
+    public static function getUriWithVersion($uri, $parameter='v')
+    {
+        $filePath = static::getLocalMediaFilePath($uri);
+        if ($filePath) {
+            $parsed = parse_url($uri);
+            $ts = filemtime($filePath);
+            $cacheControl = $parameter . '=' . $ts;
+            if (isset($parsed['query'])) {
+                return $uri . '&' . $cacheControl;
+            } else {
+                return $uri . '?' . $cacheControl;
+            }
+        }
+        return $uri;
     }
 }

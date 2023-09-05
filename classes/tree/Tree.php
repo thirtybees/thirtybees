@@ -614,7 +614,7 @@ class TreeCore
             $boTheme = 'default';
         }
 
-        $jsPath = __PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/tree.js?v='._TB_VERSION_;
+        $jsPath = Media::getUriWithVersion(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/tree.js');
         if ($this->getContext()->controller->ajax) {
             if (!$this->_no_js) {
                 $html = '<script type="text/javascript">$(function(){ $.ajax({url: "'.$jsPath.'",cache:true,dataType: "script"})});</script>';

@@ -4537,24 +4537,34 @@ class AdminControllerCore extends Controller
      */
     public function addJavascriptUri($uri, $checkPath)
     {
-        // if javascript file exists locally, include its modification timestamp into uri as a version parameter
-        $parsed = parse_url($uri);
-        if (! array_key_exists('host', $parsed) && isset($parsed['path'])) {
-            $path = $parsed['path'];
-            $mediaUri = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $path), '/\\');
-            $fileUri = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
-            if (file_exists($fileUri) && is_file($fileUri)) {
-                $timestamp = filemtime($fileUri);
-                if (isset($parsed['query'])) {
-                    $version = '&ts=' . $timestamp;
-                } else {
-                    $version = '?ts=' . $timestamp;
-                }
-                $uri .= $version;
-            }
+        parent::addJavascriptUri(Media::getUriWithVersion($uri), $checkPath);
+    }
+
+    /**
+     * Adds a new stylesheet(s) to the page header.
+     *
+     * @param string|array $cssUri Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
+     * @param string $cssMediaType
+     * @param int|null $offset
+     * @param bool $checkPath
+     *
+     * @return bool
+     */
+    public function addCSS($cssUri, $cssMediaType = 'all', $offset = null, $checkPath = true)
+    {
+        if (!is_array($cssUri)) {
+            $cssUri = [$cssUri => $cssMediaType];
         }
 
-        parent::addJavascriptUri($uri, $checkPath);
+        $converted = [];
+        foreach ($cssUri as $cssFile => $media) {
+            if (is_string($cssFile) && strlen($cssFile) > 1) {
+                $converted[Media::getUriWithVersion($cssFile)] = $media;
+            } else {
+                $converted[Media::getUriWithVersion($media)] = $cssMediaType;
+            }
+        }
+        return parent::addCSS($converted, $cssMediaType, $offset, $checkPath);
     }
 
     /**

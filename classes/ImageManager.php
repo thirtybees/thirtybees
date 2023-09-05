@@ -120,11 +120,18 @@ class ImageManagerCore
             }
         }
 
+        if ($disableCache) {
+            $ts = file_exists($targetFile) ? filemtime($targetFile) : time();
+            $suffix = '?v=' . $ts;
+        } else {
+            $suffix = '';
+        }
+
         // Relative link will always work, whatever the base uri set in the admin
         if (Context::getContext()->controller->controller_type == 'admin') {
-            return '../img/tmp/'.$cacheImage.($disableCache ? '?time='.time() : '');
+            return '../img/tmp/'.$cacheImage . $suffix;
         } else {
-            return _PS_TMP_IMG_.$cacheImage.($disableCache ? '?time='.time() : '');
+            return _PS_TMP_IMG_.$cacheImage . $suffix;
         }
     }
 

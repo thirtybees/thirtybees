@@ -74,7 +74,7 @@ class TreeToolbarSearchCategoriesCore extends TreeToolbarButtonCore implements I
         }
 
         if ($this->getContext()->controller->ajax) {
-            $path = __PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/vendor/typeahead.min.js?v='._TB_VERSION_;
+            $path = Media::getUriWithVersion(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/vendor/typeahead.min.js');
             $html = '<script type="text/javascript">$(function(){ $.ajax({url: "'.$path.'",cache:true,dataType: "script"})});</script>';
         } else {
             $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/vendor/typeahead.min.js');
