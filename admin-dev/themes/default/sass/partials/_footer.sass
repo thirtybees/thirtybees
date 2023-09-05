@@ -14,23 +14,18 @@
 	&.hide
 		display: none!important
 	#go-top
-		display: block
+		float: right
 		height: 30px
 		width: 30px
-		position: fixed
-		right: 10px
-		bottom: 10px
-		z-index: 9003
-		padding: 0px 6px
-		margin: -2px 0px 0px
+		padding: 0 6px
+		margin: 10px
 		text-align: center
-		line-height: 30px
+		line-height: 27px
 		text-decoration: none
 		color: #fff
 		cursor: pointer
 		font-size: 16px
 		background-color: $main-color
-		@include right(10px)
 		&:hover
 			background-color: $brand-primary
 	a.footer_link
@@ -46,6 +41,7 @@
 		float: right
 		.btn-backer
 			@include button-variant(#222, darken($yellow, 5%), darken($yellow, 10%))
+			margin-left: 0.25em
 
 	.footer-contact
 		padding: 7px 0 0 0

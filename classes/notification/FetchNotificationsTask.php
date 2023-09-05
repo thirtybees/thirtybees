@@ -99,6 +99,7 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
 
             // update installation info
             Configuration::updateGlobalValue(Configuration::BACKER, $installationInfo['isBacker'] ? 1 : 0);
+            Configuration::updateGlobalValue(Configuration::CONNECTED, $installationInfo['connected'] ? 1 : 0);
             if ($installationInfo['sid'] !== Configuration::getServerTrackingId()) {
                 Configuration::updateGlobalValue(Configuration::TRACKING_ID, $installationInfo['sid']);
             }

@@ -275,6 +275,8 @@ class ConfigurationCore extends ObjectModel
     const MAIL_TRANSPORT = 'TB_MAIL_TRANSPORT';
     const BACKER_URL = 'TB_BACKER_URL';
     const BACKER = 'TB_BACKER';
+    const CONNECTED = 'TB_CONNECTED';
+    const CONNECT_CODE = 'TB_CONNECT_CODE';
 
     /**
      * List of configuration keys that will raise warnings

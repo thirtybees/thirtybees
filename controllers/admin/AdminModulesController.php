@@ -443,6 +443,13 @@ class AdminModulesControllerCore extends AdminController
             return strcoll(mb_strtolower($a->displayName), mb_strtolower($b->displayName));
         });
 
+        $connectLink = null;
+        if (! Configuration::getGlobalValue(Configuration::CONNECTED)) {
+            if ($this->context->employee->hasAccess(AdminConnectController::class, Profile::PERMISSION_VIEW)) {
+                $connectLink = $this->context->link->getAdminLink('AdminConnect', true, [ AdminConnectController::ACTION_CONNECT => 1 ]);
+            }
+        }
+
         // Init tpl vars for smarty
         $tplVars = [
             'token'                     => $this->token,
@@ -474,6 +481,7 @@ class AdminModulesControllerCore extends AdminController
             'modules_uri'               => __PS_BASE_URI__.basename(_PS_MODULE_DIR_),
             'dont_filter'               => $dontFilter,
             'maintenance_mode'          => !Configuration::Get('PS_SHOP_ENABLE'),
+            'connectLink'               => $connectLink
         ];
 
         $smarty->assign($tplVars);

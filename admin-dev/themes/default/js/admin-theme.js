@@ -283,22 +283,23 @@ $(document).ready(function() {
 		}
 	}
 
-	//show footer when reach bottom
 	function animateFooter(){
-		if($(window).scrollTop() + $(window).height() === $(document).height()) {
-			$('#footer:hidden').removeClass('hide');
-		} else {
-			$('#footer').addClass('hide');
-		}
-	}
+		var scrollTop = Math.round($(window).scrollTop());
+		var windowHeight = Math.round($(window).height());
+		var documentHeight = Math.round($(document).height());
 
-	//scroll top
-	function animateGoTop() {
-		if ($(window).scrollTop()) {
+		if (scrollTop) {
 			$('#go-top:hidden').stop(true, true).fadeIn();
 			$('#go-top:hidden').removeClass('hide');
 		} else {
 			$('#go-top').stop(true, true).fadeOut();
+		}
+
+		// show footer when reach bottom
+		if (scrollTop + windowHeight >= (documentHeight - 3)) {
+			$('#footer:hidden').removeClass('hide');
+		} else {
+			$('#footer').addClass('hide');
 		}
 	}
 
@@ -395,10 +396,7 @@ $(document).ready(function() {
 		if(timer) {
 			window.clearTimeout(timer);
 		}
-		timer = window.setTimeout(function() {
-			animateGoTop();
-			animateFooter();
-		}, 100);
+		timer = window.setTimeout(animateFooter, 100);
 	});
 
 	// search with nav sidebar closed

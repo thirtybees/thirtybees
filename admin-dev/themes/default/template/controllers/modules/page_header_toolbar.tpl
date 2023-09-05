@@ -79,7 +79,14 @@
 				</a>
 			</li>
 			{/if}
-		</ul>
+			{if isset($connectLink) && $connectLink}
+				<li>
+					<a class="toolbar_btn" href="{$connectLink|escape}" title="{l s='Connect to thirty bees account'}" target="_blank">
+						<i class="process-icon-chain-broken"></i>
+						<div>{l s='Login to thirty bees'}</div>
+					</a>
+				</li>
+			{/if}
 	</div>
 </div>
 {/block}
