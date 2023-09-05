@@ -146,7 +146,7 @@ class PageCacheKeyCore
         }
 
         // we can cache only GET request
-        if (! isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] != 'GET') {
+        if (Tools::getRequestMethod() !== 'GET') {
             return false;
         }
 

@@ -35,7 +35,7 @@ class TriggerControllerCore extends FrontController
      */
     public function initContent()
     {
-        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+        $method = Tools::getRequestMethod();
 
         // Allow CORS requests
         header("Access-Control-Allow-Origin: *");

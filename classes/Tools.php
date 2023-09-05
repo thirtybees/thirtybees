@@ -5561,6 +5561,22 @@ FileETag none
     {
         return static::parseNumber($input);
     }
+
+    /**
+     * @return string
+     */
+    public static function getRequestMethod()
+    {
+        if (static::isPHPCLI()) {
+            return 'CLI';
+        }
+
+        if (isset($_SERVER['REQUEST_METHOD'])) {
+            return strtoupper((string)$_SERVER['REQUEST_METHOD']);
+        }
+
+        return 'GET';
+    }
 }
 
 /**

@@ -50,7 +50,7 @@ if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$
 }
 
 // Use for image management (using the POST method of the browser to simulate the PUT method)
-$method = isset($_REQUEST['ps_method']) ? $_REQUEST['ps_method'] : $_SERVER['REQUEST_METHOD'];
+$method = isset($_REQUEST['ps_method']) ? $_REQUEST['ps_method'] : Tools::getRequestMethod();
 
 if (isset($_SERVER['PHP_AUTH_USER'])) {
     $key = trim($_SERVER['PHP_AUTH_USER']);
@@ -66,7 +66,7 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
 $inputXml = null;
 
 // if a XML is in PUT or in POST
-if (($_SERVER['REQUEST_METHOD'] == 'PUT') || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+if (Tools::getRequestMethod() === 'PUT' || Tools::getRequestMethod() === 'POST') {
     $inputXml = file_get_contents('php://input');
     if (isset($_SERVER['HTTP_CONTENT_ENCODING']) && $_SERVER['HTTP_CONTENT_ENCODING'] == 'gzip') {
         $inputXml = zlib_decode($inputXml);

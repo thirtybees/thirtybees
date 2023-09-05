@@ -1795,7 +1795,7 @@ class FrontControllerCore extends Controller
     protected function sslRedirection()
     {
         // If we call a SSL controller without SSL or a non SSL controller with SSL, we redirect with the right protocol
-        if (Configuration::get('PS_SSL_ENABLED') && (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] != 'POST') && $this->ssl != Tools::usingSecureMode()) {
+        if (Configuration::get('PS_SSL_ENABLED') && (Tools::getRequestMethod() !== 'POST') && $this->ssl != Tools::usingSecureMode()) {
             $this->context->cookie->disallowWriting();
             header('HTTP/1.1 301 Moved Permanently');
             header('Cache-Control: no-cache');
@@ -1969,7 +1969,7 @@ class FrontControllerCore extends Controller
      */
     protected function canonicalRedirection($canonicalUrl = '')
     {
-        if (!$canonicalUrl || !Configuration::get('PS_CANONICAL_REDIRECT') || strtoupper($_SERVER['REQUEST_METHOD']) != 'GET' || Tools::getValue('live_edit')) {
+        if (!$canonicalUrl || !Configuration::get('PS_CANONICAL_REDIRECT') || Tools::getRequestMethod() !== 'GET' || Tools::getValue('live_edit')) {
             return;
         }
 

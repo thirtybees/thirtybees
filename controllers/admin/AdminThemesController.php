@@ -1438,7 +1438,7 @@ class AdminThemesControllerCore extends AdminController
             $this->errors[] = Tools::displayError('You do not have permission to add here.');
         } else {
             $this->display = 'importtheme';
-            if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['themearchive']) && isset($_POST['filename']) && Tools::isSubmit('theme_archive_server')) {
+            if (Tools::getRequestMethod() === 'POST' && isset($_FILES['themearchive']) && isset($_POST['filename']) && Tools::isSubmit('theme_archive_server')) {
                 $uniqid = uniqid();
                 $sandbox = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$uniqid.DIRECTORY_SEPARATOR;
                 mkdir($sandbox, 0777, true);
@@ -1488,7 +1488,7 @@ class AdminThemesControllerCore extends AdminController
                     }
                 }
                 Tools::deleteDirectory($sandbox);
-            } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            } elseif (Tools::getRequestMethod() === 'POST') {
                 //method is POST but no uplad info -> there is post error
                 $maxPost = (int)ini_get('post_max_size');
                 $this->errors[] = sprintf($this->l('The file size exceeds the size allowed by the server. The limit is set to %s MB.'), '<b>'.$maxPost.'</b>');
