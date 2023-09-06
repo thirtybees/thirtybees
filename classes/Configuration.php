@@ -273,8 +273,9 @@ class ConfigurationCore extends ObjectModel
     const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
     const MAIL_TRANSPORT = 'TB_MAIL_TRANSPORT';
-    const BACKER_URL = 'TB_BACKER_URL';
-    const BACKER = 'TB_BACKER';
+    const BECOME_SUPPORTER_URL = 'TB_SUPPORTER_URL';
+    const SUPPORTER_TYPE = 'TB_SUPPORTER_TYPE';
+    const SUPPORTER_TYPE_NAME = 'TB_SUPPORTER_TYPE_NAME';
     const CONNECTED = 'TB_CONNECTED';
     const CONNECT_CODE = 'TB_CONNECT_CODE';
 
@@ -1189,9 +1190,9 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function getBackerUrl()
+    public static function getBecomeSupporterUrl()
     {
-        $url = static::getGlobalValue(static::BACKER_URL);
+        $url = static::getGlobalValue(static::BECOME_SUPPORTER_URL);
         if (! $url) {
             $url = "https://forum.thirtybees.com/support-thirty-bees/?sid=@SID@";
         }
@@ -1199,12 +1200,19 @@ class ConfigurationCore extends ObjectModel
     }
 
     /**
-     * @return bool
+     * @return array|null
      *
      * @throws PrestaShopException
      */
-    public static function isBacker()
+    public static function getSupporterInfo()
     {
-        return (bool)static::getGlobalValue(static::BACKER);
+        $type = static::getGlobalValue(static::SUPPORTER_TYPE);
+        if ($type) {
+            return [
+                'type' => $type,
+                'name' => static::getGlobalValue(static::SUPPORTER_TYPE_NAME)
+            ];
+        };
+        return null;
     }
 }

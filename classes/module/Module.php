@@ -118,8 +118,6 @@ abstract class ModuleCore
     public $tab = null;
     /** @var bool Status */
     public $active = false;
-    /** @var bool Is the module certified */
-    public $trusted = true;
     /** @var string Fill it if the module is installed but not yet set up */
     public $warning;
     /** @var int $enable_device */
@@ -820,11 +818,13 @@ abstract class ModuleCore
                         'warning' => '',
                         'active' => 0,
                         'onclick_option' => false,
-                        'trusted' => true,
+                        'premium' => false,
+                        'img' => '',
                         'displayName' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->displayName), (string) $xmlModule->name)),
                         'description' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->description), (string) $xmlModule->name)),
                         'author' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->author), (string) $xmlModule->name)),
                         'author_uri' => (isset($xmlModule->author_uri) && $xmlModule->author_uri) ? stripslashes($xmlModule->author_uri) : false,
+                        'canInstall' => true,
                     ];
 
                     foreach ($xmlModule as $k => $v) {
@@ -877,7 +877,7 @@ abstract class ModuleCore
                     $tmpModule = Adapter_ServiceLocator::get($module);
 
                     $item = [
-                        'id'                     => is_null($tmpModule->id) ? 0 : $tmpModule->id,
+                        'id'                     => (int)$tmpModule->id,
                         'warning'                => $tmpModule->warning,
                         'name'                   => $tmpModule->name,
                         'version'                => $tmpModule->version,
@@ -891,7 +891,6 @@ abstract class ModuleCore
                         'is_configurable'        => $tmpModule->isModuleConfigurable(),
                         'need_instance'          => $tmpModule->need_instance,
                         'active'                 => $tmpModule->active,
-                        'trusted'                => true,
                         'currencies'             => $tmpModule->currencies ?? null,
                         'currencies_mode'        => $tmpModule->currencies_mode ?? null,
                         'confirmUninstall'       => html_entity_decode((string)$tmpModule->confirmUninstall),
@@ -902,7 +901,9 @@ abstract class ModuleCore
                         'avg_rate'               => isset($tmpModule->avg_rate) ? (array) $tmpModule->avg_rate : null,
                         'badges'                 => isset($tmpModule->badges) ? (array) $tmpModule->badges : null,
                         'url'                    => $tmpModule->url ?? null,
+                        'premium'                => false,
                         'onclick_option'         => method_exists($module, 'onclickOption'),
+                        'canInstall'             => true,
                     ];
 
 
@@ -966,6 +967,7 @@ abstract class ModuleCore
                         )
                     ) {
                         $moduleFromList->version_addons = $module['version'];
+                        $moduleFromList->premium = $module['premium'];
                         $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     }
 
@@ -982,17 +984,17 @@ abstract class ModuleCore
                     'displayName'         => isset($module['displayName'][$languageCode]) ? $module['displayName'][$languageCode] : (isset($module['displayName']['en-us']) ? $module['displayName']['en-us'] : 'Unknown module'),
                     'description'         => isset($module['description'][$languageCode]) ? $module['description'][$languageCode] : (isset($module['description']['en-us']) ? $module['description']['en-us'] : ''),
                     'description_full'    => isset($module['description_full'][$languageCode]) ? $module['description_full'][$languageCode] : (isset($module['description_full']['en-us']) ? $module['description_full']['en-us'] : ''),
-                    'author'              => isset($module['author']) ? $module['author'] : 'thirty bees',
+                    'author'              => $module['author'] ?? 'thirty bees',
                     'limited_countries'   => [],
                     'parent_class'        => '',
                     'onclick_option'      => false,
                     'is_configurable'     => 0,
                     'need_instance'       => 0,
                     'not_on_disk'         => 1,
-                    'available_on_addons' => 1,
-                    'trusted'             => true,
                     'active'              => 0,
-                    'url'                 => isset($module['url']) ? $module['url'] : '',
+                    'premium'             => $module['premium'],
+                    'canInstall'          => (bool)$module['binary'],
+                    'url'                 => $module['url'] ?? ''
                 ];
 
                 if (isset($module['img'])) {
@@ -3628,10 +3630,21 @@ abstract class ModuleCore
                 $cache = [];
                 if ($modules && is_array($modules)) {
                     foreach ($modules as $moduleName => &$module) {
-                        if (isset($module['versions']['stable']) && is_array($module['versions']['stable'])) {
+                        if (isset($module['versions']['premium']) && is_array($module['versions']['premium'])) {
+                            $versions = $module['versions']['premium'];
+                            $highestVersion = static::findHighestModuleVersion($versions);
+                            if ($highestVersion) {
+                                $module['premium'] = $module['availableFor'];
+                                $module['version'] = $highestVersion;
+                                $module['binary'] = $versions[$highestVersion]['binary'] ?? null;
+                                unset($module['versions']);
+                                $cache[$moduleName] = $module;
+                            }
+                        } elseif (isset($module['versions']['stable']) && is_array($module['versions']['stable'])) {
                             $versions = $module['versions']['stable'];
                             $highestVersion = static::findHighestModuleVersion($versions);
                             if ($highestVersion) {
+                                $module['premium'] = false;
                                 $module['version'] = $highestVersion;
                                 $module['binary'] = $versions[$highestVersion]['binary'];
                                 unset($module['versions']);

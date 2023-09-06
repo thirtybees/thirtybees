@@ -69,18 +69,20 @@
 		</div>
 	</div>
 
-	<div class="{if $backerButton}col-sm-3{else}col-sm-5{/if}">
+	<div class="col-sm-3">
 		{hook h="displayBackOfficeFooter"}
 	</div>
 
-	<div class="{if $backerButton}col-sm-3{else}col-sm-1{/if}">
+	<div class="col-sm-3">
 		<div id="go-top" class="hide"><i class="icon-arrow-up"></i></div>
-		{if $backerButton}
-			 <div class="backer-wrapper">
-				 <span>Love <b>thirty bees</b>?</span>
-				 <a href="{$backerUrl}" class="btn btn-backer blank">{l s='Become a Supporter'}</a>
-			 </div>
+		<div class="backer-wrapper">
+		{if $showBecomeSupporterButton}
+			  <span>Love <b>thirty bees</b>?</span>
+			  <a href="{$becomeSupporterUrl}" class="btn btn-backer blank">{l s='Become a Supporter'}</a>
+		{else}
+			<span>{l s='Thank you for your [1]support[/1]' tags=['<b>']}</span>
 		{/if}
+		</div>
 	</div>
 </div>
 {/if}

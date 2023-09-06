@@ -374,7 +374,7 @@ class AdminModulesControllerCore extends AdminController
             $this->makeModulesStats($module);
 
             // Assign warnings
-            if ($module->active && isset($module->warning) && !empty($module->warning) && !$this->ajax) {
+            if ($module->active && !empty($module->warning) && !$this->ajax) {
                 $href = $this->context->link->getAdminLink('AdminModules', true).'&module_name='.$module->name.'&tab_module='.$module->tab.'&configure='.$module->name;
                 $this->context->smarty->assign('text', sprintf($this->l('%1$s: %2$s'), $module->displayName, $module->warning));
                 $this->context->smarty->assign('module_link', $href);
@@ -401,7 +401,7 @@ class AdminModulesControllerCore extends AdminController
                     $modules[$km]->preferences = $modulesPreferences[$modules[$km]->name];
                 }
 
-                $this->fillModuleData($module, 'array');
+                $this->fillModuleData($module);
                 $module->categoryName = $this->list_modules_categories[$module->tab]['name'] ?? $this->list_modules_categories[static::CATEGORY_OTHERS]['name'];
             }
             unset($object);
@@ -774,7 +774,7 @@ class AdminModulesControllerCore extends AdminController
                 }
 
                 if ($perm) {
-                    $this->fillModuleData($module, 'array');
+                    $this->fillModuleData($module);
                     if ($module->id) {
                         $modulesList['installed'][] = $module;
                     } else {

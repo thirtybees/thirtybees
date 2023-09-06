@@ -95,10 +95,17 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
             $this->setLastSeenNotificationUuid($lastUuid);
 
             // update configurations
-            Configuration::updateGlobalValue(Configuration::BACKER_URL, $config['backerUrl']);
+            Configuration::updateGlobalValue(Configuration::BECOME_SUPPORTER_URL, $config['supporterUrl']);
 
             // update installation info
-            Configuration::updateGlobalValue(Configuration::BACKER, $installationInfo['isBacker'] ? 1 : 0);
+            if (isset($installationInfo['supporter'])) {
+                $supporter = $installationInfo['supporter'];
+                Configuration::updateGlobalValue(Configuration::SUPPORTER_TYPE, $supporter['type']);
+                Configuration::updateGlobalValue(Configuration::SUPPORTER_TYPE_NAME, $supporter['name']);
+            } else {
+                Configuration::deleteByName(Configuration::SUPPORTER_TYPE);
+                Configuration::deleteByName(Configuration::SUPPORTER_TYPE_NAME);
+            }
             Configuration::updateGlobalValue(Configuration::CONNECTED, $installationInfo['connected'] ? 1 : 0);
             if ($installationInfo['sid'] !== Configuration::getServerTrackingId()) {
                 Configuration::updateGlobalValue(Configuration::TRACKING_ID, $installationInfo['sid']);
