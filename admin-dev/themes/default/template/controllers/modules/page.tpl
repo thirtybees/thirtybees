@@ -99,6 +99,11 @@
                    id="moduleQuicksearch" autocomplete="off"/>
           </div>
         </form>
+        <a class="categoryModuleFilterLink list-group-item {if $selectedCategory === AdminModulesController::CATEGORY_PREMIUM}active{/if}"
+           href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={AdminModulesController::CATEGORY_PREMIUM}"
+           id="filter_premium">
+          {l s='Premium Thirty Bees Modules'} <span id="premium-count" class="badge pull-right">{$nb_modules_premium}</span>
+        </a>
         <a class="categoryModuleFilterLink list-group-item {if $selectedCategory === AdminModulesController::CATEGORY_FAVORITES}active{/if}"
            href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={AdminModulesController::CATEGORY_FAVORITES}"
            id="filter_favorite">
