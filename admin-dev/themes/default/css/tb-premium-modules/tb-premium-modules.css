@@ -50,6 +50,7 @@
 .tb-premium-modules-banner-col-right {
     display: inline-grid;
     grid-template-columns: 100%;
+    grid-template-rows: auto max-content;
     grid-row-gap: 10px;
     justify-content: left;
     border: 1px solid black;
@@ -65,3 +66,24 @@
     border: 1px solid blue;
 }
 
+.tb-premium-modules-banner-button-area a {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background: linear-gradient(to bottom, rgba(58, 138, 39, 1) 0%,rgba(76, 179, 55, 1) 100%);
+    border: 0.7px solid rgba(48, 115, 34, 1);
+    border-radius: 3px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0px;
+    text-decoration: none;
+    text-transform: none;
+    text-align: center;
+    color: #ffff;
+}
+
+.tb-premium-modules-banner-button-area a:hover {
+    text-decoration: none !important;
+    color: #ffff;
+} 

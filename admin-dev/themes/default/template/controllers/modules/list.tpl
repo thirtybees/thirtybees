@@ -40,9 +40,9 @@
 			</span>
 			<div class="tb-premium-modules-banner-button-area">
 				{if $connected}
-					<a href="{$becomeSupporterUrl|escape:'html'}" class="btn btn-backer" target="_blank">{l s="Become a supporter today!"}</a>
+					<a href="{$becomeSupporterUrl|escape:'html'}" target="_blank">{l s="Become a supporter today!"}</a>
 				{else}
-					<a href="{$connectLink|escape:'html'}" class="btn btn-backer" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to thirty bees"}</a>
+					<a href="{$connectLink|escape:'html'}" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to ThirtyBees"}</a>
 				{/if}
 			</div>
 		</div>
