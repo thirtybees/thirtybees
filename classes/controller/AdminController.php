@@ -3679,6 +3679,7 @@ class AdminControllerCore extends Controller
         //Bootstrap
         $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/'.$this->bo_css, 'all', 0);
         $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/overrides.css', 'all', PHP_INT_MAX);
+        $this->addCSS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/default/css/tb-premium-modules/tb-premium-modules.css', 'all', PHP_INT_MAX);
 
         $this->addJquery();
         $this->addjQueryPlugin(['scrollTo', 'alerts', 'chosen', 'autosize', 'fancybox']);

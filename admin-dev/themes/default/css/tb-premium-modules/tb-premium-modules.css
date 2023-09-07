@@ -1,0 +1,5 @@
+.tb-premium-modules-banner-container {
+    border-radius: 10px;
+    background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
+    box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.12);
+}

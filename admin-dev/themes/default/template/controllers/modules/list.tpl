@@ -26,7 +26,7 @@
 {$moduleModals=[]}
 
 {if $selectedCategory === AdminModulesController::CATEGORY_PREMIUM && $showBecomeSupporterButton}
-	<div class="premium-modules-category">
+	<div class="tb-premium-modules-banner-container">
 		<span>{l s="Premium [1]Thirty Bees[/1] Modules" tags=['<b>']}</span>
 		<span>{l s="Enhance your store productivity with premium ThirtyBees Modules!"}</span>
 		<span>{l s="Gain access to these modules and more with reasonable priced thirtybees membership! Your support helps ThirtyBees grow and thrive!"}</span>
