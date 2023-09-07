@@ -1,5 +1,30 @@
 .tb-premium-modules-banner-container {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
     border-radius: 10px;
     background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
     box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.12);
 }
+
+.tb-premium-modules-banner-container .tb-premium-modules-banner-icon {
+    display: inline-flex;
+    align-self: center;
+    width: 50px;
+    height: 43px;
+    background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
+    background-repeat: no-repeat;
+}
+
+.tb-premium-modules-banner-col-left {
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    justify-content: left;
+    border: 1px solid black;
+}
+
+.tb-premium-modules-banner-heading-container {
+    display: inline-flex;
+    align-self: center;
+    border: 1px solid blue;
+}
+

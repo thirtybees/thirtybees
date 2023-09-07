@@ -27,15 +27,23 @@
 
 {if $selectedCategory === AdminModulesController::CATEGORY_PREMIUM && $showBecomeSupporterButton}
 	<div class="tb-premium-modules-banner-container">
-		<span>{l s="Premium [1]Thirty Bees[/1] Modules" tags=['<b>']}</span>
-		<span>{l s="Enhance your store productivity with premium ThirtyBees Modules!"}</span>
-		<span>{l s="Gain access to these modules and more with reasonable priced thirtybees membership! Your support helps ThirtyBees grow and thrive!"}</span>
-		<div class="button-area">
-			{if $connected}
-				<a href="{$becomeSupporterUrl|escape:'html'}" class="btn btn-backer" target="_blank">{l s="Become a supporter today!"}</a>
-			{else}
-				<a href="{$connectLink|escape:'html'}" class="btn btn-backer" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to thirty bees"}</a>
-			{/if}
+		<div class="tb-premium-modules-banner-col-left">
+			<div class="tb-premium-modules-banner-icon"></div>
+			<div class="tb-premium-modules-banner-heading-container">
+				<span>{l s="Premium [1]Thirty Bees[/1] Modules" tags=['<b>']}</span>
+				<span>{l s="Enhance your store productivity with premium ThirtyBees Modules!"}</span>
+			</div>
+		</div>
+		<div class="tb-premium-modules-banner-col-right">
+		
+			<span>{l s="Gain access to these modules and more with reasonable priced thirtybees membership! Your support helps ThirtyBees grow and thrive!"}</span>
+			<div class="button-area">
+				{if $connected}
+					<a href="{$becomeSupporterUrl|escape:'html'}" class="btn btn-backer" target="_blank">{l s="Become a supporter today!"}</a>
+				{else}
+					<a href="{$connectLink|escape:'html'}" class="btn btn-backer" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to thirty bees"}</a>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
