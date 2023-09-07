@@ -30,8 +30,8 @@
 		<div class="tb-premium-modules-banner-col-left">
 			<div class="tb-premium-modules-banner-icon"></div>
 			<div class="tb-premium-modules-banner-heading-container">
-				<span>{l s="Premium [1]Thirty Bees[/1] Modules" tags=['<b>']}</span>
-				<span>{l s="Enhance your store productivity with premium ThirtyBees Modules!"}</span>
+				<span class="tb-premium-modules-banner-heading-main">{l s="Premium [1]ThirtyBees[/1] Modules" tags=['<b>']}</span>
+				<span class="tb-premium-modules-banner-heading-sub">{l s="Enhance your store and productivity with premium ThirtyBees Modules!"}</span>
 			</div>
 		</div>
 		<div class="tb-premium-modules-banner-col-right">

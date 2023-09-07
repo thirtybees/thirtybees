@@ -1,6 +1,10 @@
 .tb-premium-modules-banner-container {
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: 10px;
     background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
     box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.12);
@@ -13,18 +17,41 @@
     height: 43px;
     background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
     background-repeat: no-repeat;
+    background-size: contain;
 }
 
 .tb-premium-modules-banner-col-left {
     display: inline-grid;
     grid-template-columns: auto 1fr;
+    grid-column-gap: 20px;
     justify-content: left;
     border: 1px solid black;
 }
 
 .tb-premium-modules-banner-heading-container {
-    display: inline-flex;
+    display: inline-grid;
     align-self: center;
     border: 1px solid blue;
+    grid-template-columns: 100%;
+    grid-row-gap: 5px;
 }
+
+.tb-premium-modules-banner-heading-main {
+    font-size: 22px;
+    line-height: 1.2;
+    color: #000000;
+}
+.tb-premium-modules-banner-heading-sub {
+    font-size: 12px;
+    color: #000000;
+}
+
+.tb-premium-modules-banner-col-right {
+    display: inline-grid;
+    grid-template-columns: 100%;
+    grid-row-gap: 25px;
+    justify-content: left;
+    border: 1px solid black;
+}
+
 
