@@ -35,9 +35,10 @@
 			</div>
 		</div>
 		<div class="tb-premium-modules-banner-col-right">
-		
-			<span>{l s="Gain access to these modules and more with reasonable priced thirtybees membership! Your support helps ThirtyBees grow and thrive!"}</span>
-			<div class="button-area">
+			<span class="tb-premium-modules-banner-text">
+				{l s="Gain access to these modules and more with reasonable priced ThirtyBees membership! Your support helps ThirtyBees grow and thrive!"}
+			</span>
+			<div class="tb-premium-modules-banner-button-area">
 				{if $connected}
 					<a href="{$becomeSupporterUrl|escape:'html'}" class="btn btn-backer" target="_blank">{l s="Become a supporter today!"}</a>
 				{else}

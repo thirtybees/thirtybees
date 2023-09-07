@@ -1,8 +1,9 @@
 .tb-premium-modules-banner-container {
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    grid-column-gap: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     padding-left: 20px;
     padding-right: 20px;
     border-radius: 10px;
@@ -49,9 +50,18 @@
 .tb-premium-modules-banner-col-right {
     display: inline-grid;
     grid-template-columns: 100%;
-    grid-row-gap: 25px;
+    grid-row-gap: 10px;
     justify-content: left;
     border: 1px solid black;
 }
 
+.tb-premium-modules-banner-text {
+    width: 80%;
+    color: #000000;
+    border: 1px solid black;
+}
+
+.tb-premium-modules-banner-button-area {
+    border: 1px solid blue;
+}
 
