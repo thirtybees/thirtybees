@@ -77,3 +77,7 @@ composer.dev.lock
 /tests/_output/*
 /config/json/files.json
 codeception.yml
+/.vs/tb-dev-current/FileContentIndex
+/.vs/tb-dev-current/config/applicationhost.config
+/.vs/tb-dev-current/v17/.wsuo
+/.vs
