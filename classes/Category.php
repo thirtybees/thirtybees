@@ -933,18 +933,22 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         if (!$interval = Category::getInterval($shop->getCategory())) {
             return false;
         }
-        try {
-            $row = Db::readOnly()->getRow(
-                (new DbQuery())
-                    ->select('`nleft`, `nright`')
-                    ->from('category')
-                    ->where('`id_category` = '.(int) $idCategory)
-            );
-        } catch (PrestaShopException $e) {
+
+        $row = Db::readOnly()->getRow(
+            (new DbQuery())
+                ->select('`nleft`, `nright`')
+                ->from('category')
+                ->where('`id_category` = '.(int) $idCategory)
+        );
+
+        if (! $row) {
             return false;
         }
 
-        return ($row['nleft'] >= $interval['nleft'] && $row['nright'] <= $interval['nright']);
+        return (
+            $row['nleft'] >= $interval['nleft'] &&
+            $row['nright'] <= $interval['nright']
+        );
     }
 
     /**
