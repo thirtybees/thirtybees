@@ -2424,7 +2424,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             (new DbQuery())
                 ->select('c.`id_category`')
                 ->from('category', 'c')
-                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->join(Shop::addSqlAssociation('category', 'c', true, null, true))
                 ->where('category_shop.`id_shop` = '.(int) $idShop)
                 ->where('c.`id_parent` = '.(int) $this->id_parent)
         );
