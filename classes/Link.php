@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\View\Model\ProductViewModel;
+
 /**
  * Class LinkCore
  *
@@ -150,7 +152,7 @@ class LinkCore
      * @param int $ipa
      * @param bool $forceRoutes
      * @param bool $relativeProtocol
-     * @param bool $addAnchor
+     * @param bool|string $addAnchor
      * @param array $extraParams
      *
      * @return string
@@ -229,7 +231,14 @@ class LinkCore
             }
             $params['categories'] = implode('/', $cats);
         }
-        $anchor = $ipa ? $product->getAnchor((int) $ipa, (bool) $addAnchor) : '';
+        $anchor = is_string($addAnchor) ? $addAnchor : '';
+
+        if (!$ipa && ($product instanceof ProductViewModel)) {
+            $ipa = (int)$product->getSelectedCombinationId();
+        }
+        if ($ipa) {
+            $params['combination'] = (int)$ipa;
+        }
 
         return $url.$dispatcher->createUrl('product_rule', $idLang, array_merge($params, $extraParams), $forceRoutes, $anchor, $idShop);
     }
@@ -1260,5 +1269,27 @@ class LinkCore
             return new Product((int)$identifier->id, false, $idLang, $idShop);
         }
         return new Product((int)$identifier, false, $idLang, $idShop);
+    }
+
+    /**
+     * @param int $productId
+     * @param int $combinationId
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public function getCombinationHashUrl(int $productId, int $combinationId): string
+    {
+        $attributes = Product::getAttributesParams($productId, $combinationId);
+        $anchor = '#';
+        $sep = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
+        foreach ($attributes as $attribute) {
+            $attributeId = (int)$attribute['id_attribute'];
+            $attributeGroupName = str_replace($sep, '_', Tools::str2url($attribute['group']));
+            $attributeName = str_replace($sep, '_', Tools::str2url($attribute['name']));
+            $anchor .= '/'. $attributeId . $sep . $attributeGroupName . $sep . $attributeName;
+        }
+        return $anchor;
     }
 }

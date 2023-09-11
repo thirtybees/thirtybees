@@ -748,13 +748,14 @@ class StockAvailableCore extends ObjectModel
      * For a given product, tells if it depends on the physical (usable) stock
      *
      * @param int $idProduct
-     * @param int $idShop Optional : gets context if null
+     * @param int|null $idShop Optional : gets context if null
+     * @param int $combinationId Optional
      *
      * @return bool : depends on stock
      *
      * @throws PrestaShopException
      */
-    public static function dependsOnStock($idProduct, $idShop = null)
+    public static function dependsOnStock($idProduct, $idShop = null, $combinationId = 0)
     {
         if (!Validate::isUnsignedId($idProduct)) {
             return false;
@@ -764,7 +765,7 @@ class StockAvailableCore extends ObjectModel
         $query->select('depends_on_stock');
         $query->from('stock_available');
         $query->where('id_product = '.(int) $idProduct);
-        $query->where('id_product_attribute = 0');
+        $query->where('id_product_attribute = ' . (int)$combinationId);
 
         $query = static::addSqlShopRestriction($query, $idShop);
 
@@ -775,13 +776,15 @@ class StockAvailableCore extends ObjectModel
      * For a given product, get its "out of stock" flag
      *
      * @param int $idProduct
-     * @param int $idShop Optional : gets context if null
+     * @param int|null $idShop Optional : gets context if null
+     * @param int $combinationId Optional
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function outOfStock($idProduct, $idShop = null)
+    public static function outOfStock($idProduct, $idShop = null, $combinationId = 0)
     {
         if (!Validate::isUnsignedId($idProduct)) {
             return false;
@@ -791,7 +794,7 @@ class StockAvailableCore extends ObjectModel
         $query->select('out_of_stock');
         $query->from('stock_available');
         $query->where('id_product = '.(int) $idProduct);
-        $query->where('id_product_attribute = 0');
+        $query->where('id_product_attribute = ' . (int)$combinationId);
 
         $query = static::addSqlShopRestriction($query, $idShop);
 

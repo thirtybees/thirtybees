@@ -127,6 +127,11 @@ class CombinationCore extends ObjectModel
     ];
 
     /**
+     * @var array<int, int>]|null
+     */
+    protected $attributes = null;
+
+    /**
      * This method is allowed to know if a feature is active
      *
      * @return bool
@@ -483,6 +488,35 @@ class CombinationCore extends ObjectModel
                 ->where('al.`id_lang` = '.(int) $idLang)
                 ->where('pac.`id_product_attribute` = '.(int) $this->id)
         );
+    }
+
+    /**
+     * Returns map of used attributes [attribute group -> attribute id]
+     *
+     * @return array<int, int>
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getAttributes(): array
+    {
+        if (is_null($this->attributes)) {
+            $this->attributes = [];
+            $result = Db::readOnly()->getArray(
+                (new DbQuery())
+                    ->select('ag.id_attribute_group, a.`id_attribute`')
+                    ->from('product_attribute_combination', 'pac')
+                    ->innerJoin('attribute', 'a', 'pac.`id_attribute` = a.`id_attribute`')
+                    ->innerJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
+                    ->where('pac.`id_product_attribute` = ' . (int)$this->id)
+            );
+            foreach ($result as $row) {
+                $attributeGroupId = (int)$row['id_attribute_group'];
+                $attributeId = (int)$row['id_attribute'];
+                $this->attributes[$attributeGroupId] = $attributeId;
+            }
+        }
+        return $this->attributes;
     }
 
     /**

@@ -7559,7 +7559,7 @@ class ProductCore extends ObjectModel
      *
      * @param int $idProductAttribute
      *
-     * @param bool $withId
+     * @param bool $withId Deprecated
      *
      * @return string
      * @throws PrestaShopDatabaseException
@@ -7567,17 +7567,7 @@ class ProductCore extends ObjectModel
      */
     public function getAnchor($idProductAttribute, $withId = false)
     {
-        $attributes = static::getAttributesParams($this->id, $idProductAttribute);
-        $anchor = '#';
-        $sep = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
-        foreach ($attributes as &$a) {
-            foreach ($a as &$b) {
-                $b = str_replace($sep, '_', Tools::link_rewrite($b));
-            }
-            $anchor .= '/'.($withId && isset($a['id_attribute']) && $a['id_attribute'] ? (int) $a['id_attribute'].$sep : '').$a['group'].$sep.$a['name'];
-        }
-
-        return $anchor;
+        return Context::getContext()->link->getCombinationHashUrl($this->id, $idProductAttribute);
     }
 
     /**
