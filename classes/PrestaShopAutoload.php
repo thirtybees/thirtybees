@@ -284,7 +284,7 @@ class PrestaShopAutoload
     public function getClassPath($className)
     {
         $className = strtolower($className);
-        return (isset($this->index[$className]) && isset($this->index[$className]['path']))
+        return (isset($this->index[$className]['path']))
             ? $this->index[$className]['path']
             : null;
     }

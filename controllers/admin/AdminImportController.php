@@ -3482,7 +3482,7 @@ class AdminImportControllerCore extends AdminController
                 $state = new State();
                 $state->active = 1;
                 $state->name = $address->state;
-                $state->id_country = isset($country) && isset($country->id) ? (int) $country->id : 0;
+                $state->id_country = isset($country->id) ? (int) $country->id : 0;
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = mb_strtoupper(mb_substr($address->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;

@@ -842,7 +842,7 @@ class ProductControllerCore extends FrontController
                             if (isset($this->context->smarty->tpl_vars['images']->value)) {
                                 $productImages = $this->context->smarty->tpl_vars['images']->value;
                             }
-                            if (isset($productImages) && is_array($productImages) && isset($productImages[$idImage])) {
+                            if (isset($productImages[$idImage]) && is_array($productImages)) {
                                 $productImages[$idImage]['cover'] = 1;
                                 $this->context->smarty->assign('mainImage', $productImages[$idImage]);
                                 if (count($productImages)) {
