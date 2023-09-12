@@ -2207,6 +2207,18 @@ class AdminControllerCore extends Controller
         // Shop::initialize() in config.php may empty $this->context->shop->virtual_uri so using a new shop instance for getBaseUrl()
         $this->context->shop = new Shop((int) $this->context->shop->id);
 
+        switch (Shop::getContext()) {
+            case Shop::CONTEXT_ALL:
+                $shopContext = 'all';
+                break;
+            case Shop::CONTEXT_GROUP:
+                $shopContext = 'group-' . Shop::getContextShopGroupID(false);
+                break;
+            case Shop::CONTEXT_SHOP:
+            default:
+                $shopContext = 'shop-' . Shop::getContextShopID(false);
+        }
+
         $this->context->smarty->assign(
             [
                 'img_dir'                   => _PS_IMG_,
@@ -2230,6 +2242,7 @@ class AdminControllerCore extends Controller
                 'maintenance_mode'          => !Configuration::get('PS_SHOP_ENABLE'),
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
+                'shopContext'               => $shopContext,
             ]
         );
 
