@@ -5356,7 +5356,11 @@ FileETag none
         } elseif (is_numeric($timestamp)) {
             $timestamp = date_create('@' . $timestamp);
             if ($timestamp) {
-                $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
+                try {
+                    $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
+                } catch (Exception $e) {
+                    throw new PrestaShopException('Failed to resolve timezone', 0, $e);
+                }
             }
         } elseif (is_string($timestamp)) {
             $timestamp = date_create($timestamp);
