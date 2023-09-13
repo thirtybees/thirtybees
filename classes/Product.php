@@ -5848,15 +5848,18 @@ class ProductCore extends ObjectModel
             return 0;
         }
 
-	    $result = Db::readOnly()->getValue(
-		    (new DbQuery())
-			    ->select('COUNT(*)')
-			    ->from('product_attribute', 'pa')
-			    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
-			    ->where('pa.`id_product` = '.(int) $this->id)
-	    );
-
-        return (int) $result;
+        $cacheId = 'Product::hasAttributes_'.(int)$this->id;
+        if (! Cache::isStored($cacheId)) {
+            $result = (int)Db::readOnly()->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('product_attribute', 'pa')
+                    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+                    ->where('pa.`id_product` = ' . (int)$this->id)
+            );
+            Cache::store($cacheId, $result);
+        }
+        return (int)Cache::retrieve($cacheId);
     }
 
     /**
@@ -6036,18 +6039,35 @@ class ProductCore extends ObjectModel
      */
     public function getDefaultIdProductAttribute()
     {
+        return static::getProductDefaultCombinationId((int)$this->id);
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    public static function getProductDefaultCombinationId(int $productId): int
+    {
         if (!Combination::isFeatureActive()) {
             return 0;
         }
 
-        return (int) Db::readOnly()->getValue(
-            '
-			SELECT pa.`id_product_attribute`
-			FROM `'._DB_PREFIX_.'product_attribute` pa
-			'.Shop::addSqlAssociation('product_attribute', 'pa').'
-			WHERE pa.`id_product` = '.(int) $this->id.'
-			AND product_attribute_shop.default_on = 1'
-        );
+        $cacheId = 'Product::getProductDefaultCombinationId_' . (int)$productId;
+        if (! Cache::isStored($cacheId)) {
+            $result = (int)Db::readOnly()->getValue(
+                (new DbQuery())
+                    ->select('pa.`id_product_attribute`')
+                    ->from('product_attribute', 'pa')
+                    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+                    ->where('pa.`id_product` = ' . (int)$productId)
+                    ->where('product_attribute_shop.default_on = 1')
+            );
+            Cache::store($cacheId, $result);
+        }
+        return Cache::retrieve($cacheId);
     }
 
     /**
