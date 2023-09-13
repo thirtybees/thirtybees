@@ -50,7 +50,7 @@
 .tb-premium-modules-banner-col-right {
     display: inline-grid;
     grid-template-columns: 100%;
-    grid-template-rows: auto max-content;
+    grid-template-rows: auto auto;
     grid-row-gap: 10px;
     justify-content: left;
     border: 1px solid black;
@@ -63,6 +63,8 @@
 }
 
 .tb-premium-modules-banner-button-area {
+    display: inline-flex;
+    align-items: center;
     border: 1px solid blue;
 }
 
@@ -72,9 +74,10 @@
     padding-left: 20px;
     padding-right: 20px;
     background: linear-gradient(to bottom, rgba(58, 138, 39, 1) 0%,rgba(76, 179, 55, 1) 100%);
-    border: 0.7px solid rgba(48, 115, 34, 1);
-    border-radius: 3px;
+    border: 1px solid #307322;
+    border-radius: 5px;
     font-weight: 600;
+    font-size: 13px;
     line-height: 1.2;
     letter-spacing: 0px;
     text-decoration: none;
@@ -83,7 +86,7 @@
     color: #ffff;
 }
 
-.tb-premium-modules-banner-button-area a:hover {
+.tb-premium-modules-banner-button-area a:hover, .tb-premium-modules-banner-button-area a:visited, .tb-premium-modules-banner-button-area a:focus {
     text-decoration: none !important;
-    color: #ffff;
+    color: #ffff!important;
 } 
