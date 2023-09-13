@@ -24,7 +24,7 @@
 .tb-premium-modules-banner-col-left {
     display: inline-grid;
     grid-template-columns: auto 1fr;
-    grid-column-gap: 20px;
+    grid-column-gap: 10px;
     justify-content: left;
     border: 1px solid black;
 }
