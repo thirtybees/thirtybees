@@ -146,16 +146,20 @@ function copy2friendlyURL() {
     id_product = false;
   }
 
-  if (ps_force_friendly_product || !$('#link_rewrite_' + id_language).val().length || !id_product)//check if user didn't type anything in rewrite field, to prevent overwriting
-  {
-    $('#link_rewrite_' + id_language).val(str2url($.trim($('#name_' + id_language).val().replace(/^[0-9]+\./, ''), 'UTF-8').replace('%', '')));
+  //check if user didn't type anything in rewrite field, to prevent overwriting
+  if (ps_force_friendly_product || !$('#link_rewrite_' + id_language).val().length || !id_product) {
+    const friendlyUrl = getFriendlyUrlFromName(getProductName(id_language));
+    $('#link_rewrite_' + id_language).val(friendlyUrl);
     if ($('#friendly-url')) {
-      $('#friendly-url').html($('#link_rewrite_' + id_language).val());
+      $('#friendly-url').html(friendlyUrl);
     }
     // trigger onchange event to use anything binded there
     $('#link_rewrite_' + id_language).change();
   }
-  return;
+
+  if (!$('#meta_title_' + id_language).val().length || !id_product) {
+    updateMetaTitleByName();
+  }
 }
 
 function copyMeta2friendlyURL() {
@@ -165,29 +169,46 @@ function copyMeta2friendlyURL() {
 }
 
 function updateCurrentText() {
-  $('#current_product').html($('#name_' + id_language).val());
+  $('#current_product').html(getProductName(id_language));
 }
 
 function updateFriendlyURLByName() {
-  $('#link_rewrite_' + id_language).val(str2url($('#name_' + id_language).val(), 'UTF-8'));
-  $('#friendly-url_' + id_language).html($('#link_rewrite_' + id_language).val());
+  var friendlyUrl = getFriendlyUrlFromName(getProductName(id_language));
+  $('#link_rewrite_' + id_language).val(friendlyUrl);
+  updateFriendlyURL();
+}
+
+function updateMetaTitleByName() {
+  const productName = getProductName(id_language);
+  $('#meta_title_' + id_language).val(productName.substr(0, 128));
+}
+
+function updateMetaDescription() {
+  const descriptionHtml = $('#description_short_' + id_language).val();
+  const tempDivElement = document.createElement("div");
+  tempDivElement.innerHTML = descriptionHtml;
+  const descriptionTxt = tempDivElement.textContent || tempDivElement.innerText;
+  const element = $('#meta_description_' + id_language);
+  element.val(descriptionTxt.trim().substr(0, 255));
+  element.trigger('autosize.resize');
+}
+
+function getFriendlyUrlFromName(name) {
+  return str2url(name.replace(/^[0-9]+\./, '').replace('%', ''), 'UTF-8');
+}
+
+function getProductName(languageId) {
+  return $.trim($('#name_' + languageId).val());
 }
 
 function updateFriendlyURL() {
-  var link = $('#link_rewrite_' + id_language);
-  if (link[0]) {
-    $('#friendly-url_' + id_language).text(str2url($('#link_rewrite_' + id_language).val(), 'UTF-8'));
-  }
+  $('#friendly-url_' + id_language).text(str2url($('#link_rewrite_' + id_language).val(), 'UTF-8'));
 }
 
 function updateLinkRewrite() {
   $('#name_' + id_language).val($.trim($('#name_' + id_language).val()));
-  $('#link_rewrite_' + id_language).val($.trim($('#link_rewrite_' + id_language).val()));
-  var link = $('#link_rewrite_' + id_language);
-  if (link[0]) {
-    link.val(str2url(link.val(), 'UTF-8'));
-    $('#friendly-url_' + id_language).text(link.val());
-  }
+  $('#link_rewrite_' + id_language).val(str2url($.trim($('#link_rewrite_' + id_language).val()), 'UTF-8'));
+  updateFriendlyURL();
 }
 
 function toggleLanguageFlags(elt) {

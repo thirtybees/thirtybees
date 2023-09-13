@@ -34,13 +34,16 @@
 				{l s='Meta title'}
 			</span>
 		</label>
-		<div class="col-lg-8">
+		<div class="col-lg-7">
 			{include file="controllers/products/input_text_lang.tpl"
 				languages=$languages
 				input_name='meta_title'
 				input_value=$product->meta_title
 				maxchar=$product->def['fields']['meta_title']['size']
 			}
+		</div>
+		<div class="col-lg-1">
+			<button type="button" class="btn btn-default" onmousedown="updateMetaTitleByName();"><i class="icon-random"></i> {l s='Generate'}</button>
 		</div>
 	</div>
 	<div class="form-group">
@@ -51,7 +54,7 @@
 				{l s='Meta description'}
 			</span>
 		</label>
-		<div class="col-lg-8">
+		<div class="col-lg-7">
 			{include file="controllers/products/textarea_lang.tpl"
 				languages=$languages
 				input_name='meta_description'
@@ -59,9 +62,11 @@
 				maxchar=$product->def['fields']['meta_description']['size']
 			}
 		</div>
+		<div class="col-lg-1">
+			<button type="button" class="btn btn-default" onmousedown="updateMetaDescription();"><i class="icon-random"></i> {l s='Generate'}</button>
+		</div>
 	</div>
-	{* Removed for simplicity *}
-	<div class="form-group hide">
+	<div class="form-group">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="meta_keywords" type="default" multilang="true"}</span></div>
 		<label class="control-label col-lg-2" for="meta_keywords_{$id_lang}">
 			<span class="label-tooltip" data-toggle="tooltip"
@@ -69,10 +74,13 @@
 				{l s='Meta keywords'}
 			</span>
 		</label>
-		<div class="col-lg-8">
-			{include file="controllers/products/input_text_lang.tpl" languages=$languages
+		<div class="col-lg-7">
+			{include file="controllers/products/input_text_lang.tpl"
+				languages=$languages
 				input_value=$product->meta_keywords
-				input_name='meta_keywords'}
+				input_name='meta_keywords'
+				maxchar=$product->def['fields']['meta_keywords']['size']
+			}
 		</div>
 	</div>
 	<div class="form-group">
@@ -84,13 +92,13 @@
 			</span>
 
 		</label>
-		<div class="col-lg-6">
+		<div class="col-lg-7">
 				{include file="controllers/products/input_text_lang.tpl"
 					languages=$languages
 					input_value=$product->link_rewrite
 					input_name='link_rewrite'}
 		</div>
-		<div class="col-lg-2">
+		<div class="col-lg-1">
 			<button type="button" class="btn btn-default" id="generate-friendly-url" onmousedown="updateFriendlyURLByName();"><i class="icon-random"></i> {l s='Generate'}</button>
 		</div>
 	</div>
