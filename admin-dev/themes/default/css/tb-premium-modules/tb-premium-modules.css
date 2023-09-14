@@ -44,6 +44,47 @@
     }
 }
 
+.categoryModuleFilterLinkPremium {
+    display: inline-grid !important;
+    grid-template-columns: 17px auto 10px;
+    grid-column-gap: 10px;
+    width: 100%;
+    padding-right: 8px !important;
+    border: 1px solid red;
+}
+
+.categoryModuleFilterLinkPremium.active {
+    background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
+}
+
+.categoryModuleFilterLinkPremium * {
+    display: inline-flex!important;
+    align-items: center!important;
+}
+
+.filter-premium-icon {
+    width: 18px;
+    height: 15px;
+    transform: rotateY(-90deg);
+    background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    animation: rotateIn;
+    animation-delay: 100ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.filter-premium-text {
+    color: #000!important;
+}
+
+.categoryModuleFilterLinkPremium.active  #premium-count {
+    color: #000 !important;
+}
 
 .tb-premium-modules-banner-container {
     display: inline-grid;
@@ -183,6 +224,15 @@
 } 
 
 /*/// Responsive ///*/
-.tb-premium-modules-banner-text {
-    width: 100%;
+@media (max-width: 1000px) {
+    .tb-premium-modules-banner-text {
+        width: 100%;
+    }
 }
+
+/*@media (min-width: 100px) {
+    .tb-premium-modules-banner-text {
+        width: 100%;
+    }
+}*/
+
