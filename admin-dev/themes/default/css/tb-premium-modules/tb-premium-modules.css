@@ -73,7 +73,7 @@
     padding-bottom: 7px;
     padding-left: 20px;
     padding-right: 20px;
-    background: linear-gradient(to bottom, rgba(58, 138, 39, 1) 0%,rgba(76, 179, 55, 1) 100%);
+    background: #4AAE35;
     border: 1px solid #307322;
     border-radius: 5px;
     font-weight: 600;
@@ -84,9 +84,21 @@
     text-transform: none;
     text-align: center;
     color: #ffff;
+    transition: all 350ms ease-in-out;
+}
+
+.tb-premium-modules-banner-button-area a:hover {
+    /*background: linear-gradient(to bottom, rgba(58, 138, 39, 1) 0%,rgba(76, 179, 55, 1) 100%);*/
+    background: #4CA13B;
+    box-shadow: -1px -1px 10px 7px rgba(76,161,59,0.51);
 }
 
 .tb-premium-modules-banner-button-area a:hover, .tb-premium-modules-banner-button-area a:visited, .tb-premium-modules-banner-button-area a:focus {
     text-decoration: none !important;
     color: #ffff!important;
 } 
+
+/*/// Responsive ///*/
+.tb-premium-modules-banner-text {
+    width: 100%;
+}
