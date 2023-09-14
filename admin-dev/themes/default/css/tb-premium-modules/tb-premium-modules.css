@@ -32,6 +32,18 @@
     }
 }
 
+@keyframes rotateIn {
+    0% {
+        opacity: 0;
+        transform: rotateY(-90deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: rotateY(0deg);
+    }
+}
+
 
 .tb-premium-modules-banner-container {
     display: inline-grid;
@@ -47,6 +59,7 @@
 }
 
 .tb-premium-modules-banner-container .tb-premium-modules-banner-icon {
+    transform: rotateY(-90deg);
     display: inline-flex;
     align-self: center;
     width: 50px;
@@ -54,6 +67,13 @@
     background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
     background-repeat: no-repeat;
     background-size: contain;
+    animation: rotateIn;
+    animation-delay: 800ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
 .tb-premium-modules-banner-col-left {
