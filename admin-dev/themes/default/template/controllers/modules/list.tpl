@@ -40,7 +40,7 @@
 			</span>
 			<div class="tb-premium-modules-banner-button-area">
 				{if $connected}
-					<a href="{$becomeSupporterUrl|escape:'html'}" target="_blank">{l s="Become a supporter today!"}</a>
+					<a href="{$becomeSupporterUrl|escape:'html'}" target="_blank">{l s="Become a Member today!"}</a>
 				{else}
 					<a href="{$connectLink|escape:'html'}" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to ThirtyBees"}</a>
 				{/if}

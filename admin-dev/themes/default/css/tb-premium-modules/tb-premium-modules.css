@@ -1,3 +1,28 @@
+@keyframes slideInFadeHorizontal {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFadeVertical {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
 .tb-premium-modules-banner-container {
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
@@ -35,17 +60,37 @@
     border: 1px solid blue;
     grid-template-columns: 100%;
     grid-row-gap: 5px;
+    overflow: hidden;
 }
 
 .tb-premium-modules-banner-heading-main {
     font-size: 22px;
     line-height: 1.2;
     color: #000000;
+    opacity: 0;
+    transform: translateX(-100%);
+    animation: slideInFadeHorizontal;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
+
 .tb-premium-modules-banner-heading-sub {
+    opacity: 0;
+    transform: translateX(100%);
     font-size: 12px;
     color: #000000;
+    animation: slideInFadeVertical;
+    animation-delay: 800ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
+
 
 .tb-premium-modules-banner-col-right {
     display: inline-grid;
@@ -84,7 +129,7 @@
     text-transform: none;
     text-align: center;
     color: #ffff;
-    transition: all 350ms ease-in-out;
+    transition: all 250ms ease-in-out;
 }
 
 .tb-premium-modules-banner-button-area a:hover {
