@@ -81,13 +81,11 @@
     grid-template-columns: auto 1fr;
     grid-column-gap: 10px;
     justify-content: left;
-    border: 1px solid black;
 }
 
 .tb-premium-modules-banner-heading-container {
     display: inline-grid;
     align-self: center;
-    border: 1px solid blue;
     grid-template-columns: 100%;
     grid-row-gap: 5px;
     overflow: hidden;
@@ -127,16 +125,14 @@
     grid-template-rows: auto auto;
     grid-row-gap: 10px;
     justify-content: left;
-    border: 1px solid black;
 }
 
 .tb-premium-modules-banner-text {
     width: 80%;
     color: #000000;
-    border: 1px solid black;
     opacity: 0;
     animation: fadeIn;
-    animation-delay: 2000ms;
+    animation-delay: 1000ms;
     animation-direction: normal;
     animation-timing-function: ease-in-out;
     animation-duration: 1200ms;
@@ -147,10 +143,10 @@
 .tb-premium-modules-banner-button-area {
     display: inline-flex;
     align-items: center;
-    border: 1px solid blue;
 }
 
 .tb-premium-modules-banner-button-area a {
+    opacity: 0;
     padding-top: 7px;
     padding-bottom: 7px;
     padding-left: 20px;
@@ -167,12 +163,18 @@
     text-align: center;
     color: #ffff;
     transition: all 250ms ease-in-out;
+    animation: fadeIn;
+    animation-delay: 1500ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
 .tb-premium-modules-banner-button-area a:hover {
-    /*background: linear-gradient(to bottom, rgba(58, 138, 39, 1) 0%,rgba(76, 179, 55, 1) 100%);*/
     background: #4CA13B;
-    box-shadow: -1px -1px 10px 7px rgba(76,161,59,0.51);
+    box-shadow: -1px -1px 10px 7px rgba(76,161,59,0.21);
 }
 
 .tb-premium-modules-banner-button-area a:hover, .tb-premium-modules-banner-button-area a:visited, .tb-premium-modules-banner-button-area a:focus {
