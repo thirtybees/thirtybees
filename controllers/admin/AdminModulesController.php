@@ -169,6 +169,7 @@ class AdminModulesControllerCore extends AdminController
     {
         parent::setMedia();
         $this->addJqueryPlugin(['autocomplete', 'fancybox', 'tablefilter']);
+        $this->addCSS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/default/css/tb-premium-modules/tb-premium-modules.css', 'all', PHP_INT_MAX);
     }
 
     /**
