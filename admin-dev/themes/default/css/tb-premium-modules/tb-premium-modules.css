@@ -224,6 +224,17 @@
 } 
 
 /*/// Responsive ///*/
+@media (max-width: 588px) {
+    .tb-premium-modules-banner-container {
+        grid-template-columns: 100%;
+        grid-row-gap: 10px;
+    }
+
+    .tb-premium-modules-banner-button-area a {
+        width: 100%;
+    }
+}
+
 @media (max-width: 1000px) {
     .tb-premium-modules-banner-text {
         width: 100%;
