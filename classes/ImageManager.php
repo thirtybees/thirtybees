@@ -331,6 +331,10 @@ class ImageManagerCore
 
         $srcImage = ImageManager::create($type, $srcFile);
 
+        if (! $srcImage) {
+            return false;
+        }
+
         if ($dstWidth >= $srcWidth && $dstHeight >= $srcHeight) {
             imagecopyresized(
                 $destImage,
@@ -370,7 +374,7 @@ class ImageManagerCore
      * @param string $type
      * @param string $filename
      *
-     * @return resource
+     * @return false|GdImage|resource
      */
     public static function create($type, $filename)
     {
@@ -381,12 +385,14 @@ class ImageManagerCore
             case IMAGETYPE_PNG :
                 return imagecreatefrompng($filename);
 
-            case 18:
+            case IMAGETYPE_WEBP:
                 return imagecreatefromwebp($filename);
 
             case IMAGETYPE_JPEG :
-            default:
                 return imagecreatefromjpeg($filename);
+
+            default:
+                return false;
         }
     }
 

@@ -654,7 +654,7 @@ class ToolsCore
         $idCountry = Tools::getIntValue('id_country');
         if ($idCountry && Validate::isInt($idCountry)) {
             return (int) $idCountry;
-        } elseif (!$idCountry && isset($address) && isset($address->id_country) && $address->id_country) {
+        } elseif (isset($address->id_country) && !$idCountry && $address->id_country) {
             $idCountry = (int) $address->id_country;
         } elseif (Configuration::get('PS_DETECT_COUNTRY') && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             preg_match('#(?<=-)\w\w|\w\w(?!-)#', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $array);
@@ -5356,7 +5356,11 @@ FileETag none
         } elseif (is_numeric($timestamp)) {
             $timestamp = date_create('@' . $timestamp);
             if ($timestamp) {
-                $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
+                try {
+                    $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
+                } catch (Exception $e) {
+                    throw new PrestaShopException('Failed to resolve timezone', 0, $e);
+                }
             }
         } elseif (is_string($timestamp)) {
             $timestamp = date_create($timestamp);

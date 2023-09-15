@@ -994,7 +994,7 @@ class AdminControllerCore extends Controller
             $this->fields_list[$orderBy]['order_key'] = $this->fields_list[$orderBy]['filter_key'];
         }
 
-        if (isset($this->fields_list[$orderBy]) && isset($this->fields_list[$orderBy]['order_key'])) {
+        if (isset($this->fields_list[$orderBy]['order_key'])) {
             $orderBy = $this->fields_list[$orderBy]['order_key'];
         }
 
@@ -2207,6 +2207,18 @@ class AdminControllerCore extends Controller
         // Shop::initialize() in config.php may empty $this->context->shop->virtual_uri so using a new shop instance for getBaseUrl()
         $this->context->shop = new Shop((int) $this->context->shop->id);
 
+        switch (Shop::getContext()) {
+            case Shop::CONTEXT_ALL:
+                $shopContext = 'all';
+                break;
+            case Shop::CONTEXT_GROUP:
+                $shopContext = 'group-' . Shop::getContextShopGroupID(false);
+                break;
+            case Shop::CONTEXT_SHOP:
+            default:
+                $shopContext = 'shop-' . Shop::getContextShopID(false);
+        }
+
         $this->context->smarty->assign(
             [
                 'img_dir'                   => _PS_IMG_,
@@ -2230,6 +2242,7 @@ class AdminControllerCore extends Controller
                 'maintenance_mode'          => !Configuration::get('PS_SHOP_ENABLE'),
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
+                'shopContext'               => $shopContext,
             ]
         );
 
@@ -2776,7 +2789,7 @@ class AdminControllerCore extends Controller
                             foreach ($this->getLanguages() as $language) {
                                 $fieldValue = $this->getFieldValue($obj, $input['name'], $language['id_lang']);
                                 if (empty($fieldValue)) {
-                                    if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
+                                    if (isset($input['default_value'][$language['id_lang']]) && is_array($input['default_value'])) {
                                         $fieldValue = $input['default_value'][$language['id_lang']];
                                     } elseif (isset($input['default_value'])) {
                                         $fieldValue = $input['default_value'];
@@ -3472,7 +3485,7 @@ class AdminControllerCore extends Controller
             $modulesOptions[] = $uninstall;
         }
 
-        if (isset($module->preferences) && isset($module->preferences['favorite']) && $module->preferences['favorite'] == 1) {
+        if (isset($module->preferences['favorite']) && $module->preferences['favorite'] == 1) {
             $removeFromFavorite['style'] = '';
             $markAsFavorite['style'] = 'display:none;';
             $modulesOptions[] = $removeFromFavorite;

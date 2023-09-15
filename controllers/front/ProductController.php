@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\View\Model\ProductViewModel;
+
 /**
  * Class ProductControllerCore
  */
@@ -40,7 +42,7 @@ class ProductControllerCore extends FrontController
     public $php_self = 'product';
 
     /**
-     * @var Product
+     * @var ProductViewModel
      */
     protected $product;
 
@@ -70,6 +72,7 @@ class ProductControllerCore extends FrontController
             $this->addJqueryPlugin(['fancybox', 'idTabs', 'scrollTo', 'serialScroll', 'bxslider']);
             $this->addJS(
                 [
+                    _PS_JS_DIR_.'front/product-page.js',
                     _THEME_JS_DIR_.'tools.js',  // retro compat themes 1.5
                     _THEME_JS_DIR_.'product.js',
                 ]
@@ -104,9 +107,14 @@ class ProductControllerCore extends FrontController
     {
         parent::init();
 
-        if ($idProduct = Tools::getIntValue('id_product')) {
-            $this->product = new Product($idProduct, true, $this->context->language->id, $this->context->shop->id);
-        }
+        $productId = Tools::getIntValue('id_product');
+        $combinationId = $this->resolveCombinationId($productId);
+        $this->product = new ProductViewModel(
+            $productId,
+            $combinationId,
+            (int)$this->context->language->id,
+            (int)$this->context->shop->id
+        );
 
         if (!Validate::isLoadedObject($this->product)) {
             header('HTTP/1.1 404 Not Found');
@@ -739,18 +747,25 @@ class ProductControllerCore extends FrontController
         if (is_array($attributesGroups) && $attributesGroups) {
             $combinationImages = $this->product->getCombinationImages($this->context->language->id);
             $combinationPricesSet = [];
+            $link = Context::getContext()->link;
+            $combinations = [];
             foreach ($attributesGroups as $row) {
+
+                $combinationId = (int)$row['id_product_attribute'];
+                $attributeGroupId = (int)$row['id_attribute_group'];
+                $attributeId = (int)$row['id_attribute'];
+
                 // Color management
-                if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (file_exists(_PS_COL_IMG_DIR_.$row['id_attribute'].'.jpg'))) {
-                    $colors[$row['id_attribute']]['value'] = $row['attribute_color'];
-                    $colors[$row['id_attribute']]['name'] = $row['attribute_name'];
-                    if (!isset($colors[$row['id_attribute']]['attributes_quantity'])) {
-                        $colors[$row['id_attribute']]['attributes_quantity'] = 0;
+                if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (file_exists(_PS_COL_IMG_DIR_.$attributeId.'.jpg'))) {
+                    $colors[$attributeId]['value'] = $row['attribute_color'];
+                    $colors[$attributeId]['name'] = $row['attribute_name'];
+                    if (!isset($colors[$attributeId]['attributes_quantity'])) {
+                        $colors[$attributeId]['attributes_quantity'] = 0;
                     }
-                    $colors[$row['id_attribute']]['attributes_quantity'] += (int) $row['quantity'];
+                    $colors[$attributeId]['attributes_quantity'] += (int) $row['quantity'];
                 }
-                if (!isset($groups[$row['id_attribute_group']])) {
-                    $groups[$row['id_attribute_group']] = [
+                if (!isset($groups[$attributeGroupId])) {
+                    $groups[$attributeGroupId] = [
                         'group_name' => $row['group_name'],
                         'name'       => $row['public_group_name'],
                         'group_type' => $row['group_type'],
@@ -758,18 +773,19 @@ class ProductControllerCore extends FrontController
                     ];
                 }
 
-                $groups[$row['id_attribute_group']]['attributes'][$row['id_attribute']] = $row['attribute_name'];
-                if ($row['default_on'] && $groups[$row['id_attribute_group']]['default'] == -1) {
-                    $groups[$row['id_attribute_group']]['default'] = (int) $row['id_attribute'];
+                $groups[$attributeGroupId]['attributes'][$attributeId] = $row['attribute_name'];
+                if ($row['default_on'] && $groups[$attributeGroupId]['default'] == -1) {
+                    $groups[$attributeGroupId]['default'] = (int) $attributeId;
                 }
-                if (!isset($groups[$row['id_attribute_group']]['attributes_quantity'][$row['id_attribute']])) {
-                    $groups[$row['id_attribute_group']]['attributes_quantity'][$row['id_attribute']] = 0;
+                if (!isset($groups[$attributeGroupId]['attributes_quantity'][$attributeId])) {
+                    $groups[$attributeGroupId]['attributes_quantity'][$attributeId] = 0;
                 }
-                $groups[$row['id_attribute_group']]['attributes_quantity'][$row['id_attribute']] += (int) $row['quantity'];
+                $groups[$attributeGroupId]['attributes_quantity'][$attributeId] += (int) $row['quantity'];
 
-                $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
-                $combinations[$row['id_product_attribute']]['attributes'][] = (int) $row['id_attribute'];
-                $combinations[$row['id_product_attribute']]['price'] = Tools::convertPriceFull($row['price'], null, $this->context->currency);
+                $combinations[$combinationId]['attributes_values'][$attributeGroupId] = $row['attribute_name'];
+                $combinations[$combinationId]['attributes'][] = $attributeId;
+                $combinations[$combinationId]['price'] = Tools::convertPriceFull($row['price'], null, $this->context->currency);
+                $combinations[$combinationId]['hashUrl'] = $link->getCombinationHashUrl((int)$this->product->id, (int)$row['id_product_attribute']);
 
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationPricesSet[(int) $row['id_product_attribute']])) {
@@ -788,35 +804,35 @@ class ProductControllerCore extends FrontController
                         null,
                         $combinationSpecificPrice
                     );
-                    $combinationPricesSet[(int) $row['id_product_attribute']] = true;
-                    $combinations[$row['id_product_attribute']]['specific_price'] = $combinationSpecificPrice;
+                    $combinationPricesSet[$combinationId] = true;
+                    $combinations[$combinationId]['specific_price'] = $combinationSpecificPrice;
                 }
-                $combinations[$row['id_product_attribute']]['ecotax'] = (float) $row['ecotax'];
-                $combinations[$row['id_product_attribute']]['weight'] = (float) $row['weight'];
-                $combinations[$row['id_product_attribute']]['quantity'] = (int) $row['quantity'];
-                $combinations[$row['id_product_attribute']]['reference'] = $row['reference'];
-                $combinations[$row['id_product_attribute']]['unit_impact'] = Tools::convertPriceFull($row['unit_price_impact'], null, $this->context->currency);
-                $combinations[$row['id_product_attribute']]['minimal_quantity'] = $row['minimal_quantity'];
+                $combinations[$combinationId]['ecotax'] = (float) $row['ecotax'];
+                $combinations[$combinationId]['weight'] = (float) $row['weight'];
+                $combinations[$combinationId]['quantity'] = (int) $row['quantity'];
+                $combinations[$combinationId]['reference'] = $row['reference'];
+                $combinations[$combinationId]['unit_impact'] = Tools::convertPriceFull($row['unit_price_impact'], null, $this->context->currency);
+                $combinations[$combinationId]['minimal_quantity'] = $row['minimal_quantity'];
                 if ($row['available_date'] != '0000-00-00' && Validate::isDate($row['available_date'])) {
-                    $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
-                    $combinations[$row['id_product_attribute']]['date_formatted'] = Tools::displayDate($row['available_date']);
+                    $combinations[$combinationId]['available_date'] = $row['available_date'];
+                    $combinations[$combinationId]['date_formatted'] = Tools::displayDate($row['available_date']);
                 } else {
-                    $combinations[$row['id_product_attribute']]['available_date'] = $combinations[$row['id_product_attribute']]['date_formatted'] = '';
+                    $combinations[$combinationId]['available_date'] = $combinations[$combinationId]['date_formatted'] = '';
                 }
 
-                if (!isset($combinationImages[$row['id_product_attribute']][0]['id_image'])) {
-                    $combinations[$row['id_product_attribute']]['id_image'] = -1;
+                if (!isset($combinationImages[$combinationId][0]['id_image'])) {
+                    $combinations[$combinationId]['id_image'] = -1;
                 } else {
-                    $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $combinationImages[$row['id_product_attribute']][0]['id_image'];
+                    $combinations[$combinationId]['id_image'] = $idImage = (int) $combinationImages[$combinationId][0]['id_image'];
                     if ($row['default_on']) {
                         if (isset($this->context->smarty->tpl_vars['cover']->value)) {
                             $currentCover = $this->context->smarty->tpl_vars['cover']->value;
                         }
 
-                        if (is_array($combinationImages[$row['id_product_attribute']])) {
-                            foreach ($combinationImages[$row['id_product_attribute']] as $tmp) {
+                        if (is_array($combinationImages[$combinationId])) {
+                            foreach ($combinationImages[$combinationId] as $tmp) {
                                 if (isset($currentCover) && $tmp['id_image'] == $currentCover['id_image']) {
-                                    $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $tmp['id_image'];
+                                    $combinations[$combinationId]['id_image'] = $idImage = (int) $tmp['id_image'];
                                     break;
                                 }
                             }
@@ -826,7 +842,7 @@ class ProductControllerCore extends FrontController
                             if (isset($this->context->smarty->tpl_vars['images']->value)) {
                                 $productImages = $this->context->smarty->tpl_vars['images']->value;
                             }
-                            if (isset($productImages) && is_array($productImages) && isset($productImages[$idImage])) {
+                            if (isset($productImages[$idImage]) && is_array($productImages)) {
                                 $productImages[$idImage]['cover'] = 1;
                                 $this->context->smarty->assign('mainImage', $productImages[$idImage]);
                                 if (count($productImages)) {
@@ -934,5 +950,24 @@ class ProductControllerCore extends FrontController
     public function getCategory()
     {
         return $this->category;
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function resolveCombinationId(int $productId): int
+    {
+        $combinationId = Tools::getIntValue('combination');
+        if ($combinationId) {
+            $combinationIds = array_map('intval', array_column(Product::getProductAttributesIds($productId, true), 'id_product_attribute'));
+            if (! in_array($combinationId, $combinationIds, true)) {
+                Tools::redirect($this->context->link->getProductLink($productId));
+            }
+        }
+        return $combinationId;
     }
 }

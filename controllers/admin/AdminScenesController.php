@@ -413,7 +413,7 @@ class AdminScenesControllerCore extends AdminController
                             );
                         }
                     }
-                } elseif (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
+                } elseif (isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
                     ImageManager::resize(
                         $baseImgPath,
                         _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.jpg',

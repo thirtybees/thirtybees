@@ -383,8 +383,12 @@ class FrontControllerCore extends Controller
         switch ($this->php_self) {
             case 'product': // product page
                 $idProduct = Tools::getIntValue('id_product');
-                $canonical = $this->context->link->getProductLink($idProduct);
-                $hreflang = $this->getHrefLang('product', $idProduct, $languages, $defaultLang);
+                $combinationId = Tools::getIntValue('combination');
+                if ($combinationId && $combinationId === Product::getProductDefaultCombinationId($idProduct)) {
+                    $combinationId = 0;
+                }
+                $canonical = $this->context->link->getProductLink($idProduct, null, null, null, null, null, $combinationId);
+                $hreflang = $this->getHrefLang('product', $idProduct, $languages, $defaultLang, $combinationId);
 
                 break;
 
@@ -465,18 +469,19 @@ class FrontControllerCore extends Controller
      * @param int $idItem eventual id of the object (if any)
      * @param array $languages list of languages
      * @param int $idLangDefault id of the default language
+     * @param mixed $extra extra parameters
      *
      * @return string[] HTML of the hreflang tags
      *
      * @throws PrestaShopException
      */
-    public function getHrefLang($entity, $idItem, $languages, $idLangDefault)
+    public function getHrefLang($entity, $idItem, $languages, $idLangDefault, $extra = null)
     {
         $links = [];
         foreach ($languages as $lang) {
             switch ($entity) {
                 case 'product':
-                    $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $lang['id_lang']);
+                    $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $lang['id_lang'], null, $extra);
                     break;
                 case 'category':
                     $lnk = $this->context->link->getCategoryLink((int) $idItem, null, $lang['id_lang']);
@@ -1795,7 +1800,7 @@ class FrontControllerCore extends Controller
     protected function sslRedirection()
     {
         // If we call a SSL controller without SSL or a non SSL controller with SSL, we redirect with the right protocol
-        if (Configuration::get('PS_SSL_ENABLED') && (Tools::getRequestMethod() !== 'POST') && $this->ssl != Tools::usingSecureMode()) {
+        if (!Tools::isPHPCLI() && Configuration::get('PS_SSL_ENABLED') && (Tools::getRequestMethod() !== 'POST') && $this->ssl != Tools::usingSecureMode()) {
             $this->context->cookie->disallowWriting();
             header('HTTP/1.1 301 Moved Permanently');
             header('Cache-Control: no-cache');

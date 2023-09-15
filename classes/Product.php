@@ -5848,15 +5848,18 @@ class ProductCore extends ObjectModel
             return 0;
         }
 
-	    $result = Db::readOnly()->getValue(
-		    (new DbQuery())
-			    ->select('COUNT(*)')
-			    ->from('product_attribute', 'pa')
-			    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
-			    ->where('pa.`id_product` = '.(int) $this->id)
-	    );
-
-        return (int) $result;
+        $cacheId = 'Product::hasAttributes_'.(int)$this->id;
+        if (! Cache::isStored($cacheId)) {
+            $result = (int)Db::readOnly()->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('product_attribute', 'pa')
+                    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+                    ->where('pa.`id_product` = ' . (int)$this->id)
+            );
+            Cache::store($cacheId, $result);
+        }
+        return (int)Cache::retrieve($cacheId);
     }
 
     /**
@@ -6036,18 +6039,35 @@ class ProductCore extends ObjectModel
      */
     public function getDefaultIdProductAttribute()
     {
+        return static::getProductDefaultCombinationId((int)$this->id);
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    public static function getProductDefaultCombinationId(int $productId): int
+    {
         if (!Combination::isFeatureActive()) {
             return 0;
         }
 
-        return (int) Db::readOnly()->getValue(
-            '
-			SELECT pa.`id_product_attribute`
-			FROM `'._DB_PREFIX_.'product_attribute` pa
-			'.Shop::addSqlAssociation('product_attribute', 'pa').'
-			WHERE pa.`id_product` = '.(int) $this->id.'
-			AND product_attribute_shop.default_on = 1'
-        );
+        $cacheId = 'Product::getProductDefaultCombinationId_' . (int)$productId;
+        if (! Cache::isStored($cacheId)) {
+            $result = (int)Db::readOnly()->getValue(
+                (new DbQuery())
+                    ->select('pa.`id_product_attribute`')
+                    ->from('product_attribute', 'pa')
+                    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+                    ->where('pa.`id_product` = ' . (int)$productId)
+                    ->where('product_attribute_shop.default_on = 1')
+            );
+            Cache::store($cacheId, $result);
+        }
+        return Cache::retrieve($cacheId);
     }
 
     /**
@@ -7559,7 +7579,7 @@ class ProductCore extends ObjectModel
      *
      * @param int $idProductAttribute
      *
-     * @param bool $withId
+     * @param bool $withId Deprecated
      *
      * @return string
      * @throws PrestaShopDatabaseException
@@ -7567,17 +7587,7 @@ class ProductCore extends ObjectModel
      */
     public function getAnchor($idProductAttribute, $withId = false)
     {
-        $attributes = static::getAttributesParams($this->id, $idProductAttribute);
-        $anchor = '#';
-        $sep = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
-        foreach ($attributes as &$a) {
-            foreach ($a as &$b) {
-                $b = str_replace($sep, '_', Tools::link_rewrite($b));
-            }
-            $anchor .= '/'.($withId && isset($a['id_attribute']) && $a['id_attribute'] ? (int) $a['id_attribute'].$sep : '').$a['group'].$sep.$a['name'];
-        }
-
-        return $anchor;
+        return Context::getContext()->link->getCombinationHashUrl($this->id, $idProductAttribute);
     }
 
     /**

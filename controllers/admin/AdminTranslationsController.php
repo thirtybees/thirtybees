@@ -1870,6 +1870,11 @@ class AdminTranslationsControllerCore extends AdminController
                     // Get content for this file
                     $content = file_get_contents($filePath);
 
+                    // Check if the tpl file uses extends functionality
+                    if (preg_match('/{extends\s+file="([^"]+)"/', $content, $extendMatches)) {
+                        $prefixKey = $prefix.substr(basename($extendMatches[1]), 0, -4);
+                    }
+
                     // Parse this content
                     $matches = $this->userParseFile($content, $this->type_selected);
 

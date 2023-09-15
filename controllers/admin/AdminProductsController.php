@@ -4889,11 +4889,6 @@ class AdminProductsControllerCore extends AdminController
             $product->$prop = $this->getFieldValue($product, $prop);
         }
 
-        $product->name['class'] = 'updateCurrentText';
-        if (!$product->id || Configuration::get('PS_FORCE_FRIENDLY_PRODUCT')) {
-            $product->name['class'] .= ' copy2friendlyUrl';
-        }
-
         $images = Image::getImages($this->context->language->id, $product->id);
 
         if (is_array($images)) {

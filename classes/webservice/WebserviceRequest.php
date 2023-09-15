@@ -1132,7 +1132,7 @@ class WebserviceRequestCore
                         if ($field != 'sort' && $field != 'limit') {
                             if (!in_array($field, $availableFilters)) {
                                 // if there are linked tables
-                                if (isset($this->resourceConfiguration['linked_tables']) && isset($this->resourceConfiguration['linked_tables'][$field])) {
+                                if (isset($this->resourceConfiguration['linked_tables'][$field])) {
                                     // contruct SQL join for linked tables
                                     $sqlJoin .= 'LEFT JOIN `'.bqSQL(_DB_PREFIX_.$this->resourceConfiguration['linked_tables'][$field]['table']).'` '.bqSQL($field).' ON (main.`'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'` = '.bqSQL($field).'.`'.bqSQL($this->resourceConfiguration['fields']['id']['sqlId']).'`)'."\n";
 
@@ -1333,7 +1333,7 @@ class WebserviceRequestCore
                     $sql .= '_'.$assoc['type'];
                 } else {
                     $def = ObjectModel::getDefinition($this->resourceConfiguration['retrieveData']['className']);
-                    if (isset($def['fields']) && isset($def['fields']['id_shop_group'])) {
+                    if (isset($def['fields']['id_shop_group'])) {
                         $checkShopGroup = true;
                     }
                 }
@@ -1454,7 +1454,7 @@ class WebserviceRequestCore
         } else {
             foreach ($objects as $object) {
                 /** @var ObjectModel $object */
-                if (isset($this->resourceConfiguration['objectMethods']) && isset($this->resourceConfiguration['objectMethods']['delete'])) {
+                if (isset($this->resourceConfiguration['objectMethods']['delete'])) {
                     $resourceConfig = $this->resourceConfiguration['objectMethods']['delete'];
                     $result = $object->$resourceConfig();
                 } else {

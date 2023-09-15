@@ -933,18 +933,22 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         if (!$interval = Category::getInterval($shop->getCategory())) {
             return false;
         }
-        try {
-            $row = Db::readOnly()->getRow(
-                (new DbQuery())
-                    ->select('`nleft`, `nright`')
-                    ->from('category')
-                    ->where('`id_category` = '.(int) $idCategory)
-            );
-        } catch (PrestaShopException $e) {
+
+        $row = Db::readOnly()->getRow(
+            (new DbQuery())
+                ->select('`nleft`, `nright`')
+                ->from('category')
+                ->where('`id_category` = '.(int) $idCategory)
+        );
+
+        if (! $row) {
             return false;
         }
 
-        return ($row['nleft'] >= $interval['nleft'] && $row['nright'] <= $interval['nright']);
+        return (
+            $row['nleft'] >= $interval['nleft'] &&
+            $row['nright'] <= $interval['nright']
+        );
     }
 
     /**
@@ -1422,10 +1426,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
         if ($changed) {
             if (Tools::isSubmit('checkBoxShopAsso_category')) {
-                foreach (Tools::getArrayValue('checkBoxShopAsso_category') as $row) {
-                    foreach ($row as $idShop => $value) {
-                        $this->addPosition((int) Category::getLastPosition((int) $this->id_parent, (int) $idShop), (int) $idShop);
-                    }
+                foreach (Tools::getArrayValue('checkBoxShopAsso_category') as $idShop => $value) {
+                    $this->addPosition((int) Category::getLastPosition((int) $this->id_parent, (int) $idShop), (int) $idShop);
                 }
             } else {
                 foreach (Shop::getShops(true) as $shop) {
@@ -2422,7 +2424,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             (new DbQuery())
                 ->select('c.`id_category`')
                 ->from('category', 'c')
-                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->join(Shop::addSqlAssociation('category', 'c', true, null, true))
                 ->where('category_shop.`id_shop` = '.(int) $idShop)
                 ->where('c.`id_parent` = '.(int) $this->id_parent)
         );

@@ -416,13 +416,19 @@ class MediaCore
             return false;
         }
 
-        $filePath = static::getLocalMediaFilePath($mediaUri);
-        if (! $filePath) {
+        $urlData = parse_url($mediaUri);
+        if (!is_array($urlData)) {
             return false;
         }
 
-        $mediaUri = '/'.ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
-        $mediaUri = str_replace('//', '/', $mediaUri);
+        if (! array_key_exists('host', $urlData)) {
+            $filePath = static::getLocalMediaFilePath($mediaUri);
+            if (!$filePath) {
+                return false;
+            }
+            $mediaUri = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
+            $mediaUri = str_replace('//', '/', $mediaUri);
+        }
 
         if ($cssMediaType) {
             return [$mediaUri => $cssMediaType];

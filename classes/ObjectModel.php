@@ -1380,7 +1380,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
         }
 
-        if (isset($this->{$wsParamsAttributeName}['retrieveData']) && isset($this->{$wsParamsAttributeName}['retrieveData']['retrieveMethod'])) {
+        if (isset($this->{$wsParamsAttributeName}['retrieveData']['retrieveMethod'])) {
             unset($defaultResourceParameters['retrieveData']['retrieveMethod']);
         }
 
@@ -1760,7 +1760,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public function isMultiShopField($field)
     {
-        return (isset($this->def['fields'][$field]) && isset($this->def['fields'][$field]['shop']) && $this->def['fields'][$field]['shop']);
+        return (isset($this->def['fields'][$field]['shop']) && $this->def['fields'][$field]['shop']);
     }
 
     /**

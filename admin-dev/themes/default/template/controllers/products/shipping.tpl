@@ -86,7 +86,7 @@
 			<div class="form-control-static row" id="carrierSelection" data-selection-source="availableCarriers" data-selection-target="selectedCarriers">
 				<div class="col-xs-6">
 					<p>{l s='Available carriers'}</p>
-					<select id="availableCarriers" name="availableCarriers" multiple="multiple">
+					<select id="availableCarriers" name="availableCarriers" multiple="multiple" {if count($carrier_list)>4}style="height:12em"{/if}>
 						{foreach $carrier_list as $carrier}
 							{if !isset($carrier.selected) || !$carrier.selected}
 								<option value="{$carrier.id_reference}">{$carrier.name}</option>
@@ -97,7 +97,7 @@
 				</div>
 				<div class="col-xs-6">
 					<p>{l s='Selected carriers'}</p>
-					<select id="selectedCarriers" name="selectedCarriers[]" multiple="multiple">
+					<select id="selectedCarriers" name="selectedCarriers[]" multiple="multiple" {if count($carrier_list)>4}style="height:12em"{/if}>
 						{foreach $carrier_list as $carrier}
 							{if isset($carrier.selected) && $carrier.selected}
 								<option value="{$carrier.id_reference}">{$carrier.name}</option>
