@@ -1,0 +1,242 @@
+@keyframes slideInFadeHorizontal {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFadeVertical {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes rotateIn {
+    0% {
+        opacity: 0;
+        transform: rotateY(-90deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: rotateY(0deg);
+    }
+}
+
+.categoryModuleFilterLinkPremium {
+    display: inline-grid !important;
+    grid-template-columns: 17px auto 10px;
+    grid-column-gap: 10px;
+    width: 100%;
+    padding-right: 8px !important;
+    border: 1px solid red;
+}
+
+.categoryModuleFilterLinkPremium.active {
+    background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
+}
+
+.categoryModuleFilterLinkPremium * {
+    display: inline-flex!important;
+    align-items: center!important;
+}
+
+.filter-premium-icon {
+    width: 18px;
+    height: 15px;
+    transform: rotateY(-90deg);
+    background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    animation: rotateIn;
+    animation-delay: 100ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.filter-premium-text {
+    color: #000!important;
+}
+
+.categoryModuleFilterLinkPremium.active  #premium-count {
+    color: #000 !important;
+}
+
+.tb-premium-modules-banner-container {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 10px;
+    background: linear-gradient(to bottom, rgba(255, 208, 36, 1) 0%,rgba(229, 184, 1, 1) 100%);
+    box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.12);
+}
+
+.tb-premium-modules-banner-container .tb-premium-modules-banner-icon {
+    transform: rotateY(-90deg);
+    display: inline-flex;
+    align-self: center;
+    width: 50px;
+    height: 43px;
+    background-image: url('../../img/thirtybees/premium-modules/premium-diamond-large.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    animation: rotateIn;
+    animation-delay: 800ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.tb-premium-modules-banner-col-left {
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 10px;
+    justify-content: left;
+}
+
+.tb-premium-modules-banner-heading-container {
+    display: inline-grid;
+    align-self: center;
+    grid-template-columns: 100%;
+    grid-row-gap: 5px;
+    overflow: hidden;
+}
+
+.tb-premium-modules-banner-heading-main {
+    font-size: 22px;
+    line-height: 1.2;
+    color: #000000;
+    opacity: 0;
+    transform: translateX(-100%);
+    animation: slideInFadeHorizontal;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.tb-premium-modules-banner-heading-sub {
+    opacity: 0;
+    transform: translateX(100%);
+    font-size: 12px;
+    color: #000000;
+    animation: slideInFadeVertical;
+    animation-delay: 800ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.tb-premium-modules-banner-col-right {
+    display: inline-grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto;
+    grid-row-gap: 10px;
+    justify-content: left;
+}
+
+.tb-premium-modules-banner-text {
+    width: 80%;
+    color: #000000;
+    opacity: 0;
+    animation: fadeIn;
+    animation-delay: 1000ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.tb-premium-modules-banner-button-area {
+    display: inline-flex;
+    align-items: center;
+}
+
+.tb-premium-modules-banner-button-area a {
+    opacity: 0;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background: #4AAE35;
+    border: 1px solid #307322;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.2;
+    letter-spacing: 0px;
+    text-decoration: none;
+    text-transform: none;
+    text-align: center;
+    color: #ffff;
+    transition: all 250ms ease-in-out;
+    animation: fadeIn;
+    animation-delay: 1500ms;
+    animation-direction: normal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.tb-premium-modules-banner-button-area a:hover {
+    background: #4CA13B;
+    box-shadow: -1px -1px 10px 7px rgba(76,161,59,0.21);
+}
+
+.tb-premium-modules-banner-button-area a:hover, .tb-premium-modules-banner-button-area a:visited, .tb-premium-modules-banner-button-area a:focus {
+    text-decoration: none !important;
+    color: #ffff!important;
+}
+
+/*/// Responsive ///*/
+@media (max-width: 588px) {
+    .tb-premium-modules-banner-container {
+        grid-template-columns: 100%;
+        grid-row-gap: 10px;
+    }
+
+    .tb-premium-modules-banner-button-area a {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .tb-premium-modules-banner-text {
+        width: 100%;
+    }
+}

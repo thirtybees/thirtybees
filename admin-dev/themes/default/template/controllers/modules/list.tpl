@@ -25,6 +25,30 @@
 
 {$moduleModals=[]}
 
+{if $selectedCategory === AdminModulesController::CATEGORY_PREMIUM && $showBecomeSupporterButton}
+	<div class="tb-premium-modules-banner-container">
+		<div class="tb-premium-modules-banner-col-left">
+			<div class="tb-premium-modules-banner-icon"></div>
+			<div class="tb-premium-modules-banner-heading-container">
+				<span class="tb-premium-modules-banner-heading-main">{l s="Premium [1]ThirtyBees[/1] Modules" tags=['<b>']}</span>
+				<span class="tb-premium-modules-banner-heading-sub">{l s="Enhance your store and productivity with premium ThirtyBees Modules!"}</span>
+			</div>
+		</div>
+		<div class="tb-premium-modules-banner-col-right">
+			<span class="tb-premium-modules-banner-text">
+				{l s="Gain access to these modules and more with reasonable priced ThirtyBees membership! Your support helps ThirtyBees grow and thrive!"}
+			</span>
+			<div class="tb-premium-modules-banner-button-area">
+				{if $connected}
+					<a href="{$becomeSupporterUrl|escape:'html'}" target="_blank">{l s="Become a Member today!"}</a>
+				{else}
+					<a href="{$connectLink|escape:'html'}" {if !$connectLink}disabled="disabled"{/if} target="_blank">{l s="Login to ThirtyBees"}</a>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/if}
+
 <table id="module-list" class="table">
 	<thead>
 		<tr>
