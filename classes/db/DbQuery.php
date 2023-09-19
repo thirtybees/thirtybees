@@ -34,6 +34,12 @@
  */
 class DbQueryCore
 {
+
+    /**
+     * @var string
+     */
+    protected $dbPrefix;
+
     /**
      * List of data to build the query
      *
@@ -50,6 +56,14 @@ class DbQueryCore
         'order'  => [],
         'limit'  => ['offset' => 0, 'limit' => 0],
     ];
+
+    /**
+     * @param string|null $dbPrefix
+     */
+    public function __construct($dbPrefix = null)
+    {
+        $this->dbPrefix = $dbPrefix ?? _DB_PREFIX_;
+    }
 
     /**
      * Sets type of the query
@@ -99,8 +113,8 @@ class DbQueryCore
     public function from($table, $alias = null)
     {
         if (!empty($table)) {
-            if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-                $table = _DB_PREFIX_.$table;
+            if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+                $table = $this->dbPrefix.$table;
             }
 
             if (empty($this->query['from'])) {
@@ -114,7 +128,7 @@ class DbQueryCore
 
     /**
      * Adds JOIN clause
-     * E.g. $this->join('RIGHT JOIN '._DB_PREFIX_.'product p ON ...');
+     * E.g. $this->join('RIGHT JOIN '.$this->dbPrefix.'product p ON ...');
      *
      * @param string $join Complete string
      *
@@ -143,8 +157,8 @@ class DbQueryCore
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+        if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+            $table = $this->dbPrefix.$table;
         }
 
         return $this->join('LEFT JOIN `'.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
@@ -165,8 +179,8 @@ class DbQueryCore
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+        if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+            $table = $this->dbPrefix.$table;
         }
 
         return $this->join('INNER JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
@@ -233,8 +247,8 @@ class DbQueryCore
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+        if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+            $table = $this->dbPrefix.$table;
         }
 
         return $this->join('LEFT OUTER JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
@@ -253,8 +267,8 @@ class DbQueryCore
      */
     public function naturalJoin($table, $alias = null)
     {
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+        if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+            $table = $this->dbPrefix.$table;
         }
 
         return $this->join('NATURAL JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : ''));
@@ -274,8 +288,8 @@ class DbQueryCore
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_.$table;
+        if (strncmp($this->dbPrefix, $table, strlen($this->dbPrefix)) !== 0) {
+            $table = $this->dbPrefix.$table;
         }
 
         return $this->join('RIGHT JOIN `'.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
