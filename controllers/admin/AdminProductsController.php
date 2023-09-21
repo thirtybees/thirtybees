@@ -133,6 +133,11 @@ class AdminProductsControllerCore extends AdminController
         if (! $this->allowEditPerStore() && !Tools::isSubmit('statusproduct')) {
             if ($productId || Tools::isSubmit('addproduct')) {
                 $this->multishop_context = false;
+                $defaultShopId = (int)Configuration::get('PS_SHOP_DEFAULT');
+                $context = Context::getContext();
+                if ((int)$context->shop->id !== $defaultShopId) {
+                    $context->shop = new Shop($defaultShopId);
+                }
             }
         }
 
