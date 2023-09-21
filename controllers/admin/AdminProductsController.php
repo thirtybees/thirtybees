@@ -6543,4 +6543,21 @@ class AdminProductsControllerCore extends AdminController
         return $productSuppliers;
     }
 
+    /**
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    public function initShopContext()
+    {
+        parent::initShopContext();
+        if (!$this->allowEditPerStore()) {
+            $defaultShopId = (int)Configuration::get('PS_SHOP_DEFAULT');
+            if ((int)$this->context->shop->id !== $defaultShopId) {
+                $this->context->shop = new Shop($defaultShopId);
+            }
+        }
+    }
+
+
 }
