@@ -104,7 +104,7 @@
             id="filter_premium">
             <span class="filter-premium-icon"></span>
             <span class="filter-premium-text">{l s='Premium Modules'}</span>
-            <span id="premium-count">{$nb_modules_premium}</span>
+            <span id="premium-count"><span class="badge">{$nb_modules_premium}</span></span>
         </a>
         <a class="categoryModuleFilterLink list-group-item {if $selectedCategory === AdminModulesController::CATEGORY_FAVORITES}active{/if}"
            href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;filterCategory={AdminModulesController::CATEGORY_FAVORITES}"
