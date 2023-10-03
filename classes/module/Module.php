@@ -957,6 +957,8 @@ abstract class ModuleCore
             foreach ($modules as $name => $module) {
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
+                    $moduleFromList->premium = $module['premium'];
+
                     if ($moduleFromList->author
                         && $moduleFromList->author === $module['author']
                         && $moduleFromList->version
@@ -967,10 +969,9 @@ abstract class ModuleCore
                         )
                     ) {
                         $moduleFromList->version_addons = $module['version'];
-                        $moduleFromList->premium = $module['premium'];
-                        $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     }
 
+                    $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     continue;
                 }
 
