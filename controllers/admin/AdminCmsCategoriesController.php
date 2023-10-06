@@ -276,6 +276,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
                     'lang'  => true,
                     'rows'  => 5,
                     'cols'  => 40,
+                    'autoload_rte' => true,
                     'hint'  => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
