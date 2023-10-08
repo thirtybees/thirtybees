@@ -461,12 +461,8 @@ class AdminRequestSqlControllerCore extends AdminController
 
         try {
             if ($results = Db::readOnly()->getArray($obj->sql)) {
-                foreach (array_keys($results[0]) as $key) {
-                    $tabKey[] = $key;
-                }
-
                 $view['name'] = $obj->name;
-                $view['key'] = $tabKey;
+                $view['key'] = array_keys($results[0]);
                 $view['results'] = $results;
 
                 $this->toolbar_title = $obj->name;
