@@ -957,14 +957,15 @@ class AdminControllerCore extends Controller
         $this->ensureListIdDefinition();
 
         /* Manage default params values */
-        $useLimit = true;
         if ($limit === false) {
             $useLimit = false;
-        } elseif (empty($limit)) {
-            if (isset($this->context->cookie->{$this->list_id.'_pagination'}) && $this->context->cookie->{$this->list_id.'_pagination'}) {
-                $limit = (int)$this->context->cookie->{$this->list_id.'_pagination'};
+        } else {
+            $useLimit = true;
+            $limit = HelperList::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
+            if ($limit !== $this->_default_pagination) {
+                $this->context->cookie->{$this->list_id.'_pagination'} = $limit;
             } else {
-                $limit = (int)$this->_default_pagination;
+                unset($this->context->cookie->{$this->list_id.'_pagination'});
             }
         }
 
@@ -975,12 +976,7 @@ class AdminControllerCore extends Controller
         $orderBy = $this->resolveOrderBy($orderBy);
         $orderWay = $this->resolveOrderWay($orderWay);
 
-        $limit = Tools::getIntValue($this->list_id.'_pagination', $limit);
-        if (in_array($limit, $this->_pagination) && $limit != $this->_default_pagination) {
-            $this->context->cookie->{$this->list_id.'_pagination'} = $limit;
-        } else {
-            unset($this->context->cookie->{$this->list_id.'_pagination'});
-        }
+
 
         /* Check params validity */
         if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {

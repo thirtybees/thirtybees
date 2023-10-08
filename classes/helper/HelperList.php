@@ -309,42 +309,22 @@ class HelperListCore extends Helper
         }
 
         /* Determine total page number */
-        $pagination = $this->_default_pagination;
-        $cookie = $this->context->cookie;
-        if (in_array(Tools::getIntValue($this->list_id.'_pagination'), $this->_pagination)) {
-            $pagination = Tools::getIntValue($this->list_id.'_pagination');
-        } elseif (isset($cookie->{$this->list_id.'_pagination'}) && $cookie->{$this->list_id.'_pagination'}) {
-            $pagination = $cookie->{$this->list_id.'_pagination'};
-        }
-
+        $pagination = $this->getSelectedPagination();
         $totalPages = max(1, ceil($this->listTotal / $pagination));
 
         $identifier = Tools::getIsset($this->identifier) ? '&'.$this->identifier.'='.Tools::getIntValue($this->identifier) : '';
-//        $order = '';
-//        if (Tools::getIsset($this->table.'Orderby')) {
-//            $order = '&'.$this->table.'Orderby='.urlencode($this->orderBy).'&'.$this->table.'Orderway='.urlencode(strtolower($this->orderWay));
-//        }
 
         $action = $this->currentIndex.$identifier.'&token='.$token.'#'.$this->list_id;
 
         /* Determine current page number */
         $page = Tools::getIntValue('submitFilter'.$this->list_id);
-
-        if (!$page) {
+        if ($page <= 0) {
             $page = 1;
         }
-
         if ($page > $totalPages) {
             $page = $totalPages;
         }
-
-        $this->page = (int) $page;
-
-        /* Choose number of results per page */
-        $selectedPagination = Tools::getValue(
-            $this->list_id.'_pagination',
-            $cookie->{$this->list_id . '_pagination'} ?? $this->_default_pagination
-        );
+        $this->page = (int)$page;
 
         if (is_null($this->table_id) && $this->position_identifier && Tools::getIntValue($this->position_identifier, 1)) {
             $this->table_id = substr($this->identifier, 3, strlen($this->identifier));
@@ -357,6 +337,7 @@ class HelperListCore extends Helper
         $prefix = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
         $ajax = false;
         $controller = $this->getController();
+        $cookie = $this->context->cookie;
         foreach ($this->fields_list as $key => $params) {
             if (!isset($params['type'])) {
                 $params['type'] = 'text';
@@ -441,7 +422,7 @@ class HelperListCore extends Helper
                 'page'                => $page,
                 'simple_header'       => $this->simple_header,
                 'total_pages'         => $totalPages,
-                'selected_pagination' => $selectedPagination,
+                'selected_pagination' => $this->getSelectedPagination(),
                 'pagination'          => $this->_pagination,
                 'list_total'          => $this->listTotal,
                 'sql'                 => str_replace('\n', ' ', str_replace('\r', '', (string)$this->sql)),
@@ -1021,5 +1002,61 @@ class HelperListCore extends Helper
         );
 
         return $tpl->fetch();
+    }
+
+    /**
+     * @return int
+     */
+    protected function getSelectedPagination()
+    {
+        return static::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
+    }
+
+    /**
+     * @param string $listId
+     * @param Cookie $cookie
+     * @param array $pagination
+     * @param int $defaultPagination
+     *
+     * @return int
+     */
+    public static function resolvePagination(string $listId, Cookie $cookie, array $pagination, int $defaultPagination)
+    {
+        if ($pagination) {
+            $value = static::resolvePaginationValue($listId, $cookie, $defaultPagination);
+            if (in_array($value, $pagination)) {
+                return $value;
+            }
+            if (in_array($defaultPagination, $pagination)) {
+                return $defaultPagination;
+            }
+            return $pagination[0];
+        } else {
+            trigger_error("Pagination not set for list $listId", E_USER_WARNING);
+            return 20;
+        }
+    }
+
+    /**
+     * @param string $listId
+     * @param Cookie $cookie
+     * @param int $defaultPagination
+     *
+     * @return int
+     */
+    protected static function resolvePaginationValue(string $listId, Cookie $cookie, int $defaultPagination)
+    {
+        $paginationKey = $listId.'_pagination';
+        $pagination = Tools::getIntValue($paginationKey);
+        if ($pagination > 0) {
+            return $pagination;
+        }
+        if (isset($cookie->{$paginationKey})) {
+            $pagination = (int)$cookie->{$paginationKey};
+            if ($pagination > 0) {
+                return $pagination;
+            }
+        }
+        return $defaultPagination;
     }
 }
