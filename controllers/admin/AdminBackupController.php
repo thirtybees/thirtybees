@@ -295,7 +295,7 @@ class AdminBackupControllerCore extends AdminController
 
         if (empty($limit)) {
             $limit = isset($this->context->cookie->{$this->table.'_pagination'})
-                ? $this->context->cookie->{$this->table.'_pagination'}
+                ? (int)$this->context->cookie->{$this->table.'_pagination'}
                 : $this->_pagination[0];
         }
         $limit = Tools::getIntValue('pagination', $limit);
