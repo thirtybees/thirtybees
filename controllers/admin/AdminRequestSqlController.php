@@ -477,7 +477,7 @@ class AdminRequestSqlControllerCore extends AdminController
                 $view['error'] = true;
             }
         } catch (PrestaShopException $e) {
-            $this->errors[] = $e->getMessage();
+            $this->errors[] = Tools::safeOutput($e->getMessage());
             $view = [
                 'name'    => '',
                 'key'     => '',
