@@ -959,6 +959,7 @@ class AdminControllerCore extends Controller
         /* Manage default params values */
         if ($limit === false) {
             $useLimit = false;
+            $limit = 0;
         } else {
             $useLimit = true;
             $limit = HelperList::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
@@ -976,14 +977,9 @@ class AdminControllerCore extends Controller
         $orderBy = $this->resolveOrderBy($orderBy);
         $orderWay = $this->resolveOrderWay($orderWay);
 
-
-
         /* Check params validity */
         if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
             throw new PrestaShopException(sprintf(Tools::displayError('Invalid ordering parameters: orderBy=[%s] orderWay=[%s]'), $orderBy, $orderWay));
-        }
-        if (!is_numeric($start) || !is_numeric($limit) || !Validate::isUnsignedId($idLang)) {
-            throw new PrestaShopException(sprintf(Tools::displayError('getList params is not valid: start=[%s] limit=[%s] idLang=[%s]'), $start, $limit, $idLang));
         }
 
         if (!isset($this->fields_list[$orderBy]['order_key']) && isset($this->fields_list[$orderBy]['filter_key'])) {
@@ -998,7 +994,7 @@ class AdminControllerCore extends Controller
         $start = 0;
         if (Tools::getIntValue('submitFilter'.$this->list_id)) {
             $start = (Tools::getIntValue('submitFilter'.$this->list_id) - 1) * $limit;
-        } elseif (empty($start) && isset($this->context->cookie->{$this->list_id.'_start'}) && Tools::isSubmit('export'.$this->table)) {
+        } elseif (isset($this->context->cookie->{$this->list_id.'_start'}) && Tools::isSubmit('export'.$this->table)) {
             $start = $this->context->cookie->{$this->list_id.'_start'};
         }
 
