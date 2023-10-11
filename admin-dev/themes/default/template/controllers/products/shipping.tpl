@@ -34,33 +34,46 @@
 
 	<div class="form-group">
 		<label class="control-label col-lg-2 col-lg-offset-1" for="width">{$bullet_common_field} {l s='Package width'}</label>
-		<div class="input-group col-lg-2">
-			<span class="input-group-addon">{$ps_dimension_unit}</span>
-			<input maxlength="14" id="width" name="width" type="text" value="{$product->width}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+		<div class="col-lg-9">
+			<div class="input-group col-lg-3">
+				<span class="input-group-addon">{$ps_dimension_unit}</span>
+				<input maxlength="14" id="width" name="width" type="text" value="{$product->width}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+			</div>
 		</div>
 	</div>
 
 	<div class="form-group">
 		<label class="control-label col-lg-2 col-lg-offset-1" for="height">{$bullet_common_field} {l s='Package height'}</label>
-		<div class="input-group col-lg-2">
-			<span class="input-group-addon">{$ps_dimension_unit}</span>
-			<input maxlength="14" id="height" name="height" type="text" value="{$product->height}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+		<div class="col-lg-9">
+			<div class="input-group col-lg-3">
+				<span class="input-group-addon">{$ps_dimension_unit}</span>
+				<input maxlength="14" id="height" name="height" type="text" value="{$product->height}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+			</div>
 		</div>
 	</div>
 
 	<div class="form-group">
 		<label class="control-label col-lg-2 col-lg-offset-1" for="depth">{$bullet_common_field} {l s='Package depth'}</label>
-		<div class="input-group col-lg-2">
-			<span class="input-group-addon">{$ps_dimension_unit}</span>
-			<input maxlength="14" id="depth" name="depth" type="text" value="{$product->depth}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+		<div class="col-lg-9">
+			<div class="input-group col-lg-3">
+				<span class="input-group-addon">{$ps_dimension_unit}</span>
+				<input maxlength="14" id="depth" name="depth" type="text" value="{$product->depth}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+			</div>
 		</div>
 	</div>
 
 	<div class="form-group">
 		<label class="control-label col-lg-2 col-lg-offset-1" for="weight">{$bullet_common_field} {l s='Package weight'}</label>
-		<div class="input-group col-lg-2">
-			<span class="input-group-addon">{$ps_weight_unit}</span>
-			<input maxlength="14" id="weight" name="weight" type="text" value="{$product->weight}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+		<div class="col-lg-9">
+			<div class="input-group col-lg-3">
+				<span class="input-group-addon">{$ps_weight_unit}</span>
+				<input maxlength="14" id="weight" name="weight" type="text" value="{$product->weight}" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+			</div>
+			{if isset($packWeight)}
+			<p class="help-block">
+				{l s='Calculated weight of pack items is [1]%1$s %2$s[/1]' sprintf=[$packWeight, $ps_weight_unit] tags=['<a class="copy-weight" href="#">']}
+			</p>
+			{/if}
 		</div>
 	</div>
 
@@ -73,9 +86,11 @@
 			</span>
 
 		</label>
-		<div class="input-group col-lg-2">
-			<span class="input-group-addon">{$currency->prefix}{$currency->suffix} {if $country_display_tax_label}({l s='tax excl.'}){/if}</span>
-			<input type="text" id="additional_shipping_cost" name="additional_shipping_cost" onchange="this.value = this.value.replace(/,/g, '.');" value="{$product->additional_shipping_cost|htmlentities}" />
+		<div class="col-lg-9">
+			<div class="input-group col-lg-3">
+				<span class="input-group-addon">{$currency->prefix}{$currency->suffix} {if $country_display_tax_label}({l s='tax excl.'}){/if}</span>
+				<input type="text" id="additional_shipping_cost" name="additional_shipping_cost" onchange="this.value = this.value.replace(/,/g, '.');" value="{$product->additional_shipping_cost|htmlentities}" />
+			</div>
 		</div>
 	</div>
 
@@ -120,3 +135,13 @@
 		<button type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save and stay'}</button>
 	</div>
 </div>
+
+{if isset($packWeight)}
+<script>
+	$('.copy-weight').on('click', function() {
+		$('#weight').val("{$packWeight|floatval}");
+		event.stopPropagation();
+		event.preventDefault();
+	});
+</script>
+{/if}

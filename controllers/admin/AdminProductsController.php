@@ -4999,6 +4999,22 @@ class AdminProductsControllerCore extends AdminController
                 'multi_shop'     => Shop::isFeatureActive(),
             ]
         );
+        $productId = (int)$obj->id;
+        if ($productId && Pack::isPack($productId)) {
+            $packWeight = 0.0;
+            foreach (Pack::getPackContent($productId) as $packItem) {
+                $item = new Product((int)$packItem['id_product']);
+                $quantity = (int)$packItem['quantity'];
+                $weight = (float)$item->weight;
+                $combinationId = (int)$packItem['id_product_attribute'];
+                if ($combinationId) {
+                    $combination = new Combination($combinationId);
+                    $weight += (float)$combination->weight;
+                }
+                $packWeight += ($weight * $quantity);
+            }
+            $data->assign('packWeight', sprintf("%.2f", $packWeight));
+        }
         $this->tpl_form_vars['custom_form'] = $data->fetch();
     }
 
