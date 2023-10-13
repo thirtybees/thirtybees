@@ -3267,11 +3267,15 @@ class AdminTranslationsControllerCore extends AdminController
             $this->errors[] = sprintf(Tools::displayError('Cannot write into the "%s"'), $i18NFile);
         }
 
-        @include($i18NFile);
+        if (file_exists($i18NFile)) {
+            include($i18NFile);
+        }
 
         // if the override's translation file is empty load the default file
         if (!isset($GLOBALS[$nameVar]) || count($GLOBALS[$nameVar]) == 0) {
-            @include($defaultI18NFile);
+            if (file_exists($defaultI18NFile)) {
+                include($defaultI18NFile);
+            }
         }
 
         $prefixKey = 'PDF';
