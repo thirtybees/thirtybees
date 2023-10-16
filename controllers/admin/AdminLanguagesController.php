@@ -482,7 +482,7 @@ class AdminLanguagesControllerCore extends AdminController
             return false;
         }
 
-        if (isset($_POST['iso_code']) && !empty($_POST['iso_code']) && Validate::isLanguageIsoCode(Tools::getValue('iso_code')) && Language::getIdByIso($_POST['iso_code'])) {
+        if (!empty($_POST['iso_code']) && Validate::isLanguageIsoCode(Tools::getValue('iso_code')) && Language::getIdByIso($_POST['iso_code'])) {
             $this->errors[] = Tools::displayError('This ISO code is already linked to another language.');
         }
         if ((!empty($_FILES['no_picture']['tmp_name']) || !empty($_FILES['flag']['tmp_name'])) && Validate::isLanguageIsoCode(Tools::getValue('iso_code'))) {
@@ -664,19 +664,32 @@ class AdminLanguagesControllerCore extends AdminController
      * After image upload
      *
      * @return bool
+     * @throws PrestaShopException
      */
     protected function afterImageUpload()
     {
         parent::afterImageUpload();
 
-        if (($idLang = Tools::getIntValue('id_lang')) && $_FILES && file_exists(_PS_LANG_IMG_DIR_.$idLang.'.jpg')) {
-            $currentFile = _PS_TMP_IMG_DIR_.'lang_mini_'.$idLang.'_'.$this->context->shop->id.'.jpg';
+        $idLang = Tools::getIntValue('id_lang');
+        if ($idLang && $_FILES && file_exists(_PS_LANG_IMG_DIR_.$idLang.'.jpg')) {
+            $this->deleteFlagThumbnail($idLang);
+        }
+        return true;
+    }
 
+    /**
+     * @param int $langId
+     *
+     * @throws PrestaShopException
+     */
+    protected function deleteFlagThumbnail($langId)
+    {
+        $langId = (int)$langId;
+        foreach (Shop::getShops(true, null, true) as $shopId) {
+            $currentFile = _PS_TMP_IMG_DIR_ . 'lang_mini_' . $langId . '_' . (int)$shopId . '.jpg';
             if (file_exists($currentFile)) {
                 unlink($currentFile);
             }
         }
-
-        return true;
     }
 }

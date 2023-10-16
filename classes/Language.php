@@ -833,7 +833,7 @@ class LanguageCore extends ObjectModel
 
     /**
      * @param int $id
-     * @param int|string $iso
+     * @param string|null $iso @Deprecated
      *
      * @return bool
      *
@@ -843,27 +843,24 @@ class LanguageCore extends ObjectModel
      */
     public static function _copyNoneFlag($id, $iso = null)
     {
+        $id = (int)$id;
         if ($id) {
+            $target = _PS_LANG_IMG_DIR_ . $id . '.jpg';
             static::loadLanguages();
-            if ($databaseIso = Language::getIsoById($id)) {
-                $iso = $databaseIso;
+            $language = Language::getLanguage($id);
+            if ($language) {
+                $languageCode = (string)$language['language_code'];
+                if (preg_match('/^[a-zA-Z]{2}-([a-zA-Z]{2})$/', $languageCode, $matches)) {
+                    $countryCode = strtolower($matches[1]);
+                    $source = _PS_ROOT_DIR_ . '/img/flags/' . $countryCode . '.png';
+                    if (file_exists($source)) {
+                        return ImageManager::resize($source, $target, null, null, 'jpg', true);
+                    }
+                }
+                return copy(_PS_LANG_IMG_DIR_ . 'none.jpg', $target);
             }
         }
-
-        if ($iso) {
-            if (file_exists(_PS_ROOT_DIR_.'/img/flags/'.strtolower($iso).'.png')) {
-                return ImageManager::resize(
-                    _PS_ROOT_DIR_.'/img/flags/'.strtolower($iso).'.png',
-                    _PS_ROOT_DIR_.'/img/l/'.$id.'.jpg',
-                    null,
-                    null,
-                    'jpg',
-                    true
-                );
-            }
-        }
-
-        return copy(_PS_ROOT_DIR_.'/img/l/none.jpg', _PS_ROOT_DIR_.'/img/l/'.$id.'.jpg');
+        return false;
     }
 
     /**
