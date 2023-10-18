@@ -331,6 +331,10 @@ class AdminCustomerMergeControllerCore extends AdminController implements Initia
             $tab = new Tab();
             $tab->class_name = $classname;
             $tab->id_parent = -1;
+            $tab->name = [];
+            foreach (Language::getIDs() as $langId) {
+                $tab->name[$langId] = 'Merge Customer';
+            }
             $tab->add();
         }
     }
