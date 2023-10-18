@@ -239,6 +239,13 @@ class TabCore extends ObjectModel
             );
 
             foreach ($result as $row) {
+                $name = (string)$row['name'];
+                if (! $name) {
+                    $class = (string)$row['class_name'];
+                    $name = preg_replace("/^Admin/", "", $class);
+                    $name = preg_replace('/(?<!^)[A-Z]/', ' $0', $name);
+                    $row['name'] = $name;
+                }
                 if (!isset(static::$_cache_tabs[$idLang][$row['id_parent']])) {
                     static::$_cache_tabs[$idLang][$row['id_parent']] = [];
                 }
