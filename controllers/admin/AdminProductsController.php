@@ -3311,28 +3311,11 @@ class AdminProductsControllerCore extends AdminController
                     foreach ($languageIds as $idLang) {
                         if ($idLang == $match[1]) {
                             foreach ($idImages as $idImage) {
-                                // Insert missing entries, update already
-                                // existing ones. As SQL features no 'insert if
-                                // missing, update otherwise', try both.
-                                $conn->insert(
-                                    'image_lang',
-                                    [
-                                        'id_image'  => $idImage,
-                                        'id_lang'   => $idLang,
-                                        'legend'    => $val,
-                                    ],
-                                    false,
-                                    true,
-                                    Db::INSERT_IGNORE
-                                );
-                                $conn->update(
-                                    'image_lang',
-                                    [
-                                        'legend'    => $val,
-                                    ],
-                                    '`id_image` = '.$idImage
-                                    .' AND `id_lang` = '.$idLang
-                                );
+                                $conn->insert('image_lang', [
+                                    'id_image'  => (int)$idImage,
+                                    'id_lang'   => (int)$idLang,
+                                    'legend'    => pSQL($val),
+                                ], false, true, Db::ON_DUPLICATE_KEY);
                             }
                         }
                     }
