@@ -8274,6 +8274,6 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public static function initializationCallback(Db $conn)
     {
-        ImageEntity::rebuildImageEntities(static::class, self::$definition['images']);
+        ImageEntity::rebuildImageEntities('Product', self::$definition['images']);
     }
 }

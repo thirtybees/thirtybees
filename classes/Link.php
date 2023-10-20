@@ -483,43 +483,8 @@ class LinkCore
      */
     public static function getGenericImageLink($imageEntityName, $id, $imageType = null, $highDpi = false, $webp = null, $link_rewrite = '')
     {
-
-        // If exact $imageType is missing we save it to the db
-        if ($imageType && !ImageType::typeAlreadyExists($imageType)) {
-
-            $width = 0;
-            $height = 0;
-
-            // Trying to find missing $imageType in ObjectModel definitions
-            if ($imageEntity = ImageEntity::getImageEntities($imageEntityName, true)) {
-                if (!empty($imageEntity['imageTypes'])) {
-                    foreach ($imageEntity['imageTypes'] as $imgType) {
-                        if ($imgType['name']==$imageType && !empty($imgType['width']) && !empty($imgType['height'])) {
-                            $width = (int)$imgType['width'];
-                            $height = (int)$imgType['height'];
-                        }
-                    }
-                }
-            }
-
-            // If we haven't found $imageType we try to find by a similar name
-            if (!$width || !$height) {
-                $imageTypeParent = ImageType::getInstanceByName(ImageType::getFormatedName($imageType));
-                $width = $imageTypeParent->width ?: 300;
-                $height = $imageTypeParent->height ?: 300;
-            }
-
-            $imageTypeObj = new ImageType();
-            $imageTypeObj->name = $imageType;
-            $imageTypeObj->width = $width;
-            $imageTypeObj->height = $height;
-
-            if (!$imageTypeObj->add()) {
-                throw new PrestaShopException(Tools::displayError("ImageType couldn't be added"));
-            }
-        }
-
         // Format imageType
+        $imageType = ImageType::getFormatedName($imageType);
         $imageType = $imageType ? '-'.$imageType : '';
 
         // Format link rewrite
@@ -530,7 +495,11 @@ class LinkCore
         // Get default image extension
         $imageExtension = ImageManager::getDefaultImageExtension();
 
-        $uriPath = __PS_BASE_URI__.$imageEntityName.'/'.$id.$imageType.'/'.$link_rewrite.$highDpi.'.'.$imageExtension;
+        if ((int)Configuration::get('PS_REWRITING_SETTINGS') || !isset(_TB_IMAGE_MAP_[$imageEntityName])) {
+            $uriPath = __PS_BASE_URI__.$imageEntityName.'/'.$id.$imageType.'/'.$link_rewrite.$highDpi.'.'.$imageExtension;
+        } else {
+            $uriPath = _PS_IMG_._TB_IMAGE_MAP_[$imageEntityName].$id.$imageType.$highDpi.'.'.$imageExtension;
+        }
 
         return Tools::getShopProtocol().Tools::getMediaServer($uriPath).$uriPath;
     }
