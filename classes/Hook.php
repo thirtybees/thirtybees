@@ -530,7 +530,8 @@ class HookCore extends ObjectModel
             }
 
             // Check which / if method is callable
-            $hookCallable = is_callable([$moduleInstance, 'hook'.$hookName]);
+            $hookMethod = 'hook' . ucfirst($hookName);
+            $hookCallable = is_callable([$moduleInstance, $hookMethod]);
             $hookRetroCallable = is_callable([$moduleInstance, 'hook'.$retroHookName]);
 
             if ($hookCallable || $hookRetroCallable) {
@@ -561,7 +562,8 @@ class HookCore extends ObjectModel
                     }
                 }
             } else {
-                Logger::addLog("Module '{$array['module']}' doesn't implement handler for hook '$hookName'", 2, 0, 'Module', $moduleInstance->id);
+                Logger::addLog("Module '{$array['module']}' doesn't implement public hook handler method '$hookMethod()'. This hook will be unregistred.", 2, 0, 'Module', $moduleInstance->id, true);
+                $moduleInstance->unregisterHook((int)$idHook);
             }
         }
 
