@@ -1178,7 +1178,9 @@ class LinkCore
 
         foreach ($fileNameCandidates as $candidate) {
             if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, $candidate, $preferredExtension)) {
-                return $returnFullUri ? $sourceImage : str_replace(_PS_LANG_IMG_DIR_, _THEME_LANG_DIR_, $sourceImage);
+                return $returnFullUri
+                    ? $sourceImage
+                    : str_replace(_PS_LANG_IMG_DIR_, _THEME_LANG_DIR_, $sourceImage);
             }
         }
 
@@ -1236,11 +1238,12 @@ class LinkCore
         // find first existing file
         foreach ($candidates as $fileName => $friendlyUri) {
             if ($sourceImage = ImageManager::getSourceImage(_PS_PROD_IMG_DIR_.$imgDir, $fileName, $preferredExtension)) {
-                $sourceImageExtension = substr(strrchr($sourceImage, '.'), 1);
                 if ($this->allow == 1) {
+                    $sourceImageExtension = substr(strrchr($sourceImage, '.'), 1);
                     return __PS_BASE_URI__ . 'products/' . $friendlyUri.'.'.$sourceImageExtension;
                 } else {
-                    return _THEME_PROD_DIR_ . $fileName.'.'.$sourceImageExtension;
+                    $relativePath = str_replace(_PS_PROD_IMG_DIR_, '', $sourceImage);
+                    return _THEME_PROD_DIR_ . $relativePath;
                 }
             }
         }

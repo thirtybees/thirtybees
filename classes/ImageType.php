@@ -245,7 +245,7 @@ class ImageTypeCore extends ObjectModel
     protected static function getIndexedImageTypeNames()
     {
         if (is_null(static::$typeNameCache)) {
-            $cache = [];
+            static::$typeNameCache = [];
             $rows = Db::readOnly()->getArray(
                 (new DbQuery())
                     ->select('`name`')
@@ -253,11 +253,8 @@ class ImageTypeCore extends ObjectModel
             );
             foreach ($rows as $row) {
                 $name = $row['name'];
-                $ache[$name] = $name;
+                static::$typeNameCache[$name] = $name;
             }
-
-            static::$typeNameCache = $cache;
-            return $cache;
         }
         return static::$typeNameCache;
     }

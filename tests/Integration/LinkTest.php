@@ -25,13 +25,13 @@ class LinkTest extends Unit
     protected function getImageLinkData()
     {
         return [
-            ['1/name.jpg', 1, 'name', 1, null],
+            ['products/1/name.jpg', 1, 'name', 1, null],
             ['img/p/1/1.jpg', 0, 'name', 1, null],
-            ['1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
+            ['products/1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
             ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home'],
-            ['img/p/en-default-Niara_home.jpg', 1, 'name', 111111, 'home'],
-            ['img/p/en-default-Niara_home.jpg', 0, 'name', 111111, 'home'],
-            ['1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
+            ['img/l/en-default-Niara_home.jpg', 1, 'name', 111111, 'home'],
+            ['img/l/en-default-Niara_home.jpg', 0, 'name', 111111, 'home'],
+            ['products/1-Niara_home/name.jpg', 1, 'name', 1, 'home'],
             ['img/p/1/1-Niara_home.jpg', 0, 'name', 1, 'home'],
         ];
     }
@@ -64,8 +64,8 @@ class LinkTest extends Unit
             $link = new Link('http://', 'http://');
             $product = new Product(1, false, 1);
             $imageId = $product->getCoverWs();
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
         } finally {
             Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
         }
@@ -87,7 +87,7 @@ class LinkTest extends Unit
             $link = new Link('http://', 'http://');
             $product = new Product(1);
             $imageId = $product->getCoverWs();
-            assertEquals('1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
+            assertEquals('products/1-Niara_cart/candle.jpg', static::getRelativeUrl($link->getImageLink($product->link_rewrite, $imageId, 'cart')));
             assertEquals(true, $this->raised, "Error should have been raised");
         } finally {
             Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
