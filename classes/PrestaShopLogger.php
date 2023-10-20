@@ -77,6 +77,15 @@ class PrestaShopLoggerCore extends ObjectModel
             'date_add'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_upd'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
         ],
+        'keys' => [
+            'log' => [
+                'message' => [
+                    'type' => ObjectModel::KEY,
+                    'columns' => ['message', 'severity','error_code','object_type', 'object_id'],
+                    'subParts' => [150],
+                ],
+            ],
+        ]
     ];
 
     /**

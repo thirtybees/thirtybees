@@ -1139,7 +1139,8 @@ CREATE TABLE `PREFIX_log` (
   `id_employee` int(11) unsigned DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
-  PRIMARY KEY (`id_log`)
+  PRIMARY KEY (`id_log`),
+  KEY `message` (`message`(150),`severity`,`error_code`,`object_type`,`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_mail` (
