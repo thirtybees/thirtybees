@@ -954,10 +954,19 @@ abstract class ModuleCore
         ]);
 
         if ($modules = static::getApiModulesInfo()) {
+
+            $supporterPlan = Configuration::getSupporterInfo();
+            $supporterType = (string)($supporterPlan['type'] ?? '');
+
             foreach ($modules as $name => $module) {
+
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
                     $moduleFromList->premium = $module['premium'];
+                    if ($moduleFromList->canInstall && $moduleFromList->premium) {
+                        $allowedTypes = array_column($moduleFromList->premium, 'type');
+                        $moduleFromList->canInstall = in_array($supporterType, $allowedTypes, true);
+                    }
 
                     if ($moduleFromList->author
                         && $moduleFromList->author === $module['author']
@@ -3710,6 +3719,51 @@ abstract class ModuleCore
             return version_compare(_TB_VERSION_, $operand, $operator);
         }
         return false;
+    }
+
+    /**
+     * @param string $moduleName
+     *
+     * @return stdClass|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getModuleInfo($moduleName)
+    {
+        $modules = static::getModulesOnDisk(true);
+        if ($modules) {
+            $moduleName = mb_strtolower($moduleName);
+            foreach ($modules as $module) {
+                if ($moduleName === mb_strtolower((string)$module->name)) {
+                    return $module;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param string|null $supporterType
+     *
+     * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function processPremiumModules($supporterType)
+    {
+        foreach (static::getModulesOnDisk(true) as $module) {
+            if ($module->id && $module->premium) {
+                $allowedTypes = array_column($module->premium, 'type');
+                if (! in_array((string)$supporterType, $allowedTypes, true)) {
+                    $instance = static::getInstanceById($module->id);
+                    if (Validate::isLoadedObject($instance)) {
+                        $instance->disable(true);
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -1167,7 +1167,16 @@ class AdminModulesControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('You do not have the permission to use this module.');
                 } else {
                     if (Tools::getValue('enable')) {
-                        $module->enable();
+                        $moduleInfo = Module::getModuleInfo($module->name);
+                        $canEnable = true;
+                        if ($moduleInfo->premium) {
+                            $canEnable = $moduleInfo->canInstall;
+                        }
+                        if ($canEnable) {
+                            $module->enable();
+                        } else {
+                            $this->errors[] = Tools::displayError('You can\'t enable this premium module.');
+                        }
                     } else {
                         $module->disable();
                     }

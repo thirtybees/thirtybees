@@ -23,6 +23,7 @@ use Configuration;
 use Context;
 use Db;
 use GuzzleHttp\Exception\GuzzleException;
+use Module;
 use PrestaShopException;
 use Thirtybees\Core\InitializationCallback;
 use Thirtybees\Core\WorkQueue\ScheduledTask;
@@ -98,13 +99,15 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
             Configuration::updateGlobalValue(Configuration::BECOME_SUPPORTER_URL, $config['supporterUrl']);
 
             // update installation info
-            if (isset($installationInfo['supporter'])) {
+            if (isset($installationInfo['supporter']['type']) && $installationInfo['supporter']['type']) {
                 $supporter = $installationInfo['supporter'];
                 Configuration::updateGlobalValue(Configuration::SUPPORTER_TYPE, $supporter['type']);
                 Configuration::updateGlobalValue(Configuration::SUPPORTER_TYPE_NAME, $supporter['name']);
+                Module::processPremiumModules($supporter['type']);
             } else {
                 Configuration::deleteByName(Configuration::SUPPORTER_TYPE);
                 Configuration::deleteByName(Configuration::SUPPORTER_TYPE_NAME);
+                Module::processPremiumModules(null);
             }
             Configuration::updateGlobalValue(Configuration::CONNECTED, $installationInfo['connected'] ? 1 : 0);
             if ($installationInfo['sid'] !== Configuration::getServerTrackingId()) {

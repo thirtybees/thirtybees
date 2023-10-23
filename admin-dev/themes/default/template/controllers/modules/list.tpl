@@ -125,7 +125,7 @@
 											<a class="btn btn-success" data-toggle="modal" data-target="#modal-premium-module-{$module->name}">
 												<i class="icon-puzzle-piece"></i>&nbsp;{l s='Premium module'}
 											</a>
-											{$moduleModals[] = $module}
+											{$moduleModals[$module->name] = $module}
 										{/if}
 									{/if}
 
@@ -135,7 +135,15 @@
 										</button>
 
 										<ul class="dropdown-menu">
-											{foreach $module->optionsHtml key=key item=option}
+											{if $module->premium && $module->id && !$module->canInstall}
+												<li>
+													<a class="" href="#" data-toggle="modal" data-target="#modal-premium-module-{$module->name}">
+														<i class="icon-puzzle-piece"></i>&nbsp;{l s='Premium module'}
+													</a>
+												</li>
+												{$moduleModals[$module->name] = $module}
+											{/if}
+											{foreach from=$module->optionsHtml key=key item=option}
 												{if $key != 0}
 													{if strpos($option, 'title="divider"') !== false}
 														<li class="divider"></li>
