@@ -301,7 +301,7 @@ class ProductCore extends ObjectModel
     public $quantity_discount = 0;
 
     /**
-     * @var bool Product customization
+     * @var int Product customization
      */
     public $customizable;
 
@@ -501,7 +501,7 @@ class ProductCore extends ObjectModel
             'weight'                    => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'dbDefault' => '0.000000'],
             'out_of_stock'              => ['type' => self::TYPE_INT,  'validate' => 'isInt', 'dbDefault' => '2'],
             'quantity_discount'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0', 'dbNullable' => true],
-            'customizable'              => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
+            'customizable'              => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
             'uploadable_files'          => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'text_fields'               => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'active'                    => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbDefault' => '0'],
