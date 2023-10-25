@@ -874,11 +874,24 @@ class DispatcherCore
             return $this->controller;
         }
 
-
-        list($uri) = explode('?', $this->request_uri);
         if (isset(Context::getContext()->shop) && $idShop === null) {
             $idShop = (int) Context::getContext()->shop->id;
         }
+        return $this->resolveController($idShop, $this->request_uri);
+    }
+
+
+    /**
+     * @param int $idShop
+     * @param string $requestUri
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function resolveController(int $idShop, string $requestUri)
+    {
+        list($uri) = explode('?', $requestUri);
+
         $controller = Tools::getValue('controller');
         if (isset($controller) && is_string($controller)) {
             if (preg_match('/^([0-9a-z_-]+)\?(.*)=(.*)$/Ui', $controller, $m)) {
@@ -902,13 +915,13 @@ class DispatcherCore
             $controller = false;
         }
         if ($this->use_routes && !$controller && !defined('_PS_ADMIN_DIR_')) {
-            if (!$this->request_uri) {
+            if (!$requestUri) {
                 return mb_strtolower($this->controller_not_found);
             }
 
             // Check basic controllers & params
             $controller = $this->controller_not_found;
-            $testRequestUri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
+            $testRequestUri = preg_replace('/(=http:\/\/)/', '=', $requestUri);
             $urlPath = parse_url($testRequestUri, PHP_URL_PATH);
             if ($urlPath && !preg_match('/\.(css|js)$/i', $urlPath)) {
                 // Add empty route as last route to prevent this greedy regexp to match request uri before right time
@@ -923,7 +936,7 @@ class DispatcherCore
                         $idShop
                     );
                 }
-                list($uri) = explode('?', $this->request_uri);
+                list($uri) = explode('?', $requestUri);
                 if (isset($this->routes[$idShop][Context::getContext()->language->id])) {
                     $routes = $this->routes[$idShop][Context::getContext()->language->id];
 
@@ -994,13 +1007,14 @@ class DispatcherCore
             }
 
             // Check if index
-            if ($controller == 'index' || preg_match('/^\/index.php(?:\?.*)?$/', $this->request_uri)
+            if ($controller == 'index' || preg_match('/^\/index.php(?:\?.*)?$/', $requestUri)
                 || $uri == ''
             ) {
                 $controller = $this->useDefaultController();
             }
         }
-        $this->controller = str_replace('-', '', $controller);
+
+        $this->controller = str_replace('-', '', (string)$controller);
         $_GET['controller'] = $this->controller;
 
         return $this->controller;
