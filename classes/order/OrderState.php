@@ -38,6 +38,8 @@ class OrderStateCore extends ObjectModel
     public $name;
     /** @var string|string[] Template name if there is any e-mail to send */
     public $template;
+    /** @var string|string[] Email subject */
+    public $email_subject;
     /** @var bool Send an e-mail to customer ? */
     public $send_email;
     /** @var string $module_name */
@@ -93,6 +95,7 @@ class OrderStateCore extends ObjectModel
             /* Lang fields */
             'name'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
             'template'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTplName', 'size' => 64, 'dbNullable' => false],
+            'email_subject'=> ['type' => self::TYPE_STRING, 'lang' => true, 'size' => 128, 'dbNullable' => true],
         ],
         'keys' => [
             'order_state' => [

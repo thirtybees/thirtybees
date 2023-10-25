@@ -25,8 +25,8 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="label"}
-	{if $input.type == "select_template"}
-		<div id="tpl" style="display:{if isset($fields_value.send_email) && $fields_value.send_email}block{else}none{/if}">
+	{if $input.type == "select_template" || $input.name === 'email_subject'}
+		<div class="email_field" style="display:{if isset($fields_value.send_email) && $fields_value.send_email}block{else}none{/if}">
 	{/if}
 	{$smarty.block.parent}
 {/block}
@@ -111,7 +111,7 @@
 {block name="script"}
 	$(document).ready(function() {
 		$('#send_email_on').click(function() {
-			$('#tpl').slideToggle();
+			$('.email_field').slideToggle();
 		});
 	});
 {/block}

@@ -447,16 +447,31 @@ class OrderHistoryCore extends ObjectModel
      */
     public function sendEmail($order, $templateVars = false)
     {
-        $result = Db::readOnly()->getRow('
-			SELECT osl.`template`, c.`lastname`, c.`firstname`, osl.`name` AS osname, c.`email`, os.`module_name`, os.`id_order_state`, os.`pdf_invoice`, os.`pdf_delivery`
-			FROM `'._DB_PREFIX_.'order_history` oh
-				LEFT JOIN `'._DB_PREFIX_.'orders` o ON oh.`id_order` = o.`id_order`
-				LEFT JOIN `'._DB_PREFIX_.'customer` c ON o.`id_customer` = c.`id_customer`
-				LEFT JOIN `'._DB_PREFIX_.'order_state` os ON oh.`id_order_state` = os.`id_order_state`
-				LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = o.`id_lang`)
-			WHERE oh.`id_order_history` = '.(int) $this->id.' AND os.`send_email` = 1');
-        if (isset($result['template']) && Validate::isEmail($result['email'])) {
-            $topic = $result['osname'];
+        $sql = (new DbQuery())
+            ->select('osl.template')
+            ->select('osl.email_subject')
+            ->select('c.lastname')
+            ->select('c.firstname')
+            ->select('osl.name AS osname')
+            ->select('c.email')
+            ->select('os.module_name')
+            ->select('os.id_order_state')
+            ->select('os.pdf_invoice')
+            ->select('os.pdf_delivery')
+            ->from('order_history', 'oh')
+            ->innerJoin('orders', 'o', '(oh.id_order = o.id_order)')
+            ->innerJoin('customer', 'c', '(o.id_customer = c.id_customer)')
+            ->innerJoin('order_state', 'os', '(oh.id_order_state = os.id_order_state)')
+            ->innerJoin('order_state_lang', 'osl', '(os.id_order_state = osl.id_order_state AND osl.id_lang = o.id_lang)')
+            ->where('os.send_email = 1')
+			->where('oh.id_order_history = ' . (int) $this->id);
+        $result = Db::readOnly()->getRow($sql);
+
+        if ($result && $result['template'] && Validate::isEmail($result['email'])) {
+            $subject = trim((string)$result['email_subject']);
+            if (! $subject) {
+                $subject = trim((string)$result['osname']);
+            }
             $carrierUrl = '';
             if (Validate::isLoadedObject($carrier = new Carrier((int) $order->id_carrier, $order->id_lang))) {
                 $carrierUrl = (string)$carrier->url;
@@ -511,7 +526,7 @@ class OrderHistoryCore extends ObjectModel
                 if (!Mail::Send(
                     (int) $order->id_lang,
                     $result['template'],
-                    $topic,
+                    $subject,
                     $data,
                     $result['email'],
                     $result['firstname'].' '.$result['lastname'],

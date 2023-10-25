@@ -531,6 +531,15 @@ class AdminStatusesControllerCore extends AdminController
                     ],
                 ],
                 [
+                    'type'     => 'text',
+                    'label'    => $this->l('Email subject'),
+                    'name'     => 'email_subject',
+                    'lang'     => true,
+                    'hint'     => [
+                        $this->l('You can specify custom emails subject. If empty, status name will be used')
+                    ],
+                ],
+                [
                     'type'    => 'select_template',
                     'label'   => $this->l('Template'),
                     'name'    => 'template',
