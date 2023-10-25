@@ -87,8 +87,10 @@
 							<tr>
 								<th><span class="title_box">{l s='Product name'}</span></th>
 								<th><span class="title_box">{l s='Supplier reference'}</span></th>
+								<th><span class="title_box">{l s='Supplier product name'}</span></th>
 								<th><span class="title_box">{l s='Unit price tax excluded'}</span></th>
 								<th><span class="title_box">{l s='Unit price currency'}</span></th>
+								<th><span class="title_box">{l s='Additional comments'}</span></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -96,10 +98,14 @@
 							{assign var=reference value=''}
 							{assign var=price_te value=''}
 							{assign var=id_currency value=$id_default_currency}
+							{assign var=supplierProductName value=''}
+							{assign var=comment value=''}
 							{foreach from=$associated_suppliers_collection item=asc}
 								{if $asc->id_product == $attribute['id_product'] && $asc->id_product_attribute == $attribute['id_product_attribute'] && $asc->id_supplier == $supplier->id_supplier}
 									{assign var=reference value=$asc->product_supplier_reference}
 									{assign var=price_te value=$asc->product_supplier_price_te}
+									{assign var=supplierProductName value=$asc->product_supplier_name}
+									{assign var=comment value=$asc->product_supplier_comment}
 									{if $asc->id_currency}
 										{assign var=id_currency value=$asc->id_currency}
 									{/if}
@@ -109,6 +115,9 @@
 								<td>{$product_designation[$attribute['id_product_attribute']]}</td>
 								<td>
 									<input type="text" value="{$reference|escape:'html':'UTF-8'}" name="supplier_reference_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}" />
+								</td>
+								<td>
+									<input type="text" value="{$supplierProductName|escape:'html':'UTF-8'}" name="supplier_product_name_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}" />
 								</td>
 								<td>
                                     <input type="text"
@@ -126,6 +135,9 @@
 											>{$currency['name']}</option>
 										{/foreach}
 									</select>
+								</td>
+								<td>
+									<input type="text" value="{$comment|escape:'html':'UTF-8'}" name="supplier_comment_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}" />
 								</td>
 							</tr>
 						{/foreach}

@@ -38,26 +38,41 @@ class ProductSupplierCore extends ObjectModel
      * @var int product ID
      */
     public $id_product;
+
     /**
      * @var int product attribute ID
      */
     public $id_product_attribute;
+
     /**
      * @var int the supplier ID
      */
     public $id_supplier;
+
+    /**
+     * @var string The supplier name of the product
+     */
+    public $product_supplier_name;
+
     /**
      * @var string The supplier reference of the product
      */
     public $product_supplier_reference;
+
     /**
      * @var int the currency ID for unit price tax excluded
      */
     public $id_currency;
+
     /**
      * @var float The unit price tax excluded of the product
      */
     public $product_supplier_price_te;
+
+    /**
+     * @var string Additional information for this product
+     */
+    public $product_supplier_comment;
 
     /**
      * @var array Object model definition
@@ -69,8 +84,10 @@ class ProductSupplierCore extends ObjectModel
             'id_product'                 => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
             'id_product_attribute'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '0'],
             'id_supplier'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
+            'product_supplier_name'      => ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'size' => 128],
             'product_supplier_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => self::SIZE_REFERENCE],
             'product_supplier_price_te'  => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'product_supplier_comment'   => ['type' => self::TYPE_STRING, 'size' => 250],
             'id_currency'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbNullable' => false],
         ],
         'keys' => [

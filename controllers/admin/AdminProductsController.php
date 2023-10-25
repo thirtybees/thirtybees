@@ -2667,7 +2667,9 @@ class AdminProductsControllerCore extends AdminController
      */
     public function processSuppliers()
     {
-        if (Tools::getIntValue('supplier_loaded') === 1 && Validate::isLoadedObject($product = new Product(Tools::getIntValue('id_product')))) {
+        $productId = Tools::getIntValue('id_product');
+        if (Tools::getBoolValue('supplier_loaded') && Validate::isLoadedObject($product = new Product($productId))) {
+
             // Get all id_product_attribute
             $attributes = $product->getAttributesResume($this->context->language->id);
             if (empty($attributes)) {
@@ -2681,7 +2683,7 @@ class AdminProductsControllerCore extends AdminController
             $suppliers = Supplier::getSuppliers();
 
             // Get already associated suppliers
-            $associatedSuppliers = ProductSupplier::getSupplierCollection($product->id);
+            $associatedSuppliers = ProductSupplier::getSupplierCollection($productId);
 
             $suppliersToAssociate = [];
 
@@ -2713,7 +2715,7 @@ class AdminProductsControllerCore extends AdminController
 
                 if ($toAdd) {
                     $productSupplier = new ProductSupplier();
-                    $productSupplier->id_product = $product->id;
+                    $productSupplier->id_product = $productId;
                     $productSupplier->id_product_attribute = 0;
                     $productSupplier->id_supplier = $id;
                     if ($this->context->currency->id) {
@@ -2727,7 +2729,7 @@ class AdminProductsControllerCore extends AdminController
                     foreach ($attributes as $attribute) {
                         if ((int) $attribute['id_product_attribute'] > 0) {
                             $productSupplier = new ProductSupplier();
-                            $productSupplier->id_product = $product->id;
+                            $productSupplier->id_product = $productId;
                             $productSupplier->id_product_attribute = (int) $attribute['id_product_attribute'];
                             $productSupplier->id_supplier = $id;
                             $productSupplier->save();
@@ -2738,66 +2740,73 @@ class AdminProductsControllerCore extends AdminController
 
             // Manage references and prices
             foreach ($attributes as $attribute) {
+                $combinationId = (int)$attribute['id_product_attribute'];
+                /** @var ProductSupplier $supplier */
                 foreach ($associatedSuppliers as $supplier) {
-                    /** @var ProductSupplier $supplier */
-                    if (Tools::isSubmit('supplier_reference_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier) ||
-                        (Tools::isSubmit('product_price_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier) &&
-                            Tools::isSubmit('product_price_currency_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier))
-                    ) {
-                        $reference = pSQL(
-                            Tools::getValue(
-                                'supplier_reference_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier,
-                                ''
-                            )
-                        );
+                    $supplierId = (int)$supplier->id_supplier;
 
-                        $price = Tools::getNumberValue('product_price_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier);
+                    $postfix = '_' . $productId . '_' . $combinationId . '_' . $supplierId;
+                    $paramReference = 'supplier_reference' . $postfix;
+                    $paramPrice = 'product_price' . $postfix;
+                    $paramCurrency = 'product_price_currency' . $postfix;
+                    $paramName = 'supplier_product_name' . $postfix;
+                    $paramComment = 'supplier_comment' . $postfix;
 
-                        $idCurrency = Tools::getIntValue(
-                            'product_price_currency_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier,
-                            0
-                        );
+                    $referenceSubmitted = Tools::isSubmit($paramReference);
+                    $priceSubmitted = Tools::isSubmit($paramPrice) && Tools::isSubmit($paramCurrency);
+                    $nameSubmitted = Tools::isSubmit($paramName);
+                    $commentSubmitted = Tools::isSubmit($paramComment);
+
+                    if ($referenceSubmitted || $priceSubmitted || $nameSubmitted || $commentSubmitted) {
+                        $reference = Tools::getValue($paramReference);
+                        $name = Tools::getValue($paramName);
+                        $comment = Tools::getValue($paramComment);
+                        $price = Tools::getNumberValue($paramPrice);
+                        $idCurrency = Tools::getIntValue($paramCurrency);
 
                         if ($idCurrency <= 0 || (!($result = Currency::getCurrency($idCurrency)) || empty($result))) {
                             $this->errors[] = Tools::displayError('The selected currency is not valid');
                         }
 
                         // Save product-supplier data
-                        $productSupplierId = (int) ProductSupplier::getIdByProductAndSupplier($product->id, $attribute['id_product_attribute'], $supplier->id_supplier);
+                        $productSupplierId = (int)ProductSupplier::getIdByProductAndSupplier($productId, $combinationId, $supplierId);
 
-                        if (!$productSupplierId) {
-                            $product->addSupplierReference($supplier->id_supplier, (int) $attribute['id_product_attribute'], $reference, (float) $price, (int) $idCurrency);
-                            if ($product->id_supplier == $supplier->id_supplier) {
-                                if ((int) $attribute['id_product_attribute'] > 0) {
-                                    $data = [
-                                        'supplier_reference' => pSQL($reference),
-                                        'wholesale_price'    => Tools::convertPrice($price, $idCurrency),
-                                    ];
-                                    $where = '
-										a.id_product = '.(int) $product->id.'
-										AND a.id_product_attribute = '.(int) $attribute['id_product_attribute'];
-                                    ObjectModel::updateMultishopTable('Combination', $data, $where);
-                                } else {
-                                    $product->wholesale_price = Tools::convertPrice($price, $idCurrency);
-                                    $product->supplier_reference = pSQL($reference);
-                                    $product->update();
-                                }
-                            }
+                        if (! $productSupplierId) {
+                            $product->addSupplierReference(
+                                $supplierId,
+                                $combinationId,
+                                $reference,
+                                $price,
+                                $idCurrency,
+                                $name,
+                                $comment
+                            );
                         } else {
                             $productSupplier = new ProductSupplier($productSupplierId);
-                            $productSupplier->id_currency = (int) $idCurrency;
+                            $productSupplier->id_currency = $idCurrency;
                             $productSupplier->product_supplier_price_te = $price;
-                            $productSupplier->product_supplier_reference = pSQL($reference);
+                            $productSupplier->product_supplier_reference = $reference;
+                            $productSupplier->product_supplier_name = $name;
+                            $productSupplier->product_supplier_comment = $comment;
                             $productSupplier->update();
                         }
-                    } elseif (Tools::isSubmit('supplier_reference_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier)) {
-                        //int attribute with default values if possible
-                        if ((int) $attribute['id_product_attribute'] > 0) {
-                            $productSupplier = new ProductSupplier();
-                            $productSupplier->id_product = $product->id;
-                            $productSupplier->id_product_attribute = (int) $attribute['id_product_attribute'];
-                            $productSupplier->id_supplier = $supplier->id_supplier;
-                            $productSupplier->save();
+
+                        // update product/combination record
+                        if ((int)$product->id_supplier === $supplierId) {
+                            if ($combinationId > 0) {
+                                $data = [
+                                    'supplier_reference' => pSQL($reference),
+                                    'wholesale_price'    => Tools::convertPrice($price, $idCurrency),
+                                ];
+                                $where = '
+										a.id_product = '.$productId.'
+										AND a.id_product_attribute = '.$combinationId;
+                                ObjectModel::updateMultishopTable('Combination', $data, $where);
+                            } else {
+                                $product->wholesale_price = Tools::convertPrice($price, $idCurrency);
+                                $product->supplier_reference = $reference;
+                                $product->update();
+                            }
                         }
                     }
                 }

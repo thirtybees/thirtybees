@@ -5360,34 +5360,51 @@ class ProductCore extends ObjectModel
      *
      * @param int|null $idSupplier
      * @param int $idProductAttribute
-     * @param string $supplierReference
-     * @param float $price
-     * @param int $idCurrency
+     * @param string|null $supplierReference
+     * @param float|null $price
+     * @param int|null $idCurrency
+     * @param string|null $supplierProductName
+     * @param string|null $comment
      *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function addSupplierReference($idSupplier, $idProductAttribute, $supplierReference = null, $price = null, $idCurrency = null)
+    public function addSupplierReference(
+        $idSupplier,
+        $idProductAttribute,
+        $supplierReference = null,
+        $price = null,
+        $idCurrency = null,
+        $supplierProductName = null,
+        $comment = null
+    )
     {
-        //in some case we need to add price without supplier reference
-        if ($supplierReference === null) {
-            $supplierReference = '';
-        }
-
         //Try to set the default supplier reference
         if (($idSupplier > 0) && ($this->id > 0)) {
             $idProductSupplier = (int) ProductSupplier::getIdByProductAndSupplier($this->id, $idProductAttribute, $idSupplier);
 
             $productSupplier = new ProductSupplier($idProductSupplier);
-
             if (!$idProductSupplier) {
                 $productSupplier->id_product = (int) $this->id;
                 $productSupplier->id_product_attribute = (int) $idProductAttribute;
                 $productSupplier->id_supplier = (int) $idSupplier;
             }
 
-            $productSupplier->product_supplier_reference = pSQL($supplierReference);
-            $productSupplier->product_supplier_price_te = !is_null($price) ? (float) $price : (float) $productSupplier->product_supplier_price_te;
-            $productSupplier->id_currency = !is_null($idCurrency) ? (int) $idCurrency : (int) $productSupplier->id_currency;
+            if (! is_null($supplierReference)) {
+                $productSupplier->product_supplier_reference = (string)$supplierReference;
+            }
+            if (! is_null($supplierProductName)) {
+                $productSupplier->product_supplier_name = (string)$supplierProductName;
+            }
+            if (! is_null($comment)) {
+                $productSupplier->product_supplier_comment = (string)$comment;
+            }
+            if (! is_null($price)) {
+                $productSupplier->product_supplier_price_te = (float)$price;
+            }
+            if (! is_null($idCurrency)) {
+                $productSupplier->id_currency = (int)$idCurrency;
+            }
             $productSupplier->save();
         }
     }
