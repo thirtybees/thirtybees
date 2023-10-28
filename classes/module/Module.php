@@ -3722,28 +3722,6 @@ abstract class ModuleCore
     }
 
     /**
-     * @param string $moduleName
-     *
-     * @return stdClass|false
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public static function getModuleInfo($moduleName)
-    {
-        $modules = static::getModulesOnDisk(true);
-        if ($modules) {
-            $moduleName = mb_strtolower($moduleName);
-            foreach ($modules as $module) {
-                if ($moduleName === mb_strtolower((string)$module->name)) {
-                    return $module;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * @param string|null $supporterType
      *
      * @return void

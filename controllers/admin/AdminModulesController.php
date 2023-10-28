@@ -1167,9 +1167,9 @@ class AdminModulesControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('You do not have the permission to use this module.');
                 } else {
                     if (Tools::getValue('enable')) {
-                        $moduleInfo = Module::getModuleInfo($module->name);
+                        $moduleInfo = static::getModuleInfo($module->name);
                         $canEnable = true;
-                        if ($moduleInfo->premium) {
+                        if ($moduleInfo && $moduleInfo->premium) {
                             $canEnable = $moduleInfo->canInstall;
                         }
                         if ($canEnable) {
@@ -1725,6 +1725,28 @@ class AdminModulesControllerCore extends AdminController
         }
         if (file_exists($zipLocation)) {
             return $this->extractArchive($zipLocation, false);
+        }
+        return false;
+    }
+
+    /**
+     * @param string $moduleName
+     *
+     * @return stdClass|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getModuleInfo($moduleName)
+    {
+        $modules = Module::getModulesOnDisk(true);
+        if ($modules) {
+            $moduleName = mb_strtolower($moduleName);
+            foreach ($modules as $module) {
+                if ($moduleName === mb_strtolower((string)$module->name)) {
+                    return $module;
+                }
+            }
         }
         return false;
     }
