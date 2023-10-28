@@ -2791,21 +2791,15 @@ class AdminProductsControllerCore extends AdminController
                             $productSupplier->update();
                         }
 
-                        // update product/combination record
+                        // update supplier_reference column in product/combination record
                         if ((int)$product->id_supplier === $supplierId) {
+                            $conn = Db::getInstance();
+                            $data = ['supplier_reference' => pSQL($reference)];
                             if ($combinationId > 0) {
-                                $data = [
-                                    'supplier_reference' => pSQL($reference),
-                                    'wholesale_price'    => Tools::convertPrice($price, $idCurrency),
-                                ];
-                                $where = '
-										a.id_product = '.$productId.'
-										AND a.id_product_attribute = '.$combinationId;
-                                ObjectModel::updateMultishopTable('Combination', $data, $where);
+                                $where = 'id_product = '.$productId.' AND id_product_attribute = '.$combinationId;
+                                $conn->update('product_attribute', $data, $where);
                             } else {
-                                $product->wholesale_price = Tools::convertPrice($price, $idCurrency);
-                                $product->supplier_reference = $reference;
-                                $product->update();
+                                $conn->update('product', $data, 'id_product = ' . $productId);
                             }
                         }
                     }
