@@ -168,15 +168,15 @@ class AdminOutstandingControllerCore extends AdminController
     {
         $orderInvoice = new OrderInvoice($idInvoice);
         if (!Validate::isLoadedObject($orderInvoice)) {
-            throw new PrestaShopException('object OrderInvoice cannot be loaded');
+            return null;
         }
         $order = new Order($orderInvoice->id_order);
         if (!Validate::isLoadedObject($order)) {
-            throw new PrestaShopException('object Order cannot be loaded');
+            return null;
         }
         $customer = new Customer((int) $order->id_customer);
         if (!Validate::isLoadedObject($orderInvoice)) {
-            throw new PrestaShopException('object Customer cannot be loaded');
+            return null;
         }
 
         return '<b>'.Tools::displayPrice($customer->getOutstanding(), $this->context->currency).'</b>';
