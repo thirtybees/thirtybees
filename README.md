@@ -24,10 +24,10 @@ thirty bees is commited to being free and open source. We are also committed to 
 ## Requirements
 Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
 
-- PHP 7.4 - PHP 8.1 with a minimum of 128 MiB RAM
+- PHP 7.4 - PHP 8.2 with a minimum of 128 MiB RAM
 - Apache or nginx
 - Linux or MacOS
-- MySQL 5.5.3+ or MariaDB 5.5+
+- MySQL 5.5.3+ or MariaDB 10+
 - PHP extensions:
   - Required:
     - bcmath
