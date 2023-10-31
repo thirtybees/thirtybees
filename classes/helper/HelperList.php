@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class HelperListCore
  */
@@ -679,12 +682,17 @@ class HelperListCore extends Helper
                 } elseif (isset($params['type']) && $params['type'] == 'float') {
                     $this->_list[$index][$key] = rtrim(rtrim($dataValue, '0'), '.');
                 } elseif (isset($dataValue)) {
+                    $convertedValue = $dataValue;
                     if (isset($params['callback'])) {
-                        $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $controller;
-                        $this->_list[$index][$key] = call_user_func_array([$callbackObj, $params['callback']], [$dataValue, $tr]);
-                    } else {
-                        $this->_list[$index][$key] = $dataValue;
+                        try {
+                            $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $controller;
+                            $convertedValue = call_user_func_array([$callbackObj, $params['callback']], [$dataValue, $tr]);
+                        } catch (Throwable $e) {
+                            $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+                            $errorHandler->logFatalError(ErrorUtils::describeException($e));
+                        }
                     }
+                    $this->_list[$index][$key] = $convertedValue;
                 }
             }
         }
