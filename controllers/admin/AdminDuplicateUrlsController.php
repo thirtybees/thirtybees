@@ -118,7 +118,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @return array
      * @throws PrestaShopException
      */
-    private function getProductUrls($idLang)
+    public function getProductUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
@@ -145,7 +145,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function getCategoryUrls($idLang)
+    public function getCategoryUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
@@ -178,7 +178,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function getCmsUrls($idLang)
+    public function getCmsUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
@@ -211,7 +211,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function getCmsCategoryUrls($idLang)
+    public function getCmsCategoryUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
@@ -244,7 +244,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function getSupplierUrls($idLang)
+    public function getSupplierUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
@@ -277,7 +277,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function getManufacturerUrls($idLang)
+    public function getManufacturerUrls($idLang)
     {
         if (empty($idLang)) {
             return [];
