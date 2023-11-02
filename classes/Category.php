@@ -59,6 +59,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => true, 'size' => 128],
             'description'      => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+            'additional_description' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
             'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 128],
             'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
             'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
@@ -95,6 +96,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     public $position;
     /** @var string|string[] Description */
     public $description;
+    /** @var string|string[] Additional description */
+    public $additional_description;
     /** @var int Parent category ID */
     public $id_parent;
     /** @var int default Category id */

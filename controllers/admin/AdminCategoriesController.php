@@ -646,6 +646,14 @@ class AdminCategoriesControllerCore extends AdminController
                     'hint'         => $this->l('Invalid characters:').' <>;=#{}',
                 ],
                 [
+                    'type'         => 'textarea',
+                    'label'        => $this->l('Additional description'),
+                    'name'         => 'additional_description',
+                    'autoload_rte' => true,
+                    'lang'         => true,
+                    'hint'         => $this->l('Invalid characters:').' <>;=#{}',
+                ],
+                [
                     'type'          => 'file',
                     'label'         => $this->l('Category Cover Image'),
                     'name'          => 'image',

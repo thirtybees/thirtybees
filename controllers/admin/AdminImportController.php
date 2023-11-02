@@ -125,27 +125,28 @@ class AdminImportControllerCore extends AdminController
 
         // initialize default validators
         static::$validators = [
-            'active'            => [static::class, 'getBoolean'],
-            'tax_rate'          => [static::class, 'getPrice'],
-            'price_tex'         => [static::class, 'getPrice'],
-            'price_tin'         => [static::class, 'getPrice'],
-            'reduction_price'   => [static::class, 'getPrice'],
-            'reduction_percent' => [static::class, 'getPrice'],
-            'wholesale_price'   => [static::class, 'getPrice'],
-            'ecotax'            => [static::class, 'getPrice'],
-            'name'              => [static::class, 'createMultiLangField'],
-            'description'       => [static::class, 'createMultiLangField'],
-            'description_short' => [static::class, 'createMultiLangField'],
-            'meta_title'        => [static::class, 'createMultiLangField'],
-            'meta_keywords'     => [static::class, 'createMultiLangField'],
-            'meta_description'  => [static::class, 'createMultiLangField'],
-            'link_rewrite'      => [static::class, 'createMultiLangField'],
-            'available_now'     => [static::class, 'createMultiLangField'],
-            'available_later'   => [static::class, 'createMultiLangField'],
-            'category'          => [static::class, 'split'],
-            'online_only'       => [static::class, 'getBoolean'],
-            'accessories'       => [static::class, 'split'],
-            'image_alt'         => [static::class, 'split'],
+            'active'                 => [static::class, 'getBoolean'],
+            'tax_rate'               => [static::class, 'getPrice'],
+            'price_tex'              => [static::class, 'getPrice'],
+            'price_tin'              => [static::class, 'getPrice'],
+            'reduction_price'        => [static::class, 'getPrice'],
+            'reduction_percent'      => [static::class, 'getPrice'],
+            'wholesale_price'        => [static::class, 'getPrice'],
+            'ecotax'                 => [static::class, 'getPrice'],
+            'name'                   => [static::class, 'createMultiLangField'],
+            'description'            => [static::class, 'createMultiLangField'],
+            'additional_description' => [static::class, 'createMultiLangField'],
+            'description_short'      => [static::class, 'createMultiLangField'],
+            'meta_title'             => [static::class, 'createMultiLangField'],
+            'meta_keywords'          => [static::class, 'createMultiLangField'],
+            'meta_description'       => [static::class, 'createMultiLangField'],
+            'link_rewrite'           => [static::class, 'createMultiLangField'],
+            'available_now'          => [static::class, 'createMultiLangField'],
+            'available_later'        => [static::class, 'createMultiLangField'],
+            'category'               => [static::class, 'split'],
+            'online_only'            => [static::class, 'getBoolean'],
+            'accessories'            => [static::class, 'split'],
+            'image_alt'              => [static::class, 'split'],
         ];
 
         switch ($selectedEntity) {
@@ -239,6 +240,7 @@ class AdminImportControllerCore extends AdminController
                         'label' => $this->l('ID / Name of shop'),
                         'help'  => $this->l('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.'),
                     ],
+                    'additional_description' => ['label' => $this->l('Additional description')],
                 ];
 
                 static::$defaultValues = [
