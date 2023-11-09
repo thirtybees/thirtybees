@@ -43,9 +43,6 @@
 				{foreach $fields_display AS $key => $params}
 					<col{if isset($params.width) && $params.width != 'auto'} width="{$params.width}px"{/if}/>
 				{/foreach}
-				{if $shop_link_type}
-					<col style="width: 80px;"/>
-				{/if}
 				{if $has_actions}
 					<col style="width: 52px;" />
 				{/if}
@@ -62,15 +59,6 @@
 								</span>
 							</th>
 						{/foreach}
-						{if $shop_link_type}
-							<th>
-								{if $shop_link_type == 'shop'}
-									{l s='Shop'}
-								{else}
-									{l s='Shop group'}
-								{/if}
-							</th>
-						{/if}
 						{if $has_actions && $filters_has_value}
 							<th class="actions text-right"><button type="submit" name="submitReset{$list_id}" class="btn btn-warning">
 									<i class="icon-eraser"></i> {l s='Reset'}

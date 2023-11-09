@@ -774,11 +774,21 @@ class AdminControllerCore extends Controller
      * @param string $filter
      *
      * @return array|false
+     * @throws PrestaShopException
      */
     protected function filterToField($key, $filter)
     {
         if (!isset($this->fields_list)) {
             return false;
+        }
+
+        if (Shop::isFeatureActive() && ($this->shopLinkType === 'shop' || $this->shopLinkType === 'shop_group')) {
+            $shopFilterKey = 'shop!id_' . $this->shopLinkType;
+            if ($key === $shopFilterKey) {
+                return [
+                    'filter_type' => 'int',
+                ];
+            }
         }
 
         foreach ($this->fields_list as $field) {

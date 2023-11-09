@@ -278,17 +278,6 @@
 						</span>
 					</th>
 					{/foreach}
-					{if $shop_link_type}
-						<th>
-							<span class="title_box">
-							{if $shop_link_type == 'shop'}
-								{l s='Shop'}
-							{else}
-								{l s='Shop group'}
-							{/if}
-							</span>
-						</th>
-					{/if}
 					{if $has_actions || $show_filters}
 						<th>{if !$simple_header}{/if}</th>
 					{/if}
@@ -361,9 +350,6 @@
 						</th>
 					{/foreach}
 
-					{if $shop_link_type}
-						<th>--</th>
-					{/if}
 					{if $has_actions || $show_filters}
 						<th class="actions">
 							{if $show_filters}

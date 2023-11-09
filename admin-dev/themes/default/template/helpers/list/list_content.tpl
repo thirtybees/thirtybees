@@ -154,15 +154,6 @@
 			{/block}
 		{/foreach}
 
-	{if $shop_link_type}
-		<td title="{$tr.shop_name}"{if isset($tr.color) && $color_on_bg} style="background-color: {$tr.color};color:{if Tools::getBrightness($tr.color) < 128}white{else}#383838{/if}"{/if}>
-			{if isset($tr.shop_short_name)}
-				{$tr.shop_short_name}
-			{else}
-				{$tr.shop_name}
-			{/if}
-		</td>
-	{/if}
 	{if $has_actions}
 		<td class="text-right"{if isset($tr.color) && $color_on_bg} style="background-color: {$tr.color};color:{if Tools::getBrightness($tr.color) < 128}white{else}#383838{/if}"{/if}>
 			{assign var='compiled_actions' value=array()}

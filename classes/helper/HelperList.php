@@ -225,7 +225,7 @@ class HelperListCore extends Helper
     protected $footer_tpl = 'list_footer.tpl';
 
     /**
-     * @var string $shopLinkType
+     * @var string|false $shopLinkType
      */
     public $shopLinkType;
 
@@ -276,7 +276,7 @@ class HelperListCore extends Helper
         $this->footer_tpl = $this->createTemplate($this->footer_tpl);
 
         $this->_list = $list;
-        $this->fields_list = $fieldsDisplay;
+        $this->fields_list = $this->prepareFields($fieldsDisplay);
 
         $this->orderBy = preg_replace('/^([a-z _]*!)/Ui', '', $this->orderBy ?? '');
         $this->orderWay = preg_replace('/^([a-z _]*!)/Ui', '', $this->orderWay ?? '');
@@ -463,7 +463,7 @@ class HelperListCore extends Helper
                     'delete'            => in_array('delete', $this->actions),
                     'identifier'        => $this->identifier,
                     'id_cat'            => $idCat,
-                    'shop_link_type'    => $this->shopLinkType,
+                    'shop_link_type'    => false,
                     'has_actions'       => !empty($this->actions),
                     'table_id'          => $this->table_id ?? null,
                     'table_dnd'         => $tableDnd ?? null,
@@ -701,7 +701,7 @@ class HelperListCore extends Helper
             array_merge(
                 $this->tpl_vars,
                 [
-                    'shop_link_type'            => $this->shopLinkType,
+                    'shop_link_type'            => false,
                     'name'                      => $name ?? null,
                     'position_identifier'       => $this->position_identifier,
                     'identifier'                => $this->identifier,
@@ -1066,5 +1066,35 @@ class HelperListCore extends Helper
             }
         }
         return $defaultPagination;
+    }
+
+    /**
+     * @param array $fields
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function prepareFields(array $fields): array
+    {
+        if (Shop::isFeatureActive() && ($this->shopLinkType === 'shop' || $this->shopLinkType === 'shop_group')) {
+            if (! isset($fields['shop_name'])) {
+                $shops = [];
+                foreach (Shop::getShops(false) as $shop) {
+                    $shops[(int)$shop['id_shop']] = (string)$shop['name'];
+                }
+                $fields['shop_name'] = [
+                    'title' => ($this->shopLinkType === 'shop')
+                        ? $this->l('Shop')
+                        : $this->l('Shop group'),
+                    'filter_type' => 'int',
+                    'filter_key' => 'shop!id_' . $this->shopLinkType,
+                    'orderby' => true,
+                    'type' => 'select',
+                    'list' => $shops,
+                ];
+            }
+        }
+        return $fields;
     }
 }

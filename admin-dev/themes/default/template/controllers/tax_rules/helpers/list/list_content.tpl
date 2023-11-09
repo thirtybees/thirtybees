@@ -112,9 +112,6 @@
 				</td>
 			{/foreach}
 
-		{if $shop_link_type}
-			<td {if $name != $tr.shop_name}title="{$tr.shop_name}"{/if}>{if isset($tr.shop_short_name)}{$tr.shop_short_name}{else}{$tr.shop_name}{/if}</td>
-		{/if}
 		{if $has_actions}
 			<td class="text-right fixed-width-lg">
 				{assign var='compiled_actions' value=array()}
