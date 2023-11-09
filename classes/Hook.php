@@ -336,7 +336,7 @@ class HookCore extends ObjectModel
                 return array_shift($responses);
             default:
                 $modules = implode(', ', array_keys($responses));
-                trigger_error(sprintf("Multiple modules [$1%s] are attached to '$2%s' hook. Only the first response will be used!", $modules, $hookName), E_USER_WARNING);
+                trigger_error(sprintf('Multiple modules [%1$s] are attached to \'%2$s\' hook. Only the first response will be used!', $modules, $hookName), E_USER_WARNING);
                 return array_shift($responses);
         }
     }
