@@ -17,6 +17,8 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use Thirtybees\Core\View\Model\ProductViewModel;
+
 /**
  * Class PageCacheEntry
  */
@@ -25,6 +27,7 @@ class PageCacheEntryCore
     const CONSTANT = 'const';
     const OBJECT_MODEL = 'obj';
     const PRODUCT_PROPERTIES = 'prod';
+    const PRODUCT_VIEW = 'product';
     const SMARTY_OBJECT = 'smarty';
     const COOKIE_OBJECT = 'cookie';
     const CONTEXT_OBJECT = 'context';
@@ -265,6 +268,11 @@ class PageCacheEntryCore
                 return Context::getContext();
             case static::COOKIE_OBJECT:
                 return Context::getContext()->cookie;
+            case static::PRODUCT_VIEW:
+                $context = Context::getContext();
+                $productId = (int)$description['id'];
+                $combinationId = (int)$description['cid'];
+                return new ProductViewModel($productId, $combinationId, (int)$context->language->id, (int)$context->shop->id);
             case static::OBJECT_MODEL:
                 $class = $description['class'];
                 $id = $description['id'];
@@ -400,6 +408,14 @@ class PageCacheEntryCore
      */
     private function describeObject($param)
     {
+        if ($param instanceof ProductViewModel) {
+            return [
+                'type' => static::PRODUCT_VIEW,
+                'id' => (int)$param->id,
+                'cid' => (int)$param->getSelectedCombinationId()
+            ];
+        }
+
         $classname = get_class($param);
         if ($param instanceof ObjectModelCore) {
             return [
