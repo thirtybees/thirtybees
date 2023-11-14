@@ -123,15 +123,6 @@ class AdminMetaControllerCore extends AdminController
         // Options to generate friendly urls
         $modRewrite = Tools::modRewriteActive();
 
-        // Retrocompatibility with <= 1.0.8. Remove ::hasKey() when Core
-        // Updater has learned to add configuration keys.
-        $emitSeoFields = Tools::isSubmit('TB_EMIT_SEO_FIELDS') ?
-            (bool) Tools::getValue('TB_EMIT_SEO_FIELDS') :
-            (
-                ! Configuration::hasKey('TB_EMIT_SEO_FIELDS')
-                || Configuration::get('TB_EMIT_SEO_FIELDS')
-            );
-
         $generalFields = [
             'PS_REWRITING_SETTINGS'       => [
                 'title'      => $this->l('Friendly URL'),
@@ -169,8 +160,6 @@ class AdminMetaControllerCore extends AdminController
                 'validation' => 'isBool',
                 'cast'       => 'intval',
                 'type'       => 'bool',
-                'value'      => $emitSeoFields,
-                'auto_value' => false,
             ]
         ];
 

@@ -312,11 +312,7 @@ class FrontControllerCore extends Controller
                 $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
-            // Retrocompatibility with <= 1.0.8. Remove ::hasKey() when Core
-            // Updater has learned to add configuration keys.
-            $emitSeoFields = ! Configuration::hasKey('TB_EMIT_SEO_FIELDS')
-                             || Configuration::get('TB_EMIT_SEO_FIELDS');
-            if (isset($this->php_self) && $emitSeoFields) {
+            if (isset($this->php_self) && Configuration::get('TB_EMIT_SEO_FIELDS')) {
                 // append some seo fields, canonical, hrefLang, rel prev/next
                 $hookHeader .= $this->getSeoFields();
             }
@@ -434,7 +430,7 @@ class FrontControllerCore extends Controller
                     $hreflang = $this->getHrefLang('cms', $idCms, $languages, $defaultLang);
                 } else {
                     $canonical = $this->context->link->getCMSCategoryLink((int) $idCmsCategory);
-                    $hreflang = $this->getHrefLang('cms_category', (int) $idCmsCategory, $languages, $defaultLang);
+                    $hreflang = $this->getHrefLang('cms_category', (int)$idCmsCategory, $languages, $defaultLang);
                 }
 
                 break;
@@ -477,43 +473,48 @@ class FrontControllerCore extends Controller
      */
     public function getHrefLang($entity, $idItem, $languages, $idLangDefault, $extra = null)
     {
+        $idLangDefault = (int)$idLangDefault;
+        $mapping = $this->getHrefLangMapping($languages, $idLangDefault);
         $links = [];
-        foreach ($languages as $lang) {
+        foreach ($mapping as $languageCode => $target) {
+            $shopId = (int)$target['targetShopId'];
+            $languageId = (int)$target['targetLangId'];
+            $isDefault = (bool)$target['isDefault'];
             switch ($entity) {
                 case 'product':
-                    $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $lang['id_lang'], null, $extra);
+                    $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $languageId, $shopId, $extra);
                     break;
                 case 'category':
-                    $lnk = $this->context->link->getCategoryLink((int) $idItem, null, $lang['id_lang']);
+                    $lnk = $this->context->link->getCategoryLink((int) $idItem, null, $languageId, null, $shopId);
                     break;
                 case 'manufacturer':
                     if (!$idItem) {
-                        $lnk = $this->context->link->getPageLink('manufacturer', null, $lang['id_lang']);
+                        $lnk = $this->context->link->getPageLink('manufacturer', null, $languageId, null, false, $shopId);
                     } else {
-                        $lnk = $this->context->link->getManufacturerLink((int) $idItem, null, $lang['id_lang']);
+                        $lnk = $this->context->link->getManufacturerLink((int) $idItem, null, $languageId, $shopId);
                     }
                     break;
                 case 'supplier':
                     if (!$idItem) {
-                        $lnk = $this->context->link->getPageLink('supplier', null, $lang['id_lang']);
+                        $lnk = $this->context->link->getPageLink('supplier', null, $languageId, null, false, $shopId);
                     } else {
-                        $lnk = $this->context->link->getSupplierLink((int) $idItem, null, $lang['id_lang']);
+                        $lnk = $this->context->link->getSupplierLink((int) $idItem, null, $languageId, $shopId);
                     }
                     break;
                 case 'cms':
-                    $lnk = $this->context->link->getCMSLink((int) $idItem, null, null, $lang['id_lang']);
+                    $lnk = $this->context->link->getCMSLink((int) $idItem, null, null, $languageId, $shopId);
                     break;
                 case 'cms_category':
-                    $lnk = $this->context->link->getCMSCategoryLink((int) $idItem, null, $lang['id_lang']);
+                    $lnk = $this->context->link->getCMSCategoryLink((int) $idItem, null, $languageId, $shopId);
                     break;
                 default:
                     $dispatcher = Dispatcher::getInstance();
                     if ($info = $dispatcher->isModuleControllerRoute($entity)) {
                         // include only required $_GET parameters and ignore others
                         $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($entity));
-                        $lnk = $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $lang['id_lang']);
+                        $lnk = $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $languageId, $shopId);
                     } else  {
-                        $lnk = $this->context->link->getPageLink($entity, null, $lang['id_lang']);
+                        $lnk = $this->context->link->getPageLink($entity, null, $languageId, null, false, $shopId);;
                     }
                     break;
             }
@@ -523,8 +524,8 @@ class FrontControllerCore extends Controller
                 $lnk .= "?p=$p";
             }
 
-            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'.$lang['language_code'].'">';
-            if ($lang['id_lang'] == $idLangDefault) {
+            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'. $languageCode .'">';
+            if ($isDefault) {
                 $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="x-default">';
             }
         }
@@ -2278,5 +2279,36 @@ class FrontControllerCore extends Controller
                 $guest->update();
             }
         }
+    }
+
+    /**
+     * @param array $languages
+     * @param int $defaultLangId
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getHrefLangMapping(array $languages, int $defaultLangId): array
+    {
+        $targetShopId = (int)$this->context->shop->id;
+
+        // allow modules to override hreng mappings
+        $response = Hook::getFirstResponse('actionHrefLangMapping');
+        if (is_array($response)) {
+            return $response;
+        }
+
+        $mapping = [];
+        foreach ($languages as $lang) {
+            $code = $lang['language_code'];
+            $targetLangId = (int)$lang['id_lang'];
+            $isDefault = $targetLangId === $defaultLangId;
+            $mapping[$code] = [
+                'targetShopId' => $targetShopId,
+                'targetLangId' => $targetLangId,
+                'isDefault' => $isDefault
+            ];
+        }
+        return $mapping;
     }
 }
