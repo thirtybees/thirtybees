@@ -138,19 +138,5 @@
 				&copy; thirty bees&#8482; 2007-{$smarty.now|date_format:"%Y"} - All rights reserved
 			</a>
 		</p>
-		<p class="text-center">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/thethirtybees" title="Twitter">
-				<i class="icon-twitter"></i>
-			</a>
-			<a class="link-social link-facebook _blank" href="https://www.facebook.com/thirtybees" title="Facebook">
-				<i class="icon-facebook"></i>
-			</a>
-			<a class="link-social link-github _blank" href="https://github.com/thirtybees" title="Github">
-				<i class="icon-github"></i>
-			</a>
-			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
-				<i class="icon-reddit"></i>
-			</a>
-		</p>
 	</div>
 </div>

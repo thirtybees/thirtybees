@@ -28,28 +28,12 @@
 {if $display_footer}
 <div id="footer" class="bootstrap hide">
 
-	<div class="col-sm-2 hidden-xs">
+	<div class="col-sm-4 hidden-xs">
 		<a href="https://www.thirtybees.com/" class="_blank">thirty bees&trade;</a>
 		-
 		<span id="footer-load-time"><i class="icon-time" title="{l s='Load time: '}"></i> {number_format(microtime(true) - $timer_start, 3, '.', '')}s</span>
 	</div>
 
-	<div class="col-sm-2 hidden-xs">
-		<div class="social-networks">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/thethirtybees" title="Twitter">
-				<i class="icon-twitter"></i>
-			</a>
-			<a class="link-social link-facebook _blank" href="https://www.facebook.com/thirtybees" title="Facebook">
-				<i class="icon-facebook"></i>
-			</a>
-			<a class="link-social link-github _blank" href="https://github.com/thirtybees" title="Github">
-				<i class="icon-github"></i>
-			</a>
-			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
-				<i class="icon-reddit"></i>
-			</a>
-		</div>
-	</div>
 	<div class="col-sm-2">
 		<div class="footer-contact">
 			<a href="https://thirtybees.com/contact/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
