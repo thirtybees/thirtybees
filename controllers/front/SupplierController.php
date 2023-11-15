@@ -202,4 +202,33 @@ class SupplierControllerCore extends FrontController
             Tools::redirect('index.php?controller=404');
         }
     }
+
+    /**
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        if (Validate::isLoadedObject($this->supplier)) {
+            return $this->context->link->getSupplierLink($this->supplier->id, null, $languageId, $shopId);
+        } else {
+            return $this->context->link->getPageLink('supplier', null, $languageId, null, false, $shopId);
+        }
+    }
+
+    /**
+     * @return string|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPagePrevNextRelTags()
+    {
+        if (Validate::isLoadedObject($this->supplier)) {
+            return $this->getRelPrevNext('supplier', $this->supplier->id);
+        }
+        return null;
+    }
 }

@@ -188,4 +188,24 @@ class CmsControllerCore extends FrontController
 
         $this->setTemplate(_PS_THEME_DIR_.'cms.tpl');
     }
+
+    /**
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        if (Validate::isLoadedObject($this->cms)) {
+            return $this->context->link->getCMSLink($this->cms->id, null, null, $languageId, $shopId);
+        }
+        if (Validate::isLoadedObject($this->cms_category)) {
+            return $this->context->link->getCMSCategoryLink($this->cms_category->id, null, $languageId, $shopId);
+        }
+        return null;
+    }
+
+
 }

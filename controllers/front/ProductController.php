@@ -970,4 +970,21 @@ class ProductControllerCore extends FrontController
         }
         return $combinationId;
     }
+
+    /**
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        if (Validate::isLoadedObject($this->product)) {
+            return $this->context->link->getProductLink($this->product->id, null, null, null, $languageId, $shopId, $this->product->getSelectedCombinationId());
+        }
+        return null;
+    }
+
+
 }

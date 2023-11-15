@@ -191,4 +191,33 @@ class ManufacturerControllerCore extends FrontController
     {
         return $this->manufacturer;
     }
+
+    /**
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        if (Validate::isLoadedObject($this->manufacturer)) {
+            return $this->context->link->getManufacturerLink($this->manufacturer->id, null, $languageId, $shopId);
+        } else {
+            return $this->context->link->getPageLink('manufacturer', null, $languageId, null, false, $shopId);
+        }
+    }
+
+    /**
+     * @return string|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPagePrevNextRelTags()
+    {
+        if (Validate::isLoadedObject($this->manufacturer)) {
+            return $this->getRelPrevNext('manufacturer', $this->manufacturer->id);
+        }
+        return null;
+    }
 }

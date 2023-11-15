@@ -302,4 +302,34 @@ class CategoryControllerCore extends FrontController
     {
         return $this->category;
     }
+
+    /**
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        if (Validate::isLoadedObject($this->category)) {
+            return $this->context->link->getCategoryLink($this->category->id, null, $languageId, null, $shopId);
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPagePrevNextRelTags()
+    {
+        if (Validate::isLoadedObject($this->category)) {
+            return $this->getRelPrevNext('category', $this->category->id);
+        }
+        return null;
+    }
+
 }
+

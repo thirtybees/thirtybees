@@ -312,7 +312,7 @@ class FrontControllerCore extends Controller
                 $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
-            if (isset($this->php_self) && Configuration::get('TB_EMIT_SEO_FIELDS')) {
+            if (Configuration::get('TB_EMIT_SEO_FIELDS')) {
                 // append some seo fields, canonical, hrefLang, rel prev/next
                 $hookHeader .= $this->getSeoFields();
             }
@@ -373,89 +373,19 @@ class FrontControllerCore extends Controller
      */
     public function getSeoFields()
     {
-        $content = '';
-        $languages = Language::getLanguages(true, $this->context->shop->id);
-        $defaultLang = Configuration::get('PS_LANG_DEFAULT');
-        switch ($this->php_self) {
-            case 'product': // product page
-                $idProduct = Tools::getIntValue('id_product');
-                $combinationId = Tools::getIntValue('combination');
-                if ($combinationId && $combinationId === Product::getProductDefaultCombinationId($idProduct)) {
-                    $combinationId = 0;
-                }
-                $canonical = $this->context->link->getProductLink($idProduct, null, null, null, null, null, $combinationId);
-                $hreflang = $this->getHrefLang('product', $idProduct, $languages, $defaultLang, $combinationId);
-
-                break;
-
-            case 'category':
-                $idCategory = Tools::getIntValue('id_category');
-                $content .= $this->getRelPrevNext('category', $idCategory);
-                $canonical = $this->context->link->getCategoryLink((int) $idCategory);
-                $hreflang = $this->getHrefLang('category', $idCategory, $languages, $defaultLang);
-
-                break;
-
-            case 'manufacturer':
-                $idManufacturer = Tools::getIntValue('id_manufacturer');
-                $content .= $this->getRelPrevNext('manufacturer', $idManufacturer);
-                $hreflang = $this->getHrefLang('manufacturer', $idManufacturer, $languages, $defaultLang);
-
-                if (!$idManufacturer) {
-                    $canonical = $this->context->link->getPageLink('manufacturer');
-                } else {
-                    $canonical = $this->context->link->getManufacturerLink($idManufacturer);
-                }
-
-                break;
-
-            case 'supplier':
-                $idSupplier = Tools::getIntValue('id_supplier');
-                $content .= $this->getRelPrevNext('supplier', $idSupplier);
-                $hreflang = $this->getHrefLang('supplier', $idSupplier, $languages, $defaultLang);
-
-                if (!Tools::getIntValue('id_supplier')) {
-                    $canonical = $this->context->link->getPageLink('supplier');
-                } else {
-                    $canonical = $this->context->link->getSupplierLink(Tools::getIntValue('id_supplier'));
-                }
-
-                break;
-
-            case 'cms':
-                $idCms = Tools::getIntValue('id_cms');
-                $idCmsCategory = Tools::getIntValue('id_cms_category');
-                if ($idCms) {
-                    $canonical = $this->context->link->getCMSLink($idCms);
-                    $hreflang = $this->getHrefLang('cms', $idCms, $languages, $defaultLang);
-                } else {
-                    $canonical = $this->context->link->getCMSCategoryLink((int) $idCmsCategory);
-                    $hreflang = $this->getHrefLang('cms_category', (int)$idCmsCategory, $languages, $defaultLang);
-                }
-
-                break;
-            default:
-                $dispatcher = Dispatcher::getInstance();
-                if ($info = $dispatcher->isModuleControllerRoute($this->php_self)) {
-                    // include only required $_GET parameters and ignore others
-                    $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($this->php_self));
-                    $canonical = $this->context->link->getModuleLink($info['module'], $info['controller'], $params);
-                } else {
-                    $canonical = $this->context->link->getPageLink($this->php_self);
-                }
-                $hreflang = $this->getHrefLang($this->php_self, 0, $languages, $defaultLang);
-                break;
-
+        $content = "\n";
+        $canonicalUrl = $this->getCurrentPageCanonicalUrl();
+        if ($canonicalUrl) {
+            $content .= '<link rel="canonical" href="'.$canonicalUrl.'">'."\n";
         }
-        // build new content
-        $content .= '<link rel="canonical" href="'.$canonical.'">'."\n";
-        if (is_array($hreflang) && !empty($hreflang)) {
-            foreach ($hreflang as $lang) {
-                $content .= "$lang\n";
-            }
+        foreach ($this->getCurrentPageHrefLangTags() as $lang) {
+            $content .= $lang . "\n";
         }
-
-        return $content;
+        $relprevNext = $this->getCurrentPagePrevNextRelTags();
+        if ($relprevNext) {
+            $content .= $relprevNext . "\n";
+        }
+        return rtrim($content);
     }
 
     /**
@@ -465,72 +395,15 @@ class FrontControllerCore extends Controller
      * @param int $idItem eventual id of the object (if any)
      * @param array $languages list of languages
      * @param int $idLangDefault id of the default language
-     * @param mixed $extra extra parameters
      *
      * @return string[] HTML of the hreflang tags
      *
      * @throws PrestaShopException
      */
-    public function getHrefLang($entity, $idItem, $languages, $idLangDefault, $extra = null)
+    public function getHrefLang($entity, $idItem, $languages, $idLangDefault)
     {
-        $idLangDefault = (int)$idLangDefault;
-        $mapping = $this->getHrefLangMapping($languages, $idLangDefault);
-        $links = [];
-        foreach ($mapping as $languageCode => $target) {
-            $shopId = (int)$target['targetShopId'];
-            $languageId = (int)$target['targetLangId'];
-            $isDefault = (bool)$target['isDefault'];
-            switch ($entity) {
-                case 'product':
-                    $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $languageId, $shopId, $extra);
-                    break;
-                case 'category':
-                    $lnk = $this->context->link->getCategoryLink((int) $idItem, null, $languageId, null, $shopId);
-                    break;
-                case 'manufacturer':
-                    if (!$idItem) {
-                        $lnk = $this->context->link->getPageLink('manufacturer', null, $languageId, null, false, $shopId);
-                    } else {
-                        $lnk = $this->context->link->getManufacturerLink((int) $idItem, null, $languageId, $shopId);
-                    }
-                    break;
-                case 'supplier':
-                    if (!$idItem) {
-                        $lnk = $this->context->link->getPageLink('supplier', null, $languageId, null, false, $shopId);
-                    } else {
-                        $lnk = $this->context->link->getSupplierLink((int) $idItem, null, $languageId, $shopId);
-                    }
-                    break;
-                case 'cms':
-                    $lnk = $this->context->link->getCMSLink((int) $idItem, null, null, $languageId, $shopId);
-                    break;
-                case 'cms_category':
-                    $lnk = $this->context->link->getCMSCategoryLink((int) $idItem, null, $languageId, $shopId);
-                    break;
-                default:
-                    $dispatcher = Dispatcher::getInstance();
-                    if ($info = $dispatcher->isModuleControllerRoute($entity)) {
-                        // include only required $_GET parameters and ignore others
-                        $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($entity));
-                        $lnk = $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $languageId, $shopId);
-                    } else  {
-                        $lnk = $this->context->link->getPageLink($entity, null, $languageId, null, false, $shopId);;
-                    }
-                    break;
-            }
-
-            // append page number
-            if ($p = Tools::getIntValue('p')) {
-                $lnk .= "?p=$p";
-            }
-
-            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'. $languageCode .'">';
-            if ($isDefault) {
-                $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="x-default">';
-            }
-        }
-
-        return $links;
+        Tools::displayAsDeprecated();
+        return $this->getCurrentPageHrefLangTags();
     }
 
     /**
@@ -2310,5 +2183,92 @@ class FrontControllerCore extends Controller
             ];
         }
         return $mapping;
+    }
+
+    /**
+     * Returns canonical url to current page, if known
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageCanonicalUrl()
+    {
+        return $this->getCurrentPageAlternateUrl(
+            (int)$this->context->shop->id,
+            (int)$this->context->language->id
+        );
+    }
+
+    /**
+     * Returns current page next/prev link tags, if they exits
+     *
+     * @return string|null
+     */
+    protected function getCurrentPagePrevNextRelTags()
+    {
+        return null;
+    }
+
+    /**
+     * Returns alternate url for current page
+     *
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return string|null
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
+    {
+        $routeId = (string)$this->php_self;
+        if ($routeId) {
+            $dispatcher = Dispatcher::getInstance();
+            if ($info = $dispatcher->isModuleControllerRoute($routeId)) {
+                // include only required $_GET parameters and ignore others
+                $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($routeId));
+                return $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $languageId, $shopId);
+            } else {
+                return $this->context->link->getPageLink($routeId, null, $languageId, null, false, $shopId);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns alternate hreflang link tags
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function getCurrentPageHrefLangTags()
+    {
+        $languages = Language::getLanguages(true, $this->context->shop->id);
+        $idLangDefault = (int)Configuration::get('PS_LANG_DEFAULT');
+        $mapping = $this->getHrefLangMapping($languages, $idLangDefault);
+        $default = null;
+        $links = [];
+        foreach ($mapping as $languageCode => $target) {
+            $shopId = (int)$target['targetShopId'];
+            $languageId = (int)$target['targetLangId'];
+            $isDefault = (bool)$target['isDefault'];
+            $lnk = $this->getCurrentPageAlternateUrl($shopId, $languageId);
+            if ($lnk) {
+                // append page number
+                if ($p = Tools::getIntValue('p')) {
+                    $lnk .= "?p=$p";
+                }
+
+                $links[] = '<link rel="alternate" hreflang="' . $languageCode . '" href="' . $lnk . '">';
+                if ($isDefault) {
+                    $default = '<link rel="alternate" hreflang="x-default" href="' . $lnk . '">';
+                }
+            }
+        }
+
+        if ($default) {
+            $links[] = $default;
+        }
+
+        return $links;
     }
 }
