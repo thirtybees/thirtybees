@@ -313,7 +313,12 @@ class CategoryControllerCore extends FrontController
     protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
     {
         if (Validate::isLoadedObject($this->category)) {
-            return $this->context->link->getCategoryLink($this->category->id, null, $languageId, null, $shopId);
+            $category = ((int)$this->category->id_shop === $shopId && (int)$this->category->id_lang === $languageId)
+                ? $this->category
+                : new Category($this->category->id, $languageId, $shopId);
+            if ($category->active) {
+                return $this->context->link->getCategoryLink($category->id, null, $languageId, null, $shopId);
+            }
         }
         return null;
     }
