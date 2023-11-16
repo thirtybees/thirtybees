@@ -220,6 +220,9 @@ class DispatcherCore
                 'tags' => [
                     'regexp' => '[a-zA-Z0-9-\pL]*',
                 ],
+                'any' => [
+                    'regexp' => '.*'
+                ],
             ],
         ],
         'layered_rule' => [
