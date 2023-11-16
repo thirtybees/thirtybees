@@ -981,7 +981,13 @@ class ProductControllerCore extends FrontController
     protected function getCurrentPageAlternateUrl(int $shopId, int $languageId)
     {
         if (Validate::isLoadedObject($this->product)) {
-            return $this->context->link->getProductLink($this->product->id, null, null, null, $languageId, $shopId, $this->product->getSelectedCombinationId());
+            $product = ((int)$this->product->id_shop === $shopId && (int)$this->product->id_lang === $languageId)
+                ? $this->product
+                : new ProductViewModel((int)$this->product->id, (int)$this->product->getSelectedCombinationId(), $languageId, $shopId);
+
+            if ($product->active) {
+                return $this->context->link->getProductLink($this->product->id, null, null, null, $languageId, $shopId, $this->product->getSelectedCombinationId());
+            }
         }
         return null;
     }
