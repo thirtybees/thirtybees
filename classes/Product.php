@@ -927,7 +927,7 @@ class ProductCore extends ObjectModel
 
         if ($idAddress) {
             $addressInfos = Address::getCountryAndState($idAddress);
-            if ($addressInfos['id_country']) {
+            if ($addressInfos && $addressInfos['id_country']) {
                 $idCountry = (int) $addressInfos['id_country'];
                 $idState = (int) $addressInfos['id_state'];
                 $zipcode = $addressInfos['postcode'];
