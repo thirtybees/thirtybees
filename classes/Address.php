@@ -297,7 +297,7 @@ class AddressCore extends ObjectModel
      *
      * @param int $idAddress Address id for which we want to get zone id
      *
-     * @return int Zone id
+     * @return int|false Zone id
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -307,6 +307,8 @@ class AddressCore extends ObjectModel
         if (empty($idAddress)) {
             return false;
         }
+
+        $idAddress = (int)$idAddress;
 
         if (isset(static::$_idZones[$idAddress])) {
             return static::$_idZones[$idAddress];
@@ -329,9 +331,16 @@ class AddressCore extends ObjectModel
                 ->where('a.`id_address` = '.(int) $idAddress)
         );
 
-        static::$_idZones[$idAddress] = (int) ((int) $result['id_zone_state'] ? $result['id_zone_state'] : $result['id_zone']);
+        $zoneId = false;
+        if ($result) {
+            $zoneId = (int)$result['id_zone_state'];
+            if (! $zoneId) {
+                $zoneId = (int)$result['id_zone'];
+            }
+        }
 
-        return static::$_idZones[$idAddress];
+        static::$_idZones[$idAddress] = $zoneId;
+        return $zoneId;
     }
 
     /**
