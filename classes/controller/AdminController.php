@@ -624,12 +624,13 @@ class AdminControllerCore extends Controller
 
         if (isset($this->list_id)) {
             foreach ($_POST as $key => $value) {
+                $value = $this->serializeListFilterValue($value);
                 if ($value === '') {
                     unset($this->context->cookie->{$prefix.$key});
                 } elseif (stripos($key, $this->list_id.'Filter_') === 0) {
-                    $this->context->cookie->{$prefix.$key} = !is_array($value) ? $value : json_encode($value);
+                    $this->context->cookie->{$prefix.$key} = $value;
                 } elseif (stripos($key, 'submitFilter') === 0) {
-                    $this->context->cookie->$key = !is_array($value) ? $value : json_encode($value);
+                    $this->context->cookie->$key = $value;
                 }
             }
 
@@ -641,9 +642,14 @@ class AdminControllerCore extends Controller
                 }
 
                 if (stripos($key, $this->list_id.'Filter_') === 0) {
-                    $this->context->cookie->{$prefix.$key} = !is_array($value) ? $value : json_encode($value);
+                    $value = $this->serializeListFilterValue($value);
+                    if ($value === '') {
+                        unset($this->context->cookie->{$prefix.$key});
+                    } else {
+                        $this->context->cookie->{$prefix.$key} = $value;
+                    }
                 } elseif (stripos($key, 'submitFilter') === 0) {
-                    $this->context->cookie->$key = !is_array($value) ? $value : json_encode($value);
+                    $this->context->cookie->$key = $this->serializeListFilterValue($value);
                 }
                 if (stripos($key, $this->list_id.'Orderby') === 0 && Validate::isOrderBy($value)) {
                     if ($value === '' || $value == $this->_defaultOrderBy) {
@@ -4804,5 +4810,27 @@ class AdminControllerCore extends Controller
     {
         $this->postProcessHandleExceptions = false;
         static::getErrorHandler()->setErrorResponseHandler(new JSendErrorResponse(_PS_MODE_DEV_));
+    }
+
+    /**
+     * Serialize list filter value
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    protected function serializeListFilterValue($value)
+    {
+        if (is_array($value)) {
+            $filtered = array_filter($value);
+            if ($filtered) {
+                $json = json_encode($value);
+                if ($json !== false) {
+                    return $json;
+                }
+            }
+            return '';
+        }
+        return (string)$value;
     }
 }
