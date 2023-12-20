@@ -1712,12 +1712,12 @@ class AdminOrdersControllerCore extends AdminController
                             $orderCartRule->value_tax_excl = $cartRule['value_tax_excl'];
                             $res = $orderCartRule->add() && $res;
 
-                            $order->total_discounts += $orderCartRule->value;
-                            $order->total_discounts_tax_incl += $orderCartRule->value;
-                            $order->total_discounts_tax_excl += $orderCartRule->value_tax_excl;
-                            $order->total_paid -= $orderCartRule->value;
-                            $order->total_paid_tax_incl -= $orderCartRule->value;
-                            $order->total_paid_tax_excl -= $orderCartRule->value_tax_excl;
+                            $order->total_discounts = static::ensurePositiveValue($order->total_discounts + $orderCartRule->value, 'total_discounts');
+                            $order->total_discounts_tax_incl = static::ensurePositiveValue($order->total_discounts_tax_incl + $orderCartRule->value, 'total_discounts_tax_incl');
+                            $order->total_discounts_tax_excl = static::ensurePositiveValue($order->total_discounts_tax_excl + $orderCartRule->value_tax_excl, 'total_discounts_tax_excl');
+                            $order->total_paid = static::ensurePositiveValue($order->total_paid - $orderCartRule->value, 'total_paid');
+                            $order->total_paid_tax_incl = static::ensurePositiveValue($order->total_paid_tax_incl - $orderCartRule->value, 'total_paid_tax_incl');
+                            $order->total_paid_tax_excl = static::ensurePositiveValue($order->total_paid_tax_excl - $orderCartRule->value_tax_excl, 'total_paid_tax_excl');
                         }
 
                         // Update Order
@@ -3425,5 +3425,22 @@ class AdminOrdersControllerCore extends AdminController
             ];
         }
         return $invoiceArray;
+    }
+
+
+    /**
+     * @param float|mixed $value
+     * @param string $propertyName
+     *
+     * @return float
+     */
+    protected static function ensurePositiveValue($value, $propertyName)
+    {
+        $value = Tools::parseNumber($value);
+        if ($value < 0.0) {
+            trigger_error("Attempt to store negative value $value into '$propertyName' property", E_USER_WARNING);
+            return 0.0;
+        }
+        return $value;
     }
 }
