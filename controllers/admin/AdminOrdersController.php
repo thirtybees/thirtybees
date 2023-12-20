@@ -486,8 +486,8 @@ class AdminOrdersControllerCore extends AdminController
                         if (!Validate::isLoadedObject($order)) {
                             $this->errors[] = sprintf(Tools::displayError('Order #%d cannot be loaded'), $idOrder);
                         } else {
-                            $currentOrderState = $order->getCurrentOrderState();
-                            if ($currentOrderState->id == $orderState->id) {
+                            $currentOrderStateId = (int)$order->current_state;
+                            if ($currentOrderStateId === $idOrderState) {
                                 $this->displayWarning(sprintf('Order #%d has already been assigned this status.', $idOrder));
                             } else {
                                 $history = new OrderHistory();
@@ -497,7 +497,7 @@ class AdminOrdersControllerCore extends AdminController
                                 // Since we have an order there should already be a payment
                                 // If there is no payment and the order status is `logable`
                                 // then the order payment will be generated automatically
-                                $history->changeIdOrderState((int) $orderState->id, $order, !$order->hasInvoice());
+                                $history->changeIdOrderState($idOrderState, $order, !$order->hasInvoice());
 
                                 $carrier = new Carrier($order->id_carrier, $order->id_lang);
                                 $customer = new Customer($order->id_customer);
