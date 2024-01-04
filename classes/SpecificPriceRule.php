@@ -187,18 +187,17 @@ class SpecificPriceRuleCore extends ObjectModel
     {
         $conditionsGroup = $this->getConditions();
         $currentShopId = Context::getContext()->shop->id;
-
-        $result = [];
+        $conn = Db::readOnly();
 
         if ($conditionsGroup) {
+            $result = [];
             foreach ($conditionsGroup as $conditionGroup) {
                 // Base request
                 $query = (new DbQuery())
                     ->select('DISTINCT p.`id_product`')
                     ->from('product', 'p')
                     ->leftJoin('product_shop', 'ps', 'p.`id_product` = ps.`id_product`')
-                    ->where('ps.id_shop = '.(int) $currentShopId)
-                ;
+                    ->where('ps.id_shop = '.(int) $currentShopId);
 
                 $attributesJoinAdded = false;
 
@@ -248,8 +247,13 @@ class SpecificPriceRuleCore extends ObjectModel
                     $query->select('NULL as `id_product_attribute`');
                 }
 
-                $result = array_merge($result, Db::readOnly()->getArray($query));
+                $conditionGroupResults = $conn->getArray($query);
+                foreach ($conditionGroupResults as $row) {
+                    $key = $row['id_product'] . '|' . $row['id_product_attribute'];
+                    $result[$key] = $row;
+                }
             }
+            return array_values($result);
         } else {
             // All products without conditions
             $query = new DbQuery();
@@ -261,11 +265,8 @@ class SpecificPriceRuleCore extends ObjectModel
             if ($products && count($products)) {
                 $query->where('p.`id_product` IN ('.implode(', ', array_map('intval', $products)).')');
             }
-            $result = Db::getInstance()->executeS($query);
-
+            return $conn->getArray($query);
         }
-
-        return $result;
     }
 
     /**
