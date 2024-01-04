@@ -39,12 +39,12 @@ class HelperCalendarCore extends Helper
     const DEFAULT_COMPARE_OPTION = 1;
 
     /**
-     * @var array
+     * @var array[]
      */
     private $_actions = [];
 
     /**
-     * @var array
+     * @var array[]
      */
     private $_compare_actions = [];
 
@@ -95,7 +95,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param Traversable[] $value
+     * @param array[] $value
      *
      * @return static
      * @throws PrestaShopException
@@ -112,7 +112,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @return array
+     * @return array[]
      */
     public function getActions()
     {
@@ -120,7 +120,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param Traversable[] $value
+     * @param array[] $value
      *
      * @return static
      * @throws PrestaShopException
@@ -137,7 +137,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @return array
+     * @return array[]
      */
     public function getCompareActions()
     {
@@ -283,7 +283,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param string $action
+     * @param array $action
      *
      * @return static
      */
@@ -294,7 +294,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param string $action
+     * @param array $action
      *
      * @return static
      */
