@@ -312,6 +312,11 @@ class AdminControllerCore extends Controller
     protected $postProcessHandleExceptions = true;
 
     /**
+     * @var boolean
+     */
+    protected $listFieldsExtended = false;
+
+    /**
      * AdminControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -1167,17 +1172,20 @@ class AdminControllerCore extends Controller
      */
     protected function dispatchFieldsListingModifierEvent()
     {
-        Hook::triggerEvent(
-            'action'.$this->controller_name.'ListingFieldsModifier', [
-                'select'    => &$this->_select,
-                'join'      => &$this->_join,
-                'where'     => &$this->_where,
-                'group_by'  => &$this->_group,
-                'order_by'  => &$this->_orderBy,
-                'order_way' => &$this->_orderWay,
-                'fields'    => &$this->fields_list,
-            ]
-        );
+        if (! $this->listFieldsExtended) {
+            $this->listFieldsExtended = true;
+            Hook::triggerEvent(
+                'action' . $this->controller_name . 'ListingFieldsModifier', [
+                    'select' => &$this->_select,
+                    'join' => &$this->_join,
+                    'where' => &$this->_where,
+                    'group_by' => &$this->_group,
+                    'order_by' => &$this->_orderBy,
+                    'order_way' => &$this->_orderWay,
+                    'fields' => &$this->fields_list,
+                ]
+            );
+        }
     }
 
     /**
