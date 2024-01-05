@@ -929,10 +929,17 @@ class AdminControllerCore extends Controller
                         $fieldValue = $pathToImage;
                     }
                 }
-                if (isset($params['callback'])) {
-                    $callbackObj = (isset($params['callback_object'])) ? $params['callback_object'] : $this->context->controller;
-                    if (!preg_match('/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/ism', call_user_func_array([$callbackObj, $params['callback']], [$fieldValue, $row]))) {
-                        $fieldValue = call_user_func_array([$callbackObj, $params['callback']], [$fieldValue, $row]);
+                if (isset($params['callback_export'])) {
+                    $callback = $params['callback_export'];
+                    if (is_callable($callback)) {
+                        $fieldValue = $callback($fieldValue, $row);
+                    }
+                } elseif (isset($params['callback'])) {
+                    $callbackMethod = $params['callback'];
+                    $callbackObj = $params['callback_object'] ?? $this;
+                    $convertedValue = (string)call_user_func_array([$callbackObj, $callbackMethod], [$fieldValue, $row]);
+                    if (!preg_match('/<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/ism', $convertedValue)) {
+                        $fieldValue = $convertedValue;
                     }
                 }
                 $content[$i][] = $fieldValue;
