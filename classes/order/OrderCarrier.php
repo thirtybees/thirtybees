@@ -96,4 +96,89 @@ class OrderCarrierCore extends ObjectModel
             'id_carrier' => ['xlink_resource' => 'carriers'],
         ],
     ];
+
+
+    /**
+     * @param $trackingNumber
+     * @param $sendMail
+     * @param $errors
+     * @return bool
+     * @throws PrestaShopException If Customer or Carrier cannot be loaded
+     */
+    
+    public function updateTrackingNumber($trackingNumber, $sendMail = true, &$errors = []) {
+        if (!Validate::isTrackingNumber(Tools::getValue('tracking_number'))) {
+            $errors[] = Tools::displayError('The tracking number is incorrect.');
+            return false;
+        }
+        // update shipping number
+        // Keep these two following lines for backward compatibility, remove on 1.6 version
+        $orderObject = new Order($this->id_order);
+        if($orderObject->id){
+            $orderObject->shipping_number = $trackingNumber;
+            $orderObject->update();
+        }
+
+        // Update order_carrier
+        $this->tracking_number = $trackingNumber;
+        if ($this->update()) {
+            // Send mail to customer
+            $customer = new Customer((int) $orderObject->id_customer);
+            $carrier = new Carrier((int) $orderObject->id_carrier, $orderObject->id_lang);
+            if (!Validate::isLoadedObject($customer)) {
+                throw new PrestaShopException('Can\'t load Customer object');
+            }
+            if (!Validate::isLoadedObject($carrier)) {
+                throw new PrestaShopException('Can\'t load Carrier object');
+            }
+            $templateVars = [
+                '{followup}'         => str_replace('@', $orderObject->shipping_number, $carrier->url),
+                '{firstname}'        => $customer->firstname,
+                '{lastname}'         => $customer->lastname,
+                '{id_order}'         => $orderObject->id,
+                '{shipping_number}'  => $orderObject->shipping_number,
+                '{carrier_name}'     => $carrier->display_name,
+                '{order_name}'       => $orderObject->getUniqReference(),
+                '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
+                '{bankwire_details}' => nl2br((string) Configuration::get('BANK_WIRE_DETAILS')),
+                '{bankwire_address}' => nl2br((string) Configuration::get('BANK_WIRE_ADDRESS')),
+            ];
+            $sendMailResult = false; // flag if email was sent successfully
+            if($sendMail){
+                $sendMailResult = Mail::Send(
+                    (int) $orderObject->id_lang,
+                    'in_transit',
+                    Mail::l('Package in transit', (int) $orderObject->id_lang),
+                    $templateVars,
+                    $customer->email,
+                    $customer->firstname.' '.$customer->lastname,
+                    null,
+                    null,
+                    null,
+                    null,
+                    _PS_MAIL_DIR_,
+                    true,
+                    (int) $orderObject->id_shop
+                );
+                if(!$sendMailResult){
+                    $errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
+                }
+            }
+            Hook::triggerEvent(
+                'actionOrderCarrierTrackingNumberUpdate', 
+                [
+                    'orderObject' => $orderObject,
+                    'customer' => $customer,
+                    'carrier' => $carrier,
+                    'sendMail' => $sendMail,
+                    'sendMailResult' => $sendMailResult, // will be true if any module blocked sending via actionEmailSendBefore
+                ],
+                $orderObject->id_shop
+            );
+            return true;
+        } else {
+            $errors[] = Tools::displayError('The orderObject carrier cannot be updated.');
+        }
+        return false;
+    }
 }
