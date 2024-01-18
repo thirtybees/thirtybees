@@ -97,15 +97,6 @@ class OrderCarrierCore extends ObjectModel
         ],
     ];
 
-
-    /**
-     * @param $trackingNumber
-     * @param $sendMail
-     * @param $errors
-     * @return bool
-     * @throws PrestaShopException If Customer or Carrier cannot be loaded
-     */
-    
     public function updateTrackingNumber($trackingNumber, $sendMail = true, &$errors = []) {
         if (!Validate::isTrackingNumber(Tools::getValue('tracking_number'))) {
             $errors[] = Tools::displayError('The tracking number is incorrect.');
@@ -131,12 +122,18 @@ class OrderCarrierCore extends ObjectModel
             if (!Validate::isLoadedObject($carrier)) {
                 throw new PrestaShopException('Can\'t load Carrier object');
             }
+            $followup_url = $followup = str_replace('@', $this->tracking_number, $carrier->url);
+            if(empty($followup))
+                $followup = $this->tracking_number;
+            if(empty($followup_url))
+                $followup_url = '#';
             $templateVars = [
-                '{followup}'         => str_replace('@', $orderObject->shipping_number, $carrier->url),
+                '{followup}'         => $followup,
+                '{followup_url}'     => $followup_url,
                 '{firstname}'        => $customer->firstname,
                 '{lastname}'         => $customer->lastname,
                 '{id_order}'         => $orderObject->id,
-                '{shipping_number}'  => $orderObject->shipping_number,
+                '{tracking_number}'  => $this->tracking_number,
                 '{carrier_name}'     => $carrier->display_name,
                 '{order_name}'       => $orderObject->getUniqReference(),
                 '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
@@ -165,7 +162,7 @@ class OrderCarrierCore extends ObjectModel
                 }
             }
             Hook::triggerEvent(
-                'actionOrderCarrierTrackingNumberUpdate', 
+                'actionOrderCarrierTrackingNumberUpdate',
                 [
                     'orderObject' => $orderObject,
                     'customer' => $customer,
