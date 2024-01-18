@@ -601,65 +601,27 @@ class AdminOrdersControllerCore extends AdminController
                 } elseif (!Validate::isTrackingNumber($trackingNumber)) {
                     $this->errors[] = Tools::displayError('The tracking number is incorrect.');
                 } else {
-                    // update shipping number
-                    // Keep these two following lines for backward compatibility, remove on 1.6 version
-                    $order->shipping_number = $trackingNumber;
-                    $order->update();
-
-                    // Update order_carrier
-                    $orderCarrier->tracking_number = pSQL($trackingNumber);
-                    if ($orderCarrier->update()) {
-                        // Send mail to customer
-                        $customer = new Customer((int) $order->id_customer);
-                        $carrier = new Carrier((int) $order->id_carrier, $order->id_lang);
-                        if (!Validate::isLoadedObject($customer)) {
-                            throw new PrestaShopException('Can\'t load Customer object');
-                        }
-                        if (!Validate::isLoadedObject($carrier)) {
-                            throw new PrestaShopException('Can\'t load Carrier object');
-                        }
-                        $templateVars = [
-                            '{followup}'         => str_replace('@', $trackingNumber, $carrier->url),
-                            '{firstname}'        => $customer->firstname,
-                            '{lastname}'         => $customer->lastname,
-                            '{id_order}'         => $order->id,
-                            '{shipping_number}'  => $trackingNumber,
-                            '{order_name}'       => $order->getUniqReference(),
-                            '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
-                            '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                            '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
-                        ];
-                        if (@Mail::Send(
-                            (int) $order->id_lang,
-                            'in_transit',
-                            Mail::l('Package in transit', (int) $order->id_lang),
-                            $templateVars,
-                            $customer->email,
-                            $customer->firstname.' '.$customer->lastname,
-                            null,
-                            null,
-                            null,
-                            null,
-                            _PS_MAIL_DIR_,
-                            true,
-                            (int) $order->id_shop
-                        )) {
-                            Hook::triggerEvent(
-                                'actionAdminOrdersTrackingNumberUpdate',
-                                [
-                                    'order' => $order,
-                                    'customer' => $customer,
-                                    'carrier' => $carrier
-                                ],
-                                $order->id_shop
-                            );
-                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
-                        } else {
-                            $this->errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
-                        }
-                    } else {
-                        $this->errors[] = Tools::displayError('The order carrier cannot be updated.');
+                    $customer = new Customer((int) $order->id_customer);
+                    $carrier = new Carrier((int) $order->id_carrier, $order->id_lang);
+                    if (!Validate::isLoadedObject($customer)) {
+                        throw new PrestaShopException('Can\'t load Customer object');
                     }
+                    if (!Validate::isLoadedObject($carrier)) {
+                        throw new PrestaShopException('Can\'t load Carrier object');
+                    }
+                    if ($orderCarrier->updateTrackingNumber($trackingNumber, true, $this->errors)) {
+                        Hook::triggerEvent(
+                            'actionAdminOrdersTrackingNumberUpdate',
+                            [
+                                'order' => $order,
+                                'customer' => $customer,
+                                'carrier' => $carrier
+                            ],
+                            $order->id_shop
+                        );
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                    }
+
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
