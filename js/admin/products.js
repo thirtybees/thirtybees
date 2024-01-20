@@ -964,6 +964,7 @@ window.product_tabs.Associations = new function () {
 
     $('#product_autocomplete_input').setOptions({
       extraParams: {
+        returnType: 'list',
         excludeIds: self.getAccessoriesIds()
       }
     });
