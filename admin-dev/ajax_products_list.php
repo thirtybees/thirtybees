@@ -58,7 +58,8 @@ if ($pos = strpos($query, ' (ref:')) {
     $query = substr($query, 0, $pos);
 }
 
-$excludeIds = Tools::getValue('excludeIds', false);
+$excludeIds = Tools::getValue('excludeIds', false);+
+$returnType = Tools::getValue('returnType');
 if ($excludeIds && $excludeIds != 'NaN') {
     $excludeIds = implode(',', array_map('intval', explode(',', $excludeIds)));
 } else {
@@ -89,7 +90,13 @@ $sql = 'SELECT p.`id_product`, pl.`link_rewrite`, p.`reference`, pl.`name`, imag
 $conn = Db::readOnly();
 $items = $conn->getArray($sql);
 
-if ($items && ($excludeIds || strpos(Tools::getHttpReferer(), 'AdminScenes') !== false)) {
+if (
+    $returnType !== 'ajax' &&
+    (
+        $returnType === 'list' ||
+        ($items && ($excludeIds || strpos(Tools::getHttpReferer(), 'AdminScenes') !== false))
+    )
+) {
     foreach ($items as $item) {
         echo trim($item['name']).(!empty($item['reference']) ? ' (ref: '.$item['reference'].')' : '').'|'.(int)($item['id_product'])."\n";
     }
