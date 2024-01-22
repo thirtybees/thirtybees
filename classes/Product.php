@@ -7074,13 +7074,20 @@ class ProductCore extends ObjectModel
      */
     public function deleteDefaultAttributes()
     {
-        return ObjectModel::updateMultishopTable(
-            'Combination',
-            [
-                'default_on' => null,
-            ],
-            'a.`id_product` = '.(int) $this->id
-        );
+        $id = (int)$this->id;
+        if ($id) {
+            $conn = Db::getInstance();
+            $res = ObjectModel::updateMultishopTable(
+                'Combination',
+                [
+                    'default_on' => null
+                ],
+                'a.`id_product` = '.$id
+            );
+            return $conn->update('product_attribute', ['default_on' => null], "id_product = $id", 0, true) && $res;
+        } else {
+            return false;
+        }
     }
 
     /**
