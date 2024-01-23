@@ -151,6 +151,13 @@ class PDFCore
             case static::TEMPLATE_SUPPLY_ORDER_FORM:
                 return new HTMLTemplateSupplyOrderForm($object, $this->smarty);
             default:
+                $className = 'HTMLTemplate'.$this->template;
+                if (class_exists($className)) {
+                    $instance = new $className($object, $this->smarty, $this->send_bulk_flag);
+                    if ($instance instanceof HTMLTemplate) {
+                        return $instance;
+                    }
+                }
                 throw new PrestaShopException('Unknown template: '.$this->template);
         }
     }
