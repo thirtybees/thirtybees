@@ -174,8 +174,11 @@ class ContextCore
     public function isMobile()
     {
         if ($this->is_mobile === null) {
-            $mobileDetect = $this->getMobileDetect();
-            $this->is_mobile = $mobileDetect->isMobile();
+            try {
+                $this->is_mobile = $this->getMobileDetect()->isMobile();
+            } catch (Throwable $e) {
+                $this->is_mobile = false;
+            }
         }
 
         return $this->is_mobile;
@@ -203,8 +206,11 @@ class ContextCore
     public function isTablet()
     {
         if ($this->is_tablet === null) {
-            $mobileDetect = $this->getMobileDetect();
-            $this->is_tablet = $mobileDetect->isTablet();
+            try {
+                $this->is_tablet = $this->getMobileDetect()->isTablet();
+            } catch (Throwable $e) {
+                $this->is_tablet = false;
+            }
         }
 
         return $this->is_tablet;
