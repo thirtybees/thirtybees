@@ -1212,7 +1212,7 @@ class ConfigurationCore extends ObjectModel
                 'type' => $type,
                 'name' => static::getGlobalValue(static::SUPPORTER_TYPE_NAME)
             ];
-        };
+        }
         return null;
     }
 }
