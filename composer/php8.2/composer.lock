@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b9484c2d5d0ef926fe3ca500d8fe025",
+    "content-hash": "f1a9307dc038e74d1ad97a82a12a5ec7",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -1201,16 +1201,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "3931d8f54b8f7a4ffab538582d34d4397ba8daa5"
+                "reference": "e0cbbdf6ea21768d0194e59d2f8c2e20d5f0868c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/3931d8f54b8f7a4ffab538582d34d4397ba8daa5",
-                "reference": "3931d8f54b8f7a4ffab538582d34d4397ba8daa5",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/e0cbbdf6ea21768d0194e59d2f8c2e20d5f0868c",
+                "reference": "e0cbbdf6ea21768d0194e59d2f8c2e20d5f0868c",
                 "shasum": ""
             },
             "require": {
@@ -1261,9 +1261,9 @@
             "support": {
                 "forum": "https://github.com/smarty-php/smarty/discussions",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v4.3.4"
+                "source": "https://github.com/smarty-php/smarty/tree/v4.3.5"
             },
-            "time": "2023-09-14T10:59:08+00:00"
+            "time": "2024-01-23T10:47:54+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -5315,5 +5315,5 @@
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
