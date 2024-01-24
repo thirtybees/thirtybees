@@ -872,6 +872,7 @@ class AdminStatusesControllerCore extends AdminController
      * @param string $filter
      *
      * @return array|false
+     * @throws PrestaShopException
      */
     protected function filterToField($key, $filter)
     {
