@@ -82,7 +82,7 @@ class OrderHistoryCore extends ObjectModel
      * Sets the new state of the given order
      *
      * @param int $newOrderState
-     * @param int|OrderCore $idOrder
+     * @param int|Order|OrderCore $idOrder
      * @param bool $useExistingPayment
      *
      * @throws PrestaShopDatabaseException
@@ -94,11 +94,8 @@ class OrderHistoryCore extends ObjectModel
             return;
         }
 
-        if (is_numeric($idOrder)) {
-            $order = new Order((int) $idOrder);
-        } elseif ($idOrder instanceof Order) {
-            $order = $idOrder;
-        } else {
+        $order = $this->resolveOrder($idOrder);
+        if (! Validate::isLoadedObject($order)) {
             return;
         }
 
@@ -116,7 +113,7 @@ class OrderHistoryCore extends ObjectModel
             'order' => $order
         ], $order->id_shop);
 
-        if (Validate::isLoadedObject($order) && ($newOs instanceof OrderState)) {
+        if ($newOs instanceof OrderState) {
             $context = Context::getContext();
 
             // An email is sent the first time a virtual item is validated
@@ -617,5 +614,25 @@ class OrderHistoryCore extends ObjectModel
         } else {
             return $this->add();
         }
+    }
+
+    /**
+     * @param int|Order|OrderCore $identifier
+     *
+     * @return Order|null
+     * @throws PrestaShopException
+     */
+    protected function resolveOrder($identifier): ?Order
+    {
+        if ($identifier instanceof Order) {
+            return $identifier;
+        }
+        if (is_numeric($identifier)) {
+            return new Order((int) $identifier);
+        }
+        if ($identifier instanceof OrderCore) {
+            return new Order((int)$identifier->id);
+        }
+        return null;
     }
 }
