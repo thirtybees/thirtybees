@@ -197,9 +197,9 @@ class SearchCore
         $searchSql = (new DbQuery())
             ->select("DISTINCT `cp`.`id_product`")
             ->from('category_product', 'cp')
-            ->innerJoin('category', 'c', '`cp`.`id_category` = `c`.`id_category`')
+            ->innerJoinMultishop('category', 'c', 'cs', '`cp`.`id_category` = `c`.`id_category`')
             ->innerJoinMultishop('product', 'p', 'ps', '`cp`.`id_product` = `p`.`id_product`')
-            ->where('`c`.`active` = 1')
+            ->where('`cs`.`active` = 1')
             ->where('`ps`.`active` = 1')
             ->where('`ps`.`visibility` IN ("both", "search")')
             ->where('`ps`.`indexed` = 1');
