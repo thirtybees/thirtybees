@@ -257,3 +257,7 @@ define('_PS_SMARTY_CONSOLE_OPEN_', 2);
 if (!defined('_PS_JQUERY_VERSION_')) {
     define('_PS_JQUERY_VERSION_', '1.11.0');
 }
+
+if (! defined('K_TCPDF_EXTERNAL_CONFIG')) {
+    define('K_TCPDF_EXTERNAL_CONFIG', true);
+}
