@@ -4117,6 +4117,7 @@ class ProductCore extends ObjectModel
                 $limit = 800;
             }
 
+            $value = (string)$value;
             $sizeWithoutHtml = mb_strlen(strip_tags($value));
             $sizeWithHtml = mb_strlen($value);
             $this->def['fields']['description_short']['size'] = $limit + $sizeWithHtml - $sizeWithoutHtml;
