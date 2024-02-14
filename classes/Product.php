@@ -5216,9 +5216,16 @@ class ProductCore extends ObjectModel
     public function setAvailableDate($availableDate = '0000-00-00')
     {
         if (Validate::isDateFormat($availableDate) && $this->available_date != $availableDate) {
-            $this->available_date = $availableDate;
-
-            return $this->update();
+            $fieldsToUpdate = $this->update_fields;
+            try {
+                $this->available_date = $availableDate;
+                $this->setFieldsToUpdate(['available_date' => true]);
+                return $this->update();
+            } finally {
+                if (! is_null($fieldsToUpdate)) {
+                    $this->setFieldsToUpdate($fieldsToUpdate);
+                }
+            }
         }
 
         return false;
