@@ -1978,7 +1978,7 @@ class AdminOrdersControllerCore extends AdminController
             'total_paid'                   => $order->getTotalPaid(),
             'returns'                      => OrderReturn::getOrdersReturn($order->id_customer, $order->id),
             'customer_thread_message'      => CustomerThread::getCustomerMessages($order->id_customer, null, $order->id),
-            'orderMessages'                => OrderMessage::getOrderMessages($order->id_lang),
+            'orderMessages'                => OrderMessage::getOrderMessages($order->id_lang, $order, $customer),
             'orderDocuments'               => $order->getDocuments(),
             'messages'                     => CustomerMessage::getMessagesByOrderId($order->id, false),
             'carrier'                      => new Carrier($order->id_carrier),

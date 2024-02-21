@@ -69,19 +69,71 @@ class OrderMessageCore extends ObjectModel
 
     /**
      * @param int $idLang
+     * @param \Order|int $order
+     * @param \Customer $customer
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getOrderMessages($idLang)
+    public static function getOrderMessages($idLang, $order = null, $customer = null)
     {
-        return Db::readOnly()->getArray('
+        $orderMessages = Db::readOnly()->getArray('
 		SELECT om.id_order_message, oml.name, oml.message
 		FROM '._DB_PREFIX_.'order_message om
 		LEFT JOIN '._DB_PREFIX_.'order_message_lang oml ON (oml.id_order_message = om.id_order_message)
 		WHERE oml.id_lang = '.(int) $idLang.'
 		ORDER BY name ASC');
+
+        // Replace Shortcodes
+        if ($order) {
+            if (!Validate::isLoadedObject($order) && Validate::isUnsignedInt($order)) {
+                $order = new Order($order);
+            }
+
+            if (!Validate::isLoadedObject($customer)) {
+                $customer = new Customer($order->id_customer);
+            }
+
+            if (Validate::isLoadedObject($order) && Validate::isLoadedObject($customer)) {
+                self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
+            }
+
+        }
+
+        return $orderMessages;
+    }
+
+    /**
+     * @param array $orderMessages
+     * @param int $idLang
+     * @param \Order $order
+     * @param \Customer $customer
+     *
+     * @throws PrestaShopException
+     */
+    private static function replaceShortcodesInOrderMessages(&$orderMessages, $idLang, $order, $customer) {
+
+        $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
+        $addressDelivery = new Address($order->id_address_delivery, $idLang);
+        $addressInvoice = new Address($order->id_address_invoice, $idLang);
+
+        $shortcodesList = [
+            '[customer_firstname]' => $customer->firstname,
+            '[customer_lastname]' => $customer->lastname,
+            '[customer_gender]' => $gender->name,
+            '[order_reference]' => $order->reference,
+            '[order_date]' => Tools::displayDate($order->date_add),
+            '[order_delivery_date]' => Tools::displayDate($order->delivery_date),
+            '[order_total_paid_tax_incl]' => Tools::displayPrice($order->total_paid_tax_incl, $order->id_currency),
+            '[order_total_paid_tax_excl]' => Tools::displayPrice($order->total_paid_tax_excl, $order->id_currency),
+            '[order_address_delivery]' => AddressFormat::generateAddress($addressDelivery),
+            '[order_address_invoice]' => AddressFormat::generateAddress($addressInvoice),
+        ];
+
+        foreach ($orderMessages as &$orderMessage) {
+            $orderMessage['message'] = str_replace(array_keys($shortcodesList), array_values($shortcodesList), $orderMessage['message']);
+        }
     }
 }
