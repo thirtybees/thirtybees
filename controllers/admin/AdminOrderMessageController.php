@@ -79,6 +79,11 @@ class AdminOrderMessageControllerCore extends AdminController
             ],
         ];
 
+        $availableShortocdes = '';
+        foreach (OrderMessage::getShortcodeList() as $shortcode) {
+            $availableShortocdes .= '<code>' . $shortcode . '</code></br>';
+        }
+
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Order messages'),
@@ -99,6 +104,7 @@ class AdminOrderMessageControllerCore extends AdminController
                     'label'    => $this->l('Message'),
                     'name'     => 'message',
                     'required' => true,
+                    'desc'     => $this->l('Available Shortcodes:') . '<br><ul>'.$availableShortocdes
                 ],
             ],
             'submit' => [
