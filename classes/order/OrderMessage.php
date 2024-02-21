@@ -97,7 +97,7 @@ class OrderMessageCore extends ObjectModel
             }
 
             if (Validate::isLoadedObject($order) && Validate::isLoadedObject($customer)) {
-                self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
+                $orderMessages = self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
             }
 
         }
@@ -110,10 +110,13 @@ class OrderMessageCore extends ObjectModel
      * @param int $idLang
      * @param \Order $order
      * @param \Customer $customer
+     * @param bool $returnShortcodeList
+     *
+     * @return array
      *
      * @throws PrestaShopException
      */
-    private static function replaceShortcodesInOrderMessages(&$orderMessages, $idLang, $order, $customer) {
+    private static function replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer, $returnShortcodeList = false) {
 
         $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
         $addressDelivery = new Address($order->id_address_delivery, $idLang);
@@ -132,8 +135,23 @@ class OrderMessageCore extends ObjectModel
             '[order_address_invoice]' => AddressFormat::generateAddress($addressInvoice),
         ];
 
+        if ($returnShortcodeList) {
+            return array_keys($shortcodesList);
+        }
+
         foreach ($orderMessages as &$orderMessage) {
             $orderMessage['message'] = str_replace(array_keys($shortcodesList), array_values($shortcodesList), $orderMessage['message']);
         }
+
+        return $orderMessages;
+    }
+
+    /**
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    public static function getShortcodeList() {
+        return self::replaceShortcodesInOrderMessages([], Configuration::get('PS_LANG_DEFAULT'), new Order(), new Customer(), true);
     }
 }

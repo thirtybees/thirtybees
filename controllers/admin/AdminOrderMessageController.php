@@ -99,6 +99,7 @@ class AdminOrderMessageControllerCore extends AdminController
                     'label'    => $this->l('Message'),
                     'name'     => 'message',
                     'required' => true,
+                    'desc'     => $this->l('Available Shortcodes').': '.implode(', ', OrderMessage::getShortcodeList())
                 ],
             ],
             'submit' => [
