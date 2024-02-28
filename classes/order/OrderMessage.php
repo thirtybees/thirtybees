@@ -122,6 +122,8 @@ class OrderMessageCore extends ObjectModel
         $addressDelivery = new Address($order->id_address_delivery, $idLang);
         $addressInvoice = new Address($order->id_address_invoice, $idLang);
 
+        $context = Context::getContext();
+
         $shortcodesList = [
             '[customer_firstname]' => $customer->firstname,
             '[customer_lastname]' => $customer->lastname,
@@ -133,6 +135,8 @@ class OrderMessageCore extends ObjectModel
             '[order_total_paid_tax_excl]' => Tools::displayPrice($order->total_paid_tax_excl, $order->id_currency),
             '[order_address_delivery]' => AddressFormat::generateAddress($addressDelivery),
             '[order_address_invoice]' => AddressFormat::generateAddress($addressInvoice),
+            '[employee_firstname]' => $context->employee->firstname,
+            '[employee_lastname]' => $context->employee->lastname,
         ];
 
         if ($returnShortcodeList) {
