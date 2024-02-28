@@ -934,6 +934,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
             'actions'                       => $actions,
             'employees'                     => $employees,
             'current_employee'              => $this->context->employee,
+            'orderMessages'                 => OrderMessage::getOrderMessages($thread->id_lang, $thread->id_order, $thread->id_customer),
             'messages'                      => $messages,
             'first_message'                 => $firstMessage,
             'contact'                       => $contact,

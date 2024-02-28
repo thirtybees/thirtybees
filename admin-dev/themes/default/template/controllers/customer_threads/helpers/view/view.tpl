@@ -103,29 +103,42 @@
 	</div>
 </div>
 <div class="panel">
+
 	<form action="{$link->getAdminLink('AdminCustomerThreads')|escape:'html':'UTF-8'}&amp;id_customer_thread={$thread->id|intval}&amp;viewcustomer_thread" method="post" enctype="multipart/form-data" class="form-horizontal">
-	<h3>{l s="Your answer to"} {if isset($customer->firstname)}{$customer->firstname|escape:'html':'UTF-8'} {$customer->lastname|escape:'html':'UTF-8'} {else} {$thread->email|idnToUtf8|escape:'htmlall':'UTF-8'}{/if}</h3>
-	<div class="row">
-		<div class="media">
-			<div class="pull-left">
-				<span class="avatar-md">{if isset($current_employee->firstname)}<img src="{$current_employee->getImage()|escape:'htmlall':'UTF-8'}" alt="">{/if}</span>
-			</div>
-			<div class="media-body">
-				<textarea cols="30" rows="7" name="reply_message">{$PS_CUSTOMER_SERVICE_SIGNATURE|escape:'html':'UTF-8'}</textarea>
+		<h3>{l s="Your answer to"} {if isset($customer->firstname)}{$customer->firstname|escape:'html':'UTF-8'} {$customer->lastname|escape:'html':'UTF-8'} {else} {$thread->email|idnToUtf8|escape:'htmlall':'UTF-8'}{/if}</h3>
+		<div class="form-group">
+			<label class="col-lg-12">{l s='Choose a standard message'}</label>
+			<div class="col-lg-12">
+				<select class="chosen form-control" name="order_message" id="order_message" onchange="orderOverwriteMessage(this, '{l s='Do you want to overwrite your existing message?'}')">
+					<option value="0" selected="selected">-</option>
+					{foreach from=$orderMessages item=orderMessage}
+						<option value="{$orderMessage['message']|escape:'html':'UTF-8'}">{$orderMessage['name']}</option>
+					{/foreach}
+				</select>
 			</div>
 		</div>
-	</div>
-	<div class="panel-footer">
-		<!--
-		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-			<i class="icon-magic icon-2x"></i><br>
-			{l s="Choose a template"}
-		</button>
-		-->
-		<button class="btn btn-default pull-right" name="submitReply"><i class="process-icon-mail-reply"></i> {l s='Send'}</button>
-		<input type="hidden" name="id_customer_thread" value="{$thread->id|intval}" />
-		<input type="hidden" name="msg_email" value="{$thread->email|escape:'htmlall':'UTF-8'}" />
-	</div>
+		<br>
+		<div class="row">
+			<div class="media">
+				<div class="pull-left">
+					<span class="avatar-md">{if isset($current_employee->firstname)}<img src="{$current_employee->getImage()|escape:'htmlall':'UTF-8'}" alt="">{/if}</span>
+				</div>
+				<div class="media-body">
+					<textarea cols="30" rows="7" id="txt_msg" name="reply_message">{$PS_CUSTOMER_SERVICE_SIGNATURE|escape:'html':'UTF-8'}</textarea>
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer">
+			<!--
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				<i class="icon-magic icon-2x"></i><br>
+				{l s="Choose a template"}
+			</button>
+			-->
+			<button class="btn btn-default pull-right" name="submitReply"><i class="process-icon-mail-reply"></i> {l s='Send'}</button>
+			<input type="hidden" name="id_customer_thread" value="{$thread->id|intval}" />
+			<input type="hidden" name="msg_email" value="{$thread->email|escape:'htmlall':'UTF-8'}" />
+		</div>
 	</form>
 </div>
 
