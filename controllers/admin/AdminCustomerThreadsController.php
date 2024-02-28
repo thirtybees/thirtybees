@@ -890,6 +890,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
             ];
         }
 
+        $customer = null;
         if ($thread->id_customer) {
             $customer = new Customer($thread->id_customer);
             $orders = Order::getCustomerOrders($customer->id);
@@ -928,12 +929,18 @@ class AdminCustomerThreadsControllerCore extends AdminController
             }
         }
 
+        $order = new Order((int)$thread->id_order);
+        if (! Validate::isLoadedObject($order)) {
+            $order = null;
+        }
+
         $this->tpl_view_vars = [
             'id_customer_thread'            => $idCustomerThread,
             'thread'                        => $thread,
             'actions'                       => $actions,
             'employees'                     => $employees,
             'current_employee'              => $this->context->employee,
+            'orderMessages'                 => OrderMessage::getOrderMessages($thread->id_lang, $order, $customer),
             'messages'                      => $messages,
             'first_message'                 => $firstMessage,
             'contact'                       => $contact,
