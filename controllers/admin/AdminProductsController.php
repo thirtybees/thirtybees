@@ -243,7 +243,7 @@ class AdminProductsControllerCore extends AdminController
         $aliasImage = 'image_shop';
 
         $idShop = Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP ? (int) $this->context->shop->id : 'a.id_shop_default';
-        $this->_join .= ' JOIN `'._DB_PREFIX_.'product_shop` sa ON (a.`id_product` = sa.`id_product` AND sa.id_shop = '.$idShop.')
+        $this->_join .= 'LEFT JOIN `'._DB_PREFIX_.'product_shop` sa ON (a.`id_product` = sa.`id_product` AND sa.id_shop = '.$idShop.')
 				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON ('.$alias.'.`id_category_default` = cl.`id_category` AND b.`id_lang` = cl.`id_lang` AND cl.id_shop = '.$idShop.')
 				LEFT JOIN `'._DB_PREFIX_.'shop` shop ON (shop.id_shop = '.$idShop.')
 				LEFT JOIN `'._DB_PREFIX_.'image_shop` image_shop ON (image_shop.`id_product` = a.`id_product` AND image_shop.`cover` = 1 AND image_shop.id_shop = '.$idShop.')
@@ -520,7 +520,7 @@ class AdminProductsControllerCore extends AdminController
 
                 $decimals = $this->context->currency->getDisplayPrecision();
                 // convert price with the currency from context
-                $this->_list[$i]['price'] = Tools::convertPrice($this->_list[$i]['price'], $this->context->currency, true, $this->context);
+                $this->_list[$i]['price'] = Tools::convertPrice((float)$this->_list[$i]['price'], $this->context->currency, true, $this->context);
                 $this->_list[$i]['price_final'] = Product::getPriceStatic(
                     $this->_list[$i]['id_product'],
                     true,
