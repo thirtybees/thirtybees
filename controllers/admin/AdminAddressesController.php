@@ -142,6 +142,39 @@ class AdminAddressesControllerCore extends AdminController
      */
     public function renderForm()
     {
+        $this->fields_value['address_type'] = Tools::getIntValue('address_type', 1);
+
+        $idCustomer = Tools::getIntValue('id_customer');
+        if (!$idCustomer && Validate::isLoadedObject($this->object)) {
+            $idCustomer = $this->object->id_customer;
+        }
+
+        if ($idCustomer) {
+            $customer = new Customer((int) $idCustomer);
+            $token_customer = Tools::getAdminToken('AdminCustomers'.(int) (Tab::getIdFromClassName('AdminCustomers')).(int) $this->context->employee->id);
+        }
+
+        if (isset($customer) &&
+            !Tools::isSubmit('submit'.strtoupper($this->table)) &&
+            Validate::isLoadedObject($customer) &&
+            !Validate::isLoadedObject($this->object)
+        ) {
+            $defaultLastname = $customer->lastname;
+            $defaultFirstname = $customer->firstname;
+        } else {
+            $defaultLastname = '';
+            $defaultFirstname = '';
+        }
+
+        $this->tpl_form_vars = [
+            'customer'      => isset($customer) ? $customer : null,
+            'tokenCustomer' => isset($token_customer) ? $token_customer : null,
+            'back_url'      => urldecode(Tools::getValue('back')),
+        ];
+
+        // get required field
+        $requiredFields = AddressFormat::getFieldsRequired();
+
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Addresses'),
@@ -171,6 +204,108 @@ class AdminAddressesControllerCore extends AdminController
                     'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
+                    'type'     => 'text',
+                    'label'    => $this->l('Company'),
+                    'name'     => 'company',
+                    'required' => in_array('company', $requiredFields),
+                    'col'      => '4',
+                    'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('VAT number'),
+                    'col'      => '2',
+                    'name'     => 'vat_number',
+                    'required' => in_array('vat_number', $requiredFields),
+                ],
+                [
+                    'type'          => 'text',
+                    'label'         => $this->l('Last Name'),
+                    'name'          => 'lastname',
+                    'required'      => true,
+                    'col'           => '4',
+                    'hint'          => $this->l('Invalid characters:').' 0-9!&amp;lt;&amp;gt;,;?=+()@#"�{}_$%:',
+                    'default_value' => $defaultLastname,
+                ],
+                [
+                    'type'          => 'text',
+                    'label'         => $this->l('First Name'),
+                    'name'          => 'firstname',
+                    'required'      => true,
+                    'col'           => '4',
+                    'hint'          => $this->l('Invalid characters:').' 0-9!&amp;lt;&amp;gt;,;?=+()@#"�{}_$%:',
+                    'default_value' => $defaultFirstname,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Address'),
+                    'name'     => 'address1',
+                    'col'      => '6',
+                    'required' => true,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Address').' (2)',
+                    'name'     => 'address2',
+                    'col'      => '6',
+                    'required' => in_array('address2', $requiredFields),
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Zip/Postal Code'),
+                    'name'     => 'postcode',
+                    'col'      => '2',
+                    'required' => true,
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('City'),
+                    'name'     => 'city',
+                    'col'      => '4',
+                    'required' => true,
+                ],
+                [
+                    'type'          => 'select',
+                    'label'         => $this->l('Country'),
+                    'name'          => 'id_country',
+                    'required'      => in_array('Country:name', $requiredFields) || in_array('country', $requiredFields),
+                    'col'           => '4',
+                    'default_value' => (int) $this->context->country->id,
+                    'options'       => [
+                        'query' => Country::getCountries($this->context->language->id),
+                        'id'    => 'id_country',
+                        'name'  => 'name',
+                    ],
+                ],
+                [
+                    'type'     => 'select',
+                    'label'    => $this->l('State'),
+                    'name'     => 'id_state',
+                    'required' => false,
+                    'col'      => '4',
+                    'options'  => [
+                        'query' => [],
+                        'id'    => 'id_state',
+                        'name'  => 'name',
+                    ],
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Home phone'),
+                    'name'     => 'phone',
+                    'required' => in_array('phone', $requiredFields) || Configuration::get('PS_ONE_PHONE_AT_LEAST'),
+                    'col'      => '4',
+                    'hint'     => Configuration::get('PS_ONE_PHONE_AT_LEAST') ? $this->l('You must register at least one phone number.') : '',
+                ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Mobile phone'),
+                    'name'     => 'phone_mobile',
+                    'required' => in_array('phone_mobile', $requiredFields) || Configuration::get('PS_ONE_PHONE_AT_LEAST'),
+                    'col'      => '4',
+                    'hint'     => Configuration::get('PS_ONE_PHONE_AT_LEAST') ? $this->l('You must register at least one phone number.') : '',
+                ],
+                [
                     'type'     => 'textarea',
                     'label'    => $this->l('Other'),
                     'name'     => 'other',
@@ -196,175 +331,6 @@ class AdminAddressesControllerCore extends AdminController
                 'title' => $this->l('Save'),
             ],
         ];
-
-        $this->fields_value['address_type'] = Tools::getIntValue('address_type', 1);
-
-        $idCustomer = Tools::getIntValue('id_customer');
-        if (!$idCustomer && Validate::isLoadedObject($this->object)) {
-            $idCustomer = $this->object->id_customer;
-        }
-        if ($idCustomer) {
-            $customer = new Customer((int) $idCustomer);
-            $token_customer = Tools::getAdminToken('AdminCustomers'.(int) (Tab::getIdFromClassName('AdminCustomers')).(int) $this->context->employee->id);
-        }
-
-        $this->tpl_form_vars = [
-            'customer'      => isset($customer) ? $customer : null,
-            'tokenCustomer' => isset($token_customer) ? $token_customer : null,
-            'back_url'      => urldecode(Tools::getValue('back')),
-        ];
-
-        // Order address fields depending on country format
-        $addressesFields = $this->processAddressFormat();
-        // we use  delivery address
-        $addressesFields = $addressesFields['dlv_all_fields'];
-
-        // get required field
-        $requiredFields = AddressFormat::getFieldsRequired();
-
-        // Merge with field required
-        $addressesFields = array_unique(array_merge($addressesFields, $requiredFields));
-
-        $tempFields = [];
-
-        foreach ($addressesFields as $addrFieldItem) {
-            if ($addrFieldItem == 'company') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Company'),
-                    'name'     => 'company',
-                    'required' => in_array('company', $requiredFields),
-                    'col'      => '4',
-                    'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
-                ];
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('VAT number'),
-                    'col'      => '2',
-                    'name'     => 'vat_number',
-                    'required' => in_array('vat_number', $requiredFields),
-                ];
-            } elseif ($addrFieldItem == 'lastname') {
-                if (isset($customer) &&
-                    !Tools::isSubmit('submit'.strtoupper($this->table)) &&
-                    Validate::isLoadedObject($customer) &&
-                    !Validate::isLoadedObject($this->object)
-                ) {
-                    $defaultValue = $customer->lastname;
-                } else {
-                    $defaultValue = '';
-                }
-
-                $tempFields[] = [
-                    'type'          => 'text',
-                    'label'         => $this->l('Last Name'),
-                    'name'          => 'lastname',
-                    'required'      => true,
-                    'col'           => '4',
-                    'hint'          => $this->l('Invalid characters:').' 0-9!&amp;lt;&amp;gt;,;?=+()@#"�{}_$%:',
-                    'default_value' => $defaultValue,
-                ];
-            } elseif ($addrFieldItem == 'firstname') {
-                if (isset($customer) &&
-                    !Tools::isSubmit('submit'.strtoupper($this->table)) &&
-                    Validate::isLoadedObject($customer) &&
-                    !Validate::isLoadedObject($this->object)
-                ) {
-                    $defaultValue = $customer->firstname;
-                } else {
-                    $defaultValue = '';
-                }
-
-                $tempFields[] = [
-                    'type'          => 'text',
-                    'label'         => $this->l('First Name'),
-                    'name'          => 'firstname',
-                    'required'      => true,
-                    'col'           => '4',
-                    'hint'          => $this->l('Invalid characters:').' 0-9!&amp;lt;&amp;gt;,;?=+()@#"�{}_$%:',
-                    'default_value' => $defaultValue,
-                ];
-            } elseif ($addrFieldItem == 'address1') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Address'),
-                    'name'     => 'address1',
-                    'col'      => '6',
-                    'required' => true,
-                ];
-            } elseif ($addrFieldItem == 'address2') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Address').' (2)',
-                    'name'     => 'address2',
-                    'col'      => '6',
-                    'required' => in_array('address2', $requiredFields),
-                ];
-            } elseif ($addrFieldItem == 'postcode') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Zip/Postal Code'),
-                    'name'     => 'postcode',
-                    'col'      => '2',
-                    'required' => true,
-                ];
-            } elseif ($addrFieldItem == 'city') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('City'),
-                    'name'     => 'city',
-                    'col'      => '4',
-                    'required' => true,
-                ];
-            } elseif ($addrFieldItem == 'country' || $addrFieldItem == 'Country:name') {
-                $tempFields[] = [
-                    'type'          => 'select',
-                    'label'         => $this->l('Country'),
-                    'name'          => 'id_country',
-                    'required'      => in_array('Country:name', $requiredFields) || in_array('country', $requiredFields),
-                    'col'           => '4',
-                    'default_value' => (int) $this->context->country->id,
-                    'options'       => [
-                        'query' => Country::getCountries($this->context->language->id),
-                        'id'    => 'id_country',
-                        'name'  => 'name',
-                    ],
-                ];
-                $tempFields[] = [
-                    'type'     => 'select',
-                    'label'    => $this->l('State'),
-                    'name'     => 'id_state',
-                    'required' => false,
-                    'col'      => '4',
-                    'options'  => [
-                        'query' => [],
-                        'id'    => 'id_state',
-                        'name'  => 'name',
-                    ],
-                ];
-            } elseif ($addrFieldItem == 'phone') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Home phone'),
-                    'name'     => 'phone',
-                    'required' => in_array('phone', $requiredFields) || Configuration::get('PS_ONE_PHONE_AT_LEAST'),
-                    'col'      => '4',
-                    'hint'     => Configuration::get('PS_ONE_PHONE_AT_LEAST') ? $this->l('You must register at least one phone number.') : '',
-                ];
-            } elseif ($addrFieldItem == 'phone_mobile') {
-                $tempFields[] = [
-                    'type'     => 'text',
-                    'label'    => $this->l('Mobile phone'),
-                    'name'     => 'phone_mobile',
-                    'required' => in_array('phone_mobile', $requiredFields) || Configuration::get('PS_ONE_PHONE_AT_LEAST'),
-                    'col'      => '4',
-                    'hint'     => Configuration::get('PS_ONE_PHONE_AT_LEAST') ? $this->l('You must register at least one phone number.') : '',
-                ];
-            }
-        }
-
-        // merge address format with the rest of the form
-        array_splice($this->fields_form['input'], 3, 0, $tempFields);
 
         return parent::renderForm();
     }
@@ -500,7 +466,7 @@ class AdminAddressesControllerCore extends AdminController
         /* Reassignation of the order's new (invoice or delivery) address */
         $addressType = Tools::getIntValue('address_type') === 2 ? 'invoice' : 'delivery';
 
-        if ($this->action == 'save' && ($idOrder = Tools::getIntValue('id_order')) && !count($this->errors) && !empty($addressType)) {
+        if ($this->action == 'save' && ($idOrder = Tools::getIntValue('id_order')) && !count($this->errors)) {
             if (!Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'orders SET `id_address_'.bqSQL($addressType).'` = '.(int) $this->object->id.' WHERE `id_order` = '.(int) $idOrder)) {
                 $this->errors[] = Tools::displayError('An error occurred while linking this address to its order.');
             } else {
