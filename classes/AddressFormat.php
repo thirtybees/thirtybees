@@ -663,8 +663,12 @@ class AddressFormatCore extends ObjectModel
      */
     public static function getFieldsRequired()
     {
-        $address = new Address;
-
-        return array_unique(array_merge($address->getFieldsRequiredDB(), AddressFormat::$requireFormFieldsList));
+        $address = new Address();
+        $requiredFields = static::$requireFormFieldsList;
+        if (Configuration::get('PS_ONE_PHONE_AT_LEAST')) {
+            $requiredFields[] = 'phone';
+            $requiredFields[] = 'phone_mobile';
+        }
+        return array_unique(array_merge($address->getFieldsRequiredDB(), $requiredFields));
     }
 }
