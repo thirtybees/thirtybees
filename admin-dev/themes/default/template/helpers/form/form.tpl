@@ -74,7 +74,7 @@
 							{block name="label"}
 								{if isset($input.label)}
 									<label class="control-label col-lg-3{if isset($input.required) && $input.required && $input.type != 'radio'} required{/if}">
-										{if isset($input.hint)}
+										{if isset($input.hint) && !empty($input.hint)}
 										<span class="label-tooltip" data-toggle="tooltip" data-html="true" title="{if is_array($input.hint)}
 													{foreach $input.hint as $hint}
 														{if is_array($hint)}
@@ -88,7 +88,7 @@
 												{/if}">
 										{/if}
 										{$input.label}
-										{if isset($input.hint)}
+										{if isset($input.hint) && !empty($input.hint)}
 										</span>
 										{/if}
 									</label>
