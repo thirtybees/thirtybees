@@ -3,7 +3,6 @@
 namespace Thirtybees\Core\View\Model;
 
 use Combination;
-use Context;
 use PrestaShopException;
 use Product;
 use StockAvailable;
@@ -11,10 +10,25 @@ use StockAvailable;
 class ProductViewModelCore extends Product
 {
 
+    const LEGACY_PROPERTY_GETTER = [
+        'id_image' => 'getCoverImageId',
+        'allow_oosp' => 'availableWhenOutOfStock',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $legacyPropertyValues = [];
+
     /**
      * @var Combination|null
      */
     protected $selectedCombination;
+
+    /**
+     * @var int|null
+     */
+    protected $coverImageId;
 
     /**
      * @param int $productId
@@ -115,5 +129,43 @@ class ProductViewModelCore extends Product
         return null;
     }
 
+    /**
+     * @param string $property
+     *
+     * @return mixed
+     */
+    public function &__get($property)
+    {
+        if (array_key_exists($property, $this->legacyPropertyValues)) {
+            return $this->legacyPropertyValues[$property];
+        }
+        if (array_key_exists($property, static::LEGACY_PROPERTY_GETTER)) {
+            $methodName = static::LEGACY_PROPERTY_GETTER[$property];
+            $this->legacyPropertyValues[$property] = $this->$methodName();
+            return $this->legacyPropertyValues[$property];
+        }
+        return parent::__get($property) ;
+    }
+
+    /**
+     * @return int
+     * @throws PrestaShopException
+     */
+    public function getCoverImageId(): int
+    {
+        $cover = Product::getCover($this->id);
+        return $cover['id_image'] ?? 0;
+    }
+
+    /**
+     * return bool|int
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function availableWhenOutOfStock(): bool
+    {
+        return Product::isAvailableWhenOutOfStock($this->out_of_stock);
+    }
 
 }

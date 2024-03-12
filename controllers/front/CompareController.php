@@ -29,12 +29,16 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\View\Model\ProductViewModel;
+
 /**
  * Class CompareControllerCore
  */
 class CompareControllerCore extends FrontController
 {
-    /** @var string $php_self */
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'products-comparison';
 
     /**
@@ -131,7 +135,7 @@ class CompareControllerCore extends FrontController
                 $listFeatures = [];
 
                 foreach ($ids as $k => &$id) {
-                    $curProduct = new Product((int) $id, true, $this->context->language->id);
+                    $curProduct = new ProductViewModel((int) $id, 0, $this->context->language->id, $this->context->shop->id);
                     if (!Validate::isLoadedObject($curProduct) || !$curProduct->active || !$curProduct->isAssociatedToShop()) {
                         if (isset($this->context->cookie->id_compare)) {
                             CompareProduct::removeCompareProduct($this->context->cookie->id_compare, $id);
@@ -144,10 +148,6 @@ class CompareControllerCore extends FrontController
                         $listFeatures[$curProduct->id][$feature['id_feature']] = $feature['value'];
                     }
 
-                    $cover = Product::getCover((int) $id);
-
-                    $curProduct->id_image = (int)$cover['id_image'];
-                    $curProduct->allow_oosp = Product::isAvailableWhenOutOfStock($curProduct->out_of_stock);
                     $listProducts[] = $curProduct;
                 }
 
