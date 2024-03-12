@@ -3550,18 +3550,7 @@ FileETag none
     public static function property_exists($class, $property)
     {
         Tools::displayAsDeprecated();
-
-        if (function_exists('property_exists')) {
-            return property_exists($class, $property);
-        }
-
-        if (is_object($class)) {
-            $vars = get_object_vars($class);
-        } else {
-            $vars = get_class_vars($class);
-        }
-
-        return array_key_exists($property, $vars);
+        return property_exists($class, $property);
     }
 
     /**
