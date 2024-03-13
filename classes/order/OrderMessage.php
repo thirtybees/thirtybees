@@ -87,22 +87,15 @@ class OrderMessageCore extends ObjectModel
 		ORDER BY name ASC');
 
         // Replace Shortcodes
-        if ($order) {
-            if (!Validate::isLoadedObject($order) && Validate::isUnsignedInt($order)) {
-                $order = new Order($order);
-            }
-
-            if (!Validate::isLoadedObject($customer)) {
-                $customer = new Customer($order->id_customer);
-            }
-
-            if (Validate::isLoadedObject($order) && Validate::isLoadedObject($customer)) {
-                $orderMessages = self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
-            }
-
+        if (!Validate::isLoadedObject($order) && Validate::isUnsignedInt($order)) {
+            $order = new Order($order);
         }
 
-        return $orderMessages;
+        if (!Validate::isLoadedObject($customer)) {
+            $customer = new Customer($order->id_customer);
+        }
+
+        return self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
     }
 
     /**
@@ -117,6 +110,14 @@ class OrderMessageCore extends ObjectModel
      * @throws PrestaShopException
      */
     private static function replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer, $returnShortcodeList = false) {
+
+        if (!Validate::isLoadedObject($order)) {
+            $order = new Order();
+        }
+
+        if (!Validate::isLoadedObject($customer)) {
+            $customer = new Customer();
+        }
 
         $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
         $addressDelivery = new Address($order->id_address_delivery, $idLang);
