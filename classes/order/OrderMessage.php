@@ -70,7 +70,7 @@ class OrderMessageCore extends ObjectModel
     /**
      * @param int $idLang
      * @param \Order|int $order
-     * @param \Customer $customer
+     * @param \Customer|int $customer
      *
      * @return array
      *
@@ -91,8 +91,9 @@ class OrderMessageCore extends ObjectModel
             $order = new Order($order);
         }
 
-        if (!Validate::isLoadedObject($customer)) {
-            $customer = new Customer($order->id_customer);
+        if (!Validate::isLoadedObject($customer) && (Validate::isUnsignedInt($customer) || Validate::isLoadedObject($order))) {
+            $id_customer = Validate::isUnsignedInt($customer) ? $customer : $order->id_customer;
+            $customer = new Customer($id_customer);
         }
 
         return self::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
