@@ -69,7 +69,7 @@ class OrderMessageCore extends ObjectModel
 
     /**
      * @param int $idLang
-     * @param Order|int|null $order
+     * @param Order|null $order
      * @param Customer|null $customer
      *
      * @return array
@@ -89,60 +89,95 @@ class OrderMessageCore extends ObjectModel
 		ORDER BY name ASC');
 
         // Replace Shortcodes
-        if ($orderMessages && $order) {
-            if (! Validate::isLoadedObject($order) && Validate::isUnsignedInt($order)) {
-                $order = new Order($order);
-            }
-
-            if (! Validate::isLoadedObject($customer)) {
-                $customer = new Customer($order->id_customer);
-            }
-
-            if (Validate::isLoadedObject($order) && Validate::isLoadedObject($customer)) {
-                $orderMessages = static::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
-            }
+        if ($orderMessages) {
+            $customer = static::resolveCustomer($customer, $order);
+            return static::replaceShortcodesInOrderMessages($orderMessages, $idLang, $order, $customer);
 
         }
+        return [];
+    }
 
-        return $orderMessages;
+    /**
+     * @param Customer|null $customer
+     * @param Order|null $order
+     *
+     * @return Customer|null
+     * @throws PrestaShopException
+     */
+    protected static function resolveCustomer(?Customer $customer, ?Order $order): ?Customer
+    {
+        if (Validate::isLoadedObject($customer)) {
+            return $customer;
+        }
+        if ($order) {
+            $customer = new Customer((int)$order->id_customer);
+            if (Validate::isLoadedObject($customer)) {
+                return $customer;
+            }
+        }
+        return null;
     }
 
     /**
      * @param array $orderMessages
      * @param int $idLang
-     * @param Order $order
-     * @param Customer $customer
+     * @param Order|null $order
+     * @param Customer|null $customer
      * @param bool $returnShortcodeList
      *
      * @return array
      *
      * @throws PrestaShopException
      */
-    private static function replaceShortcodesInOrderMessages(
+    protected static function replaceShortcodesInOrderMessages(
         array $orderMessages,
         int $idLang,
-        Order $order,
-        Customer $customer,
+        ?Order $order,
+        ?Customer $customer,
         bool $returnShortcodeList = false
     ) {
+        $genderName = '[customer_gender]';
+        $customerFirstName = '[customer_firstname]';
+        $customerLastName = '[customer_lastname]';
+        $orderReference = '[order_reference]';
+        $orderAddressDelivery = '[order_address_delivery]';
+        $orderAddressInvoice = '[order_address_invoice]';
+        $orderTotalPaidTaxIncl = '[order_total_paid_tax_incl]';
+        $orderTotalPaidTaxExcl = '[order_total_paid_tax_excl]';
+        $orderData = '[order_date]';
+        $orderDeliveryDate = '[order_delivery_date]';
 
-        $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
-        $addressDelivery = new Address($order->id_address_delivery, $idLang);
-        $addressInvoice = new Address($order->id_address_invoice, $idLang);
+        if (Validate::isLoadedObject($customer)) {
+            $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
+            $genderName = $gender->name;
+            $customerFirstName = $customer->firstname;
+            $customerLastName = $customer->lastname;
+        }
+        if (Validate::isLoadedObject($order)) {
+            $orderReference = $order->reference;
+            $addressDelivery = new Address($order->id_address_delivery, $idLang);
+            $addressInvoice = new Address($order->id_address_invoice, $idLang);
+            $orderAddressDelivery = AddressFormat::generateAddress($addressDelivery);
+            $orderAddressInvoice = AddressFormat::generateAddress($addressInvoice);
+            $orderTotalPaidTaxIncl = Tools::displayPrice($order->total_paid_tax_incl, $order->id_currency);
+            $orderTotalPaidTaxExcl = Tools::displayPrice($order->total_paid_tax_excl, $order->id_currency);
+            $orderData = Tools::displayDate($order->date_add);
+            $orderDeliveryDate = Tools::displayDate($order->delivery_date);
+        }
 
         $context = Context::getContext();
 
         $shortcodesList = [
-            '[customer_firstname]' => $customer->firstname,
-            '[customer_lastname]' => $customer->lastname,
-            '[customer_gender]' => $gender->name,
-            '[order_reference]' => $order->reference,
-            '[order_date]' => Tools::displayDate($order->date_add),
-            '[order_delivery_date]' => Tools::displayDate($order->delivery_date),
-            '[order_total_paid_tax_incl]' => Tools::displayPrice($order->total_paid_tax_incl, $order->id_currency),
-            '[order_total_paid_tax_excl]' => Tools::displayPrice($order->total_paid_tax_excl, $order->id_currency),
-            '[order_address_delivery]' => AddressFormat::generateAddress($addressDelivery),
-            '[order_address_invoice]' => AddressFormat::generateAddress($addressInvoice),
+            '[customer_firstname]' => $customerFirstName,
+            '[customer_lastname]' => $customerLastName,
+            '[customer_gender]' => $genderName,
+            '[order_reference]' => $orderReference,
+            '[order_date]' => $orderData,
+            '[order_delivery_date]' => $orderDeliveryDate,
+            '[order_total_paid_tax_incl]' => $orderTotalPaidTaxIncl,
+            '[order_total_paid_tax_excl]' => $orderTotalPaidTaxExcl,
+            '[order_address_delivery]' => $orderAddressDelivery,
+            '[order_address_invoice]' => $orderAddressInvoice,
             '[employee_firstname]' => $context->employee->firstname,
             '[employee_lastname]' => $context->employee->lastname,
         ];
@@ -168,8 +203,8 @@ class OrderMessageCore extends ObjectModel
         return static::replaceShortcodesInOrderMessages(
             [],
             (int)Configuration::get('PS_LANG_DEFAULT'),
-            new Order(),
-            new Customer(),
+            null,
+            null,
             true
         );
     }
