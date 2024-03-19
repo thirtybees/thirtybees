@@ -725,19 +725,27 @@ class ToolsCore
 
     /**
      * @param float $number
-     * @param Currency $currency
+     * @param Currency|array|int|null $currency
      *
      * @return string
      */
-    public static function displayNumber($number, $currency)
+    public static function displayNumber($number, $currency = null)
     {
-        if (is_array($currency)) {
-            $format = $currency['format'];
-        } elseif (is_object($currency)) {
-            $format = $currency->format;
+        $thousandsSeparator = ' ';
+        if (! is_null($currency)) {
+            if (is_array($currency) && array_key_exists('format', $currency)) {
+                $format = (int)$currency['format'];
+            } elseif (is_object($currency) && property_exists($currency, 'format')) {
+                $format = (int)$currency->format;
+            } else {
+                $format = 0;
+            }
+            if ($format === 1 || $format === 4) {
+                $thousandsSeparator = ',';
+            }
         }
 
-        return number_format($number, 0, '.', in_array($format, [1, 4]) ? ',' : ' ');
+        return number_format($number, 0, '.', $thousandsSeparator);
     }
 
     /**
