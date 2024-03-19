@@ -1450,7 +1450,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $assoc = Shop::getAssoTable($this->def['table']);
-        $className = WebserviceRequest::$ws_current_classname;
         if ($assoc !== false) {
             if ($assoc['type'] !== 'fk_shop') {
                 $multiShopJoin = ' LEFT JOIN `'._DB_PREFIX_.bqSQL($this->def['table']).'_'.bqSQL($assoc['type']).'`
@@ -1459,13 +1458,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $sqlFilter = 'AND `multi_shop_'.bqSQL($this->def['table']).'`.id_shop = '.Context::getContext()->shop->id.' '.$sqlFilter;
                 $sqlJoin = $multiShopJoin.' '.$sqlJoin;
             } else {
-                $vars = get_class_vars($className);
-                foreach ($vars['shopIDs'] as $idShop) {
-                    $or[] = '(main.id_shop = '.(int) $idShop.(isset($this->def['fields']['id_shop_group']) ? ' OR (id_shop = 0 AND id_shop_group='.(int) Shop::getGroupFromShop((int) $idShop).')' : '').')';
+                $or = [];
+                foreach (WebserviceRequest::getInstance()->getShopIds() as $idShop) {
+                    $or[] = '(main.id_shop = ' . (int)$idShop . (isset($this->def['fields']['id_shop_group']) ? ' OR (id_shop = 0 AND id_shop_group=' . (int)Shop::getGroupFromShop((int)$idShop) . ')' : '') . ')';
                 }
 
                 $prepend = '';
-                if (isset($or) && count($or)) {
+                if ($or) {
                     $prepend = 'AND ('.implode('OR', $or).')';
                 }
                 $sqlFilter = $prepend.' '.$sqlFilter;

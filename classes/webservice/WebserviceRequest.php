@@ -231,7 +231,7 @@ class WebserviceRequestCore
     /**
      * @var int[]
      */
-    public static $shopIDs;
+    public static $shopIDs = [];
 
     /**
      * @var WebserviceLogger
@@ -810,8 +810,8 @@ class WebserviceRequestCore
 				WHERE wsa.key = \''.pSQL($key).'\'';
 
         $OR = [];
-        foreach (static::$shopIDs as $id_shop) {
-            $OR[] = ' wsas.id_shop = ' . (int)$id_shop . ' ';
+        foreach ($this->getShopIds() as $shopId) {
+            $OR[] = ' wsas.id_shop = ' . (int)$shopId . ' ';
         }
         if ($OR) {
             $sql .= ' AND (' . implode('OR', $OR) . ') ';
@@ -842,7 +842,7 @@ class WebserviceRequestCore
         if (isset($params['id_shop'])) {
             if ($params['id_shop'] != 'all' && is_numeric($params['id_shop'])) {
                 Shop::setContext(Shop::CONTEXT_SHOP, (int) $params['id_shop']);
-                static::$shopIDs[] = (int) $params['id_shop'];
+                static::$shopIDs[] = (int)$params['id_shop'];
 
                 return true;
             } elseif ($params['id_shop'] == 'all') {
@@ -852,7 +852,7 @@ class WebserviceRequestCore
                 return true;
             }
         } else {
-            static::$shopIDs[] = Context::getContext()->shop->id;
+            static::$shopIDs[] = (int)Context::getContext()->shop->id;
 
             return true;
         }
@@ -875,7 +875,6 @@ class WebserviceRequestCore
             Shop::setContext(Shop::CONTEXT_GROUP, (int) $params['id_group_shop']);
             static::$shopIDs = Shop::getShops(true, (int) $params['id_group_shop'], true);
             if (! static::$shopIDs) {
-                // @FIXME Set ErrorCode !
                 $this->setError(500, 'This group shop doesn\'t have shops', 999);
 
                 return false;
@@ -1340,7 +1339,7 @@ class WebserviceRequestCore
                 $sql .= '`';
 
                 $OR = [];
-                foreach (static::$shopIDs as $idShop) {
+                foreach ($this->getShopIds() as $idShop) {
                     $OR[] = ' (id_shop = '.(int) $idShop.($checkShopGroup ? ' OR (id_shop = 0 AND id_shop_group='.(int) Shop::getGroupFromShop((int) $idShop).')' : '').') ';
                 }
 
@@ -1639,14 +1638,15 @@ class WebserviceRequestCore
                         $assoc = Shop::getAssoTable($this->resourceConfiguration['retrieveData']['table']);
                         if ($assoc !== false && $assoc['type'] != 'fk_shop') {
                             // PUT nor POST is destructive, no deletion
-                            $sql = 'INSERT IGNORE INTO `'.bqSQL(_DB_PREFIX_.$this->resourceConfiguration['retrieveData']['table'].'_'.$assoc['type']).'` (id_shop, '.pSQL($this->resourceConfiguration['fields']['id']['sqlId']).') VALUES ';
-                            foreach (static::$shopIDs as $id) {
-                                $sql .= '('.(int) $id.','.(int) $object->id.')';
-                                if ($id != end(static::$shopIDs)) {
-                                    $sql .= ', ';
+                            $shopIds = $this->getShopIds();
+                            if ($shopIds) {
+                                $sql = 'INSERT IGNORE INTO `' . bqSQL(_DB_PREFIX_ . $this->resourceConfiguration['retrieveData']['table'] . '_' . $assoc['type']) . '` (id_shop, ' . pSQL($this->resourceConfiguration['fields']['id']['sqlId']) . ') VALUES ';
+                                $data = [];
+                                foreach ($shopIds as $id) {
+                                    $data[] = '(' . (int)$id . ',' . (int)$object->id . ')';
                                 }
+                                Db::getInstance()->execute($sql . implode(', ', $data));
                             }
-                            Db::getInstance()->execute($sql);
                         }
                     } else {
                         $this->setError(500, 'Unable to save resource', 46);
@@ -1940,4 +1940,14 @@ class WebserviceRequestCore
         return $this->logger;
     }
 
+    /**
+     * @return array
+     */
+    public function getShopIds(): array
+    {
+        if (is_array(static::$shopIDs)) {
+            return static::$shopIDs;
+        }
+        return [];
+    }
 }
