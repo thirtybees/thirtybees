@@ -1511,10 +1511,12 @@ class FrontControllerCore extends Controller
         $displayTaxLabel = $this->context->country->display_tax_label;
         if (isset($cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) && $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) {
             $infos = Address::getCountryAndState((int) $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-            $country = new Country((int) $infos['id_country']);
-            $this->context->country = $country;
-            if (Validate::isLoadedObject($country)) {
-                $displayTaxLabel = $country->display_tax_label;
+            if (isset($infos['id_country']) && $infos['id_country']) {
+                $country = new Country((int)$infos['id_country']);
+                $this->context->country = $country;
+                if (Validate::isLoadedObject($country)) {
+                    $displayTaxLabel = $country->display_tax_label;
+                }
             }
         }
 
