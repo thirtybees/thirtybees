@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 use Thirtybees\Core\Error\Response\JSendErrorResponse;
 
@@ -1153,8 +1154,21 @@ class AdminControllerCore extends Controller
             }
 
             $conn = Db::readOnly();
-            $this->_list = $conn->getArray($this->_listsql);
-            $this->_listTotal = $conn->getValue($listCount);
+            try {
+                $this->_list = $conn->getArray($this->_listsql);
+                $this->_listTotal = $conn->getValue($listCount);
+            } catch (PrestaShopDatabaseException $e) {
+                $description = ErrorUtils::describeException($e);
+                $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+                $errorHandler->logFatalError($description);
+                $this->_list_error = Tools::displayError("Invalid list SQL");
+                if (_PS_MODE_DEV_) {
+                    $this->_list_error .= ': ' . $description->getMessage();
+
+                }
+                $this->_list = [];
+                $this->_listTotal = 0;
+            }
 
             if ($useLimit === true) {
                 $start = (int) $start - (int) $limit;
@@ -2925,6 +2939,7 @@ class AdminControllerCore extends Controller
     public function setHelperListDisplay(HelperList $helper)
     {
         $this->setHelperCommonDisplay($helper);
+        $helper->setListError($this->_list_error);
         $helper->actions = $this->actions;
         $helper->simple_header = $this->list_simple_header;
         $helper->bulk_actions = $this->bulk_actions;
@@ -3123,14 +3138,6 @@ class AdminControllerCore extends Controller
         }
 
         $helper = new HelperList();
-
-        // Empty list is ok
-        if (!is_array($this->_list)) {
-            $this->displayWarning($this->l('Bad SQL query', 'Helper').'<br />'.htmlspecialchars($this->_list_error));
-
-            return false;
-        }
-
         $this->setHelperDisplay($helper);
         $helper->_default_pagination = $this->_default_pagination;
         $helper->_pagination = $this->_pagination;

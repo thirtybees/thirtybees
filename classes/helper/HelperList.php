@@ -240,6 +240,11 @@ class HelperListCore extends Helper
     public $linkUrlTarget = '_self';
 
     /**
+     * @var string|null
+     */
+    protected $listError = null;
+
+    /**
      * HelperListCore constructor.
      */
     public function __construct()
@@ -728,6 +733,7 @@ class HelperListCore extends Helper
                     'row_hover'                 => $this->row_hover,
                     'list_id'                   => $this->list_id ?? $this->table,
                     'checked_boxes'             => Tools::getArrayValue(($this->list_id ?? $this->table).'Box'),
+                    'list_error'                => $this->listError,
                 ]
             )
         );
@@ -1096,5 +1102,16 @@ class HelperListCore extends Helper
             }
         }
         return $fields;
+    }
+
+    /**
+     * @param string|null $listError
+     *
+     * @return $this
+     */
+    public function setListError($listError)
+    {
+        $this->listError = $listError;
+        return $this;
     }
 }

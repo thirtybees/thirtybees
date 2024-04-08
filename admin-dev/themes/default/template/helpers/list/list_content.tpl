@@ -24,7 +24,7 @@
 *}
 {capture name='tr_count'}{counter name='tr_count'}{/capture}
 <tbody>
-{if count($list)}
+{if count($list) && !$list_error}
 {foreach $list AS $index => $tr}
 	{if isset($linkUrlCallback)}
 		{assign var='linkUrl' value=call_user_func($linkUrlCallback, $tr) }
@@ -196,10 +196,20 @@
 {else}
 	<tr>
 		<td class="list-empty" colspan="{count($fields_display)+1}">
-			<div class="list-empty-msg">
-				<i class="icon-warning-sign list-empty-icon"></i>
-				{l s='No records found'}
-			</div>
+			{if $list_error}
+				<div class="list-empty-msg">
+					 <div class="alert alert-danger">
+						 <div style="padding-left: 1em; text-align: left">
+							 {$list_error|escape:'htmlall'}
+						 </div>
+					 </div>
+				</div>
+			{else}
+				<div class="list-empty-msg">
+					 <i class="icon-warning-sign list-empty-icon"></i>
+					 {l s='No records found'}
+				</div>
+			{/if}
 		</td>
 	</tr>
 {/if}

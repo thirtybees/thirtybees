@@ -1066,13 +1066,6 @@ class AdminCartsControllerCore extends AdminController
 
         $helper = new HelperList();
 
-        // Empty list is ok
-        if (!is_array($this->_list)) {
-            $this->displayWarning($this->l('Bad SQL query', 'Helper').'<br />'.htmlspecialchars($this->_list_error));
-
-            return false;
-        }
-
         $this->setHelperDisplay($helper);
         $helper->tpl_vars = $this->tpl_list_vars;
         $helper->tpl_delete_link_vars = $this->tpl_delete_link_vars;
