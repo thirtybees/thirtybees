@@ -1192,20 +1192,23 @@ class LanguageCore extends ObjectModel
 
             $modList = scandir(_PS_MODULE_DIR_);
             foreach ($modList as $mod) {
-                $moduleMailsDir = _PS_MODULE_DIR_ . $mod . '/mails/';
-                if (file_exists($moduleMailsDir) && is_dir($moduleMailsDir)) {
-                    Tools::deleteDirectory($moduleMailsDir . $this->iso_code);
-                    $files = @scandir($moduleMailsDir);
-                    if (is_array($files) && count($files) <= 2) {
-                        Tools::deleteDirectory($moduleMailsDir);
-                    }
-                }
+                $moduleDir = _PS_MODULE_DIR_ . $mod;
+                if (file_exists($moduleDir) && is_dir($moduleDir)) {
 
-                if (file_exists(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php')) {
-                    unlink(_PS_MODULE_DIR_.$mod.'/'.$this->iso_code.'.php');
-                    $files = @scandir(_PS_MODULE_DIR_.$mod);
-                    if (is_array($files) && count($files) <= 2) {
-                        Tools::deleteDirectory(_PS_MODULE_DIR_.$mod);
+                    $moduleMailsDir = $moduleDir . '/mails/';
+                    if (file_exists($moduleMailsDir) && is_dir($moduleMailsDir)) {
+                        Tools::deleteDirectory($moduleMailsDir . $this->iso_code);
+                        if (Tools::isDirectoryEmpty($moduleMailsDir)) {
+                            Tools::deleteDirectory($moduleMailsDir);
+                        }
+                    }
+
+                    if (file_exists($moduleDir . '/' . $this->iso_code . '.php')) {
+                        unlink($moduleDir . '/' . $this->iso_code . '.php');
+                    }
+
+                    if (Tools::isDirectoryEmpty($moduleDir)) {
+                        Tools::deleteDirectory($moduleDir);
                     }
                 }
             }
