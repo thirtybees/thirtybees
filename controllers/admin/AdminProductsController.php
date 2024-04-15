@@ -2073,30 +2073,6 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
-        if (Tools::getIsset('description_short') && $this->isProductFieldUpdated('description_short')) {
-            $saveShort = Tools::getValue('description_short');
-            $_POST['description_short'] = strip_tags(Tools::getValue('description_short'));
-        }
-
-        // Check description short size without html
-        $limit = (int) Configuration::get('PS_PRODUCT_SHORT_DESC_LIMIT');
-        if ($limit <= 0) {
-            $limit = 400;
-        }
-        foreach ($languages as $language) {
-            if ($this->isProductFieldUpdated('description_short', $language['id_lang']) && ($value = Tools::getValue('description_short_'.$language['id_lang']))) {
-                if (mb_strlen(strip_tags($value)) > $limit) {
-                    $this->errors[] = sprintf(
-                        Tools::displayError('This %1$s field (%2$s) is too long: %3$d chars max (current count %4$d).'),
-                        call_user_func([$className, 'displayFieldName'], 'description_short'),
-                        $language['name'],
-                        $limit,
-                        mb_strlen(strip_tags($value))
-                    );
-                }
-            }
-        }
-
         // Check multilingual fields sizes
         foreach ($rules['sizeLang'] as $fieldLang => $maxLength) {
             foreach ($languages as $language) {
@@ -2109,10 +2085,6 @@ class AdminProductsControllerCore extends AdminController
                     );
                 }
             }
-        }
-
-        if ($this->isProductFieldUpdated('description_short') && isset($_POST['description_short'])) {
-            $_POST['description_short'] = $saveShort;
         }
 
         // Check fields validity

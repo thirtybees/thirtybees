@@ -4100,35 +4100,6 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::validateField()
-     *
-     * @param string $field
-     * @param array|bool|float|int|string|null $value
-     * @param int|null $idLang
-     * @param array $skip
-     * @param bool $humanErrors
-     *
-     * @return string|true
-     * @throws PrestaShopException
-     */
-    public function validateField($field, $value, $idLang = null, $skip = [], $humanErrors = false)
-    {
-        if ($field == 'description_short') {
-            $limit = (int) Configuration::get('PS_PRODUCT_SHORT_DESC_LIMIT');
-            if ($limit <= 0) {
-                $limit = 800;
-            }
-
-            $value = (string)$value;
-            $sizeWithoutHtml = mb_strlen(strip_tags($value));
-            $sizeWithHtml = mb_strlen($value);
-            $this->def['fields']['description_short']['size'] = $limit + $sizeWithHtml - $sizeWithoutHtml;
-        }
-
-        return parent::validateField($field, $value, $idLang, $skip, $humanErrors);
-    }
-
-    /**
      * @return bool
      *
      * @throws PrestaShopException

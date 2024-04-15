@@ -92,14 +92,6 @@ class AdminPPreferencesControllerCore extends AdminController
                             1 => $this->l('Cart summary'),
                         ],
                     ],
-                    'PS_PRODUCT_SHORT_DESC_LIMIT'    => [
-                        'title'      => $this->l('Max size of short description'),
-                        'hint'       => $this->l('Set the maximum size of product short description (in characters).'),
-                        'validation' => 'isInt',
-                        'cast'       => 'intval',
-                        'type'       => 'text',
-                        'suffix'     => $this->l('characters'),
-                    ],
                     'PS_QTY_DISCOUNT_ON_COMBINATION' => [
                         'title'      => $this->l('Quantity discounts based on'),
                         'hint'       => $this->l('How to calculate quantity discounts.'),
