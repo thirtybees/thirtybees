@@ -180,7 +180,11 @@ function updateFriendlyURLByName() {
 
 function updateMetaTitleByName() {
   const productName = getProductName(id_language);
-  $('#meta_title_' + id_language).val(productName.substr(0, 128));
+  const element = $('#meta_title_' + id_language);
+  const val = productName.substr(0, 128);
+  element.val(val);
+  const counter = $('#meta_title_' + id_language + '_counter');
+  counter.text(element.attr("data-maxchar") - val.length);
 }
 
 function updateMetaDescription() {
@@ -189,8 +193,11 @@ function updateMetaDescription() {
   tempDivElement.innerHTML = descriptionHtml;
   const descriptionTxt = tempDivElement.textContent || tempDivElement.innerText;
   const element = $('#meta_description_' + id_language);
-  element.val(descriptionTxt.trim().substr(0, 255));
+  const val = descriptionTxt.trim().substr(0, 255);
+  element.val(val);
   element.trigger('autosize.resize');
+  const counter = $('#meta_description_' +id_language + '_counter');
+  counter.text(element.attr("data-maxchar") - val.length);
 }
 
 function getFriendlyUrlFromName(name) {
@@ -1338,6 +1345,7 @@ function confirm_link(head_text, display_text, confirm_text, cancel_text, confir
     }
   });
 }
+
 function countDown($source, $target) {
   var max = $source.attr("data-maxchar");
   $target.html(max - $source.val().length);
