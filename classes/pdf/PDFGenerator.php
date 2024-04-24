@@ -19102,10 +19102,11 @@ class PDFGeneratorCore extends TCPDF
      * @param bool $useCache Deprecated and unused as per upstream (tcpdf
      *                            by tecnick.com), tcpdf doesn't cache.
      * @param string $orientation
+     * @param string|array $pageFormat
      */
-    public function __construct($useCache = false, $orientation = 'P')
+    public function __construct($useCache = false, $orientation = 'P', $pageFormat = 'A4')
     {
-        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8', false, false);
+        parent::__construct($orientation, 'mm', $pageFormat, true, 'UTF-8', false, false);
         $this->setRTL(Context::getContext()->language->is_rtl);
     }
 
