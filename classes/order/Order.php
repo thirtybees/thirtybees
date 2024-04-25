@@ -1337,11 +1337,11 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * Get an order by its cart id
+     * Get an order id by its cart id
      *
      * @param int $idCart Cart id
      *
-     * @return false|array Order details
+     * @return int Order id
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -1355,7 +1355,7 @@ class OrderCore extends ObjectModel
                 ->where('`id_cart` = '.(int) $idCart.' '.Shop::addSqlRestriction())
         );
 
-        return isset($result['id_order']) ? $result['id_order'] : false;
+        return isset($result['id_order']) ? (int)$result['id_order'] : 0;
     }
 
     /**
