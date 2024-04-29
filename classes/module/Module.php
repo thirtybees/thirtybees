@@ -862,6 +862,9 @@ abstract class ModuleCore
                         file_get_contents($filePath)
                     );
 
+                    // replace "namespace {...} " syntax with if(false) {...} to avoid syntax error
+                    $file = preg_replace('/\n[\s\t]*?namespace\s*{\s*/', 'if (false) {', $file);
+
                     // If (false) is a trick to not load the class with "eval".
                     // This way require_once will works correctly
                     if (eval('if (false){	'.$file."\n".' }') !== false) {
