@@ -109,7 +109,8 @@ class OrderPaymentCore extends ObjectModel
      *
      * @param int $idOrder
      *
-     * @return array
+     * @return OrderPayment[]
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -132,7 +133,7 @@ class OrderPaymentCore extends ObjectModel
      *
      * @param int $orderReference
      *
-     * @return array
+     * @return OrderPayment[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -156,6 +157,7 @@ class OrderPaymentCore extends ObjectModel
      * @param int $idInvoice Invoice ID
      *
      * @return PrestaShopCollection Collection of OrderPayment
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -182,7 +184,8 @@ class OrderPaymentCore extends ObjectModel
      *
      * @param int $idOrder Order Id
      *
-     * @return bool|OrderInvoice
+     * @return OrderInvoice|false
+     *
      * @throws PrestaShopException
      */
     public function getOrderInvoice($idOrder)

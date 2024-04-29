@@ -140,7 +140,8 @@ class PaymentCCCore extends OrderPayment
      *
      * @param int $idOrder
      *
-     * @return array
+     * @return OrderPayment[]
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @deprecated 1.5.0.1 use OrderPaymentCore
