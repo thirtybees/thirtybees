@@ -87,8 +87,8 @@
  */
 class CookieCore
 {
-    const FIELDS_SEPARATOR = '¤';
-    const VALUE_SEPARATOR = '|';
+    const VERSION = 'v2';
+
     /**
      * @var array Contain cookie content in a key => value format
      */
@@ -234,30 +234,35 @@ class CookieCore
     public function update($nullValues = false)
     {
         if (isset($_COOKIE[$this->_name])) {
+
             /* Decrypt cookie content */
+            $valid = false;
             $rawContent = $this->getCipherTool()->decrypt($_COOKIE[$this->_name]);
             if ($rawContent && strlen($rawContent) >= 64) {
 
                 // Verify checksum
                 $storedChecksum = substr($rawContent, 0, 64);
                 $data = substr($rawContent, 64);
-                $calculatedChecksum = hash('sha256', $this->_salt . $data);
+                $calculatedChecksum = $this->getSignature($data);
 
                 if ($storedChecksum === $calculatedChecksum) {
                     if ($data) {
-                        /* Unserialize cookie content */
-                        $tmpTab = explode(static::FIELDS_SEPARATOR, $data);
-                        foreach ($tmpTab as $keyAndValue) {
-                            $tmpTab2 = explode(static::VALUE_SEPARATOR, $keyAndValue);
-                            if (count($tmpTab2) == 2) {
-                                $this->_content[$tmpTab2[0]] = $tmpTab2[1];
+                        $array = str_getcsv($data);
+                        $len = count($array);
+                        if ($len % 2 === 0) {
+                            $fields = $len / 2;
+                            $valid = true;
+                            for ($i = 0; $i<$fields; $i++) {
+                                $key = $array[$i * 2];
+                                $value = $array[$i * 2 + 1];
+                                $this->_content[$key] = $value;
                             }
                         }
                     }
-                } else {
-                    $this->delete();
                 }
-            } else {
+            }
+
+            if (! $valid) {
                 $this->delete();
             }
         }
@@ -377,13 +382,6 @@ class CookieCore
         }
         if (is_array($value)) {
             throw new RuntimeException("Value can't be array");
-        }
-        $test = $key . $value;
-        if (strpos($test, static::FIELDS_SEPARATOR) !== false) {
-            throw new RuntimeException('Forbidden chars in cookie');
-        }
-        if (strpos($test, static::VALUE_SEPARATOR) !== false) {
-            throw new RuntimeException('Forbidden chars in cookie');
         }
         if (!$this->_modified && (!isset($this->_content[$key]) || (isset($this->_content[$key]) && $this->_content[$key] != $value))) {
             $this->_modified = true;
@@ -522,12 +520,18 @@ class CookieCore
         /* Serialize cookie content */
         $data = [];
         foreach ($this->_content as $key => $value) {
-            $data[] = $key. static::VALUE_SEPARATOR .$value;
+            $data[] = $key;
+            $data[] = $value;
         }
-        $content = implode(static::FIELDS_SEPARATOR, $data);
+        $f = fopen('php://memory', 'r+');
+        if (fputcsv($f, $data) === false) {
+            return false;
+        }
+        rewind($f);
+        $content = stream_get_contents($f);
 
         /* Calculate checksum and add it to cookie */
-        $checksum = hash('sha256', $this->_salt . $content);
+        $checksum = $this->getSignature($content);
         $cookie = $checksum . $content;
         $this->_modified = false;
 
@@ -606,5 +610,16 @@ class CookieCore
         return $this->_standalone
             ? Encryptor::getStandaloneInstance(__FILE__)
             : Encryptor::getInstance();
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return string
+     */
+    protected function getSignature(string $data): string
+    {
+        $payload = $this->_salt . static::VERSION . $data;
+        return hash('sha256', $payload);
     }
 }
