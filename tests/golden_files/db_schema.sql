@@ -1316,7 +1316,8 @@ CREATE TABLE `PREFIX_modules_perfs` (
 CREATE TABLE `PREFIX_operating_system` (
   `id_operating_system` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id_operating_system`)
+  PRIMARY KEY (`id_operating_system`),
+  UNIQUE KEY `os_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_order_carrier` (

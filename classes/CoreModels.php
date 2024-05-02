@@ -635,6 +635,11 @@ class CoreModelsCore
             'fields' => [
                 'name'                => ['type' => ObjectModel::TYPE_STRING, 'size' => 64],
             ],
+            'keys' => [
+                'operating_system' => [
+                    'os_name' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['name']]
+                ]
+            ]
         ];
 
         $orderDetailTax = [

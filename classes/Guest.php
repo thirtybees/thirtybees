@@ -254,20 +254,36 @@ class GuestCore extends ObjectModel
             'Linux' => 'X11',
         ];
 
-        foreach ($osArray as $k => $value) {
+        foreach ($osArray as $osName => $value) {
             if (strstr($userAgent, $value)) {
-                $result = Db::readOnly()->getRow(
-                    (new DbQuery())
-                        ->select('`id_operating_system`')
-                        ->from('operating_system', 'os')
-                        ->where('os.`name` = \''.pSQL($k).'\'')
-                );
-
-                return $result['id_operating_system'];
+                $id = $this->getOperatingSystemId($osName);
+                if (! $id) {
+                    Db::getInstance()->insert('operating_system', ['name' => pSQL($osName)], false, false, Db::INSERT_IGNORE);
+                    $id = $this->getOperatingSystemId($osName);
+                }
+                return $id;
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return int|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function getOperatingSystemId(string $name)
+    {
+        $id = (int)Db::readOnly()->getValue(
+            (new DbQuery())
+                ->select('`id_operating_system`')
+                ->from('operating_system', 'os')
+                ->where('os.`name` = \''.pSQL($name).'\'')
+        );
+        return $id ? $id : null;
     }
 
     /**
