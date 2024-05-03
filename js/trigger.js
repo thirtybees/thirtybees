@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2021 - 2021 thirty bees
+ * Copyright (C) 2017-2024 thirty bees
  *
  * NOTICE OF LICENSE
  *
@@ -12,7 +12,7 @@
  * to license@thirtybees.com so we can send you a copy immediately.
  *
  * @author    thirty bees <contact@thirtybees.com>
- * @copyright 2021 - 2021 thirty bees
+ * @copyright 2017-2024 thirty bees
  * @license   Academic Free License (AFL 3.0)
  */
 window.addEventListener("load", function() {
