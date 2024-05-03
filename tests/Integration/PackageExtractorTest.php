@@ -10,7 +10,7 @@ use Throwable;
 use Tools;
 
 /**
- * Copyright (C) 2023 thirty bees
+ * Copyright (C) 2017-2024 thirty bees
  *
  * NOTICE OF LICENSE
  *
@@ -23,7 +23,7 @@ use Tools;
  * to license@thirtybees.com so we can send you a copy immediately.
  *
  * @author    thirty bees <contact@thirtybees.com>
- * @copyright 2023 thirty bees
+ * @copyright 2017-2024 thirty bees
  * @license   Open Software License (OSL 3.0)
  */
 

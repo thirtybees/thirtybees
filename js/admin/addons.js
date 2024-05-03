@@ -12,7 +12,7 @@
  * to license@thirtybees.com so we can send you a copy immediately.
  *
  * @author    thirty bees <contact@thirtybees.com>
- * @copyright 2017-2018 thirty bees
+ * @copyright 2017-2024 thirty bees
  * @license   http://opensource.org/licenses/osc-3.0.php  Open Software License (OSL 3.0)
  *
  * This file only exists for backwards compatibility
