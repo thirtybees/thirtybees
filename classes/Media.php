@@ -1054,6 +1054,7 @@ class MediaCore
 
     /**
      * Returns full path to local file for $uri, or false if file does not exists
+     * with Linux and Windows compatibility
      *
      * @param string $uri
      *
@@ -1072,12 +1073,19 @@ class MediaCore
         if (!array_key_exists('host', $parsed) && isset($parsed['path'])) {
             $path = $parsed['path'];
             $rootDir = rtrim(str_replace('\\', '/', _PS_ROOT_DIR_), '/');
-            $filePath = $rootDir . '/' . $path;
+            $filePath = $rootDir . '' . $path;	// deleted slash separator as unnecessary in both environments
             if (file_exists($filePath) && is_file($filePath)) {
                 return $filePath;
             }
             $mediaUri = '/' . ltrim(str_replace($rootDir, __PS_BASE_URI__, $path), '/\\');
-            $filePath = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, '/', $mediaUri);
+            if (isset($parsed['scheme'])) {
+                // windows environment
+                $mediaUri = $parsed['scheme'] . ":" . $mediaUri;
+                $filePath = $mediaUri;
+            } else {
+                // linux environment
+                $filePath = _PS_ROOT_DIR_ . Tools::str_replace_once(__PS_BASE_URI__, '/', $mediaUri);
+            }
             if (file_exists($filePath) && is_file($filePath)) {
                 return $filePath;
             }
