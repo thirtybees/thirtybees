@@ -72,7 +72,7 @@ class SmartyCustomCore extends Smarty
         }  elseif ($cachingType === static::CACHING_TYPE_SSC && Cache::isEnabled()) {
             $cache = Cache::getInstance();
             if ($cache->isAvailable()) {
-                $this->registerCacheResource('ssc', new CacheResourceServerSideCache(Cache::getInstance()));
+                $this->registerCacheResource('ssc', new CacheResourceServerSideCache($cache));
                 $this->caching_type = 'ssc';
             } else {
                 $this->caching_type = 'file';
@@ -296,7 +296,7 @@ class SmartyCustomCore extends Smarty
      * @param string $cacheId cache id
      * @param string $compileId compile id
      *
-     * @return bool
+     * @return bool|string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -456,7 +456,9 @@ class SmartyCustomCore extends Smarty
      * @param string $cacheId
      * @param string $compileId
      * @param string $template
+     *
      * @return bool | string
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -486,12 +488,14 @@ class SmartyCustomCore extends Smarty
             }
             return true;
         } else {
-            $fullpath = $this->getCacheDir() . $filepath;
-            if (! file_exists($fullpath)) {
-                return false;
-            }
-            if (filemtime($fullpath) < $lastUpdate) {
-                return false;
+            if ($this->caching_type === 'file') {
+                $fullpath = $this->getCacheDir() . $filepath;
+                if (!file_exists($fullpath)) {
+                    return false;
+                }
+                if (filemtime($fullpath) < $lastUpdate) {
+                    return false;
+                }
             }
             return $filepath;
         }
