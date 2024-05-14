@@ -309,21 +309,38 @@ class GuestCore extends ObjectModel
             'IE 7'        => 'MSIE 7',
             'IE 6'        => 'MSIE 6',
         ];
-        foreach ($browserArray as $k => $value) {
+        foreach ($browserArray as $browserName => $value) {
             if (strstr($userAgent, $value)) {
-                $result = Db::readOnly()->getRow(
-                    (new DbQuery())
-                        ->select('`id_web_browser`')
-                        ->from('web_browser', 'wb')
-                        ->where('wb.`name` = \''.pSQL($k).'\'')
-                );
-
-                return $result['id_web_browser'];
+                $id = $this->getBrowserId($browserName);
+                if (! $id) {
+                    Db::getInstance()->insert('web_browser', ['name' => pSQL($browserName)], false, false, Db::INSERT_IGNORE);
+                    $id = $this->getBrowserId($browserName);
+                }
+                return $id;
             }
         }
 
         return null;
     }
+
+    /**
+     * @param string $name
+     *
+     * @return int|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function getBrowserId(string $name)
+    {
+        $id = (int)Db::readOnly()->getValue(
+            (new DbQuery())
+                ->select('`id_web_browser`')
+                ->from('web_browser', 'wb')
+                ->where('wb.`name` = \''.pSQL($name).'\'')
+        );
+        return $id ? $id : null;
+    }
+
 
     /**
      * @param int $idGuest

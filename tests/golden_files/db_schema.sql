@@ -2752,7 +2752,8 @@ CREATE TABLE `PREFIX_warehouse_shop` (
 CREATE TABLE `PREFIX_web_browser` (
   `id_web_browser` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id_web_browser`)
+  PRIMARY KEY (`id_web_browser`),
+  UNIQUE KEY `browser_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_webservice_account` (

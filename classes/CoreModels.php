@@ -1201,6 +1201,11 @@ class CoreModelsCore
             'fields' => [
                 'name'           => ['type' => ObjectModel::TYPE_STRING, 'size' => 64],
             ],
+            'keys' => [
+                'web_browser' => [
+                    'browser_name' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['name']]
+                ]
+            ]
         ];
 
         $webservicePermission = [
