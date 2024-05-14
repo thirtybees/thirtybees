@@ -581,19 +581,16 @@ class OrderInvoiceCore extends ObjectModel
             $sumOfTaxBases = 0;
             foreach ($shippingBreakdown as &$row) {
                 if (Carrier::useProportionateTax()) {
-                    $row['total_tax_excl'] = round(
-                        $row['total_amount'] / $row['rate'] * 100,
-                        _TB_PRICE_DATABASE_PRECISION_
-                    );
+                    $rate = (float)$row['rate'];
+                    $row['total_tax_excl'] = $rate !== 0.0
+                        ? round($row['total_amount'] / $rate * 100, _TB_PRICE_DATABASE_PRECISION_)
+                        : round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
                     $sumOfTaxBases += $row['total_tax_excl'];
                 } else {
                     $row['total_tax_excl'] = $this->total_shipping_tax_excl;
                 }
 
-                $row['total_amount'] = round(
-                    $row['total_amount'],
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
+                $row['total_amount'] = round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
                 $sumOfSplitTaxes += $row['total_amount'];
             }
             unset($row);
