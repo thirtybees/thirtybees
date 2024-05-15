@@ -7310,6 +7310,8 @@ class ProductCore extends ObjectModel
      */
     public function setWsPositionInCategory($position)
     {
+        $position = (int)$position;
+
         if ($position < 0) {
             WebserviceRequest::getInstance()->setError(500, Tools::displayError('You cannot set a negative position, the minimum for a position is 0.'), 134);
         }
