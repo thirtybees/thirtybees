@@ -7313,7 +7313,7 @@ class ProductCore extends ObjectModel
         $position = (int)$position;
 
         if ($position < 0) {
-            WebserviceRequest::getInstance()->setError(500, Tools::displayError('You cannot set a negative position, the minimum for a position is 0.'), 134);
+            WebserviceRequest::getInstance()->setError(500, 'You cannot set a negative position, the minimum for a position is 0.', 134);
         }
         $conn = Db::getInstance();
         $result = $conn->getArray(
@@ -7325,7 +7325,7 @@ class ProductCore extends ObjectModel
 		'
         );
         if (($position > 0) && ($position + 1 > count($result))) {
-            WebserviceRequest::getInstance()->setError(500, Tools::displayError('You cannot set a position greater than the total number of products in the category, minus 1 (position numbering starts at 0).'), 135);
+            WebserviceRequest::getInstance()->setError(500, 'You cannot set a position greater than the total number of products in the category, minus 1 (position numbering starts at 0).', 135);
         }
 
         foreach ($result as &$value) {
