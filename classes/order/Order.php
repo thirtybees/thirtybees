@@ -2818,7 +2818,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @param int $state
+     * @param string $state
      *
      * @return bool
      *
@@ -2829,7 +2829,7 @@ class OrderCore extends ObjectModel
     public function setWsCurrentState($state)
     {
         if ($this->id) {
-            $this->setCurrentState($state);
+            $this->setCurrentState((int)$state);
         }
 
         return true;

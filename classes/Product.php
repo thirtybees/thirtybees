@@ -7033,7 +7033,7 @@ class ProductCore extends ObjectModel
     /**
      * Webservice setter : set virtual field default combination
      *
-     * @param int $idCombination id default combination
+     * @param string $idCombination id default combination
      *
      * @return bool
      *
@@ -7301,7 +7301,7 @@ class ProductCore extends ObjectModel
     /**
      * Webservice setter : set virtual field position in category
      *
-     * @param int $position
+     * @param string $position
      *
      * @return bool
      *
@@ -7425,12 +7425,16 @@ class ProductCore extends ObjectModel
     /**
      * Webservice setter : set virtual field id_default_image in category
      *
+     * @param string $idImage
+     *
      * @return bool
      *
      * @throws PrestaShopException
      */
     public function setCoverWs($idImage)
     {
+        $idImage = (int)$idImage;
+
         $conn = Db::getInstance();
         $conn->execute(
             'UPDATE `'._DB_PREFIX_.'image_shop` image_shop, `'._DB_PREFIX_.'image` i

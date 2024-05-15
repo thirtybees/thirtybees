@@ -199,7 +199,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             'is_module'          => [],
             'id_tax_rules_group' => [
                 'getter'         => 'getIdTaxRulesGroup',
-                'setter'         => 'setTaxRulesGroup',
+                'setter'         => 'setWsTaxRulesGroup',
                 'xlink_resource' => [
                     'resourceName' => 'tax_rule_groups',
                 ],
@@ -1877,6 +1877,18 @@ class CarrierCore extends ObjectModel implements InitializationCallback
         Cache::clean('carrier_id_tax_rules_group_'.(int) $this->id.'_'.(int) Context::getContext()->shop->id);
 
         return Db::getInstance()->insert('carrier_tax_rules_group_shop', $values);
+    }
+
+    /**
+     * @param string $idTaxRulesGroup
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public function setWsTaxRulesGroup($idTaxRulesGroup)
+    {
+        return $this->setTaxRulesGroup((int)$idTaxRulesGroup);
     }
 
     /**
