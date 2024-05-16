@@ -2761,11 +2761,22 @@ class ProductCore extends ObjectModel
 
         $colors = [];
         foreach ($res as $row) {
-            if (Tools::isEmpty($row['color']) && !@filemtime(_PS_COL_IMG_DIR_.$row['id_attribute'].'.jpg')) {
+            $color = (string)$row['color'];
+            $attributeId = (int)$row['id_attribute'];
+            $textureFile = _PS_COL_IMG_DIR_ . $attributeId . '.jpg';
+
+            if (!$color && !file_exists($textureFile)) {
                 continue;
             }
 
-            $colors[(int) $row['id_product']][] = ['id_product_attribute' => (int) $row['id_product_attribute'], 'color' => $row['color'], 'id_product' => $row['id_product'], 'name' => $row['name'], 'id_attribute' => $row['id_attribute']];
+            $productId = (int)$row['id_product'];
+            $colors[$productId][] = [
+                'id_attribute' => $attributeId,
+                'id_product' => $productId,
+                'id_product_attribute' => (int)$row['id_product_attribute'],
+                'color' => $color,
+                'name' => (string)$row['name'],
+            ];
         }
 
         return $colors;
