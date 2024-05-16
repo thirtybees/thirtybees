@@ -214,7 +214,7 @@ function smarty_modifier_truncate($string, $length = 80, $etc = '...', $break_wo
         return '';
     }
 
-    $string = trim($string);
+    $string = trim((string)$string);
 
     if (mb_strlen($string) > $length) {
         $length -= min($length, mb_strlen($etc));
