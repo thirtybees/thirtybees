@@ -474,7 +474,7 @@ class CountryCore extends ObjectModel
         $zipRegexp = str_replace('L', '[a-zA-Z]', $zipRegexp);
         $zipRegexp = str_replace('C', $this->iso_code, $zipRegexp);
 
-        return (bool) preg_match($zipRegexp, $zipCode);
+        return (bool) preg_match($zipRegexp, (string)$zipCode);
     }
 
     /**
