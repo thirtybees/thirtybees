@@ -723,12 +723,12 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                 unset($carrierList[$key]);
             }
 
-            if ($carrier->min_weight > 0 && ($carrier->min_weight > $product->weight * $cartQuantity || $carrier->min_weight > $cartWeight)) {
+            if ($carrier->min_weight > 0 && $cartWeight < $carrier->min_weight) {
                 $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                 unset($carrierList[$key]);
             }
 
-            if ($carrier->max_weight > 0 && ($carrier->max_weight < $product->weight * $cartQuantity || $carrier->max_weight < $cartWeight)) {
+            if ($carrier->max_weight > 0 && $cartWeight > $carrier->max_weight) {
                 $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                 unset($carrierList[$key]);
             }
