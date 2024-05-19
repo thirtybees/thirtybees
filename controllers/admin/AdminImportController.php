@@ -523,7 +523,7 @@ class AdminImportControllerCore extends AdminController
                     'fax'       => ['label' => $this->l('Fax')],
                     'email'     => ['label' => $this->l('Email address')],
                     'note'      => ['label' => $this->l('Note')],
-                    'hours'     => ['label' => $this->l('Hours (x,y,z...)')],
+                    'hours'     => ['label' => $this->l('Hours (x;y;z...)')],
                     'image'     => ['label' => $this->l('Image URL')],
                     'shop'      => [
                         'label' => $this->l('ID / Name of shop'),
@@ -4640,8 +4640,13 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        if (isset($store->hours) && is_array($store->hours)) {
-            $store->hours = serialize($store->hours);
+        // Handle hours field
+        if (isset($info['hours']) && is_string($info['hours'])) {
+            // Convert the CSV string to an array using ; as the delimiter
+            $hoursArray = explode(';', $info['hours']);
+            $store->hours = json_encode($hoursArray);
+        } elseif (isset($store->hours) && is_array($store->hours)) {
+            $store->hours = json_encode($store->hours);
         }
 
         if (isset($store->country) && is_numeric($store->country)) {
