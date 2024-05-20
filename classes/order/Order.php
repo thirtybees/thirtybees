@@ -663,19 +663,14 @@ class OrderCore extends ObjectModel
         $row['tax_calculator'] = $taxCalculator;
         $row['tax_rate'] = $taxCalculator->getTotalRate();
 
-        $row['product_price'] = round(
-            $row['unit_price_tax_excl'],
-            _TB_PRICE_DATABASE_PRECISION_
-        );
-        $row['product_price_wt'] = round(
-            $row['unit_price_tax_incl'],
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        $row['product_price'] = Tools::roundPrice((float)$row['unit_price_tax_excl']);
+        $row['product_price_wt'] = Tools::roundPrice((float)$row['unit_price_tax_incl']);
 
-        $row['product_price_wt_but_ecotax'] = $row['product_price_wt'] - $row['ecotax'];
+        $row['ecotax'] = Tools::roundPrice((float)$row['ecotax']);
+        $row['product_price_wt_but_ecotax'] = Tools::roundPrice($row['product_price_wt'] - $row['ecotax']);
 
-        $row['total_wt'] = $row['total_price_tax_incl'];
-        $row['total_price'] = $row['total_price_tax_excl'];
+        $row['total_wt'] = Tools::roundPrice((float)$row['total_price_tax_incl']);
+        $row['total_price'] = Tools::roundPrice((float)$row['total_price_tax_excl']);
     }
 
     /**
