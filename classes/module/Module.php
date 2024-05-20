@@ -3467,7 +3467,7 @@ abstract class ModuleCore
                     $element = $xml->createElement($node);
                     $element->appendChild($xml->createCDATASection($value));
                 } else {
-                    $element = $xml->createElement($node, $value);
+                    $element = $xml->createElement($node, (string)$value);
                 }
                 $moduleXML->appendChild($element);
             }
