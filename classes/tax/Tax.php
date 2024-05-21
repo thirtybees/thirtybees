@@ -309,4 +309,31 @@ class TaxCore extends ObjectModel
 
         return $taxCalculator->getTotalRate();
     }
+
+    /**
+     * Returns tax name
+     *
+     * @param int $languageId
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getName(int $languageId = 0)
+    {
+        if (is_array($this->name)) {
+            if (isset($this->name[$languageId])) {
+                return (string)$this->name[$languageId];
+            }
+            $defaultLangId = (int)Configuration::get('PS_LANG_DEFAULT');
+            if (isset($this->name[$defaultLangId])) {
+                return (string)$this->name[$languageId];
+            }
+            foreach ($this->name as $name) {
+                return $name;
+            }
+            return '';
+        } else {
+            return (string)$this->name;
+        }
+    }
 }

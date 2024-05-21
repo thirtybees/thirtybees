@@ -47,7 +47,7 @@ class TaxCalculatorCore
     const ONE_AFTER_ANOTHER_METHOD = 2;
 
     /**
-     * @var array $taxes
+     * @var Tax[] $taxes
      */
     public $taxes;
 
@@ -57,7 +57,7 @@ class TaxCalculatorCore
     public $computation_method;
 
     /**
-     * @param array $taxes
+     * @param Tax[] $taxes
      * @param int $computationMethod (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
      */
     public function __construct(array $taxes = [], $computationMethod = self::COMBINE_METHOD)
@@ -129,17 +129,17 @@ class TaxCalculatorCore
 
     /**
      * @return string
+     * @throws PrestaShopException
      */
     public function getTaxesName()
     {
-        $name = '';
+        $names = [];
+        $languageId = (int) Context::getContext()->language->id;
         foreach ($this->taxes as $tax) {
-            $name .= $tax->name[(int) Context::getContext()->language->id].' - ';
+            $names[] = $tax->getName($languageId);
         }
 
-        $name = rtrim($name, ' -');
-
-        return $name;
+        return implode(' - ', $names);
     }
 
     /**
