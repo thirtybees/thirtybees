@@ -40,6 +40,12 @@ if (file_exists(_PS_ROOT_DIR_ . '/config/settings.inc.php')) {
  */
 class DbCore implements ReadOnlyConnection
 {
+    const MYSQL_ERROR_SERVER_GONE = 2006;
+    const MYSQL_ERROR_LOCK_WAIT_TIMEOUT = 1205;
+    const MYSQL_ERROR_LOCK_DEADLOCK = 1213;
+
+    const MAX_ATTEMPTS = 3;
+
     /**
      * @var int Constant used by insert() method
      */
@@ -429,13 +435,7 @@ class DbCore implements ReadOnlyConnection
         $sqlString = $this->getSqlString($sql);
 
         $this->last_query = $sqlString;
-        $this->result = $this->link->query($sqlString);
-
-        if ($this->result === false && $this->getNumberError() === 2006) {
-            if ($this->connect()) {
-                $this->result = $this->link->query($sqlString);
-            }
-        }
+        $this->result = $this->_query($sqlString);
 
         if ($this->result === false && $this->throwOnError) {
             $this->displayError($sqlString);
@@ -1224,12 +1224,41 @@ class DbCore implements ReadOnlyConnection
      * @param string $sql
      *
      * @return PDOStatement|false
-     *
-     * @deprecated 1.5.0
      */
     protected function _query($sql)
     {
-        return $this->link->query($sql);
+        for ($attempt = 0; $attempt < static::MAX_ATTEMPTS; $attempt++) {
+
+            $result = $this->link->query($sql);
+            if ($result !== false) {
+                return $result;
+            }
+
+            if ($attempt === (static::MAX_ATTEMPTS - 1)) {
+                return false;
+            }
+
+            // handle errors
+            $error = $this->getNumberError();
+            if ($error === static::MYSQL_ERROR_SERVER_GONE) {
+                if (! $this->connect()) {
+                    return false;
+                }
+            } elseif ($error === static::MYSQL_ERROR_LOCK_WAIT_TIMEOUT || $error === static::MYSQL_ERROR_LOCK_DEADLOCK) {
+                $wait = (1 << $attempt) * 1000;
+                try {
+                    $rand = floor(random_int(0, $wait));
+                    $wait = $rand;
+                } catch (Exception $ignored) {}
+                if ($wait > 0) {
+                    usleep($wait);
+                }
+            } else {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
