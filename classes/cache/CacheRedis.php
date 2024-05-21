@@ -28,6 +28,10 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * This class require Redis server to be installed
  */
@@ -269,8 +273,6 @@ class CacheRedisCore extends Cache
      * Clean all cached data
      *
      * @return bool
-     *
-     * @throws RedisException
      */
     public function flush()
     {
@@ -278,7 +280,12 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return (bool) $this->redis->flushDB();
+        try {
+            return (bool)$this->redis->flushDB();
+        } catch (RedisException $e) {
+            $this->logException($e);
+            return false;
+        }
     }
 
     /**
@@ -289,7 +296,6 @@ class CacheRedisCore extends Cache
      * @param int $ttl
      *
      * @return bool
-     * @throws RedisException
      */
     public function set($key, $value, $ttl = 0)
     {
@@ -302,7 +308,6 @@ class CacheRedisCore extends Cache
      * @param string $key
      *
      * @return mixed
-     * @throws RedisException
      */
     public function get($key)
     {
@@ -315,7 +320,6 @@ class CacheRedisCore extends Cache
      * @param string $key
      *
      * @return bool
-     * @throws RedisException
      */
     public function exists($key)
     {
@@ -329,7 +333,6 @@ class CacheRedisCore extends Cache
      * @param string $key
      *
      * @return bool
-     * @throws RedisException
      */
     public function delete($key)
     {
@@ -337,17 +340,25 @@ class CacheRedisCore extends Cache
             return false;
         }
         if ($key == '*') {
-            $this->flush();
-        } elseif (strpos($key, '*') === false) {
-            $this->_delete($key);
-        } else {
-            $keys = $this->redis->keys($this->mapKey($key));
-            if (is_array($keys) && $keys) {
-                $this->redis->del($keys);
-            }
+            return $this->flush();
+
         }
 
-        return true;
+        if (strpos($key, '*') === false) {
+            return $this->_delete($key);
+        }
+
+        try {
+            $keys = $this->redis->keys($this->mapKey($key));
+            $res = true;
+            if (is_array($keys) && $keys) {
+                $res = $this->redis->del($keys) && $res;
+            }
+            return $res;
+        } catch (RedisException $e) {
+            $this->logException( $e);
+            return false;
+        }
     }
 
     /**
@@ -358,8 +369,6 @@ class CacheRedisCore extends Cache
      * @param int $ttl
      *
      * @return bool
-     *
-     * @throws RedisException
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -368,15 +377,19 @@ class CacheRedisCore extends Cache
         }
 
         $timeout = ($ttl > 0) ? $ttl : null;
-        return $this->redis->set($this->mapKey($key), $value, $timeout);
+        $mappedKey = $this->mapKey($key);
+        try {
+            return $this->redis->set($mappedKey, $value, $timeout);
+        } catch (RedisException $e) {
+            $this->logException($e);
+            return false;
+        }
     }
 
     /**
      * @param string $key
      *
      * @return bool
-     *
-     * @throws RedisException
      */
     protected function _exists($key)
     {
@@ -384,15 +397,13 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return (bool) $this->_get($key);
+        return (bool)$this->_get($key);
     }
 
     /**
      * @param string $key
      *
      * @return mixed
-     *
-     * @throws RedisException
      */
     protected function _get($key)
     {
@@ -400,15 +411,19 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->get($this->mapKey($key));
+        $mappedKey = $this->mapKey($key);
+        try {
+            return $this->redis->get($mappedKey);
+        } catch (RedisException $e) {
+            $this->logException($e);
+            return false;
+        }
     }
 
     /**
      * @param string $key
      *
      * @return bool
-     *
-     * @throws RedisException
      */
     protected function _delete($key)
     {
@@ -416,7 +431,13 @@ class CacheRedisCore extends Cache
             return false;
         }
 
-        return $this->redis->del($this->mapKey($key));
+        $mappedKey = $this->mapKey($key);
+        try {
+            return $this->redis->del($mappedKey);
+        } catch (RedisException $e) {
+            $this->logException($e);
+            return false;
+        }
     }
 
     /**
@@ -435,5 +456,17 @@ class CacheRedisCore extends Cache
     protected function mapKey($key)
     {
         return $this->keysPrefix . ':' . $key;
+    }
+
+    /**
+     * @param RedisException $e
+     *
+     * @return void
+     */
+    protected function logException(RedisException $e)
+    {
+        $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+        $description = ErrorUtils::describeException($e);
+        $errorHandler->logFatalError($description);
     }
 }
