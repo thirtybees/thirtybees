@@ -145,13 +145,13 @@ class CustomerThreadCore extends ObjectModel
      * @param string $email
      * @param int $idOrder
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopException
      */
     public static function getIdCustomerThreadByEmailAndIdOrder($email, $idOrder)
     {
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('cm.`id_customer_thread`')
                 ->from('customer_thread', 'cm')

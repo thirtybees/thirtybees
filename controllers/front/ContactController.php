@@ -71,65 +71,22 @@ class ContactControllerCore extends FrontController
                     $customer->getByEmail($from);
                 }
 
-                $idOrder = (int) $this->getOrder();
+                $idOrder = (int) $this->getOrder($customer);
 
                 $conn = Db::readOnly();
-                if (!((
-                        ($idCustomerThread = Tools::getIntValue('id_customer_thread'))
-                        && (int) $conn->getValue(
-                            (new DbQuery())
-                                ->select('ct.`id_customer_thread`')
-                                ->from('customer_thread', 'ct')
-                                ->where('ct.`id_customer_thread` = '.(int) $idCustomerThread)
-                                ->where('ct.`id_shop` = '.(int) $this->context->shop->id)
-                                ->where('ct.`token` = \''.pSQL(Tools::getValue('token')).'\'')
-                        )
-                    ) || (
-                    $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($from, $idOrder)
-                    ))
-                ) {
-                    $fields = $conn->getArray(
-                        (new DbQuery())
-                            ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`email`')
-                            ->from('customer_thread', 'ct')
-                            ->where('ct.`email` = \''.pSQL($from).'\'')
-                            ->where('ct.`id_shop` = '.(int) $this->context->shop->id)
-                            ->where('('.($customer->id ? 'id_customer = '.(int) $customer->id.' OR ' : '').' id_order = '.(int) $idOrder.')')
-                    );
-                    $score = 0;
-                    foreach ($fields as $row) {
-                        $tmp = 0;
-                        if ((int) $row['id_customer'] && $row['id_customer'] != $customer->id && $row['email'] != $from) {
-                            continue;
-                        }
-                        if ($row['id_order'] != 0 && $idOrder != $row['id_order']) {
-                            continue;
-                        }
-                        if ($row['email'] == $from) {
-                            $tmp += 4;
-                        }
-                        if ($row['id_contact'] == $idContact) {
-                            $tmp++;
-                        }
-                        if (Tools::getIntValue('id_product') !== 0 && (int)$row['id_product'] === Tools::getIntValue('id_product')) {
-                            $tmp += 2;
-                        }
-                        if ($tmp >= 5 && $tmp >= $score) {
-                            $score = $tmp;
-                            $idCustomerThread = $row['id_customer_thread'];
-                        }
-                    }
-                }
-                $oldMessage = $conn->getValue(
-                    (new DbQuery())
+                $idCustomerThread = $this->resolveCustomerThreadId($from, $idOrder, $customer, $idContact);
+                $oldMessage = '';
+                if ($idCustomerThread) {
+                    $oldMessage = $conn->getValue((new DbQuery())
                         ->select('cm.`message`')
                         ->from('customer_message', 'cm')
                         ->leftJoin('customer_thread', 'cc', 'cm.`id_customer_thread` = cc.`id_customer_thread`')
-                        ->where('cc.`id_customer_thread` = '.(int) $idCustomerThread)
-                        ->where('cc.`id_shop` = '.(int) $this->context->shop->id)
+                        ->where('cc.`id_customer_thread` = ' . (int)$idCustomerThread)
+                        ->where('cc.`id_shop` = ' . (int)$this->context->shop->id)
                         ->orderBy('cm.`date_add` DESC')
-                );
-                if ($oldMessage == $message) {
+                    );
+                }
+                if ($oldMessage === $message) {
                     $this->context->smarty->assign('alreadySent', 1);
                 } else {
                     $ct = null;
@@ -166,7 +123,7 @@ class ContactControllerCore extends FrontController
                             $cm = new CustomerMessage();
                             $cm->id_customer_thread = $ct->id;
                             $cm->message = $message;
-                            if (isset($fileAttachment['rename']) && !empty($fileAttachment['rename'])) {
+                            if (!empty($fileAttachment['rename'])) {
                                 $cm->file_name = basename($fileAttachment['rename']);
                                 if (! rename($fileAttachment['tmp_name'], $cm->getFilePath())) {
                                     $cm->file_name = null;
@@ -202,14 +159,25 @@ class ContactControllerCore extends FrontController
      *
      * @throws PrestaShopException
      */
-    protected function getOrder()
+    protected function getOrder(Customer $customer)
     {
-        $idOrder = Tools::getIntValue('id_order');
-        if ($idOrder) {
-            $order = new Order($idOrder);
-            if (Validate::isLoadedObject($order)) {
-                return $idOrder;
+        if (Validate::isLoadedObject($customer)) {
+            $idOrder = Tools::getIntValue('id_order');
+            if ($idOrder) {
+                $order = new Order($idOrder);
+            } else {
+                $reference = trim((string)Tools::getValue('id_order'));
+                if ($reference) {
+                    $order = Order::getByReference($reference)->getFirst();
+                } else {
+                    $order = null;
+                }
             }
+
+            if (Validate::isLoadedObject($order) && (int)$order->id_customer === (int)$customer->id) {
+                return (int)$order->id;
+            }
+
         }
         return 0;
     }
@@ -308,7 +276,7 @@ class ContactControllerCore extends FrontController
 
             $orders = [];
 
-            $orderId = (int)$this->getOrder();
+            $orderId = (int)$this->getOrder($this->context->customer);
             foreach ($result as $row) {
                 $order = new Order($row['id_order']);
                 $date = explode(' ', $order->date_add);
@@ -464,5 +432,77 @@ class ContactControllerCore extends FrontController
         if (!$this->sendConfirmationEmail($ct, $varList, $from, $fileAttachment, $contact)) {
             $this->errors[] = Tools::displayError('An error occurred while sending the message.');
         }
+    }
+
+    /**
+     * @param string $from
+     * @param int $idOrder
+     * @param Customer $customer
+     * @param int $idContact
+     *
+     * @return int
+     * @throws PrestaShopException
+     */
+    protected function resolveCustomerThreadId(string $from, int $idOrder, Customer $customer, int $idContact)
+    {
+        $conn = Db::readOnly();
+
+        // first, check explicitly provided customer thread id
+        $idCustomerThread = Tools::getIntValue('id_customer_thread');
+        if ($idCustomerThread) {
+            // verify token value
+            $tokenMatches = (bool)$conn->getValue(
+                (new DbQuery())
+                    ->select('ct.`id_customer_thread`')
+                    ->from('customer_thread', 'ct')
+                    ->where('ct.`id_customer_thread` = ' . (int)$idCustomerThread)
+                    ->where('ct.`id_shop` = ' . (int)$this->context->shop->id)
+                    ->where('ct.`token` = \'' . pSQL(Tools::getValue('token')) . '\'')
+            );
+            if ($tokenMatches) {
+                return $idCustomerThread;
+            }
+        }
+
+        // find customer thread by combination of from address and order id
+        $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($from, $idOrder);
+        if ($idCustomerThread) {
+            return $idCustomerThread;
+        }
+
+        // find best matching customer thread
+        $idCustomerThread = 0;
+        $fields = $conn->getArray(
+            (new DbQuery())
+                ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`email`')
+                ->from('customer_thread', 'ct')
+                ->where('ct.`email` = \'' . pSQL($from) . '\'')
+                ->where('ct.`id_shop` = ' . (int)$this->context->shop->id)
+                ->where('(' . ($customer->id ? 'id_customer = ' . (int)$customer->id . ' OR ' : '') . ' id_order = ' . (int)$idOrder . ')')
+        );
+        $score = 0;
+        foreach ($fields as $row) {
+            $tmp = 0;
+            if ((int)$row['id_customer'] && $row['id_customer'] != $customer->id && $row['email'] != $from) {
+                continue;
+            }
+            if ($row['id_order'] != 0 && $idOrder != $row['id_order']) {
+                continue;
+            }
+            if ($row['email'] == $from) {
+                $tmp += 4;
+            }
+            if ($row['id_contact'] == $idContact) {
+                $tmp++;
+            }
+            if (Tools::getIntValue('id_product') !== 0 && (int)$row['id_product'] === Tools::getIntValue('id_product')) {
+                $tmp += 2;
+            }
+            if ($tmp >= 5 && $tmp >= $score) {
+                $score = $tmp;
+                $idCustomerThread = (int)$row['id_customer_thread'];
+            }
+        }
+        return $idCustomerThread;
     }
 }
