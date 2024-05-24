@@ -87,8 +87,8 @@ class AdminCartsControllerCore extends AdminController
             'total'    => [
                 'title'         => $this->l('Total'),
                 'callback'      => 'getOrderTotalUsingTaxCalculationMethod',
-                'orderby'       => false,
-                'search'        => false,
+                'orderby'       => true,
+                'search'        => true,
                 'align'         => 'text-right',
                 'badge_success' => true,
             ],
@@ -145,14 +145,34 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public static function getOrderTotalUsingTaxCalculationMethod($idCart)
-    {
-        $context = Context::getContext();
-        $context->cart = new Cart($idCart);
-        $context->currency = new Currency((int) $context->cart->id_currency);
-        $context->customer = new Customer((int) $context->cart->id_customer);
+	{
+		$context = Context::getContext();
+		$context->cart = new Cart($idCart);
+		$context->currency = new Currency((int) $context->cart->id_currency);
+		$context->customer = new Customer((int) $context->cart->id_customer);
 
-        return Cart::getTotalCart($idCart, true, Cart::BOTH_WITHOUT_SHIPPING);
-    }
+		// Attempt to calculate the cart total excluding shipping
+		$cartTotal = Cart::getTotalCart($idCart, true, Cart::BOTH_WITHOUT_SHIPPING);
+
+		// Check if the calculated cart total is valid and not zero
+		if ($cartTotal > 0) {
+			return Tools::displayPrice($cartTotal, $context->currency);
+		}
+
+		// Fallback to order total calculation if the cart total is zero or invalid
+		$idOrder = Order::getOrderByCartId($idCart);
+		if ($idOrder) {
+			$order = new Order($idOrder);
+			if (Validate::isLoadedObject($order)) {
+				// Calculate the total excluding shipping from the order
+				$orderTotalWithoutShipping = $order->total_products_wt + $order->total_discounts_tax_incl + $order->total_wrapping_tax_incl;
+				return Tools::displayPrice($orderTotalWithoutShipping, $context->currency);
+			}
+		}
+
+		// Fallback to zero if neither the cart nor the order total can be calculated
+		return Tools::displayPrice(0, $context->currency);
+	}
 
     /**
      * @param string $echo
@@ -171,17 +191,29 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
-    {
-        if (empty($this->display)) {
-            $this->page_header_toolbar_btn['export_cart'] = [
-                'href' => static::$currentIndex.'&exportcart&token='.$this->token,
-                'desc' => $this->l('Export carts', null, null, false),
-                'icon' => 'process-icon-export',
-            ];
-        }
+	{
+		if (empty($this->display)) {
+			$this->page_header_toolbar_btn['export_cart'] = [
+				'href' => static::$currentIndex.'&exportcart&token='.$this->token,
+				'desc' => $this->l('Export carts', null, null, false),
+				'icon' => 'process-icon-export',
+			];
 
-        parent::initPageHeaderToolbar();
-    }
+			$this->page_header_toolbar_btn['delete_empty_carts'] = [
+				'href' => static::$currentIndex.'&delete_empty_carts&token='.$this->token,
+				'desc' => $this->l('Delete Empty Carts', null, null, false),
+				'icon' => 'process-icon-delete',
+			];
+
+			$this->page_header_toolbar_btn['delete_old_carts'] = [
+				'href' => static::$currentIndex.'&delete_old_carts&token='.$this->token,
+				'desc' => $this->l('Delete Carts Older Than 30 Days', null, null, false),
+				'icon' => 'process-icon-delete',
+			];
+		}
+
+		parent::initPageHeaderToolbar();
+	}	
 
     /**
      * @return false|string
@@ -1095,4 +1127,63 @@ class AdminCartsControllerCore extends AdminController
 
         return $list;
     }
+
+    /**
+     * Delete empty carts
+     *
+     * @throws PrestaShopException
+     */
+    public function processDeleteEmptyCarts()
+    {
+        $sql = new DbQuery();
+        $sql->select('id_cart');
+        $sql->from('cart');
+        $sql->where('id_cart NOT IN (SELECT id_cart FROM '._DB_PREFIX_.'cart_product)');
+
+        $emptyCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        foreach ($emptyCarts as $cart) {
+            $cartObj = new Cart((int)$cart['id_cart']);
+            if (Validate::isLoadedObject($cartObj)) {
+                $cartObj->delete();
+            }
+        }
+    }
+	
+	/**
+	 * Delete carts older than 30 days
+	 *
+	 * @throws PrestaShopException
+	 */
+	public function processDeleteOldCarts()
+	{
+		$dateThreshold = date('Y-m-d H:i:s', strtotime('-30 days'));
+
+		$sql = new DbQuery();
+		$sql->select('id_cart');
+		$sql->from('cart');
+		$sql->where('date_add < \'' . pSQL($dateThreshold) . '\'');
+
+		$oldCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+		foreach ($oldCarts as $cart) {
+			$cartObj = new Cart((int)$cart['id_cart']);
+			if (Validate::isLoadedObject($cartObj)) {
+				$cartObj->delete();
+			}
+		}
+	}
+
+    public function postProcess()
+	{
+		if (Tools::isSubmit('delete_empty_carts')) {
+			$this->processDeleteEmptyCarts();
+		}
+
+		if (Tools::isSubmit('delete_old_carts')) {
+			$this->processDeleteOldCarts();
+		}
+
+		parent::postProcess();
+	}
 }
