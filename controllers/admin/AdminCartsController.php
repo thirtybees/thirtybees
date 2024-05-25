@@ -145,14 +145,34 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public static function getOrderTotalUsingTaxCalculationMethod($idCart)
-    {
-        $context = Context::getContext();
-        $context->cart = new Cart($idCart);
-        $context->currency = new Currency((int) $context->cart->id_currency);
-        $context->customer = new Customer((int) $context->cart->id_customer);
+	{
+		$context = Context::getContext();
+		$context->cart = new Cart($idCart);
+		$context->currency = new Currency((int) $context->cart->id_currency);
+		$context->customer = new Customer((int) $context->cart->id_customer);
 
-        return Cart::getTotalCart($idCart, true, Cart::BOTH_WITHOUT_SHIPPING);
-    }
+		// Attempt to calculate the cart total excluding shipping
+		$cartTotal = Cart::getTotalCart($idCart, true, Cart::BOTH_WITHOUT_SHIPPING);
+
+		// Check if the calculated cart total is valid and not zero
+		if ($cartTotal > 0) {
+			return Tools::displayPrice($cartTotal, $context->currency);
+		}
+
+		// Fallback to order total calculation if the cart total is zero or invalid
+		$idOrder = Order::getOrderByCartId($idCart);
+		if ($idOrder) {
+			$order = new Order($idOrder);
+			if (Validate::isLoadedObject($order)) {
+				// Calculate the total excluding shipping from the order
+				$orderTotalWithoutShipping = $order->total_products_wt + $order->total_discounts_tax_incl + $order->total_wrapping_tax_incl;
+				return Tools::displayPrice($orderTotalWithoutShipping, $context->currency);
+			}
+		}
+
+		// Fallback to zero if neither the cart nor the order total can be calculated
+		return Tools::displayPrice(0, $context->currency);
+	}
 
     /**
      * @param string $echo
