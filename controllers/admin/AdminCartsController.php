@@ -87,8 +87,8 @@ class AdminCartsControllerCore extends AdminController
             'total'    => [
                 'title'         => $this->l('Total'),
                 'callback'      => 'getOrderTotalUsingTaxCalculationMethod',
-                'orderby'       => false,
-                'search'        => false,
+                'orderby'       => true,
+                'search'        => true,
                 'align'         => 'text-right',
                 'badge_success' => true,
             ],
