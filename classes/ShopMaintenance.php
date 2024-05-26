@@ -20,7 +20,7 @@
 /**
  * Class ShopMaintenance
  *
- * This class implements tasks for maintaining hte shop installation, to be
+ * This class implements tasks for maintaining the shop installation, to be
  * run on a regular schedule. It gets called by an asynchronous Ajax request
  * in DashboardController.
  */
@@ -44,6 +44,7 @@ class ShopMaintenanceCore
             static::adjustThemeHeaders();
             static::optinShop();
             static::cleanAdminControllerMessages();
+            static::cleanOldLogFiles();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -59,7 +60,7 @@ class ShopMaintenanceCore
     public static function adjustThemeHeaders()
     {
         foreach (scandir(_PS_ALL_THEMES_DIR_) as $themeDir) {
-            if ( ! is_dir(_PS_ALL_THEMES_DIR_.$themeDir)
+            if (!is_dir(_PS_ALL_THEMES_DIR_.$themeDir)
                 || in_array($themeDir, ['.', '..'])) {
                 continue;
             }
@@ -85,7 +86,7 @@ class ShopMaintenanceCore
     public static function optinShop()
     {
         $name = Configuration::STORE_REGISTERED;
-        if ( ! Configuration::get($name)) {
+        if (!Configuration::get($name)) {
             $employees = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_);
             // Usually there's only one employee when we run this code.
             foreach ($employees as $employee) {
@@ -112,6 +113,28 @@ class ShopMaintenanceCore
                 $path = _PS_CACHE_DIR_.'/'.$candidate;
                 if (time() - filemtime($path) > 3600) {
                     unlink($path);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete all .log files in the /log/ directory older than 6 months.
+     *
+     * @return void
+     */
+    public static function cleanOldLogFiles()
+    {
+        $logDir = _PS_ROOT_DIR_ . '/log/';
+        $files = scandir($logDir);
+        $now = time();
+        $thirtyDays = 180 * 86400;
+
+        foreach ($files as $file) {
+            $filePath = $logDir . $file;
+            if (is_file($filePath) && pathinfo($filePath, PATHINFO_EXTENSION) === 'log') {
+                if ($now - filemtime($filePath) > $thirtyDays) {
+                    unlink($filePath);
                 }
             }
         }
