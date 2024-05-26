@@ -45,6 +45,7 @@ class ShopMaintenanceCore
             static::optinShop();
             static::cleanAdminControllerMessages();
             static::cleanOldLogFiles();
+            static::cleanOldThemeCacheFiles();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -128,13 +129,40 @@ class ShopMaintenanceCore
         $logDir = _PS_ROOT_DIR_ . '/log/';
         $files = scandir($logDir);
         $now = time();
-        $thirtyDays = 180 * 86400;
+        $oldlogdeleteperiod = 180 * 86400;
 
         foreach ($files as $file) {
             $filePath = $logDir . $file;
             if (is_file($filePath) && pathinfo($filePath, PATHINFO_EXTENSION) === 'log') {
-                if ($now - filemtime($filePath) > $thirtyDays) {
+                if ($now - filemtime($filePath) > $oldlogdeleteperiod) {
                     unlink($filePath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete all .js and .css files in /themes/../cache/ directories older than 30 days.
+     *
+     * @return void
+     */
+    public static function cleanOldThemeCacheFiles()
+    {
+        $themesDir = _PS_ROOT_DIR_ . '/themes/';
+        $now = time();
+        $themecachedeleteperiod = 30 * 86400;
+
+        foreach (scandir($themesDir) as $themeDir) {
+            $cacheDir = $themesDir . $themeDir . '/cache/';
+            if (is_dir($cacheDir) && !in_array($themeDir, ['.', '..'])) {
+                foreach (scandir($cacheDir) as $file) {
+                    $filePath = $cacheDir . $file;
+                    $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                    if (is_file($filePath) && ($extension === 'js' || $extension === 'css')) {
+                        if ($now - filemtime($filePath) > $themecachedeleteperiod) {
+                            unlink($filePath);
+                        }
+                    }
                 }
             }
         }
