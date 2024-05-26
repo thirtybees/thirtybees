@@ -20,7 +20,7 @@
 /**
  * Class ShopMaintenance
  *
- * This class implements tasks for maintaining hte shop installation, to be
+ * This class implements tasks for maintaining the shop installation, to be
  * run on a regular schedule. It gets called by an asynchronous Ajax request
  * in DashboardController.
  */
@@ -44,6 +44,7 @@ class ShopMaintenanceCore
             static::adjustThemeHeaders();
             static::optinShop();
             static::cleanAdminControllerMessages();
+            static::cleanOldLogFiles();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -112,6 +113,28 @@ class ShopMaintenanceCore
                 $path = _PS_CACHE_DIR_.'/'.$candidate;
                 if (time() - filemtime($path) > 3600) {
                     unlink($path);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete all .log files in the /log/ directory older than 6 months.
+     *
+     * @return void
+     */
+    public static function cleanOldLogFiles()
+    {
+        $now = time();
+        $oldlogdeleteperiod = 180 * 86400;
+        $logDir = _PS_ROOT_DIR_ . '/log/';
+
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($logDir));
+        foreach ($iterator as $item) {
+            $filePath = $item->getPathname();
+            if (is_file($filePath) && pathinfo($filePath, PATHINFO_EXTENSION) === 'log' && is_writable($filePath)) {
+                if ($now - filemtime($filePath) > $oldlogdeleteperiod) {
+                    unlink($filePath);
                 }
             }
         }
