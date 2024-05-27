@@ -489,31 +489,33 @@ class OrderInvoiceCore extends ObjectModel
         if ($sumCompositeTaxes) {
             $groupedDetails = [];
             foreach ($details as $row) {
-                if (!isset($groupedDetails[$row['id_order_detail']])) {
-                    $groupedDetails[$row['id_order_detail']] = [
-                        'tax_rate'       => 0,
-                        'total_tax_base' => 0,
-                        'total_amount'   => 0,
-                        'id_tax'         => $row['id_tax'],
+                $orderDetailId = $row['id_order_detail'];
+
+                if (!isset($groupedDetails[$orderDetailId])) {
+                    $groupedDetails[$orderDetailId] = [
+                        'tax_rate'       => 0.0,
+                        'total_tax_base' => 0.0,
+                        'total_amount'   => 0.0,
+                        'id_tax'         => (int)$row['id_tax'],
                     ];
                 }
 
-                $groupedDetails[$row['id_order_detail']]['tax_rate'] += $row['tax_rate'];
-                $groupedDetails[$row['id_order_detail']]['total_tax_base'] += $row['total_tax_base'];
-                $groupedDetails[$row['id_order_detail']]['total_amount'] += $row['total_amount'];
+                $groupedDetails[$orderDetailId]['tax_rate'] += (float)$row['tax_rate'];
+                $groupedDetails[$orderDetailId]['total_tax_base'] += (float)$row['total_tax_base'];
+                $groupedDetails[$orderDetailId]['total_amount'] += (float)$row['total_amount'];
             }
 
             $details = $groupedDetails;
         }
 
         foreach ($details as $row) {
-            $rate = (float) round($row['tax_rate'], 3);
+            $rate = (float)round((float)$row['tax_rate'], 3);
             $key = (string)$rate;
             if (!isset($breakdown[$key])) {
                 $breakdown[$key] = [
-                    'total_price_tax_excl' => 0,
-                    'total_amount'         => 0,
-                    'id_tax'               => $row['id_tax'],
+                    'total_price_tax_excl' => 0.0,
+                    'total_amount'         => 0.0,
+                    'id_tax'               => (int)$row['id_tax'],
                     'rate'                 => $rate,
                 ];
             }
