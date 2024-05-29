@@ -2107,8 +2107,11 @@ class AdminControllerCore extends Controller
      */
     public function display()
     {
+        $supporterInfo = Configuration::getSupporterInfo();
         $this->context->smarty->assign(
             [
+                'supporterInfo'             => $supporterInfo,
+                'campaingClass'             => $this->getCampaignClasses($supporterInfo),
                 'display_header'            => $this->display_header,
                 'display_header_javascript' => $this->display_header_javascript,
                 'display_footer'            => $this->display_footer,
@@ -2330,7 +2333,7 @@ class AdminControllerCore extends Controller
             $boColor = empty($this->context->employee->bo_color) ? '#FFFFFF' : $this->context->employee->bo_color;
             $this->context->smarty->assign(
                 [
-                    'autorefresh_notifications' => false, Configuration::get('PS_ADMINREFRESH_NOTIFICATION'),
+                    'autorefresh_notifications' => false,
                     'notificationTypes'         => $notification->getTypes(),
                     'help_box'                  => Configuration::get('PS_HELPBOX'),
                     'round_mode'                => Configuration::get('PS_PRICE_ROUND_MODE'),
@@ -2644,6 +2647,41 @@ class AdminControllerCore extends Controller
                     ];
                 }
         }
+    }
+
+    /**
+     * @param array|null $supporterInfo
+     *
+     * @return string
+     */
+    public function getCampaignClasses($supporterInfo): string
+    {
+        $campaignClass = 'campaign-bar-on';
+        $employee = $this->context->employee;
+        if (Validate::isLoadedObject($employee)) {
+            $disabled = false;
+            if ($employee->campaign_disabled) {
+                try {
+                    $ts = DateTime::createFromFormat('Y-m-d H:i:s', $employee->campaign_disabled);
+                    if ($ts) {
+                        $months = $supporterInfo ? 6 : 1;
+                        $disabledUntil = $ts->add(new DateInterval('P' . $months . 'M'));
+                        $now = new DateTime();
+                        if ($disabledUntil > $now) {
+                            $disabled = true;
+                        }
+                    }
+                } catch (Throwable $ignored) {}
+            }
+            if (! $disabled) {
+                $campaignClass .= ' show-campaign-bar';
+                $campaignClass .= ' show-campaign-slider';
+            }
+        }
+        if ($supporterInfo) {
+            $campaignClass .= ' ' . $supporterInfo['type'];
+        }
+        return $campaignClass;
     }
 
     /**
@@ -3837,6 +3875,7 @@ class AdminControllerCore extends Controller
         //Bootstrap
         $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/'.$this->bo_css, 'all', 0);
         $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/overrides.css', 'all', PHP_INT_MAX);
+        $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/admin-campaign-bar/admin-campaign-bar.css', 'all', PHP_INT_MAX);
 
         $this->addJquery();
         $this->addjQueryPlugin(['scrollTo', 'alerts', 'chosen', 'autosize', 'fancybox']);
@@ -3859,6 +3898,7 @@ class AdminControllerCore extends Controller
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/enquire.min.js');
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/vendor/moment-with-langs.min.js');
         $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/admin-theme.js');
+        $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/admin-campaign-bar/admin-campaign-bar.js');
 
         if (!$this->lite_display) {
             $this->addJS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/js/help.js');

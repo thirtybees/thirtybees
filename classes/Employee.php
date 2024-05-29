@@ -163,6 +163,11 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
     public $signature;
 
     /**
+     * @var string
+     */
+    public $campaign_disabled;
+
+    /**
      * @var Notification|null
      */
     protected $notification = null;
@@ -197,6 +202,7 @@ class EmployeeCore extends ObjectModel implements InitializationCallback
             'optin'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
             'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => true],
             'signature'                => ['type' => self::TYPE_STRING, 'validate' => 'isSha256', 'size' => 64, 'copy_post' => false],
+            'campaign_disabled'        => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => false, 'dbNullable' => true],
         ],
         'keys' => [
             'employee' => [

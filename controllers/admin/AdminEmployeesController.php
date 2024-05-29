@@ -920,4 +920,27 @@ class AdminEmployeesControllerCore extends AdminController
         $this->context->cookie->collapse_menu = Tools::getIntValue('collapse');
         $this->context->cookie->write();
     }
+
+    /**
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    protected function ajaxProcessDisableCampaign()
+    {
+        $this->setJSendErrorHandling();
+        $employee = $this->context->employee;
+        $employee->campaign_disabled = date('Y-m-d H:i:s');
+        $employee->setFieldsToUpdate(['campaign_disabled']);
+        $employee->update();
+        if (Configuration::getSupporterInfo()) {
+            $message = $this->l('The top bar and slider messages has been disabled');
+        } else {
+            $message = Translate::ppTags($this->l('The top bar and slider messages will be hidden for [1]1 month[/1]'), ['<strong>']);
+        }
+        $this->ajaxDie(json_encode([
+            'status' => 'success',
+            'data' => $message
+        ]));
+    }
 }

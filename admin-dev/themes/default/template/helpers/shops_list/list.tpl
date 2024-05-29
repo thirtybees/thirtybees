@@ -23,8 +23,8 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 {strip}
-<a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-    {$current_shop_name} <i class="icon-caret-down"></i>
+<a href="javascript:void(0)" class="tb-admin-top-bar-multishop-holder dropdown-toggle" data-toggle="dropdown">
+    <i class="icon-th-list"></i><span title="{$current_shop_name}">{$current_shop_name}</span><i class="icon-angle-down"></i>
 </a>
 <ul class="dropdown-menu">
     <li{if !isset($current_shop_value) || $current_shop_value == ''} class="active"{/if}><a href="{$url|escape:'html':'UTF-8'}">{l s='All shops'}</a></li>

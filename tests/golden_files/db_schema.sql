@@ -864,6 +864,7 @@ CREATE TABLE `PREFIX_employee` (
   `optin` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `last_connection_date` datetime DEFAULT NULL,
   `signature` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `campaign_disabled` datetime DEFAULT NULL,
   PRIMARY KEY (`id_employee`),
   KEY `employee_login` (`email`,`passwd`),
   KEY `id_employee_passwd` (`id_employee`,`passwd`),

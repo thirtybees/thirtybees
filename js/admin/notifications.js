@@ -118,7 +118,7 @@ function renderOrderNotification(notification, translations) {
 function renderCustomerNotification(notification, translations) {
   var html = '';
   html += "<a id='notification_customer_"+notification.id+"' href='"+notification.link+"'>";
-  html += "<p>" + translations.customerName + "&nbsp;<strong>" + notification.customerName + "</strong></p>";
+  html += "<p><span class='notification-customer-name-title'>" + translations.customerName + "</span>&nbsp;<strong>" + notification.customerName + "</strong></p>";
   html += "<small class='text-muted'><i class='icon-time'></i>&nbsp;" + moment(notification.ts * 1000).fromNow() + "</small>";
   html += "</a>";
   return html;
