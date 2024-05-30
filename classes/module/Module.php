@@ -965,7 +965,7 @@ abstract class ModuleCore
 
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
-                    $moduleFromList->premium = $module['premium'];
+                    $moduleFromList->premium = $module['premium'] ?? false;
                     if ($moduleFromList->canInstall && $moduleFromList->premium) {
                         $allowedTypes = array_column($moduleFromList->premium, 'type');
                         $moduleFromList->canInstall = in_array($supporterType, $allowedTypes, true);
@@ -1005,7 +1005,7 @@ abstract class ModuleCore
                     'need_instance'       => 0,
                     'not_on_disk'         => 1,
                     'active'              => 0,
-                    'premium'             => $module['premium'],
+                    'premium'             => $module['premium'] ?? false,
                     'canInstall'          => (bool)$module['binary'],
                     'url'                 => $module['url'] ?? ''
                 ];
