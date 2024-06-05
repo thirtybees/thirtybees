@@ -868,16 +868,7 @@ class MediaCore
      */
     public static function clearCache()
     {
-        if (!Configuration::get('TB_KEEP_CCC_FILES')) {
-            foreach ([_PS_THEME_DIR_.'cache'] as $dir) {
-                if (file_exists($dir)) {
-                    foreach (array_diff(scandir($dir), ['..', '.', 'index.php']) as $file) {
-                        Tools::deleteFile($dir.DIRECTORY_SEPARATOR.$file);
-                    }
-                }
-            }
-        }
-
+        ShopMaintenance::cleanOldThemeCacheFiles();
         $version = (int) Configuration::get('PS_CCCJS_VERSION');
         Configuration::updateValue('PS_CCCJS_VERSION', ++$version);
         $version = (int) Configuration::get('PS_CCCCSS_VERSION');

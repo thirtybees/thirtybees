@@ -650,20 +650,10 @@ class AdminPerformanceControllerCore extends AdminController
                     ],
                 ],
                 [
-                    'type'   => 'switch',
+                    'type'   => 'text',
                     'label'  => $this->l('Keep JS and CSS files'),
-                    'desc'  => $this->l('Keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders correctly (improves SEO).'),
-                    'name'   => 'TB_KEEP_CCC_FILES',
-                    'values' => [
-                        [
-                            'id'    => 'TB_KEEP_CCC_FILES_1',
-                            'value' => 1,
-                        ],
-                        [
-                            'id'    => 'TB_KEEP_CCC_FILES_0',
-                            'value' => 0,
-                        ],
-                    ],
+                    'desc'  => $this->l('Number of days to keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders it correctly. Enter zero if you don\'t want to keep old files'),
+                    'name'   => Configuration::CCC_ASSETS_RETENTION_PERIOD,
                 ],
             ],
             'submit' => [
@@ -676,7 +666,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['PS_JS_HTML_THEME_COMPRESSION'] = Configuration::get('PS_JS_HTML_THEME_COMPRESSION');
         $this->fields_value['PS_HTACCESS_CACHE_CONTROL'] = Configuration::get('PS_HTACCESS_CACHE_CONTROL');
         $this->fields_value['PS_JS_DEFER'] = Configuration::get('PS_JS_DEFER');
-        $this->fields_value['TB_KEEP_CCC_FILES'] = Configuration::get('TB_KEEP_CCC_FILES');
+        $this->fields_value[Configuration::CCC_ASSETS_RETENTION_PERIOD] = Configuration::getCCCAssetsRetentionPeriod();
         $this->fields_value['ccc_up'] = 1;
 
         return ['form' => $form];
@@ -1201,7 +1191,7 @@ class AdminPerformanceControllerCore extends AdminController
                     !Configuration::updateValue('PS_JS_THEME_CACHE', Tools::getIntValue('PS_JS_THEME_CACHE')) ||
                     !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION')) ||
                     !Configuration::updateValue('PS_JS_DEFER', Tools::getIntValue('PS_JS_DEFER')) ||
-                    !Configuration::updateValue('TB_KEEP_CCC_FILES', Tools::getIntValue('TB_KEEP_CCC_FILES')) ||
+                    !Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD)) ||
                     !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL'))
                 ) {
                     $this->errors[] = Tools::displayError('Unknown error.');

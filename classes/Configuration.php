@@ -285,8 +285,9 @@ class ConfigurationCore extends ObjectModel
     const DEPRECATED_CONFIG_KEYS = [
         self::PRICE_DISPLAY_PRECISION => 'Use Currency::getDisplayPrecision() method instead'
     ];
-
     const LAST_SEEN_NOTIFICATION_UUID = 'TB_LAST_SEEN_NOTIFICATION_UUID';
+
+    const CCC_ASSETS_RETENTION_PERIOD = 'TB_CCC_ASSETS_RETENTION_PERIOD';
 
     /**
      * @var array Object model definition
@@ -1214,5 +1215,23 @@ class ConfigurationCore extends ObjectModel
             ];
         }
         return null;
+    }
+
+    /**
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    public static function getCCCAssetsRetentionPeriod()
+    {
+        $value = (int)static::get(static::CCC_ASSETS_RETENTION_PERIOD);
+        if (! $value) {
+            // fallback
+            if ((int)static::get('TB_KEEP_CCC_FILES')) {
+                $value = 180;
+                static::updateValue(static::CCC_ASSETS_RETENTION_PERIOD, $value);
+            }
+        }
+        return $value;
     }
 }

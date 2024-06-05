@@ -145,12 +145,14 @@ class ShopMaintenanceCore
      * Delete all .js and .css files in /themes/../cache/ directories older than 30 days.
      *
      * @return void
+     * @throws PrestaShopException
      */
     public static function cleanOldThemeCacheFiles()
     {
+        $days = Configuration::getCCCAssetsRetentionPeriod();
         $themesDir = _PS_ROOT_DIR_ . '/themes/';
         $now = time();
-        $themecachedeleteperiod = 30 * 86400;
+        $themecachedeleteperiod = $days * 86400;
 
         foreach (scandir($themesDir) as $themeDir) {
             $cacheDir = $themesDir . $themeDir . '/cache/';
