@@ -359,7 +359,7 @@ class AdminPerformanceControllerCore extends AdminController
                 [
                     'type'   => 'text',
                     'label'  => $this->l('Log files retention period'),
-                    'desc'  => $this->l('Number of days to keep log files in /log/ directory'),
+                    'desc'  => $this->l('Number of days to keep old log files in /log/ directory and old lines in /error_log and /admin_folder/error_log files. Recommended value: 180.'),
                     'name'   => Configuration::LOGS_RETENTION_PERIOD,
                 ],
             ],
@@ -659,7 +659,7 @@ class AdminPerformanceControllerCore extends AdminController
                 [
                     'type'   => 'text',
                     'label'  => $this->l('Keep JS and CSS files'),
-                    'desc'  => $this->l('Number of days to keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders it correctly. Enter zero if you don\'t want to keep old files'),
+                    'desc'  => $this->l('Number of days to keep old JS and CSS files on the server, to make sure e.g. Google\'s cache still renders it correctly. Recommended value: 180. Enter zero if you don\'t want to keep old files.'),
                     'name'   => Configuration::CCC_ASSETS_RETENTION_PERIOD,
                 ],
             ],

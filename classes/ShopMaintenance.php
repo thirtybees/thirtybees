@@ -46,6 +46,7 @@ class ShopMaintenanceCore
             static::cleanAdminControllerMessages();
             static::cleanOldLogFiles();
             static::cleanOldThemeCacheFiles();
+            static::deleteOldErrorLogEntries();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -120,7 +121,7 @@ class ShopMaintenanceCore
     }
 
     /**
-     * Delete all .log files in the /log/ directory older than 6 months.
+     * Delete all old .log files in the /log/ directory based on the log retention period set in Performance.
      *
      * @return void
      * @throws PrestaShopException
@@ -144,7 +145,7 @@ class ShopMaintenanceCore
     }
 
     /**
-     * Delete all .js and .css files in /themes/../cache/ directories older than 30 days.
+     * Delete all old .js and .css files in /themes/../cache/ directories based on the JS and CSS retention period set in Performance.
      *
      * @return void
      * @throws PrestaShopException
@@ -171,4 +172,66 @@ class ShopMaintenanceCore
             }
         }
     }
+
+    /**
+     * Delete all old line entries in /error_log and /_PS_ADMIN_DIR_/error_log based on the log retention period set in Performance.
+     *
+     * @return void
+     */
+    protected static function deleteOldErrorLogEntries()
+    {
+        // Construct the log file paths
+        $logFilePaths = [
+            _PS_ROOT_DIR_ . '/error_log',
+            _PS_ADMIN_DIR_ . '/error_log'
+        ];
+
+        foreach ($logFilePaths as $logFilePath) {
+            if ($logFilePath && is_file($logFilePath) && is_writable($logFilePath)) {
+                // Get the current time
+                $currentTime = time();
+
+                // Calculate the cutoff time
+                $days = Configuration::getLogsRetentionPeriod();
+                $cutoffTime = $currentTime - ($days * 86400);
+
+                // Temporary file to store new content
+                $tempFilePath = $logFilePath . '.tmp';
+                $tempFile = fopen($tempFilePath, 'w');
+
+                // Date pattern to match log entry dates
+                $datePattern = '/^\[(\d{2}-[A-Za-z]{3}-\d{4} \d{2}:\d{2}:\d{2} [A-Za-z\/]+)\]/';
+
+                // Open the original file for reading
+                $file = fopen($logFilePath, 'r');
+                if ($file) {
+                    while (($line = fgets($file)) !== false) {
+                        if (preg_match($datePattern, $line, $matches)) {
+                            $logTime = strtotime($matches[1]);
+                            if ($logTime >= $cutoffTime) {
+                                // Write the current line and all following lines to the temp file
+                                fwrite($tempFile, $line);
+                                while (($line = fgets($file)) !== false) {
+                                    fwrite($tempFile, $line);
+                                }
+                                break; // Stop processing as we have written all the necessary lines
+                            }
+                        }
+                    }
+                    fclose($file);
+                }
+                fclose($tempFile);
+
+                // Get the original file's last modified time
+                $lastModifiedTime = filemtime($logFilePath);
+
+                // Replace the original file with the temp file
+                rename($tempFilePath, $logFilePath);
+
+                // Restore the original last modified time
+                touch($logFilePath, $lastModifiedTime);
+            }
+        }
+    }
+
 }
