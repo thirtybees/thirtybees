@@ -156,9 +156,10 @@ class ShopMaintenanceCore
         $now = time();
         $themecachedeleteperiod = $days * 86400;
 
-        foreach (scandir($themesDir) as $themeDir) {
-            $cacheDir = $themesDir . $themeDir . '/cache/';
-            if (is_dir($cacheDir) && !in_array($themeDir, ['.', '..'])) {
+        foreach (scandir($themesDir) as $themeName) {
+            $themeDir = $themesDir . $themeName;
+            $cacheDir = $themeDir . '/cache/';
+            if (!in_array($themeName, ['.', '..']) && is_dir($themeDir) && is_dir($cacheDir)) {
                 foreach (scandir($cacheDir) as $file) {
                     $filePath = $cacheDir . $file;
                     $extension = pathinfo($filePath, PATHINFO_EXTENSION);
