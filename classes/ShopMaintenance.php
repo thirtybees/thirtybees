@@ -123,11 +123,13 @@ class ShopMaintenanceCore
      * Delete all .log files in the /log/ directory older than 6 months.
      *
      * @return void
+     * @throws PrestaShopException
      */
     public static function cleanOldLogFiles()
     {
         $now = time();
-        $oldlogdeleteperiod = 180 * 86400;
+        $days = Configuration::getLogsRetentionPeriod();
+        $oldlogdeleteperiod = $days * 86400;
         $logDir = _PS_ROOT_DIR_ . '/log/';
 
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($logDir));

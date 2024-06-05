@@ -289,6 +289,8 @@ class ConfigurationCore extends ObjectModel
 
     const CCC_ASSETS_RETENTION_PERIOD = 'TB_CCC_ASSETS_RETENTION_PERIOD';
 
+    const LOGS_RETENTION_PERIOD = 'TB_LOGS_RETENTION_PERIOD';
+
     /**
      * @var array Object model definition
      */
@@ -1231,6 +1233,20 @@ class ConfigurationCore extends ObjectModel
                 $value = 180;
                 static::updateValue(static::CCC_ASSETS_RETENTION_PERIOD, $value);
             }
+        }
+        return $value;
+    }
+
+    /**
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    public static function getLogsRetentionPeriod()
+    {
+        $value = (int)static::get(static::LOGS_RETENTION_PERIOD);
+        if ($value <= 0) {
+            return 180;
         }
         return $value;
     }

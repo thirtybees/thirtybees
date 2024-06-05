@@ -356,6 +356,12 @@ class AdminPerformanceControllerCore extends AdminController
                     ],
                     'hint'    => $this->l('When enabled, you will see deprecation notices. Otherwise, only errors and warnings will be displayed'),
                 ],
+                [
+                    'type'   => 'text',
+                    'label'  => $this->l('Log files retention period'),
+                    'desc'  => $this->l('Number of days to keep log files in /log/ directory'),
+                    'name'   => Configuration::LOGS_RETENTION_PERIOD,
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -367,6 +373,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['debug_mode'] = $this->isDebugModeEnabled();
         $this->fields_value['profiling'] = $this->isProfilingEnabled();
         $this->fields_value['display_deprecation_warnings'] = $this->shouldDisplayDeprecationWarnings();
+        $this->fields_value[Configuration::LOGS_RETENTION_PERIOD] = Configuration::getLogsRetentionPeriod();
 
         return ['form' => $form];
     }
@@ -1342,6 +1349,7 @@ class AdminPerformanceControllerCore extends AdminController
         if (Tools::isSubmit('submitAddconfiguration')) {
             Configuration::updateGlobalValue('PS_DISABLE_NON_NATIVE_MODULE', Tools::getIntValue('native_module'));
             Configuration::updateGlobalValue('PS_DISABLE_OVERRIDES', Tools::getIntValue('overrides'));
+            Configuration::updateGlobalValue(Configuration::LOGS_RETENTION_PERIOD, Tools::getIntValue(Configuration::LOGS_RETENTION_PERIOD));
 
             $this->updateCustomDefines([
                 '_PS_MODE_DEV_' => Tools::getBoolValue('debug_mode'),
