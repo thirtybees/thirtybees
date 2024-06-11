@@ -454,6 +454,17 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 'desc' => $this->l('Settings'),
             ];
         }
+        
+        // Add button to close old threads
+        $this->page_header_toolbar_btn['close_old_threads'] = [
+
+            'href' => $this->context->link->getAdminLink('AdminCustomerThreads').'&action=closeOldThreads',
+
+            'icon' => 'process-icon-refresh',
+
+            'desc' => $this->l('Close threads older than 30 days'),
+
+        ];
     }
 
     /**
@@ -476,6 +487,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
      */
     public function postProcess()
     {
+        if (Tools::getValue('action') == 'closeOldThreads') {
+
+            $this->processCloseOldThreads();
+        }
+        
         if ($idCustomerThread = Tools::getIntValue('id_customer_thread')) {
             if (($idContact = Tools::getIntValue('id_contact'))) {
                 Db::getInstance()->execute(
@@ -650,6 +666,35 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         return parent::postProcess();
+    }
+
+    /**
+     * Process closing old threads.
+     */
+
+    public function processCloseOldThreads()
+
+    {  
+        $dateLimit = date('Y-m-d H:i:s', strtotime('-30 days'));
+        $dateLimitEscaped = pSQL($dateLimit);
+        $countSql = '
+            SELECT COUNT(*)
+            FROM `'._DB_PREFIX_.'customer_thread`
+            WHERE `status` = "open" AND `date_upd` < "'.$dateLimitEscaped.'"';
+
+        $numThreads = (int) Db::getInstance()->getValue($countSql);
+
+        if ($numThreads > 0) {
+            $updateSql = '
+                UPDATE `'._DB_PREFIX_.'customer_thread`
+                SET `status` = "closed"
+                WHERE `status` = "open" AND `date_upd` < "'.$dateLimitEscaped.'"';
+            if (Db::getInstance()->execute($updateSql)) {
+                $this->confirmations[] = sprintf($this->l('%d old open threads have been successfully closed.'), $numThreads);
+            } else {
+                $this->errors[] = $this->l('An error occurred while closing old open threads.');
+            }
+        }
     }
 
     /**
