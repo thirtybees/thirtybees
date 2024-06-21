@@ -52,6 +52,9 @@ function tinySetup(config) {
     browser_spellcheck: true,
     toolbar1: "code,|,bold,italic,underline,strikethrough,|,alignleft,aligncenter,alignright,alignfull,rtl,ltr,formatselect,|,blockquote,colorpicker,pasteword,|,bullist,numlist,|,outdent,indent,|,link,unlink,|,anchor,|,media,image",
     toolbar2: "",
+    rel_list: [
+        { title: 'noopener nofollow', value: 'noopener nofollow' }
+    ],
     external_filemanager_path: ad + "/filemanager/",
     filemanager_title: "File manager",
     external_plugins: { "filemanager": ad + "/filemanager/plugin.min.js" },
