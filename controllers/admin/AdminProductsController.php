@@ -5197,6 +5197,7 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('minimal_quantity', $this->getFieldValue($product, 'minimal_quantity') ? $this->getFieldValue($product, 'minimal_quantity') : 1);
                 $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
                 $data->assign('imageType', 'backoffice_product_medium');
+                $data->assign('imageExtension', ImageManager::getDefaultImageExtension());
                 $i = 0;
                 foreach ($images as $k => $image) {
                     $images[$k]['obj'] = new Image($image['id_image']);
