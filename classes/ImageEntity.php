@@ -313,11 +313,11 @@ class ImageEntityCore extends ObjectModel
 
             if ($withImageTypes) {
                 $imageEntities[$name]['imageTypes'][] = [
-                    'id_image_type' => $res['id_image_type'],
+                    'id_image_type' => (int)$res['id_image_type'],
                     'name' => $res['image_type'],
-                    'width' => $res['width'],
-                    'height' => $res['height'],
-                    'id_image_type_parent' => $res['id_image_type_parent'],
+                    'width' => (int)$res['width'],
+                    'height' => (int)$res['height'],
+                    'id_image_type_parent' => (int)$res['id_image_type_parent'],
                 ];
             }
 
