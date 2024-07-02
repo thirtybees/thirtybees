@@ -60,6 +60,8 @@ class PageNotFoundControllerCore extends FrontController
 
         if ($urlPath && preg_match('/\.('.$mainImageExtensions.'|ico)$/i', $urlPath)) {
             $requestUri = urldecode($requestUri);
+            $requestUri = preg_replace('#^'.preg_quote(Context::getContext()->shop->getBaseURI(), '#').'#i', '/', $requestUri);
+
             $this->context->cookie->disallowWriting();
 
             $imageType = null;
@@ -71,9 +73,6 @@ class PageNotFoundControllerCore extends FrontController
 
             if (($imageEntityName = $uriParts[0]) && ($imageEntity = ImageEntity::getImageEntities($imageEntityName, true))) {
 
-                /* Todo: Datakick This function was complettly rewriten, maybe some parts can be done cleaner with pregmatch
-                    not sure if we need keep old mechanism for backward compatibility too
-                */
                 // Check if we have a model
                 $idEntity_imageType = '';
                 $linkRewrite_retina_imageExtension = '';
