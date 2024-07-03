@@ -1623,7 +1623,6 @@ class AdminControllerCore extends Controller
             $definition = ObjectModel::getDefinition($this->className);
             if (! empty($definition['images'])) {
                 $this->fieldImageSettings = $definition['images'];
-                ImageEntity::rebuildImageEntities($this->className, $this->fieldImageSettings);
             }
         }
 
