@@ -71,7 +71,7 @@ class PageNotFoundControllerCore extends FrontController
 
             $uriParts = explode('/', ltrim($requestUri, '/'));
 
-            if (($imageEntityName = $uriParts[0]) && ($imageEntity = ImageEntity::getImageEntities($imageEntityName, true))) {
+            if (($imageEntityName = $uriParts[0]) && ($imageEntity = ImageEntity::getImageEntityInfo($imageEntityName))) {
 
                 // Check if we have a model
                 $idEntity_imageType = '';

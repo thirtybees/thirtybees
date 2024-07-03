@@ -294,7 +294,7 @@ class AdminImagesControllerCore extends AdminController
         $this->fields_value['ids_image_type_parent[]'] = array_column(ImageType::getImageTypeAliases($id_image_type), 'id_image_type');
 
         // Adding image entities to the form
-        $imageEntities = ImageEntity::getImageEntities('', true);
+        $imageEntities = ImageEntity::getImageEntities();
 
         foreach ($imageEntities as $imageEntity) {
             $this->fields_form['input'][] = [
@@ -451,7 +451,7 @@ class AdminImagesControllerCore extends AdminController
      */
     public function ajaxProcessDeleteOldImages()
     {
-        foreach (ImageEntity::getImageEntities('', true) as $imageEntity) {
+        foreach (ImageEntity::getImageEntities() as $imageEntity) {
             try {
                 // Getting format generation
                 Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($imageEntity['name']), 0);
@@ -513,7 +513,7 @@ class AdminImagesControllerCore extends AdminController
         $this->max_execution_time = (int) ini_get('max_execution_time');
 
         // Launching generation process
-        foreach (ImageEntity::getImageEntities('', true) as $imageEntity) {
+        foreach (ImageEntity::getImageEntities() as $imageEntity) {
             if ($type!='all' && $type!=$imageEntity['name']) {
                 continue;
             }
@@ -808,7 +808,10 @@ class AdminImagesControllerCore extends AdminController
      */
     protected function getNextEntityId($entityType)
     {
-        $imageEntity = ImageEntity::getImageEntities($entityType);
+        $imageEntity = ImageEntity::getImageEntityInfo($entityType);
+        if (! $imageEntity) {
+            throw new PrestaShopException("Invalid image entity type: '$entityType'");
+        }
         $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_'.strtoupper($entityType));
 
         return (int) Db::readOnly()->getValue(
@@ -1040,7 +1043,7 @@ class AdminImagesControllerCore extends AdminController
     {
         $this->context->smarty->assign(
             [
-                'imageEntities'   => ImageEntity::getImageEntities('', true),
+                'imageEntities'   => ImageEntity::getImageEntities(),
             ]
         );
     }

@@ -167,7 +167,7 @@ class ImageEntityCore extends ObjectModel
 
         foreach ($images as $imageEntityName => $imageEntity) {
 
-            $existingImageEntity = static::getImageEntities($imageEntityName);
+            $existingImageEntity = static::getImageEntityInfo($imageEntityName);
             $id_image_entity = $existingImageEntity['id_image_entity'] ?? 0;
 
             $imageEntityObj = new ImageEntity($id_image_entity);
@@ -261,73 +261,83 @@ class ImageEntityCore extends ObjectModel
     }
 
     /**
-     * @param string $imageEntityName image entity name (products, manufacturers, beesblogbposts)
-     * @param bool $withImageTypes if true, image types of the entity will be collected too
-     * @param bool $orderImageTypeBySize
+     * @param string $imageEntityName
+     *
+     * @return array|null
+     *
+     * @throws PrestaShopException
+     */
+    public static function getImageEntityInfo(string $imageEntityName)
+    {
+        if ($imageEntityName) {
+            $entities = static::getImageEntities();
+            if (isset($entities[$imageEntityName])) {
+                return $entities[$imageEntityName];
+            }
+        }
+        return null;
+    }
+
+    /**
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getImageEntities($imageEntityName = '', $withImageTypes = false, $orderImageTypeBySize = false)
+    public static function getImageEntities(): array
     {
-
-        $query = new DbQuery();
-        $query->select('ie.*');
-        $query->from(static::$definition['table'], 'ie');
-
-        if ($withImageTypes) {
+        $cacheKey = 'ImageEntity::getImageEntities';
+        if (! Cache::isStored($cacheKey)) {
+            $query = new DbQuery();
+            $query->select('ie.*');
+            $query->from(static::$definition['table'], 'ie');
             $query->select('it.id_image_type, it.name AS image_type, it.width, it.height, it.id_image_type_parent');
             $query->leftJoin('image_entity_type', 'iet', 'iet.id_image_entity=ie.id_image_entity');
             $query->leftJoin('image_type', 'it', 'iet.id_image_type=it.id_image_type');
-        }
-
-        if ($imageEntityName) {
-            $query->where("ie.name = '" . pSQL($imageEntityName) ."'");
-        }
-
-        if ($withImageTypes && $orderImageTypeBySize) {
-            $query->orderBy('it.width DESC, it.height DESC, it.name ASC');
-        } else {
             $query->orderBy('ie.name ASC');
-        }
 
-        $result = Db::getInstance()->getArray($query);
+            $result = Db::getInstance()->getArray($query);
 
-        $imageEntities = [];
+            $imageEntities = [];
 
-        foreach ($result as $res) {
+            foreach ($result as $res) {
 
-            $name = $res['name'];
+                $name = $res['name'];
 
-            // Get data from object model $definition
-            $definition = $res['classname']::$definition;
-            $imageEntities[$name]['table'] = $definition['table'];
-            $imageEntities[$name]['primary'] = $definition['primary'];
-            $imageEntities[$name]['path'] = $definition['images'][$name]['path'];
+                if (!isset($imageEntities[$name])) {
+                    // Get data from object model $definition
+                    $className = $res['classname'];
+                    $definition = ObjectModel::getDefinition($className);
 
-            $imageEntities[$name]['name'] = $name;
-            $imageEntities[$name]['classname'] = $res['classname'];
-            $imageEntities[$name]['id_image_entity'] = $res['id_image_entity'];
+                    $imageEntities[$name] = [
+                        'table' => $definition['table'],
+                        'primary' => $definition['primary'],
+                        'path' => $definition['images'][$name]['path'] ?? '',
+                        'name' => $name,
+                        'classname' => $className,
+                        'id_image_entity' => (int)$res['id_image_entity'],
+                        'imageTypes' => [],
+                    ];
+                }
 
-            if ($withImageTypes) {
-                $imageEntities[$name]['imageTypes'][] = [
-                    'id_image_type' => (int)$res['id_image_type'],
-                    'name' => $res['image_type'],
-                    'width' => (int)$res['width'],
-                    'height' => (int)$res['height'],
-                    'id_image_type_parent' => (int)$res['id_image_type_parent'],
-                ];
+                $imageTypeId = (int)$res['id_image_type'];
+                if ($imageTypeId) {
+                    $imageEntities[$name]['imageTypes'][] = [
+                        'id_image_type' => $imageTypeId,
+                        'name' => $res['image_type'],
+                        'width' => (int)$res['width'],
+                        'height' => (int)$res['height'],
+                        'id_image_type_parent' => (int)$res['id_image_type_parent'],
+                    ];
+                }
             }
 
+            Cache::store($cacheKey, $imageEntities);
+            return $imageEntities;
         }
 
-        if ($imageEntityName) {
-            return $imageEntities[$imageEntityName] ?? [];
-        }
-
-        return $imageEntities;
+        return Cache::retrieve($cacheKey);
     }
 
     /**

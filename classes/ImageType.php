@@ -197,25 +197,37 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getImagesTypes($imageEntityName = null, $orderBySize = false)
     {
-        static $cache = [];
+        $cacheKey = $imageEntityName
+            ? 'ImageType::getImagesTypes_entity:' . $imageEntityName
+            : 'ImageType::getImagesTypes_all';
 
-        if (!isset($cache[$imageEntityName])) {
-
+        if (! Cache::isStored($cacheKey)) {
             if ($imageEntityName) {
-                $imageEntity = ImageEntity::getImageEntities($imageEntityName, true, $orderBySize);
-                $cache[$imageEntityName] = $imageEntity['imageTypes'] ?? [];
-            }
-            else {
+                $imageEntity = ImageEntity::getImageEntityInfo($imageEntityName);
+                $imageTypes = $imageEntity['imageTypes'] ?? [];
+            } else {
                 $query = new DbQuery();
                 $query->select('*');
                 $query->from(self::$definition['table']);
-                $orderBySize ? $query->orderBy('`width` DESC, `height` DESC, `name` ASC') : $query->orderBy('`name` ASC');
-
-                $cache[$imageEntityName] = Db::readOnly()->getArray($query);
+                $query->orderBy('`name` ASC');
+                $imageTypes = Db::readOnly()->getArray($query);
             }
+            Cache::store($cacheKey, $imageTypes);
+        } else {
+            $imageTypes = Cache::retrieve($cacheKey);
         }
 
-        return $cache[$imageEntityName];
+        if ($orderBySize) {
+            usort($imageTypes, function($a, $b) {
+                $ret = $a['width'] - $b['width'];
+                if (! $ret) {
+                    $ret = $a['height'] - $b['height'];
+                }
+                return $ret;
+            });
+        }
+
+        return $imageTypes;
     }
 
     /**

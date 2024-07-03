@@ -553,7 +553,7 @@ class ImageManagerCore
      */
     public static function generateImageTypesByEntity($entityType, $idEntity, $idsImage = [])
     {
-        $imageEntity = ImageEntity::getImageEntities($entityType, true);
+        $imageEntity = ImageEntity::getImageEntityInfo($entityType);
         if (! $imageEntity) {
             return false;
         }

@@ -2009,7 +2009,8 @@ class AdminImportControllerCore extends AdminController
             }
 
             // Find path depending on $entityType
-            if (empty($imageEntity = ImageEntity::getImageEntities($entityType))) {
+            $imageEntity = ImageEntity::getImageEntityInfo($entityType);
+            if (! $imageEntity) {
                 @unlink($tmpfile);
                 return false;
             }
