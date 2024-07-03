@@ -116,10 +116,9 @@ class PageNotFoundControllerCore extends FrontController
                     $sendPath = $imageEntity['path'] . $subfolder . $idEntity . $imageTypeNameFormatted . $retina . '.' . $imageExtension;
                     $sourcePath = ImageManager::getSourceImage($imageEntity['path'] . $subfolder, $idEntity);
                 }
-            }
-            else {
+            } else {
                 // Check if source file is actually requested, but in a missing extension
-                $sendPath = ImageManager::tryRestoreImage($requestUri);
+                $sendPath = ImageManager::tryRestoreImage(_PS_ROOT_DIR_ . '/' . ltrim($requestUri, '/'));
             }
 
             if ($sendPath) {
