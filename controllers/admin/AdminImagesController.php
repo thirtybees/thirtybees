@@ -631,7 +631,6 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
-<<<<<<< HEAD
      * Regenerate images for one entity
      *
      * @param string $entityType
@@ -802,8 +801,6 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
-=======
->>>>>>> c22ca52dae (Image rewrite)
      * @param string $entityType
      *
      * @return int
