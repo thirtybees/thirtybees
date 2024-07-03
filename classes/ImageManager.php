@@ -1172,28 +1172,28 @@ class ImageManagerCore
      *
      * @param string $image
      *
-     * @return string Returns full path to source image
+     * @return string|null Returns full path to source image
      *
      */
     public static function tryRestoreImage($image)
     {
-        if (!$image) {
-            return false;
+        if (! $image) {
+            return null;
         }
 
-        if (file_exists($image)) {
+        if (@file_exists($image)) {
             return $image;
         }
 
+        $baseSourcePath = pathinfo($image, PATHINFO_DIRNAME) . '/' . pathinfo($image, PATHINFO_FILENAME);
+
         foreach (ImageManager::getAllowedImageExtensions(false, true) as $imageExtension) {
-            $allPossibleImageExtensions = implode('|', ImageManager::getAllowedImageExtensions());
-
-            $sourcePath = preg_replace( '/\.('.$allPossibleImageExtensions.')$/i', '.'.$imageExtension, $image);
-
-            if (file_exists($sourcePath)) {
+            $sourcePath = $baseSourcePath . '.' . $imageExtension;
+            if (@file_exists($sourcePath)) {
                 return $sourcePath;
             }
         }
+
         return null;
     }
 
