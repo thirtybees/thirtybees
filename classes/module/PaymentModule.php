@@ -882,7 +882,8 @@ abstract class PaymentModuleCore extends Module
                             ]);
                             $voucher->add();
 
-                            $cartRule = $voucher;
+                            // load new cart rule in single language context
+                            $cartRule = new CartRule($voucher->id, $cartRule->id_lang);
                         }
                     }
 
