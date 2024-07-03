@@ -554,6 +554,14 @@ class ImageManagerCore
     public static function generateImageTypesByEntity($entityType, $idEntity, $idsImage = [])
     {
         $imageEntity = ImageEntity::getImageEntities($entityType, true);
+        if (! $imageEntity) {
+            return false;
+        }
+
+        $imageTypes = $imageEntity['imageTypes'];
+        if (! $imageTypes) {
+            return false;
+        }
 
         // Get all source image paths, that are related to this entity
         $possibleSourceImages = [];
@@ -599,41 +607,39 @@ class ImageManagerCore
                 $baseName = pathinfo($sourceImage, PATHINFO_DIRNAME) . '/' . pathinfo($sourceImage, PATHINFO_FILENAME);
                 $defaultImageExtension = ImageManager::getDefaultImageExtension();
 
-                if (!empty($imageTypes = $imageEntity['imageTypes'])) {
-                    foreach ($imageTypes as $imageType) {
+                foreach ($imageTypes as $imageType) {
 
-                        // Check if imageType is alias
-                        if ($imageType['id_image_type_parent']) {
-                            continue;
-                        }
-
-                        $dstFile = $baseName . '-' . stripslashes($imageType['name']) . '.' . $defaultImageExtension;
-                        $success = self::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
-
-                        // Only generate if size of sourceImage is big enough
-                        if (self::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
-                            $dstFileRetina = $baseName . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
-                            $success = self::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
-                        }
+                    // Check if imageType is alias
+                    if ($imageType['id_image_type_parent']) {
+                        continue;
                     }
 
-                    // Call actionWatermark hook
-                    if (is_array($watermarkModules) && count($watermarkModules) && ($entityType == ImageEntity::ENTITY_TYPE_PRODUCTS)) {
-                        foreach ($watermarkModules as $module) {
-                            $moduleInstance = Module::getInstanceByName($module['name']);
-                            if ($moduleInstance && is_callable([$moduleInstance, 'hookActionWatermark'])) {
-                                call_user_func([$moduleInstance, 'hookActionWatermark'], [
-                                    'id_image' => $possibleSourceImage['filename'],
-                                    'id_product' => $idEntity,
-                                    'image_type' => $imageTypes,
-                                ]);
-                            }
+                    $dstFile = $baseName . '-' . stripslashes($imageType['name']) . '.' . $defaultImageExtension;
+                    $success = self::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
+
+                    // Only generate if size of sourceImage is big enough
+                    if (self::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
+                        $dstFileRetina = $baseName . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
+                        $success = self::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
+                    }
+                }
+
+                // Call actionWatermark hook
+                if (is_array($watermarkModules) && count($watermarkModules) && ($entityType == ImageEntity::ENTITY_TYPE_PRODUCTS)) {
+                    foreach ($watermarkModules as $module) {
+                        $moduleInstance = Module::getInstanceByName($module['name']);
+                        if ($moduleInstance && is_callable([$moduleInstance, 'hookActionWatermark'])) {
+                            call_user_func([$moduleInstance, 'hookActionWatermark'], [
+                                'id_image' => $possibleSourceImage['filename'],
+                                'id_product' => $idEntity,
+                                'image_type' => $imageTypes,
+                            ]);
                         }
                     }
                 }
             }
             else {
-                if ($entityType == ImageEntity::ENTITY_TYPE_PRODUCTS) {
+                if ($entityType === ImageEntity::ENTITY_TYPE_PRODUCTS) {
                     // Note: for other entity types, we don't even know if we can expect an image
                     throw new PrestaShopException("Source file in {$possibleSourceImage['path']} is missing!");
                 }
