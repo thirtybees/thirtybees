@@ -148,7 +148,7 @@ class OrderMessageCore extends ObjectModel
         $orderDeliveryDate = '[order_delivery_date]';
 
         if (Validate::isLoadedObject($customer)) {
-            $gender = new Gender($customer->id_gender, $idLang, $order->id_shop);
+            $gender = new Gender($customer->id_gender, $idLang, $order->id_shop ?? null);
             $genderName = $gender->name;
             $customerFirstName = $customer->firstname;
             $customerLastName = $customer->lastname;
