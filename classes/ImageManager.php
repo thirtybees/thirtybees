@@ -547,6 +547,7 @@ class ImageManagerCore
      * @param string $entityType
      * @param int $idEntity
      *
+     * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -594,19 +595,8 @@ class ImageManagerCore
 
             // Check if the image does really exist
             if ($sourceImage = ImageManager::getSourceImage($possibleSourceImage['path'], $possibleSourceImage['filename'])) {
-
-                list($sourceWidth, $sourceHeight, $phpImageType) = getimagesize($sourceImage);
-                $sourceImageExtension = ltrim(image_type_to_extension($phpImageType), '.');
-
-                // Sometimes image_type_to_extension seems to fail
-                if ((!$sourceImageExtension || !str_contains($sourceImage, '.'.$sourceImageExtension)) && str_contains($sourceImage, '.')) {
-                    $sourceImageExtension = explode('.', $sourceImage)[1];
-                }
-
-                if (!$sourceImageExtension) {
-                    throw new PrestaShopException("Source file in in {$possibleSourceImage['path']} probably corrupted!");
-                }
-
+                list($sourceWidth, $sourceHeight) = getimagesize($sourceImage);
+                $baseName = pathinfo($sourceImage, PATHINFO_DIRNAME) . '/' . pathinfo($sourceImage, PATHINFO_FILENAME);
                 $defaultImageExtension = ImageManager::getDefaultImageExtension();
 
                 if (!empty($imageTypes = $imageEntity['imageTypes'])) {
@@ -617,12 +607,12 @@ class ImageManagerCore
                             continue;
                         }
 
-                        $dstFile = str_replace('.' . $sourceImageExtension, '', $sourceImage) . '-' . stripslashes($imageType['name']) . '.' . $defaultImageExtension;
+                        $dstFile = $baseName . '-' . stripslashes($imageType['name']) . '.' . $defaultImageExtension;
                         $success = self::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
 
                         // Only generate if size of sourceImage is big enough
                         if (self::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
-                            $dstFileRetina = str_replace('.' . $sourceImageExtension, '', $sourceImage) . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
+                            $dstFileRetina = $baseName . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
                             $success = self::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
                         }
                     }
