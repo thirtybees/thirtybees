@@ -257,16 +257,30 @@ class ImageTypeCore extends ObjectModel
     protected static function getIndexedImageTypeNames()
     {
         if (is_null(static::$typeNameCache)) {
-            static::$typeNameCache = [];
-            $rows = Db::readOnly()->getArray(
-                (new DbQuery())
-                    ->select('`name`')
-                    ->from('image_type')
-            );
-            foreach ($rows as $row) {
-                $name = $row['name'];
-                static::$typeNameCache[$name] = $name;
+
+            $imageTypes = static::getImagesTypes();
+
+            // index image types by name and ids
+            $byName = [];
+            $byId = [];
+            foreach ($imageTypes as $type) {
+                $name = (string)$type['name'];
+                $id = (int)$type['id_image_type'];
+                $byName[$name] = $type;
+                $byId[$id] = $type;
             }
+
+            static::$typeNameCache = array_map(function($type) use ($byId) {
+                for ($i = 0; $i < 20; $i++) {
+                    $parentId = (int)$type['id_image_type_parent'];
+                    if ($parentId && array_key_exists($parentId, $byId)) {
+                        $type = $byId[$parentId];
+                    } else {
+                        break;
+                    }
+                }
+                return $type['name'];
+            }, $byName);
         }
         return static::$typeNameCache;
     }
@@ -420,6 +434,7 @@ class ImageTypeCore extends ObjectModel
     {
         $res = parent::add($autoDate, $nullValues);
         static::$typeNameCache = null;
+        Cache::clean('ImageType::*');
         return $res;
     }
 

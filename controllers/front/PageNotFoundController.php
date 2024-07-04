@@ -78,7 +78,7 @@ class PageNotFoundControllerCore extends FrontController
 
                 $imageType = $this->getImageType($imageInfo['imageType'], $imageEntity['imageTypes']);
 
-                $imageTypeNameFormatted = $imageType ? ('-' . $imageType['name']) : '';
+                $imageTypeNameFormatted = $imageType ? ('-' . $imageType->name) : '';
 
                 // As products have a sophisticated image system with folder structure
                 $subfolder = ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS) ? Image::getImgFolderStatic($idEntity) : '';
@@ -99,8 +99,8 @@ class PageNotFoundControllerCore extends FrontController
                     $height = 0;
                     if ($imageType) {
                         $scale = $highDpi && ImageManager::retinaSupport() ? 2 : 1;
-                        $width = (int)$imageType['width'] * $scale;
-                        $height = (int)$imageType['height'] * $scale;
+                        $width = (int)$imageType->width * $scale;
+                        $height = (int)$imageType->width * $scale;
                     }
 
                     // Create the image in the default imageExtension (readable by the user)
@@ -125,7 +125,7 @@ class PageNotFoundControllerCore extends FrontController
             }
 
             // We haven't found any image, we try to display the default image
-            $imageTypeName = $imageType ? $imageType['name'] : '';
+            $imageTypeName = $imageType ? $imageType->name : '';
             if ($notFoundImage = $this->context->link->getDefaultImageUri($this->context->language->iso_code, $imageTypeName, $highDpi, '', true)) {
                 $imageExtension = pathinfo($notFoundImage, PATHINFO_EXTENSION);
                 $mimeType = Media::getFileInformations('images', $imageExtension)['mimeType'] ?? 'image/jpeg';
@@ -251,39 +251,17 @@ class PageNotFoundControllerCore extends FrontController
      * @param string $imageTypeName
      * @param array $imageTypes
      *
-     * @return array|null
+     * @return ImageType|null
      * @throws PrestaShopException
      */
-    protected function getImageType(string $imageTypeName, array $imageTypes): ?array
+    protected function getImageType(string $imageTypeName, array $imageTypes): ?ImageType
     {
         if ($imageTypeName) {
-
-            // index image types by name and ids
-            $byName = [];
-            $byId = [];
-            foreach ($imageTypes as $type) {
-                $name = (string)$type['name'];
-                $id = (int)$type['id_image_type'];
-                $byName[$name] = $type;
-                $byId[$id] = $type;
-            }
-
             // find image type
             $formattedName = ImageType::getFormatedName($imageTypeName);
-            if (array_key_exists($formattedName, $byName)) {
-                $type = $byName[$formattedName];
-                // loop is here to prevent inifinite loops
-                for ($i = 0; $i < 20; $i++) {
-                    $parentId = (int)$type['id_image_type_parent'];
-                    if ($parentId && array_key_exists($parentId, $byId)) {
-                        $type = $byId[$parentId];
-                    } else {
-                        break;
-                    }
-                }
-                return $type;
+            if (ImageType::typeAlreadyExists($formattedName)) {
+                return ImageType::getInstanceByName($formattedName);
             }
-
         }
         return null;
     }
