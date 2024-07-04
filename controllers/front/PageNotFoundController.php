@@ -66,56 +66,27 @@ class PageNotFoundControllerCore extends FrontController
 
             $imageType = null;
             $sourcePath = null;
-            $sendPath = null;
-            $imageTypeName = '';
+            $imageExtension = '';
+            $highDpi = false;
 
-            $uriParts = explode('/', ltrim($requestUri, '/'));
+            $imageInfo = $this->getImageInfoFromUri($requestUri);
+            if ($imageInfo) {
+                $imageEntity = $imageInfo['imageEntity'];
+                $idEntity = $imageInfo['id'];
+                $highDpi = $imageInfo['highDpi'];
+                $imageExtension = $imageInfo['extension'];
 
-            if (($imageEntityName = $uriParts[0]) && ($imageEntity = ImageEntity::getImageEntityInfo($imageEntityName))) {
+                $imageType = $this->getImageType($imageInfo['imageType'], $imageEntity['imageTypes']);
 
-                // Check if we have a model
-                $idEntity_imageType = '';
-                $linkRewrite_retina_imageExtension = '';
+                $imageTypeNameFormatted = $imageType ? ('-' . $imageType['name']) : '';
 
-                if (count($uriParts)==4) {
-                    $idEntity_imageType = $uriParts[2];
-                    $linkRewrite_retina_imageExtension = $uriParts[3];
-                } else {
-                    if (count($uriParts) == 3) {
-                        $idEntity_imageType = $uriParts[1];
-                        $linkRewrite_retina_imageExtension = $uriParts[2];
-                    }
-                }
+                // As products have a sophisticated image system with folder structure
+                $subfolder = ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS) ? Image::getImgFolderStatic($idEntity) : '';
+                $highDpiDim = $highDpi ? '2x' : '';
 
-                // Separate idEntity and imageTypeName
-                $parts = explode('-', $idEntity_imageType);
-                $idEntity = $parts[0];
-                $imageTypeName = count($parts) > 1 ? str_replace($idEntity.'-', '', $idEntity_imageType) : '';
+                $sendPath = $imageEntity['path'] . $subfolder . $idEntity . $imageTypeNameFormatted . $highDpiDim . '.' . $imageExtension;
+                $sourcePath = ImageManager::getSourceImage($imageEntity['path'] . $subfolder, $idEntity);
 
-                // Check if $imageTypeName is actually allowed for this entity
-                if (!$imageTypeName || in_array($imageTypeName, array_column($imageEntity['imageTypes'], 'name'))) {
-
-                    $imageType = ImageType::getInstanceByName($imageTypeName);
-
-                    // Check if imageType has a parent
-                    if ($imageType->id_image_type_parent) {
-                        $imageType = new ImageType($imageType->id_image_type_parent);
-                        $imageTypeName = $imageType->name;
-                    }
-
-                    $imageTypeNameFormatted = $imageTypeName ? '-' . $imageTypeName : '';
-
-                    // Separate retina and imageExtension
-                    $imageExtension = pathinfo($linkRewrite_retina_imageExtension, PATHINFO_EXTENSION);
-                    $imageExtension = $this->normalizeImageExtension($imageExtension);
-                    $retina = str_contains($linkRewrite_retina_imageExtension, '2x.' . $imageExtension) && $imageType->id ? '2x' : '';
-
-                    // As products have a sophisticated image system with folder structure
-                    $subfolder = ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS) ? Image::getImgFolderStatic($idEntity) : '';
-
-                    $sendPath = $imageEntity['path'] . $subfolder . $idEntity . $imageTypeNameFormatted . $retina . '.' . $imageExtension;
-                    $sourcePath = ImageManager::getSourceImage($imageEntity['path'] . $subfolder, $idEntity);
-                }
             } else {
                 // Check if source file is actually requested, but in a missing extension
                 $sendPath = ImageManager::tryRestoreImage(_PS_ROOT_DIR_ . '/' . ltrim($requestUri, '/'));
@@ -123,13 +94,22 @@ class PageNotFoundControllerCore extends FrontController
 
             if ($sendPath) {
 
-                if (!file_exists($sendPath) && $sourcePath && $imageType->width && $imageType->height) {
+                if ($sourcePath && $imageExtension && !file_exists($sendPath) && file_exists($sourcePath)) {
+                    $width = 0;
+                    $height = 0;
+                    if ($imageType) {
+                        $scale = $highDpi && ImageManager::retinaSupport() ? 2 : 1;
+                        $width = (int)$imageType['width'] * $scale;
+                        $height = (int)$imageType['height'] * $scale;
+                    }
+
                     // Create the image in the default imageExtension (readable by the user)
                     ImageManager::resize(
                         $sourcePath,
                         $sendPath,
-                        $imageType->width,
-                        $imageType->height,
+                        $width,
+                        $height,
+                        $imageExtension
                     );
                 }
 
@@ -145,7 +125,8 @@ class PageNotFoundControllerCore extends FrontController
             }
 
             // We haven't found any image, we try to display the default image
-            if ($notFoundImage = $this->context->link->getDefaultImageUri($this->context->language->iso_code, $imageTypeName, false, '', true)) {
+            $imageTypeName = $imageType ? $imageType['name'] : '';
+            if ($notFoundImage = $this->context->link->getDefaultImageUri($this->context->language->iso_code, $imageTypeName, $highDpi, '', true)) {
                 $imageExtension = pathinfo($notFoundImage, PATHINFO_EXTENSION);
                 $mimeType = Media::getFileInformations('images', $imageExtension)['mimeType'] ?? 'image/jpeg';
                 header('HTTP/1.1 200 Found');
@@ -209,5 +190,101 @@ class PageNotFoundControllerCore extends FrontController
             return 'jpg';
         }
         return $ext;
+    }
+
+    /**
+     * @param string $requestUri
+     *
+     * @return array|false
+     * @throws PrestaShopException
+     */
+    protected function getImageInfoFromUri(string $requestUri)
+    {
+        $extensions = implode('|', ImageManager::getAllowedImageExtensions());
+        $imageEntitites = implode('|', array_keys(ImageEntity::getImageEntities()));
+
+        // try match image route: /entityType/id-imageType/name.ext
+        // example: /products/100-home/candle.jpg
+        //          /manufactures/5/manufacturer.jpg
+        $imageRoute = '#^/(?P<imageEntity>'.$imageEntitites.'+)/(?P<id>[0-9]+)(-(?P<imageType>[a-zA-Z0-9_ -]+))?/(?P<name>.*)\.(?P<extension>'.$extensions.')$#u';
+        if (preg_match($imageRoute, $requestUri, $matches)) {
+            $name = (string)$matches['name'];
+            $highDpi = false;
+            if (str_ends_with($name, '2x')) {
+                $name = substr($name, 0, -2);
+                $highDpi = true;
+            }
+            return [
+                'imageEntity' => ImageEntity::getImageEntityInfo($matches['imageEntity']),
+                'id' => $matches['id'],
+                'imageType' => $matches['imageType'] ?? '',
+                'name' => $name,
+                'extension' => $matches['extension'],
+                'highDpi' => $highDpi,
+            ];
+        }
+
+        // test legacy product image route -- without image entity section
+        // example: /100-home/candle.jpg
+        $legacyProductImageRoute = '#^/(?P<id>[0-9]+)(-(?P<imageType>[a-zA-Z0-9_ -]+))?/(?P<name>.*)\.(?P<extension>'.$extensions.')$#u';
+        if (preg_match($legacyProductImageRoute, $requestUri, $matches)) {
+            $name = (string)$matches['name'];
+            $highDpi = false;
+            if (str_ends_with($name, '2x')) {
+                $name = substr($name, 0, -2);
+                $highDpi = true;
+            }
+            return [
+                'imageEntity' => ImageEntity::getImageEntityInfo('products'),
+                'id' => $matches['id'],
+                'imageType' => $matches['imageType'] ?? '',
+                'name' => $name,
+                'extension' => $matches['extension'],
+                'highDpi' => $highDpi,
+            ];
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $imageTypeName
+     * @param array $imageTypes
+     *
+     * @return array|null
+     * @throws PrestaShopException
+     */
+    protected function getImageType(string $imageTypeName, array $imageTypes): ?array
+    {
+        if ($imageTypeName) {
+
+            // index image types by name and ids
+            $byName = [];
+            $byId = [];
+            foreach ($imageTypes as $type) {
+                $name = (string)$type['name'];
+                $id = (int)$type['id_image_type'];
+                $byName[$name] = $type;
+                $byId[$id] = $type;
+            }
+
+            // find image type
+            $formattedName = ImageType::getFormatedName($imageTypeName);
+            if (array_key_exists($formattedName, $byName)) {
+                $type = $byName[$formattedName];
+                // loop is here to prevent inifinite loops
+                for ($i = 0; $i < 20; $i++) {
+                    $parentId = (int)$type['id_image_type_parent'];
+                    if ($parentId && array_key_exists($parentId, $byId)) {
+                        $type = $byId[$parentId];
+                    } else {
+                        break;
+                    }
+                }
+                return $type;
+            }
+
+        }
+        return null;
     }
 }
