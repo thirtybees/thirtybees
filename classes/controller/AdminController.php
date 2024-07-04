@@ -1608,9 +1608,6 @@ class AdminControllerCore extends Controller
 
     /**
      * Gathering ObjectModel data and setting $fieldImageSettings as a multidimensional array
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     private function cleanFieldImageSettings()
     {
@@ -1620,10 +1617,12 @@ class AdminControllerCore extends Controller
         }
 
         if (empty($this->fieldImageSettings) && $this->className && class_exists($this->className)) {
-            $definition = ObjectModel::getDefinition($this->className);
-            if (! empty($definition['images'])) {
-                $this->fieldImageSettings = $definition['images'];
-            }
+            try {
+                $definition = ObjectModel::getDefinition($this->className);
+                if (!empty($definition['images'])) {
+                    $this->fieldImageSettings = $definition['images'];
+                }
+            } catch (PrestaShopException $ignore) {}
         }
 
         if (!empty($this->fieldImageSettings)) {
