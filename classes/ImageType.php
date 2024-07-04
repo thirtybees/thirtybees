@@ -387,20 +387,24 @@ class ImageTypeCore extends ObjectModel
     }
 
     /**
-     * @param int $id_image_type ID (not name!) of imageType
+     * @param int $imageTypeId ID (not name!) of imageType
      *
      * @return array of imageTypes
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getImageTypeAliases($id_image_type)
+    public static function getImageTypeAliases(int $imageTypeId): array
     {
-        $query = new DbQuery();
-        $query->select('*');
-        $query->from(self::$definition['table']);
-        $query->where('id_image_type_parent = ' . (int)$id_image_type);
-        return Db::getInstance()->getArray($query);
+        if ($imageTypeId) {
+            $query = new DbQuery();
+            $query->select('*');
+            $query->from(self::$definition['table']);
+            $query->where('id_image_type_parent = ' . (int)$imageTypeId);
+            return Db::getInstance()->getArray($query);
+        } else {
+            return [];
+        }
     }
 
     /**
