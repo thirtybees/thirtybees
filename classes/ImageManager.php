@@ -281,7 +281,7 @@ class ImageManagerCore
         }
 
         if (is_null($imageExtension)) {
-            $imageExtension = ImageManager::getDefaultImageExtension();
+            $imageExtension = static::resolveImageExtension($dstFile);
         }
 
         list($tmpWidth, $tmpHeight, $type) = getimagesize($srcFile);
@@ -1291,5 +1291,24 @@ class ImageManagerCore
             }
 
         }
+    }
+
+    /**
+     * @param string $filename
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected static function resolveImageExtension(string $filename)
+    {
+        $extension = strtolower((string)pathinfo($filename, PATHINFO_EXTENSION));
+        if ($extension) {
+            $allowedExtensions = static::getAllowedImageExtensions(true, true);
+            if (in_array($extension, $allowedExtensions)) {
+                return $extension;
+            }
+        }
+        return static::getDefaultImageExtension();
     }
 }
