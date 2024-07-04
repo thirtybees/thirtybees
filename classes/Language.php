@@ -1224,12 +1224,22 @@ class LanguageCore extends ObjectModel
             // Database translations deletion
             $result = Db::readOnly()->getArray('SHOW TABLES FROM `'._DB_NAME_.'`');
             $conn = Db::getInstance();
+            $tableNameKey = 'Tables_in_'._DB_NAME_;
             foreach ($result as $row) {
-                if (isset($row['Tables_in_'._DB_NAME_]) && !empty($row['Tables_in_'._DB_NAME_]) && preg_match('/'.preg_quote(_DB_PREFIX_).'_lang/', $row['Tables_in_'._DB_NAME_])) {
-                    if (!$conn->delete(bqSQL($row['Tables_in_'._DB_NAME_]), '`id_lang` = '.(int) $this->id)) {
-                        return false;
+                if (empty($row[$tableNameKey]) || !preg_match('/_lang$/', $row[$tableNameKey])) {
+                    continue;
+                }
+                $columns = Db::readOnly()->getArray('SHOW COLUMNS FROM `'.$row[$tableNameKey].'`');
+                $idLangColumnExists = false;
+                foreach ($columns as $column) {
+                    if ($column['Field'] == 'id_lang') {
+                        $idLangColumnExists = true;
                     }
                 }
+                if ($idLangColumnExists === false) {
+                    continue;
+                }
+                $conn->delete(bqSQL($row[$tableNameKey]), '`id_lang` = '.(int) $this->id);
             }
 
             // Delete tags
