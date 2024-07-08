@@ -78,14 +78,11 @@ class TaxCalculatorCore
      *
      * @param float $priceTaxExcluded price tax excluded
      *
-     * @return float Price with taxes, rounded to _TB_PRICE_DATABASE_PRECISION_.
+     * @return float Price with taxes
      */
     public function addTaxes($priceTaxExcluded)
     {
-        return round(
-            $priceTaxExcluded * (1 + ($this->getTotalRate() / 100)),
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        return Tools::roundPrice($priceTaxExcluded * (1 + ($this->getTotalRate() / 100)));
     }
 
     /**
@@ -93,15 +90,11 @@ class TaxCalculatorCore
      *
      * @param float $priceTaxIncluded price tax inclusive
      *
-     * @return float Price without taxes, rounded to
-     *               _TB_PRICE_DATABASE_PRECISION_.
+     * @return float Price without taxes
      */
     public function removeTaxes($priceTaxIncluded)
     {
-        return round(
-            $priceTaxIncluded / (1 + $this->getTotalRate() / 100),
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        return Tools::roundPrice($priceTaxIncluded / (1 + $this->getTotalRate() / 100));
     }
 
     /**
@@ -147,8 +140,7 @@ class TaxCalculatorCore
      *
      * @param float $priceTaxExcluded
      *
-     * @return array Array with one amount per tax, all rounded to
-     *               _TB_PRICE_DATABASE_PRECISION_.
+     * @return array Array with one amount per tax
      */
     public function getTaxesAmount($priceTaxExcluded)
     {
@@ -156,16 +148,10 @@ class TaxCalculatorCore
 
         foreach ($this->taxes as $tax) {
             if ($this->computation_method == static::ONE_AFTER_ANOTHER_METHOD) {
-                $taxesAmounts[$tax->id] = round(
-                    $priceTaxExcluded * ($this->getTaxRate($tax) / 100),
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
+                $taxesAmounts[$tax->id] = Tools::roundPrice($priceTaxExcluded * ($this->getTaxRate($tax) / 100));
                 $priceTaxExcluded = $priceTaxExcluded + $taxesAmounts[$tax->id];
             } else {
-                $taxesAmounts[$tax->id] = round(
-                    $priceTaxExcluded * ($this->getTaxRate($tax) / 100),
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
+                $taxesAmounts[$tax->id] = Tools::roundPrice($priceTaxExcluded * ($this->getTaxRate($tax) / 100));
             }
         }
 
@@ -177,7 +163,7 @@ class TaxCalculatorCore
      *
      * @param float $priceTaxExcluded
      *
-     * @return float Amount, rounded to _TB_PRICE_DATABASE_PRECISION_.
+     * @return float Amount
      */
     public function getTaxesTotalAmount($priceTaxExcluded)
     {
