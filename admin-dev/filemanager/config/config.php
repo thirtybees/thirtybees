@@ -92,6 +92,10 @@ if (! defined('FILE_MANAGER_ALLOWED_MIME_TYPES')) {
             'extensions' => ['webp'],
             'category' => 'image'
         ],
+        'image/avif' => [
+            'extensions' => ['avif'],
+            'category' => 'image'
+        ],
         'application/pdf' => [
             'extensions' => ['pdf'],
             'category' => 'file'

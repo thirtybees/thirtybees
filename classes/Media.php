@@ -1181,6 +1181,16 @@ class MediaCore
             ];
         }
 
+        if (ImageManager::serverSupportsAvif()) {
+            $allowedExtensions['images']['avif'] = [
+                'mimeType'          => 'image/avif',
+                'extensions'        => ['avif'],
+                'imageSupport'      => true,
+                'uploadFrontOffice' => true,
+                'uploadBackOffice'  => true,
+            ];
+        }
+
         if ($type) {
 
             // Check if the type is defined

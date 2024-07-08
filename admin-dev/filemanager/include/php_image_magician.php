@@ -1748,6 +1748,11 @@ class imageLib
             case 'webp':
                 $img = @imagecreatefromwebp($file);
                 break;
+            case 'avif':
+                $img = function_exists('imagecreatefromavif')
+                    ? imagecreatefromavif($file)
+                    : false;
+                break;
             case 'gif':
                 $img = @imagecreatefromgif($file);
                 break;
@@ -1810,6 +1815,13 @@ class imageLib
                     $error = 'webp';
                 }
                 break;
+            case '.avif':
+                if (defined('IMG_AVIF') && (imagetypes() & IMG_AVIF) && function_exists('imageavif')) {
+                    imageavif($this->imageResized, $savePath, $imageQuality);
+                } else {
+                    $error = 'avif';
+                }
+                break;
             case '.gif':
                 $this->checkInterlaceImage($this->isInterlace);
                 if (imagetypes() & IMG_GIF) {
@@ -1860,6 +1872,12 @@ class imageLib
             case 'webp':
                 header('Content-type: image/webp');
                 imagewebp($this->imageResized, '', $imageQuality);
+                break;
+            case 'avif':
+                if (function_exists('imageavif')) {
+                    header('Content-type: image/avif');
+                    imageavif($this->imageResized, '', $imageQuality);
+                }
                 break;
             case 'gif':
                 header('Content-type: image/gif');

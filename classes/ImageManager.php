@@ -332,7 +332,7 @@ class ImageManagerCore
         $destImage = imagecreatetruecolor($dstWidth, $dstHeight);
 
         // If image is a PNG or WEBP and the output is PNG/WEBP, fill with transparency. Else fill with white background.
-        if ($imageExtension == 'png' || $imageExtension === 'webp') {
+        if ($imageExtension == 'png' || $imageExtension === 'webp' || $imageExtension === 'avif') {
             imagealphablending($destImage, false);
             imagesavealpha($destImage, true);
             $transparent = imagecolorallocatealpha($destImage, 255, 255, 255, 127);
@@ -391,6 +391,11 @@ class ImageManagerCore
      */
     public static function create($type, $filename)
     {
+        // avif is supported from PHP8.1 only
+        if (! defined('IMAGETYPE_AVIF')) {
+            define('IMAGETYPE_AVIF', 19);
+        }
+
         switch ($type) {
             case IMAGETYPE_GIF :
                 $resource = imagecreatefromgif($filename);
@@ -405,6 +410,11 @@ class ImageManagerCore
 
             case IMAGETYPE_JPEG :
                 return imagecreatefromjpeg($filename);
+
+            case IMAGETYPE_AVIF:
+                return function_exists('imagecreatefromavif')
+                    ? imagecreatefromavif($filename)
+                    : false;
 
             default:
                 return false;
@@ -438,7 +448,7 @@ class ImageManagerCore
      * Generate and write image
      *
      * @param string $imageExtension
-     * @param resource $resource
+     * @param GdImage|resource $resource
      * @param string $filename
      * @param int $quality
      *
@@ -479,6 +489,12 @@ class ImageManagerCore
                 $success = imagewebp($resource, $filename, (int) $quality);
                 break;
 
+            case 'avif':
+                $success = function_exists('imageavif')
+                    ? imageavif($resource, $filename, $quality)
+                    : false;
+                break;
+
             case 'jpg':
             case 'jpeg':
             default:
@@ -487,7 +503,10 @@ class ImageManagerCore
                 break;
         }
         imagedestroy($resource);
-        @chmod($filename, 0664);
+
+        if (@file_exists(@$filename)) {
+            @chmod($filename, 0664);
+        }
 
         return $success;
     }
@@ -1119,6 +1138,16 @@ class ImageManagerCore
     public static function serverSupportsWebp()
     {
         return (bool)function_exists('imagewebp');
+    }
+
+    /**
+     * Returns true, if server supports avif images
+     *
+     * @return bool
+     */
+    public static function serverSupportsAvif()
+    {
+        return (bool)function_exists('imageavif');
     }
 
     /**
