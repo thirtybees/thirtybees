@@ -347,12 +347,13 @@ class OrderSlipCore extends ObjectModel
             // In case of a distinction between product value in the order and
             // product value in the refund (choosen by the merchant on refund
             // creation), these prices are reduced already.
+            $unitPrice = (float)$product['unit_price'];
             if ($addTax == true) {
-                $product['unit_price_tax_excl'] = Tools::roundPrice($product['unit_price']);
-                $product['unit_price_tax_incl'] = $taxCalculator->addTaxes($product['unit_price']);
+                $product['unit_price_tax_excl'] = Tools::roundPrice($unitPrice);
+                $product['unit_price_tax_incl'] = $taxCalculator->addTaxes($unitPrice);
             } else {
-                $product['unit_price_tax_incl'] = Tools::roundPrice($product['unit_price']);
-                $product['unit_price_tax_excl'] = $taxCalculator->removeTaxes($product['unit_price']);
+                $product['unit_price_tax_incl'] = Tools::roundPrice($unitPrice);
+                $product['unit_price_tax_excl'] = $taxCalculator->removeTaxes($unitPrice);
             }
 
             $product['total_price_tax_excl'] = Tools::roundPrice($product['unit_price_tax_excl'] * $quantity);
@@ -427,9 +428,9 @@ class OrderSlipCore extends ObjectModel
         $orderSlip = new OrderSlip();
         $orderSlip->id_customer = (int) $order->id_customer;
         $orderSlip->id_order = (int) $order->id;
-        $orderSlip->amount = Tools::roundPrice($amount);
+        $orderSlip->amount = Tools::roundPrice((float)$amount);
         $orderSlip->shipping_cost = false;
-        $orderSlip->shipping_cost_amount = Tools::roundPrice($shippingCostAmount);
+        $orderSlip->shipping_cost_amount = Tools::roundPrice((float)$shippingCostAmount);
         $orderSlip->conversion_rate = $currency->conversion_rate;
         $orderSlip->partial = 1;
         if (!$orderSlip->add()) {
@@ -658,12 +659,12 @@ class OrderSlipCore extends ObjectModel
             'id_order_slip'        => (int) $this->id,
             'id_order_detail'      => (int) $product['id_order_detail'],
             'product_quantity'     => (int) $product['quantity'],
-            'unit_price_tax_excl'  => Tools::roundPrice($product['unit_price_tax_excl']),
-            'unit_price_tax_incl'  => Tools::roundPrice($product['unit_price_tax_incl']),
-            'total_price_tax_excl' => Tools::roundPrice($product['total_price_tax_excl']),
-            'total_price_tax_incl' => Tools::roundPrice($product['total_price_tax_incl']),
-            'amount_tax_excl'      => Tools::roundPrice($product['total_price_tax_excl']),
-            'amount_tax_incl'      => Tools::roundPrice($product['total_price_tax_incl']),
+            'unit_price_tax_excl'  => Tools::roundPrice((float)$product['unit_price_tax_excl']),
+            'unit_price_tax_incl'  => Tools::roundPrice((float)$product['unit_price_tax_incl']),
+            'total_price_tax_excl' => Tools::roundPrice((float)$product['total_price_tax_excl']),
+            'total_price_tax_incl' => Tools::roundPrice((float)$product['total_price_tax_incl']),
+            'amount_tax_excl'      => Tools::roundPrice((float)$product['total_price_tax_excl']),
+            'amount_tax_incl'      => Tools::roundPrice((float)$product['total_price_tax_incl']),
         ]);
     }
 
@@ -693,7 +694,7 @@ class OrderSlipCore extends ObjectModel
             }
         }
 
-        return Tools::roundPrice($shippingCost);
+        return Tools::roundPrice((float)$shippingCost);
     }
 
 }
