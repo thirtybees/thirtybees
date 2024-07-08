@@ -292,6 +292,7 @@ class PackageExtractorCore
         } finally {
             if ($dir) {
                 Tools::deleteDirectory($dir);
+                Tools::clearOpCache();
             }
         }
     }
