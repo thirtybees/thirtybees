@@ -611,6 +611,14 @@ class AdminLanguagesControllerCore extends AdminController
             $id = Tools::getValue('iso_code').'-default';
         }
 
-        return parent::uploadImage($id, $name, $dir, $imageExtension, $width, $height, $generateImageTypes);
+        $res = true;
+        if (!empty($_FILES[$name]['tmp_name'])) {
+            $res = parent::uploadImage($id, $name, $dir, $imageExtension, $width, $height, $generateImageTypes);
+
+            if ($name === 'no_picture' && $res) {
+                $res = Language::regenerateDefaultImages(Tools::getValue('iso_code'));
+            }
+        }
+        return $res;
     }
 }

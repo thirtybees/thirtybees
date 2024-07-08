@@ -1689,7 +1689,7 @@ class AdminControllerCore extends Controller
      */
     protected function uploadImage($id, $name, $path, $imageExtension = false, $width = null, $height = null, $generateImageTypes = [])
     {
-        if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
+        if (!empty($_FILES[$name]['tmp_name'])) {
 
             // Delete old image
             if (Validate::isLoadedObject($object = $this->loadObject())) {
