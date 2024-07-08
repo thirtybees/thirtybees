@@ -1088,6 +1088,9 @@ class AdminModulesControllerCore extends AdminController
                 return false;
             }
 
+            // delete any existing config xml files to force config file regeneration
+            $this->deleteModuleConfigXmlFiles($moduleName);
+
             if ($redirect) {
                 // redirect halts the script execution, finally block won't get a chance to run. We need to clean up upfront
                 @unlink($file);
@@ -1120,6 +1123,23 @@ class AdminModulesControllerCore extends AdminController
         }
 
         return $errors;
+    }
+
+    /**
+     * @param string $module
+     *
+     * @return void
+     */
+    protected function deleteModuleConfigXmlFiles(string $module)
+    {
+        $moduleDir = _PS_MODULE_DIR_ . $module . '/' ;
+        if (file_exists($moduleDir) && is_dir($moduleDir)) {
+            foreach (Tools::scandir($moduleDir, 'xml') as $file) {
+                if (preg_match("/config(_[a-z]{2})?\.xml$/", $file)) {
+                    @unlink($moduleDir . $file);
+                }
+            }
+        }
     }
 
     /**
