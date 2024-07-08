@@ -305,6 +305,11 @@ class AdminControllerCore extends Controller
     protected array $_conf = [];
 
     /**
+     * @var int|null
+     */
+    protected $max_image_size = null;
+
+    /**
      * If set to true, any exception throws in postProcess() phase will be converted to error message. Otherwise,
      * exceptions will cause error page response
      *
@@ -1703,7 +1708,7 @@ class AdminControllerCore extends Controller
             }
 
             // Check image validity
-            $maxSize = $this->max_image_size ?? 0;
+            $maxSize = (int)$this->max_image_size;
             if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize($maxSize))) {
                 $this->errors[] = $error;
             }

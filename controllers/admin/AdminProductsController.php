@@ -58,11 +58,6 @@ class AdminProductsControllerCore extends AdminController
     protected $max_file_size = null;
 
     /**
-     * @var int|null
-     */
-    protected $max_image_size = null;
-
-    /**
      * @var Category
      */
     protected $_category;
