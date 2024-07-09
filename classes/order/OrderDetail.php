@@ -502,8 +502,8 @@ class OrderDetailCore extends ObjectModel
      *
      * This is an excellent example of how NOT TO WRITE a code.
      *
-     * @param object|Order $order
-     * @param Cart|object $cart
+     * @param Order $order
+     * @param Cart $cart
      * @param int $idOrderState
      * @param array[] $productList
      * @param int $idOrderInvoice
