@@ -395,6 +395,8 @@
 				{capture}<a class="addImageDescription" href="javascript:void(0);">{l s='Click here'}</a>{/capture}
 				{l s='Would you like to add an image in your description? %s and paste the given tag in the description.' sprintf=$smarty.capture.default}
 			</div>
+			<div class="help-block">{l s='In order to use the browser\'s spell check, please use CTRL + right click over the underlined word.'}
+			</div>
 		</div>
 	</div>
 	<div id="createImageDescription" class="panel" style="display:none">
@@ -458,7 +460,7 @@
 		<label class="control-label col-lg-3" for="tags_{$id_lang}">
 			<span class="label-tooltip" data-toggle="tooltip"
 				title="{l s='Will be displayed in the tags block when enabled. Tags help customers easily find your products.'}">
-				{l s='Tags:'}
+				{l s='Tags'}
 			</span>
 		</label>
 		<div class="col-lg-9">
