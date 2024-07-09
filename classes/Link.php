@@ -1188,7 +1188,7 @@ class LinkCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function getProductImageUri(int $imageId, string $formattedType, bool $highDpi, string $preferredExtension, string $name): string
+    protected function getProductImageUri(int $imageId, string $formattedType, bool $highDpi, string $preferredExtension, string $name)
     {
         // ids can either be single number, or in format id_product-id_image
         $typeDimension = $formattedType ? '-'.$formattedType : '';
