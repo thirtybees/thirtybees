@@ -104,7 +104,7 @@ if (empty($_SERVER['REQUEST_URI'])) {
             $_SERVER['REQUEST_URI'] = dirname($_SERVER['SCRIPT_NAME']).'/';
         } else {
             $_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
-            if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
+            if (!empty($_SERVER['QUERY_STRING'])) {
                 $_SERVER['REQUEST_URI'] .= '?'.$_SERVER['QUERY_STRING'];
             }
         }

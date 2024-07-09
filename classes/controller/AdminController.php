@@ -712,7 +712,7 @@ class AdminControllerCore extends Controller
 
                     /* Only for date filtering (from, to) */
                     if (is_array($value)) {
-                        if (isset($value[0]) && !empty($value[0])) {
+                        if (!empty($value[0])) {
                             if (!Validate::isDate($value[0])) {
                                 $this->errors[] = Tools::displayError('The \'From\' date format is invalid (YYYY-MM-DD)');
                             } else {
@@ -720,7 +720,7 @@ class AdminControllerCore extends Controller
                             }
                         }
 
-                        if (isset($value[1]) && !empty($value[1])) {
+                        if (!empty($value[1])) {
                             if (!Validate::isDate($value[1])) {
                                 $this->errors[] = Tools::displayError('The \'To\' date format is invalid (YYYY-MM-DD)');
                             } else {
@@ -1780,7 +1780,7 @@ class AdminControllerCore extends Controller
 
             return false;
         }
-        elseif (isset($_FILES[$name]['name']) && !empty($_FILES[$name]['name'])) {
+        elseif (!empty($_FILES[$name]['name'])) {
             $this->errors[] = $this->l('Image upload failed!');
         }
 
@@ -2286,7 +2286,7 @@ class AdminControllerCore extends Controller
             $subTabs = Tab::getTabs($this->context->language->id, $tab['id_tab']);
             foreach ($subTabs as $index2 => $subTab) {
                 //check if module is enable and
-                if (isset($subTab['module']) && !empty($subTab['module'])) {
+                if (!empty($subTab['module'])) {
 
                     $moduleId = Module::getModuleIdByName($subTab['module']) ;
                     if (!$moduleId || !Module::isEnabledForShops($moduleId, Shop::getContextListShopID())) {
@@ -2707,7 +2707,7 @@ class AdminControllerCore extends Controller
                     ];
                 }
                 $obj = $this->loadObject(true);
-                if (Validate::isLoadedObject($obj) && isset($obj->{$this->identifier_name}) && !empty($obj->{$this->identifier_name})) {
+                if (Validate::isLoadedObject($obj) && !empty($obj->{$this->identifier_name})) {
                     array_pop($this->toolbar_title);
                     array_pop($this->meta_title);
                     $this->toolbar_title[] = is_array($obj->{$this->identifier_name}) ? $obj->{$this->identifier_name}[$this->context->employee->id_lang] : $obj->{$this->identifier_name};
@@ -2716,7 +2716,7 @@ class AdminControllerCore extends Controller
                 break;
             case 'edit':
                 $obj = $this->loadObject(true);
-                if (Validate::isLoadedObject($obj) && isset($obj->{$this->identifier_name}) && !empty($obj->{$this->identifier_name})) {
+                if (Validate::isLoadedObject($obj) && !empty($obj->{$this->identifier_name})) {
                     array_pop($this->toolbar_title);
                     array_pop($this->meta_title);
                     $this->toolbar_title[] = sprintf($this->l('Edit: %s'), (is_array($obj->{$this->identifier_name}) && isset($obj->{$this->identifier_name}[$this->context->employee->id_lang])) ? $obj->{$this->identifier_name}[$this->context->employee->id_lang] : $obj->{$this->identifier_name});
@@ -2814,7 +2814,7 @@ class AdminControllerCore extends Controller
                             $date = json_decode($val, true);
                             if (isset($date[0]) && $ts=strtotime($date[0])) {
                                 $filterValue = (string)date('Y-m-d', $ts);
-                                if (isset($date[1]) && !empty($date[1]) && $ts=strtotime($date[1])) {
+                                if (!empty($date[1]) && $ts=strtotime($date[1])) {
                                     $filterValue .= ' - '. date('Y-m-d', $ts);
                                 }
                             }

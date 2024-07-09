@@ -503,7 +503,7 @@ function runAdminTab($tab, $ajax_mode = false)
                         }
                     } else {
                         /* Filter memorization */
-                        if (isset($_POST) && !empty($_POST) && isset($admin_obj->table)) {
+                        if (!empty($_POST) && isset($admin_obj->table)) {
                             foreach ($_POST as $key => $value) {
                                 if (is_array($admin_obj->table)) {
                                     foreach ($admin_obj->table as $table) {
@@ -517,7 +517,7 @@ function runAdminTab($tab, $ajax_mode = false)
                             }
                         }
 
-                        if (isset($_GET) && !empty($_GET) && isset($admin_obj->table)) {
+                        if (!empty($_GET) && isset($admin_obj->table)) {
                             foreach ($_GET as $key => $value) {
                                 if (is_array($admin_obj->table)) {
                                     foreach ($admin_obj->table as $table) {

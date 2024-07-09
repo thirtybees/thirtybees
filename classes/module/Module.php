@@ -2697,7 +2697,7 @@ abstract class ModuleCore
             $from = $res[$k];
             $to = $res[$k + 1];
 
-            if (isset($position) && !empty($position)) {
+            if (!empty($position)) {
                 $to['position'] = (int) $position;
             }
 

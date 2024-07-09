@@ -397,7 +397,7 @@ class ProductControllerCore extends FrontController
         }
         $indexes = array_flip($authorizedFileFields);
         foreach ($_FILES as $fieldName => $file) {
-            if (in_array($fieldName, $authorizedFileFields) && isset($file['tmp_name']) && !empty($file['tmp_name'])) {
+            if (in_array($fieldName, $authorizedFileFields) && !empty($file['tmp_name'])) {
                 $fileName = md5(uniqid(rand(), true));
                 if ($error = ImageManager::validateUpload($file, (int) Configuration::get('PS_PRODUCT_PICTURE_MAX_SIZE'))) {
                     $this->errors[] = $error;

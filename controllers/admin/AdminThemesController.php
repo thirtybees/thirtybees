@@ -2274,7 +2274,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function uploadIco($name, $dest)
     {
-        if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
+        if (!empty($_FILES[$name]['tmp_name'])) {
             // Check ico validity
             if ($error = ImageManager::validateIconUpload($_FILES[$name])) {
                 $this->errors[] = $name . ': ' . $error;

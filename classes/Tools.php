@@ -2507,7 +2507,7 @@ class ToolsCore
     {
         foreach ($array as &$row) {
             $productId = (int)$row['id_product'];
-            $productAttributeId = (isset($row['id_product_attribute']) && ! empty($row['id_product_attribute']))
+            $productAttributeId = (! empty($row['id_product_attribute']))
                 ? (int)$row['id_product_attribute']
                 : null;
             $row['price_tmp'] = (float)Product::getPriceStatic($productId, true, $productAttributeId);
@@ -4218,7 +4218,7 @@ FileETag none
     public static function fileAttachment($input = 'fileUpload', $return_content = true)
     {
         $file_attachment = null;
-        if (isset($_FILES[$input]['name']) && !empty($_FILES[$input]['name']) && !empty($_FILES[$input]['tmp_name'])) {
+        if (!empty($_FILES[$input]['name']) && !empty($_FILES[$input]['tmp_name'])) {
             $file_attachment['rename'] = uniqid().mb_strtolower(substr($_FILES[$input]['name'], -5));
             if ($return_content) {
                 $file_attachment['content'] = file_get_contents($_FILES[$input]['tmp_name']);

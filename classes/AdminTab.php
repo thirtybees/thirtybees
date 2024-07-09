@@ -1730,7 +1730,7 @@ abstract class AdminTabCore
 
                         /* Only for date filtering (from, to) */
                         if (is_array($value)) {
-                            if (isset($value[0]) && !empty($value[0])) {
+                            if (!empty($value[0])) {
                                 if (!Validate::isDate($value[0])) {
                                     $this->_errors[] = Tools::displayError('\'From:\' date format is invalid (YYYY-MM-DD)');
                                 } else {
@@ -1738,7 +1738,7 @@ abstract class AdminTabCore
                                 }
                             }
 
-                            if (isset($value[1]) && !empty($value[1])) {
+                            if (!empty($value[1])) {
                                 if (!Validate::isDate($value[1])) {
                                     $this->_errors[] = Tools::displayError('\'To:\' date format is invalid (YYYY-MM-DD)');
                                 } else {
@@ -2091,7 +2091,7 @@ abstract class AdminTabCore
      */
     protected function uploadImage($id, $name, $dir, $ext = false, $width = null, $height = null)
     {
-        if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
+        if (!empty($_FILES[$name]['tmp_name'])) {
             // Delete old image
             if (Validate::isLoadedObject($object = $this->loadObject())) {
                 $object->deleteImage();

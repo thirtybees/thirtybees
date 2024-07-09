@@ -1531,7 +1531,7 @@ class CartCore extends ObjectModel
             $totalPrice += (isset($realBestPrice) && $cartRule['minimum_amount_tax'] && $cartRule['minimum_amount_shipping']) ? $realBestPrice : 0;
             $totalPrice += (isset($realBestPriceWt) && !$cartRule['minimum_amount_tax'] && $cartRule['minimum_amount_shipping']) ? $realBestPriceWt : 0;
             $condition = ($cartRule['free_shipping'] && $cartRule['carrier_restriction'] && $cartRule['minimum_amount'] <= $totalPrice) ? 1 : 0;
-            if (isset($cartRule['code']) && !empty($cartRule['code'])) {
+            if (!empty($cartRule['code'])) {
                 $condition = ($cartRule['free_shipping'] && $cartRule['carrier_restriction'] && in_array($cartRule['id_cart_rule'], $cartRulesInCart)
                     && $cartRule['minimum_amount'] <= $totalPrice) ? 1 : 0;
             }

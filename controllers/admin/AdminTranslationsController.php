@@ -1154,7 +1154,7 @@ class AdminTranslationsControllerCore extends AdminController
                         // Get instance of this tab by class name
                         $tab = Tab::getInstanceFromClassName($className);
                         //Check if class name exists
-                        if (isset($tab->class_name) && !empty($tab->class_name)) {
+                        if (!empty($tab->class_name)) {
                             $idLang = Language::getIdByIso($isoCode, true);
                             $tab->name[(int) $idLang] = $translations;
 

@@ -223,7 +223,7 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
             $ret .= ' encode="'.$field['encode'].'"';
         }
 
-        if (isset($field['synopsis_details']) && !empty($field['synopsis_details']) && $this->schemaToDisplay !== 'blank') {
+        if (!empty($field['synopsis_details']) && $this->schemaToDisplay !== 'blank') {
             foreach ($field['synopsis_details'] as $name => $detail) {
                 $ret .= ' '.$name.'="'.(is_array($detail) ? implode(' ', $detail) : $detail).'"';
             }

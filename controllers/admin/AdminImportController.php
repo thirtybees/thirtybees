@@ -1155,7 +1155,7 @@ class AdminImportControllerCore extends AdminController
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be saved'),
                 $categoryToCreate->name[$defaultLanguageId],
-                (isset($categoryToCreate->id) && !empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
+                (!empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
             );
             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
                 $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
@@ -1769,7 +1769,7 @@ class AdminImportControllerCore extends AdminController
                     $this->l(
                         'The category ID must be unique. It can\'t be the same as the one for the parent category (ID: %1$s).'
                     ),
-                    [(isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null']
+                    [(!empty($info['id'])) ? $info['id'] : 'null']
                 );
 
                 return;
@@ -1808,7 +1808,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = sprintf(
                             $this->l('%1$s (ID: %2$s) cannot be saved'),
                             $categoryToCreate->name[$idLang],
-                            (isset($categoryToCreate->id) && !empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
+                            (!empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -1843,7 +1843,7 @@ class AdminImportControllerCore extends AdminController
             $this->informations[] = sprintf(
                 $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
                 $bak,
-                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                (!empty($info['id'])) ? $info['id'] : 'null',
                 $category->link_rewrite[$idDefaultLanguage]
             );
         }
@@ -1869,7 +1869,7 @@ class AdminImportControllerCore extends AdminController
             if ($category->id && $category->id == $category->id_parent) {
                 $this->errors[] = sprintf(
                     $this->l('A category cannot be its own parent. The parent category ID is either missing or unknown (ID: %1$s).'),
-                    (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null'
+                    (!empty($info['id'])) ? $info['id'] : 'null'
                 );
 
                 return;
@@ -1903,7 +1903,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         //copying images of categories
-        if (isset($category->image) && !empty($category->image)) {
+        if (!empty($category->image)) {
             if (!(static::copyImg($category->id, null, $category->image, static::ENTITY_TYPE_CATEGORIES, !$regenerate))) {
                 $this->warnings[] = $category->image.' '.$this->l('cannot be copied.');
             }
@@ -1912,8 +1912,8 @@ class AdminImportControllerCore extends AdminController
         if (!$res) {
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be saved'),
-                (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                (!empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                (!empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
             );
             $errorTmp = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
             if ($errorTmp != '') {
@@ -2366,7 +2366,7 @@ class AdminImportControllerCore extends AdminController
         }
         if (isset($product->manufacturer) && is_numeric($product->manufacturer) && Manufacturer::manufacturerExists((int) $product->id_manufacturer)) {
             $product->id_manufacturer = (int) $product->manufacturer;
-        } elseif (isset($product->manufacturer) && is_string($product->manufacturer) && !empty($product->manufacturer)) {
+        } elseif (is_string($product->manufacturer) && !empty($product->manufacturer)) {
             if ($manufacturer = Manufacturer::getIdByName($product->manufacturer)) {
                 $product->id_manufacturer = (int) $manufacturer;
             } else {
@@ -2385,7 +2385,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = sprintf(
                             $this->l('%1$s (ID: %2$s) cannot be saved'),
                             $manufacturer->name,
-                            (isset($manufacturer->id) && !empty($manufacturer->id)) ? $manufacturer->id : 'null'
+                            (!empty($manufacturer->id)) ? $manufacturer->id : 'null'
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -2397,7 +2397,7 @@ class AdminImportControllerCore extends AdminController
 
         if (isset($product->supplier) && is_numeric($product->supplier) && Supplier::supplierExists((int) $product->supplier)) {
             $product->id_supplier = (int) $product->supplier;
-        } elseif (isset($product->supplier) && is_string($product->supplier) && !empty($product->supplier)) {
+        } elseif (is_string($product->supplier) && !empty($product->supplier)) {
             if ($supplier = Supplier::getIdByName($product->supplier)) {
                 $product->id_supplier = (int) $supplier;
             } else {
@@ -2417,7 +2417,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = sprintf(
                             $this->l('%1$s (ID: %2$s) cannot be saved'),
                             $supplier->name,
-                            (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
+                            (!empty($supplier->id)) ? $supplier->id : 'null'
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -2475,7 +2475,7 @@ class AdminImportControllerCore extends AdminController
                                 $this->errors[] = sprintf(
                                     $this->l('%1$s (ID: %2$s) cannot be saved'),
                                     $categoryToCreate->name[$idDefaultLanguage],
-                                    (isset($categoryToCreate->id) && !empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
+                                    (!empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
                                 );
                             }
                             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -2527,7 +2527,7 @@ class AdminImportControllerCore extends AdminController
             $this->informations[] = sprintf(
                 $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
                 $product->name[$idLang],
-                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                (!empty($info['id'])) ? $info['id'] : 'null',
                 $linkRewrite
             );
         }
@@ -2664,8 +2664,8 @@ class AdminImportControllerCore extends AdminController
         if (!$res) {
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be saved'),
-                (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                (!empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                (!empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
             );
             $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
         } else {
@@ -2740,7 +2740,7 @@ class AdminImportControllerCore extends AdminController
                 }
             }
 
-            if (!$validateOnly && isset($product->tags) && !empty($product->tags)) {
+            if (!$validateOnly && !empty($product->tags)) {
                 if (isset($product->id) && $product->id) {
                     $tags = Tag::getProductTags($product->id);
                     if (is_array($tags) && count($tags)) {
@@ -2841,7 +2841,7 @@ class AdminImportControllerCore extends AdminController
             // Features import
             $features = get_object_vars($product);
 
-            if (!$validateOnly && isset($features['features']) && !empty($features['features'])) {
+            if (!$validateOnly && !empty($features['features'])) {
                 $featureValuesToImport = [];
                 foreach (explode($this->multiple_value_separator, $features['features']) as $singleFeature) {
                     if (empty($singleFeature)) {
@@ -3108,7 +3108,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         // Group Importation
-        if (isset($info['group']) && !empty($info['group'])) {
+        if (!empty($info['group'])) {
             foreach (explode($this->multiple_value_separator, $info['group']) as $group) {
                 $group = trim($group);
                 if (empty($group)) {
@@ -3148,7 +3148,7 @@ class AdminImportControllerCore extends AdminController
             $customerGroups = [0 => Configuration::get('PS_CUSTOMER_GROUP')];
         }
 
-        if (isset($info['date_add']) && !empty($info['date_add'])) {
+        if (!empty($info['date_add'])) {
             $autodate = false;
         }
 
@@ -3186,7 +3186,7 @@ class AdminImportControllerCore extends AdminController
         //set temporary for validate field
         $customer->id_shop = $defaultShop->id;
         $customer->id_shop_group = $defaultShop->getGroup()->id;
-        if (isset($info['id_default_group']) && !empty($info['id_default_group']) && !is_numeric($info['id_default_group'])) {
+        if (!empty($info['id_default_group']) && !is_numeric($info['id_default_group'])) {
             $info['id_default_group'] = trim($info['id_default_group']);
             $myGroup = Group::searchByName($info['id_default_group']);
             if (isset($myGroup['id_group']) && $myGroup['id_group']) {
@@ -3284,7 +3284,7 @@ class AdminImportControllerCore extends AdminController
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be %3$s'),
                 $info['email'],
-                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                (!empty($info['id'])) ? $info['id'] : 'null',
                 ($validateOnly ? 'validated' : 'saved')
             );
             $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
@@ -3364,7 +3364,7 @@ class AdminImportControllerCore extends AdminController
             if (Country::getNameById(Configuration::get('PS_LANG_DEFAULT'), (int) $address->country)) {
                 $address->id_country = (int) $address->country;
             }
-        } elseif (isset($address->country) && is_string($address->country) && !empty($address->country)) {
+        } elseif (is_string($address->country) && !empty($address->country)) {
             if ($idCountry = Country::getIdByName(null, $address->country)) {
                 $address->id_country = (int) $idCountry;
             } else {
@@ -3397,7 +3397,7 @@ class AdminImportControllerCore extends AdminController
             if (State::getNameById((int) $address->state)) {
                 $address->id_state = (int) $address->state;
             }
-        } elseif (isset($address->state) && is_string($address->state) && !empty($address->state)) {
+        } elseif (is_string($address->state) && !empty($address->state)) {
             if ($idState = State::getIdByName($address->state)) {
                 $address->id_state = (int) $idState;
             } else {
@@ -3425,7 +3425,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        if (isset($address->customer_email) && !empty($address->customer_email)) {
+        if (!empty($address->customer_email)) {
             if (Validate::isEmail($address->customer_email)) {
                 // a customer could exists in different shop
                 $customerList = Customer::getCustomersByEmail($address->customer_email);
@@ -3435,7 +3435,7 @@ class AdminImportControllerCore extends AdminController
                         $this->l('%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s'),
                         Db::getInstance()->getMsgError(),
                         $address->customer_email,
-                        (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                        (!empty($info['id'])) ? $info['id'] : 'null',
                         ($validateOnly ? 'validated' : 'saved')
                     );
                 }
@@ -3444,7 +3444,7 @@ class AdminImportControllerCore extends AdminController
 
                 return;
             }
-        } elseif (isset($address->id_customer) && !empty($address->id_customer)) {
+        } elseif (!empty($address->id_customer)) {
             if (Customer::customerIdExistsStatic((int) $address->id_customer)) {
                 $customer = new Customer((int) $address->id_customer);
 
@@ -3474,7 +3474,7 @@ class AdminImportControllerCore extends AdminController
 
         if (isset($address->manufacturer) && is_numeric($address->manufacturer) && Manufacturer::manufacturerExists((int) $address->id_manufacturer)) {
             $address->id_manufacturer = (int) $address->manufacturer;
-        } elseif (isset($address->manufacturer) && is_string($address->manufacturer) && !empty($address->manufacturer)) {
+        } elseif (is_string($address->manufacturer) && !empty($address->manufacturer)) {
             if ($manufacturerId = Manufacturer::getIdByName($address->manufacturer)) {
                 $address->id_manufacturer = $manufacturerId;
             } else {
@@ -3491,7 +3491,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                             $this->l('%1$s (ID: %2$s) cannot be saved'),
                             $manufacturer->name,
-                            (isset($manufacturer->id) && !empty($manufacturer->id)) ? $manufacturer->id : 'null'
+                            (!empty($manufacturer->id)) ? $manufacturer->id : 'null'
                         );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -3503,7 +3503,7 @@ class AdminImportControllerCore extends AdminController
 
         if (isset($address->supplier) && is_numeric($address->supplier) && Supplier::supplierExists((int) $address->supplier)) {
             $address->id_supplier = (int) $address->supplier;
-        } elseif (isset($address->supplier) && is_string($address->supplier) && !empty($address->supplier)) {
+        } elseif (is_string($address->supplier) && !empty($address->supplier)) {
             if ($supplierId = Supplier::getIdByName($address->supplier)) {
                 $address->id_supplier = $supplierId;
             } else {
@@ -3520,7 +3520,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                                 $this->l('%1$s (ID: %2$s) cannot be saved'),
                                 $supplier->name,
-                                (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
+                                (!empty($supplier->id)) ? $supplier->id : 'null'
                             );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -3560,7 +3560,7 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = sprintf(
                     $this->l('%1$s (ID: %2$s) cannot be saved'),
                     $info['alias'],
-                    (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null'
+                    (!empty($info['id'])) ? $info['id'] : 'null'
                 );
             }
             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -3901,7 +3901,7 @@ class AdminImportControllerCore extends AdminController
                     }
 
                     // if a reference is specified for this product, get the associate id_product_attribute to UPDATE
-                    if (isset($info['reference']) && !empty($info['reference'])) {
+                    if (!empty($info['reference'])) {
                         $idProductAttribute = Combination::getIdByReference($product->id, strval($info['reference']));
 
                         // updates the attribute
@@ -3929,7 +3929,7 @@ class AdminImportControllerCore extends AdminController
                                         $idShopList
                                     );
                                     $idProductAttributeUpdate = true;
-                                    if (isset($info['supplier_reference']) && !empty($info['supplier_reference'])) {
+                                    if (!empty($info['supplier_reference'])) {
                                         $product->addSupplierReference($product->id_supplier, $idProductAttribute, $info['supplier_reference']);
                                     }
 // until here
@@ -3959,7 +3959,7 @@ class AdminImportControllerCore extends AdminController
                             $info['available_date']
                         );
 
-                        if (isset($info['supplier_reference']) && !empty($info['supplier_reference'])) {
+                        if (!empty($info['supplier_reference'])) {
                             $product->addSupplierReference($product->id_supplier, $idProductAttribute, $info['supplier_reference']);
                         }
                     }
@@ -4221,7 +4221,7 @@ class AdminImportControllerCore extends AdminController
             }
 
             //copying images of manufacturer
-            if (!$validateOnly && isset($manufacturer->image) && !empty($manufacturer->image)) {
+            if (!$validateOnly && !empty($manufacturer->image)) {
                 if (!static::copyImg($manufacturer->id, null, $manufacturer->image, static::ENTITY_TYPE_MANUFACTURERS, !$regenerate)) {
                     $this->warnings[] = $manufacturer->image.' '.$this->l('cannot be copied.');
                 }
@@ -4255,8 +4255,8 @@ class AdminImportControllerCore extends AdminController
             if (!$validateOnly) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                     $this->l('%1$s (ID: %2$s) cannot be saved'),
-                    (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                    (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                    (!empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                    (!empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
                 );
             }
             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
@@ -4350,7 +4350,7 @@ class AdminImportControllerCore extends AdminController
             }
 
             //copying images of suppliers
-            if (!$validateOnly && isset($supplier->image) && !empty($supplier->image)) {
+            if (!$validateOnly && !empty($supplier->image)) {
                 if (!static::copyImg($supplier->id, null, $supplier->image, static::ENTITY_TYPE_SUPPLIERS, !$regenerate)) {
                     $this->warnings[] = $supplier->image.' '.$this->l('cannot be copied.');
                 }
@@ -4359,8 +4359,8 @@ class AdminImportControllerCore extends AdminController
             if (!$res) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
                     $this->l('%1$s (ID: %2$s) cannot be saved'),
-                    (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                    (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                    (!empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                    (!empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
                 );
             } elseif (!$validateOnly) {
                 // Associate supplier to group shop
@@ -4554,7 +4554,7 @@ class AdminImportControllerCore extends AdminController
 
         array_walk($info, [static::class, 'fillInfo'], $store);
 
-        if (isset($store->image) && !empty($store->image)) {
+        if (!empty($store->image)) {
             if (!(static::copyImg($store->id, null, $store->image, 'stores', !$regenerate))) {
                 $this->warnings[] = $store->image.' '.$this->l('cannot be copied.');
             }
@@ -4573,7 +4573,7 @@ class AdminImportControllerCore extends AdminController
             if (Country::getNameById(Configuration::get('PS_LANG_DEFAULT'), (int) $store->country)) {
                 $store->id_country = (int) $store->country;
             }
-        } elseif (isset($store->country) && is_string($store->country) && !empty($store->country)) {
+        } elseif (is_string($store->country) && !empty($store->country)) {
             if ($idCountry = Country::getIdByName(null, $store->country)) {
                 $store->id_country = (int) $idCountry;
             } else {
@@ -4606,7 +4606,7 @@ class AdminImportControllerCore extends AdminController
             if (State::getNameById((int) $store->state)) {
                 $store->id_state = (int) $store->state;
             }
-        } elseif (isset($store->state) && is_string($store->state) && !empty($store->state)) {
+        } elseif (is_string($store->state) && !empty($store->state)) {
             if ($idState = State::getIdByName($store->state)) {
                 $store->id_state = (int) $idState;
             } else {

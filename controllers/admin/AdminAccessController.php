@@ -193,7 +193,7 @@ class AdminAccessControllerCore extends AdminController
      */
     public function getCurrentProfileId()
     {
-        return (isset($_GET['id_profile']) && !empty($_GET['id_profile']) && is_numeric($_GET['id_profile'])) ? (int) $_GET['id_profile'] : 1;
+        return (!empty($_GET['id_profile']) && is_numeric($_GET['id_profile'])) ? (int) $_GET['id_profile'] : 1;
     }
 
     /**

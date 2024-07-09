@@ -1015,7 +1015,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // Copy the field, or the default language field if it's both required and empty
             if ((!$this->id_lang && isset($this->{$fieldName}[$idLanguage]) && !empty($this->{$fieldName}[$idLanguage]))
-            || ($this->id_lang && isset($this->$fieldName) && !empty($this->$fieldName))) {
+            || ($this->id_lang && !empty($this->$fieldName))) {
                 $fields[$idLanguage][$fieldName] = $this->id_lang ? pSQL($this->$fieldName, $html) : pSQL($this->{$fieldName}[$idLanguage], $html);
             } elseif (in_array($fieldName, $this->fieldsRequiredLang)) {
                 $fields[$idLanguage][$fieldName] = pSQL($this->id_lang ? $this->$fieldName : $this->{$fieldName}[Configuration::get('PS_LANG_DEFAULT')], $html);

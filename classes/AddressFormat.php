@@ -419,7 +419,7 @@ class AddressFormatCore extends ObjectModel
                     if ((!array_key_exists('avoid', $patternRules)) ||
                         (is_array($patternRules) && !in_array($pattern, $patternRules['avoid']))
                     ) {
-                        $tmpText .= (isset($addressFormatedValues[$pattern]) && !empty($addressFormatedValues[$pattern])) ?
+                        $tmpText .= (!empty($addressFormatedValues[$pattern])) ?
                             (((isset($style[$pattern])) ?
                                     (sprintf($style[$pattern], $addressFormatedValues[$pattern])) :
                                     $addressFormatedValues[$pattern]).$separator) : '';

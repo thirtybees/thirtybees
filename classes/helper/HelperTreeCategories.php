@@ -507,14 +507,12 @@ class HelperTreeCategoriesCore extends TreeCore
             $data = $this->getData();
         }
 
-        if (isset($this->_disabled_categories)
-            && !empty($this->_disabled_categories)
+        if (!empty($this->_disabled_categories)
         ) {
             $this->_disableCategories($data, $this->getDisabledCategories());
         }
 
-        if (isset($this->_selected_categories)
-            && !empty($this->_selected_categories)
+        if (!empty($this->_selected_categories)
         ) {
             $this->_getSelectedChildNumbers($data, $this->getSelectedCategories());
         }
@@ -647,7 +645,7 @@ class HelperTreeCategoriesCore extends TreeCore
                 $selectedChilds++;
             }
 
-            if (isset($category['children']) && !empty($category['children'])) {
+            if (!empty($category['children'])) {
                 $selectedChilds += $this->_getSelectedChildNumbers($category['children'], $selected, $category);
             }
         }

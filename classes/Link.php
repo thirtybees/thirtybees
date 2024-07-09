@@ -718,11 +718,11 @@ class LinkCore
         $params['meta_keywords'] = '';
         $params['categories'] = $this->findCMSSubcategories($cms->id, $idLang);
 
-        if (isset($cms->meta_keywords) && !empty($cms->meta_keywords)) {
+        if (!empty($cms->meta_keywords)) {
             $params['meta_keywords'] = is_array($cms->meta_keywords) ?  Tools::str2url($cms->meta_keywords[(int) $idLang]) :  Tools::str2url($cms->meta_keywords);
         }
         $params['meta_title'] = '';
-        if (isset($cms->meta_title) && !empty($cms->meta_title)) {
+        if (!empty($cms->meta_title)) {
             $params['meta_title'] = is_array($cms->meta_title) ? Tools::str2url($cms->meta_title[(int) $idLang]) : Tools::str2url($cms->meta_title);
         }
 
