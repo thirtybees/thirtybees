@@ -38,6 +38,8 @@
 			<div id="category_block">
 				{$category_tree}
 			</div>
+			<div class="help-block">{l s='You can safely remove the Home category association if you have another default one and you don\'t use the Featured Products module. The Home category should not be the default one, as this might hurt your user experience and SEO.'}
+			</div>
 			<a class="btn btn-link bt-icon confirm_leave" href="{$link->getAdminLink('AdminCategories')|escape:'html':'UTF-8'}&amp;addcategory">
 				<i class="icon-plus-sign"></i> {l s='Create new category'} <i class="icon-external-link-sign"></i>
 			</a>
