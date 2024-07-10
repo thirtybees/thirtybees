@@ -1482,18 +1482,21 @@ class ToolsCore
     }
 
     /**
+     * @param int $idLang
+     * @param string $pageName
+     * @param string $title
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     *
      * @deprecated 1.0.0
      */
     public static function getMetaTags($idLang, $pageName, $title = '')
     {
         Tools::displayAsDeprecated();
 
-        try {
-            return Meta::getMetaTags($idLang, $pageName, $title);
-        } catch (PrestaShopDatabaseException $e) {
-            return [];
-        } catch (PrestaShopException $e) {
-        }
+        return Meta::getMetaTags($idLang, $pageName, $title);
     }
 
     /**
