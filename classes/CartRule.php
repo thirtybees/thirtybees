@@ -1510,6 +1510,7 @@ class CartRuleCore extends ObjectModel
         }
 
         if (in_array($filter, [static::FILTER_ACTION_ALL, static::FILTER_ACTION_ALL_NOCAP, static::FILTER_ACTION_REDUCTION])) {
+
             // Discount (%) on the whole order
             if ($this->reduction_percent && $this->reduction_product == 0) {
                 // Do not give a reduction on free products!
@@ -1525,25 +1526,17 @@ class CartRuleCore extends ObjectModel
                     $orderTotal -= $reduction;
                 }
 
-                $reductionValue += round(
-                    $orderTotal * $this->reduction_percent / 100,
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
+                $reductionValue += Tools::roundPrice( $orderTotal * $this->reduction_percent / 100);
             }
 
             // Discount (%) on a specific product
             if ($this->reduction_percent && $this->reduction_product > 0) {
                 foreach ($packageProducts as $product) {
                     if ($product['id_product'] == $this->reduction_product) {
-                        if ($useTax == true) {
-                            $reduction = $product['total_wt'];
-                        } else {
-                            $reduction = $product['total'];
-                        }
-                        $reductionValue += round(
-                            $reduction * $this->reduction_percent / 100,
-                            _TB_PRICE_DATABASE_PRECISION_
-                        );
+                        $reduction = $useTax
+                            ? (float)$product['total_wt']
+                            : (float)$product['total'];
+                        $reductionValue += Tools::roundPrice($reduction * $this->reduction_percent / 100);
                     }
                 }
             }
@@ -1553,39 +1546,33 @@ class CartRuleCore extends ObjectModel
                 $minPrice = false;
                 $cheapestProduct = null;
                 $selectedProducts = $this->checkProductRestrictions($context, true);
-                foreach ($allProducts as $product) {
-                    if (!is_array($selectedProducts) ||
-                        (!in_array($product['id_product'].'-'.$product['id_product_attribute'], $selectedProducts) && !in_array($product['id_product'].'-0', $selectedProducts))
-                    ) {
-                        continue;
+                if (is_array($selectedProducts)) {
+
+                    // find the cheapest product price
+                    foreach ($allProducts as $product) {
+                        $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
+                        if (in_array($productKey, $selectedProducts)) {
+                            $price = $useTax
+                                ? (float)$product['total_wt']
+                                : (float)$product['total'];
+
+                            if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
+                                $minPrice = $price;
+                                $cheapestProduct = $productKey;
+                            }
+                        }
                     }
 
-                    $price = $product['price'];
-                    if ($useTax == true) {
-                        $price = round(
-                            $price * (1 + $product['rate'] / 100),
-                            _TB_PRICE_DATABASE_PRECISION_
-                        );
+                    // Check if the cheapest product is in the package
+                    if ($cheapestProduct) {
+                        foreach ($packageProducts as $product) {
+                            $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
+                            if ($productKey === $cheapestProduct) {
+                                $reductionValue += Tools::roundPrice($minPrice * $this->reduction_percent / 100);
+                                break;
+                            }
+                        }
                     }
-
-                    if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
-                        $minPrice = $price;
-                        $cheapestProduct = $product['id_product'].'-'.$product['id_product_attribute'];
-                    }
-                }
-
-                // Check if the cheapest product is in the package
-                $inPackage = false;
-                foreach ($packageProducts as $product) {
-                    if ($product['id_product'].'-'.$product['id_product_attribute'] == $cheapestProduct || $product['id_product'].'-0' == $cheapestProduct) {
-                        $inPackage = true;
-                    }
-                }
-                if ($inPackage) {
-                    $reductionValue += round(
-                        $minPrice * $this->reduction_percent / 100,
-                        _TB_PRICE_DATABASE_PRECISION_
-                    );
                 }
             }
 
@@ -1595,25 +1582,16 @@ class CartRuleCore extends ObjectModel
                 $selectedProducts = $this->checkProductRestrictions($context, true);
                 if (is_array($selectedProducts)) {
                     foreach ($packageProducts as $product) {
-                        if (in_array($product['id_product'].'-'.$product['id_product_attribute'], $selectedProducts)
-                            || in_array($product['id_product'].'-0', $selectedProducts)
-                        ) {
-                            $price = $product['price'];
-                            if ($useTax == true) {
-                                $price = round(
-                                    $price * (1 + $product['rate'] / 100),
-                                    _TB_PRICE_DATABASE_PRECISION_
-                                );
-                            }
-
-                            $selectedProductsReduction += $price * $product['cart_quantity'];
+                        $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
+                        if (in_array($productKey, $selectedProducts)) {
+                            $price = $useTax
+                                ? (float)$product['total_wt']
+                                : (float)$product['total'];
+                            $selectedProductsReduction += $price;
                         }
                     }
+                    $reductionValue += Tools::roundPrice($selectedProductsReduction * $this->reduction_percent / 100);
                 }
-                $reductionValue += round(
-                    $selectedProductsReduction * $this->reduction_percent / 100,
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
             }
 
             // Discount (¤)
