@@ -1553,8 +1553,8 @@ class CartRuleCore extends ObjectModel
                         $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
                         if (in_array($productKey, $selectedProducts)) {
                             $price = $useTax
-                                ? (float)$product['total_wt']
-                                : (float)$product['total'];
+                                ? (float)$product['price_wt']
+                                : (float)$product['price'];
 
                             if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
                                 $minPrice = $price;
