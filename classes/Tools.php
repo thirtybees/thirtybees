@@ -3238,31 +3238,37 @@ class ToolsCore
                 $supportedMainImageExtensions[] = 'jpeg';
 
                 if ($rewrite_settings) {
-                    fwrite($write_fd, "# Images\n");
-                    // Rewrite product images < 100 millions
-                    for ($i = 1; $i <= 8; $i++) {
-                        $img_path = $img_name = '';
-                        for ($j = 1; $j <= $i; $j++) {
-                            $img_path .= '$'.$j.'/';
-                            $img_name .= '$'.$j;
+                    fwrite($write_fd, "# Images\n\n");
+                    foreach (ImageEntity::getImageEntities() as $entity) {
+                        $name = $entity['name'];
+                        $path = trim(str_replace(_PS_ROOT_DIR_, '', $entity['path']), '/') . '/';
+                        fwrite($write_fd, "\n# $name images\n");
+                        if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
+                            foreach ($supportedMainImageExtensions as $imageExtension) {
+                                fwrite($write_fd, $mediaDomains);
+                                fwrite($write_fd, $domain_rewrite_cond);
+                                fwrite($write_fd, 'RewriteRule ^'.$name.'/([0-9]+)(\-[\.*_a-zA-Z0-9\s-]*)(-[0-9]+)?/.+?([2-4]x)?\.' . $imageExtension . '$ %{ENV:REWRITEBASE}'.$path.'$1$2$3$4.' . $imageExtension . ' [L]' . "\n");
+
+                                fwrite($write_fd, $mediaDomains);
+                                fwrite($write_fd, $domain_rewrite_cond);
+                                fwrite($write_fd, 'RewriteRule ^'.$name.'/([a-zA-Z\s_-]+)(-[0-9]+)?/.+?([2-4]x)?\.' . $imageExtension . '$ %{ENV:REWRITEBASE}'.$path.'$1$2$3.' . $imageExtension . ' [L]' . "\n");
+                            }
+                        } else {
+                            for ($i = 1; $i <= 8; $i++) {
+                                $img_path = $img_name = '';
+                                for ($j = 1; $j <= $i; $j++) {
+                                    $img_path .= '$'.$j.'/';
+                                    $img_name .= '$'.$j;
+                                }
+                                $img_name .= '$'.$j;
+
+                                foreach ($supportedMainImageExtensions as $imageExtension) {
+                                    fwrite($write_fd, $mediaDomains);
+                                    fwrite($write_fd, $domain_rewrite_cond);
+                                    fwrite($write_fd, 'RewriteRule ^'.$name.'/'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?(-[0-9]+)?/.+?([2-4]x)?\.'.$imageExtension.'$ %{ENV:REWRITEBASE}'.$path.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).'.'.$imageExtension." [L]\n");
+                                }
+                            }
                         }
-                        $img_name .= '$'.$j;
-
-                        foreach ($supportedMainImageExtensions as $imageExtension) {
-                            fwrite($write_fd, $mediaDomains);
-                            fwrite($write_fd, $domain_rewrite_cond);
-                            fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?(-[0-9]+)?/.+?([2-4]x)?\.'.$imageExtension.'$ %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).".'.$imageExtension.' [L]\n");
-                        }
-                    }
-
-                    foreach ($supportedMainImageExtensions as $imageExtension) {
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9\s-]*)(-[0-9]+)?/.+?([2-4]x)?\.'.$imageExtension.'$ %{ENV:REWRITEBASE}img/c/$1$2$3$4.'.$imageExtension.' [L]'."\n");
-
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z\s_-]+)(-[0-9]+)?/.+?([2-4]x)?\.'.$imageExtension.'$ %{ENV:REWRITEBASE}img/c/$1$2$3.'.$imageExtension.' [L]'."\n");
                     }
                 }
 
