@@ -117,14 +117,22 @@
 		</p>
 		<p class="radio">
 			<label for="apply_discount_to_cheapest">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_cheapest" value="cheapest"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -1} checked="checked"{/if} />
-				 {l s='Cheapest product'}
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_cheapest" value="cheapest"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -1} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
+				 {l s='Cheapest product from selection'}
+				<span class="no_selection_warning text-muted clearfix">
+					<i class="icon-warning-sign"></i>
+					<a href="#" class="product_selection_link">{l s='You must select some products before'}</a>
+				</span>
 			</label>
 		</p>
 		<p class="radio">
 			<label for="apply_discount_to_selection">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_selection" value="selection"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -2} checked="checked"{/if}{if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
-				{l s='Selected product(s)'}{if $product_rule_groups|@count == 0}&nbsp;<span id="apply_discount_to_selection_warning" class="text-muted clearfix"><i class="icon-warning-sign"></i> <a href="#" id="apply_discount_to_selection_shortcut">{l s='You must select some products before'}</a></span>{/if}
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_selection" value="selection"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -2} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
+				{l s='Selected product(s)'}
+				<span class="no_selection_warning text-muted clearfix">
+					<i class="icon-warning-sign"></i>
+					<a href="#" class="product_selection_link">{l s='You must select some products before'}</a>
+				</span>
 			</label>
 		</p>
 	</div>

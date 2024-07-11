@@ -116,27 +116,31 @@ for (i in restrictions)
 }
 
 toggleCartRuleFilter($('#product_restriction'));
+updateProductSelectionWarning();
 
 $('#product_restriction').click(function() {
 	toggleCartRuleFilter(this);
-
-	if ($(this).prop('checked'))
-	{
-		$('#apply_discount_to_selection').prop('disabled', false);
-		$('#apply_discount_to_selection_warning').hide();
-	}
-	else
-	{
-		$('#apply_discount_to_selection').prop('disabled', true);
-		$('#apply_discount_to_selection_warning').show();
-	}
+	updateProductSelectionWarning();
 });
 
-$('#apply_discount_to_selection_shortcut').click(function(e) {
+$('.product_selection_link').click(function(e) {
 	displayCartRuleTab('conditions');
 	$('#product_restriction').focus();
 	e.preventDefault();
 });
+
+function updateProductSelectionWarning()
+{
+	if ($('#product_restriction').prop('checked')) {
+		$('#apply_discount_to_selection').prop('disabled', false);
+		$('#apply_discount_to_cheapest').prop('disabled', false);
+		$('.no_selection_warning').hide();
+	} else {
+		$('#apply_discount_to_selection').prop('disabled', true);
+		$('#apply_discount_to_cheapest').prop('disabled', true);
+		$('.no_selection_warning').show();
+	}
+}
 
 function toggleApplyDiscount(percent, amount, apply_to)
 {
