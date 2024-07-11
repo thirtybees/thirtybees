@@ -1800,7 +1800,7 @@ class AdminTranslationsControllerCore extends AdminController
                         '/->\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*(\s*,\s*?\'(.+)\'\s*)?(,\s*\'(.+)\'\s*)?\)/U',
                     ];
                 } else {
-                    $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf\s*=\s*.*)?(\s*js\s*=\s*1)?(\s*pdf\s*=\s*\'true\')?\s*\}/U';
+                    $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf\s*=\s*.*)?(\s*js\s*=\s*1)?(\s*pdf\s*=\s*\'true\')?(\s*mod\s*=\s*\'[a-zA-Z0-9_]+\')?\s*\}/U';
                 }
                 break;
         }
