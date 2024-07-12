@@ -3199,7 +3199,15 @@ class ToolsCore
             return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
         }, '');
 
+
+        $supportedMainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
+        $supportedMainImageExtensions[] = 'jpeg';
+        $supportedMainImageExtensions = array_unique($supportedMainImageExtensions);
+        sort($supportedMainImageExtensions);
+        $extensionsPattern = implode('|', $supportedMainImageExtensions);
+
         foreach ($domains as $domain => $list_uri) {
+            $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n";
             foreach ($list_uri as $uri) {
                 fwrite($write_fd, PHP_EOL.PHP_EOL.'# Domain: '.$domain.PHP_EOL);
                 if (Shop::isFeatureActive()) {
@@ -3216,7 +3224,6 @@ class ToolsCore
                     $rewrite_settings = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, (int) $uri['id_shop']);
                 }
 
-                $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n";
                 // Rewrite virtual multishop uri
                 if ($uri['virtual']) {
                     fwrite($write_fd, "# Virtual uri\n");
@@ -3234,25 +3241,17 @@ class ToolsCore
                     fwrite($write_fd, 'RewriteRule ^'.ltrim($uri['virtual'], '/').'(.*) '.$uri['physical']."$1 [L]\n\n");
                 }
 
-                $supportedMainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
-                $supportedMainImageExtensions[] = 'jpeg';
-
                 if ($rewrite_settings) {
-                    fwrite($write_fd, "# Images\n\n");
+                    fwrite($write_fd, "# Images\n");
                     foreach (ImageEntity::getImageEntities() as $entity) {
                         $name = $entity['name'];
                         $path = trim(str_replace(_PS_ROOT_DIR_, '', $entity['path']), '/') . '/';
                         fwrite($write_fd, "\n# $name images\n");
-                        if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
-                            foreach ($supportedMainImageExtensions as $imageExtension) {
-                                fwrite($write_fd, $mediaDomains);
-                                fwrite($write_fd, $domain_rewrite_cond);
-                                fwrite($write_fd, 'RewriteRule ^'.$name.'/([0-9]+)(\-[\.*_a-zA-Z0-9\s-]*)(-[0-9]+)?/.+?([2-4]x)?\.' . $imageExtension . '$ %{ENV:REWRITEBASE}'.$path.'$1$2$3$4.' . $imageExtension . ' [L]' . "\n");
 
-                                fwrite($write_fd, $mediaDomains);
-                                fwrite($write_fd, $domain_rewrite_cond);
-                                fwrite($write_fd, 'RewriteRule ^'.$name.'/([a-zA-Z\s_-]+)(-[0-9]+)?/.+?([2-4]x)?\.' . $imageExtension . '$ %{ENV:REWRITEBASE}'.$path.'$1$2$3.' . $imageExtension . ' [L]' . "\n");
-                            }
+                        if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
+                            fwrite($write_fd, $mediaDomains);
+                            fwrite($write_fd, $domain_rewrite_cond);
+                            fwrite($write_fd, 'RewriteRule ^'.$name.'/([0-9]+)(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' . $extensionsPattern . ')$ %{ENV:REWRITEBASE}'.$path.'$1$2$3.$4 [L]' . "\n");
                         } else {
                             for ($i = 1; $i <= 8; $i++) {
                                 $img_path = $img_name = '';
@@ -3262,20 +3261,13 @@ class ToolsCore
                                 }
                                 $img_name .= '$'.$j;
 
-                                foreach ($supportedMainImageExtensions as $imageExtension) {
-                                    fwrite($write_fd, $mediaDomains);
-                                    fwrite($write_fd, $domain_rewrite_cond);
-                                    fwrite($write_fd, 'RewriteRule ^'.$name.'/'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?(-[0-9]+)?/.+?([2-4]x)?\.'.$imageExtension.'$ %{ENV:REWRITEBASE}'.$path.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).'.'.$imageExtension." [L]\n");
-                                }
+                                fwrite($write_fd, $mediaDomains);
+                                fwrite($write_fd, $domain_rewrite_cond);
+                                fwrite($write_fd, 'RewriteRule ^'.$name.'/'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.('.$extensionsPattern.')$ %{ENV:REWRITEBASE}'.$path.$img_path.$img_name.'$'.($j + 1).'.$'.($j+2)." [L]\n");
                             }
                         }
                     }
                 }
-
-                fwrite($write_fd, "\n# AlphaImageLoader for IE and fancybox\n");
-                fwrite($write_fd, $mediaDomains);
-                fwrite($write_fd, $domain_rewrite_cond);
-                fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.('.implode('|', $supportedMainImageExtensions).')$ js/jquery/plugins/fancybox/images/$1.$2 [L]'."\n");
             }
 
             // Redirections to dispatcher
@@ -3318,7 +3310,7 @@ class ToolsCore
 	ExpiresByType image/jpeg \"access plus 1 year\"
 	ExpiresByType image/png \"access plus 1 year\"
 	ExpiresByType image/webp \"access plus 1 year\"
-        ExpiresByType image/avif \"access plus 1 year\"
+	ExpiresByType image/avif \"access plus 1 year\"
 	ExpiresByType text/css \"access plus 1 year\"
 	ExpiresByType text/javascript \"access plus 1 year\"
 	ExpiresByType application/javascript \"access plus 1 year\"
