@@ -3195,10 +3195,10 @@ class ToolsCore
 
         fwrite($write_fd, "RewriteEngine on\n");
 
-        $mediaDomains = array_reduce(static::getMediaServersUrls(), function($acc, $mediaServer) {
-            return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
-        }, '');
-
+        $mediaDomainsArray = static::getMediaServersUrls();
+        $mediaDomainsPattern = implode('|', array_map(function($mediaServer) {
+            return preg_quote(trim($mediaServer), '/');
+        }, $mediaDomainsArray));
 
         $supportedMainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
         $supportedMainImageExtensions[] = 'jpeg';
@@ -3207,18 +3207,17 @@ class ToolsCore
         $extensionsPattern = implode('|', $supportedMainImageExtensions);
 
         foreach ($domains as $domain => $list_uri) {
-            $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n";
-            foreach ($list_uri as $uri) {
-                fwrite($write_fd, PHP_EOL.PHP_EOL.'# Domain: '.$domain.PHP_EOL);
-                if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n");
-                }
-                fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:'.$uri['physical'].']'."\n\n");
+            fwrite($write_fd, PHP_EOL . PHP_EOL . '# Domain: ' . $domain . PHP_EOL);
+            if (Shop::isFeatureActive()) {
+                fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^' . $domain . '$' . "\n");
+            }
+            fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:' . $uri['physical'] . ']' . "\n\n");
 
+            foreach ($list_uri as $uri) {
                 // Webservice
                 fwrite($write_fd, "# Webservice API\n");
-                fwrite($write_fd, 'RewriteRule ^api$ api/ [L]'."\n");
-                fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]'."\n\n");
+                fwrite($write_fd, 'RewriteRule ^api$ api/ [L]' . "\n");
+                fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]' . "\n\n");
 
                 if (!$rewrite_settings) {
                     $rewrite_settings = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, (int) $uri['id_shop']);
@@ -3228,44 +3227,64 @@ class ToolsCore
                 if ($uri['virtual']) {
                     fwrite($write_fd, "# Virtual uri\n");
                     if (!$rewrite_settings) {
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'/?$ '.$uri['physical'].$uri['virtual']."index.php [L,R]\n");
+                        fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^(' . $mediaDomainsPattern . ')$ [NC]' . "\n");
+                        fwrite($write_fd, 'RewriteRule ^' . trim($uri['virtual'], '/') . '/?$ ' . $uri['physical'] . $uri['virtual'] . "index.php [L,R]\n");
                     } else {
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'$ '.$uri['physical'].$uri['virtual']." [L,R]\n");
+                        fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^(' . $mediaDomainsPattern . ')$ [NC]' . "\n");
+                        fwrite($write_fd, 'RewriteRule ^' . trim($uri['virtual'], '/') . '$ ' . $uri['physical'] . $uri['virtual'] . " [L,R]\n");
                     }
-                    fwrite($write_fd, $mediaDomains);
-                    fwrite($write_fd, $domain_rewrite_cond);
-                    fwrite($write_fd, 'RewriteRule ^'.ltrim($uri['virtual'], '/').'(.*) '.$uri['physical']."$1 [L]\n\n");
+                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^(' . $mediaDomainsPattern . ')$ [NC]' . "\n");
+                    fwrite($write_fd, 'RewriteRule ^' . ltrim($uri['virtual'], '/') . '(.*) ' . $uri['physical'] . "$1 [L]\n\n");
                 }
 
                 if ($rewrite_settings) {
                     fwrite($write_fd, "# Images\n");
-                    foreach (ImageEntity::getImageEntities() as $entity) {
+
+                    // Combine all media domains into a single line
+                    if (!empty($mediaDomainsPattern)) {
+                        fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^(' . $mediaDomainsPattern . ')$ [NC]' . "\n");
+                    }
+
+                    $imageEntities = ImageEntity::getImageEntities();
+                    $nonProductPatterns = [];
+                    $productPatterns = [];
+
+                    foreach ($imageEntities as $entity) {
                         $name = $entity['name'];
                         $path = trim(str_replace(_PS_ROOT_DIR_, '', $entity['path']), '/') . '/';
-                        fwrite($write_fd, "\n# $name images\n");
-
+                        
                         if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
-                            fwrite($write_fd, $mediaDomains);
-                            fwrite($write_fd, $domain_rewrite_cond);
-                            fwrite($write_fd, 'RewriteRule ^'.$name.'/([0-9]+)(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' . $extensionsPattern . ')$ %{ENV:REWRITEBASE}'.$path.'$1$2$3.$4 [L]' . "\n");
+                            $nonProductPatterns[] = $name;
                         } else {
-                            for ($i = 1; $i <= 8; $i++) {
-                                $img_path = $img_name = '';
-                                for ($j = 1; $j <= $i; $j++) {
-                                    $img_path .= '$'.$j.'/';
-                                    $img_name .= '$'.$j;
-                                }
-                                $img_name .= '$'.$j;
-
-                                fwrite($write_fd, $mediaDomains);
-                                fwrite($write_fd, $domain_rewrite_cond);
-                                fwrite($write_fd, 'RewriteRule ^'.$name.'/'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.('.$extensionsPattern.')$ %{ENV:REWRITEBASE}'.$path.$img_path.$img_name.'$'.($j + 1).'.$'.($j+2)." [L]\n");
-                            }
+                            $productPatterns[] = $entity;
                         }
+                    }
+
+                    // Combine all non-product entity names into a single pattern
+                    $nonProductPattern = implode('|', $nonProductPatterns);
+                    fwrite($write_fd, "\n# Combined non-product images\n");
+                    fwrite($write_fd, 'RewriteRule ^(' . $nonProductPattern . ')/([0-9]+)(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' . $extensionsPattern . ')$ %{ENV:REWRITEBASE}img/$1/$2$3$4.$5 [L]' . "\n");
+
+                    // Write product image rewrite rules under a single section heading
+                    fwrite($write_fd, "\n# Product images\n");
+
+                    // Write the RewriteRule statements for product images
+                    for ($i = 1; $i <= 8; $i++) {
+                        $digits = str_repeat('([0-9])', $i);
+                        $dash_part = '(\-[_a-zA-Z0-9\s-]*)?';
+                        $res_part = '/([2-4]x)?';
+                        $file_ext = '\.(' . $extensionsPattern . ')$';
+                        $img_path = '';
+                        $img_name = '';
+
+                        for ($j = 1; $j <= $i; $j++) {
+                            $img_path .= '$' . $j . '/';
+                            $img_name .= '$' . $j;
+                        }
+
+                        $file_name = '$' . ($i + 1);
+                        $ext = '$' . ($i + 2);
+                        fwrite($write_fd, 'RewriteRule ^products/' . $digits . $dash_part . '/.+?' . $res_part . $file_ext . ' %{ENV:REWRITEBASE}img/p/' . $img_path . $img_name . $file_name . '.' . $ext . " [L]\n");
                     }
                 }
             }
@@ -3277,11 +3296,11 @@ class ToolsCore
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -l [OR]\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -d\n");
                 if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, $domain_rewrite_cond);
+                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^' . $domain . '$' . "\n");
                 }
                 fwrite($write_fd, "RewriteRule ^.*$ - [NC,L]\n");
                 if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, $domain_rewrite_cond);
+                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^' . $domain . '$' . "\n");
                 }
                 fwrite($write_fd, "RewriteRule ^.*\$ %{ENV:REWRITEBASE}index.php [NC,L]\n");
             }
