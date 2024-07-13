@@ -247,12 +247,13 @@ class ContactControllerCore extends FrontController
                     ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
                     ->where('cm.`token` = \''.pSQL($token).'\'')
             );
-
-            $order = new Order((int) $customerThread['id_order']);
-            if (Validate::isLoadedObject($order)) {
-                $customerThread['reference'] = $order->getUniqReference();
+            if ($customerThread) {
+                $order = new Order((int) $customerThread['id_order']);
+                if (Validate::isLoadedObject($order)) {
+                    $customerThread['reference'] = $order->getUniqReference();
+                }
+                $this->context->smarty->assign('customerThread', $customerThread);
             }
-            $this->context->smarty->assign('customerThread', $customerThread);
         }
 
         $this->context->smarty->assign(
