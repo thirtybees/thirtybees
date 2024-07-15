@@ -58,7 +58,7 @@ class PageNotFoundControllerCore extends FrontController
 
         $mainImageExtensions = implode('|', ImageManager::getAllowedImageExtensions(false, true));
 
-        if ($urlPath && preg_match('/\.('.$mainImageExtensions.'|ico)$/i', $urlPath)) {
+        if ($urlPath && preg_match('/\.('.$mainImageExtensions.')$/i', $urlPath)) {
             $requestUri = urldecode($requestUri);
             $requestUri = preg_replace('#^'.preg_quote(Context::getContext()->shop->getBaseURI(), '#').'#i', '/', $requestUri);
 
