@@ -709,7 +709,7 @@ abstract class ControllerCore
         // check if scheduler event is required
         if (! $this->ajax) {
             $scheduler = ServiceLocator::getInstance()->getScheduler();
-            if ($scheduler ->syntheticEventRequired()) {
+            if ($scheduler->syntheticEventRequired() && !Tools::isCrawler()) {
                 $triggerUrl = $this->context->link->getPageLink('trigger', null, null, ['ts' => time()]);
                 Media::addJsDef([
                     'triggerUrl' => $triggerUrl,

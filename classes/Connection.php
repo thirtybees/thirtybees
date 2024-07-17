@@ -29,8 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
-
 /**
  * Class ConnectionCore
  */
@@ -134,10 +132,9 @@ class ConnectionCore extends ObjectModel
      */
     public static function setNewConnection($cookie)
     {
-		$detect = new CrawlerDetect();
-		if ($detect->isCrawler()) {
-			return false;
-		}
+        if (Tools::isCrawler()) {
+            return false;
+        }
 
         $guestId = (int) $cookie->id_guest;
         if ($guestId) {

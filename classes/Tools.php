@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use PHPSQLParser\PHPSQLParser;
 use Thirtybees\Core\Error\ErrorUtils;
 
@@ -5576,6 +5577,19 @@ FileETag none
         }
 
         return 'GET';
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isCrawler(): bool
+    {
+        try {
+            $detect = new CrawlerDetect();
+            return $detect->isCrawler();
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 }
 
