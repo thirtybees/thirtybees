@@ -476,4 +476,26 @@ class ImageTypeCore extends ObjectModel
         return $res;
     }
 
+    /**
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getWsImageEntities()
+    {
+        $result = [];
+        foreach (ImageEntity::getImageEntities() as $imageEntity) {
+            foreach ($imageEntity['imageTypes'] as $type) {
+                if ((int)$type['id_image_type'] === (int)$this->id) {
+                    $result[] = [
+                        'id' => (int)$imageEntity['id_image_entity'],
+                    ];
+                    break;
+                }
+            }
+        }
+        return $result;
+    }
+
 }

@@ -76,6 +76,23 @@ class ImageEntityCore extends ObjectModel
     ];
 
     /**
+     * @var array Webservice parameters
+     */
+    protected $webserviceParameters = [
+        'objectsNodeName' => 'image_entities',
+        'objectNodeName'  => 'image_entity',
+        'fields'          => [],
+        'associations'    => [
+            'image_types' => [
+                'resource' => 'image_types',
+                'fields'   => [
+                    'id' => [],
+                ],
+            ],
+        ],
+    ];
+
+    /**
      * @param string $classname This needs to be the classname like defined in AdminController (with namespace)
      * @param array $images The structure is defined ObjectModel $definition['images']
      *
@@ -395,6 +412,26 @@ class ImageEntityCore extends ObjectModel
         $res = parent::add($autoDate, $nullValues);
         Cache::clean('ImageEntity::*');
         return $res;
+    }
+
+    /**
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getWsImageTypes()
+    {
+        $result = [];
+        $info = static::getImageEntityInfo($this->name);
+        if ($info) {
+            foreach ($info['imageTypes'] as $type) {
+                $result[] = [
+                    'id' => (int)$type['id_image_type']
+                ];
+            }
+        }
+        return $result;
     }
 
 }

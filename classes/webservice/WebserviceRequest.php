@@ -330,6 +330,7 @@ class WebserviceRequestCore
             'groups'                         => ['description' => 'The customer\'s groups', 'class' => 'Group'],
             'guests'                         => ['description' => 'The guests', 'class' => 'Guest'],
             'images'                         => ['description' => 'The images', 'specific_management' => true],
+            'image_entities'                 => ['description' => 'Image entities', 'class' => 'ImageEntity'],
             'image_types'                    => ['description' => 'The image types', 'class' => 'ImageType'],
             'languages'                      => ['description' => 'Shop languages', 'class' => 'Language'],
             'manufacturers'                  => ['description' => 'The product manufacturers', 'class' => 'Manufacturer'],
