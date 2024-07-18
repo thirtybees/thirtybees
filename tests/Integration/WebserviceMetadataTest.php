@@ -21,7 +21,6 @@ class WebserviceMetadataTest extends Unit
         \AddressFormat::class,
         \Alias::class,
         \Attachment::class,
-        \CMSCategory::class,
         \CMSRole::class,
         \CompareProduct::class,
         \ConfigurationKPI::class,

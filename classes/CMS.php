@@ -116,6 +116,11 @@ class CMSCore extends ObjectModel
     protected $webserviceParameters = [
         'objectNodeName'  => 'content',
         'objectsNodeName' => 'content_management_system',
+        'fields'          => [
+            'id_cms_category' => [
+                'xlink_resource' => 'cms_categories'
+            ],
+        ],
     ];
 
     /**

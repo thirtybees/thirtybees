@@ -359,6 +359,7 @@ class WebserviceRequestCore
             'employees'                      => ['description' => 'The Employees', 'class' => 'Employee'],
             'search'                         => ['description' => 'Search', 'specific_management' => true, 'forbidden_method' => ['PUT', 'POST', 'DELETE']],
             'content_management_system'      => ['description' => 'Content management system', 'class' => 'CMS'],
+            'cms_categories'                 => ['description' => 'CMS Category', 'class' => 'CMSCategory'],
             'shops'                          => ['description' => 'Shops from multi-shop feature', 'class' => 'Shop'],
             'shop_groups'                    => ['description' => 'Shop groups from multi-shop feature', 'class' => 'ShopGroup'],
             'taxes'                          => ['description' => 'The tax rate', 'class' => 'Tax'],
