@@ -97,8 +97,10 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
     public function __construct()
     {
-        foreach (ImageManager::getAllowedImageExtensions(true, null, null, true) as $imageExtension) {
-            $this->acceptedImgMimeTypes[] = $imageExtension['mimeType'];
+        foreach (Media::getFileInformations('images') as $type) {
+            if ($type['imageSupport']) {
+                $this->acceptedImgMimeTypes[] = $type['mimeType'];
+            }
         }
     }
 
