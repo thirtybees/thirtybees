@@ -473,6 +473,7 @@ class ImageTypeCore extends ObjectModel
         $res = parent::add($autoDate, $nullValues);
         static::$typeNameCache = null;
         Cache::clean('ImageType::*');
+        Cache::clean('ImageEntity::*');
         return $res;
     }
 

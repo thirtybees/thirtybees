@@ -411,6 +411,7 @@ class ImageEntityCore extends ObjectModel
     {
         $res = parent::add($autoDate, $nullValues);
         Cache::clean('ImageEntity::*');
+        Cache::clean('ImageType::*');
         return $res;
     }
 
