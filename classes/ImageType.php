@@ -130,7 +130,45 @@ class ImageTypeCore extends ObjectModel
     /**
      * @var array Webservice parameters
      */
-    protected $webserviceParameters = [];
+    protected $webserviceParameters = [
+        'objectsNodeName' => 'image_types',
+        'objectNodeName'  => 'image_type',
+        'fields'          => [],
+        'associations'    => [
+            'image_entities' => [
+                'resource' => 'image_entities',
+                'fields'   => [
+                    'id' => [],
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * @param int|null $id
+     * @param int|null $idLang
+     * @param int|null $idShop
+     *
+     * @throws PrestaShopException
+     */
+    public function __construct($id = null, $idLang = null, $idShop = null)
+    {
+        parent::__construct($id, $idLang, $idShop);
+
+        // BC: populate values of legacy properties based on entity association
+        if ($id) {
+            foreach (['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'] as $entityType) {
+                $info = ImageEntity::getImageEntityInfo($entityType);
+                $this->{$entityType} = 0;
+                foreach ($info['imageTypes'] as $type) {
+                    if ((int)$type['id_image_type'] === $id) {
+                        $this->{$entityType} = 1;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * @return bool
