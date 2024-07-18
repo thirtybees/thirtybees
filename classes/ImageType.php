@@ -158,12 +158,14 @@ class ImageTypeCore extends ObjectModel
         // BC: populate values of legacy properties based on entity association
         if ($id) {
             foreach (['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'] as $entityType) {
-                $info = ImageEntity::getImageEntityInfo($entityType);
                 $this->{$entityType} = 0;
-                foreach ($info['imageTypes'] as $type) {
-                    if ((int)$type['id_image_type'] === $id) {
-                        $this->{$entityType} = 1;
-                        break;
+                $info = ImageEntity::getImageEntityInfo($entityType);
+                if ($info) {
+                    foreach ($info['imageTypes'] as $type) {
+                        if ((int)$type['id_image_type'] === $id) {
+                            $this->{$entityType} = 1;
+                            break;
+                        }
                     }
                 }
             }
