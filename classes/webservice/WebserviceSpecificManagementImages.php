@@ -189,6 +189,13 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 ];
             }
 
+            if (ImageManager::serverSupportsAvif()) {
+                $types['avif'] = [
+                    'function'     => 'imagecreatefromavif',
+                    'Content-Type' => 'image/avif',
+                ];
+            }
+
             if (array_key_exists($this->imgExtension, $types)) {
                 $imageResource = @$types[$this->imgExtension]['function']($this->imgToDisplay);
             }
@@ -995,20 +1002,9 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         if ($destHeight == null) {
             $destHeight = $sourceHeight;
         }
-        switch ($type) {
-            case IMAGETYPE_GIF:
-                $sourceImage = imagecreatefromgif($basePath);
-                break;
-            case IMAGETYPE_PNG:
-                $sourceImage = imagecreatefrompng($basePath);
-                break;
-            case IMAGETYPE_WEBP:
-                $sourceImage = imagecreatefromwebp($basePath);
-                break;
-            case IMAGETYPE_JPEG:
-            default:
-                $sourceImage = imagecreatefromjpeg($basePath);
-                break;
+        $sourceImage = ImageManager::create($type, $basePath);
+        if (! $sourceImage) {
+            throw new WebserviceException("Failed to create image", [69, 500]);
         }
 
         $widthDiff = $destWidth / $sourceWidth;
@@ -1043,36 +1039,17 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         }
 
         // Write it on disk
-        $quality = Configuration::get('TB_IMAGE_QUALITY') ?: 90;
+        $imaged = ImageManager::write($this->imgExtension, $destImage, $newPath);
 
-        switch ($this->imgExtension) {
-            case 'gif':
-                $imaged = imagegif($destImage, $newPath);
-                break;
-            case 'png':
-                // PNG compression (0 => biggest file, 9 => smallest file)
-                // This little mechanism transforms 0-100 range to a sensible compression value
-                $quality *= -1;
-                $quality += 100;
-                $quality /= 10;
-                $imaged = imagepng($destImage, $newPath, (int) $quality);
-                break;
-            case 'webp':
-                $imaged = imagewebp($destImage, $newPath, (int) $quality);
-                break;
-            case 'jpeg':
-            default:
-                $imaged = imagejpeg($destImage, $newPath, (int) $quality);
-                if ($this->wsObject->urlSegment[1] == 'customizations') {
-                    // write smaller image in case of customization image
-                    $productPictureWidth = (int) Configuration::get('PS_PRODUCT_PICTURE_WIDTH');
-                    $productPictureHeight = (int) Configuration::get('PS_PRODUCT_PICTURE_HEIGHT');
-                    if (!ImageManager::resize($newPath, $newPath.'_small', $productPictureWidth, $productPictureHeight)) {
-                        throw new WebserviceException(Tools::displayError('An error occurred during the image upload process.'), [70, 500]);
-                    }
-                }
-                break;
+        if ($this->wsObject->urlSegment[1] == 'customizations') {
+            // write smaller image in case of customization image
+            $productPictureWidth = (int) Configuration::get('PS_PRODUCT_PICTURE_WIDTH');
+            $productPictureHeight = (int) Configuration::get('PS_PRODUCT_PICTURE_HEIGHT');
+            if (!ImageManager::resize($newPath, $newPath.'_small', $productPictureWidth, $productPictureHeight)) {
+                throw new WebserviceException(Tools::displayError('An error occurred during the image upload process.'), [70, 500]);
+            }
         }
+
         imagedestroy($destImage);
         if (!$imaged) {
             throw new WebserviceException(sprintf('Unable to write the image "%s".', str_replace(_PS_ROOT_DIR_, '[SHOP_ROOT_DIR]', $newPath)), [70, 500]);
