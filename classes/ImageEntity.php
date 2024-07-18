@@ -381,4 +381,20 @@ class ImageEntityCore extends ObjectModel
         }
     }
 
+    /**
+     * @param bool $autoDate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        $res = parent::add($autoDate, $nullValues);
+        Cache::clean('ImageEntity::*');
+        return $res;
+    }
+
 }
