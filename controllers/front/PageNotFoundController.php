@@ -75,16 +75,17 @@ class PageNotFoundControllerCore extends FrontController
                 $idEntity = $imageInfo['id'];
                 $highDpi = $imageInfo['highDpi'];
                 $imageExtension = $imageInfo['extension'];
-
                 $imageType = $this->getImageType($imageInfo['imageType'], $imageEntity['imageTypes']);
-
-                $imageTypeNameFormatted = $imageType ? ('-' . $imageType->name) : '';
 
                 // As products have a sophisticated image system with folder structure
                 $subfolder = ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS) ? Image::getImgFolderStatic($idEntity) : '';
-                $highDpiDim = $highDpi ? '2x' : '';
 
-                $sendPath = $imageEntity['path'] . $subfolder . $idEntity . $imageTypeNameFormatted . $highDpiDim . '.' . $imageExtension;
+                if ($imageType) {
+                    $highDpiDim = $highDpi ? '2x' : '';
+                    $sendPath = $imageEntity['path'] . $subfolder . $idEntity . '-' . $imageType->name . $highDpiDim . '.' . $imageExtension;
+                } else {
+                    $sendPath = $imageEntity['path'] . $subfolder . $idEntity . '.' . $imageExtension;
+                }
                 $sourcePath = ImageManager::getSourceImage($imageEntity['path'] . $subfolder, $idEntity);
 
             } else {
@@ -95,22 +96,29 @@ class PageNotFoundControllerCore extends FrontController
             if ($sendPath) {
 
                 if ($sourcePath && $imageExtension && !file_exists($sendPath) && file_exists($sourcePath)) {
-                    $width = 0;
-                    $height = 0;
                     if ($imageType) {
+                        // Automatically generate image type
+
                         $scale = $highDpi && ImageManager::retinaSupport() ? 2 : 1;
                         $width = (int)$imageType->width * $scale;
                         $height = (int)$imageType->width * $scale;
-                    }
 
-                    // Create the image in the default imageExtension (readable by the user)
-                    ImageManager::resize(
-                        $sourcePath,
-                        $sendPath,
-                        $width,
-                        $height,
-                        $imageExtension
-                    );
+                        ImageManager::resize(
+                            $sourcePath,
+                            $sendPath,
+                            $width,
+                            $height,
+                            $imageExtension
+                        );
+                    } else {
+                        // request to source image in different format
+                        ImageManager::convertImageToExtension(
+                            $sourcePath,
+                            $imageExtension,
+                            $sendPath
+                        );
+
+                    }
                 }
 
                 if (file_exists($sendPath)) {
