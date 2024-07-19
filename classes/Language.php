@@ -892,18 +892,21 @@ class LanguageCore extends ObjectModel
      * Saves all default images in all types and resolutions in l folder
      *
      * @param string $iso_code
+     * @param string $imageExtension|null image extension
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function regenerateDefaultImages($iso_code)
+    public static function regenerateDefaultImages($iso_code, $imageExtension = null)
     {
         $success = true;
 
         if ($sourceImage = ImageManager::getSourceImage(_PS_LANG_IMG_DIR_, $iso_code.'-default')) {
-            $imageExtension = ImageManager::getDefaultImageExtension();
+            if (! $imageExtension) {
+                $imageExtension = ImageManager::getDefaultImageExtension();
+            }
             foreach (ImageType::getImagesTypes() as $imageType) {
                 $dstFile = _PS_LANG_IMG_DIR_.$iso_code.'-default-'.$imageType['name'].'.'.$imageExtension;
                 $success = ImageManager::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $imageExtension) && $success;

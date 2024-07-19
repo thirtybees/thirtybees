@@ -147,6 +147,19 @@ class AdminWebserviceControllerCore extends AdminController
             ];
         }, Employee::getEmployees(false));
 
+        $imageFormats = [
+            [
+                'id' => '',
+                'name' => $this->l('Default image extension')
+            ]
+        ];
+        foreach (ImageManager::getAllowedImageExtensions(true, true) as $imageExtension) {
+            $imageFormats[] = [
+                'id' => $imageExtension,
+                'name' => $imageExtension
+            ];
+        }
+
         // generate form
         $this->fields_form = [
             'legend' => [
@@ -187,6 +200,18 @@ class AdminWebserviceControllerCore extends AdminController
                     ],
                     'desc'    => $this->l('Select employee in which context API request will be executed'),
                     'hint'    => $this->l('This is useful for audit trail, as changes created by API calls can be associated with dedicated user')
+                ],
+                [
+                    'type'       => 'select',
+                    'label'      => $this->l('Image extension'),
+                    'name'       => 'image_extension',
+                    'options' => [
+                        'query' => $imageFormats,
+                        'id'    => 'id',
+                        'name'  => 'name',
+                    ],
+                    'desc'    => $this->l('Select image format in which the images will be returned'),
+                    'hint'    => $this->l('Select image format in which the images will be returned')
                 ],
                 [
                     'type'     => 'switch',

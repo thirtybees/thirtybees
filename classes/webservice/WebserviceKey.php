@@ -36,26 +36,46 @@ use Thirtybees\Core\InitializationCallback;
  */
 class WebserviceKeyCore extends ObjectModel implements InitializationCallback
 {
-    /** @var string Key */
+    /**
+     * @var string Key
+     */
     public $key;
 
-    /** @var bool Webservice Account statuts */
+    /**
+     * @var bool Webservice Account statuts
+     */
     public $active = true;
 
-    /** @var string Webservice Account description */
+    /**
+     * @var string Webservice Account description
+     */
     public $description;
 
-    /** @var string php class to handle web request. Default WebserviceRequest */
+    /**
+     * @var string php class to handle web request. Default WebserviceRequest
+     */
     public $class_name;
 
-    /** @var bool is this created by external module */
+    /**
+     * @var bool is this created by external module
+     */
     public $is_module;
 
-    /** @var string module name - webservice provider*/
+    /**
+     * @var string module name - webservice provider
+     */
     public $module_name;
 
-    /** @var int context employee id */
+    /**
+     * @var int context employee id
+     */
     public $context_employee_id;
+
+    /**
+     * @var string image format extension to be used to return images (jpg, webp, avif, png).
+     *             If null or empty, default image extension set for store will be used
+     */
+    public $image_extension;
 
     /**
      * @var array Object model definition
@@ -72,6 +92,7 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
             'module_name'         => ['type' => self::TYPE_STRING, 'size' => 50],
             'active'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbNullable' => false],
             'context_employee_id' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'image_extension'     => ['type' => self::TYPE_STRING, 'size' => 10]
         ],
         'keys' => [
             'webservice_account' => [
@@ -288,5 +309,22 @@ class WebserviceKeyCore extends ObjectModel implements InitializationCallback
                 'context_employee_id IS NULL OR context_employee_id = 0'
             );
         }
+    }
+
+    /**
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public function getImageExtension(): string
+    {
+        if (! $this->image_extension) {
+            return ImageManager::getDefaultImageExtension();
+        }
+        $supportedExtensions = ImageManager::getAllowedImageExtensions(true, true);
+        if (! in_array($this->image_extension, $supportedExtensions)) {
+            return ImageManager::getDefaultImageExtension();
+        }
+        return $this->image_extension;
     }
 }

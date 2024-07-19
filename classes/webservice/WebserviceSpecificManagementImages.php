@@ -34,7 +34,9 @@
  */
 class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManagementInterface
 {
-    /** @var WebserviceOutputBuilder */
+    /**
+     * @var WebserviceOutputBuilder
+     */
     protected $objOutput;
 
     /**
@@ -510,15 +512,24 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         } else {
             $langIso = $this->wsObject->urlSegment[3];
             $imageSize = $this->wsObject->urlSegment[4];
-            $imageExtension = ImageManager::getDefaultImageExtension();
+            $imageExtension = $this->getImageExtension();
             if ($imageSize != '') {
+                $this->checkImageSizeExits($normalImageSizes, $imageSize);
                 $filename = $directory.$langIso.'-default-'.$imageSize.'.'.$imageExtension;
             } else {
-                $filename = $directory.$langIso.'.'.$imageExtension;
+                $filename = $directory.$langIso.'-default.'.$imageExtension;
             }
             $filenameExists = file_exists($filename);
+            if (! $filenameExists && $source = ImageManager::getSourceImage($directory, $langIso.'-default')) {
+                if ($imageSize) {
+                    Language::regenerateDefaultImages($langIso, $imageExtension);
+                } else {
+                    ImageManager::convertImageToExtension($source, $imageExtension, $filename);
+                }
+                $filenameExists = file_exists($filename);
+            }
 
-            return $this->manageDeclinatedImagesCRUD($filenameExists, $filename, $normalImageSizes, $directory);// @todo : [feature] @see todo#1
+            return $this->manageDeclinatedImagesCRUD($filenameExists, $filename, $normalImageSizes, $directory);
         }
     }
 
@@ -585,54 +596,44 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function manageEntityDeclinatedImages($directory, $normalImageSizes)
     {
-        $normalImageSizeNames = [];
-        foreach ($normalImageSizes as $normalImageSize) {
-            $normalImageSizeNames[] = $normalImageSize['name'];
-        }
         // If id is detected
         $objectId = $this->wsObject->urlSegment[2];
         if (!Validate::isUnsignedId($objectId)) {
             throw new WebserviceException('The image id is invalid. Please set a valid id or the "default" value', [60, 400]);
         }
 
+        $ext = $this->getImageExtension();
+
         // For the product case
         if ($this->imageType == ImageEntity::ENTITY_TYPE_PRODUCTS) {
-            // Get available image ids
-            $availableImageIds = [];
 
-            // New Behavior
-            foreach (Language::getIDs() as $idLang) {
-                foreach (Image::getImages($idLang, $objectId) as $image) {
-                    $availableImageIds[] = $image['id_image'];
-                }
+            $imageId = $this->wsObject->urlSegment[3];
+            $imageSize = $this->wsObject->urlSegment[4];
+
+            $product = new Product($objectId);
+            if(! Validate::isLoadedObject($product)) {
+                throw new WebserviceException('This product id does not exist', [57, 400]);
             }
-            $availableImageIds = array_unique($availableImageIds, SORT_NUMERIC);
+
+            // Get available image ids
+            $availableImageIds = array_column($product->getWsImages(), 'id');
 
             // If an image id is specified
-            if ($this->wsObject->urlSegment[3] != '') {
-                if ($this->wsObject->urlSegment[3] == 'bin') {
+            if ($imageId != '') {
+                if ($imageId == 'bin') {
                     $currentProduct = new Product($objectId);
-                    $this->wsObject->urlSegment[3] = $currentProduct->getCoverWs();
+                    $imageId = (int)$currentProduct->getCoverWs();
                 }
-                if (!Validate::isUnsignedId($objectId) || !in_array($this->wsObject->urlSegment[3], $availableImageIds)) {
+                if (!in_array($imageId, $availableImageIds)) {
                     throw new WebserviceException('This image id does not exist', [57, 400]);
-                } else {
-                    // Check for new image system
-                    $imageId = $this->wsObject->urlSegment[3];
-                    $path = implode('/', str_split((string) $imageId));
-                    $imageSize = $this->wsObject->urlSegment[4];
-
-                    if ($sourceFile = ImageManager::getSourceImage($directory.$path.'/', $imageId.(strlen($imageSize) > 0 ? '-'.$imageSize : ''))) {
-                        $filename = $sourceFile;
-                        $origFilename = $imageSize ? str_replace('-'.$imageSize, '', $sourceFile) : $sourceFile;
-                    } else {
-                        // else old system or not exists
-                        $origFilename = ImageManager::getSourceImage($directory, $objectId.'-'.$imageId);
-                        $filename = ImageManager::getSourceImage($directory, $objectId.'-'.$imageId.'-'.$imageSize);
-                    }
                 }
-            } // display the list of declinated images
-            elseif ($this->wsObject->method == 'GET' || $this->wsObject->method == 'HEAD') {
+
+                $path = implode('/', str_split((string) $imageId));
+                $imageTypeSuffix = $imageSize ? '-' . $imageSize : '';
+                $filename = $directory . $path . '/' . $imageId . $imageTypeSuffix . '.' . $ext;
+                $origFilename = ImageManager::getSourceImage($directory . $path,  $imageId);
+            } elseif ($this->wsObject->method == 'GET' || $this->wsObject->method == 'HEAD') {
+                // display the list of declinated images
                 if ($availableImageIds) {
                     $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image', [], ['id' => $objectId]);
                     foreach ($availableImageIds as $availableImageId) {
@@ -643,42 +644,62 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                     $this->objOutput->setStatus(404);
                     $this->wsObject->setOutputEnabled(false);
                 }
+                return true;
+            } else {
+                return $this->manageDeclinatedImagesCRUD(false, '', $normalImageSizes, $directory);
             }
-        } // for all other cases
-        else {
-            $origFilename = ImageManager::getSourceImage($directory, $objectId);
-            $imageSize = $this->wsObject->urlSegment[3];
-            $filename = str_replace('/'.$objectId.'.', '/'.$objectId.'-'.$imageSize.'.', $origFilename);
-        }
-
-        // in case of declinated images list of a product is get
-        if ($this->output != '') {
-            return true;
-        } // If a size was given try to display it
-        elseif (isset($imageSize) && $imageSize != '') {
-            // Check the given size
-            if (isset($imageId) && $this->imageType == ImageEntity::ENTITY_TYPE_PRODUCTS && $imageSize == 'bin') {
-                $filename = ImageManager::getSourceImage($directory, $objectId.'-'.$imageId);
-            } elseif (!in_array($imageSize, $normalImageSizeNames)) {
-                $exception = new WebserviceException('This image size does not exist', [58, 400]);
-                throw $exception->setDidYouMean($imageSize, $normalImageSizeNames);
-            }
-            if (!file_exists($filename)) {
-                throw new WebserviceException('This image does not exist on disk', [59, 500]);
-            }
-
-            // Display the resized specific image
-            $this->imgToDisplay = $filename;
-
-            return true;
-        } // Management of the original image (GET, PUT, POST, DELETE)
-        elseif (isset($origFilename)) {
-            $origFilenameExists = file_exists($origFilename);
-
-            return $this->manageDeclinatedImagesCRUD($origFilenameExists, $origFilename, $normalImageSizes, $directory);
         } else {
-            return $this->manageDeclinatedImagesCRUD(false, '', $normalImageSizes, $directory);
+            // for all other cases
+            $imageSize = $this->wsObject->urlSegment[3];
+            $imageTypeSuffix = $imageSize ? '-' . $imageSize : '';
+            $origFilename = ImageManager::getSourceImage($directory, $objectId);
+            $filename = $directory . $objectId . $imageTypeSuffix . '.' . $ext;
         }
+
+        // request for specific image type
+        if ($imageSize) {
+            $this->checkImageSizeExits($normalImageSizes, $imageSize);
+
+            if (! file_exists($filename) && $origFilename) {
+                $formattedName = ImageType::getFormatedName($imageSize);
+                $imageType = ImageType::getInstanceByName($formattedName);
+                ImageManager::resize(
+                    $origFilename,
+                    $filename,
+                    $imageType->width,
+                    $imageType->height,
+                    $ext
+                );
+            }
+            return $this->setImgToDisplay($filename);
+        }
+
+        // request for source image
+        if ($origFilename) {
+            if (! file_exists($filename)) {
+                // convert source image
+                ImageManager::convertImageToExtension($origFilename, $ext, $filename);
+            }
+            return $this->setImgToDisplay($filename);
+        }
+
+        return $this->manageDeclinatedImagesCRUD(false, '', $normalImageSizes, $directory);
+    }
+
+    /**
+     * @param string $filename
+     *
+     * @return bool
+     * @throws WebserviceException
+     */
+    protected function setImgToDisplay(string $filename): bool
+    {
+        if (!file_exists($filename)) {
+            throw new WebserviceException('This image does not exist on disk', [59, 500]);
+        }
+
+        $this->imgToDisplay = $filename;
+        return true;
     }
 
     /**
@@ -699,7 +720,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         switch ($this->wsObject->urlSegment[2]) {
             // Match the default images
             case 'default':
-                return $this->manageDefaultDeclinatedImages($directory, $normalImageSizes);
+                return $this->manageDefaultDeclinatedImages(_PS_LANG_IMG_DIR_, $normalImageSizes);
             // Display the list of images
             case '':
                 return $this->manageListDeclinatedImages($directory, $normalImageSizes);
@@ -1061,7 +1082,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         }
 
         if (is_array($imageTypes)) {
-            $imageExtension = ImageManager::getDefaultImageExtension();
+            $imageExtension = $this->getImageExtension();
             foreach ($imageTypes as $imageType) {
                 if ($this->defaultImage) {
                     $declinationPath = $parentPath.$this->wsObject->urlSegment[3].'-default-'.$imageType['name'].'.'.$imageExtension;
@@ -1261,6 +1282,37 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             }
         } else {
             throw new WebserviceException('Method '.$this->wsObject->method.' is not allowed for an image resource', [77, 405]);
+        }
+    }
+
+    /**
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected function getImageExtension(): string
+    {
+        $key = $this->wsObject->getWebserviceKey();
+        return $key->getImageExtension();
+    }
+
+    /**
+     * @param array $normalImageSizes
+     * @param string $imageSize
+     *
+     * @throws WebserviceException
+     */
+    protected function checkImageSizeExits(array $normalImageSizes, string $imageSize)
+    {
+        $normalImageSizeNames = [];
+        foreach ($normalImageSizes as $normalImageSize) {
+            $normalImageSizeNames[] = $normalImageSize['name'];
+        }
+
+        // Check the given size
+        if (! in_array($imageSize, $normalImageSizeNames)) {
+            $exception = new WebserviceException('This image size does not exist', [58, 400]);
+            throw $exception->setDidYouMean($imageSize, $normalImageSizeNames);
         }
     }
 }

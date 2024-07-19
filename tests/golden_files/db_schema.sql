@@ -2780,6 +2780,7 @@ CREATE TABLE `PREFIX_webservice_account` (
   `module_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `active` tinyint(2) NOT NULL,
   `context_employee_id` int(11) unsigned DEFAULT NULL,
+  `image_extension` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_webservice_account`),
   KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

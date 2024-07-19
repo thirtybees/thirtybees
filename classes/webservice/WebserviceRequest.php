@@ -547,7 +547,7 @@ class WebserviceRequestCore
         // Check webservice activation and request authentication
         if ($this->webserviceChecks()) {
 
-            $logger->setKey(WebserviceKey::getInstanceByKey($this->_key));
+            $logger->setKey($this->getWebserviceKey());
 
             $headers = static::getWebserviceHeaders();
             $logger->logRequest($method, $_SERVER['REQUEST_URI'], $headers, $inputXml);
@@ -1951,5 +1951,19 @@ class WebserviceRequestCore
             return static::$shopIDs;
         }
         return [];
+    }
+
+    /**
+     * @return WebserviceKey|null
+     *
+     * @throws PrestaShopException
+     */
+    public function getWebserviceKey(): WebserviceKey
+    {
+        $key = WebserviceKey::getInstanceByKey($this->_key);
+        if (! $key) {
+            throw new PrestaShopException("Webservice key not assigned");
+        }
+        return $key;
     }
 }
