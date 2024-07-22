@@ -281,7 +281,12 @@ class ImageManagerCore
         }
 
         if (is_null($imageExtension)) {
-            $imageExtension = static::resolveImageExtension($dstFile);
+            // try to detect extension from target file name
+            $imageExtension = static::getImageExtensionFromFilename($dstFile);
+            if (! $imageExtension) {
+                // fallback to system default extension
+                $imageExtension = static::getDefaultImageExtension();
+            }
         }
 
         list($tmpWidth, $tmpHeight, $type) = getimagesize($srcFile);
@@ -1323,21 +1328,48 @@ class ImageManagerCore
     }
 
     /**
-     * @param string $filename
+     * Resolves valid image extension from filepath. File does not need to exits -- extension is extracted from name
+     * only
      *
-     * @return string
+     * @param string $filepath
      *
-     * @throws PrestaShopException
+     * @return string|null
      */
-    protected static function resolveImageExtension(string $filename)
+    protected static function getImageExtensionFromFilename(string $filepath)
     {
-        $extension = strtolower((string)pathinfo($filename, PATHINFO_EXTENSION));
+        $extension = strtolower((string)pathinfo($filepath, PATHINFO_EXTENSION));
         if ($extension) {
             $allowedExtensions = static::getAllowedImageExtensions(true, true);
             if (in_array($extension, $allowedExtensions)) {
                 return $extension;
             }
         }
-        return static::getDefaultImageExtension();
+        return null;
+    }
+
+    /**
+     * Resolves valid image extension from filepath. File have to exists - image extension is resolved from file content
+     *
+     * @return string|null
+     */
+    public static function getImageExtension(string $filepath)
+    {
+        $imageInfo = @getimagesize($filepath);
+        if (! $imageInfo) {
+            return null;
+        }
+
+        $mimeType = $imageInfo['mime'] ?? null;
+        if (! $mimeType) {
+            return null;
+        }
+
+        // Detect mime content type
+        foreach (Media::getFileInformations('images') as $ext => $imageFileInfo) {
+            if (strstr($mimeType, $imageFileInfo['mimeType'])) {
+                return $ext;
+            }
+        }
+        return null;
     }
 }

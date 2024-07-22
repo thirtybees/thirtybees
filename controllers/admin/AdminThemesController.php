@@ -2041,18 +2041,22 @@ class AdminThemesControllerCore extends AdminController
                 $this->errors[] = $error;
                 return;
             }
-            $tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS');
 
+            $tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS');
             if (!$tmpName || !move_uploaded_file($_FILES[$fieldName]['tmp_name'], $tmpName)) {
+                $this->errors[] = Tools::displayError("Failed to copy image file");
                 return;
             }
 
-            $imageExtension = ($fieldName == 'PS_STORES_ICON') ? 'gif' : 'jpg';
+            $imageExtension = ImageManager::getImageExtension($tmpName);
+            if (! $imageExtension) {
+                $this->errors[] = Tools::displayError("Failed to determine image type");
+                return;
+            }
+
             $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.'.'.$imageExtension;
 
-            if ($this->context->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0
-                || Shop::isFeatureActive() == false
-            ) {
+            if ($this->context->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0 || !Shop::isFeatureActive()) {
                 $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').'.'.$imageExtension;
             }
 
@@ -2073,7 +2077,7 @@ class AdminThemesControllerCore extends AdminController
                         $logoGroup = Configuration::get($fieldName);
                         Shop::setContext(Shop::CONTEXT_SHOP);
                         $logoShop = Configuration::get($fieldName);
-                        if ($logoAll != $logoShop && $logoGroup != $logoShop && $logoShop != false) {
+                        if ($logoAll != $logoShop && $logoGroup != $logoShop && $logoShop) {
                             @unlink(_PS_IMG_DIR_.Configuration::get($fieldName));
                         }
                     } elseif (Shop::getContext() == Shop::CONTEXT_GROUP) {
