@@ -679,10 +679,11 @@ class ImageManagerCore
      *
      * @param array $file Upload $_FILE value
      * @param int $maxFileSize Maximum upload size
+     * @param string[] $allowedExtensions allowed image extensions
      *
      * @return bool|string Return false if no error encountered
      */
-    public static function validateUpload($file, $maxFileSize = 0, $types = null)
+    public static function validateUpload($file, $maxFileSize = 0, $allowedExtensions = null)
     {
         if ((int) $maxFileSize > 0 && $file['size'] > (int) $maxFileSize) {
             return sprintf(Tools::displayError('Image is too large (%1$d kB). Maximum allowed: %2$d kB'), $file['size'] / 1024, $maxFileSize / 1024);
@@ -690,7 +691,10 @@ class ImageManagerCore
         if ($file['error']) {
             return Tools::decodeUploadError($file['error']);
         }
-        if (!ImageManager::isRealImage($file['tmp_name'], $file['type']) || !ImageManager::isCorrectImageFileExt($file['name'], $types) || preg_match('/%00/', $file['name'])) {
+        if (!ImageManager::isRealImage($file['tmp_name'], $file['type']) ||
+            !ImageManager::isCorrectImageFileExt($file['name'], $allowedExtensions) ||
+            preg_match('/%00/', $file['name'])
+        ) {
             return Tools::displayError('Image format not recognized, allowed formats are: ').implode(', ',self::getAllowedImageExtensions());
         }
         return false;
@@ -760,28 +764,19 @@ class ImageManagerCore
      * Check if image file extension is correct
      *
      * @param string $filename Real filename
-     * @param array|null $authorizedExtensions
+     * @param array|null $allowedExtensions
      *
      * @return bool True if it's correct
      */
-    public static function isCorrectImageFileExt($filename, $authorizedExtensions = null)
+    public static function isCorrectImageFileExt($filename, $allowedExtensions = null)
     {
         // Filter on file extension
-        if ($authorizedExtensions === null) {
-            $authorizedExtensions = self::getAllowedImageExtensions();
+        if ($allowedExtensions === null) {
+            $allowedExtensions = static::getAllowedImageExtensions();
         }
 
-        $nameExplode = explode('.', $filename);
-        if (count($nameExplode) >= 2) {
-            $current_extension = strtolower($nameExplode[count($nameExplode) - 1]);
-            if (!in_array($current_extension, $authorizedExtensions)) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        return true;
+        $extension = pathinfo((string)$filename, PATHINFO_EXTENSION);
+        return in_array($extension, $allowedExtensions);
     }
 
     /**
