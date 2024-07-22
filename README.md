@@ -6,7 +6,7 @@ thirty bees is a matured e-commerce solution which once started as a fork of Pre
 
 ## Supporters
 
-thirty bees is commited to being free and open source. We are also committed to making all software that thirty bees develops free and open source. For that reason we have setup a [Patreon](https://www.patreon.com/thirtybees) page so our community can help support us. You can [view our current list of supporters here](https://github.com/thirtybees/thirtybees/blob/1.0.x/SUPPORTERS.md) which will be shipped with all thirty bees versions moving forward.
+thirty bees is commited to being free and open source. We are also committed to making all software that thirty bees develops free and open source. For that reason we have setup a Backers page so our community can help support us. Please feel free to [sign-up](https://forum.thirtybees.com/support-thirty-bees/) as a backer to help support ThirtyBees so it can grow and thrive!
 
 ![thirty bees screenshot](docs/thirty-bees-screenshot.jpeg)
 
