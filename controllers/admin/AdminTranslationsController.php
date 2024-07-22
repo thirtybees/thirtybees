@@ -1755,6 +1755,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param string $moduleName name of the module
      *
      * @return array
+     * @throws PrestaShopException
      */
     protected function userParseFile($content, $typeTranslation, $typeFile = false, $moduleName = '')
     {
@@ -1783,7 +1784,10 @@ class AdminTranslationsControllerCore extends AdminController
             case 'modules':
                 // Parsing modules file
                 if ($typeFile == 'php') {
-                    $regex = '/->\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*(\s*,\s*?\'(.+)\'\s*)?(,\s*\'(.+)\'\s*)?\)/U';
+                    $regex = [
+                        '/->\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*(\s*,\s*?\'(.+)\'\s*)?(,\s*\'(.+)\'\s*)?\)/U',
+                        '/Translate\s*::\s*getModuleTranslation\([^,]*,\s*(\')'._PS_TRANS_PATTERN_.'\'\s*,.*\s*\)/U',
+                    ];
                 } else {
                     // In tpl file look for something that should contain mod='module_name' according to the documentation
                     $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1.*\s+mod\s*=\s*\''.$moduleName.'\'.*\\s*}/U';
@@ -1803,6 +1807,8 @@ class AdminTranslationsControllerCore extends AdminController
                     $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf\s*=\s*.*)?(\s*js\s*=\s*1)?(\s*pdf\s*=\s*\'true\')?(\s*mod\s*=\s*\'[a-zA-Z0-9_]+\')?\s*\}/U';
                 }
                 break;
+            default:
+                throw new PrestaShopException('Unknown translation type: ' . $typeTranslation);
         }
 
         if (!is_array($regex)) {
@@ -3183,6 +3189,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param string|bool $dir
      *
      * @return void
+     * @throws PrestaShopException
      */
     protected function findAndFillTranslations($files, $themeName, $moduleName, $dir = false)
     {
@@ -3347,6 +3354,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param array $countMissing
      *
      * @return array Array          Containing all datas needed for building the translation form
+     * @throws PrestaShopException
      */
     protected function parsePdfClass($filePath, $fileType, $langArray, $tab, $tabsArray, &$countMissing)
     {
