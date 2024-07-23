@@ -847,6 +847,8 @@ class AdminProductsControllerCore extends AdminController
 	                StockAvailable::setQuantity((int) $product->id, 0, (int) $quantityAttributeOld);
                 }
 
+                StockAvailable::setProductOutOfStock((int)$product->id, StockAvailable::outOfStock($idProductOld));
+
                 if (!Tools::getValue('noimage') && !Image::duplicateProductImages($idProductOld, $product->id, $combinationImages)) {
                     $this->errors[] = Tools::displayError('An error occurred while copying images.');
                 } else {
