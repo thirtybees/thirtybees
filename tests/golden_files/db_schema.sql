@@ -1077,6 +1077,13 @@ CREATE TABLE `PREFIX_image_entity` (
   KEY `image_entity_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_image_entity_lang` (
+  `id_image_entity` int(11) unsigned NOT NULL,
+  `id_lang` int(11) unsigned NOT NULL,
+  `display_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_image_entity`,`id_lang`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_image_entity_type` (
   `id_image_entity` int(11) unsigned NOT NULL,
   `id_image_type` int(11) unsigned NOT NULL,

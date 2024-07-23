@@ -76,6 +76,7 @@ class SceneCore extends ObjectModel implements InitializationCallback
             ImageEntity::ENTITY_TYPE_SCENES_THUMB => [
                 'inputName' => 'thumb',
                 'path' => _PS_SCENE_IMG_DIR_.'thumbs/',
+                'displayName' => 'Scenes Thumbnails',
                 'imageTypes' => [
                     ['name' => 'm_scene_default', 'width' => 161, 'height' => 58]
                 ]

@@ -59,14 +59,23 @@ class ImageEntityCore extends ObjectModel
     public $classname;
 
     /**
+     * @var string|string[]
+     */
+    public $display_name;
+
+    /**
      * @var array Object model definition
      */
     public static $definition = [
         'table'   => 'image_entity',
         'primary' => 'id_image_entity',
+        'multilang' => true,
         'fields'  => [
             'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isImageTypeName', 'required' => true, 'size' => 64],
             'classname'     => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 64],
+
+            /* Lang fields */
+            'display_name'  => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 128, 'lang' => true],
         ],
         'keys' => [
             'image_entity' => [
@@ -185,14 +194,24 @@ class ImageEntityCore extends ObjectModel
         foreach ($images as $imageEntityName => $imageEntity) {
 
             $existingImageEntity = static::getImageEntityInfo($imageEntityName);
-            $id_image_entity = $existingImageEntity['id_image_entity'] ?? 0;
+            $imageEntityId = (int)$existingImageEntity['id_image_entity'] ?? 0;
 
-            $imageEntityObj = new ImageEntity($id_image_entity);
+            $imageEntityObj = new ImageEntity($imageEntityId);
             $imageEntityObj->name = $imageEntityName;
             $imageEntityObj->classname = $imageEntity['classname'] ?? $classname;
+            $displayName = [];
+            foreach (Language::getLanguages(false, false, true) as $langId) {
+                if (isset($imageEntityObj->display_name[$langId]) && $imageEntityObj->display_name[$langId]) {
+                    $displayName[$langId] = $imageEntityObj->display_name[$langId];
+                }  else {
+                    $displayName[$langId] = $imageEntity['displayName'] ?? ucfirst($imageEntityName);
+                }
+            }
+            $imageEntityObj->display_name = $displayName;
             $imageEntityObj->save();
+            $imageEntityId = (int)$imageEntityObj->id;
 
-            if ($imageEntityObj->id && !empty($imageEntity['imageTypes'])) {
+            if ($imageEntityId && !empty($imageEntity['imageTypes']) && is_array($imageEntity['imageTypes'])) {
                 foreach ($imageEntity['imageTypes'] as $imageType) {
 
                     $imageTypeObj = ImageType::getInstanceByName($imageType['name']);
@@ -207,7 +226,10 @@ class ImageEntityCore extends ObjectModel
 
                     // Link imageType to imageEntity
                     if ($imageTypeObj->id) {
-                        Db::getInstance()->insert('image_entity_type', ['id_image_entity' => $imageEntityObj->id, 'id_image_type' => $imageTypeObj->id], false, true, Db::REPLACE);
+                        Db::getInstance()->insert('image_entity_type', [
+                            'id_image_entity' => $imageEntityId,
+                            'id_image_type' => $imageTypeObj->id
+                        ], false, true, Db::REPLACE);
                     }
                 }
             }
@@ -304,14 +326,17 @@ class ImageEntityCore extends ObjectModel
      */
     public static function getImageEntities(): array
     {
-        $cacheKey = 'ImageEntity::getImageEntities';
+        $langId = (int)Context::getContext()->language->id;
+        $cacheKey = 'ImageEntity::getImageEntities_' . $langId;
         if (! Cache::isStored($cacheKey)) {
             $query = new DbQuery();
             $query->select('ie.*');
+            $query->select('l.display_name');
             $query->from(static::$definition['table'], 'ie');
             $query->select('it.id_image_type, it.name AS image_type, it.width, it.height, it.id_image_type_parent');
-            $query->leftJoin('image_entity_type', 'iet', 'iet.id_image_entity=ie.id_image_entity');
-            $query->leftJoin('image_type', 'it', 'iet.id_image_type=it.id_image_type');
+            $query->leftJoin('image_entity_type', 'iet', '(iet.id_image_entity = ie.id_image_entity)');
+            $query->leftJoin('image_type', 'it', '(iet.id_image_type = it.id_image_type)');
+            $query->leftJoin('image_entity_lang', 'l', '(l.id_image_entity = ie.id_image_entity AND l.id_lang = '.$langId.')');
             $query->orderBy('ie.name ASC');
 
             $result = Db::getInstance()->getArray($query);
@@ -332,6 +357,7 @@ class ImageEntityCore extends ObjectModel
                         'primary' => $definition['primary'],
                         'path' => $definition['images'][$name]['path'] ?? '',
                         'name' => $name,
+                        'display_name' => $res['display_name'] ? $res['display_name'] : ucfirst($name),
                         'classname' => $className,
                         'id_image_entity' => (int)$res['id_image_entity'],
                         'imageTypes' => [],

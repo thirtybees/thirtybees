@@ -77,7 +77,7 @@
                       {if $status['total'] == 0}disabled="disabled"{/if}
                       title="{$entityType|escape:'htmlall':'UTF-8'}"
               >
-                <i class="icon icon-play"></i> {l s='Regenerate %s' sprintf=[Translate::getAdminTranslation(ucfirst($entityType), 'AdminImages')]}
+                <i class="icon icon-play"></i> {l s='Regenerate %s' sprintf=[$status.display_name]}
               </button>
             </td>
             <td width="99%" style="padding-left: 20px; padding-top: 15px">

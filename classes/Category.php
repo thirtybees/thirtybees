@@ -86,6 +86,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             ],
             ImageEntity::ENTITY_TYPE_CATEGORIES_THUMB => [
                 'inputName' => 'thumb',
+                'displayName' => 'Categories Thumbnails',
                 'path' => _PS_CAT_IMG_DIR_.'thumb/',
             ],
         ],

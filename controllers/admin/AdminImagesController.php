@@ -1091,6 +1091,8 @@ class AdminImagesControllerCore extends AdminController
             $indexed = $conn->getValue($query);
 
             $return[$name] = [
+                'name' => $name,
+                'display_name' => $entityType['display_name'],
                 'indexed' => $indexed,
                 'total' => $total,
             ];
