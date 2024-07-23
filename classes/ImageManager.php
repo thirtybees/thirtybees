@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class ImageManagerCore
  */
@@ -590,19 +592,20 @@ class ImageManagerCore
         // Get all source image paths, that are related to this entity
         $possibleSourceImages = [];
 
-        if ($entityType==ImageEntity::ENTITY_TYPE_PRODUCTS) {
+        if ($entityType == ImageEntity::ENTITY_TYPE_PRODUCTS) {
             if (empty($idsImage)) {
                 $idsImage = array_column(Image::getImages(null, $idEntity), 'id_image');
             }
             foreach ($idsImage as $idImage) {
                 $possibleSourceImages[] = [
+                    'description' => 'product ' . $idEntity . ', image ' . $idImage,
                     'path' => $imageEntity['path'].Image::getImgFolderStatic($idImage),
                     'filename' => $idImage,
                 ];
             }
-        }
-        else {
+        } else {
             $possibleSourceImages[] = [
+                'description' => lcfirst((string)$imageEntity['classname']) . ' ' . $idEntity,
                 'path' => $imageEntity['path'],
                 'filename' => $idEntity,
             ];
@@ -661,11 +664,12 @@ class ImageManagerCore
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 if ($entityType === ImageEntity::ENTITY_TYPE_PRODUCTS) {
-                    // Note: for other entity types, we don't even know if we can expect an image
-                    throw new PrestaShopException("Source file in {$possibleSourceImage['path']} is missing!");
+                    $description = $possibleSourceImage['description'];
+                    $path = $possibleSourceImage['path'] . $possibleSourceImage['filename'] . '.' . static::getDefaultImageExtension();
+                    $path = ErrorUtils::getRelativeFile($path);
+                    throw new PrestaShopException("Source image file for $description not found ($path)");
                 }
             }
 

@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class AdminImagesControllerCore
  *
@@ -411,24 +414,35 @@ class AdminImagesControllerCore extends AdminController
                 'hasError' => true,
                 'errors'   => [$this->l('Entity type missing')],
             ]));
-        } elseif (!in_array($entityType, array_column(ImageEntity::getImageEntities(), 'name'))) {
+        }
+
+        $imageEntityInfo = ImageEntity::getImageEntityInfo($entityType);
+        if (! $imageEntityInfo) {
             $this->ajaxDie(json_encode([
                 'hasError' => true,
                 'errors'   => [$this->l('Wrong entity type')],
             ]));
         }
+
+        $imageEntityId = (int)$imageEntityInfo['id_image_entity'];
+
+        $idEntity = $this->getNextEntityId($imageEntityId);
+        if (!$idEntity) {
+            $this->ajaxDie(json_encode([
+                'hasError'    => true,
+                'errors'      => [$this->l('Thumbnails of this type have already been generated')],
+                'indexStatus' => $this->getIndexationStatus(),
+            ]));
+        }
+
         try {
-            $idEntity = $this->getNextEntityId($request->entity_type);
-            if (!$idEntity) {
-                $this->ajaxDie(json_encode([
-                    'hasError'    => true,
-                    'errors'      => [$this->l('Thumbnails of this type have already been generated')],
-                    'indexStatus' => $this->getIndexationStatus(),
-                ]));
-            }
+            $this->updateRegenerationStatus($imageEntityId, $idEntity, 'in_progress');
             ImageManager::generateImageTypesByEntity($request->entity_type, $idEntity);
-            Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($request->entity_type), $idEntity);
-        } catch (Exception $e) {
+            $this->updateRegenerationStatus($imageEntityId, $idEntity, 'completed');
+        } catch (Throwable $e) {
+            $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+            $errorHandler->logFatalError(ErrorUtils::describeException($e));
+            $this->updateRegenerationStatus($imageEntityId, $idEntity, 'failed', $e->getMessage());
             $this->errors[] = $e->getMessage();
         }
 
@@ -445,16 +459,41 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
+     * @param int $imageEntityId
+     * @param int $entityId
+     * @param string $status
+     * @param string|null $error
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    protected function updateRegenerationStatus(int $imageEntityId, int $entityId, string $status, ?string $error = null)
+    {
+        $imageEntityId = (int)$imageEntityId;
+        $entityId = (int)$entityId;
+        $conn = Db::getInstance();
+        $conn->update('image_regeneration', [
+            'status' => pSQL($status),
+            'error' => pSQL($error),
+            'date_upd' => date('Y-m-d H:i:s'),
+        ], "id_image_entity = $imageEntityId AND id_entity = $entityId");
+    }
+
+    /**
      * Ajax - delete all previous images
      *
      * @throws PrestaShopException
      */
     public function ajaxProcessDeleteOldImages()
     {
+        Db::getInstance()->update('image_regeneration', [
+            'status' => 'pending',
+            'error' => null,
+        ]);
+
         foreach (ImageEntity::getImageEntities() as $imageEntity) {
             try {
                 // Getting format generation
-                Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($imageEntity['name']), 0);
                 $this->_deleteOldImages($imageEntity['path'], $imageEntity['imageTypes'], ($imageEntity['name'] == ImageEntity::ENTITY_TYPE_PRODUCTS));
             } catch (PrestaShopException $e) {
                 $this->errors[] = $e->getMessage();
@@ -478,14 +517,10 @@ class AdminImagesControllerCore extends AdminController
         // Reset default images
         Configuration::updateValue('TB_IMAGES_UPD_DEFAULT', 0);
 
-        foreach (ImageEntity::getImageEntities() as $imageEntity) {
-            try {
-                // Getting format generation
-                Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($imageEntity['name']), 0);
-            } catch (PrestaShopException $e) {
-                $this->errors[] = $e->getMessage();
-            }
-        }
+        Db::getInstance()->update('image_regeneration', [
+            'status' => 'pending',
+            'error' => null,
+        ]);
 
         $this->ajaxDie(json_encode([
             'hasError'    => !empty($this->errors),
@@ -801,25 +836,20 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
-     * @param string $entityType
+     * @param int $imageEntityId
      *
      * @return int
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function getNextEntityId($entityType)
+    protected function getNextEntityId(int $imageEntityId)
     {
-        $imageEntity = ImageEntity::getImageEntityInfo($entityType);
-        if (! $imageEntity) {
-            throw new PrestaShopException("Invalid image entity type: '$entityType'");
-        }
-        $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_'.strtoupper($entityType));
-
-        return (int) Db::readOnly()->getValue(
-            (new DbQuery())
-                ->select('MIN(`'.bqSQL($imageEntity['primary']).'`)')
-                ->from($imageEntity['table'])
-                ->where('`'.bqSQL($imageEntity['primary']).'` > '.(int) $lastId)
-        );
+        $query = (new DbQuery())
+            ->select('MIN(r.id_entity)')
+            ->from('image_regeneration', 'r')
+            ->where('r.id_image_entity = ' . (int)$imageEntityId)
+            ->where('r.status = "pending"');
+        return (int)Db::readOnly()->getValue($query);
     }
 
     /**
@@ -1074,31 +1104,65 @@ class AdminImagesControllerCore extends AdminController
      */
     protected function getIndexationStatus()
     {
+        static::updateImageRegenerationList();
+
         $conn = Db::readOnly();
         $return = [];
         foreach (ImageEntity::getImageEntities() as $entityType) {
-
+            $imageEntityId = (int)$entityType['id_image_entity'];
             $name = $entityType['name'];
-            $table = bqSQL($entityType['table']);
-            $primary = bqSQL($entityType['primary']);
 
-            $query = new DbQuery();
-            $query->select('COUNT(*)');
-            $query->from($table);
-            $total = $conn->getValue($query);
+            $query = (new DbQuery())
+                ->select('COUNT(1) AS total')
+                ->select('SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as indexed')
+                ->select('SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed')
+                ->select('SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending')
+                ->from('image_regeneration', 'r')
+                ->where('r.id_image_entity = ' . $imageEntityId);
 
-            $query->where('`'.$primary.'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_'.strtoupper($name)));
-            $indexed = $conn->getValue($query);
-
+            $data = $conn->getRow($query);
             $return[$name] = [
                 'name' => $name,
                 'display_name' => $entityType['display_name'],
-                'indexed' => $indexed,
-                'total' => $total,
+                'total' => (int)$data['total'],
+                'pending' => (int)$data['pending'],
+                'failed' => (int)$data['failed'],
             ];
         }
 
         return $return;
+    }
+
+    /**
+     * Adds records for missing entities into tb_image_regeneration table, and removes
+     * old records
+     *
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    public static function updateImageRegenerationList()
+    {
+        $conn = Db::getInstance();
+        foreach (ImageEntity::getImageEntities() as $entityType) {
+            $imageEntityId = (int)$entityType['id_image_entity'];
+            $primary = bqSQL($entityType['primary']);
+
+            $insert = (
+                "INSERT INTO " . _DB_PREFIX_ . "image_regeneration(id_image_entity, id_entity, status, date_add, date_upd)\n" .
+                "SELECT $imageEntityId, entity.$primary, 'pending', now(), now()\n" .
+                "FROM " . _DB_PREFIX_ . $entityType['table'] . " entity\n" .
+                "WHERE NOT EXISTS(SELECT 1 FROM " . _DB_PREFIX_ . "image_regeneration r WHERE r.id_image_entity = $imageEntityId AND r.id_entity = entity.$primary)"
+            );
+            $conn->execute($insert);
+
+            $delete = (
+                "DELETE FROM " . _DB_PREFIX_ . "image_regeneration r\n" .
+                "WHERE r.id_image_entity = $imageEntityId\n" .
+                "AND NOT EXISTS(SELECT 1 FROM " . _DB_PREFIX_ . $entityType['table'] . " entity WHERE r.id_entity = entity.$primary)"
+            );
+            $conn->execute($delete);
+        }
     }
 
 }

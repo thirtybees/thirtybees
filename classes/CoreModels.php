@@ -478,6 +478,24 @@ class CoreModelsCore
 
         ];
 
+        $imageRenegeration = [
+            'table' => 'image_regeneration',
+            'primaryKeyDbType' => 'int(10)',
+            'fields' => [
+                'id_image_entity'  => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'id_entity'        => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'status'           => ['type' => ObjectModel::TYPE_STRING, 'required' => true, 'values' => [ 'pending', 'completed', 'in_progress', 'failed' ], 'default' => 'pending'],
+                'error'            => ['type' => ObjectModel::TYPE_STRING, 'required' => false],
+                'date_add'         => ['type' => ObjectModel::TYPE_DATE, 'required' => true],
+                'date_upd'         => ['type' => ObjectModel::TYPE_DATE, 'required' => true],
+            ],
+            'keys' => [
+                'image_regeneration' => [
+                    'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_image_entity', 'id_entity']],
+                ],
+            ],
+        ];
+
         $importMatch = [
             'table' => 'import_match',
             'primary' => 'id_import_match',
@@ -1276,6 +1294,7 @@ class CoreModelsCore
             'HookModule' => $hookModule,
             'HookModuleExceptions' => $hookModuleExceptions,
             'ImageEntityType' => $imageEntityType,
+            'ImageRegeneration' => $imageRenegeration,
             'ImportMatch' => $importMatch,
             'MemcachedServers' => $memcachedServers,
             'MessageReaded' => $messageReaded,

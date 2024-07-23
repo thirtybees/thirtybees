@@ -69,25 +69,34 @@
         </label>
         <table class="col-lg-9">
           {foreach $image_indexation as $entityType => $status}
+            {$total = intval($status['total'])}
+            {$indexed = $total - intval($status['pending'])}
+            {$failed = intval($status['failed'])}
           <tr>
             <td>
               <button class="btn btn-info ajax-regenerate-button"
                       id="regenerate{$entityType|ucfirst|escape:'htmlall':'UTF-8'}Images"
                       data-entity-type="{$entityType|escape:'htmlall':'UTF-8'}"
-                      {if $status['total'] == 0}disabled="disabled"{/if}
+                      {if $total === 0}disabled="disabled"{/if}
                       title="{$entityType|escape:'htmlall':'UTF-8'}"
               >
                 <i class="icon icon-play"></i> {l s='Regenerate %s' sprintf=[$status.display_name]}
               </button>
             </td>
             <td width="99%" style="padding-left: 20px; padding-top: 15px">
-              <div class="progress{if $status['indexed'] == 0} disabled{/if}"{if $status['indexed'] == 0} disabled="disabled"{/if}>
+              <div class="progress{if $total === 0} disabled{/if}">
                 <div id="progress-bar-{$entityType|escape:'htmlall':'UTF-8'}"
                      class="progress-bar"
                      role="progressbar"
-                     style="width: {if $status['total'] == 0}0{else}{(($status['indexed']|floatval / $status['total']|floatval) * 100)|intval}{/if}%; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000">
+                     style="width: {if $total === 0}0{else}{intval(($indexed / $total) * 100.0)}{/if}%; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000">
                   <span style="position: absolute; padding-left: 5px; padding-right: 5px">
-                    <span id="regen-indexed-{$entityType|escape:'html':'UTF-8'}">{$status['indexed']|intval}</span> / <span id="regen-total-{$entityType|escape:'html':'UTF-8'}">{$status['total']|intval}</span>
+                    <span id="regen-indexed-{$entityType|escape:'html':'UTF-8'}">{$indexed}</span>
+                    /
+                    <span id="regen-total-{$entityType|escape:'html':'UTF-8'}">{$total}</span>
+                    <span id="regen-failed-{$entityType|escape:'html':'UTF-8'}-wrap" {if !$failed}style="display:none"{/if}>
+                      &nbsp;
+                      {l s='([1]%s[/1] failed)' sprintf=[$failed] tags=['<span id="regen-failed-'|cat:$entityType|cat:'">']}
+                    </span>
                   </span>
                 </div>
               </div>
@@ -108,7 +117,7 @@
 
     (function () {
 
-      var regenerating = {};
+      var regenerating = { };
 
       {foreach from=$imageEntities item=$imageEntity}
         regenerating.{$imageEntity.name} = false;
@@ -221,6 +230,26 @@
           }
         }
 
+        function updateProgress(indexStatus) {
+            $.each(indexStatus, function (entityType) {
+              const total = indexStatus[entityType].total;
+              const pending = indexStatus[entityType].pending;
+              const failed = indexStatus[entityType].failed;
+              const indexed = total - pending;
+              const progressPerc = total > 0 ? ((indexed / total) * 100) : 0;
+
+              $('#regen-indexed-' + entityType).text(indexed);
+              $('#regen-total-' + entityType).text(total);
+              $('#regen-failed-' + entityType).text(failed);
+              $('#progress-bar-' + entityType).css('width', progressPerc + '%');
+              if (failed > 0) {
+                $('#regen-failed-' + entityType+'-wrap').show();
+              } else {
+                $('#regen-failed-' + entityType+'-wrap').hide();
+              }
+            });
+        }
+
         function deleteOldImages() {
           $.each(pendingRequests, function (index, request) {
             if (request != null && typeof request.abort === 'function') {
@@ -244,11 +273,7 @@
               }
 
               if (response.indexStatus) {
-                $.each(response.indexStatus, function (entityType) {
-                  $('#regen-indexed-' + entityType).text(response.indexStatus[entityType].indexed);
-                  $('#regen-total-' + entityType).text(response.indexStatus[entityType].total);
-                  $('#progress-bar-' + entityType).css('width', (response.indexStatus[entityType].indexed / response.indexStatus[entityType].total) * 100);
-                });
+                updateProgress(response.indexStatus);
               }
             },
             error: function (jqXhr) {
@@ -297,11 +322,7 @@
               }
 
               if (response.indexStatus) {
-                $.each(response.indexStatus, function (entityType) {
-                  $('#regen-indexed-' + entityType).text(response.indexStatus[entityType].indexed);
-                  $('#regen-total-' + entityType).text(response.indexStatus[entityType].total);
-                  $('#progress-bar-' + entityType).css('width', (response.indexStatus[entityType].indexed / response.indexStatus[entityType].total) * 100);
-                });
+                updateProgress(response.indexStatus);
               }
             },
             error: function (jqXhr) {
@@ -341,18 +362,14 @@
               }
 
               if (response.indexStatus) {
-                if (response.indexStatus[entityType].indexed == 0) {
-                  response.indexStatus[entityType].indexed = response.indexStatus[entityType].total;
-                }
-                $('#regen-indexed-' + entityType).text(response.indexStatus[entityType].indexed);
-                $('#regen-total-' + entityType).text(response.indexStatus[entityType].total);
-                $('#progress-bar-' + entityType).css('width', (response.indexStatus[entityType].indexed / response.indexStatus[entityType].total) * 100 + '%');
+                updateProgress(response.indexStatus);
 
-                if (response.indexStatus[entityType].indexed == response.indexStatus[entityType].total) {
+                if (response.indexStatus[entityType].pending === 0) {
                   showSuccessMessage('{l s='The thumbnails for this type have been successfully generated' js=1}');
                   pauseGenerating(entityType);
                 }
               }
+
               if (response.hasError) {
                 $.each(response.errors, function (index, error) {
                   if (error) {
