@@ -1147,9 +1147,10 @@ class AdminImagesControllerCore extends AdminController
         foreach (ImageEntity::getImageEntities() as $entityType) {
             $imageEntityId = (int)$entityType['id_image_entity'];
             $primary = bqSQL($entityType['primary']);
+            $table = _DB_PREFIX_ . "image_regeneration";
 
             $insert = (
-                "INSERT INTO " . _DB_PREFIX_ . "image_regeneration(id_image_entity, id_entity, status, date_add, date_upd)\n" .
+                "INSERT INTO $table(id_image_entity, id_entity, status, date_add, date_upd)\n" .
                 "SELECT $imageEntityId, entity.$primary, 'pending', now(), now()\n" .
                 "FROM " . _DB_PREFIX_ . $entityType['table'] . " entity\n" .
                 "WHERE NOT EXISTS(SELECT 1 FROM " . _DB_PREFIX_ . "image_regeneration r WHERE r.id_image_entity = $imageEntityId AND r.id_entity = entity.$primary)"
@@ -1157,9 +1158,9 @@ class AdminImagesControllerCore extends AdminController
             $conn->execute($insert);
 
             $delete = (
-                "DELETE FROM " . _DB_PREFIX_ . "image_regeneration r\n" .
-                "WHERE r.id_image_entity = $imageEntityId\n" .
-                "AND NOT EXISTS(SELECT 1 FROM " . _DB_PREFIX_ . $entityType['table'] . " entity WHERE r.id_entity = entity.$primary)"
+                "DELETE FROM $table\n" .
+                "WHERE id_image_entity = $imageEntityId\n" .
+                "AND NOT EXISTS(SELECT 1 FROM " . _DB_PREFIX_ . $entityType['table'] . " entity WHERE $table.id_entity = entity.$primary)"
             );
             $conn->execute($delete);
         }
