@@ -250,6 +250,15 @@
             });
         }
 
+        function handleResponseError(jqXhr) {
+          let msg = '{l s='Server retured error code [statusCode]' js=1}'.replace('[statusCode]', jqXhr.status);
+          const response = jqXhr.responseJSON;
+          if (response && response.status === 'error' && response.message) {
+            msg += ': ' + response.message;
+          }
+          showErrorMessage(msg);
+        }
+
         function deleteOldImages() {
           $.each(pendingRequests, function (index, request) {
             if (request != null && typeof request.abort === 'function') {
@@ -276,19 +285,7 @@
                 updateProgress(response.indexStatus);
               }
             },
-            error: function (jqXhr) {
-              showErrorMessage('{l s='Server timed out before all images could be deleted. You might want to increase the `max_execution_time`' js=1}');
-
-              if (parseInt(jqXhr.status, 10) === 504) {
-                $.each(regenerating, function (entityType) {
-                  $('#regen-indexed-' + entityType).text('0');
-                  $('#regen-total-' + entityType).text('0');
-                  $('#progress-bar-' + entityType).css('width', 0);
-                });
-              } else if (parseInt(jqXhr.status, 10) >= 500 < 600) {
-                showErrorMessage('{l s='Received a 5xx response (generic error). Make the rate limit of the server has been (temporarily) increased' js=1}');
-              }
-            },
+            error: handleResponseError,
             complete: function () {
               unspinDeleteButton();
               enableButtons();
@@ -325,19 +322,7 @@
                 updateProgress(response.indexStatus);
               }
             },
-            error: function (jqXhr) {
-              showErrorMessage('{l s='Server timed out before all images could be deleted. You might want to increase the `max_execution_time`' js=1}');
-
-              if (parseInt(jqXhr.status, 10) === 504) {
-                $.each(regenerating, function (entityType) {
-                  $('#regen-indexed-' + entityType).text('0');
-                  $('#regen-total-' + entityType).text('0');
-                  $('#progress-bar-' + entityType).css('width', 0);
-                });
-              } else if (parseInt(jqXhr.status, 10) >= 500 < 600) {
-                showErrorMessage('{l s='Received a 5xx response (generic error). Make the rate limit of the server has been (temporarily) increased' js=1}');
-              }
-            },
+            error: handleResponseError,
             complete: function () {
               unspinDeleteButton();
               enableButtons();
@@ -378,11 +363,7 @@
                 });
               }
             },
-            error: function (jqXhr) {
-              if (parseInt(jqXhr.status, 10) >= 500 && parseInt(jqXhr.status, 10) < 600) {
-                showErrorMessage('{l s='Received a 5xx response (generic error). Make the rate limit of the server has been (temporarily) increased' js=1}');
-              }
-            },
+            error: handleResponseError,
             complete: function () {
               if (regenerating[entityType]) {
                 doAjaxRequest(entityType);

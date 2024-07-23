@@ -407,6 +407,8 @@ class AdminImagesControllerCore extends AdminController
      */
     public function ajaxProcessRegenerateThumbnails()
     {
+        $this->setJSendErrorHandling();
+
         $request = json_decode(file_get_contents('php://input'));
         $entityType = $request->entity_type;
         if (!$entityType) {
@@ -486,6 +488,8 @@ class AdminImagesControllerCore extends AdminController
      */
     public function ajaxProcessDeleteOldImages()
     {
+        $this->setJSendErrorHandling();
+
         Db::getInstance()->update('image_regeneration', [
             'status' => 'pending',
             'error' => null,
@@ -514,6 +518,8 @@ class AdminImagesControllerCore extends AdminController
      */
     public function ajaxProcessResetImageStats()
     {
+        $this->setJSendErrorHandling();
+
         // Reset default images
         Configuration::updateValue('TB_IMAGES_UPD_DEFAULT', 0);
 
