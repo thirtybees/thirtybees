@@ -29,14 +29,21 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\View\Model\GuestTrackingOrderModel;
+
 /**
  * Class GuestTrackingControllerCore
  */
 class GuestTrackingControllerCore extends FrontController
 {
-    /** @var bool $ssl */
+    /**
+     * @var bool $ssl
+     */
     public $ssl = true;
-    /** @var string $php_self */
+
+    /**
+     * @var string $php_self
+     */
     public $php_self = 'guest-tracking';
 
     /**
@@ -67,57 +74,52 @@ class GuestTrackingControllerCore extends FrontController
     public function postProcess()
     {
         if (Tools::isSubmit('submitGuestTracking') || Tools::isSubmit('submitTransformGuestToCustomer')) {
-            // These lines are here for retrocompatibility with old theme
-            $idOrder = Tools::getValue('id_order');
-            $orderCollection = [];
-            if ($idOrder) {
-                if (is_numeric($idOrder)) {
-                    $order = new Order((int) $idOrder);
-                    if (Validate::isLoadedObject($order)) {
-                        $orderCollection = Order::getByReference($order->reference);
-                    }
-                } else {
-                    $orderCollection = Order::getByReference($idOrder);
-                }
+
+            $email = (string)Tools::getValue('email');
+            if (!Validate::isEmail($email)) {
+                $this->errors[] = Tools::displayError('Please provide a valid email address.');
+                return;
             }
 
-            // Get order reference, ignore package reference (after the #, on the order reference)
-            $orderReference = current(explode('#', Tools::getValue('order_reference')));
-            // Ignore $result_number
-            if (!empty($orderReference)) {
-                $orderCollection = Order::getByReference($orderReference);
-            }
-
-            $email = Tools::getValue('email');
-
-            if (empty($orderReference) && empty($idOrder)) {
+            $orders = $this->getOrders();
+            if (! $orders) {
                 $this->errors[] = Tools::displayError('Please provide your order\'s reference number.');
-            } elseif (empty($email)) {
-                $this->errors[] = Tools::displayError('Please provide a valid email address.');
-            } elseif (!Validate::isEmail($email)) {
-                $this->errors[] = Tools::displayError('Please provide a valid email address.');
-            } elseif (!Customer::customerExists($email, false, false)) {
-                $this->errors[] = Tools::displayError('There is no account associated with this email address.');
-            } elseif (Customer::customerExists($email, false, true)) {
+                return;
+            }
+
+            if (Customer::customerExists($email, false, true)) {
                 $this->errors[] = Tools::displayError('This page is for guest accounts only. Since your guest account has already been transformed into a customer account, you can no longer view your order here. Please log in to your customer account to view this order');
                 $this->context->smarty->assign('show_login_link', true);
-            } elseif (empty($orderCollection->getResults())) {
+                return;
+            }
+
+            $order = $orders[0];
+            if (! $order->isAssociatedAtGuest($email)) {
                 $this->errors[] = Tools::displayError('Invalid order reference');
-            } elseif (!$orderCollection->getFirst()->isAssociatedAtGuest($email)) {
-                $this->errors[] = Tools::displayError('Invalid order reference');
-            } else {
-                $this->assignOrderTracking($orderCollection);
-                if (isset($order) && Tools::isSubmit('submitTransformGuestToCustomer')) {
-                    $customer = new Customer((int) $order->id_customer);
-                    if (!Validate::isLoadedObject($customer)) {
-                        $this->errors[] = Tools::displayError('Invalid customer');
-                    } elseif (!Tools::getValue('password')) {
-                        $this->errors[] = Tools::displayError('Invalid password.');
-                    } elseif (!$customer->transformToCustomer($this->context->language->id, Tools::getValue('password'))) {
-                        $this->errors[] = Tools::displayError('An error occurred while transforming a guest into a registered customer.');
-                    } else {
-                        $this->context->smarty->assign('transformSuccess', true);
-                    }
+                return;
+            }
+
+            // display orders
+            $this->assignOrderTracking($orders);
+
+            // process transformation to customer account
+            if (Tools::isSubmit('submitTransformGuestToCustomer')) {
+                $password = Tools::getValue('password');
+                if (! Validate::isPasswd($password)) {
+                    $this->errors[] = Tools::displayError('Please use stronger password');
+                    return;
+                }
+
+                $customer = new Customer((int) $order->id_customer);
+                if (!Validate::isLoadedObject($customer)) {
+                    $this->errors[] = Tools::displayError('Invalid customer');
+                    return;
+                }
+
+                if (! $customer->transformToCustomer($this->context->language->id, Tools::getValue('password'))) {
+                    $this->errors[] = Tools::displayError('An error occurred while transforming a guest into a registered customer.');
+                } else {
+                    $this->context->smarty->assign('transformSuccess', true);
                 }
             }
         }
@@ -126,23 +128,17 @@ class GuestTrackingControllerCore extends FrontController
     /**
      * Assigns template vars related to order tracking information
      *
-     * @param PrestaShopCollection $orderCollection
+     * @param Order[] $orders non-empty list of orders
      *
      * @throws PrestaShopException
      */
-    protected function assignOrderTracking($orderCollection)
+    protected function assignOrderTracking(array $orders)
     {
-        $customer = new Customer((int) $orderCollection->getFirst()->id_customer);
-
-        $orderCollection = ($orderCollection->getAll());
-
         $orderList = [];
-        foreach ($orderCollection as $order) {
-            $orderList[] = $order;
-        }
+        $customer = new Customer($orders[0]->id_customer);
 
-        foreach ($orderList as $order) {
-            /** @var Order $order */
+        foreach ($orders as $o) {
+            $order = new GuestTrackingOrderModel($o->id);
             $order->id_order_state = (int) $order->getCurrentState();
             $order->invoice = (OrderState::invoiceAvailable((int) $order->id_order_state) && $order->invoice_number);
             $order->order_history = $order->getHistory((int) $this->context->language->id, false, true);
@@ -162,27 +158,30 @@ class GuestTrackingControllerCore extends FrontController
             Product::addCustomizationPrice($order->products, $order->customizedDatas);
             $order->total_old = $order->total_discounts > 0 ? (float) $order->total_paid - (float) $order->total_discounts : false;
 
-            if ($order->carrier->url && $order->shipping_number) {
-                $order->followup = str_replace('@', $order->shipping_number, $order->carrier->url);
+            if ($order->carrier->url) {
+                $orderCarrier = new OrderCarrier($order->getIdOrderCarrier());
+                if (Validate::isLoadedObject($orderCarrier) && $orderCarrier->tracking_number) {
+                    $order->followup = str_replace('@', $orderCarrier->tracking_number, $order->carrier->url);
+                }
             }
             $order->hook_orderdetaildisplayed = Hook::displayHook('displayOrderDetail', ['order' => $order]);
 
             Hook::triggerEvent('actionOrderDetail', ['carrier' => $order->carrier, 'order' => $order]);
+
+            $orderList[] = $order;
         }
 
-        $this->context->smarty->assign(
-            [
-                'shop_name'           => Configuration::get('PS_SHOP_NAME'),
-                'order_collection'    => $orderList,
-                'return_allowed'      => false,
-                'invoiceAllowed'      => (int) Configuration::get('PS_INVOICE'),
-                'is_guest'            => true,
-                'group_use_tax'       => (Group::getPriceDisplayMethod($customer->id_default_group) == PS_TAX_INC),
-                'CUSTOMIZE_FILE'      => Product::CUSTOMIZE_FILE,
-                'CUSTOMIZE_TEXTFIELD' => Product::CUSTOMIZE_TEXTFIELD,
-                'use_tax'             => Configuration::get('PS_TAX'),
-            ]
-        );
+        $this->context->smarty->assign([
+            'shop_name'           => Configuration::get('PS_SHOP_NAME'),
+            'order_collection'    => $orderList,
+            'return_allowed'      => false,
+            'invoiceAllowed'      => (int) Configuration::get('PS_INVOICE'),
+            'is_guest'            => true,
+            'group_use_tax'       => Group::getPriceDisplayMethod($customer->id_default_group) === PS_TAX_INC,
+            'CUSTOMIZE_FILE'      => Product::CUSTOMIZE_FILE,
+            'CUSTOMIZE_TEXTFIELD' => Product::CUSTOMIZE_TEXTFIELD,
+            'use_tax'             => Configuration::get('PS_TAX'),
+        ]);
     }
 
     /**
@@ -241,5 +240,43 @@ class GuestTrackingControllerCore extends FrontController
             'inv_adr_fields' => $invAdrFields,
             'dlv_adr_fields' => $dlvAdrFields,
         ]);
+    }
+
+    /**
+     * @return Order[]
+     *
+     * @throws PrestaShopException
+     */
+    protected function getOrders(): array
+    {
+        $orders = [];
+
+        // first, try to resolve by order_reference
+        $orderReference = (string)Tools::getValue('order_reference');
+        if ($orderReference) {
+            // Get order reference, ignore package reference (after the #, on the order reference)
+            $orderReference = explode('#', $orderReference)[0];
+            if ($orderReference) {
+                $orders = Order::getByReference($orderReference)->getResults();
+            }
+        }
+
+        // fallback for id_order, for retrocompatibility with old theme
+        if (! $orders) {
+            $idOrder = Tools::getValue('id_order');
+            if ($idOrder) {
+                if (is_numeric($idOrder)) {
+                    $order = new Order((int)$idOrder);
+                    if (Validate::isLoadedObject($order)) {
+                        $orders = Order::getByReference($order->reference)->getResults();
+                    }
+                }
+                if (!$orders) {
+                    $orders = Order::getByReference($idOrder)->getResults();
+                }
+            }
+        }
+
+        return $orders;
     }
 }

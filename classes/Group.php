@@ -261,7 +261,7 @@ class GroupCore extends ObjectModel
     public static function getPriceDisplayMethod($idGroup)
     {
         if ( ! isset(static::$group_price_display_method[$idGroup])) {
-            static::$group_price_display_method[$idGroup] = Db::readOnly()->getValue(
+            static::$group_price_display_method[$idGroup] = (int)Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`price_display_method`')
                     ->from('group')
@@ -269,7 +269,7 @@ class GroupCore extends ObjectModel
             );
         }
 
-        return static::$group_price_display_method[$idGroup];
+        return (int)static::$group_price_display_method[$idGroup];
     }
 
     /**
@@ -283,10 +283,10 @@ class GroupCore extends ObjectModel
     {
         static $psGroupFeatureActive = null;
         if ($psGroupFeatureActive === null) {
-            $psGroupFeatureActive = Configuration::get('PS_GROUP_FEATURE_ACTIVE');
+            $psGroupFeatureActive = (bool)Configuration::get('PS_GROUP_FEATURE_ACTIVE');
         }
 
-        return $psGroupFeatureActive;
+        return (bool)$psGroupFeatureActive;
     }
 
     /**
