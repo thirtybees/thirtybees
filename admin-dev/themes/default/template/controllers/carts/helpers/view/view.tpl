@@ -217,5 +217,5 @@
 		{l s='For this particular customer group, prices are displayed as:'} <b>{if $tax_calculation_method == $smarty.const.PS_TAX_EXC}{l s='Tax excluded'}{else}{l s='Tax included'}{/if}</b>
 	</div>
 	{hook h="displayAdminCartFooter" id_cart=$cart->id|intval}
-{/block}
 </div>
+{/block}
