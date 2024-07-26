@@ -79,7 +79,7 @@ class MessageCore extends ObjectModel
      *
      * @param int $idCart Cart ID
      *
-     * @return array Message
+     * @return array|false Message
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

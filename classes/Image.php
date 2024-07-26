@@ -111,7 +111,7 @@ class ImageCore extends ObjectModel
      * @param int $idProduct Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
-     * @return array
+     * @return array|false
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -293,11 +293,11 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     *Get global product cover
+     * Get global product cover
      *
      * @param int $idProduct Product ID
      *
-     * @return bool result
+     * @return array|false result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

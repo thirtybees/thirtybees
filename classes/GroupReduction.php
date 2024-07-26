@@ -150,7 +150,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @param int $idCategory
      *
-     * @return array|null
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -189,7 +189,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @param int $idCategory
      *
-     * @return array|null
+     * @return array|false
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */

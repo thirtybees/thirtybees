@@ -126,7 +126,7 @@ class FeatureCore extends ObjectModel implements InitializationCallback
      * @param int $idLang Language id
      * @param int $idFeature Feature id
      *
-     * @return array Array with feature's data
+     * @return array|false Array with feature's data
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

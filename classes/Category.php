@@ -799,7 +799,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @param string $categoryName Searched category name
      * @param int $idParentCategory parent category ID
      *
-     * @return array Corresponding category
+     * @return array|false Corresponding category
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

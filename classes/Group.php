@@ -389,7 +389,7 @@ class GroupCore extends ObjectModel
      *
      * @param string $query Searched string
      *
-     * @return array Corresponding groups
+     * @return array|false Corresponding groups
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

@@ -403,7 +403,7 @@ class CMSCategoryCore extends ObjectModel
      * @param string $query Searched string
      * @param bool $unrestricted allows search without lang and includes first CMSCategory and exact match
      *
-     * @return array Corresponding categories
+     * @return array|false Corresponding categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -437,7 +437,7 @@ class CMSCategoryCore extends ObjectModel
      * @param string $cmsCategoryName Searched CMSCategory name
      * @param int $idParentCmsCategory parent CMSCategory ID
      *
-     * @return array Corresponding CMSCategory
+     * @return array|false Corresponding CMSCategory
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @deprecated 1.0.0

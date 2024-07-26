@@ -968,7 +968,7 @@ class OrderCore extends ObjectModel
      *
      * @param int $idLang
      *
-     * @return array Order status details
+     * @return array|false Order status details
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
