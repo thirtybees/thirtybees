@@ -155,9 +155,6 @@ class AddressControllerCore extends FrontController
             if (method_exists('VatNumber', 'adjustAddressForLayout')) {
                 VatNumber::adjustAddressForLayout($this->_address);
                 VatNumber::assignTemplateVars($this->context);
-            } else {
-                // Retrocompatibility for module version < 2.1.0 (07/2018).
-                $this->assignVatNumber();
             }
         }
 
@@ -391,38 +388,6 @@ class AddressControllerCore extends FrontController
             [
                 'ordered_adr_fields' => $orderedAdrFields,
                 'required_fields'    => $requireFormFieldsList,
-            ]
-        );
-    }
-
-    /**
-     * Assign template vars related to vat number
-     * For retrocompatibility with vatnumber module version < 2.1.0 (07/2018).
-     *
-     * @throws PrestaShopException
-     * @deprecated 1.0.6 Moved into the vatnumber module,
-     *                   VatNumber::assignTemplateVars().
-     */
-    protected function assignVatNumber()
-    {
-        $vatNumberExists = file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php');
-        $vatNumberManagement = Configuration::get('VATNUMBER_MANAGEMENT');
-        if ($vatNumberManagement && $vatNumberExists) {
-            include_once(_PS_MODULE_DIR_.'vatnumber/vatnumber.php');
-        }
-
-        if ($vatNumberManagement && $vatNumberExists && VatNumber::isApplicable((int) Tools::getCountry())) {
-            $vatDisplay = 2;
-        } elseif ($vatNumberManagement) {
-            $vatDisplay = 1;
-        } else {
-            $vatDisplay = 0;
-        }
-
-        $this->context->smarty->assign(
-            [
-                'vatnumber_ajax_call' => file_exists(_PS_MODULE_DIR_.'vatnumber/ajax.php'),
-                'vat_display'         => $vatDisplay,
             ]
         );
     }
