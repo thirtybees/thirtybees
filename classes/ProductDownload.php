@@ -313,9 +313,13 @@ class ProductDownloadCore extends ObjectModel
      * @param bool $hash hash code in table order detail
      *
      * @return string Html all the code for print a link to the file
+     * @throws PrestaShopException
+     * @deprecated 1.6.0
      */
     public function getHtmlLink($class = false, $admin = true, $hash = false)
     {
+        Tools::displayAsDeprecated();
+
         $link = $this->getTextLink($admin, $hash);
         $html = '<a href="'.$link.'" title=""';
         if ($class) {
@@ -331,14 +335,19 @@ class ProductDownloadCore extends ObjectModel
      *
      * @param bool $admin specific to backend (optional)
      * @param bool|string $hash hash code in table order detail (optional)
+     * @param array $params
      *
      * @return string Html all the code for print a link to the file
+     * @throws PrestaShopException
      */
-    public function getTextLink($admin = true, $hash = false)
+    public function getTextLink($admin = true, $hash = false, $params = [])
     {
-        $key = $this->filename.'-'.($hash ? $hash : 'orderdetail');
-        $link = ($admin) ? 'get-file-admin.php?' : _PS_BASE_URL_.__PS_BASE_URI__.'index.php?controller=get-file&';
-        $link .= ($admin) ? 'file='.$this->filename : 'key='.$key;
+        if ($admin) {
+            $link = 'get-file-admin.php?file='.$this->filename;
+        } else {
+            $params['key'] = $this->filename.'-'.($hash ? $hash : 'orderdetail');
+            $link = Context::getContext()->link->getPageLink('get-file', null, null, $params);
+        }
 
         return $link;
     }

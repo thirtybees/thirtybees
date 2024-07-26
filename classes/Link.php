@@ -892,7 +892,7 @@ class LinkCore
      * @param string $controller
      * @param bool $ssl
      * @param int $idLang
-     * @param string|array $request
+     * @param string|array|null $request
      * @param bool $requestUrlEncode Use URL encode
      * @param int|null $idShop
      * @param bool $relativeProtocol
