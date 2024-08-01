@@ -480,13 +480,16 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $strAttributesGroups .= '"'.$attributeGroup['id_attribute_group'].'" : '.($attributeGroup['group_type'] == 'color' ? '1' : '0').', ';
         }
 
-        $imageExtension = ImageManager::getDefaultImageExtension();
-        $image = '../img/'.$this->fieldImageSettings['path'].'/'.(int) $obj->id.'.'.$imageExtension;
+        $imageSettings = $this->getFieldImageSettings('texture');
+        $image = ImageManager::getSourceImage($imageSettings['path'], $obj->id);
+        if ($image) {
+            $image = str_replace(_PS_IMG_DIR_, '../img/', $image);
+        }
 
         $this->tpl_form_vars = [
             'strAttributesGroups'      => $strAttributesGroups,
             'colorAttributeProperties' => Validate::isLoadedObject($obj) && $obj->isColorAttribute(),
-            'imageTextureExists'       => (bool)ImageManager::getSourceImage($this->fieldImageSettings['path'].'/', $obj->id),
+            'imageTextureExists'       => (bool)$image,
             'imageTexture'             => $image,
             'imageTextureUrl'          => Tools::safeOutput($_SERVER['REQUEST_URI']).'&deleteImage=1',
         ];
@@ -771,7 +774,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
             }
 
             if (Tools::getIntValue('id_attribute') && Tools::isSubmit('submitAddattribute') && Tools::getValue('color') && !Tools::getValue('filename')) {
-                if ($sourceImage = ImageManager::getSourceImage($this->fieldImageSettings['path'].'/', (string)Tools::getIntValue('id_attribute'))) {
+                $imageSettings = $this->getFieldImageSettings('texture');
+                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], (string)Tools::getIntValue('id_attribute'))) {
                     unlink($sourceImage);
                 }
             }
@@ -963,7 +967,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             foreach ($this->_list as &$list) {
                 $id = (int)$list['id_attribute'];
-                if ($sourceImage = ImageManager::getSourceImage($this->fieldImageSettings['path'], $id)) {
+                $imageSettings = $this->getFieldImageSettings('texture');
+                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], $id)) {
                     if (!isset($list['color']) || !is_array($list['color'])) {
                         $list['color'] = [];
                     }

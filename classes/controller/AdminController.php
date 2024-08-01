@@ -4961,4 +4961,21 @@ class AdminControllerCore extends Controller
         }
         return (string)$value;
     }
+
+    /**
+     * @param string $name
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    protected function getFieldImageSettings(string $name): array
+    {
+        foreach ($this->fieldImageSettings as $fieldImageSetting) {
+            if ((string)$fieldImageSetting['name'] === $name) {
+                return $fieldImageSetting;
+            }
+        }
+        throw new PrestaShopException("Image settings for field '$name' not found");
+    }
 }
