@@ -42,7 +42,10 @@
 	{if $input.name == 'current_texture'}
 		<div class="col-lg-9">
 			{if isset($imageTextureExists) && $imageTextureExists}
-				<img src="{$imageTexture}" alt="{l s='Texture'}" class="img-thumbnail" />
+				<div>
+					<img src="{$imageTexture}" alt="{l s='Texture'}" class="img-thumbnail" />
+				</div>
+				<a class="btn btn-link" href="{$imageDeleteLink}" onclick="return confirm('{l s='Do you really want to delete this texture image?' js=1}')">{l s='Delete texture'}</a>
 			{else}
 				<p class="form-control-static">{l s='None'}</p>
 			{/if}

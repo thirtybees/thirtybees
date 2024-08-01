@@ -482,8 +482,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         $imageSettings = $this->getFieldImageSettings('texture');
         $image = ImageManager::getSourceImage($imageSettings['path'], $obj->id);
+        $deleteLink = '';
         if ($image) {
             $image = str_replace(_PS_IMG_DIR_, '../img/', $image);
+            $deleteLink =  $this->context->link->getAdminLink('AdminAttributesGroups', true, [
+                'deleteTexture' => 1,
+                'id_attribute' => Tools::getIntValue('id_attribute'),
+            ]);
         }
 
         $this->tpl_form_vars = [
@@ -492,6 +497,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             'imageTextureExists'       => (bool)$image,
             'imageTexture'             => $image,
             'imageTextureUrl'          => Tools::safeOutput($_SERVER['REQUEST_URI']).'&deleteImage=1',
+            'imageDeleteLink'          => $deleteLink,
         ];
 
         return parent::renderForm();
@@ -728,6 +734,26 @@ class AdminAttributesGroupsControllerCore extends AdminController
             return;
         }
 
+        if (Tools::isSubmit('deleteTexture')) {
+            $attribute = new ProductAttribute(Tools::getIntValue('id_attribute'));
+            if (Validate::isLoadedObject($attribute))  {
+                $imageSettings = $this->getFieldImageSettings('texture');
+                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], $attribute->id)) {
+                    unlink($sourceImage);
+                    $this->confirmations[] = $this->l('Texture image was deleted');
+                } else {
+                    $this->errors[] = $this->l('Texture image not found');
+                }
+                $this->redirect_after = $this->context->link->getAdminLink('AdminAttributesGroups', true, [
+                    'id_attribute_group' => (int)$attribute->id_attribute_group,
+                    'viewattribute_group' => 1,
+                    'updateattribute' => 1,
+                    'id_attribute' => (int)$attribute->id,
+                ]);
+                return;
+            }
+        }
+
         if (!Tools::getValue($this->identifier) && Tools::getIntValue('id_attribute') && !Tools::getValue('attributeOrderby')) {
             // Override var of Controller
             $this->table = 'attribute';
@@ -771,13 +797,6 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 }
                 $_POST['id_parent'] = 0;
                 $this->processSave();
-            }
-
-            if (Tools::getIntValue('id_attribute') && Tools::isSubmit('submitAddattribute') && Tools::getValue('color') && !Tools::getValue('filename')) {
-                $imageSettings = $this->getFieldImageSettings('texture');
-                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], (string)Tools::getIntValue('id_attribute'))) {
-                    unlink($sourceImage);
-                }
             }
         } else {
             if (Tools::isSubmit('submitBulkdelete'.$this->table)) {
