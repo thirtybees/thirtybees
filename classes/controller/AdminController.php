@@ -1667,9 +1667,9 @@ class AdminControllerCore extends Controller
     {
         if (!empty($this->fieldImageSettings)) {
             foreach ($this->fieldImageSettings as $imageEntityName => $fieldImageSetting) {
-                $imageExtension = $fieldImageSetting['imageExtension'] ?? false;
-                $imageTypes = ImageType::getImagesTypes($imageEntityName);
                 if (isset($fieldImageSetting['inputName']) && isset($fieldImageSetting['path'])) {
+                    $imageExtension = $fieldImageSetting['imageExtension'] ?? false;
+                    $imageTypes = $imageEntityName ? ImageType::getImagesTypes($imageEntityName) : [];
                     $width = $fieldImageSetting['width'] ?? null;
                     $height = $fieldImageSetting['height'] ?? null;
                     $this->uploadImage($id, $fieldImageSetting['inputName'], $fieldImageSetting['path'], $imageExtension, $width, $height, $imageTypes);
