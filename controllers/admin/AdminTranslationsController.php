@@ -90,9 +90,12 @@ class AdminTranslationsControllerCore extends AdminController
             $emailFile = _PS_ROOT_DIR_.$email;
         }
 
-        $emailHtml = file_get_contents($emailFile);
 
-        return $emailHtml;
+        if (file_exists($emailFile)) {
+            return (string)file_get_contents($emailFile);
+        }
+
+        return '';
     }
 
     /**
@@ -2686,7 +2689,10 @@ class AdminTranslationsControllerCore extends AdminController
             $filesToCopyIso = [];
             $currentIsoCode = $lang['iso_code'];
 
-            $dirToCopyIso[] = _PS_MAIL_DIR_.$currentIsoCode.'/';
+            $dir = _PS_MAIL_DIR_.$currentIsoCode.'/';
+            if (@is_dir($dir)) {
+                $dirToCopyIso[] = $dir;
+            }
 
             $modulesHasMails = $this->getModulesHasMails(true);
             foreach ($modulesHasMails as $modulePath) {
