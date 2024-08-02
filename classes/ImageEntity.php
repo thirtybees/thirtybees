@@ -110,7 +110,6 @@ class ImageEntityCore extends ObjectModel
      */
     public static function rebuildImageEntities($classname, $images)
     {
-
         // Adding images from themes
         /** @var Theme $theme */
         foreach (Theme::getThemes() as $theme) {
@@ -194,7 +193,7 @@ class ImageEntityCore extends ObjectModel
         foreach ($images as $imageEntityName => $imageEntity) {
 
             $existingImageEntity = static::getImageEntityInfo($imageEntityName);
-            $imageEntityId = (int)$existingImageEntity['id_image_entity'] ?? 0;
+            $imageEntityId = isset($existingImageEntity['id_image_entity']) ? (int)$existingImageEntity['id_image_entity'] : 0;
 
             $imageEntityObj = new ImageEntity($imageEntityId);
             $imageEntityObj->name = $imageEntityName;
@@ -226,10 +225,7 @@ class ImageEntityCore extends ObjectModel
 
                     // Link imageType to imageEntity
                     if ($imageTypeObj->id) {
-                        Db::getInstance()->insert('image_entity_type', [
-                            'id_image_entity' => $imageEntityId,
-                            'id_image_type' => $imageTypeObj->id
-                        ], false, true, Db::REPLACE);
+                        $imageEntityObj->associateImageType($imageTypeObj->id);
                     }
                 }
             }
@@ -265,14 +261,7 @@ class ImageEntityCore extends ObjectModel
                 $ids_image_entity[$imageEntity['name']] = $imageEntity['id_image_entity'];
             }
 
-            $oldEntityTypes = [
-                static::ENTITY_TYPE_PRODUCTS,
-                static::ENTITY_TYPE_CATEGORIES,
-                static::ENTITY_TYPE_MANUFACTURERS,
-                static::ENTITY_TYPE_SUPPLIERS,
-                static::ENTITY_TYPE_SCENES,
-                static::ENTITY_TYPE_STORES,
-            ];
+            $oldEntityTypes = static::getLegacyImageEntities();
 
             foreach ($imageTypes as $imageType) {
                 foreach ($oldEntityTypes as $oldEntityType) {
@@ -398,6 +387,11 @@ class ImageEntityCore extends ObjectModel
             $conn = Db::getInstance();
             if ($deleteExisting) {
                 $conn->delete('image_entity_type', "id_image_entity = $imageEntityId");
+
+                // BC: keep legacy properties in tb_image_type synchronized
+                if (in_array($this->name, static::getLegacyImageEntities())) {
+                    $conn->update('image_type', [ $this->name => 0]);
+                }
             }
 
             foreach ($imageTypeIds as $imageTypeId) {
@@ -416,11 +410,19 @@ class ImageEntityCore extends ObjectModel
     public function associateImageType(int $imageTypeId)
     {
         $imageEntityId = (int)$this->id;
+        $imageTypeId = (int)$imageTypeId;
         if ($imageEntityId && $imageTypeId) {
-            Db::getInstance()->insert('image_entity_type', [
+            $conn = Db::getInstance();
+            $conn->insert('image_entity_type', [
                 'id_image_entity' => $imageEntityId,
                 'id_image_type' => $imageTypeId,
             ], false, true, Db::INSERT_IGNORE);
+
+            // BC: keep legacy properties in tb_image_type synchronized
+            if (in_array($this->name, static::getLegacyImageEntities())) {
+                $conn->update('image_type', [ $this->name => 1 ], 'id_image_type = ' . $imageTypeId);
+            }
+            ImageType::cleanCache();
         }
     }
 
@@ -436,8 +438,7 @@ class ImageEntityCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         $res = parent::add($autoDate, $nullValues);
-        Cache::clean('ImageEntity::*');
-        Cache::clean('ImageType::*');
+        ImageType::cleanCache();
         return $res;
     }
 
@@ -461,4 +462,18 @@ class ImageEntityCore extends ObjectModel
         return $result;
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getLegacyImageEntities()
+    {
+        return [
+            static::ENTITY_TYPE_PRODUCTS,
+            static::ENTITY_TYPE_CATEGORIES,
+            static::ENTITY_TYPE_MANUFACTURERS,
+            static::ENTITY_TYPE_SUPPLIERS,
+            static::ENTITY_TYPE_SCENES,
+            static::ENTITY_TYPE_STORES,
+        ];
+    }
 }

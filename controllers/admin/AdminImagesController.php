@@ -390,6 +390,13 @@ class AdminImagesControllerCore extends AdminController
                 // Delete old image_entity_type entries
                 $db->delete('image_entity_type', 'id_image_type=' . $imageTypeId);
 
+                // BC: keep legacy properties in tb_image_type synchronized
+                $values = [];
+                foreach (ImageEntity::getLegacyImageEntities() as $column) {
+                    $values[$column] = 0;
+                }
+                $db->update('image_type', $values, 'id_image_type = ' . $imageTypeId);
+
                 foreach (ImageEntity::getAll() as $imageEntity) {
                     if (Tools::getValue($imageEntity->name)) {
                         $imageEntity->associateImageType($imageTypeId);

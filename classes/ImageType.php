@@ -157,7 +157,7 @@ class ImageTypeCore extends ObjectModel
 
         // BC: populate values of legacy properties based on entity association
         if ($id) {
-            foreach (['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'] as $entityType) {
+            foreach (ImageEntity::getLegacyImageEntities() as $entityType) {
                 $this->{$entityType} = 0;
                 $info = ImageEntity::getImageEntityInfo($entityType);
                 if ($info) {
@@ -473,9 +473,22 @@ class ImageTypeCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         $res = parent::add($autoDate, $nullValues);
-        static::$typeNameCache = null;
-        Cache::clean('ImageType::*');
-        Cache::clean('ImageEntity::*');
+        static::cleanCache();
+        return $res;
+    }
+
+    /**
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function update($nullValues = false)
+    {
+        $res = parent::update($nullValues);
+        static::cleanCache();
         return $res;
     }
 
@@ -499,6 +512,16 @@ class ImageTypeCore extends ObjectModel
             }
         }
         return $result;
+    }
+
+    /**
+     * @return void
+     */
+    public static function cleanCache()
+    {
+        static::$typeNameCache = null;
+        Cache::clean('ImageType::*');
+        Cache::clean('ImageEntity::*');
     }
 
 }
