@@ -1823,7 +1823,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Delete images associated with the object
      *
-     * @param bool $forceDelete
+     * @param bool $forceDelete @deprecated
      *
      * @return bool
      *
@@ -1836,49 +1836,43 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             return false;
         }
 
-        if ($forceDelete || !$this->hasMultishopEntries()) {
+        $candidates = [];
+        $types = $this->image_dir
+            ? ImageType::getImagesTypes()
+            : [];
 
-            // To make sure we get all relevant image files, we need to loop through all supported image extensions
-            foreach (ImageManager::getAllowedImageExtensions(true, true) as $imageExtension) {
+        // To make sure we get all relevant image files, we need to loop through all supported image extensions
+        foreach (ImageManager::getAllowedImageExtensions(true, true) as $imageExtension) {
 
-                // Deleting tmp images
-                $ids_shop = Shop::getCompleteListOfShopsID();
-                $ids_shop[] = 0; // Making sure that none shop related image are deleted too
-                foreach ($ids_shop as $id_shop) {
-                    $shop_key = $id_shop ? '_'.$id_shop : '';
-                    if (file_exists(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '.' . $imageExtension)
-                        && !unlink(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '.' . $imageExtension)) {
-                        return false;
-                    }
-                    if (file_exists(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_mini_' . $this->id . $shop_key . '.' . $imageExtension)
-                        && !unlink(_PS_TMP_IMG_DIR_ . $this->def['table'] . '_mini_' . $this->id . $shop_key . '.' . $imageExtension)) {
-                        return false;
-                    }
-                }
+            // Deleting tmp images
+            $ids_shop = Shop::getCompleteListOfShopsID();
+            $ids_shop[] = 0; // Making sure that none shop related image are deleted too
 
-                /* Deleting object images and thumbnails (cache) */
-                if ($this->image_dir) {
-                    if (file_exists($this->image_dir . $this->id . '.' . $imageExtension)
-                        && !unlink($this->image_dir . $this->id . '.' . $imageExtension)) {
-                        return false;
-                    }
+            foreach ($ids_shop as $id_shop) {
+                $shop_key = $id_shop ? '_'.$id_shop : '';
+                $candidates[] = _PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '.' . $imageExtension;
+                $candidates[] = _PS_TMP_IMG_DIR_ . $this->def['table'] . '_mini_' . $this->id . $shop_key . '.' . $imageExtension;
+                $candidates[] = _PS_TMP_IMG_DIR_ . $this->def['table'] . '_' . $this->id . $shop_key . '_thumb.' . $imageExtension;
+            }
 
-                    $types = ImageType::getImagesTypes();
-                    foreach ($types as $imageType) {
-                        if (file_exists($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '.' . $imageExtension)
-                            && !unlink($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '.' . $imageExtension)) {
-                            return false;
-                        }
-                        if (file_exists($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '2x.' . $imageExtension)
-                            && !unlink($this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '2x.' . $imageExtension)) {
-                            return false;
-                        }
-                    }
+            /* Deleting object images and thumbnails (cache) */
+            if ($this->image_dir) {
+                $candidates[] = $this->image_dir . $this->id . '.' . $imageExtension;
+                foreach ($types as $imageType) {
+                    $candidates[] = $this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '.' . $imageExtension;
+                    $candidates[] = $this->image_dir . $this->id . '-' . stripslashes($imageType['name']) . '2x.' . $imageExtension;
                 }
             }
         }
 
-        return true;
+        $result = true;
+        foreach ($candidates as $candidate) {
+            if (file_exists($candidate)) {
+                $result = unlink($candidate) && $result;
+            }
+        }
+
+        return $result;
     }
 
     /**

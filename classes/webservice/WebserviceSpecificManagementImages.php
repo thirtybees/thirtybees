@@ -931,7 +931,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                         $imageClass = $this->wsObject->resourceList[$this->imageType]['class'];
                         $object = new $imageClass((int) $this->wsObject->urlSegment[2]);
 
-                        return $object->deleteImage(true);
+                        return $object->deleteImage();
                     } else {
                         return $this->deleteImageOnDisk($filename, $imageSizes, $directory);
                     }
