@@ -3011,23 +3011,38 @@ class ToolsCore
      */
     public static function getMediaServer($filename)
     {
-        if (static::$_cache_nb_media_servers === null && defined('_MEDIA_SERVER_1_') && defined('_MEDIA_SERVER_2_') && defined('_MEDIA_SERVER_3_')) {
-            if (_MEDIA_SERVER_1_ == '') {
-                static::$_cache_nb_media_servers = 0;
-            } elseif (_MEDIA_SERVER_2_ == '') {
-                static::$_cache_nb_media_servers = 1;
-            } elseif (_MEDIA_SERVER_3_ == '') {
-                static::$_cache_nb_media_servers = 2;
-            } else {
-                static::$_cache_nb_media_servers = 3;
-            }
-        }
+        $shopId = (int)Context::getContext()->shop->id;
+        $mediaServers = static::getMediaServers($shopId);
+        static::$_cache_nb_media_servers = count($mediaServers);
 
-        if ($filename && static::$_cache_nb_media_servers && ($id_media_server = (abs(crc32($filename)) % static::$_cache_nb_media_servers + 1))) {
-            return constant('_MEDIA_SERVER_'.$id_media_server.'_');
+        if ($filename && $mediaServers) {
+            $index = abs(crc32($filename)) % static::$_cache_nb_media_servers;
+            return $mediaServers[$index];
         }
-
         return Tools::usingSecureMode() ? Tools::getShopDomainSSL() : Tools::getShopDomain();
+    }
+
+    /**
+     * @param int $shopId
+     *
+     * @return array
+     * @throws PrestaShopException
+     */
+    public static function getMediaServers(int $shopId)
+    {
+        $cacheId = 'Tools::getMediaServers_' . $shopId;
+        if (! Cache::isStored($cacheId)) {
+            $mediaServers = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $key = 'PS_MEDIA_SERVER_' . $i;
+                $mediaServer = Configuration::get($key, null, null, $shopId);
+                if ($mediaServer) {
+                    $mediaServers[] = $mediaServer;
+                }
+            }
+            Cache::store($cacheId, $mediaServers);
+        }
+        return Cache::retrieve($cacheId);
     }
 
     /**

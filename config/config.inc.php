@@ -305,6 +305,9 @@ define('_PS_OS_WS_PAYMENT_', Configuration::get('PS_OS_WS_PAYMENT'));
  */
 define('_PS_OS_COD_VALIDATION_', Configuration::get('PS_OS_COD_VALIDATION'));
 
+/**
+ * @deprecated, these constants are no longer used by core
+ */
 if (!defined('_MEDIA_SERVER_1_')) {
     define('_MEDIA_SERVER_1_', Configuration::get('PS_MEDIA_SERVER_1'));
 }
