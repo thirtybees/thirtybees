@@ -22,6 +22,7 @@ namespace Thirtybees\Core\Error\Response;
 use Configuration;
 use PrestaShopException;
 use Thirtybees\Core\Error\ErrorDescription;
+use Throwable;
 
 /**
  * Class DebugErrorPageCore
@@ -40,16 +41,47 @@ class ProductionErrorPageCore extends AbstractErrorPage
     /**
      * @param ErrorDescription $errorDescription
      * @return string
-     * @throws PrestaShopException
      */
     protected function renderError(ErrorDescription $errorDescription)
     {
         return static::displayErrorTemplate(
             _PS_ROOT_DIR_.'/error500.phtml',
             [
-                'shopEmail' => Configuration::get('PS_SHOP_EMAIL'),
-                'encrypted' => $errorDescription->encrypt(),
+                'shopEmail' => $this->getShopEmail(),
+                'encrypted' => $this->getEncryptedMessage($errorDescription),
             ]
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getShopEmail(): string
+    {
+        try {
+            $email = Configuration::get('PS_SHOP_EMAIL');
+            if ($email) {
+                return $email;
+            }
+        } catch (Throwable $ignored) {}
+        return 'contact@thirtybees.com';
+    }
+
+    /**
+     * @param ErrorDescription $errorDescription
+     *
+     * @return string
+     */
+    private function getEncryptedMessage(ErrorDescription $errorDescription)
+    {
+        try {
+            $msg = $errorDescription->encrypt();
+            if ($msg) {
+                return $msg;
+            }
+            return 'Failed to generate encrypted message';
+        } catch (Throwable $e) {
+            return 'Failed to generate encrypted message: ' . $e->getMessage();
+        }
     }
 }
