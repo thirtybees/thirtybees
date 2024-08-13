@@ -209,6 +209,9 @@ class ServiceLocatorCore
         if (_PS_MODE_DEV_) {
             return new DebugErrorPage();
         }
+        if (defined('TB_INSTALLATION_IN_PROGRESS') && TB_INSTALLATION_IN_PROGRESS) {
+            return new DebugErrorPage();
+        }
         return new ProductionErrorPage();
     }
 }

@@ -49,13 +49,14 @@ if (!defined('_PS_DEBUG_SQL_')) {
     define('_PS_DEBUG_SQL_', true);
 }
 
+define('TB_INSTALLATION_IN_PROGRESS', true);
+
 require_once(_PS_CORE_DIR_.'/config/defines.inc.php');
 require_once(_PS_CORE_DIR_.'/config/autoload.php');
 require_once(_PS_CORE_DIR_.'/config/bootstrap.php');
 require_once(_PS_CORE_DIR_.'/config/defines_uri.inc.php');
 
 // Generate common constants
-define('TB_INSTALLATION_IN_PROGRESS', true);
 define('_TB_INSTALL_PATH_', dirname(__FILE__).'/');
 define('_PS_INSTALL_DATA_PATH_', _TB_INSTALL_PATH_.'data/');
 define('_PS_INSTALL_CONTROLLERS_PATH_', _TB_INSTALL_PATH_.'controllers/');
