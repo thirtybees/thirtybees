@@ -578,7 +578,7 @@ class LinkCore
         }
         $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
         if (!is_object($category)) {
-            $category = new Category($category, $idLang);
+            $category = new Category($category, $idLang, $idShop);
         }
         // Set available keywords
         $params = [];
