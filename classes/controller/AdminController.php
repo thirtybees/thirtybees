@@ -4569,8 +4569,6 @@ class AdminControllerCore extends Controller
 			<head>
 				<meta charset='UTF-8'>
 				<title>thirty bees Help</title>
-				<link href='//help.thirtybees.com/css/help.css' rel='stylesheet'>
-				<link href='//fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet'>
 				<script src='"._PS_JS_DIR_."jquery/jquery-1.11.0.min.js'></script>
 				<script src='"._PS_JS_DIR_."admin.js'></script>
 				<script src='"._PS_JS_DIR_."tools.js'></script>
