@@ -419,17 +419,18 @@ class SearchCore
 
     /**
      * @param bool $full
-     * @param int|bool $idProduct
+     * @param int|bool $specificProductId
      *
      * @return bool
      *
      * @throws PrestaShopException
      */
-    public static function indexation($full = false, $idProduct = false)
+    public static function indexation($full = false, $specificProductId = false)
     {
         $db = Db::getInstance();
 
-        if ($idProduct) {
+        $specificProductId = (int)$specificProductId;
+        if ($specificProductId) {
             $full = false;
         }
 
@@ -453,7 +454,8 @@ class SearchCore
         } elseif ($full) {
             $db->execute('TRUNCATE '._DB_PREFIX_.'search_index');
             $db->execute('TRUNCATE '._DB_PREFIX_.'search_word');
-            ObjectModel::updateMultishopTable('Product', ['indexed' => 0]);
+            $db->update('product_shop', ['indexed' => 0]);
+            $db->update('product', ['indexed' => 0]);
         } else {
             $db->execute(
                 'DELETE si FROM `'._DB_PREFIX_.'search_index` si
@@ -461,7 +463,7 @@ class SearchCore
 				'.Shop::addSqlAssociation('product', 'p', true, null, true).'
 				WHERE product_shop.`visibility` IN ("both", "search")
 				AND product_shop.`active` = 1
-				AND '.($idProduct ? 'p.`id_product` = '.(int) $idProduct : 'product_shop.`indexed` = 0')
+				AND '.($specificProductId ? 'p.`id_product` = '.(int) $specificProductId : 'product_shop.`indexed` = 0')
             );
 
             $db->execute(
@@ -470,163 +472,118 @@ class SearchCore
 				SET p.`indexed` = 0, product_shop.`indexed` = 0
 				WHERE product_shop.`visibility` IN ("both", "search")
 				AND product_shop.`active` = 1
-				AND '.($idProduct ? 'p.`id_product` = '.(int) $idProduct : 'product_shop.`indexed` = 0')
+				AND '.($specificProductId ? 'p.`id_product` = '.(int) $specificProductId : 'product_shop.`indexed` = 0')
             );
         }
 
         // Every fields are weighted according to the configuration in the backend
         $weightArray = [
-            'pname'                 => Configuration::get('PS_SEARCH_WEIGHT_PNAME'),
-            'reference'             => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'pa_reference'          => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'supplier_reference'    => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'pa_supplier_reference' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'ean13'                 => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'pa_ean13'              => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'upc'                   => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'pa_upc'                => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'description_short'     => Configuration::get('PS_SEARCH_WEIGHT_SHORTDESC'),
-            'description'           => Configuration::get('PS_SEARCH_WEIGHT_DESC'),
-            'cname'                 => Configuration::get('PS_SEARCH_WEIGHT_CNAME'),
-            'mname'                 => Configuration::get('PS_SEARCH_WEIGHT_MNAME'),
-            'tags'                  => Configuration::get('PS_SEARCH_WEIGHT_TAG'),
-            'attributes'            => Configuration::get('PS_SEARCH_WEIGHT_ATTRIBUTE'),
-            'features'              => Configuration::get('PS_SEARCH_WEIGHT_FEATURE'),
+            'pname'                 => (int)Configuration::get('PS_SEARCH_WEIGHT_PNAME'),
+            'reference'             => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'pa_reference'          => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'supplier_reference'    => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'pa_supplier_reference' => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'ean13'                 => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'pa_ean13'              => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'upc'                   => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'pa_upc'                => (int)Configuration::get('PS_SEARCH_WEIGHT_REF'),
+            'description_short'     => (int)Configuration::get('PS_SEARCH_WEIGHT_SHORTDESC'),
+            'description'           => (int)Configuration::get('PS_SEARCH_WEIGHT_DESC'),
+            'cname'                 => (int)Configuration::get('PS_SEARCH_WEIGHT_CNAME'),
+            'mname'                 => (int)Configuration::get('PS_SEARCH_WEIGHT_MNAME'),
+            'tags'                  => (int)Configuration::get('PS_SEARCH_WEIGHT_TAG'),
+            'attributes'            => (int)Configuration::get('PS_SEARCH_WEIGHT_ATTRIBUTE'),
+            'features'              => (int)Configuration::get('PS_SEARCH_WEIGHT_FEATURE'),
         ];
 
         // Those are kind of global variables required to save the processed data in the database every X occurrences, in order to avoid overloading MySQL
         $countWords = 0;
-        $queryArray3 = [];
 
         // Retrieve the number of languages
         $totalLanguages = count(Language::getIDs(false));
 
         $sqlAttribute = Search::getSQLProductAttributeFields($weightArray);
+
         // Products are processed 50 by 50 in order to avoid overloading MySQL
-        while (($products = Search::getProductsToIndex($totalLanguages, $idProduct, 50, $weightArray)) && (count($products) > 0)) {
-            $productsArray = [];
+        $searchIndexBatch = [];
+        while ($products = Search::getProductsToIndex($totalLanguages, $specificProductId, 50, $weightArray)) {
+            $processedProducts = [];
             // Now each non-indexed product is processed one by one, langage by langage
             foreach ($products as $product) {
+
+                $productId = (int)$product['id_product'];
+                $languageId = (int)$product['id_lang'];
+                $shopId = (int)$product['id_shop'];
+
                 if ((int) $weightArray['tags']) {
-                    $product['tags'] = Search::getTags($db, (int) $product['id_product'], (int) $product['id_lang']);
+                    $product['tags'] = Search::getTags($db, $productId, $languageId);
                 }
                 if ((int) $weightArray['attributes']) {
-                    $product['attributes'] = Search::getAttributes($db, (int) $product['id_product'], (int) $product['id_lang']);
+                    $product['attributes'] = Search::getAttributes($db, $productId, $languageId);
                 }
                 if ((int) $weightArray['features']) {
-                    $product['features'] = Search::getFeatures($db, (int) $product['id_product'], (int) $product['id_lang']);
+                    $product['features'] = Search::getFeatures($db, $productId, $languageId);
                 }
                 if ($sqlAttribute) {
-                    $attributeFields = Search::getAttributesFields($db, (int) $product['id_product'], $sqlAttribute);
+                    $attributeFields = Search::getAttributesFields($db, $productId, $sqlAttribute);
                     if ($attributeFields) {
                         $product['attributes_fields'] = $attributeFields;
                     }
                 }
 
                 // Data must be cleaned of html, bad characters, spaces and anything, then if the resulting words are long enough, they're added to the array
-                $productArray = [];
-                foreach ($product as $key => $value) {
-                    if ($key == 'attributes_fields') {
-                        foreach ($value as $paArray) {
-                            foreach ($paArray as $paKey => $paValue) {
-                                Search::fillProductArray($productArray, $weightArray, $paKey, $paValue, $product['id_lang'], $product['iso_code']);
-                            }
-                        }
-                    } else {
-                        Search::fillProductArray($productArray, $weightArray, $key, $value, $product['id_lang'], $product['iso_code']);
-                    }
-                }
+                $productWords = static::getProductWords($product, $weightArray);
 
                 // If we find words that need to be indexed, they're added to the word table in the database
-                if (is_array($productArray) && !empty($productArray)) {
-                    $queryArray = $queryArray2 = [];
-                    foreach ($productArray as $word => $weight) {
-                        if ($weight) {
-                            $queryArray[$word] = '('.(int) $product['id_lang'].', '.(int) $product['id_shop'].', \''.pSQL($word).'\')';
-                            $queryArray2[] = '\''.pSQL($word).'\'';
-                        }
-                    }
-
-                    if (is_array($queryArray) && !empty($queryArray)) {
-                        // The words are inserted...
-                        $db->execute(
-                            '
-						INSERT IGNORE INTO '._DB_PREFIX_.'search_word (id_lang, id_shop, word)
-						VALUES '.implode(',', $queryArray), false
-                        );
-                    }
-                    $wordIdsByWord = [];
-                    if (is_array($queryArray2) && !empty($queryArray2)) {
-                        // ...then their IDs are retrieved
-                        $addedWords = $db->getArray(
-                            '
-						SELECT sw.id_word, sw.word
-						FROM '._DB_PREFIX_.'search_word sw
-						WHERE sw.word IN ('.implode(',', $queryArray2).')
-						AND sw.id_lang = '.(int) $product['id_lang'].'
-						AND sw.id_shop = '.(int) $product['id_shop']);
-                        foreach ($addedWords as $wordId) {
-                            $wordIdsByWord['_'.$wordId['word']] = (int) $wordId['id_word'];
+                if ($productWords) {
+                    $wordsIds = static::getOrCreateWords(array_keys($productWords), $shopId, $languageId);
+                    foreach ($wordsIds as $word => $wordId) {
+                        $weight = (int)$productWords[$word];
+                        $searchIndexBatch[] = '(' . $productId . ',' . $wordId . ',' . $weight . ')';
+                        if (++$countWords % 50 === 0) {
+                            Search::saveIndex($searchIndexBatch);
+                            $searchIndexBatch = [];
                         }
                     }
                 }
 
-                foreach ($productArray as $word => $weight) {
-                    if (!$weight) {
-                        continue;
-                    }
-                    if (!isset($wordIdsByWord['_'.$word])) {
-                        continue;
-                    }
-                    $idWord = $wordIdsByWord['_'.$word];
-                    if (!$idWord) {
-                        continue;
-                    }
-                    $queryArray3[] = '('.(int) $product['id_product'].','.
-                        (int) $idWord.','.(int) $weight.')';
-                    // Force save every 200 words in order to avoid overloading MySQL
-                    if (++$countWords % 200 == 0) {
-                        Search::saveIndex($queryArray3);
-                    }
-                }
-
-                $productsArray[] = (int) $product['id_product'];
+                $processedProducts[$productId] = $productId;
             }
-            $productsArray = array_unique($productsArray);
-            Search::setProductsAsIndexed($productsArray);
 
-            // One last save is done at the end in order to save what's left
-            Search::saveIndex($queryArray3);
+            Search::setProductsAsIndexed($processedProducts);
+        }
+
+        // One last save is done at the end in order to save what's left
+        if ($searchIndexBatch) {
+            Search::saveIndex($searchIndexBatch);
         }
 
         return true;
     }
 
     /**
-     * @param int[] $weightArray
+     * @param array<string, int> $weightArray
      *
      * @return string
      */
-    protected static function getSQLProductAttributeFields(&$weightArray)
+    protected static function getSQLProductAttributeFields($weightArray)
     {
         $sql = '';
-        if (is_array($weightArray)) {
-            foreach ($weightArray as $key => $weight) {
-                if ((int) $weight) {
-                    switch ($key) {
-                        case 'pa_reference':
-                            $sql .= ', pa.reference AS pa_reference';
-                            break;
-                        case 'pa_supplier_reference':
-                            $sql .= ', pa.supplier_reference AS pa_supplier_reference';
-                            break;
-                        case 'pa_ean13':
-                            $sql .= ', pa.ean13 AS pa_ean13';
-                            break;
-                        case 'pa_upc':
-                            $sql .= ', pa.upc AS pa_upc';
-                            break;
-                    }
+        foreach ($weightArray as $key => $weight) {
+            if ((int) $weight) {
+                switch ($key) {
+                    case 'pa_reference':
+                        $sql .= ', pa.reference AS pa_reference';
+                        break;
+                    case 'pa_supplier_reference':
+                        $sql .= ', pa.supplier_reference AS pa_supplier_reference';
+                        break;
+                    case 'pa_ean13':
+                        $sql .= ', pa.ean13 AS pa_ean13';
+                        break;
+                    case 'pa_upc':
+                        $sql .= ', pa.upc AS pa_upc';
+                        break;
                 }
             }
         }
@@ -638,7 +595,7 @@ class SearchCore
      * @param int $totalLanguages
      * @param bool $idProduct
      * @param int $limit
-     * @param array $weightArray
+     * @param array<string, int> $weightArray
      *
      * @return array
      *
@@ -665,38 +622,36 @@ class SearchCore
         // Now get every attribute in every language
         $sql = 'SELECT p.id_product, pl.id_lang, pl.id_shop, l.iso_code';
 
-        if (is_array($weightArray)) {
-            foreach ($weightArray as $key => $weight) {
-                if ((int) $weight) {
-                    switch ($key) {
-                        case 'pname':
-                            $sql .= ', pl.name pname';
-                            break;
-                        case 'reference':
-                            $sql .= ', p.reference';
-                            break;
-                        case 'supplier_reference':
-                            $sql .= ', p.supplier_reference';
-                            break;
-                        case 'ean13':
-                            $sql .= ', p.ean13';
-                            break;
-                        case 'upc':
-                            $sql .= ', p.upc';
-                            break;
-                        case 'description_short':
-                            $sql .= ', pl.description_short';
-                            break;
-                        case 'description':
-                            $sql .= ', pl.description';
-                            break;
-                        case 'cname':
-                            $sql .= ', cl.name cname';
-                            break;
-                        case 'mname':
-                            $sql .= ', m.name mname';
-                            break;
-                    }
+        foreach ($weightArray as $key => $weight) {
+            if ((int) $weight) {
+                switch ($key) {
+                    case 'pname':
+                        $sql .= ', pl.name pname';
+                        break;
+                    case 'reference':
+                        $sql .= ', p.reference';
+                        break;
+                    case 'supplier_reference':
+                        $sql .= ', p.supplier_reference';
+                        break;
+                    case 'ean13':
+                        $sql .= ', p.ean13';
+                        break;
+                    case 'upc':
+                        $sql .= ', p.upc';
+                        break;
+                    case 'description_short':
+                        $sql .= ', pl.description_short';
+                        break;
+                    case 'description':
+                        $sql .= ', pl.description';
+                        break;
+                    case 'cname':
+                        $sql .= ', cl.name cname';
+                        break;
+                    case 'mname':
+                        $sql .= ', m.name mname';
+                        break;
                 }
             }
         }
@@ -825,7 +780,7 @@ class SearchCore
 
     /**
      * @param array $productArray
-     * @param array $weightArray
+     * @param array<string, int> $weightArray
      * @param string $key
      * @param string $value
      * @param int $idLang
@@ -835,60 +790,67 @@ class SearchCore
      */
     protected static function fillProductArray(&$productArray, $weightArray, $key, $value, $idLang, $isoCode)
     {
-        if (strncmp($key, 'id_', 3) && isset($weightArray[$key])) {
+        $weight = (int)($weightArray[$key] ?? 0);
+        if ($weight) {
             $words = explode(' ', Search::sanitize($value, (int) $idLang, true, $isoCode));
             foreach ($words as $word) {
                 if (!empty($word)) {
                     $word = mb_substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH);
 
-                    if (!isset($productArray[$word])) {
-                        $productArray[$word] = 0;
+                    if (! isset($productArray[$word])) {
+                        $productArray[$word] = $weight;
+                    } else {
+                        $productArray[$word] += $weight;
                     }
-                    $productArray[$word] += $weightArray[$key];
                 }
             }
         }
     }
 
     /**
-     * @param array $queryArray3
+     * @param array $tuples
      *
      * @throws PrestaShopException
      */
-    protected static function saveIndex(&$queryArray3)
+    protected static function saveIndex($tuples)
     {
-        if (is_array($queryArray3) && !empty($queryArray3)) {
-            Db::getInstance()->execute(
-                'INSERT INTO '._DB_PREFIX_.'search_index (id_product, id_word, weight)
-				VALUES '.implode(',', $queryArray3).'
-				ON DUPLICATE KEY UPDATE weight = weight + VALUES(weight)', false
-            );
-        }
-        $queryArray3 = [];
-    }
-
-    /**
-     * @param array $products
-     *
-     * @throws PrestaShopException
-     */
-    protected static function setProductsAsIndexed(&$products)
-    {
-        if (is_array($products) && !empty($products)) {
-            ObjectModel::updateMultishopTable('Product', ['indexed' => 1], 'a.id_product IN ('.implode(',', $products).')');
+        if ($tuples) {
+            $conn = Db::getInstance();
+            $values = implode(', ', $tuples);
+            $conn->execute('INSERT IGNORE INTO '._DB_PREFIX_.'search_index(id_product, id_word, weight) VALUES '.$values);
         }
     }
 
     /**
-     * @param array $products
+     * @param int[] $ids
      *
      * @throws PrestaShopException
      */
-    public static function removeProductsSearchIndex($products)
+    protected static function setProductsAsIndexed($ids)
     {
-        if (is_array($products) && !empty($products)) {
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'search_index WHERE id_product IN ('.implode(',', array_map('intval', $products)).')');
-            ObjectModel::updateMultishopTable('Product', ['indexed' => 0], 'a.id_product IN ('.implode(',', array_map('intval', $products)).')');
+        $ids = array_filter(array_map('intval', $ids));
+        if ($ids) {
+            $conn = Db::getInstance();
+            $condition = 'id_product IN (' . implode(', ', $ids) . ')';
+            $conn->update('product_shop', ['indexed' => 1], $condition);
+            $conn->update('product', ['indexed' => 1], $condition);
+        }
+    }
+
+    /**
+     * @param int[] $ids
+     *
+     * @throws PrestaShopException
+     */
+    public static function removeProductsSearchIndex($ids)
+    {
+        $ids = array_filter(array_map('intval', $ids));
+        if ($ids) {
+            $conn = Db::getInstance();
+            $condition = 'id_product IN (' . implode(', ', $ids) . ')';
+            $conn->delete('search_index', $condition);
+            $conn->update('product_shop', ['indexed' => 0], $condition);
+            $conn->update('product', ['indexed' => 0], $condition);
         }
     }
 
@@ -1006,5 +968,96 @@ class SearchCore
         }
 
         return Product::getProductsProperties((int) $idLang, $result);
+    }
+
+    /**
+     * @param array $productData product data in single language/single shop context
+     * @param array $weightArray weight configuration
+     *
+     * @return array<string, int> mapping from Word -> Weight
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getProductWords(array $productData, array $weightArray): array
+    {
+        $isoCode = $productData['iso_code'];
+        $languageId = (int)$productData['id_lang'];
+
+        $productWords = [];
+        foreach ($productData as $key => $value) {
+            if ($key === 'attributes_fields') {
+                foreach ($value as $paArray) {
+                    foreach ($paArray as $paKey => $paValue) {
+                        Search::fillProductArray($productWords, $weightArray, $paKey, $paValue, $languageId, $isoCode);
+                    }
+                }
+            } else {
+                Search::fillProductArray($productWords, $weightArray, $key, $value, $languageId, $isoCode);
+            }
+        }
+
+        return array_filter($productWords);
+    }
+
+    /**
+     * @param array $words
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return array<string, int> map from word to ID
+     *
+     * @throws PrestaShopException
+     */
+    protected static function getExistingWords(array $words, int $shopId, int $languageId): array
+    {
+        $result = [];
+        if ($words) {
+
+            $imploded = implode(', ', array_map(function($word) {
+                return '\'' . pSQL($word) . '\'';
+            }, $words));
+
+            $sql = (new DbQuery())
+                ->select('sw.id_word, sw.word')
+                ->from('search_word', 'sw')
+                ->where("sw.word IN ($imploded)")
+                ->where('sw.id_lang = ' . (int)$languageId)
+                ->where('sw.id_shop = ' . (int)$shopId);
+
+            foreach (Db::readOnly()->getArray($sql) as $row) {
+                $word = $row['word'];
+                $id = (int)$row['id_word'];
+                $result[$word] = $id;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param string[] $words
+     * @param int $shopId
+     * @param int $languageId
+     *
+     * @return array<string, int> map from word to ID
+     *
+     * @throws PrestaShopException
+     */
+    private static function getOrCreateWords(array $words, int $shopId, int $languageId)
+    {
+        $existingWords = static::getExistingWords($words, $shopId, $languageId);
+        $missingWords = array_diff($words, array_keys($existingWords));
+        if ($missingWords) {
+            $data = [];
+            foreach ($missingWords as $word) {
+                $data[] = [
+                    'id_shop' => $shopId,
+                    'id_lang' => $languageId,
+                    'word' => $word
+                ];
+            }
+            Db::getInstance()->insert('search_word', $data, false, true, Db::INSERT_IGNORE);
+            $existingWords = static::getExistingWords($words, $shopId, $languageId);
+        }
+        return $existingWords;
     }
 }

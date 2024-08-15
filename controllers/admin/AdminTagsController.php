@@ -145,7 +145,7 @@ class AdminTagsControllerCore extends AdminController
                 $products = $this->getSelectedProducts();
                 foreach ($previousProducts as $product) {
                     if (!in_array($product['id_product'], $products)) {
-                        $removedProducts[] = $product['id_product'];
+                        $removedProducts[] = (int)$product['id_product'];
                     }
                 }
 

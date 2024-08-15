@@ -47,7 +47,7 @@ if (substr(_COOKIE_KEY_, 34, 8) != Tools::getValue('token')) {
 }
 
 ini_set('max_execution_time', 7200);
-Search::indexation(Tools::getValue('full'));
+Search::indexation(Tools::getBoolValue('full'));
 if (Tools::getValue('redirect') && Tools::getHttpReferer()) {
     Tools::redirectAdmin(Tools::getHttpReferer().'&conf=4');
 }
