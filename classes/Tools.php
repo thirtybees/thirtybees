@@ -2621,7 +2621,11 @@ class ToolsCore
         }
 
         if (!preg_match('/^https?:\/\//', $url)) {
-            return @file_get_contents($url, $useIncludePath, $streamContext);
+            if (file_exists($url)) {
+                return @file_get_contents($url, $useIncludePath, $streamContext);
+            } else {
+                return false;
+            }
         } elseif (function_exists('curl_init')) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
