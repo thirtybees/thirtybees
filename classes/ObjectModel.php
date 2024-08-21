@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Error\ErrorUtils;
+
 /**
  * Class ObjectModelCore
  */
@@ -1160,7 +1162,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Check field values
         if (!in_array('values', $skip) && !empty($data['values']) && is_array($data['values']) && !in_array($value, $data['values'])) {
-            return 'Property '.get_class($this).'->'.$field.' has bad value (allowed values are: '.implode(', ', $data['values']).')';
+            if ($humanErrors) {
+                return sprintf(Tools::displayError('The %s field is invalid.'), $this->displayFieldName($field, get_class($this)));
+            } else {
+                return 'Property '.get_class($this).'->'.$field.' has invalid value [' . ErrorUtils::displayArgument($value) . ']. Allowed values are: '.implode(', ', $data['values']).')';
+            }
         }
 
         // Check field size
@@ -1188,26 +1194,27 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Check field validator
         if (!in_array('validate', $skip) && !empty($data['validate'])) {
-            if (!method_exists('Validate', $data['validate'])) {
-                throw new PrestaShopException('Validation function not found. '.$data['validate']);
-            }
-
             if (!empty($value)) {
-                $res = true;
-                if (mb_strtolower($data['validate']) == 'iscleanhtml') {
-                    if (!call_user_func(['Validate', $data['validate']], $value, $psAllowHtmlIframe)) {
-                        $res = false;
+                $validate = $data['validate'];
+                if (is_string($validate)) {
+                    if (mb_strtolower($validate) === 'iscleanhtml') {
+                        $res = Validate::isCleanHtml($value, $psAllowHtmlIframe);
+                    } elseif (method_exists(Validate::class, $validate)) {
+                        $res = (bool)Validate::$validate($value);
+                    } else {
+                        throw new PrestaShopException('Property '.get_class($this).'->'.$field.': Validation function not found: '.$validate);
                     }
+                } elseif (is_callable($validate)) {
+                    $res = $validate($value);
                 } else {
-                    if (!call_user_func(['Validate', $data['validate']], $value)) {
-                        $res = false;
-                    }
+                    throw new PrestaShopException('Property '.get_class($this).'->'.$field.': invalid validation callback');
                 }
+
                 if (!$res) {
                     if ($humanErrors) {
                         return sprintf(Tools::displayError('The %s field is invalid.'), $this->displayFieldName($field, get_class($this)));
                     } else {
-                        return 'Property '.get_class($this).'->'.$field.' is not valid';
+                        return 'Property '.get_class($this).'->'.$field.' has invalid value [' . ErrorUtils::displayArgument($value) . ']';
                     }
                 }
             }
