@@ -801,7 +801,10 @@ abstract class PaymentModuleCore extends Module
                                 $voucher->reduction_amount -= $order->total_shipping_tax_excl;
                             }
                         }
-                        if ($voucher->reduction_amount <= 0) {
+
+                        $voucher->reduction_amount = Tools::roundPrice((float)$voucher->reduction_amount);
+
+                        if ($voucher->reduction_amount <= 0.0) {
                             continue;
                         }
 
