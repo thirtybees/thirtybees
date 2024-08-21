@@ -278,11 +278,7 @@ class FrontControllerCore extends Controller
         }
 
         if (!$this->useMobileTheme()) {
-            // These hooks aren't used for the mobile theme.
-            // Needed hooks are called in the tpl files.
-
-            $hookHeader = Hook::displayHook('displayHeader');
-
+            $hookHeader = '';
             $faviconTemplate = Configuration::get('TB_SOURCE_FAVICON_CODE') ?? '';
             if (!empty(trim($faviconTemplate))) {
                 $faviconTemplate = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $faviconTemplate);
@@ -317,19 +313,19 @@ class FrontControllerCore extends Controller
                 $hookHeader .= $this->getSeoFields();
             }
 
+            $hookHeader .= Hook::displayHook('displayHeader');
+
             // To be removed: append extra css and metas to the header hook
             $extraCode = Configuration::getMultiple([Configuration::CUSTOMCODE_METAS, Configuration::CUSTOMCODE_CSS]);
             $extraCss = $extraCode[Configuration::CUSTOMCODE_CSS] ? '<style>'.$extraCode[Configuration::CUSTOMCODE_CSS].'</style>' : '';
             $hookHeader .= $extraCode[Configuration::CUSTOMCODE_METAS].$extraCss;
 
-            $this->context->smarty->assign(
-                [
-                    'HOOK_HEADER'       => $hookHeader,
-                    'HOOK_TOP'          => Hook::displayHook('displayTop'),
-                    'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::displayHook('displayLeftColumn') : ''),
-                    'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::displayHook('displayRightColumn', ['cart' => $this->context->cart]) : ''),
-                ]
-            );
+            $this->context->smarty->assign([
+                'HOOK_HEADER'       => $hookHeader,
+                'HOOK_TOP'          => Hook::displayHook('displayTop'),
+                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::displayHook('displayLeftColumn') : ''),
+                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::displayHook('displayRightColumn', ['cart' => $this->context->cart]) : ''),
+            ]);
         } else {
             $this->context->smarty->assign('HOOK_MOBILE_HEADER', Hook::displayHook('displayMobileHeader'));
         }
