@@ -9,6 +9,7 @@
             <input type="hidden" name="connect[{$connectUrl.id}][url]" value="{$connectUrl.url}" />
             <input type="hidden" name="connect[{$connectUrl.id}][code]" value="{$connectUrl.code}" />
         {/foreach}
+        <input type="hidden" name="sid" value="{$sid}" />
         <input type="submit" value="{l s='Submit'}" />
     </form>
     <script type="text/javascript">

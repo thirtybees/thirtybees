@@ -84,7 +84,8 @@ class AdminConnectControllerCore extends AdminController
         }
 
         $this->context->smarty->assign([
-            'redirectUrl' => 'https://accounts.thirtybees.com/connect/init',
+            'sid' => Configuration::getServerTrackingId(),
+            'redirectUrl' => Configuration::getAccountsServer() . '/connect/init',
             'connectUrls' => $urls
         ]);
         die($this->getSmartyOutputContent('controllers/connect/redirect.tpl'));

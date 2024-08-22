@@ -266,6 +266,7 @@ class ConfigurationCore extends ObjectModel
     const STORE_REGISTERED = 'TB_STORE_REGISTERED';
     const MAIL_SUBJECT_TEMPLATE = 'TB_MAIL_SUBJECT_TEMPLATE';
     const API_SERVER_OVERRIDE = 'TB_API_SERVER_OVERRIDE';
+    const ACCOUNTS_SERVER_OVERRIDE = 'TB_ACCOUNTS_SERVER_OVERRIDE';
     const SSL_TRUST_STORE_TYPE = 'TB_SSL_TRUST_STORE_TYPE';
     const SSL_TRUST_STORE = 'TB_SSL_TRUST_STORE';
     const TRACKING_ID = 'TB_TRACKING_UID';
@@ -1130,9 +1131,9 @@ class ConfigurationCore extends ObjectModel
      * @return string
      * @throws PrestaShopException
      */
-    public static function getApiServer()
+    public static function getApiServer(): string
     {
-        $baseUriOverride = static::getGlobalValue(static::API_SERVER_OVERRIDE);
+        $baseUriOverride = (string)static::getGlobalValue(static::API_SERVER_OVERRIDE);
         if ($baseUriOverride) {
             $baseUriOverride = rtrim($baseUriOverride, '/');
             if (Validate::isAbsoluteUrl($baseUriOverride)) {
@@ -1140,6 +1141,27 @@ class ConfigurationCore extends ObjectModel
             }
         }
         return 'https://api.thirtybees.com';
+    }
+
+    /**
+     *  Returns url to thirty bees accounts server
+     *
+     *  Default api url can be overridden using configuration key TB_ACCOUNTS_SERVER_OVERRIDE. This should be used
+     *  by thirty bees developers only
+     *
+     * @return string
+     * @throws PrestaShopException
+     */
+    public static function getAccountsServer(): string
+    {
+        $baseUriOverride = static::getGlobalValue(static::ACCOUNTS_SERVER_OVERRIDE);
+        if ($baseUriOverride) {
+            $baseUriOverride = rtrim($baseUriOverride, '/');
+            if (Validate::isAbsoluteUrl($baseUriOverride)) {
+                return $baseUriOverride;
+            }
+        }
+        return 'https://accounts.thirtybees.com';
     }
 
     /**
