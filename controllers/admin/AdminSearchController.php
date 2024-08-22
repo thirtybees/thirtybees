@@ -110,8 +110,7 @@ class AdminSearchControllerCore extends AdminController
                         $row['id_order'] = $row['id'];
                         $customer = $order->getCustomer();
                         $row['customer'] = $customer->firstname.' '.$customer->lastname;
-                        $orderState = $order->getCurrentOrderState();
-                        $row['osname'] = $orderState->name[$this->context->language->id];
+                        $row['osname'] = $this->getOrderStatusName($order);
                         $this->_list['orders'] = [$row];
                     }
                 } else {
@@ -127,8 +126,7 @@ class AdminSearchControllerCore extends AdminController
                             $row['id_order'] = $row['id'];
                             $customer = $order->getCustomer();
                             $row['customer'] = $customer->firstname.' '.$customer->lastname;
-                            $orderState = $order->getCurrentOrderState();
-                            $row['osname'] = $orderState->name[$this->context->language->id];
+                            $row['osname'] = $this->getOrderStatusName($order);
                             $this->_list['orders'][] = $row;
                         }
                     } elseif ($searchType == 3) {
@@ -341,7 +339,7 @@ class AdminSearchControllerCore extends AdminController
         if (! $this->errors) {
             $nbResults = 0;
             foreach ($this->_list as $list) {
-                if ($list != false) {
+                if ($list) {
                     $nbResults += count($list);
                 }
             }
@@ -533,5 +531,22 @@ class AdminSearchControllerCore extends AdminController
             return '<a href="'.$link.'">' . Tools::safeOutput($category->name) . '</a>';
         }, $path);
         return implode(' > ', $names);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return string|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function getOrderStatusName(Order $order): ?string
+    {
+        $lang = (int)Context::getContext()->language->id;
+        $orderState = $order->getCurrentOrderState();
+        if (isset($orderState->name[$lang])) {
+            return (string)$orderState->name[$lang];
+        }
+        return null;
     }
 }
