@@ -213,7 +213,8 @@ class ImageEntityCore extends ObjectModel
             if ($imageEntityId && !empty($imageEntity['imageTypes']) && is_array($imageEntity['imageTypes'])) {
                 foreach ($imageEntity['imageTypes'] as $imageType) {
 
-                    $imageTypeObj = ImageType::getInstanceByName($imageType['name']);
+                    $imageTypeNameFormated = ImageType::getFormatedName($imageType['name']);
+                    $imageTypeObj = ImageType::getInstanceByName($imageTypeNameFormated);
 
                     // Adding missing image types
                     if (!$imageTypeObj->id) {
