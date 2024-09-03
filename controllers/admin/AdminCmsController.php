@@ -340,7 +340,9 @@ class AdminCmsControllerCore extends AdminController
      */
     public function renderList()
     {
-        $this->_group = 'GROUP BY a.`id_cms`';
+        $this->_group = 'GROUP BY a.`id_cms`, b.`id_shop`';
+        $this->_where .= ' AND b.`id_shop` = ' . $this->context->shop->id;
+        $this->_where .= Shop::addSqlRestriction(false, 'b');
         //static::$currentIndex = static::$currentIndex.'&cms';
         $this->position_group_identifier = (int) $this->id_cms_category;
 
