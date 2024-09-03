@@ -1079,13 +1079,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     public function duplicateLogo($newId, $oldId)
     {
         if ($sourceImageOldLogo = ImageManager::getSourceImage(_PS_SHIP_IMG_DIR_, $oldId)) {
-            $imageExtension = explode('.', $sourceImageOldLogo)[1];
+            $imageExtension = ImageManager::getImageExtension($sourceImageOldLogo);
             @copy($sourceImageOldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $newId.'.'.$imageExtension);
         }
 
         if ($sourceImageOldTmpLogo = ImageManager::getSourceImage(_PS_TMP_IMG_DIR_, '/carrier_mini_'.(int) $oldId)) {
             if (!isset($_FILES['logo'])) {
-                $imageExtension = explode('.', $sourceImageOldTmpLogo)[1];
+                $imageExtension = ImageManager::getImageExtension($sourceImageOldTmpLogo);
                 @copy($sourceImageOldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$newId.'.'.$imageExtension);
             }
             unlink($sourceImageOldTmpLogo);
