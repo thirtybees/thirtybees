@@ -929,6 +929,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
                 ->leftJoin('lang', 'l', 'c.`id_lang` = l.`id_lang`')
                 ->where('c.`id_category` = '.(int) $idCategory)
                 ->where('l.`active` = 1')
+                ->addCurrentShopRestriction('c')
         );
     }
 

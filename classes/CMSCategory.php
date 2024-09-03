@@ -474,6 +474,7 @@ class CMSCategoryCore extends ObjectModel
                 ->leftJoin('lang', 'l', 'c.`id_lang` = l.`id_lang`')
                 ->where('c.`id_cms_category` = '.(int) $idCategory)
                 ->where('l.`active` = 1')
+                ->addCurrentShopRestriction('c')
         );
     }
 
