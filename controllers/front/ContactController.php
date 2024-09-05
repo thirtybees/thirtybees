@@ -65,7 +65,7 @@ class ContactControllerCore extends FrontController
             }
 
             $fileAttachment = Tools::fileAttachment('fileUpload');
-            $message = Tools::getValue('message'); // Html entities is not usefull, iscleanHtml check there is no bad html tags.
+            $message = (string)Tools::getValue('message');
             if (!($from = Tools::convertEmailToIdn(trim(Tools::getValue('from')))) || !Validate::isEmail($from)) {
                 $this->errors[] = Tools::displayError('Invalid email address.');
             } elseif (!$message) {
@@ -102,8 +102,14 @@ class ContactControllerCore extends FrontController
                 if ($oldMessage === $message) {
                     $this->context->smarty->assign('alreadySent', 1);
                 } else {
+
+                    $errors = $this->customValidation($customer, $from, $message, $contact);
+                    if ($errors) {
+                        $this->errors = array_merge($this->errors, $errors);
+                    }
+
                     $ct = null;
-                    if ($contact->customer_service) {
+                    if (!$this->errors && $contact->customer_service) {
                         if ((int)$idCustomerThread) {
                             $ct = new CustomerThread($idCustomerThread);
                             $ct->status = 'open';
@@ -518,5 +524,39 @@ class ContactControllerCore extends FrontController
             }
         }
         return $idCustomerThread;
+    }
+
+    /**
+     * Give modules option to validate message
+     *
+     * @param Customer $customer
+     * @param string $from
+     * @param string $message
+     * @param Contact $contact
+     *
+     * @return array
+     *
+     * @throws PrestaShopException
+     */
+    protected function customValidation(Customer $customer, string $from, string $message, Contact $contact): array
+    {
+        $errors = [];
+        $responses = Hook::getResponses('actionValidateContactFormMessage', [
+            'from' => [
+                'customer' => $customer,
+                'email' => $from,
+            ],
+            'message' => $message,
+            'contact' => $contact,
+        ]);
+        foreach ($responses as $moduleErrors) {
+            if (is_string($moduleErrors)) {
+                $moduleErrors = [ $moduleErrors ];
+            }
+            if (is_array($moduleErrors) && $moduleErrors) {
+                $errors = array_merge($errors, array_values($moduleErrors));
+            }
+        }
+        return $errors;
     }
 }
