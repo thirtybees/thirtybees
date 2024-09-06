@@ -68,11 +68,6 @@ class PageCacheKeyCore
     public $idGroup;
 
     /**
-     * @var int
-     */
-    public $idCustomer;
-
-    /**
      * Creates new cache key and set its metadata
      *
      * @param string $entityType -- controller name
@@ -83,9 +78,8 @@ class PageCacheKeyCore
      * @param int $idCountry
      * @param int $idShop
      * @param int $idGroup
-     * @param int $idCustomer id of logged-in customer, zero otherwise
      */
-    protected function __construct($entityType, $entityId, $url, $idCurrency, $idLanguage, $idCountry, $idShop, $idGroup, $idCustomer)
+    protected function __construct($entityType, $entityId, $url, $idCurrency, $idLanguage, $idCountry, $idShop, $idGroup)
     {
         $this->entityType = $entityType;
         $this->entityId = $entityId;
@@ -95,7 +89,6 @@ class PageCacheKeyCore
         $this->idCountry = $idCountry;
         $this->idShop = $idShop;
         $this->idGroup = $idGroup;
-        $this->idCustomer = $idCustomer;
     }
 
 
@@ -113,7 +106,6 @@ class PageCacheKeyCore
             .$this->idCountry
             .$this->idShop
             .$this->idGroup
-            .$this->idCustomer
         );
     }
 
@@ -135,7 +127,7 @@ class PageCacheKeyCore
     /**
      * Returns full page cache key for current request
      *
-     * @return PageCacheKey | false
+     * @return PageCacheKey|false
      * @throws PrestaShopException
      */
     protected static function resolvePageKey()
@@ -184,7 +176,7 @@ class PageCacheKeyCore
         $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
         $url = explode('?', $_SERVER['REQUEST_URI']);
         $uri = $url[0];
-        $queryString = isset($url[1]) ? $url[1] : '';
+        $queryString = $url[1] ?? '';
         if ($queryString === '') {
             $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
         } else {
@@ -215,8 +207,7 @@ class PageCacheKeyCore
             (int) $context->language->id,
             (int) $context->country->id,
             (int) $context->shop->id,
-            (int) Group::getCurrent()->id,
-            (int) $context->customer->id
+            (int) Group::getCurrent()->id
         );
     }
 }
