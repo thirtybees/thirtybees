@@ -2343,7 +2343,7 @@ class AdminProductsControllerCore extends AdminController
     /**
      * @param Product $product
      *
-     * @return bool|string
+     * @return string|null
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -2360,11 +2360,11 @@ class AdminProductsControllerCore extends AdminController
 
 
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
-            return $this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.');
+            return null;
         }
 
         if (!ShopUrl::getMainShopDomain()) {
-            return false;
+            return null;
         }
 
         $isRewriteActive = (bool) Configuration::get('PS_REWRITING_SETTINGS');
@@ -6002,19 +6002,16 @@ class AdminProductsControllerCore extends AdminController
      */
     public function displayPreviewLink($token, $id, $name = null)
     {
-        $tpl = $this->createTemplate('helpers/list/list_action_preview.tpl');
-        if (!array_key_exists('Bad SQL query', static::$cache_lang)) {
-            static::$cache_lang['Preview'] = $this->l('Preview', 'Helper');
+        $previewUrl = $this->getPreviewUrl(new Product((int) $id));
+        if ($previewUrl) {
+            $tpl = $this->createTemplate('helpers/list/list_action_preview.tpl');
+            $tpl->assign([
+                'href' => $previewUrl,
+                'action' => $this->l('Preview', 'Helper'),
+            ]);
+
+            return $tpl->fetch();
         }
-
-        $tpl->assign(
-            [
-                'href'   => $this->getPreviewUrl(new Product((int) $id)),
-                'action' => static::$cache_lang['Preview'],
-            ]
-        );
-
-        return $tpl->fetch();
     }
 
     /**
