@@ -2620,7 +2620,9 @@ class ToolsCore
             stream_context_set_option($streamContext, ['http' => $opts['http']]);
         }
 
-        if (!preg_match('/^https?:\/\//', $url)) {
+        if (preg_match('/^(file|php|zlib|ftp|data|glob|phar):\/\//', $url)) {
+            return file_get_contents($url, $useIncludePath, $streamContext);
+        } elseif (!preg_match('/^https?:\/\//', $url)) {
             if (file_exists($url)) {
                 return @file_get_contents($url, $useIncludePath, $streamContext);
             } else {
