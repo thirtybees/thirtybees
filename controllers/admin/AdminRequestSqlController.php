@@ -562,10 +562,11 @@ class AdminRequestSqlControllerCore extends AdminController
             '
 		<strong>'.$this->l('How do I create a new SQL query?').'</strong><br />
 		<ul>
-			<li>'.$this->l('Click "Add New".').'</li>
+			<li>'.$this->l('Click "Add new SQL query".').'</li>
 			<li>'.$this->l('Fill in the fields and click "Save".').'</li>
-			<li>'.$this->l('You can then view the query results by clicking on the Edit action in the dropdown menu: ').' <i class="icon-pencil"></i></li>
-			<li>'.$this->l('You can also export the query results as a CSV file by clicking on the Export button: ').' <i class="icon-cloud-upload"></i></li>
+			<li>'.$this->l('You can then view the query results by clicking on the query in the list or the View action in the dropdown menu: ').' <i class="icon-search-plus"></i></li>
+			<li>'.$this->l('You can edit the query by clicking on the Edit action in the dropdown menu: ').' <i class="icon-pencil"></i></li>
+            <li>'.$this->l('You can also export the query results as a CSV file by clicking on the Export button: ').' <i class="icon-cloud-upload"></i></li>
 		</ul>'
         );
 
