@@ -40,7 +40,7 @@ class GenderCore extends ObjectModel
         'primaryKeyDbType' => 'int(11)',
         'multilang' => true,
         'fields'    => [
-            'type' => ['type' => self::TYPE_INT, 'required' => true, 'dbType' => 'tinyint(1)'],
+            'type' => ['type' => self::TYPE_INT, 'required' => false, 'dbType' => 'tinyint(1)', 'default' => 0],
 
             /* Lang fields */
             'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true, 'size' => 20],
@@ -64,8 +64,10 @@ class GenderCore extends ObjectModel
 
     /**
      * @var int
+     *
+     * @deprecated Gender type is not used anymore, exists for BC only
      */
-    public $type;
+    public $type = 0;
 
     /**
      * GenderCore constructor.
@@ -111,7 +113,7 @@ class GenderCore extends ObjectModel
         $gendersIcon = [
             'default' => [
                 'src' => static::getGenderImage(null),
-                'alt' => 'Unknown gender',
+                'alt' => 'Unknown',
             ]
         ];
         foreach (GenderCore::getGenders() as $gender) {

@@ -949,7 +949,7 @@ CREATE TABLE `PREFIX_feature_value_lang` (
 
 CREATE TABLE `PREFIX_gender` (
   `id_gender` int(11) NOT NULL AUTO_INCREMENT,
-  `type` tinyint(1) NOT NULL,
+  `type` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id_gender`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -77,19 +77,6 @@ class AdminGendersControllerCore extends AdminController
                 'title' => $this->l('Social title'),
                 'filter_key' => 'b!name'
             ],
-            'type' => [
-                'title' => $this->l('Gender'),
-                'orderby' => false,
-                'type' => 'select',
-                'list' => [
-                    0 => $this->l('Male'),
-                    1 => $this->l('Female'),
-                    2 => $this->l('Neutral')
-                ],
-                'filter_key' => 'a!type',
-                'callback' => 'displayGenderType',
-                'callback_object' => $this
-            ],
             'image' => [
                 'title' => $this->l('Image'),
                 'align' => 'center',
@@ -143,30 +130,6 @@ class AdminGendersControllerCore extends AdminController
                     'required' => true
                 ],
                 [
-                    'type' => 'radio',
-                    'label' => $this->l('Gender'),
-                    'name' => 'type',
-                    'required' => false,
-                    'class' => 't',
-                    'values' => [
-                        [
-                            'id' => 'type_male',
-                            'value' => 0,
-                            'label' => $this->l('Male')
-                        ],
-                        [
-                            'id' => 'type_female',
-                            'value' => 1,
-                            'label' => $this->l('Female')
-                        ],
-                        [
-                            'id' => 'type_neutral',
-                            'value' => 2,
-                            'label' => $this->l('Neutral')
-                        ]
-                    ]
-                ],
-                [
                     'type' => 'file',
                     'label' => $this->l('Image'),
                     'name' => 'image',
@@ -205,16 +168,6 @@ class AdminGendersControllerCore extends AdminController
         ];
 
         return parent::renderForm();
-    }
-
-    /**
-     * @param int $value
-     * @param array $tr
-     * @return string
-     */
-    public function displayGenderType($value, $tr)
-    {
-        return $this->fields_list['type']['list'][$value];
     }
 
     /**
