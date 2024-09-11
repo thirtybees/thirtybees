@@ -3728,10 +3728,11 @@ FileETag none
      */
     public static function display404Error()
     {
+        Tools::displayAsDeprecated();
         header('HTTP/1.1 404 Not Found');
         header('Status: 404 Not Found');
-        include(dirname(__FILE__).'/../404.php');
-        die;
+        header('Content-Type: text/plain');
+        die('Not Found');
     }
 
     /**
