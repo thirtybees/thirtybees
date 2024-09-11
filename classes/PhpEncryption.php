@@ -31,6 +31,8 @@
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Encoding;
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key;
 
 /**
@@ -48,8 +50,8 @@ class PhpEncryptionCore
      *
      * @param string $asciiKey
      *
-     * @throws \Defuse\Crypto\Exception\BadFormatException
-     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
      */
     public function __construct($asciiKey)
     {
@@ -60,7 +62,7 @@ class PhpEncryptionCore
      * @param string $plaintext
      *
      * @return string Ciphertext
-     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
+     * @throws EnvironmentIsBrokenException
      */
     public function encrypt($plaintext)
     {
@@ -89,7 +91,7 @@ class PhpEncryptionCore
      * @param string $salt
      *
      * @return string
-     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
+     * @throws EnvironmentIsBrokenException
      */
     public static function createKeyFromSalt(string $salt)
     {

@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
+
 /**
  * Class AdminThemesControllerCore
  *
@@ -2433,7 +2435,7 @@ class AdminThemesControllerCore extends AdminController
     public function ajaxProcessRefreshFaviconTemplate()
     {
         try {
-            $template = (string) (new \GuzzleHttp\Client([
+            $template = (string) (new Client([
                 'verify'      => Configuration::getSslTrustStore(),
                 'timeout'     => 20,
             ]))->get('https://raw.githubusercontent.com/thirtybees/favicons/master/template.html')->getBody();

@@ -29,4 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-\Thirtybees\Core\DependencyInjection\ServiceLocator::initialize();
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+
+ServiceLocator::initialize();

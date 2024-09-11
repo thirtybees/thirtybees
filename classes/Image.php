@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use CoreUpdater\TableSchema;
+
 /**
  * Class ImageCore
  */
@@ -1039,7 +1041,7 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param \CoreUpdater\TableSchema $table
+     * @param TableSchema $table
      */
     public static function processTableSchema($table)
     {

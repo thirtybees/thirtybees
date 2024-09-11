@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Error\ErrorDescription;
+use Thirtybees\Core\Error\Response\DebugErrorPage;
+
 /**
  * Class AdminLogsControllerCore
  *
@@ -138,8 +141,8 @@ class AdminLogsControllerCore extends AdminController
                 $upload = Tools::fileAttachment('exception');
                 if ($upload && $upload['content']) {
                     $encrypted = $upload['content'];
-                    $errorDescription = \Thirtybees\Core\Error\ErrorDescription::decrypt($encrypted);
-                    $debugErrorPage = new \Thirtybees\Core\Error\Response\DebugErrorPage();
+                    $errorDescription = ErrorDescription::decrypt($encrypted);
+                    $debugErrorPage = new DebugErrorPage();
                     $this->fields_options = array_merge($this->fields_options, [
                         'decrypted_exception' => [
                             'title'  => $this->l('Decrypted exception message'),

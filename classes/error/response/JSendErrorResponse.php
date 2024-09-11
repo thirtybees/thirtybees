@@ -20,6 +20,7 @@
 namespace Thirtybees\Core\Error\Response;
 
 use Thirtybees\Core\Error\ErrorDescription;
+use Tools;
 
 /**
  * Class JSendErrorResponse
@@ -69,7 +70,7 @@ class JSendErrorResponseCore extends AbstractErrorPage
         if ($this->sendErrorMessage) {
             return $errorDescription->getExtendedMessage();
         } else {
-            return \Tools::displayError('Internal server error');
+            return Tools::displayError('Internal server error');
         }
     }
 }

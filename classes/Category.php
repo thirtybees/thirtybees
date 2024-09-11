@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use CoreUpdater\TableSchema;
 use Thirtybees\Core\InitializationCallback;
 
 /**
@@ -2561,7 +2562,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @param \CoreUpdater\TableSchema $table
+     * @param TableSchema $table
      */
     public static function processTableSchema($table)
     {

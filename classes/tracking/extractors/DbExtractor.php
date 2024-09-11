@@ -19,6 +19,7 @@
 
 namespace Thirtybees\Core\Tracking\Extractor;
 
+use Exception;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Thirtybees\Core\Tracking\DataExtractor;
@@ -77,7 +78,7 @@ class DbExtractorCore extends DataExtractor
             if (isset($result[0]['Value'])) {
                 return $result[0]['Value'];
             }
-        } catch (\Exception $ignored) {}
+        } catch (Exception $ignored) {}
         return '';
     }
 }

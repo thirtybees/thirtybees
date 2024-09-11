@@ -31,6 +31,8 @@
 
 use CoreUpdater\CodeCallback;
 use CoreUpdater\ObjectModelSchemaBuilder;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Key;
 
 /**
  * Class InstallModelInstall
@@ -115,9 +117,9 @@ class InstallModelInstall extends InstallAbstractModel
 
         if (Encryptor::supportsPhpEncryption()) {
             try {
-                $secureKey = \Defuse\Crypto\Key::createNewRandomKey();
+                $secureKey = Key::createNewRandomKey();
                 $settingsConstants['_PHP_ENCRYPTION_KEY_'] = $secureKey->saveToAsciiSafeString();
-            } catch (\Defuse\Crypto\Exception\EnvironmentIsBrokenException $e) {
+            } catch (EnvironmentIsBrokenException $e) {
                 throw new PrestashopInstallerException("Failed to generate encryption key", 0, $e);
             }
         }

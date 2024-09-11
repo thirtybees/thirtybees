@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use PHPSQLParser\PHPSQLParser;
 use Thirtybees\Core\Error\ErrorUtils;
@@ -2669,7 +2670,7 @@ class ToolsCore
     {
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
-            $guzzle = new \GuzzleHttp\Client([
+            $guzzle = new Client([
                 'verify' => Configuration::getSslTrustStore(),
                 'timeout' => 20,
             ]);
@@ -2710,7 +2711,7 @@ class ToolsCore
         }
         $timeout -= 5; // Room for other processing.
 
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'verify'   => Configuration::getSslTrustStore(),
             'timeout'  => $timeout,
         ]);

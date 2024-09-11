@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
+
 /**
  * Class AdminTranslationsControllerCore
  */
@@ -218,7 +220,7 @@ class AdminTranslationsControllerCore extends AdminController
         $fileName = "{$this->link_lang_pack}/{$version}/index.json";
 
         $langPacks = false;
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'verify'      => Configuration::getSslTrustStore(),
             'timeout'     => 20,
         ]);
@@ -1189,7 +1191,7 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $arrImportLang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
         if (Validate::isLangIsoCode($arrImportLang[0])) {
-            $guzzle = new \GuzzleHttp\Client([
+            $guzzle = new Client([
                 'base_uri' => $this->link_lang_pack,
                 'timeout'  => 20,
                 'verify'   => Configuration::getSslTrustStore(),

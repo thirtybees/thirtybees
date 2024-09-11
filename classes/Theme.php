@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
+
 /**
  * Class ThemeCore
  */
@@ -1134,7 +1136,7 @@ class ThemeCore extends ObjectModel
         ];
         $archiveFile = tempnam(_PS_CACHE_DIR_, 'theme-templates');
         try {
-            $guzzle = new \GuzzleHttp\Client([
+            $guzzle = new Client([
                 'base_uri' => Configuration::getApiServer(),
                 'verify' => Configuration::getSslTrustStore(),
                 'timeout' => 20,

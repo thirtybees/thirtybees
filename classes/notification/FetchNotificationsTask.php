@@ -22,6 +22,7 @@ namespace Thirtybees\Core\Notification;
 use Configuration;
 use Context;
 use Db;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Module;
 use PrestaShopException;
@@ -125,7 +126,7 @@ class FetchNotificationsTaskCore implements WorkQueueTaskCallable, Initializatio
      */
     protected function fetch($lastUuid)
     {
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'base_uri'    => Configuration::getApiServer(),
             'timeout'     => 15,
             'verify'      => Configuration::getSslTrustStore()

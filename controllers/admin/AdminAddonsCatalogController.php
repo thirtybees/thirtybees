@@ -17,6 +17,7 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use GuzzleHttp\Client;
 use Psr\Http\Message\StreamInterface;
 
 class AdminAddonsCatalogControllerCore extends AdminController
@@ -76,7 +77,7 @@ class AdminAddonsCatalogControllerCore extends AdminController
      */
     protected function downloadCatalog()
     {
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'base_uri'    => Configuration::getApiServer(),
             'http_errors' => true,
             'verify'      => Configuration::getSslTrustStore(),

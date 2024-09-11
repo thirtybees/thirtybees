@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use GuzzleHttp\Client;
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 
@@ -951,7 +952,7 @@ abstract class ModuleCore
 
         // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
         $imagePromises = [];
-        $guzzle = new \GuzzleHttp\Client([
+        $guzzle = new Client([
             'verify'      => Configuration::getSslTrustStore(),
             'timeout'     => 20,
         ]);
