@@ -4372,7 +4372,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             SET position = @rank:=@rank+1
             WHERE `id_category` = '.$idCategory.'
             ORDER BY `position`, `id_product`
-        ');
+        ') && $return;
 
         // mark all products whose position within category (might) have changed as modified
         $return = $conn->execute('
