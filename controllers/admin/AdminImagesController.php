@@ -892,7 +892,7 @@ class AdminImagesControllerCore extends AdminController
             $formattedMedium = ImageType::getFormatedName('medium');
             foreach (scandir($dir) as $image) {
                 if (preg_match('/^[0-9]*\.'.$legacyImageExtension.'$/', $image)) {
-                    foreach ($type as $k => $imageType) {
+                    foreach ($type as $imageType) {
                         // Customizable writing dir
                         $newDir = $dir;
                         if ($imageType['name'] == $formattedThumbScene) {

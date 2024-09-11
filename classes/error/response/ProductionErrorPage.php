@@ -20,7 +20,6 @@
 namespace Thirtybees\Core\Error\Response;
 
 use Configuration;
-use PrestaShopException;
 use Thirtybees\Core\Error\ErrorDescription;
 use Throwable;
 

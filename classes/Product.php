@@ -3022,7 +3022,6 @@ class ProductCore extends ObjectModel implements InitializationCallback
 	        // Set stock quantity
 	        StockAvailable::setQuantity((int) $idProductNew, $idProductAttributeNew, (int) $quantityAttributeOld, $idShop);
 
-            $oldOutOfStock = StockAvailable::outOfStock($idProductOld, $idShop, $quantityAttributeOld);
             StockAvailable::setProductOutOfStock((int)$idProductNew, StockAvailable::outOfStock($idProductOld), $idShop, $idProductAttributeNew);
 
             if ($resultImages = static::_getAttributeImageAssociations($idProductAttributeOld)) {

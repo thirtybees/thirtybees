@@ -682,13 +682,9 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             $carrierList = array_intersect($carrierList, $warehouseCarrierList);
         }
 
-        $cartQuantity = 0;
         $cartWeight = 0;
 
         foreach ($cart->getProducts(false, false) as $cartProduct) {
-            if ($cartProduct['id_product'] == $product->id) {
-                $cartQuantity += $cartProduct['cart_quantity'];
-            }
             if (isset($cartProduct['weight_attribute']) && $cartProduct['weight_attribute'] > 0) {
                 $cartWeight += ($cartProduct['weight_attribute'] * $cartProduct['cart_quantity']);
             } else {
