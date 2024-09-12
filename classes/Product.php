@@ -991,7 +991,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     /**
      * Price calculation / Get product price
      *
-     * @param int $idShop Shop id
+     * @param int|null $idShop Shop id
      * @param int $idProduct Product id
      * @param int|false|null $idProductAttribute Product attribute id
      * @param int $idCountry Country id
