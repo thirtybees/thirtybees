@@ -597,7 +597,7 @@ class DispatcherCore
                     $route['controller'],
                     $lang['id_lang'],
                     $route['keywords'],
-                    isset($route['params']) ? $route['params'] : [],
+                    $route['params'] ?? [],
                     $idShop
                 );
             }
@@ -1131,9 +1131,7 @@ class DispatcherCore
             $idShop = (int) Context::getContext()->shop->id;
         }
 
-        return isset($this->routes[$idShop][$idLang][$routeId])
-            ? $this->routes[$idShop][$idLang][$routeId]
-            : null;
+        return $this->routes[$idShop][$idLang][$routeId] ?? null;
     }
 
     /**
@@ -1240,7 +1238,7 @@ class DispatcherCore
         }
         $route = $this->routes[$idShop][$idLang][$routeId];
         // Check required fields
-        $queryParams = isset($route['params']) ? $route['params'] : [];
+        $queryParams = $route['params'] ?? [];
         // Skip if we are not using routes
         // Build an url which match a route
         if ($this->use_routes || $forceRoutes) {
@@ -1250,7 +1248,7 @@ class DispatcherCore
                     continue;
                 }
 
-                $alias = isset($aliases[$key]) ? $aliases[$key] : null;
+                $alias = $aliases[$key] ?? null;
                 if ($alias && array_key_exists($alias, $params)) {
                     $params[$key] = $params[$alias];
                     unset($params[$alias]);

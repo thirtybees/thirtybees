@@ -223,7 +223,7 @@ class AdminTaxesControllerCore extends AdminController
             [
                 'enabled'    => (bool) $value,
                 'url_enable' => static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.((int) $idCategory && (int) $idProduct ? '&id_category='.(int) $idCategory : '').'&token='.($token != null ? $token : $this->token),
-                'confirm'    => isset($confirm) ? $confirm : null,
+                'confirm'    => $confirm ?? null,
             ]
         );
 

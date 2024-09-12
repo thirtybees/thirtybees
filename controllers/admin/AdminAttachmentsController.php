@@ -192,8 +192,8 @@ class AdminAttachmentsControllerCore extends AdminController
                 ],
                 [
                     'type'     => 'file',
-                    'file'     => isset($link) ? $link : null,
-                    'size'     => isset($size) ? $size : null,
+                    'file'     => $link ?? null,
+                    'size'     => $size ?? null,
                     'label'    => $this->l('File'),
                     'name'     => 'file',
                     'required' => true,

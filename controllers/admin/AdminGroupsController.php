@@ -399,7 +399,7 @@ class AdminGroupsControllerCore extends AdminController
             $this->fields_value['price_display_method'] = Configuration::get('PRICE_DISPLAY_METHOD');
         }
 
-        $this->fields_value['reduction'] = isset($group->reduction) ? $group->reduction : 0;
+        $this->fields_value['reduction'] = $group->reduction ?? 0;
 
         $tree = new HelperTreeCategories('categories-tree');
         $this->tpl_form_vars['categoryTreeView'] = $tree->setRootCategory((int)Category::getRootCategory()->id)->render();

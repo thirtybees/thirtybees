@@ -322,11 +322,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $result = imap_fetch_overview($mbox, "1:{$check->Nmsgs}", 0);
         foreach ($result as $overview) {
             //check if message exist in database
-            if (isset($overview->subject)) {
-                $subject = $overview->subject;
-            } else {
-                $subject = '';
-            }
+            $subject = $overview->subject ?? '';
             //Creating an md5 to check if message has been allready processed
             $md5 = md5($overview->date.$overview->from.$subject.$overview->msgno);
             $exist = Db::readOnly()->getValue(
@@ -986,11 +982,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
             'first_message'                 => $firstMessage,
             'contact'                       => $contact,
             'next_thread'                   => $nextThread,
-            'orders'                        => isset($orders) ? $orders : false,
-            'customer'                      => isset($customer) ? $customer : false,
-            'products'                      => isset($products) ? $products : false,
+            'orders'                        => $orders ?? false,
+            'customer'                      => $customer ?? false,
+            'products'                      => $products ?? false,
             'total_ok'                      => isset($totalOk) ? Tools::displayPrice($totalOk, $this->context->currency) : false,
-            'orders_ok'                     => isset($ordersOk) ? $ordersOk : false,
+            'orders_ok'                     => $ordersOk ?? false,
             'count_ok'                      => isset($ordersOk) ? count($ordersOk) : false,
             'PS_CUSTOMER_SERVICE_SIGNATURE' => str_replace('\r\n', "\n", Configuration::get('PS_CUSTOMER_SERVICE_SIGNATURE', (int) $thread->id_lang)),
             'timeline_items'                => $timelineItems,

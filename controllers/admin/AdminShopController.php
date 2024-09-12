@@ -586,7 +586,7 @@ class AdminShopControllerCore extends AdminController
         $this->fields_value = [
             'id_shop_group'    => $idShopGroup,
             'id_category'      => $idCategory,
-            'id_theme_checked' => (int)(isset($obj->id_theme) ? $obj->id_theme : $idTheme),
+            'id_theme_checked' => (int)($obj->id_theme ?? $idTheme),
         ];
 
         $idsCategory = [];

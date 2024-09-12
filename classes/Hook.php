@@ -806,7 +806,7 @@ class HookCore extends ObjectModel
             $hookIds = Cache::retrieve($cacheId);
         }
 
-        return (isset($hookIds[$hookName]) ? $hookIds[$hookName] : false);
+        return ($hookIds[$hookName] ?? false);
     }
 
     /**

@@ -1395,7 +1395,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         $resourceParameters = array_merge_recursive($defaultResourceParameters, $this->{$wsParamsAttributeName});
 
-        $requiredFields = (isset(static::$fieldsRequiredDatabase[get_class($this)]) ? static::$fieldsRequiredDatabase[get_class($this)] : []);
+        $requiredFields = (static::$fieldsRequiredDatabase[get_class($this)] ?? []);
         foreach ($this->def['fields'] as $fieldName => $details) {
             if (!isset($resourceParameters['fields'][$fieldName])) {
                 $resourceParameters['fields'][$fieldName] = [];

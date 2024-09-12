@@ -346,7 +346,7 @@ class LanguageCore extends ObjectModel
             }
         }
 
-        return (isset(static::$_cache_language_installation[$iso_code]) ? static::$_cache_language_installation[$iso_code] : false);
+        return (static::$_cache_language_installation[$iso_code] ?? false);
     }
 
     /**

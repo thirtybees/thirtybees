@@ -292,11 +292,7 @@ class GetFileControllerCore extends FrontController
                 'ice'     => 'x-conference-xcooltalk',
             ];
 
-            if (isset($mimeTypes[$bName])) {
-                $mimeType = $mimeTypes[$bName];
-            } else {
-                $mimeType = 'application/octet-stream';
-            }
+            $mimeType = $mimeTypes[$bName] ?? 'application/octet-stream';
         }
 
         if (ob_get_level() && ob_get_length() > 0) {

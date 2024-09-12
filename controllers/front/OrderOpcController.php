@@ -477,7 +477,7 @@ class OrderOpcControllerCore extends ParentOrderController
             'delivery_option'             => $deliveryOption,
             'address_collection'          => $this->context->cart->getAddressCollection(),
             'opc'                         => true,
-            'oldMessage'                  => isset($oldMessage['message']) ? $oldMessage['message'] : '',
+            'oldMessage'                  => $oldMessage['message'] ?? '',
             'HOOK_BEFORECARRIER'          => Hook::displayHook(
                 'displayBeforeCarrier',
                 [
@@ -846,7 +846,7 @@ class OrderOpcControllerCore extends ParentOrderController
                 [
                     'HOOK_EXTRACARRIER'      => null,
                     'HOOK_EXTRACARRIER_ADDR' => null,
-                    'oldMessage'             => isset($oldMessage['message']) ? $oldMessage['message'] : '',
+                    'oldMessage'             => $oldMessage['message'] ?? '',
                     'HOOK_BEFORECARRIER'     => Hook::displayHook(
                         'displayBeforeCarrier', [
                             'carriers'             => $carriers,

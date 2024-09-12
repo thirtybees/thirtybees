@@ -2123,7 +2123,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
             }
         }
 
-        return isset($nameArray[$idLang]) ? $nameArray[$idLang] : '';
+        return $nameArray[$idLang] ?? '';
     }
 
     /**

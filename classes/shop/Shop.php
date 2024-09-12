@@ -601,7 +601,7 @@ class ShopCore extends ObjectModel
             static::init();
         }
 
-        return (isset(static::$asso_tables[$table]) ? static::$asso_tables[$table] : false);
+        return (static::$asso_tables[$table] ?? false);
     }
 
     /**

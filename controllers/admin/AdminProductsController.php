@@ -4177,7 +4177,7 @@ class AdminProductsControllerCore extends AdminController
 						<td>'.($specificPrice['id_currency'] ? $currencies[$specificPrice['id_currency']]['name'] : $this->l('All currencies')).'</td>
 						<td>'.($specificPrice['id_country'] ? $countries[$specificPrice['id_country']]['name'] : $this->l('All countries')).'</td>
 						<td>'.($specificPrice['id_group'] ? $groups[$specificPrice['id_group']]['name'] : $this->l('All groups')).'</td>
-						<td title="'.$this->l('ID:').' '.$specificPrice['id_customer'].'">'.(isset($customerFullName) ? $customerFullName : $this->l('All customers')).'</td>
+						<td title="'.$this->l('ID:').' '.$specificPrice['id_customer'].'">'.($customerFullName ?? $this->l('All customers')).'</td>
 						<td>'.$fixedPrice.'</td>
 						<td>'.$impact.'</td>
 						<td>'.$period.'</td>
@@ -5278,7 +5278,7 @@ class AdminProductsControllerCore extends AdminController
                     $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
                     $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
                     $combArray[$combination['id_product_attribute']]['upc'] = $combination['upc'];
-                    $combArray[$combination['id_product_attribute']]['id_image'] = isset($combinationImages[$combination['id_product_attribute']][0]['id_image']) ? $combinationImages[$combination['id_product_attribute']][0]['id_image'] : 0;
+                    $combArray[$combination['id_product_attribute']]['id_image'] = $combinationImages[$combination['id_product_attribute']][0]['id_image'] ?? 0;
                     $combArray[$combination['id_product_attribute']]['available_date'] = strtotime($combination['available_date']);
                     $combArray[$combination['id_product_attribute']]['default_on'] = $combination['default_on'];
                 }

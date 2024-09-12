@@ -556,7 +556,7 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
         while (true) {
             try {
                 $tpl = parent::fetch($template, $cacheId, $compileId, $parent);
-                return isset($tpl) ? $tpl : '';
+                return $tpl ?? '';
             } catch (SmartyException $e) {
                 // handle exception
                 if (++$count === $maxTries) {

@@ -654,7 +654,7 @@ class TreeCore
             ]
         );
 
-        return (isset($html) ? $html : '').$template->fetch();
+        return ($html ?? '').$template->fetch();
     }
 
     /**

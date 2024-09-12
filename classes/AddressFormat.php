@@ -448,10 +448,10 @@ class AddressFormatCore extends ObjectModel
     {
         return AddressFormat::generateAddress(
             $params['address'],
-            (isset($params['patternRules']) ? $params['patternRules'] : []),
-            (isset($params['newLine']) ? $params['newLine'] : "\r\n"),
-            (isset($params['separator']) ? $params['separator'] : ' '),
-            (isset($params['style']) ? $params['style'] : [])
+            ($params['patternRules'] ?? []),
+            ($params['newLine'] ?? "\r\n"),
+            ($params['separator'] ?? ' '),
+            ($params['style'] ?? [])
         );
     }
 

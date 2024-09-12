@@ -818,7 +818,7 @@ class CMSCategoryCore extends ObjectModel
             }
         }
 
-        return isset($this->name[$idLang]) ? $this->name[$idLang] : '';
+        return $this->name[$idLang] ?? '';
     }
 
     /**

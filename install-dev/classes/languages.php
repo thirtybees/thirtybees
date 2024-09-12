@@ -216,7 +216,7 @@ class InstallLanguages
             if ($xml) {
                 foreach ($xml->entities->country as $country) {
                     $iso = strtolower((string) $country['iso_code']);
-                    $countries[$iso] = isset($countriesLang[$iso]) ? $countriesLang[$iso] : $countriesDefault[$iso];
+                    $countries[$iso] = $countriesLang[$iso] ?? $countriesDefault[$iso];
                 }
             }
             asort($countries);

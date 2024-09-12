@@ -727,7 +727,7 @@ class ThemeCore extends ObjectModel
                             $value = strtolower((string)$moduleRow['manageHooks']);
                             $manageHooks = $value === 'true';
                         }
-                        $moduleHooks = isset($hooks[$moduleName]) ? $hooks[$moduleName] : [];
+                        $moduleHooks = $hooks[$moduleName] ?? [];
                         $result = $this->installModule($module, $manageHooks, $moduleHooks, $return['warnings']['unmanagedModules']);
                         if ($result !== true) {
                             $return['moduleErrors'][] = [

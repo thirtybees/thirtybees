@@ -398,13 +398,13 @@ class OrderCore extends ObjectModel
         foreach ($products as &$product) {
             $product['id_product_attribute'] = $product['product_attribute_id'];
             $product['cart_quantity'] = $product['product_quantity'];
-            $productIdList[] = $this->id_address_delivery.'_'.$product['product_id'].'_'.$product['product_attribute_id'].'_'.(isset($product['id_customization']) ? $product['id_customization'] : '0');
+            $productIdList[] = $this->id_address_delivery.'_'.$product['product_id'].'_'.$product['product_attribute_id'].'_'.($product['id_customization'] ?? '0');
         }
         unset($product);
 
         $productList = [];
         foreach ($products as $product) {
-            $key = $this->id_address_delivery.'_'.$product['id_product'].'_'.(isset($product['id_product_attribute']) ? $product['id_product_attribute'] : '0').'_'.(isset($product['id_customization']) ? $product['id_customization'] : '0');
+            $key = $this->id_address_delivery.'_'.$product['id_product'].'_'.($product['id_product_attribute'] ?? '0').'_'.($product['id_customization'] ?? '0');
 
             if (in_array($key, $productIdList)) {
                 $productList[] = $product;
@@ -1328,7 +1328,7 @@ class OrderCore extends ObjectModel
                 ->where('`id_customer` = '.(int) $idCustomer.' '.Shop::addSqlRestriction())
         );
 
-        return isset($result['nb']) ? $result['nb'] : 0;
+        return $result['nb'] ?? 0;
     }
 
     /**

@@ -583,7 +583,7 @@ class StockManagerCore implements StockManagerInterface
             $productStockCriteria['product_id'],
             $productStockCriteria['product_attribute_id'],
             $productStockCriteria['warehouse_id'],
-            isset($productStockCriteria['usable']) ? $productStockCriteria['usable'] : false
+            $productStockCriteria['usable'] ?? false
         );
     }
 

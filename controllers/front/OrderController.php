@@ -182,7 +182,7 @@ class OrderControllerCore extends ParentOrderController
 
         $this->context->smarty->assign(
             [
-                'is_guest' => (isset($this->context->customer->is_guest) ? $this->context->customer->is_guest : 0),
+                'is_guest' => ($this->context->customer->is_guest ?? 0),
             ]
         );
     }

@@ -423,7 +423,7 @@ class ParentOrderControllerCore extends FrontController
         }
 
         // Get available cart rules and unset the cart rules already in the cart
-        $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
+        $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, ($this->context->customer->id ?? 0), true, true, true, $this->context->cart, false, true);
         $cartCartRules = $this->context->cart->getCartRules();
         foreach ($availableCartRules as $key => $availableCartRule) {
             foreach ($cartCartRules as $cartCartRule) {

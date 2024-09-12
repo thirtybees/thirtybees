@@ -506,7 +506,7 @@ class ToolsCore
             return false;
         }
 
-        return (isset($_POST[$key]) ? $_POST[$key] : (isset($_GET[$key]) ? $_GET[$key] : $defaultValue));
+        return ($_POST[$key] ?? ($_GET[$key] ?? $defaultValue));
     }
 
     /**
@@ -1137,7 +1137,7 @@ class ToolsCore
      */
     public static function dateFormat($params, $smarty)
     {
-        return Tools::displayDate($params['date'], null, (isset($params['full']) ? $params['full'] : false));
+        return Tools::displayDate($params['date'], null, ($params['full'] ?? false));
     }
 
     /**
@@ -1711,7 +1711,7 @@ class ToolsCore
      */
     public static function getHttpHost($http = false, $entities = false, $ignore_port = false)
     {
-        $host = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST']);
+        $host = ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']);
         if ($ignore_port && $pos = strpos($host, ':')) {
             $host = substr($host, 0, $pos);
         }
@@ -5200,7 +5200,7 @@ FileETag none
 
                 // find out all separators
                 preg_match_all("/[^0-9]/", $s, $matches);
-                $separators = isset($matches[0]) ? $matches[0] : [];
+                $separators = $matches[0] ?? [];
                 $unique = array_count_values($separators);
 
                 // if there is only unique separator, it s considered thousand separator.

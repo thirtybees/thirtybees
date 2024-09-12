@@ -606,7 +606,7 @@ abstract class AdminTabCore
 			'.($this->lang ? 'LEFT JOIN `'._DB_PREFIX_.$this->table.'_lang` b ON (b.`'.$this->identifier.'` = a.`'.$this->identifier.'` AND b.`id_lang` = '.(int) $idLang.($idLangShop ? ' AND b.`id_shop`='.(int) $idLangShop : '').')' : '').'
 			'.(isset($this->_join) ? $this->_join.' ' : '').'
 			'.$joinShop.'
-			WHERE 1 '.(isset($this->_where) ? $this->_where.' ' : '').($this->deleted ? 'AND a.`deleted` = 0 ' : '').(isset($this->_filter) ? $this->_filter : '').$whereShop.'
+			WHERE 1 '.(isset($this->_where) ? $this->_where.' ' : '').($this->deleted ? 'AND a.`deleted` = 0 ' : '').($this->_filter ?? '').$whereShop.'
 			'.(isset($this->_group) ? $this->_group.' ' : '').'
 			'.((isset($this->_filterHaving) || isset($this->_having)) ? 'HAVING ' : '').(isset($this->_filterHaving) ? ltrim($this->_filterHaving, ' AND ') : '').(isset($this->_having) ? $this->_having.' ' : '').'
 			ORDER BY '.(($orderBy == $this->identifier) ? 'a.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay).
@@ -878,11 +878,11 @@ abstract class AdminTabCore
                     if (!Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
                         $value = '';
                     }
-                    $name = $this->table.'Filter_'.(isset($params['filter_key']) ? $params['filter_key'] : $key);
+                    $name = $this->table.'Filter_'.($params['filter_key'] ?? $key);
                     $nameId = str_replace('!', '__', $name);
                     includeDatepicker([$nameId.'_0', $nameId.'_1']);
-                    echo $this->l('From').' <input type="text" id="'.$nameId.'_0" name="'.$name.'[0]" value="'.(isset($value[0]) ? $value[0] : '').'"'.$width.' '.$keyPress.' /><br />
-					'.$this->l('To').' <input type="text" id="'.$nameId.'_1" name="'.$name.'[1]" value="'.(isset($value[1]) ? $value[1] : '').'"'.$width.' '.$keyPress.' />';
+                    echo $this->l('From').' <input type="text" id="'.$nameId.'_0" name="'.$name.'[0]" value="'.($value[0] ?? '').'"'.$width.' '.$keyPress.' /><br />
+					'.$this->l('To').' <input type="text" id="'.$nameId.'_1" name="'.$name.'[1]" value="'.($value[1] ?? '').'"'.$width.' '.$keyPress.' />';
                     break;
 
                 case 'select':
@@ -904,7 +904,7 @@ abstract class AdminTabCore
                     if (!Validate::isCleanHtml($value)) {
                         $value = '';
                     }
-                    echo '<input type="text" name="'.$this->table.'Filter_'.(isset($params['filter_key']) ? $params['filter_key'] : $key).'" value="'.htmlentities($value, ENT_COMPAT, 'UTF-8').'"'.$width.' '.$keyPress.' />';
+                    echo '<input type="text" name="'.$this->table.'Filter_'.($params['filter_key'] ?? $key).'" value="'.htmlentities($value, ENT_COMPAT, 'UTF-8').'"'.$width.' '.$keyPress.' />';
             }
             echo '</td>';
         }
@@ -963,11 +963,11 @@ abstract class AdminTabCore
                 echo '</td>';
                 foreach ($this->fieldsDisplay as $key => $params) {
                     $tmp = explode('!', $key);
-                    $key = isset($tmp[1]) ? $tmp[1] : $tmp[0];
+                    $key = $tmp[1] ?? $tmp[0];
                     echo '
 					<td '.(isset($params['position']) ? ' id="td_'.$idCategory.'_'.$id.'"' : '').' class="'.((!isset($this->noLink) || !$this->noLink) ? 'pointer' : '').((isset($params['position']) && $this->_orderBy == 'position') ? ' dragHandle' : '').(isset($params['align']) ? ' '.$params['align'] : '').'" ';
                     if (!isset($params['position']) && (!isset($this->noLink) || !$this->noLink)) {
-                        echo ' onclick="document.location = \''.static::$currentIndex.'&'.$this->identifier.'='.$id.($this->view ? '&view' : '&update').$this->table.'&token='.($token != null ? $token : $this->token).'\'">'.(isset($params['prefix']) ? $params['prefix'] : '');
+                        echo ' onclick="document.location = \''.static::$currentIndex.'&'.$this->identifier.'='.$id.($this->view ? '&view' : '&update').$this->table.'&token='.($token != null ? $token : $this->token).'\'">'.($params['prefix'] ?? '');
                     } else {
                         echo '>';
                     }
@@ -1005,7 +1005,7 @@ abstract class AdminTabCore
 
                         echo ImageManager::thumbnail($pathToImage, $this->table.'_mini_'.$itemId.'.'.$this->imageType, 45, $this->imageType);
                     } elseif (isset($params['icon']) && (isset($params['icon'][$tr[$key]]) || isset($params['icon']['default']))) {
-                        echo '<img src="../img/admin/'.(isset($params['icon'][$tr[$key]]) ? $params['icon'][$tr[$key]] : $params['icon']['default'].'" alt="'.$tr[$key]).'" title="'.$tr[$key].'" />';
+                        echo '<img src="../img/admin/'.($params['icon'][$tr[$key]] ?? $params['icon']['default'] . '" alt="' . $tr[$key]).'" title="'.$tr[$key].'" />';
                     } elseif (isset($params['price'])) {
                         echo Tools::displayPrice($tr[$key], (isset($params['currency']) ? Currency::getCurrencyInstance($tr['id_currency']) : $this->context->currency), false);
                     } elseif (isset($params['float'])) {
@@ -1034,7 +1034,7 @@ abstract class AdminTabCore
                         echo '--';
                     }
 
-                    echo (isset($params['suffix']) ? $params['suffix'] : '').
+                    echo ($params['suffix'] ?? '').
                         '</td>';
                 }
 
@@ -1709,7 +1709,7 @@ abstract class AdminTabCore
             $this->updateOptions($token);
         } /* Manage list filtering */
         elseif (Tools::isSubmit('submitFilter'.$this->table) || $this->context->cookie->{'submitFilter'.$this->table} !== false) {
-            $_POST = array_merge($this->context->cookie->getFamily($this->table.'Filter_'), (isset($_POST) ? $_POST : []));
+            $_POST = array_merge($this->context->cookie->getFamily($this->table.'Filter_'), ($_POST ?? []));
             foreach ($_POST as $key => $value) {
                 /* Extracting filters from $_POST on key filter_ */
                 if ($value != null && !strncmp($key, $this->table.'Filter_', 7 + mb_strlen($this->table))) {
@@ -2100,7 +2100,7 @@ abstract class AdminTabCore
             }
 
             // Check image validity
-            $maxSize = isset($this->maxImageSize) ? $this->maxImageSize : 0;
+            $maxSize = $this->maxImageSize ?? 0;
             if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize($maxSize))) {
                 $this->_errors[] = $error;
             } elseif (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES[$name]['tmp_name'], $tmpName)) {
@@ -2389,11 +2389,11 @@ abstract class AdminTabCore
     public function displayOptionTypeBool($key, $field, $value)
     {
         echo '<label class="t" for="'.$key.'_on"><img src="../img/admin/enabled.gif" alt="'.$this->l('Yes').'" title="'.$this->l('Yes').'" /></label>';
-        echo '<input type="radio" name="'.$key.'" id="'.$key.'_on" value="1" '.($value ? ' checked="checked" ' : '').(isset($field['js']['on']) ? $field['js']['on'] : '').' />';
+        echo '<input type="radio" name="'.$key.'" id="'.$key.'_on" value="1" '.($value ? ' checked="checked" ' : '').($field['js']['on'] ?? '').' />';
         echo '<label class="t" for="'.$key.'_on"> '.$this->l('Yes').'</label>';
 
         echo '<label class="t" for="'.$key.'_off"><img src="../img/admin/disabled.gif" alt="'.$this->l('No').'" title="'.$this->l('No').'" style="margin-left: 10px;" /></label>';
-        echo '<input type="radio" name="'.$key.'" id="'.$key.'_off" value="0" '.(!$value ? ' checked="checked" ' : '').(isset($field['js']['off']) ? $field['js']['off'] : '').' />';
+        echo '<input type="radio" name="'.$key.'" id="'.$key.'_off" value="0" '.(!$value ? ' checked="checked" ' : '').($field['js']['off'] ?? '').' />';
         echo '<label class="t" for="'.$key.'_off"> '.$this->l('No').'</label>';
     }
 
@@ -2662,7 +2662,7 @@ abstract class AdminTabCore
         if ($id_lang) {
             $defaultValue = ($obj->id && isset($obj->{$key}[$id_lang])) ? $obj->{$key}[$id_lang] : '';
         } else {
-            $defaultValue = isset($obj->{$key}) ? $obj->{$key} : '';
+            $defaultValue = $obj->{$key} ?? '';
         }
 
         return Tools::getValue($key.($id_lang ? '_'.$idShop.'_'.$id_lang : ''), $defaultValue);

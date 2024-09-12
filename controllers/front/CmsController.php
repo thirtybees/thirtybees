@@ -165,7 +165,7 @@ class CmsControllerCore extends FrontController
                 [
                     'cms'          => $this->cms,
                     'content_only' => Tools::getIntValue('content_only'),
-                    'path'         => isset($path) ? $path : '',
+                    'path'         => $path ?? '',
                     'body_classes' => [$this->php_self.'-'.$this->cms->id, $this->php_self.'-'.$this->cms->link_rewrite],
                 ]
             );

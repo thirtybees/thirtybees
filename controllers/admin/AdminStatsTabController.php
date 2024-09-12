@@ -296,8 +296,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $tpl->assign(
             [
                 'module_name'     => $moduleName,
-                'module_instance' => isset($moduleInstance) ? $moduleInstance : null,
-                'hook'            => isset($hook) ? $hook : null,
+                'module_instance' => $moduleInstance ?? null,
+                'hook'            => $hook ?? null,
             ]
         );
 

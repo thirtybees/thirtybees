@@ -994,10 +994,10 @@ abstract class ModuleCore
                     'type'                => 'native',
                     'name'                => $name,
                     'version'             => $module['version'],
-                    'tab'                 => isset($module['tab']) ? $module['tab'] : 'administration',
-                    'displayName'         => isset($module['displayName'][$languageCode]) ? $module['displayName'][$languageCode] : (isset($module['displayName']['en-us']) ? $module['displayName']['en-us'] : 'Unknown module'),
-                    'description'         => isset($module['description'][$languageCode]) ? $module['description'][$languageCode] : (isset($module['description']['en-us']) ? $module['description']['en-us'] : ''),
-                    'description_full'    => isset($module['description_full'][$languageCode]) ? $module['description_full'][$languageCode] : (isset($module['description_full']['en-us']) ? $module['description_full']['en-us'] : ''),
+                    'tab'                 => $module['tab'] ?? 'administration',
+                    'displayName'         => $module['displayName'][$languageCode] ?? ($module['displayName']['en-us'] ?? 'Unknown module'),
+                    'description'         => $module['description'][$languageCode] ?? ($module['description']['en-us'] ?? ''),
+                    'description_full'    => $module['description_full'][$languageCode] ?? ($module['description_full']['en-us'] ?? ''),
                     'author'              => $module['author'] ?? 'thirty bees',
                     'limited_countries'   => [],
                     'parent_class'        => '',
@@ -1592,7 +1592,7 @@ abstract class ModuleCore
     {
         $map = static::getModulesNameToIdMap();
         $key = strtolower($name);
-        return isset($map[$key]) ? $map[$key] : 0;
+        return $map[$key] ?? 0;
     }
 
     /**

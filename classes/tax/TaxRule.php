@@ -233,7 +233,7 @@ class TaxRuleCore extends ObjectModel
             $to = 0;
         } else {
             $from = $zipCodes[0];
-            $to = isset($zipCodes[1]) ? $zipCodes[1] : 0;
+            $to = $zipCodes[1] ?? 0;
 
         }
 

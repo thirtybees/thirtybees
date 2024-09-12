@@ -354,7 +354,7 @@ class AdminCartsControllerCore extends AdminController
                 );
             }
 
-            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int) $idShop);
+            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], $product['id_product_attribute'] ?? null, (int) $idShop);
 
             if ($image) {
                 $product['image'] = ImageManager::getProductImageThumbnailTag($image);

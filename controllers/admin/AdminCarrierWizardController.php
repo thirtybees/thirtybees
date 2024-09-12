@@ -936,7 +936,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $allowedImageExtensions = implode('|', ImageManager::getAllowedImageExtensions());
         $imageExtension = ImageManager::getDefaultImageExtension();
 
-        $logo = (isset($_FILES['carrier_logo_input']) ? $_FILES['carrier_logo_input'] : false);
+        $logo = ($_FILES['carrier_logo_input'] ?? false);
         if ($logo && !empty($logo['tmp_name']) && $logo['tmp_name'] != 'none'
             && (!isset($logo['error']) || !$logo['error'])
             && preg_match('/\.('.$allowedImageExtensions.')$/', $logo['name'])

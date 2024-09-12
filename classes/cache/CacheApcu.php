@@ -96,11 +96,7 @@ class CacheApcuCore extends Cache
 
             $cacheInfo = apcu_cache_info(false);
             foreach ($cacheInfo['cache_list'] as $entry) {
-                if (isset($entry['key'])) {
-                    $key = $entry['key'];
-                } else {
-                    $key = $entry['info'];
-                }
+                $key = $entry['key'] ?? $entry['info'];
                 if (preg_match('#^'.$pattern.'$#', $key)) {
                     $this->_delete($key);
                 }

@@ -519,7 +519,7 @@ class InstallXmlLoader
      */
     public function retrieveId($entity, $identifier)
     {
-        return isset($this->ids[$entity.':'.$identifier]) ? $this->ids[$entity.':'.$identifier] : 0;
+        return $this->ids[$entity . ':' . $identifier] ?? 0;
     }
 
     /**
@@ -1379,7 +1379,7 @@ class InstallXmlLoader
                 if ($isMultilang && $row['id_lang']) {
                     $node = [];
                     foreach ($multilangColumns as $column => $is_text) {
-                        $node[$column] = $row[isset($aliasMultilang[$column]) ? $aliasMultilang[$column] : $column];
+                        $node[$column] = $row[$aliasMultilang[$column] ?? $column];
                     }
                     $nodesLang[$row['id_lang']][$id] = $node;
                 }

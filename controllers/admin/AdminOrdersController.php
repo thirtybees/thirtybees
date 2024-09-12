@@ -1145,7 +1145,7 @@ class AdminOrdersControllerCore extends AdminController
                                     'id_order_detail' => $idOrderDetail,
                                     'quantity'        => $fullQuantityList[$idOrderDetail],
                                     'unit_price'      => $orderDetail->unit_price_tax_excl,
-                                    'amount'          => isset($amount) ? $amount : $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail],
+                                    'amount'          => $amount ?? $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail],
                                 ];
                             }
 
@@ -1967,9 +1967,9 @@ class AdminOrdersControllerCore extends AdminController
             'customer_addresses'           => $customer->getAddresses($this->context->language->id),
             'addresses'                    => [
                 'delivery'      => $addressDelivery,
-                'deliveryState' => isset($deliveryState) ? $deliveryState : null,
+                'deliveryState' => $deliveryState ?? null,
                 'invoice'       => $addressInvoice,
-                'invoiceState'  => isset($invoiceState) ? $invoiceState : null,
+                'invoiceState'  => $invoiceState ?? null,
             ],
             'customerStats'                => $customer->getStats(),
             'products'                     => $products,
@@ -2217,11 +2217,7 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         $productInformations = $_POST['add_product'];
-        if (isset($_POST['add_invoice'])) {
-            $invoiceInformations = $_POST['add_invoice'];
-        } else {
-            $invoiceInformations = [];
-        }
+        $invoiceInformations = $_POST['add_invoice'] ?? [];
         $product = new Product($productInformations['product_id'], false, $order->id_lang);
         if (!Validate::isLoadedObject($product)) {
             $this->ajaxDie(
@@ -2290,7 +2286,7 @@ class AdminOrdersControllerCore extends AdminController
         $updateQuantity = $cart->updateQty(
             $productInformations['product_quantity'],
             $product->id,
-            isset($productInformations['product_attribute_id']) ? $productInformations['product_attribute_id'] : null,
+            $productInformations['product_attribute_id'] ?? null,
             isset($combination) ? $combination->id : null,
             'up',
             0,
@@ -2711,7 +2707,7 @@ class AdminOrdersControllerCore extends AdminController
 
 
         // Check fields validity
-        $this->doEditProductValidation($orderDetail, $order, isset($orderInvoice) ? $orderInvoice : null);
+        $this->doEditProductValidation($orderDetail, $order, $orderInvoice ?? null);
 
         // If multiple product_quantity, the order details concern a product customized
         $productQuantity = 0;

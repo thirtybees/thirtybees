@@ -727,7 +727,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     #[ReturnTypeWillChange]
     public function current()
     {
-        return isset($this->results[$this->iterator]) ? $this->results[$this->iterator] : null;
+        return $this->results[$this->iterator] ?? null;
     }
 
     /**

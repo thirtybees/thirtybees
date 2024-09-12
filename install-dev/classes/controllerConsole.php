@@ -50,8 +50,8 @@ class InstallControllerConsole
             $availableArguments = $datas->getArgs();
             echo 'Arguments available:'."\n";
             foreach ($availableArguments as $key => $arg) {
-                $name = isset($arg['name']) ? $arg['name'] : $key;
-                echo '--'.$name."\t".(isset($arg['help']) ? $arg['help'] : '').(isset($arg['default']) ? "\t".'(Default: '.$arg['default'].')' : '')."\n";
+                $name = $arg['name'] ?? $key;
+                echo '--'.$name."\t".($arg['help'] ?? '').(isset($arg['default']) ? "\t".'(Default: '.$arg['default'].')' : '')."\n";
             }
             exit;
         }

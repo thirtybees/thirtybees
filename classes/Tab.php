@@ -261,7 +261,7 @@ class TabCore extends ObjectModel
             return $arrayAll;
         }
 
-        return (isset(static::$_cache_tabs[$idLang][$idParent]) ? static::$_cache_tabs[$idLang][$idParent] : []);
+        return (static::$_cache_tabs[$idLang][$idParent] ?? []);
     }
 
     /**

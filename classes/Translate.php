@@ -455,7 +455,7 @@ class TranslateCore
         $htmlentities = !isset($params['js']);
         $pdf = isset($params['pdf']);
         $addslashes = (isset($params['slashes']) || isset($params['js']));
-        $sprintf = isset($params['sprintf']) ? $params['sprintf'] : null;
+        $sprintf = $params['sprintf'] ?? null;
 
         if ($pdf) {
             return static::postProcessTranslation(Translate::getPdfTranslation($params['s'], $sprintf), $params);

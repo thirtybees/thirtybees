@@ -177,7 +177,7 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
     {
         $ret = '';
         $nodeContent = '';
-        $value = isset($field['value']) ? $field['value'] : null;
+        $value = $field['value'] ?? null;
         $ret .= '<'.$field['sqlId'];
         // display i18n fields
         if (isset($field['i18n']) && $field['i18n']) {

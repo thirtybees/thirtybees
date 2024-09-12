@@ -1145,7 +1145,7 @@ class AdminControllerCore extends Controller
 			'.(isset($this->_join) ? $this->_join.' ' : '').'
 			'.$joinShop;
             $sqlWhere = ' '.(isset($this->_where) ? $this->_where.' ' : '').($this->deleted ? 'AND a.`deleted` = 0 ' : '').
-                (isset($this->_filter) ? $this->_filter : '').$whereShop.'
+                ($this->_filter ?? '').$whereShop.'
 			'.(isset($this->_group) ? $this->_group.' ' : '').'
 			'.$havingClause;
             $sqlOrderBy = ' ORDER BY '.((str_replace('`', '', $orderBy) == $this->identifier) ? 'a.' : '').$orderBy.' '.pSQL($orderWay).
@@ -1968,7 +1968,7 @@ class AdminControllerCore extends Controller
     public function processResetFilters($listId = null)
     {
         if ($listId === null) {
-            $listId = isset($this->list_id) ? $this->list_id : $this->table;
+            $listId = $this->list_id ?? $this->table;
         }
 
         $prefix = $this->getCookieFilterPrefix();
@@ -2376,7 +2376,7 @@ class AdminControllerCore extends Controller
                 'link'                      => $this->context->link,
                 'shop_name'                 => Configuration::get('PS_SHOP_NAME'),
                 'base_url'                  => $this->context->shop->getBaseURL(),
-                'tab'                       => isset($tab) ? $tab : null, // Deprecated, this tab is declared in the foreach, so it's the last tab in the foreach
+                'tab'                       => $tab ?? null, // Deprecated, this tab is declared in the foreach, so it's the last tab in the foreach
                 'current_parent_id'         => (int) Tab::getCurrentParentId(),
                 'tabs'                      => $tabs,
                 'install_dir_exists'        => file_exists(_PS_ADMIN_DIR_.'/../install'),
@@ -4551,11 +4551,7 @@ class AdminControllerCore extends Controller
             $this->errors[] = Tools::displayError('You must select at least one element to delete.');
         }
 
-        if (isset($result)) {
-            return $result;
-        } else {
-            return false;
-        }
+        return $result ?? false;
     }
 
     /**

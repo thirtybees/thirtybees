@@ -365,7 +365,7 @@ class CookieCore
      */
     public function __get($key)
     {
-        return isset($this->_content[$key]) ? $this->_content[$key] : false;
+        return $this->_content[$key] ?? false;
     }
 
     /**

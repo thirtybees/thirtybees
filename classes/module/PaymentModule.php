@@ -478,7 +478,7 @@ abstract class PaymentModuleCore extends Module
                             }
                             Tools::redirect('index.php?controller=order&submitAddDiscount=1&discount_name='.urlencode($rule->code));
                         } else {
-                            $ruleName = isset($rule->name[(int) $this->context->cart->id_lang]) ? $rule->name[(int) $this->context->cart->id_lang] : $rule->code;
+                            $ruleName = $rule->name[(int)$this->context->cart->id_lang] ?? $rule->code;
                             $error = sprintf(Tools::displayError('CartRule ID %1s (%2s) used in this cart is not valid and has been withdrawn from cart. Reason: '.$error), (int) $rule->id, $ruleName);
                             Logger::addLog($error, 3, '0000002', 'Cart', (int) $this->context->cart->id);
                         }
@@ -617,11 +617,7 @@ abstract class PaymentModuleCore extends Module
                 // $order is the last order loop in the foreach
                 // The method addOrderPayment of the class Order make a create a paymentOrder
                 // linked to the order reference and not to the order id
-                if (isset($extraVars['transaction_id'])) {
-                    $transactionId = $extraVars['transaction_id'];
-                } else {
-                    $transactionId = null;
-                }
+                $transactionId = $extraVars['transaction_id'] ?? null;
 
                 if (!isset($order) || !Validate::isLoadedObject($order) || !$order->addOrderPayment($amountPaid, null, $transactionId)) {
                     Logger::addLog('PaymentModule::validateOrder - Cannot save Order Payment', 3, null, 'Cart', (int) $idCart, true);

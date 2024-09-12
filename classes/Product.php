@@ -2025,7 +2025,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $row['quantity'] = static::getQuantity(
             (int) $row['id_product'],
             0,
-            isset($row['cache_is_pack']) ? $row['cache_is_pack'] : null
+            $row['cache_is_pack'] ?? null
         );
 
         $row['quantity_all_versions'] = $row['quantity'];
@@ -2034,7 +2034,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             $row['quantity'] = static::getQuantity(
                 (int) $row['id_product'],
                 $idProductAttribute,
-                isset($row['cache_is_pack']) ? $row['cache_is_pack'] : null
+                $row['cache_is_pack'] ?? null
             );
         }
 
@@ -3590,13 +3590,11 @@ class ProductCore extends ObjectModel implements InitializationCallback
                 $idProductAttribute = isset($productUpdate['id_product_attribute']) ? (int) $productUpdate['id_product_attribute'] : (int) $productUpdate['product_attribute_id'];
                 $idAddressDelivery = (int) $productUpdate['id_address_delivery'];
                 $productQuantity = isset($productUpdate['cart_quantity']) ? (int) $productUpdate['cart_quantity'] : (int) $productUpdate['product_quantity'];
-                $price = isset($productUpdate['price']) ? $productUpdate['price'] : $productUpdate['product_price'];
+                $price = $productUpdate['price'] ?? $productUpdate['product_price'];
                 if (isset($productUpdate['price_wt']) && $productUpdate['price_wt']) {
                     $priceWt = $productUpdate['price_wt'];
                 } else {
-                    $taxRate = isset($productUpdate['tax_rate']) ?
-                        $productUpdate['tax_rate'] :
-                        $productUpdate['rate'];
+                    $taxRate = $productUpdate['tax_rate'] ?? $productUpdate['rate'];
                     $priceWt = round(
                         $price * (1 + $taxRate / 100),
                         _TB_PRICE_DATABASE_PRECISION_
@@ -4819,7 +4817,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $newCategoryPos = [];
         foreach ($categories as $idCategory) {
-            $newCategoryPos[$idCategory] = isset($newCategories[$idCategory]) ? $newCategories[$idCategory] : 0;
+            $newCategoryPos[$idCategory] = $newCategories[$idCategory] ?? 0;
         }
 
         foreach ($categories as $newIdCateg) {
@@ -7413,7 +7411,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     {
         $result = static::getCover($this->id);
 
-        return isset($result['id_image']) ? $result['id_image'] : null;
+        return $result['id_image'] ?? null;
     }
 
     /**

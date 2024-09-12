@@ -874,7 +874,7 @@ class AdminTranslationsControllerCore extends AdminController
                                 }
                             }
                         }
-                        $this->redirect(false, (isset($conf) ? $conf : '15'));
+                        $this->redirect(false, ($conf ?? '15'));
                     }
                 }
                 $this->errors[] = Tools::displayError('The archive cannot be extracted.');
@@ -1227,7 +1227,7 @@ class AdminTranslationsControllerCore extends AdminController
                         if (!unlink($file)) {
                             $this->errors[] = sprintf(Tools::displayError('Cannot delete the archive %s.'), $file);
                         }
-                        $this->redirect(false, (isset($conf) ? $conf : '15'));
+                        $this->redirect(false, ($conf ?? '15'));
                     }
                 } else {
                     $this->errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), $arrImportLang[0]);
@@ -2963,7 +2963,7 @@ class AdminTranslationsControllerCore extends AdminController
                                 continue;
                             }
                             $topicAlreadyDisplayed[] = $subjectKey;
-                            $valueSubjectMail = isset($mails['subject'][$subjectMail]) ? $mails['subject'][$subjectMail] : '';
+                            $valueSubjectMail = $mails['subject'][$subjectMail] ?? '';
                             $strReturn .= '
                             <div class="label-subject row">
                                 <label class="control-label col-lg-3">'. $this->l('Email subject');
@@ -3056,8 +3056,8 @@ class AdminTranslationsControllerCore extends AdminController
                         <div class="form-group">
                             <label class="control-label col-lg-3">'.$this->l('HTML "title" tag').'</label>
                             <div class="col-lg-9">
-                                <input class="form-control" type="text" name="title_'.$groupName.'_'.$mailName.'" value="'.(isset($title[$lang]) ? $title[$lang] : '').'" />
-                                <p class="help-block">'.(isset($title['en']) ? $title['en'] : '').'</p>
+                                <input class="form-control" type="text" name="title_'.$groupName.'_'.$mailName.'" value="'.($title[$lang] ?? '').'" />
+                                <p class="help-block">'.($title['en'] ?? '').'</p>
                             </div>
                         </div>
                         <div class="thumbnail email-html-frame" data-email-src="'.$url.'"></div>

@@ -54,7 +54,7 @@ class ServerSettingsExtractorCore extends DataExtractor
     public function extractValue()
     {
         return [
-            'serverSoftware'   => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '',
+            'serverSoftware'   => $_SERVER['SERVER_SOFTWARE'] ?? '',
             'memoryLimit'      => @ini_get('memory_limit'),
             'maxExecutionTime' => @ini_get('max_execution_time'),
         ];

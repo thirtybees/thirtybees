@@ -444,20 +444,18 @@ class WebserviceRequestCore
         $arrReturn = [];
         foreach ($parameters as $name => $value) {
             $idShop = (int) Context::getContext()->shop->id;
-            $idCountry = (int) (isset($value['country']) ? $value['country'] : (Configuration::get('PS_COUNTRY_DEFAULT')));
-            $idState = (int) (isset($value['state']) ? $value['state'] : 0);
-            $idCurrency = (int) (isset($value['currency']) ? $value['currency'] : Configuration::get('PS_CURRENCY_DEFAULT'));
-            $idGroup = (int) (isset($value['group']) ? $value['group'] : (int) Configuration::get('PS_CUSTOMER_GROUP'));
-            $quantity = (int) (isset($value['quantity']) ? $value['quantity'] : 1);
-            $useTax = (int) (isset($value['use_tax']) ? $value['use_tax'] : Configuration::get('PS_TAX'));
-            $decimals = (int) (isset($value['decimals']) ?
-                $value['decimals'] :
-                _TB_PRICE_DATABASE_PRECISION_
+            $idCountry = (int) ($value['country'] ?? (Configuration::get('PS_COUNTRY_DEFAULT')));
+            $idState = (int) ($value['state'] ?? 0);
+            $idCurrency = (int) ($value['currency'] ?? Configuration::get('PS_CURRENCY_DEFAULT'));
+            $idGroup = (int) ($value['group'] ?? (int)Configuration::get('PS_CUSTOMER_GROUP'));
+            $quantity = (int) ($value['quantity'] ?? 1);
+            $useTax = (int) ($value['use_tax'] ?? Configuration::get('PS_TAX'));
+            $decimals = (int) ($value['decimals'] ?? _TB_PRICE_DATABASE_PRECISION_
             );
-            $idProductAttribute = (int) (isset($value['product_attribute']) ? $value['product_attribute'] : null);
-            $onlyReduc = (int) (isset($value['only_reduction']) ? $value['only_reduction'] : false);
-            $useReduc = (int) (isset($value['use_reduction']) ? $value['use_reduction'] : true);
-            $useEcotax = (int) (isset($value['use_ecotax']) ? $value['use_ecotax'] : Configuration::get('PS_USE_ECOTAX'));
+            $idProductAttribute = (int) ($value['product_attribute'] ?? null);
+            $onlyReduc = (int) ($value['only_reduction'] ?? false);
+            $useReduc = (int) ($value['use_reduction'] ?? true);
+            $useEcotax = (int) ($value['use_ecotax'] ?? Configuration::get('PS_USE_ECOTAX'));
             $specificPriceOutput = null;
             $zipcode = $value['zipcode'] ?? '';
             $returnValue = Product::priceCalculation(

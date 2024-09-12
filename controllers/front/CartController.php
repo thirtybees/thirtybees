@@ -220,7 +220,7 @@ class CartControllerCore extends FrontController
 
             if (!$this->errors) {
                 $cartRules = $this->context->cart->getCartRules();
-                $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
+                $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, ($this->context->customer->id ?? 0), true, true, true, $this->context->cart, false, true);
                 $updateQuantity = $this->context->cart->updateQty($this->qty, $this->id_product, $this->id_product_attribute, $this->customization_id, Tools::getValue('op', 'up'), $this->id_address_delivery);
                 if ($updateQuantity < 0) {
                     // If product has attribute, minimal quantity is set with minimal quantity of attribute
@@ -245,7 +245,7 @@ class CartControllerCore extends FrontController
                             }
                         }
                     } else {
-                        $availableCartRules2 = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
+                        $availableCartRules2 = CartRule::getCustomerCartRules($this->context->language->id, ($this->context->customer->id ?? 0), true, true, true, $this->context->cart, false, true);
                         if (count($availableCartRules2) != count($availableCartRules)) {
                             $this->ajax_refresh = true;
                         } elseif (count($availableCartRules2)) {

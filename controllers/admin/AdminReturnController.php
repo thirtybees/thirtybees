@@ -277,7 +277,7 @@ class AdminReturnControllerCore extends AdminController
                             '{lastname}'           => $customer->lastname,
                             '{firstname}'          => $customer->firstname,
                             '{id_order_return}'    => $idOrderReturn,
-                            '{state_order_return}' => (isset($orderReturnState->name[(int) $order->id_lang]) ? $orderReturnState->name[(int) $order->id_lang] : $orderReturnState->name[(int) Configuration::get('PS_LANG_DEFAULT')]),
+                            '{state_order_return}' => ($orderReturnState->name[(int)$order->id_lang] ?? $orderReturnState->name[(int)Configuration::get('PS_LANG_DEFAULT')]),
                         ];
                         Mail::Send(
                             (int) $order->id_lang,

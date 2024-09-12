@@ -99,7 +99,7 @@ class InstallLanguage
             }
         }
 
-        return isset($this->meta[$key]) ? $this->meta[$key] : null;
+        return $this->meta[$key] ?? null;
     }
 
     /**
@@ -114,7 +114,7 @@ class InstallLanguage
             $this->data = file_exists($this->path.'install.php') ? include($this->path.'install.php') : [];
         }
 
-        return isset($this->data[$type][$key]) ? $this->data[$type][$key] : null;
+        return $this->data[$type][$key] ?? null;
     }
 
     /**

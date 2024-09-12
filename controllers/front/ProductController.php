@@ -898,7 +898,7 @@ class ProductControllerCore extends FrontController
                 [
                     'groups'            => $groups,
                     'colors'            => (count($colors)) ? $colors : false,
-                    'combinations'      => isset($combinations) ? $combinations : [],
+                    'combinations'      => $combinations ?? [],
                     'combinationImages' => $combinationImages,
                 ]
             );

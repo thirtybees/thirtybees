@@ -176,7 +176,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             }
         }
 
-        return isset($timezones[$iso]) ? $timezones[$iso] : '';
+        return $timezones[$iso] ?? '';
     }
 
     /**
@@ -260,7 +260,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
         if (!$this->session->shopCountry) {
             $detectLanguage = $this->language->detectLanguage();
             if (isset($detectLanguage['primarytag'])) {
-                $this->session->shopCountry = strtolower(isset($detectLanguage['subtag']) ? $detectLanguage['subtag'] : $detectLanguage['primarytag']);
+                $this->session->shopCountry = strtolower($detectLanguage['subtag'] ?? $detectLanguage['primarytag']);
                 $this->session->shopTimezone = $this->getTimezoneByIso($this->session->shopCountry);
             }
         }

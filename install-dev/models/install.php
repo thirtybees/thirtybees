@@ -373,7 +373,7 @@ class InstallModelInstall extends InstallAbstractModel
             InstallModelInstall::$cacheLocalizationPackContent[$country] = $localizationFileContent;
         }
 
-        return isset(InstallModelInstall::$cacheLocalizationPackContent[$country]) ? InstallModelInstall::$cacheLocalizationPackContent[$country] : false;
+        return InstallModelInstall::$cacheLocalizationPackContent[$country] ?? false;
     }
 
     /**

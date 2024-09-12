@@ -360,7 +360,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
      */
     protected function getFieldValue($field)
     {
-        $value = isset($field['value']) ? $field['value'] : null;
+        $value = $field['value'] ?? null;
 
         if (is_array($value)) {
             $tmp = [];
