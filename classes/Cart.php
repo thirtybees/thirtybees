@@ -780,7 +780,7 @@ class CartCore extends ObjectModel
             throw new PrestaShopException(sprintf(Tools::displayError('Cart with ID %s not found'), (int)$idCart));
         }
 
-        $withTaxes = $useTaxDisplay ? $cart->_taxCalculationMethod !== PS_TAX_EXC : true;
+        $withTaxes = !$useTaxDisplay || $cart->_taxCalculationMethod !== PS_TAX_EXC;
 
         return Tools::displayPrice($cart->getOrderTotal($withTaxes, $type), Currency::getCurrencyInstance((int) $cart->id_currency), false);
     }
@@ -1584,7 +1584,7 @@ class CartCore extends ObjectModel
                 }
                 $deliveryOptionList[$idAddress][$key]['total_price_with_tax'] = $totalPriceWithTax;
                 $deliveryOptionList[$idAddress][$key]['total_price_without_tax'] = $totalPriceWithoutTax;
-                $deliveryOptionList[$idAddress][$key]['is_free'] = !$totalPriceWithoutTaxWithRules ? true : false;
+                $deliveryOptionList[$idAddress][$key]['is_free'] = !$totalPriceWithoutTaxWithRules;
                 $deliveryOptionList[$idAddress][$key]['position'] = $position / count($value['carrier_list']);
             }
         }

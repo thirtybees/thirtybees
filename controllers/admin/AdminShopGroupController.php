@@ -265,7 +265,7 @@ class AdminShopGroupControllerCore extends AdminController
                     'required' => true,
                     'class'    => 't',
                     'is_bool'  => true,
-                    'disabled' => ($this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'customer')) ? true : false,
+                    'disabled' => $this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'customer'),
                     'values'   => [
                         [
                             'id'    => 'share_customer_on',
@@ -304,7 +304,7 @@ class AdminShopGroupControllerCore extends AdminController
                     'required' => true,
                     'class'    => 't',
                     'is_bool'  => true,
-                    'disabled' => ($this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'order')) ? true : false,
+                    'disabled' => $this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'order'),
                     'values'   => [
                         [
                             'id'    => 'share_order_on',
@@ -360,7 +360,7 @@ class AdminShopGroupControllerCore extends AdminController
         $defaultShop = new Shop(Configuration::get('PS_SHOP_DEFAULT'));
         $this->tpl_form_vars = [
             'disabled'     => $disabled,
-            'checked'      => (Tools::getValue('addshop_group') !== false) ? true : false,
+            'checked'      => Tools::getValue('addshop_group') !== false,
             'defaultGroup' => $defaultShop->id_shop_group,
         ];
 

@@ -239,7 +239,7 @@ class AddressFormatCore extends ObjectModel
             }
         }
 
-        return (count($this->_errorFormatList)) ? false : true;
+        return !count($this->_errorFormatList);
     }
 
     /**

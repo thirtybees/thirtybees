@@ -597,7 +597,7 @@ class AdminShopControllerCore extends AdminController
 
         $this->tpl_form_vars = [
             'disabled'     => $disabled,
-            'checked'      => (Tools::getValue('addshop') !== false) ? true : false,
+            'checked'      => Tools::getValue('addshop') !== false,
             'defaultShop'  => (int) Configuration::get('PS_SHOP_DEFAULT'),
             'ids_category' => $idsCategory,
         ];

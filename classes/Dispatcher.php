@@ -1194,7 +1194,7 @@ class DispatcherCore
             }
         }
 
-        return (count($errors)) ? false : true;
+        return !count($errors);
     }
 
     /**

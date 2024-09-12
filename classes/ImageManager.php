@@ -497,9 +497,7 @@ class ImageManagerCore
                 break;
 
             case 'avif':
-                $success = function_exists('imageavif')
-                    ? imageavif($resource, $filename, $quality)
-                    : false;
+                $success = function_exists('imageavif') && imageavif($resource, $filename, $quality);
                 break;
 
             case 'jpg':

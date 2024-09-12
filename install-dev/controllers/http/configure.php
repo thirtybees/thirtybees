@@ -131,7 +131,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             $this->errors['adminEmail'] = $this->l('This e-mail address is invalid');
         }
 
-        return count($this->errors) ? false : true;
+        return !count($this->errors);
     }
 
     /**
@@ -152,7 +152,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
     public function processTimezoneByIso()
     {
         $timezone = $this->getTimezoneByIso(Tools::getValue('iso'));
-        $this->ajaxJsonAnswer(($timezone) ? true : false, $timezone);
+        $this->ajaxJsonAnswer((bool)$timezone, $timezone);
     }
 
     /**

@@ -778,7 +778,7 @@ class CartRuleCore extends ObjectModel
             return $selectedProducts;
         }
 
-        return (!$displayError) ? true : false;
+        return !$displayError;
     }
 
     /**
@@ -854,7 +854,7 @@ class CartRuleCore extends ObjectModel
             foreach ($array2 as $value2) {
                 if (static::array_uintersect_compare($value1, $value2) == 0) {
                     $intersection[] = $value1;
-                    break 1;
+                    break;
                 }
             }
         }

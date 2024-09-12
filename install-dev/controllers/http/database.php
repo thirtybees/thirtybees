@@ -145,7 +145,7 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         $errors = $this->modelDatabase->testDatabaseSettings($server, $database, $login, $password, $prefix, $clear);
 
         $this->ajaxJsonAnswer(
-            (count($errors)) ? false : true,
+            !count($errors),
             (count($errors)) ? implode('<br />', $errors) : $this->l('Database is connected')
         );
     }

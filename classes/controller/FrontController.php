@@ -661,7 +661,7 @@ class FrontControllerCore extends Controller
             if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
                 $liveEditContent = $this->getLiveEditFooter();
             }
-            $domAvailable = extension_loaded('dom') ? true : false;
+            $domAvailable = extension_loaded('dom');
             $defer = (bool)Configuration::get('PS_JS_DEFER');
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
@@ -1175,7 +1175,7 @@ class FrontControllerCore extends Controller
         // 'orderwayposition' => Tools::getProductsOrder('way'), // Deprecated: orderwayposition
         // 'orderwaydefault' => Tools::getProductsOrder('way'),
 
-        $stockManagement = Configuration::get('PS_STOCK_MANAGEMENT') ? true : false; // no display quantity order if stock management disabled
+        $stockManagement = (bool)Configuration::get('PS_STOCK_MANAGEMENT'); // no display quantity order if stock management disabled
         $orderByValues = [0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference'];
         $orderWayValues = [0 => 'asc', 1 => 'desc'];
 
@@ -1345,7 +1345,7 @@ class FrontControllerCore extends Controller
         Tools::setCookieLanguage($this->context->cookie);
 
         $protocolLink = (Configuration::get('PS_SSL_ENABLED') || Tools::usingSecureMode()) ? 'https://' : 'http://';
-        $useSSL = ((isset($this->ssl) && $this->ssl && Configuration::get('PS_SSL_ENABLED')) || Tools::usingSecureMode()) ? true : false;
+        $useSSL = (isset($this->ssl) && $this->ssl && Configuration::get('PS_SSL_ENABLED')) || Tools::usingSecureMode();
         $protocolContent = ($useSSL) ? 'https://' : 'http://';
         $link = new Link($protocolLink, $protocolContent);
         $this->context->link = $link;

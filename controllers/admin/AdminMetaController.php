@@ -387,7 +387,7 @@ class AdminMetaControllerCore extends AdminController
         if (is_object($this->object) && is_array($this->object->url_rewrite) && $this->object->url_rewrite) {
             foreach ($this->object->url_rewrite as $rewrite) {
                 if ($isIndex != true) {
-                    $isIndex = ($this->object->page == 'index' && empty($rewrite)) ? true : false;
+                    $isIndex = $this->object->page == 'index' && empty($rewrite);
                 }
             }
         }

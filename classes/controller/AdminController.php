@@ -1676,7 +1676,7 @@ class AdminControllerCore extends Controller
                 }
             }
         }
-        return !count($this->errors) ? true : false;
+        return !count($this->errors);
     }
 
     /**
@@ -4293,7 +4293,7 @@ class AdminControllerCore extends Controller
 
         $languages = Language::getLanguages(false);
 
-        $hideMultishopCheckbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
+        $hideMultishopCheckbox = Shop::getTotalShops(false, null) < 2;
         foreach ($this->fields_options as $categoryData) {
             if (!isset($categoryData['fields'])) {
                 continue;
@@ -4417,7 +4417,7 @@ class AdminControllerCore extends Controller
                                 }
                             }
                         }
-                        Configuration::updateValue($key, $list, isset($values['validation']) && isset($options['validation']) && $options['validation'] == 'isCleanHtml' ? true : false);
+                        Configuration::updateValue($key, $list, isset($values['validation']) && isset($options['validation']) && $options['validation'] == 'isCleanHtml');
                     } else {
                         $isCodeField = $options['type'] === 'code';
                         $val = $isCodeField ? Tools::getValueRaw($key) : Tools::getValue($key);

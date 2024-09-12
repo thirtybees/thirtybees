@@ -401,7 +401,7 @@ class AdminLanguagesControllerCore extends AdminController
             }
         }
 
-        return !count($this->errors) ? true : false;
+        return !count($this->errors);
     }
 
     /**

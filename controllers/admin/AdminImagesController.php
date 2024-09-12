@@ -603,7 +603,7 @@ class AdminImagesControllerCore extends AdminController
             }
         }
 
-        return (count($this->errors) > 0 ? false : true);
+        return !(count($this->errors) > 0);
     }
 
     /**

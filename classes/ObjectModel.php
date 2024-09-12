@@ -478,7 +478,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 }
             }
 
-            $purify = (isset($data['validate']) && mb_strtolower($data['validate']) == 'iscleanhtml') ? true : false;
+            $purify = isset($data['validate']) && mb_strtolower($data['validate']) == 'iscleanhtml';
             // Format field value
             $fields[$field] = ObjectModel::formatValue($value, $data['type'], false, $purify, !empty($data['allow_null']));
         }

@@ -428,7 +428,7 @@ class ToolsCore
             return false;
         }
 
-        return isset($_POST[$key]) ? true : (isset($_GET[$key]) ? true : false);
+        return isset($_POST[$key]) || ((isset($_GET[$key]) ? true : false));
     }
 
     /**

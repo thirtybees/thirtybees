@@ -669,7 +669,7 @@ class AdminTranslationsControllerCore extends AdminController
                 $arrReplace[$value] = str_replace($themeFrom, $themeTo, $value);
             }
             $content = str_replace(array_keys($arrReplace), array_values($arrReplace), $content);
-            $boolFlag = (file_put_contents($path, $content) === false) ? false : true;
+            $boolFlag = !((file_put_contents($path, $content) === false));
         }
 
         return $boolFlag;
