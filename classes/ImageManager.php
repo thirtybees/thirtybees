@@ -1236,7 +1236,7 @@ class ImageManagerCore
      * @param null $expectedImageExtension // Only set this, if you have clear idea in which extension the source file is available
      * @param bool $convertImage // If an image is not existing in the configured image extension, should we convert it?
      *
-     * @return string Returns full path to source image
+     * @return string|false Returns full path to source image
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException

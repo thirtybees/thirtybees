@@ -481,4 +481,18 @@ class ProductAttributeCore extends ObjectModel
 
         return (is_numeric($position)) ? $position : -1;
     }
+
+    /**
+     * Returns file path to attribute texture file, if exists
+     *
+     * @param int $attributeId
+     *
+     * @return string|false
+     *
+     * @throws PrestaShopException
+     */
+    public static function getTextureFilePath(int $attributeId)
+    {
+        return ImageManager::getSourceImage(_PS_COL_IMG_DIR_, $attributeId);
+    }
 }

@@ -480,11 +480,11 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $strAttributesGroups .= '"'.$attributeGroup['id_attribute_group'].'" : '.($attributeGroup['group_type'] == 'color' ? '1' : '0').', ';
         }
 
-        $imageSettings = $this->getFieldImageSettings('texture');
-        $image = ImageManager::getSourceImage($imageSettings['path'], $obj->id);
+        $image = ProductAttribute::getTextureFilePath((int)$obj->id);
         $deleteLink = '';
         if ($image) {
-            $image = str_replace(_PS_IMG_DIR_, '../img/', $image);
+            $ts = filemtime($image);
+            $image = str_replace(_PS_IMG_DIR_, '../img/', $image) . '?ts=' . $ts;
             $deleteLink =  $this->context->link->getAdminLink('AdminAttributesGroups', true, [
                 'deleteTexture' => 1,
                 'id_attribute' => Tools::getIntValue('id_attribute'),
@@ -737,8 +737,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
         if (Tools::isSubmit('deleteTexture')) {
             $attribute = new ProductAttribute(Tools::getIntValue('id_attribute'));
             if (Validate::isLoadedObject($attribute))  {
-                $imageSettings = $this->getFieldImageSettings('texture');
-                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], $attribute->id)) {
+                if ($sourceImage = ProductAttribute::getTextureFilePath((int)$attribute->id)) {
                     unlink($sourceImage);
                     $this->confirmations[] = $this->l('Texture image was deleted');
                 } else {
@@ -986,12 +985,12 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             foreach ($this->_list as &$list) {
                 $id = (int)$list['id_attribute'];
-                $imageSettings = $this->getFieldImageSettings('texture');
-                if ($sourceImage = ImageManager::getSourceImage($imageSettings['path'], $id)) {
+                if ($sourceImage = ProductAttribute::getTextureFilePath($id)) {
                     if (!isset($list['color']) || !is_array($list['color'])) {
                         $list['color'] = [];
                     }
-                    $list['color']['texture'] = str_replace(_PS_IMG_DIR_, '../img/', $sourceImage);
+                    $ts = filemtime($sourceImage);
+                    $list['color']['texture'] = str_replace(_PS_IMG_DIR_, '../img/', $sourceImage) . '?ts=' . $ts;
                 }
                 $list['products'] = $products[$id] ?? 0;
             }
