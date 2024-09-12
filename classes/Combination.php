@@ -202,7 +202,7 @@ class CombinationCore extends ObjectModel
      */
     public static function getPrice($idProductAttribute)
     {
-        return Db::readOnly()->getValue(
+        return (float)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('product_attribute_shop.`price`')
                 ->from('product_attribute', 'pa')

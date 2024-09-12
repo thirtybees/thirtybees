@@ -1982,7 +1982,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $row['attribute_price'] = 0;
         if ($idProductAttribute) {
-            $row['attribute_price'] = (float) static::getProductAttributePrice($idProductAttribute);
+            $row['attribute_price'] = Combination::getPrice($idProductAttribute);
         }
 
         $row['price_tax_exc'] = static::getPriceStatic(
