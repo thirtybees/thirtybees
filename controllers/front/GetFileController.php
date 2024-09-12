@@ -57,7 +57,7 @@ class GetFileControllerCore extends FrontController
             if (!Validate::isSha1($filename)) {
                 throw new PrestaShopException(sprintf(Tools::displayError("Invalid filename [%s] - not a valid sha1"), Tools::safeOutput($filename)));
             }
-            $file = _PS_DOWNLOAD_DIR_.strval(preg_replace('/\.{2,}/', '.', $filename));
+            $file = _PS_DOWNLOAD_DIR_. preg_replace('/\.{2,}/', '.', $filename);
             $filename = ProductDownload::getFilenameFromFilename(Tools::getValue('file'));
             if (empty($filename)) {
                 $newFileName = Tools::getValue('filename');
