@@ -2516,20 +2516,23 @@ class AdminImportControllerCore extends AdminController
 
         $linkRewrite = (is_array($product->link_rewrite) && isset($product->link_rewrite[$idLang])) ? trim($product->link_rewrite[$idLang]) : '';
         $validLink = Validate::isLinkRewrite($linkRewrite);
-        if ((isset($product->link_rewrite[$idLang]) && empty($product->link_rewrite[$idLang])) || !$validLink) {
-            $linkRewrite = Tools::link_rewrite($product->name[$idLang]);
-            if ($linkRewrite == '') {
+        if (!$validLink) {
+            if (isset($product->name[$idLang])) {
+                $productName = $product->name[$idLang] ?? '';
+                $linkRewrite = Tools::link_rewrite($product->name[$idLang] ?? '');
+                if ($linkRewrite == '') {
+                    $linkRewrite = 'friendly-url-autogeneration-failed';
+                }
+
+                $this->informations[] = sprintf(
+                    $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
+                    $productName,
+                    $idProduct ?? 'No ID',
+                    $linkRewrite
+                );
+            } else {
                 $linkRewrite = 'friendly-url-autogeneration-failed';
             }
-        }
-
-        if (!$validLink) {
-            $this->informations[] = sprintf(
-                $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
-                $product->name[$idLang],
-                (!empty($info['id'])) ? $info['id'] : 'null',
-                $linkRewrite
-            );
         }
 
         if (!$validLink || !(is_array($product->link_rewrite) && count($product->link_rewrite))) {
@@ -2665,7 +2668,7 @@ class AdminImportControllerCore extends AdminController
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be saved'),
                 (!empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                (!empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                $idProduct ?? 'No ID'
             );
             $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
         } else {
