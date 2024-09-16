@@ -2691,18 +2691,26 @@ class ToolsCore
      * @param string $source
      * @param string $destination
      * @param resource|null $streamContext
+     * @param string $copyError
      * @return bool
      *
      * @throws PrestaShopException
      */
-    public static function copy($source, $destination, $streamContext = null)
+    public static function copy($source, $destination, $streamContext = null, &$copyError = null)
     {
         if ($streamContext) {
             Tools::displayParameterAsDeprecated('streamContext');
         }
 
         if ( ! preg_match('/^https?:\/\//', $source)) {
-            return @copy($source, $destination);
+            if (copy($source, $destination)) {
+                return true;
+            }
+            $error = error_get_last();
+            if (isset($error['message'])) {
+                $copyError = $error['message'];
+            }
+            return false;
         }
 
         $timeout = ini_get('max_execution_time');
@@ -2719,6 +2727,7 @@ class ToolsCore
         try {
             $guzzle->get($source, ['sink' => $destination]);
         } catch (Throwable $e) {
+            $copyError = $e->getMessage();
             return false;
         }
 

@@ -1904,7 +1904,7 @@ class AdminImportControllerCore extends AdminController
 
         //copying images of categories
         if (!empty($category->image)) {
-            if (!(static::copyImg($category->id, null, $category->image, static::ENTITY_TYPE_CATEGORIES, !$regenerate))) {
+            if (!(static::copyImg($category->id, null, $category->image, static::ENTITY_TYPE_CATEGORIES, !$regenerate, $this->warnings))) {
                 $this->warnings[] = $category->image.' '.$this->l('cannot be copied.');
             }
         }
@@ -1969,13 +1969,14 @@ class AdminImportControllerCore extends AdminController
      * @param string $url path or url to use
      * @param string $entityType entity type
      * @param bool $regenerate
+     * @param string[] $errors collect errors
      *
      * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function copyImg($idEntity, $idImage = null, $url = '', $entityType = 'products', $regenerate = true)
+    protected static function copyImg($idEntity, $idImage = null, $url = '', $entityType = 'products', $regenerate = true, &$errors = [])
     {
         $tmpfile = tempnam(_PS_TMP_IMG_DIR_, 'ps_import');
         $url = urldecode(trim($url));
@@ -1999,20 +2000,27 @@ class AdminImportControllerCore extends AdminController
 
         $url = http_build_url('', $parsedUrl);
 
-        $origTmpfile = $tmpfile;
+        $copyErr = null;
+        if (! Tools::copy($url, $tmpfile, null, $copyErr)) {
+            $msg = sprintf(Tools::displayError("Failed to download file '%s' to temporary file '%s'"), $url, $tmpfile);
+            if ($copyErr) {
+                $msg .= ': ' . $copyErr;
+            }
+            $errors[] = $msg;
+            return false;
+        }
 
-        if (Tools::copy($url, $tmpfile)) {
+        try {
             // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
             if (!ImageManager::checkImageMemoryLimit($tmpfile)) {
-                @unlink($tmpfile);
+                $errors[] = sprintf(Tools::displayError("Failed to process image '%s': Not engough memory"), $url);
                 return false;
             }
 
             // Find path depending on $entityType
             $imageEntity = ImageEntity::getImageEntityInfo($entityType);
-            if (! $imageEntity) {
-                @unlink($tmpfile);
-                return false;
+            if (!$imageEntity) {
+                throw new PrestaShopException("Image entity $entityType not found");
             }
 
             $path = $imageEntity['path'];
@@ -2023,30 +2031,35 @@ class AdminImportControllerCore extends AdminController
                 $filename = $idImage;
             }
 
-            // Create the new source image file
-            $imageExtension = ImageManager::getDefaultImageExtension();
-
             // Ensure the directory exists, or create it dynamically
             if (!is_dir($path)) {
                 if (!mkdir($path, 0755, true) || !is_dir($path)) {
-                    @unlink($tmpfile);
+                    $errors[] = sprintf(Tools::displayError("Failed to create directory '%s'"), $path);
                     return false;
                 }
             }
 
-            if (ImageManager::convertImageToExtension($tmpfile, $imageExtension, $path.$filename.'.'.$imageExtension) && $regenerate) {
+            // Create the new source image file
+            $imageExtension = ImageManager::getDefaultImageExtension();
+
+            $targetFile = $path . $filename . '.' . $imageExtension;
+            if (! ImageManager::convertImageToExtension($tmpfile, $imageExtension, $targetFile)) {
+                $error = sprintf(Tools::displayError("Failed to convert uploaded file to '%s' image format"), $imageExtension);
+                $errors[] = $error;
+                return false;
+            }
+
+            if ($regenerate) {
                 // Generate all image types for source image
                 ImageManager::generateImageTypesByEntity($entityType, $idEntity);
             }
 
-        } else {
-            @unlink($origTmpfile);
-
-            return false;
+            return true;
+        } finally {
+            if (file_exists($tmpfile)) {
+                unlink($tmpfile);
+            }
         }
-        unlink($origTmpfile);
-
-        return true;
     }
 
     /**
@@ -2823,7 +2836,7 @@ class AdminImportControllerCore extends AdminController
                         ) {
                             // associate image to selected shops
                             $image->associateTo($shops);
-                            if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate)) {
+                            if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate, $this->warnings)) {
                                 $image->delete();
                                 $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             }
@@ -3744,7 +3757,7 @@ class AdminImportControllerCore extends AdminController
                     ) {
                         $image->associateTo($idShopList);
 // FIXME: 2s/image !
-                        if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate)) {
+                        if (!static::copyImg($product->id, $image->id, $url, static::ENTITY_TYPE_PRODUCTS, !$regenerate, $this->warnings)) {
                             $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             $image->delete();
                         } else {
@@ -4233,7 +4246,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of manufacturer
             if (!$validateOnly && !empty($manufacturer->image)) {
-                if (!static::copyImg($manufacturer->id, null, $manufacturer->image, static::ENTITY_TYPE_MANUFACTURERS, !$regenerate)) {
+                if (!static::copyImg($manufacturer->id, null, $manufacturer->image, static::ENTITY_TYPE_MANUFACTURERS, !$regenerate, $this->warnings)) {
                     $this->warnings[] = $manufacturer->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -4362,7 +4375,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of suppliers
             if (!$validateOnly && !empty($supplier->image)) {
-                if (!static::copyImg($supplier->id, null, $supplier->image, static::ENTITY_TYPE_SUPPLIERS, !$regenerate)) {
+                if (!static::copyImg($supplier->id, null, $supplier->image, static::ENTITY_TYPE_SUPPLIERS, !$regenerate, $this->warnings)) {
                     $this->warnings[] = $supplier->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -4566,7 +4579,7 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, [static::class, 'fillInfo'], $store);
 
         if (!empty($store->image)) {
-            if (!(static::copyImg($store->id, null, $store->image, 'stores', !$regenerate))) {
+            if (!(static::copyImg($store->id, null, $store->image, 'stores', !$regenerate, $this->warnings))) {
                 $this->warnings[] = $store->image.' '.$this->l('cannot be copied.');
             }
         }
