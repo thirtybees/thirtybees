@@ -2026,6 +2026,14 @@ class AdminImportControllerCore extends AdminController
             // Create the new source image file
             $imageExtension = ImageManager::getDefaultImageExtension();
 
+            // Ensure the directory exists, or create it dynamically
+            if (!is_dir($path)) {
+                if (!mkdir($path, 0755, true) || !is_dir($path)) {
+                    @unlink($tmpfile);
+                    return false;
+                }
+            }
+
             if (ImageManager::convertImageToExtension($tmpfile, $imageExtension, $path.$filename.'.'.$imageExtension) && $regenerate) {
                 // Generate all image types for source image
                 ImageManager::generateImageTypesByEntity($entityType, $idEntity);
