@@ -119,7 +119,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'disabled_products':
-                $value = round(100 * AdminStatsController::getDisabledProducts() / AdminStatsController::getTotalProducts(), 2).'%';
+                $totalProducts = AdminStatsController::getTotalProducts();
+                $value = $totalProducts
+                    ? round(100 * AdminStatsController::getDisabledProducts() / $totalProducts, 2).'%'
+                    : $this->l('N/A');
                 ConfigurationKPI::updateValue('DISABLED_PRODUCTS', $value);
                 ConfigurationKPI::updateValue('DISABLED_PRODUCTS_EXPIRE', strtotime('+2 hour'));
                 break;
@@ -179,7 +182,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'newsletter_registrations':
-                $value = $conn->getValue(
+                $value = (int)$conn->getValue(
                     '
 				SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'customer`
@@ -187,7 +190,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				'.Shop::addSqlRestriction(Shop::SHARE_ORDER)
                 );
                 if (Module::isInstalled('blocknewsletter')) {
-                    $value += $conn->getValue(
+                    $value += (int)$conn->getValue(
                         '
 					SELECT COUNT(*)
 					FROM `'._DB_PREFIX_.'newsletter`
@@ -209,7 +212,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
             case 'frontoffice_translations':
                 $themes = Theme::getThemes();
                 $languages = Language::getLanguages();
-                $total = $translated = 0;
+                $total = 0;
+                $translated = 0;
                 foreach ($themes as $theme) {
                     /** @var Theme $theme */
                     foreach ($languages as $language) {
@@ -219,7 +223,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     }
                 }
                 $value = 0;
-                if ($translated) {
+                if ($translated && $total) {
                     $value = round(100 * $translated / $total, 1);
                 }
                 $value .= '%';
@@ -240,7 +244,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'orders_per_customer':
-                $value = $conn->getValue(
+                $value = (int)$conn->getValue(
                     '
 				SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'customer` c
@@ -272,7 +276,11 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				WHERE `invoice_date` BETWEEN "'.pSQL(date('Y-m-d', strtotime('-31 day'))).' 00:00:00" AND "'.pSQL(date('Y-m-d', strtotime('-1 day'))).' 23:59:59"
 				'.Shop::addSqlRestriction()
                 );
-                $value = Tools::displayPrice($row['orders'] ? $row['total_paid_tax_excl'] / $row['orders'] : 0, $currency);
+                $orders = (int)$row['orders'];
+                $total = (float)$row['total_paid_tax_excl'];
+                $value = $orders
+                    ? Tools::displayPrice($total / $orders, $currency)
+                    : $this->l('N/A');
                 ConfigurationKPI::updateValue('AVG_ORDER_VALUE', $value);
                 ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', strtotime(date('Y-m-d 00:00:00', strtotime('+1 day'))));
                 break;
@@ -299,9 +307,11 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             case 'products_per_category':
-                $products = AdminStatsController::getTotalProducts();
+                $totalProducts = AdminStatsController::getTotalProducts();
                 $categories = AdminStatsController::getTotalCategories();
-                $value = round($products / $categories);
+                $value = $categories
+                    ? round($totalProducts / $categories)
+                    : $totalProducts;
                 ConfigurationKPI::updateValue('PRODUCTS_PER_CATEGORY', $value);
                 ConfigurationKPI::updateValue('PRODUCTS_PER_CATEGORY_EXPIRE', strtotime('+1 hour'));
                 break;
