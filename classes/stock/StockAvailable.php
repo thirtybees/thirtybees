@@ -38,6 +38,10 @@ use Thirtybees\Core\Stock\Synchronization\DynamicPacksSynchronizationTask;
  */
 class StockAvailableCore extends ObjectModel
 {
+    const OUT_OF_STOCK_DENY = 0;
+    const OUT_OF_STOCK_ALLOW = 1;
+    const OUT_OF_STOCK_SYSTEM_DEFAULT = 2;
+
     /** @var int identifier of the current product */
     public $id_product;
     /** @var int identifier of product attribute if necessary */
@@ -51,7 +55,7 @@ class StockAvailableCore extends ObjectModel
     /** @var bool determine if the available stock value depends on physical stock */
     public $depends_on_stock = false;
     /** @var int determine if a product is out of stock - it was previously in Product class */
-    public $out_of_stock = 0;
+    public $out_of_stock = self::OUT_OF_STOCK_DENY;
 
 
     /** @var int */
@@ -382,7 +386,7 @@ class StockAvailableCore extends ObjectModel
      * For a given id_product, sets if product is available out of stocks
      *
      * @param int $idProduct
-     * @param bool|int $outOfStock Optional false by default
+     * @param int $outOfStock Optional false by default
      * @param int $idShop Optional gets context by default
      * @param int $idProductAttribute
      *
@@ -390,10 +394,15 @@ class StockAvailableCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function setProductOutOfStock($idProduct, $outOfStock = false, $idShop = null, $idProductAttribute = 0)
+    public static function setProductOutOfStock($idProduct, $outOfStock = self::OUT_OF_STOCK_DENY, $idShop = null, $idProductAttribute = 0)
     {
         if (!Validate::isUnsignedId($idProduct)) {
             return false;
+        }
+
+        $outOfStock = (int)$outOfStock;
+        if (! static::isValidOutOfStockValue($outOfStock)) {
+            $outOfStock = static::OUT_OF_STOCK_DENY;
         }
 
         $existingId = (int) static::getStockAvailableIdByProductId((int) $idProduct, (int) $idProductAttribute, $idShop);
@@ -787,7 +796,7 @@ class StockAvailableCore extends ObjectModel
     public static function outOfStock($idProduct, $idShop = null, $combinationId = 0)
     {
         if (!Validate::isUnsignedId($idProduct)) {
-            return false;
+            return static::OUT_OF_STOCK_DENY;
         }
 
         $query = new DbQuery();
@@ -798,7 +807,12 @@ class StockAvailableCore extends ObjectModel
 
         $query = static::addSqlShopRestriction($query, $idShop);
 
-        return (int) Db::readOnly()->getValue($query);
+        $value = (int) Db::readOnly()->getValue($query);
+        if (static::isValidOutOfStockValue($value)) {
+            return $value;
+        } else {
+            return static::OUT_OF_STOCK_DENY;
+        }
     }
 
     /**
@@ -1008,4 +1022,19 @@ class StockAvailableCore extends ObjectModel
             );
         }
     }
+
+    /**
+     * @param int $value
+     *
+     * @return bool
+     */
+    protected static function isValidOutOfStockValue(int $value): bool
+    {
+        return in_array($value, [
+            static::OUT_OF_STOCK_DENY,
+            static::OUT_OF_STOCK_ALLOW,
+            static::OUT_OF_STOCK_SYSTEM_DEFAULT
+        ]);
+    }
+
 }

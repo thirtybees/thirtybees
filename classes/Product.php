@@ -7776,7 +7776,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $idShopList = Shop::getContextListShopID();
         if ($this->getType() == static::PTYPE_VIRTUAL) {
             foreach ($idShopList as $value) {
-                StockAvailable::setProductOutOfStock((int) $this->id, 1, $value);
+                StockAvailable::setProductOutOfStock((int) $this->id, StockAvailable::OUT_OF_STOCK_ALLOW, $value);
             }
 
             if ($this->active && !Configuration::get('PS_VIRTUAL_PROD_FEATURE_ACTIVE')) {
@@ -7784,7 +7784,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             }
         } else {
             foreach ($idShopList as $value) {
-                StockAvailable::setProductOutOfStock((int) $this->id, 2, $value);
+                StockAvailable::setProductOutOfStock((int) $this->id, StockAvailable::OUT_OF_STOCK_SYSTEM_DEFAULT, $value);
             }
         }
 
