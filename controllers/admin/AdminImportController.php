@@ -2638,10 +2638,9 @@ class AdminImportControllerCore extends AdminController
             }
 
             if (!$validateOnly) {
-                if ($product->getType() == Product::PTYPE_VIRTUAL) {
-                    StockAvailable::setProductOutOfStock((int) $product->id, 1);
-                } else {
-                    StockAvailable::setProductOutOfStock((int) $product->id, (int) $product->out_of_stock);
+
+                if (isset($info['out_of_stock'])) {
+                    StockAvailable::setProductOutOfStock((int) $product->id, (int)$info['out_of_stock']);
                 }
 
                 if ($productDownloadId = ProductDownload::getIdFromIdProduct((int) $product->id)) {
