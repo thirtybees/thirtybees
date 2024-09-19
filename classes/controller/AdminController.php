@@ -1832,7 +1832,12 @@ class AdminControllerCore extends Controller
                 }
                 // Default behavior (save and back)
                 if (empty($this->redirect_after) && $this->redirect_after !== false) {
-                    $this->redirect_after = static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$this->object->id : '').'&conf=3&token='.$this->token;
+                    // Specific back redirect
+                    if ($back = Tools::getValue('back')) {
+                        $this->redirect_after = urldecode($back).'&conf=3';
+                    } else {
+                        $this->redirect_after = static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$this->object->id : '').'&conf=3&token='.$this->token;
+                    }
                 }
             }
         }
