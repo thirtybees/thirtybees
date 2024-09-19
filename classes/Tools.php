@@ -5623,6 +5623,22 @@ FileETag none
             return false;
         }
     }
+
+    /**
+     * @return string[]
+     * @throws PrestaShopException
+     */
+    public static function getMaintenanceIPAddresses(): array
+    {
+        $ips = explode(',', (string)Configuration::getGlobalValue(Configuration::MAINTENANCE_IP_ADDRESSES));
+        $ips = array_map('trim', $ips);
+        $ips = array_filter($ips);
+        $ips = array_filter($ips, [Validate::class, 'isIPAddress']);
+        sort($ips);
+        $ips = array_unique($ips);
+        return $ips;
+    }
+
 }
 
 /**

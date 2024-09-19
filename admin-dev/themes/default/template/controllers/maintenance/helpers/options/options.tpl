@@ -43,7 +43,7 @@
             }
 
             function addRemoteAddr() {
-                var input = $('input[name=PS_MAINTENANCE_IP]');
+                var input = $('input[name={$key}');
                 var value = input.attr('value').trim()
                 if (value) {
                     input.attr('value', uniqueAddresses(value + ',' + remoteIp));
@@ -53,7 +53,7 @@
             }
 
             function removeRemoteAddr() {
-                var input = $('input[name=PS_MAINTENANCE_IP]');
+                var input = $('input[name={$key}]');
                 var value = input.attr('value').trim();
                 input.attr('value', uniqueAddresses(value
                     .split(/,/)

@@ -280,7 +280,7 @@ class MetaCore extends ObjectModel
     public static function getMetaTags($idLang, $pageName, $title = '')
     {
         if (!(!Configuration::get('PS_SHOP_ENABLE')
-            && !in_array(Tools::getRemoteAddr(), explode(',', (string)Configuration::get('PS_MAINTENANCE_IP'))))
+            && !in_array(Tools::getRemoteAddr(), Tools::getMaintenanceIPAddresses()))
         ) {
             if ($pageName == 'product' && ($idProduct = Tools::getIntValue('id_product'))) {
                 return Meta::getProductMetas($idProduct, $idLang, $pageName);

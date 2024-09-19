@@ -723,24 +723,26 @@ class FrontControllerCore extends Controller
     {
         if ($this->maintenance == true || !(int) Configuration::get('PS_SHOP_ENABLE')) {
             $this->maintenance = true;
-            $isCLI = Tools::isPHPCLI();
-            $excludedIP = in_array(Tools::getRemoteAddr(), explode(',', (string)Configuration::get('PS_MAINTENANCE_IP')));
-            // don't show maintenance page to excluded IP addresses, or to CLI scripts
-            if (!$isCLI && !$excludedIP) {
-                header('HTTP/1.1 503 temporarily overloaded');
 
-                $this->context->smarty->assign($this->initLogoAndFavicon());
-                $this->context->smarty->assign(
-                    [
-                        'HOOK_MAINTENANCE' => Hook::displayHook('displayMaintenance'),
-                    ]
-                );
-
-                // If the controller is a module, then getTemplatePath will try to find the template in the modules, so we need to instanciate a real frontcontroller
-                $frontController = preg_match('/ModuleFrontController$/', get_class($this)) ? new FrontController() : $this;
-                $this->smartyOutputContent($frontController->getTemplatePath($this->getThemeDir().'maintenance.tpl'));
-                exit;
+            if (Tools::isPHPCLI()) {
+                // don't show mantenance page in CLI mode
+                return;
             }
+
+            $allowedIP = in_array(Tools::getRemoteAddr(), Tools::getMaintenanceIPAddresses());
+            if ($allowedIP) {
+                // don't show mantenance page for maintenance IP addresses
+                return;
+            }
+
+            header('HTTP/1.1 503 temporarily overloaded');
+            $this->context->smarty->assign($this->initLogoAndFavicon());
+            $this->context->smarty->assign('HOOK_MAINTENANCE', Hook::displayHook('displayMaintenance'));
+
+            // If the controller is a module, then getTemplatePath will try to find the template in the modules, so we need to instanciate a real frontcontroller
+            $frontController = preg_match('/ModuleFrontController$/', get_class($this)) ? new FrontController() : $this;
+            $this->smartyOutputContent($frontController->getTemplatePath($this->getThemeDir() . 'maintenance.tpl'));
+            exit;
         }
     }
 

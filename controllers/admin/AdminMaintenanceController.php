@@ -60,17 +60,42 @@ class AdminMaintenanceControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'bool',
                     ],
-                    'PS_MAINTENANCE_IP' => [
+                    'MAINTENANCE_IP' => [
                         'title'      => $this->l('Maintenance IP'),
                         'hint'       => $this->l('IP addresses allowed to access the front office even if the shop is disabled. Please use a comma to separate them (e.g. 42.24.4.2,127.0.0.1,99.98.97.96)'),
-                        'validation' => 'isGenericName',
                         'type'       => 'maintenance_ip',
-                        'default'    => '',
+                        'auto_value' => false,
+                        'no_multishop_checkbox' => true,
+                        'value'      => implode(',', Tools::getMaintenanceIPAddresses()),
                         'remoteIp'   => Tools::getRemoteAddr(),
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
         ];
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function updateOptionMaintenanceIp($value)
+    {
+        $ips = explode(',', (string)$value);
+        $ips = array_map('trim', $ips);
+        $ips = array_filter($ips);
+        $ips = array_filter($ips, [Validate::class, 'isIPAddress']);
+        sort($ips);
+        $ips = array_unique($ips);
+        $value = implode(',', $ips);
+        if ($ips) {
+            Configuration::updateGlobalValue(Configuration::MAINTENANCE_IP_ADDRESSES, $value);
+            Db::getInstance()->delete('configuration', 'name = "'.pSQL(Configuration::MAINTENANCE_IP_ADDRESSES).'" AND (id_shop IS NOT NULL OR id_shop_group IS NOT NULL)');
+        } else {
+            Configuration::deleteByName(Configuration::MAINTENANCE_IP_ADDRESSES);
+        }
+        $this->fields_options['general']['fields']['MAINTENANCE_IP']['value'] = implode(',', Tools::getMaintenanceIPAddresses());
     }
 }
