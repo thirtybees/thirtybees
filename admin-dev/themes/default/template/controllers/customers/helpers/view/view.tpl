@@ -681,7 +681,7 @@
 					<i class="icon-map-marker"></i> {l s='Addresses'} <span class="badge">{count($addresses)}</span>
 				</div>
 				{if count($addresses)}
-					<table class="table">
+					<table class="table" style="margin-bottom: 1em">
 						<thead>
 							<tr>
 								<th><span class="title_box ">{l s='Company'}</span></th>
@@ -714,7 +714,7 @@
 								{/strip}</td>
 								<td class="text-right">
 									<div class="btn-group">
-										<a class="btn btn-default" href="?tab=AdminAddresses&amp;id_address={$address['id_address']}&amp;addaddress=1&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
+										<a class="btn btn-default" href="index.php?controller=AdminAddresses&amp;id_address={$address['id_address']}&amp;updateaddress=1&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
 											<i class="icon-edit"></i> {l s='Edit'}
 										</a>
 										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -722,7 +722,7 @@
 										</button>
 										<ul class="dropdown-menu">
 											<li>
-												<a href="?tab=AdminAddresses&amp;id_address={$address['id_address']}&amp;deleteaddress&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
+												<a href="index.php?controller=AdminAddresses&amp;id_address={$address['id_address']}&amp;deleteaddress&amp;token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">
 													<i class="icon-trash"></i>
 													{l s='Delete'}
 												</a>
@@ -738,10 +738,10 @@
 					<p class="text-muted text-center">
 						{l s='%1$s %2$s has not registered any addresses yet' sprintf=[$customer->firstname, $customer->lastname]}
 					</p>
-					<p>
-						<a href="index.php?controller=AdminAddresses&addaddress&id_customer={$customer->id}&token={getAdminToken tab='AdminAddresses'}" target="_blank">{l s='Add new address'}</a>
-					</p>
 				{/if}
+				<p>
+					<a class="btn btn-default" href="index.php?controller=AdminAddresses&addaddress&id_customer={$customer->id}&token={getAdminToken tab='AdminAddresses'}&amp;back={$smarty.server.REQUEST_URI|urlencode}">{l s='Add new address'}</a>
+				</p>
 			</div>
 		</div>
 	</div>
