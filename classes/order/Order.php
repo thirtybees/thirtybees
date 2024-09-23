@@ -2854,8 +2854,6 @@ class OrderCore extends ObjectModel
 
         $orderDetailTaxRows = [];
 
-        $breakdown = [];
-
         foreach ($this->getCartRules() as $orderCartRule) {
             if ($orderCartRule['free_shipping'] && $freeShippingTax === 0) {
                 $freeShippingTax = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
@@ -2914,13 +2912,6 @@ class OrderCore extends ObjectModel
                     $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
                     $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
                 }
-
-                if (!isset($breakdown[$idTax])) {
-                    $breakdown[$idTax] = ['tax_base' => 0, 'tax_amount' => 0];
-                }
-
-                $breakdown[$idTax]['tax_base'] += $totalTaxBase;
-                $breakdown[$idTax]['tax_amount'] += $totalAmount;
 
                 $orderDetailTaxRows[] = [
                     'id_order_detail' => $idOrderDetail,
