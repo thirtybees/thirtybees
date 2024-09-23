@@ -2829,7 +2829,7 @@ class CartCore extends ObjectModel
 
         $uploadedFiles = Db::readOnly()->getArray(
             (new DbQuery())
-                ->select('cd.`value`')
+                ->select('cd.`value`, cd.`type')
                 ->from('customized_data', 'cd')
                 ->innerJoin('customization', 'c', 'cd.`id_customization` = c.`id_customization`')
                 ->where('cd.`type` = 0')
@@ -2837,8 +2837,7 @@ class CartCore extends ObjectModel
         );
 
         foreach ($uploadedFiles as $mustUnlink) {
-            unlink(_PS_UPLOAD_DIR_.$mustUnlink['value'].'_small');
-            unlink(_PS_UPLOAD_DIR_.$mustUnlink['value']);
+            $this->deleteCustomizationFile($mustUnlink);
         }
 
         $conn = Db::getInstance();
@@ -3447,11 +3446,8 @@ class CartCore extends ObjectModel
             );
 
             // Delete customization picture if necessary
-            if (isset($custData['type']) && $custData['type'] == 0) {
-                $result = (
-                    @unlink(_PS_UPLOAD_DIR_.$custData['value']) &&
-                    @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small')
-                );
+            if ($custData) {
+                $result = $this->deleteCustomizationFile($custData);
             }
 
             $result = $conn->delete('customized_data', '`id_customization` = '.(int) $idCustomization) && $result;
@@ -4285,10 +4281,7 @@ class CartCore extends ObjectModel
                         'id_customization = '.(int) $customization['id_customization'].' AND type = '.(int) $customization['type'].' AND `index` = '.(int) $customization['index']
 
                     );
-                    if ($type == Product::CUSTOMIZE_FILE) {
-                        @unlink(_PS_UPLOAD_DIR_.$customization['value']);
-                        @unlink(_PS_UPLOAD_DIR_.$customization['value'].'_small');
-                    }
+                    $this->deleteCustomizationFile($customization);
                     break;
                 }
             }
@@ -4362,13 +4355,11 @@ class CartCore extends ObjectModel
      * @param int $index
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
+     *
      * @throws PrestaShopException
      */
     public function deleteCustomizationToProduct($idProduct, $index)
     {
-        $result = true;
-
         $custData = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('cu.`id_customization`, cd.`index`, cd.`value`, cd.`type`')
@@ -4380,20 +4371,15 @@ class CartCore extends ObjectModel
                 ->where('`in_cart` = 0')
         );
 
-        // Delete customization picture if necessary
-        if ($custData['type'] == 0) {
-            $result = (
-                @unlink(_PS_UPLOAD_DIR_.$custData['value']) &&
-                @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small')
-            );
+        if ($custData) {
+            // Delete customization picture if necessary
+            $result = $this->deleteCustomizationFile($custData);
+            $result = Db::getInstance()->delete('customized_data', '`id_customization` = ' . (int)$custData['id_customization'] . ' AND `index` = ' . (int)$index) && $result;
+            return $result;
+        } else {
+            return true;
         }
 
-        $result = (
-            Db::getInstance()->delete('customized_data', '`id_customization` = '.(int) $custData['id_customization'].' AND `index` = '.(int) $index) &&
-            $result
-        );
-
-        return $result;
     }
 
     /**
@@ -4521,7 +4507,7 @@ class CartCore extends ObjectModel
             foreach ($customs as $custom) {
                 $customizedValue = $custom['value'];
 
-                if ((int) $custom['type'] == 0) {
+                if ((int) $custom['type'] === Product::CUSTOMIZE_FILE) {
                     $customizedValue = md5(uniqid(rand(), true));
                     copy(_PS_UPLOAD_DIR_.$custom['value'], _PS_UPLOAD_DIR_.$customizedValue);
                     copy(_PS_UPLOAD_DIR_.$custom['value'].'_small', _PS_UPLOAD_DIR_.$customizedValue.'_small');
@@ -4979,5 +4965,24 @@ class CartCore extends ObjectModel
         }
 
         return true;
+    }
+
+    /**
+     * @param array $custData
+     *
+     * @return bool
+     */
+    protected function deleteCustomizationFile(array $custData): bool
+    {
+        $result = true;
+        if ((int)$custData['type'] === Product::CUSTOMIZE_FILE) {
+            if (file_exists(_PS_UPLOAD_DIR_ . $custData['value'])) {
+                $result = unlink(_PS_UPLOAD_DIR_ . $custData['value']);
+            }
+            if (file_exists(_PS_UPLOAD_DIR_ . $custData['value'] . '_small')) {
+                $result = unlink(_PS_UPLOAD_DIR_ . $custData['value'] . '_small') && $result;
+            }
+        }
+        return $result;
     }
 }
