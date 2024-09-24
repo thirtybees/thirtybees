@@ -1688,8 +1688,15 @@ abstract class ModuleCore
         try {
             $path = PrestaShopAutoload::getInstance()->getClassPath($classname . 'Core');
             if (!$path) {
+                // override for module
                 $path = 'modules' . DIRECTORY_SEPARATOR . $classname . DIRECTORY_SEPARATOR . $classname . '.php';
+                $classname = $classname . 'Override';
+                $tmpClassSuffix = '';
+            } else {
+                // override for core file
+                $tmpClassSuffix = 'Override';
             }
+
             $pathOverride = $this->getLocalPath() . 'override' . DIRECTORY_SEPARATOR . $path;
 
             if (!file_exists($pathOverride)) {
@@ -1715,10 +1722,10 @@ abstract class ModuleCore
 
                 // Make a reflection of the override class and the module override class
                 $overrideFile = $this->loadOverrideFile($overridePath);
-                $overrideClass = $this->getOverrideFileReflectionClass($classname, $overrideFile, 'OverrideOriginal', $overridePath);
+                $overrideClass = $this->getOverrideFileReflectionClass($classname, $overrideFile, $tmpClassSuffix . 'Original', $overridePath);
 
                 $moduleFile = $this->loadOverrideFile($pathOverride);
-                $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, 'Override', $pathOverride);
+                $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, $tmpClassSuffix, $pathOverride);
 
                 // Check if none of the methods already exists in the override class
                 foreach ($moduleClass->getMethods() as $method) {
@@ -1788,7 +1795,7 @@ abstract class ModuleCore
 
                 // Load module override file
                 $moduleFile = $this->loadOverrideFile($overrideSrc);
-                $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, 'Override', $overrideSrc);
+                $moduleClass = $this->getOverrideFileReflectionClass($classname, $moduleFile, $tmpClassSuffix, $overrideSrc);
 
                 // For each method found in the override, prepend a comment with the module name and version
                 foreach ($moduleClass->getMethods() as $method) {
@@ -3534,12 +3541,8 @@ abstract class ModuleCore
             implode('', $fileLines)
         );
 
-
-
         try {
             eval($overrideContent);
-        } catch (Exception $e) {
-            throw new PrestaShopException(sprintf(Tools::displayError("Failed to evaluate override file %s"), $filename), 0, $e);
         } catch (Throwable $e) {
             $message = $e->getMessage() . " at line " . $e->getLine();
             throw new PrestaShopException(sprintf(Tools::displayError("Failed to evaluate override file %s: %s"), $filename, $message));
@@ -3548,6 +3551,7 @@ abstract class ModuleCore
         if (! class_exists($overrideClassName, false)) {
             throw new PrestaShopException(sprintf(Tools::displayError('Override file %s does not contain class %s'), $filename, $classname));
         }
+
         try {
             return new ReflectionClass($overrideClassName);
         } catch (ReflectionException $e) {
