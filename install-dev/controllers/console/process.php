@@ -287,6 +287,7 @@ class InstallControllerConsoleProcess
                 'adminEmail'             => $this->datas->adminEmail,
                 'configurationAgreement' => true,
                 'sendInformations'       => true,
+                'rewriteEngine'          => $this->datas->rewriteEngine,
             ]
         );
     }

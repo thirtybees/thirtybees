@@ -148,6 +148,12 @@ class Datas
             'default' => 0,
             'help'    => 'show thirty bees license',
         ],
+        'rewriteEngine' => [
+            'name' => 'friendly_url',
+            'default' => 0,
+            'validate' => 'isInt',
+            'help' => 'enable or disable friendly url'
+        ],
     ];
 
     /**
@@ -254,6 +260,11 @@ class Datas
      * @var bool
      */
     public $showLicense;
+
+    /**
+     * @var bool
+     */
+    public $rewriteEngine;
 
     /**
      * @param string[] $argv
