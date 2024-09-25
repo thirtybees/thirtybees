@@ -582,6 +582,7 @@ class InstallModelInstall extends InstallAbstractModel
             'shopCountry'    => 'us',
             'shopTimezone'   => 'US/Eastern',
             'rewriteEngine'  => false,
+            'sslEnabled'     => false,
         ];
 
         foreach ($defaultData as $k => $v) {
@@ -607,8 +608,11 @@ class InstallModelInstall extends InstallAbstractModel
         Configuration::updateGlobalValue('PS_TIMEZONE', $data['shopTimezone']);
         Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configurationAgreement']);
 
+        // Set SSL options
+        Configuration::updateGlobalValue('PS_SSL_ENABLED', $data['sslEnabled'] ? 1 : 0);
+
         // Set default rewriting settings
-        Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewriteEngine']);
+        Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewriteEngine'] ? 1 : 0);
 
         // Choose the best ciphering algorithm available
         Configuration::updateGlobalValue('PS_CIPHER_ALGORITHM', $this->getCipherAlgorightm());

@@ -154,6 +154,12 @@ class Datas
             'validate' => 'isInt',
             'help' => 'enable or disable friendly url'
         ],
+        'sslEnabled' => [
+            'name' => 'enable_ssl',
+            'default' => 0,
+            'validate' => 'isInt',
+            'help' => 'enable or disable HTTPS support'
+        ],
     ];
 
     /**
@@ -265,6 +271,11 @@ class Datas
      * @var bool
      */
     public $rewriteEngine;
+
+    /**
+     * @var bool
+     */
+    public $sslEnabled;
 
     /**
      * @param string[] $argv
