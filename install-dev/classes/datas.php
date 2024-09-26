@@ -160,6 +160,10 @@ class Datas
             'validate' => 'isInt',
             'help' => 'enable or disable HTTPS support'
         ],
+        'config' => [
+            'name' => 'config',
+            'help' => 'Set custom configuration value in format <key>:<value>. This option can be used multiple times'
+        ],
     ];
 
     /**
@@ -278,6 +282,11 @@ class Datas
     public $sslEnabled;
 
     /**
+     * @var array
+     */
+    public array $config = [];
+
+    /**
      * @param string[] $argv
      * @return string[]|bool
      */
@@ -287,20 +296,7 @@ class Datas
             return false;
         }
 
-        $argsOk = [];
-        foreach ($argv as $arg) {
-            if (!preg_match('/^--([^=\'"><|`]+)(?:=([^=><|`]+)|(?!license))/i', trim($arg), $res)) {
-                continue;
-            }
-
-            if ($res[1] == 'license' && !isset($res[2])) {
-                $res[2] = 1;
-            } elseif (!isset($res[2])) {
-                continue;
-            }
-
-            $argsOk[$res[1]] = $res[2];
-        }
+        $argsOk = $this->extractArgs($argv);
 
         $errors = [];
         foreach (static::$availableArgs as $key => $row) {
@@ -327,5 +323,38 @@ class Datas
     public static function getArgs()
     {
         return Datas::$availableArgs;
+    }
+
+    /**
+     * @param array $argv
+     * @return array
+     */
+    public function extractArgs(array $argv): array
+    {
+        $arguments = [
+            'config' => []
+        ];
+
+        foreach ($argv as $arg) {
+            if (!preg_match('/^--([^=\'"><|`]+)(?:=([^=><|`]+)|(?!license))/i', trim($arg), $res)) {
+                continue;
+            }
+
+            $parameterName = (string)$res[1];
+            $parameterValue = $res[2] ?? null;
+            if ($parameterName === 'license') {
+                $parameterValue = 1;
+            } elseif ($parameterName === 'config') {
+                if (preg_match('/^([a-zA-Z_0-9-]+):(.*)$/',(string)$parameterValue, $config)) {
+                    $arguments['config'][$config[1]] = $config[2];
+                }
+                continue;
+            } else if (!isset($parameterValue)) {
+                continue;
+            }
+
+            $arguments[$parameterName] = $parameterValue;
+        }
+        return $arguments;
     }
 }

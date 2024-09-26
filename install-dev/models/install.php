@@ -565,7 +565,7 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @throws PrestaShopException
      */
-    public function configureShop(array $data = [])
+    public function configureShop(array $data = [], array $config = []): bool
     {
         //clear image cache in tmp folder
         if (file_exists(_PS_TMP_IMG_DIR_)) {
@@ -707,6 +707,10 @@ class InstallModelInstall extends InstallAbstractModel
 
             if (!@Tools::generateHtaccess(null, $data['rewriteEngine'])) {
                 Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', 0);
+            }
+
+            foreach ($config as $key => $value) {
+                Configuration::updateGlobalValue($key, $value);
             }
 
             return true;

@@ -289,7 +289,8 @@ class InstallControllerConsoleProcess
                 'sendInformations'       => true,
                 'rewriteEngine'          => $this->datas->rewriteEngine,
                 'sslEnabled'             => $this->datas->sslEnabled,
-            ]
+            ],
+            $this->datas->config,
         );
     }
 
