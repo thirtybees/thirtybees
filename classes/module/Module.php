@@ -959,17 +959,13 @@ abstract class ModuleCore
 
         if ($modules = static::getApiModulesInfo()) {
 
-            $supporterPlan = Configuration::getSupporterInfo();
-            $supporterType = (string)($supporterPlan['type'] ?? '');
-
             foreach ($modules as $name => $module) {
 
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
                     $moduleFromList->premium = $module['premium'] ?? false;
                     if ($moduleFromList->canInstall && $moduleFromList->premium) {
-                        $allowedTypes = array_column($moduleFromList->premium, 'type');
-                        $moduleFromList->canInstall = in_array($supporterType, $allowedTypes, true);
+                        $moduleFromList->canInstall = (bool)$module['binary'];
                     }
 
                     if ($moduleFromList->author
@@ -3731,23 +3727,19 @@ abstract class ModuleCore
     }
 
     /**
-     * @param string|null $supporterType
-     *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function processPremiumModules($supporterType)
+    public static function processPremiumModules()
     {
+        Module::checkApiModulesUpdates(true);
         foreach (static::getModulesOnDisk(true) as $module) {
-            if ($module->id && $module->premium) {
-                $allowedTypes = array_column($module->premium, 'type');
-                if (! in_array((string)$supporterType, $allowedTypes, true)) {
-                    $instance = static::getInstanceById($module->id);
-                    if (Validate::isLoadedObject($instance)) {
-                        $instance->disable(true);
-                    }
+            if ($module->id && $module->premium && !$module->canInstall) {
+                $instance = static::getInstanceById($module->id);
+                if (Validate::isLoadedObject($instance)) {
+                    $instance->disable(true);
                 }
             }
         }
