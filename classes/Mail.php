@@ -432,7 +432,7 @@ class MailCore extends ObjectModel
         }
 
         if (!$templates) {
-            throw new PrestaShopException("No template");
+            throw new PrestaShopException(sprintf("No templates found for email '%s' in language '%s'", $template, $iso));
         }
 
         return $templates;
