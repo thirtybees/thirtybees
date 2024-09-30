@@ -5128,13 +5128,16 @@ FileETag none
      */
     public static function getDateFromDateFormat($format, $date, $resultFormat = 'Y-m-d H:i:s')
     {
-        $d = DateTime::createFromFormat($format, $date);
-        if ($d && $d->format($format) == $date) {
-            if ($resultFormat === 'Y-m-d H:i:s') {
-                $d->setTime(0, 0, 0);
-            }
+        $date = (string)$date;
+        if ($date) {
+            $d = DateTime::createFromFormat($format, $date);
+            if ($d && $d->format($format) == $date) {
+                if ($resultFormat === 'Y-m-d H:i:s') {
+                    $d->setTime(0, 0, 0);
+                }
 
-            return $d->format($resultFormat);
+                return $d->format($resultFormat);
+            }
         }
 
         return null;
