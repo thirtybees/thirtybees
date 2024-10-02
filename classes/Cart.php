@@ -2829,7 +2829,7 @@ class CartCore extends ObjectModel
 
         $uploadedFiles = Db::readOnly()->getArray(
             (new DbQuery())
-                ->select('cd.`value`, cd.`type')
+                ->select('cd.`value`, cd.`type`')
                 ->from('customized_data', 'cd')
                 ->innerJoin('customization', 'c', 'cd.`id_customization` = c.`id_customization`')
                 ->where('cd.`type` = 0')
