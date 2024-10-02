@@ -127,6 +127,7 @@ class AdminInformationControllerCore extends AdminController
                 'wrong_php'=> $buildPhp != PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION,
                 'url'      => $this->context->shop->getBaseURL(),
                 'theme'    => $this->context->shop->theme_name,
+                'rootDir'  => _PS_ROOT_DIR_,
             ],
             'user_agent'      => $_SERVER['HTTP_USER_AGENT'],
         ];

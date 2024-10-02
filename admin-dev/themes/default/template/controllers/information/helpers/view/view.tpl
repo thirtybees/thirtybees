@@ -176,6 +176,9 @@
 					</a>
 				</p>
 				<p>
+					<strong>{l s='Shop Root Directory:'}</strong> {$shop.rootDir|escape:'html':'UTF-8'}
+				</p>
+				<p>
 					<strong>{l s='Current theme in use:'}</strong> {$shop.theme|escape:'html':'UTF-8'}
 				</p>
 			</div>
