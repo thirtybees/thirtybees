@@ -810,7 +810,7 @@ class HelperListCore extends Helper
     public function displayDuplicateLink($token, $id, $name = null)
     {
         $tpl = $this->createTemplate('list_action_duplicate.tpl');
-        if (!array_key_exists('Bad SQL query', static::$cache_lang)) {
+        if (!array_key_exists('Duplicate', static::$cache_lang)) {
             static::$cache_lang['Duplicate'] = $this->l('Duplicate');
         }
 
