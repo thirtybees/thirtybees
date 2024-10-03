@@ -149,7 +149,7 @@
 					<i class="icon-info"></i>
 					{l s='Configuration information'}
 				</h3>
-				<p>{l s='This information must be provided when you report an issue on our bug tracker or forum.'}</p>
+				<p>{l s='This information must be provided when you report an [1]issue[/1] on github or [2]forum[/2].' tags=['<a href="https://github.com/thirtybees/thirtybees/issues" target="_blank" rel="noreferrer">', '<a href="https://forum.thirtybees.com/" target="_blank" rel="noreferrer">']}</p>
 			</div>
 			<div class="panel">
 				<h3>
@@ -216,7 +216,7 @@
 				</p>
 				<p>
 					<strong>{l s='Thirty bees revision:'}</strong>
-					<a target="_blank" href="https://github.com/thirtybees/thirtybees{if $shop.revision != 'development'}/tree/{$shop.revision}{/if}">
+					<a target="_blank" rel="noreferrer" href="https://github.com/thirtybees/thirtybees{if $shop.revision != 'development'}/tree/{$shop.revision}{/if}">
 						{$shop.revision|escape:'html':'UTF-8'}
 					</a>
 				</p>
