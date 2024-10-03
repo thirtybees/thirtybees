@@ -2202,9 +2202,11 @@ class FrontControllerCore extends Controller
      */
     protected function getCurrentPageCanonicalUrl()
     {
-        return $this->getCurrentPageAlternateUrl(
-            (int)$this->context->shop->id,
-            (int)$this->context->language->id
+        return $this->addCurrentPaginationParametersToUrl(
+            $this->getCurrentPageAlternateUrl(
+                (int)$this->context->shop->id,
+                (int)$this->context->language->id
+            )
         );
     }
 
@@ -2260,13 +2262,8 @@ class FrontControllerCore extends Controller
             $shopId = (int)$target['targetShopId'];
             $languageId = (int)$target['targetLangId'];
             $isDefault = (bool)$target['isDefault'];
-            $lnk = $this->getCurrentPageAlternateUrl($shopId, $languageId);
+            $lnk = $this->addCurrentPaginationParametersToUrl($this->getCurrentPageAlternateUrl($shopId, $languageId));
             if ($lnk) {
-                // append page number
-                if ($p = Tools::getIntValue('p')) {
-                    $lnk .= "?p=$p";
-                }
-
                 $links[] = '<link rel="alternate" hreflang="' . $languageCode . '" href="' . $lnk . '">';
                 if ($isDefault) {
                     $default = '<link rel="alternate" hreflang="x-default" href="' . $lnk . '">';
@@ -2279,5 +2276,32 @@ class FrontControllerCore extends Controller
         }
 
         return $links;
+    }
+
+    /**
+     * Helper method that adds pagination parameters 'p' and 'n' to url
+     *
+     * @param string|null $url
+     * @return string|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function addCurrentPaginationParametersToUrl($url)
+    {
+        if ($url) {
+            // add page number, unless it's first page
+            $p = Tools::getIntValue('p');
+            if ($p > 1) {
+                $url = Tools::url($url, "p=$p");
+            }
+
+            // add page size, unless it's default page size
+            $defaultProductsPerPage = max(1, (int) Configuration::get('PS_PRODUCTS_PER_PAGE'));
+            $n = Tools::getIntValue('n');
+            if ($n >= 1 && $n !== $defaultProductsPerPage) {
+                $url = Tools::url($url, "n=$n");
+            }
+        }
+        return $url;
     }
 }
