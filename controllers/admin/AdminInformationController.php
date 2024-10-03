@@ -101,7 +101,7 @@ class AdminInformationControllerCore extends AdminController
     {
         $this->initPageHeaderToolbar();
         $buildPhp = defined('_TB_BUILD_PHP_') ? _TB_BUILD_PHP_ : '';
-        $vars = [
+        $this->tpl_view_vars = [
             'version'         => [
                 'php'                => phpversion(),
                 'phpinfoUrl'         => $this->context->link->getAdminLink('AdminInformation', true, [ 'display' => 'phpinfo' ]),
@@ -132,8 +132,6 @@ class AdminInformationControllerCore extends AdminController
             'user_agent'      => $_SERVER['HTTP_USER_AGENT'],
         ];
 
-        $this->tpl_view_vars = array_merge($this->getTestResult(), array_merge($vars));
-
         return parent::renderView();
     }
 
@@ -143,6 +141,18 @@ class AdminInformationControllerCore extends AdminController
      * @return array of test results
      */
     public function getTestResult()
+    {
+        return [
+            'required' => $this->runTests(ConfigurationTest::getDefaultTests()),
+            'optional' =>  $this->runTests(ConfigurationTest::getDefaultTestsOp()),
+        ];
+    }
+
+    /**
+     * @param array $tests
+     * @return array
+     */
+    protected function runTests(array $tests)
     {
         $testsErrors = [
             ConfigurationTest::TEST_UPLOAD => $this->l('Configure your server to allow file uploads.'),
@@ -175,46 +185,22 @@ class AdminInformationControllerCore extends AdminController
             ConfigurationTest::TEST_GZ => $this->l('Enable GZIP compression on your server.'),
         ];
 
-        // Functions list to test with 'test_system'
-        // Test to execute (function/args): lets uses the default test
-        $paramsRequiredResults = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
-        $paramsOptionalResults = ConfigurationTest::check(ConfigurationTest::getDefaultTestsOp());
-
-        $failRequired = false;
-        foreach ($paramsRequiredResults as $key => $result) {
+        $results = ConfigurationTest::check($tests);
+        $output = [];
+        foreach ($results as $key => $result) {
             if ($result !== 'ok') {
-                $failRequired = true;
-                $testsErrors[$key] .= '<br/>'.sprintf($this->l('Test result: %s'), $result);
-                // Establish retrocompatibility with templates.
-                $paramsRequiredResults[$key] = 'fail';
+                $entry = [
+                    'test' => $key,
+                    'message' => $testsErrors[$key] ?? 'Unknown test',
+                    'result' => $result === 'fail' ? $this->l('Test failed') : $result,
+                ];
+                if ($key === ConfigurationTest::TEST_FILES) {
+                    $entry['extra'] = ConfigurationTest::testFiles(true);
+                }
+                $output[] = $entry;
             }
         }
-        $failOptional = false;
-        foreach ($paramsOptionalResults as $key => $result) {
-            if ($result !== 'ok') {
-                $failOptional = true;
-                $testsErrors[$key] .= '<br/>'.sprintf($this->l('Test result: %s'), $result);
-                // Establish retrocompatibility with templates.
-                $paramsOptionalResults[$key] = 'fail';
-            }
-        }
-
-        if ($failRequired && $paramsRequiredResults['Files'] !== 'ok') {
-            $tmp = ConfigurationTest::testFiles(true);
-            if (is_array($tmp) && count($tmp)) {
-                $testsErrors['Files'] = $testsErrors['Files'].'<br/>('.implode(', ', $tmp).')';
-            }
-        }
-
-        $results = [
-            'failRequired'  => $failRequired,
-            'testsRequired' => $paramsRequiredResults,
-            'failOptional'  => $failOptional,
-            'testsOptional' => $paramsOptionalResults,
-            'testsErrors'   => $testsErrors,
-        ];
-
-        return $results;
+        return $output;
     }
 
     /**
@@ -222,6 +208,7 @@ class AdminInformationControllerCore extends AdminController
      */
     public function displayAjaxCheckFiles()
     {
+        $this->setJSendErrorHandling();
         $this->fileList = [
             'listMissing'   => false,
             'isDevelopment' => false,
@@ -242,6 +229,20 @@ class AdminInformationControllerCore extends AdminController
         }
 
         $this->ajaxDie(json_encode($this->fileList));
+    }
+
+    /**
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    public function displayAjaxRunTests()
+    {
+        $this->setJSendErrorHandling();
+        $this->ajaxDie(json_encode([
+            'status' => 'success',
+            'data' => $this->getTestResult()
+        ]));
     }
 
     /**
