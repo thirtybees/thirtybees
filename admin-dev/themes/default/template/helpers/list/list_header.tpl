@@ -295,13 +295,13 @@
 							{if isset($params.search) && !$params.search}
 								--
 							{else}
-								{if $params.type == 'bool'}
+								{if $params.type === HelperList::COLUMN_TYPE_BOOL}
 									<select class="filter fixed-width-xs center" name="{$list_id}Filter_{if isset($params.filter_key)}{$params.filter_key}{else}{$key}{/if}">
 										<option value="">-</option>
 										<option value="1" {if $params.value == 1} selected="selected" {/if}>{l s='Yes'}</option>
 										<option value="0" {if $params.value == 0 && $params.value != ''} selected="selected" {/if}>{l s='No'}</option>
 									</select>
-								{elseif $params.type == 'date' || $params.type == 'datetime'}
+								{elseif $params.type === HelperList::COLUMN_TYPE_DATE || $params.type == HelperList::COLUMN_TYPE_DATETIME}
 									<div class="date_range row">
  										<div class="input-group fixed-width-md center">
 											<input type="text" class="filter datepicker date-input form-control" id="local_{$params.id_date}_0" name="local_{$params.name_date}[0]"  placeholder="{l s='From'}" autocomplete="off" />
@@ -332,7 +332,7 @@
 											});
 										</script>
 									</div>
-								{elseif $params.type == 'select'}
+								{elseif $params.type === HelperList::COLUMN_TYPE_SELECT}
 									{if isset($params.filter_key)}
 										<select class="filter{if isset($params.align) && $params.align == 'center'}center{/if}" onchange="$('#submitFilterButton{$list_id}').focus();$('#submitFilterButton{$list_id}').click();" name="{$list_id}Filter_{$params.filter_key}" {if isset($params.width)} style="width:{$params.width}px"{/if}>
 											<option value="" {if $params.value == ''} selected="selected" {/if}>-</option>

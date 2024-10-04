@@ -108,7 +108,7 @@
 								<img src="{$tr[$key]['src']}" alt="{$tr[$key]['alt']}" title="{$tr[$key]['alt']}" {if isset($tr[$key]['width'])}width="{$tr[$key]['width']}"{/if} {if isset($tr[$key]['height'])}height="{$tr[$key]['height']}"{/if} />
 							{/if}
 						{/if}
-					{elseif isset($params.type) && $params.type == 'price'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_PRICE}
 						{if isset($params.currency) && is_string($params.currency)}
 							{displayPrice price=$tr.$key currency=$tr.{$params.currency}}
 						{else}
@@ -116,16 +116,18 @@
 						{/if}
 					{elseif isset($params.float)}
 						{$tr.$key}
-					{elseif isset($params.type) && $params.type == 'date'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_DATE}
 						{dateFormat date=$tr.$key full=0}
-					{elseif isset($params.type) && $params.type == 'datetime'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_DATETIME}
 						{dateFormat date=$tr.$key full=1}
-					{elseif isset($params.type) && $params.type == 'decimal'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_DECIMAL}
 						{$tr.$key|string_format:"%.2f"}
-					{elseif isset($params.type) && $params.type == 'percent'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_PERCENT}
 						{$tr.$key} {l s='%'}
+					{elseif $params.type === HelperList::COLUMN_TYPE_INT}
+						{$tr.$key|intval}
 					{* If type is 'editable', an input is created *}
-					{elseif isset($params.type) && $params.type == 'editable' && isset($tr.id)}
+					{elseif $params.type === HelperList::COLUMNT_TYPE_EDITABLE && isset($tr.id)}
 						<input type="text" name="{$key}_{$tr.id}" value="{$tr.$key|escape:'html':'UTF-8'}" class="{$key}" />
 					{elseif $key == 'color'}
 						{if !is_array($tr.$key)}

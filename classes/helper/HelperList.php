@@ -37,6 +37,18 @@ use Thirtybees\Core\Error\ErrorUtils;
  */
 class HelperListCore extends Helper
 {
+    const COLUMN_TYPE_TEXT = 'text';
+    const COLUMN_TYPE_BOOL = 'bool';
+    const COLUMN_TYPE_DATE = 'date';
+    const COLUMN_TYPE_DATETIME = 'datetime';
+    const COLUMN_TYPE_SELECT = 'select';
+    const COLUMN_TYPE_FLOAT = 'float';
+    const COLUMN_TYPE_PRICE = 'price';
+    const COLUMN_TYPE_DECIMAL = 'decimal';
+    const COLUMN_TYPE_PERCENT = 'percent';
+    const COLUMNT_TYPE_EDITABLE = 'editable';
+    const COLUMN_TYPE_INT = 'int';
+
     /**
      * @var array $cache_lang use to cache texts in current language
      */
@@ -348,7 +360,7 @@ class HelperListCore extends Helper
         $cookie = $this->context->cookie;
         foreach ($this->fields_list as $key => $params) {
             if (!isset($params['type'])) {
-                $params['type'] = 'text';
+                $params['type'] = static::COLUMN_TYPE_TEXT;
             }
 
             $valueKey = $prefix.$this->list_id.'Filter_'.(array_key_exists('filter_key', $params) ? $params['filter_key'] : $key);
@@ -362,14 +374,14 @@ class HelperListCore extends Helper
             }
 
             switch ($params['type']) {
-                case 'bool':
+                case static::COLUMN_TYPE_BOOL:
                     if (isset($params['ajax']) && $params['ajax']) {
                         $ajax = true;
                     }
                     break;
 
-                case 'date':
-                case 'datetime':
+                case static::COLUMN_TYPE_DATE:
+                case static::COLUMN_TYPE_DATETIME:
                     if ($value) {
                         if (is_string($value)) {
                             $value = json_decode($value, true);
@@ -387,7 +399,7 @@ class HelperListCore extends Helper
                     $controller->addJqueryUI('ui.datepicker');
                     break;
 
-                case 'select':
+                case static::COLUMN_TYPE_SELECT:
                     foreach ($params['list'] as $optionValue => $optionDisplay) {
                         if (isset($cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']})
                             && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} == $optionValue
@@ -398,7 +410,7 @@ class HelperListCore extends Helper
                     }
                     break;
 
-                case 'text':
+                case static::COLUMN_TYPE_TEXT:
                     if (!Validate::isCleanHtml($value)) {
                         $value = '';
                     }
@@ -684,7 +696,7 @@ class HelperListCore extends Helper
                             $this->_list[$index][$key]['src'] =_PS_ADMIN_IMG_.$iconFile;
                         }
                     }
-                } elseif (isset($params['type']) && $params['type'] == 'float') {
+                } elseif (isset($params['type']) && $params['type'] == static::COLUMN_TYPE_FLOAT) {
                     $this->_list[$index][$key] = rtrim(rtrim($dataValue, '0'), '.');
                 } elseif (isset($dataValue)) {
                     $convertedValue = $dataValue;
@@ -1096,7 +1108,7 @@ class HelperListCore extends Helper
                     'filter_type' => 'int',
                     'filter_key' => 'shop!id_' . $this->shopLinkType,
                     'orderby' => true,
-                    'type' => 'select',
+                    'type' => static::COLUMN_TYPE_SELECT,
                     'list' => $shops,
                 ];
             }
