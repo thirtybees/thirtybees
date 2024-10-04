@@ -81,6 +81,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->list_no_link = true;
 
         $this->fields_list = [
+            'id_supply_order'        => [
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'type'  => 'int',
+            ],
             'reference'              => [
                 'title'        => $this->l('Reference'),
                 'havingFilter' => true,
