@@ -76,7 +76,7 @@
 		<div class="row">
 			<div class="col-lg-3">
 				<div class="form-group">
-					<select multiple name="attributes[]" id="attribute_group" style="height: 500px">
+					<select multiple name="attributes[]" id="attribute_group" style="height: 65vh">
 						{foreach $attribute_groups as $k => $attribute_group}
 							{if isset($attribute_js[$attribute_group['id_attribute_group']])}
 								<optgroup name="{$attribute_group['id_attribute_group']}" id="{$attribute_group['id_attribute_group']}" label="{$attribute_group['name']|escape:'html':'UTF-8'}">
