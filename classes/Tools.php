@@ -30,8 +30,8 @@
  */
 
 use GuzzleHttp\Client;
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use PHPSQLParser\PHPSQLParser;
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 
 /**
@@ -5619,12 +5619,22 @@ FileETag none
      */
     public static function isCrawler(): bool
     {
-        try {
-            $detect = new CrawlerDetect();
-            return $detect->isCrawler();
-        } catch (Throwable $e) {
-            return false;
+        static $crawler = null;
+        if (is_null($crawler)) {
+            $crawler = false;
+            try {
+                $responses = Hook::getResponses('actionDetectBot');
+                foreach ($responses as $response) {
+                    if ($response) {
+                        $crawler = true;
+                    }
+                }
+            } catch (Throwable $e) {
+                $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+                $errorHandler->logFatalError(ErrorUtils::describeException($e));
+            }
         }
+        return $crawler;
     }
 
     /**
