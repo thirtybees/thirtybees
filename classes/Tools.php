@@ -2196,7 +2196,7 @@ class ToolsCore
             return false;
         }
 
-        return mb_strlen($str, $encoding);
+        return mb_strlen((string)$str, $encoding);
     }
 
     /**
