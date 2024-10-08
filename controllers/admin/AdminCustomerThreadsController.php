@@ -799,11 +799,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $helper->color = 'color2';
         $helper->title = $this->l('Average Response Time', null, null, false);
         $helper->subtitle = $this->l('30 days', null, null, false);
-        if (ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME') !== false) {
-            $helper->value = ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME');
+        if (ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME', $this->context->employee->id_lang) !== false) {
+            $helper->value = ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME', $this->context->employee->id_lang);
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=avg_msg_response_time';
-        $helper->refresh = (bool) (ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('AVG_MSG_RESPONSE_TIME_EXPIRE', $this->context->employee->id_lang) < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpi();

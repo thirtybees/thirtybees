@@ -1795,11 +1795,11 @@ class AdminOrdersControllerCore extends AdminController
         $helper->color = 'color3';
         $helper->title = $this->l('Average Order Value', null, null, false);
         $helper->subtitle = $this->l('30 days', null, null, false);
-        if (ConfigurationKPI::get('AVG_ORDER_VALUE') !== false) {
-            $helper->value = sprintf($this->l('%s tax excl.'), ConfigurationKPI::get('AVG_ORDER_VALUE'));
+        if (ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang) !== false) {
+            $helper->value = ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang);
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=average_order_value';
-        $helper->refresh = (bool) (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE', $this->context->employee->id_lang) < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpi();

@@ -51,6 +51,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
         $conn = Db::readOnly();
         $kpi = (string)Tools::getValue('kpi');
         $value = null;
+        $languageId = $this->context->language->id;
         switch ($kpi) {
             case 'conversion_rate':
                 $visitors = AdminStatsController::getVisits(true, date('Y-m-d', strtotime('-31 day')), date('Y-m-d', strtotime('-1 day')), false /*'day'*/);
@@ -123,17 +124,18 @@ class AdminStatsControllerCore extends AdminStatsTabController
             case 'disabled_products':
                 $totalProducts = AdminStatsController::getTotalProducts();
                 $value = $totalProducts
-                    ? round(100 * AdminStatsController::getDisabledProducts() / $totalProducts, 2).'%'
-                    : $this->l('N/A');
+                    ? round(100 * AdminStatsController::getDisabledProducts() / $totalProducts, 2)
+                    : 0;
+                $value .= '%';
                 ConfigurationKPI::updateValue('DISABLED_PRODUCTS', $value);
                 ConfigurationKPI::updateValue('DISABLED_PRODUCTS_EXPIRE', strtotime('+2 hour'));
                 break;
 
             case '8020_sales_catalog':
                 $value = AdminStatsController::get8020SalesCatalog(date('Y-m-d', strtotime('-30 days')), date('Y-m-d'));
-                $value = sprintf($this->l('%d%% of your Catalog'), $value);
-                ConfigurationKPI::updateValue('8020_SALES_CATALOG', $value);
-                ConfigurationKPI::updateValue('8020_SALES_CATALOG_EXPIRE', strtotime('+12 hour'));
+                $value = sprintf($this->l('%d%% of your catalog'), $value);
+                ConfigurationKPI::updateValue('8020_SALES_CATALOG', [$languageId => $value]);
+                ConfigurationKPI::updateValue('8020_SALES_CATALOG_EXPIRE', [$languageId => strtotime('+12 hour')]);
                 break;
 
             case 'empty_categories':
@@ -155,14 +157,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     $value = sprintf($this->l('%d%% Neutral Customers', null, null, false), $value['value']);
                 }
 
-                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER', [$this->context->language->id => $value]);
-                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
+                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER', [$languageId => $value]);
+                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER_EXPIRE', [$languageId => strtotime('+1 day')]);
                 break;
 
             case 'avg_customer_age':
                 $value = sprintf($this->l('%d years', null, null, false), AdminStatsController::getAverageCustomerAge(), 1);
-                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE', [$this->context->language->id => $value]);
-                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
+                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE', [$languageId => $value]);
+                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE_EXPIRE', [$languageId => strtotime('+1 day')]);
                 break;
 
             case 'pending_messages':
@@ -173,8 +175,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
             case 'avg_msg_response_time':
                 $value = sprintf($this->l('%.1f hours', null, null, false), AdminStatsController::getAverageMessageResponseTime(date('Y-m-d', strtotime('-31 day')), date('Y-m-d', strtotime('-1 day'))));
-                ConfigurationKPI::updateValue('AVG_MSG_RESPONSE_TIME', $value);
-                ConfigurationKPI::updateValue('AVG_MSG_RESPONSE_TIME_EXPIRE', strtotime('+4 hour'));
+                ConfigurationKPI::updateValue('AVG_MSG_RESPONSE_TIME',  [$languageId => $value]);
+                ConfigurationKPI::updateValue('AVG_MSG_RESPONSE_TIME_EXPIRE',  [$languageId => strtotime('+4 hour')]);
                 break;
 
             case 'messages_per_thread':
@@ -237,12 +239,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 if (!($row = AdminStatsController::getMainCountry(date('Y-m-d', strtotime('-30 day')), date('Y-m-d')))) {
                     $value = $this->l('No orders', null, null, false);
                 } else {
-                    $country = new Country($row['id_country'], $this->context->language->id);
+                    $country = new Country($row['id_country'], $languageId);
                     $value = sprintf($this->l('%d%% %s', null, null, false), $row['orders'], $country->name);
                 }
 
-                ConfigurationKPI::updateValue('MAIN_COUNTRY', [$this->context->language->id => $value]);
-                ConfigurationKPI::updateValue('MAIN_COUNTRY_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
+                ConfigurationKPI::updateValue('MAIN_COUNTRY', [$languageId => $value]);
+                ConfigurationKPI::updateValue('MAIN_COUNTRY_EXPIRE', [$languageId => strtotime('+1 day')]);
                 break;
 
             case 'orders_per_customer':
@@ -280,11 +282,10 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 );
                 $orders = (int)$row['orders'];
                 $total = (float)$row['total_paid_tax_excl'];
-                $value = $orders
-                    ? Tools::displayPrice($total / $orders, $currency)
-                    : $this->l('N/A');
-                ConfigurationKPI::updateValue('AVG_ORDER_VALUE', $value);
-                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', strtotime(date('Y-m-d 00:00:00', strtotime('+1 day'))));
+                $value = $orders ? $total / $orders : 0;
+                $value = sprintf($this->l('%s tax excl.'), Tools::displayPrice($value, $currency));
+                ConfigurationKPI::updateValue('AVG_ORDER_VALUE', [$languageId => $value]);
+                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', [$languageId => strtotime(date('Y-m-d 00:00:00', strtotime('+1 day')))]);
                 break;
 
             case 'netprofit_visit':
@@ -322,12 +323,12 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 if (!($idCategory = AdminStatsController::getBestCategory(date('Y-m-d', strtotime('-1 month')), date('Y-m-d')))) {
                     $value = $this->l('No category', null, null, false);
                 } else {
-                    $category = new Category($idCategory, $this->context->language->id);
+                    $category = new Category($idCategory, $languageId);
                     $value = $category->name;
                 }
 
-                ConfigurationKPI::updateValue('TOP_CATEGORY', [$this->context->language->id => $value]);
-                ConfigurationKPI::updateValue('TOP_CATEGORY_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
+                ConfigurationKPI::updateValue('TOP_CATEGORY', [$languageId => $value]);
+                ConfigurationKPI::updateValue('TOP_CATEGORY_EXPIRE', [$languageId => strtotime('+1 day')]);
                 break;
 
             default:
@@ -356,8 +357,11 @@ class AdminStatsControllerCore extends AdminStatsTabController
      */
     public static function getVisits($unique, $dateFrom, $dateTo, $granularity = false)
     {
-        $visits = ($granularity == false) ? 0 : [];
-        /** @var Gapi $gapi */
+        $visits = !$granularity ? 0 : [];
+        /**
+         * @var Gapi $gapi
+         * @noinspection PhpUndefinedClassInspection
+         */
         $gapi = Module::isInstalled('gapi') ? Module::getInstanceByName('gapi') : false;
         if (Validate::isLoadedObject($gapi) && $gapi->isConfigured()) {
             $metric = $unique ? 'visitors' : 'visits';
@@ -479,14 +483,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
      * @param string $dateFrom
      * @param string $dateTo
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getAbandonedCarts($dateFrom, $dateTo)
     {
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             '
 		SELECT COUNT(DISTINCT id_guest)
 		FROM `'._DB_PREFIX_.'cart`
@@ -499,14 +503,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * Get installed modules
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getInstalledModules()
     {
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             '
 		SELECT COUNT(DISTINCT m.`id_module`)
 		FROM `'._DB_PREFIX_.'module` m
@@ -517,14 +521,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
     /**
      * Get disabled modules
      *
-     * @return false|null|string
+     * @return int
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public static function getDisabledModules()
     {
-        return Db::readOnly()->getValue(
+        return (int)Db::readOnly()->getValue(
             '
 		SELECT COUNT(*)
 		FROM `'._DB_PREFIX_.'module` m

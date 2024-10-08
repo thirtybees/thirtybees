@@ -252,10 +252,10 @@ class AdminCartsControllerCore extends AdminController
         $helper->color = 'color3';
         $helper->title = $this->l('Average Order Value', null, null, false);
         $helper->subtitle = $this->l('30 days', null, null, false);
-        if (ConfigurationKPI::get('AVG_ORDER_VALUE') !== false) {
-            $helper->value = sprintf($this->l('%s tax excl.'), ConfigurationKPI::get('AVG_ORDER_VALUE'));
+        if (ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang) !== false) {
+            $helper->value = ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang);
         }
-        if (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE') < $time) {
+        if (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE', $this->context->employee->id_lang) < $time) {
             $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=average_order_value';
         }
         $kpis[] = $helper->generate();
@@ -266,11 +266,11 @@ class AdminCartsControllerCore extends AdminController
         $helper->color = 'color4';
         $helper->title = $this->l('Net Profit per Visitor', null, null, false);
         $helper->subtitle = $this->l('30 days', null, null, false);
-        if (ConfigurationKPI::get('NETPROFIT_VISITOR') !== false) {
-            $helper->value = ConfigurationKPI::get('NETPROFIT_VISITOR');
+        if (ConfigurationKPI::get('NETPROFIT_VISIT') !== false) {
+            $helper->value = ConfigurationKPI::get('NETPROFIT_VISIT');
         }
-        $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=netprofit_visitor';
-        $helper->refresh = (bool) (ConfigurationKPI::get('NETPROFIT_VISITOR_EXPIRE') < $time);
+        $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=netprofit_visit';
+        $helper->refresh = (bool) (ConfigurationKPI::get('NETPROFIT_VISIT_EXPIRE') < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpiRow();

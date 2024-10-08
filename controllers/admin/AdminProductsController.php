@@ -3464,12 +3464,12 @@ class AdminProductsControllerCore extends AdminController
         $helper->color = 'color3';
         $helper->title = $this->l('Purchased references', null, null, false);
         $helper->subtitle = $this->l('30 days', null, null, false);
-        if (ConfigurationKPI::get('8020_SALES_CATALOG') !== false) {
-            $helper->value = ConfigurationKPI::get('8020_SALES_CATALOG');
+        if (ConfigurationKPI::get('8020_SALES_CATALOG', $this->context->employee->id_lang) !== false) {
+            $helper->value = ConfigurationKPI::get('8020_SALES_CATALOG', $this->context->employee->id_lang);
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=8020_sales_catalog';
         $helper->tooltip = $this->l('X% of your references have been purchased for the past 30 days', null, null, false);
-        $helper->refresh = (bool) (ConfigurationKPI::get('8020_SALES_CATALOG_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('8020_SALES_CATALOG_EXPIRE', $this->context->employee->id_lang) < $time);
         if (Module::isInstalled('statsbestproducts')) {
             $helper->href = $this->context->link->getAdminLink('AdminStats').'&module=statsbestproducts&datepickerFrom='.date('Y-m-d', strtotime('-30 days')).'&datepickerTo='.date('Y-m-d');
         }
