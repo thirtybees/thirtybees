@@ -49,7 +49,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
     {
         $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
         $conn = Db::readOnly();
-        switch (Tools::getValue('kpi')) {
+        $kpi = (string)Tools::getValue('kpi');
+        $value = null;
+        switch ($kpi) {
             case 'conversion_rate':
                 $visitors = AdminStatsController::getVisits(true, date('Y-m-d', strtotime('-31 day')), date('Y-m-d', strtotime('-1 day')), false /*'day'*/);
                 $orders = AdminStatsController::getOrders(date('Y-m-d', strtotime('-31 day')), date('Y-m-d', strtotime('-1 day')), false /*'day'*/);
@@ -329,11 +331,13 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 break;
 
             default:
-                $value = false;
+                trigger_error('Unknown KPI: ' . $kpi, E_USER_WARNING);
+                break;
         }
-        if ($value !== false) {
-            $array = ['value' => $value];
-            $this->ajaxDie(json_encode($array));
+        if ($value !== null) {
+            $this->ajaxDie(json_encode([
+                'value' => $value
+            ]));
         }
         $this->ajaxDie(json_encode(['has_errors' => true]));
     }

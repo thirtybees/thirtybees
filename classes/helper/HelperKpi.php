@@ -75,7 +75,7 @@ class HelperKpiCore extends Helper
     public $subtitle;
 
     /**
-     * @var int|float
+     * @var int|float|string|null
      */
     public $value;
 

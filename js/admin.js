@@ -873,7 +873,11 @@ $(document).ready(function () {
   }
 
   if ($('.kpi-container').length) {
-    refresh_kpis();
+    $.each(window['kpis'], function(id, kpi) {
+      if (kpi.initRefresh) {
+        refresh_kpi(id, kpi);
+      }
+    });
   }
 });
 
@@ -1289,15 +1293,53 @@ function displayPriceValue(price) {
 }
 
 function refresh_kpis() {
-  $('.box-stats').each(function () {
-    if ($(this).attr('id')) {
-      var functionName = 'refresh_' + $(this).attr('id').replace(/-/g, '_');
+  $.each(window['kpis'], refresh_kpi);
+}
 
-      if (typeof window[functionName] === 'function') {
-        window[functionName]();
+function refresh_kpi(id, kpi) {
+  if (kpi.source) {
+    $.ajax({
+      url: kpi.source + '&rand=' + new Date().getTime(),
+      dataType: 'json',
+      type: 'GET',
+      cache: false,
+      headers: {'cache-control': 'no-cache'},
+      success: function (jsonData) {
+        if (!jsonData.has_errors) {
+
+          if (jsonData.value !== undefined) {
+            $('#' + id + ' .value').html(jsonData.value);
+          }
+
+          if (jsonData.data !== undefined) {
+            const data = [];
+            $.each(jsonData.data, function (index, value) {
+              data.push(value);
+            });
+
+            const data_max = d3.max(data);
+
+            const chart = d3.select("#" + id + " .boxchart").append("svg")
+                .attr("class", "data_chart")
+                .attr("width", data.length * 6)
+                .attr("height", 45);
+
+            const y = d3.scale.linear()
+                .domain([0, data_max])
+                .range([0, data_max * 45]);
+
+            chart.selectAll("rect")
+                .data(data)
+                .enter().append("rect")
+                .attr("y", d => 45 - d * 45 / data_max)
+                .attr("x", (d, i) => i * 6)
+                .attr("width", 4)
+                .attr("height", y);
+          }
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function createSqlQueryName() {
