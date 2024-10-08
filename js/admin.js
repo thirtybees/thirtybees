@@ -1298,6 +1298,10 @@ function refresh_kpis() {
 
 function refresh_kpi(id, kpi) {
   if (kpi.source) {
+
+    const $valueContainer = $('#' + id + ' .value');
+    $valueContainer.html('<span class="icon icon-spin icon-spinner"></span>')
+
     $.ajax({
       url: kpi.source + '&rand=' + new Date().getTime(),
       dataType: 'json',
@@ -1305,10 +1309,12 @@ function refresh_kpi(id, kpi) {
       cache: false,
       headers: {'cache-control': 'no-cache'},
       success: function (jsonData) {
-        if (!jsonData.has_errors) {
+        if (! jsonData.has_errors) {
 
           if (jsonData.value !== undefined) {
-            $('#' + id + ' .value').html(jsonData.value);
+            $valueContainer.html(jsonData.value);
+          } else {
+            $valueContainer.html('');
           }
 
           if (jsonData.data !== undefined) {
@@ -1336,6 +1342,8 @@ function refresh_kpi(id, kpi) {
                 .attr("width", 4)
                 .attr("height", y);
           }
+        } else {
+          $valueContainer.html('Error');
         }
       }
     });
