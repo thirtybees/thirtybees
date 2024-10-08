@@ -755,9 +755,13 @@ class LanguageCore extends ObjectModel
         $tables = $connection->getArray('SHOW TABLES LIKE \''.str_replace('_', '\\_', _DB_PREFIX_).'%\_lang\' ');
         $langTables = [];
 
+        $ignoredTables = [
+            _DB_PREFIX_.'configuration_lang',
+            _DB_PREFIX_.'configuration_kpi_lang'
+        ];
         foreach ($tables as $table) {
             foreach ($table as $t) {
-                if ($t != _DB_PREFIX_.'configuration_lang') {
+                if (! in_array($t, $ignoredTables)) {
                     $langTables[] = $t;
                 }
             }

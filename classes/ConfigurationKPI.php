@@ -29,10 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\InitializationCallback;
+
 /**
  * Class ConfigurationKPICore
  */
-class ConfigurationKPICore extends Configuration
+class ConfigurationKPICore extends Configuration implements InitializationCallback
 {
     /**
      * @var array
@@ -327,5 +329,16 @@ class ConfigurationKPICore extends Configuration
         ConfigurationKPI::unsetKpiDefinition();
 
         return $r;
+    }
+
+    /**
+     * @param Db $conn
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    public static function initializationCallback(Db $conn)
+    {
+        $conn->delete('configuration_kpi_lang', 'IFNULL(value, "") = ""');
     }
 }
