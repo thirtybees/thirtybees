@@ -872,7 +872,7 @@ $(document).ready(function () {
     $('button:submit').click(bindSwapSave);
   }
 
-  if ($('.kpi-container').length) {
+  if (window['kpis']) {
     $.each(window['kpis'], function(id, kpi) {
       if (kpi.initRefresh) {
         refresh_kpi(id, kpi);
@@ -1293,7 +1293,9 @@ function displayPriceValue(price) {
 }
 
 function refresh_kpis() {
-  $.each(window['kpis'], refresh_kpi);
+  if (window['kpis']) {
+    $.each(window['kpis'], refresh_kpi);
+  }
 }
 
 function refresh_kpi(id, kpi) {
