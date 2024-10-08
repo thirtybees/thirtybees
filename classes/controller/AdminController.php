@@ -699,6 +699,9 @@ class AdminControllerCore extends Controller
                     if (($type == 'date' || $type == 'datetime') && is_string($value)) {
                         $value = json_decode($value, true);
                     }
+                    if (array_key_exists('filter_key', $field) && (string)$field['filter_key']) {
+                        $tmpTab = explode('!', (string)$field['filter_key']);
+                    }
                     $key = isset($tmpTab[1]) ? $tmpTab[0].'.`'.$tmpTab[1].'`' : '`'.$tmpTab[0].'`';
 
                     // Assignment by reference
