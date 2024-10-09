@@ -51,6 +51,7 @@ class MailCore extends ObjectModel
 
     const RECIPIENT_TYPE_TO = 'to';
     const RECIPIENT_TYPE_BCC = 'bcc';
+
     /**
      * @var array Object model definition
      */
@@ -64,6 +65,7 @@ class MailCore extends ObjectModel
             'template' => ['type' => self::TYPE_STRING, 'validate' => 'isTplName', 'copy_post' => false, 'required' => true, 'size' => 62],
             'subject' => ['type' => self::TYPE_STRING, 'validate' => 'isMailSubject', 'copy_post' => false, 'required' => true, 'size' => 254],
             'id_lang' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false, 'required' => true],
+            'transport' => ['type' => self::TYPE_STRING, 'copy_post' => false, 'required' => false, 'size' => 100],
             'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'required' => true, 'dbType' => 'timestamp', 'dbDefault' => ObjectModel::DEFAULT_CURRENT_TIMESTAMP],
         ],
         'keys' => [
@@ -102,6 +104,11 @@ class MailCore extends ObjectModel
      * @var int Language ID
      */
     public $id_lang;
+
+    /**
+     * @var string
+     */
+    public $transport;
 
     /**
      * @var string Timestamp
@@ -203,8 +210,12 @@ class MailCore extends ObjectModel
             $attachements = static::getFileAttachements($fileAttachment);
 
 
+            // get email transport
+            $transportId = static::getSelectedTransport();
+            $transport = static::getTransport($transportId);
+
             // send email via transport
-            $success = static::getTransport()->sendMail(
+            $success = $transport->sendMail(
                 $idShop,
                 $idLang,
                 $fromAddress,
@@ -219,10 +230,10 @@ class MailCore extends ObjectModel
 
             if ($success && Configuration::get(Configuration::LOG_EMAILS)) {
                 foreach ($toAddresses as $address) {
-                    static::logMail($fromAddress, static::RECIPIENT_TYPE_TO, $address, $template, $subject, $idLang);
+                    static::logMail($fromAddress, static::RECIPIENT_TYPE_TO, $address, $template, $subject, $idLang, $transportId);
                 }
                 foreach ($bccAddresses as $address) {
-                    static::logMail($fromAddress, static::RECIPIENT_TYPE_BCC, $address, $template, $subject, $idLang);
+                    static::logMail($fromAddress, static::RECIPIENT_TYPE_BCC, $address, $template, $subject, $idLang, $transportId);
                 }
             }
 
@@ -633,37 +644,34 @@ class MailCore extends ObjectModel
     }
 
     /**
+     * @param string $trasportId
+     *
      * @return MailTransport
+     *
      * @throws PrestaShopException
      */
-    public static function getTransport()
+    public static function getTransport(string $trasportId): MailTransport
     {
         $transports = static::getAvailableTransports();
-        return $transports[static::resolveSelectedTransport($transports)];
+        if (isset($transports[$trasportId])) {
+            return $transports[$trasportId];
+        } else {
+            throw new PrestaShopException("Mail transport $trasportId not found");
+        }
     }
 
     /**
      * Returns string identifier of selected email transport
      *
      * @return string
-     * @throws PrestaShopException
-     */
-    public static function getSelectedTransport()
-    {
-        return static::resolveSelectedTransport(static::getAvailableTransports());
-    }
-
-    /**
-     * Returns string identifier of selected email transport
      *
-     * @return string
      * @throws PrestaShopException
      */
-    protected static function resolveSelectedTransport(array $transports)
+    public static function getSelectedTransport(): string
     {
-        $transports = static::getAvailableTransports();
-        $selected = Configuration::get(Configuration::MAIL_TRANSPORT);
+        $selected = (string)Configuration::get(Configuration::MAIL_TRANSPORT);
         if ($selected) {
+            $transports = static::getAvailableTransports();
             if (isset($transports[$selected])) {
                 return $selected;
             } else {
@@ -777,11 +785,19 @@ class MailCore extends ObjectModel
      * @param string $template
      * @param string $subject
      * @param int $idLang
+     * @param string $transportId
      *
      * @throws PrestaShopException
      */
-    protected static function logMail(MailAddress $fromAddress, string $recipientType, MailAddress $recipient, string $template, string $subject, int $idLang)
-    {
+    protected static function logMail(
+        MailAddress $fromAddress,
+        string $recipientType,
+        MailAddress $recipient,
+        string $template,
+        string $subject,
+        int $idLang,
+        string $transportId
+    ) {
         $mail = new static();
         $mail->recipient_type = $recipientType;
         $mail->recipient = mb_substr($recipient->getAddress(), 0, 126);
@@ -789,6 +805,7 @@ class MailCore extends ObjectModel
         $mail->template = mb_substr($template, 0, 62);
         $mail->subject = mb_substr($subject, 0, 254);
         $mail->id_lang = (int)$idLang;
+        $mail->transport = $transportId;
         $mail->add();
     }
 
