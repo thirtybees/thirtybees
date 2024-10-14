@@ -1343,14 +1343,13 @@ class OrderCore extends ObjectModel
      */
     public static function getOrderByCartId($idCart)
     {
-        $result = Db::readOnly()->getRow(
+        return (int)Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_order`')
                 ->from('orders')
-                ->where('`id_cart` = '.(int) $idCart.' '.Shop::addSqlRestriction())
+                ->where('`id_cart` = '.(int) $idCart)
+                ->orderBy('`id_order`')
         );
-
-        return isset($result['id_order']) ? (int)$result['id_order'] : 0;
     }
 
     /**
