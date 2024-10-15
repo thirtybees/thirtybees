@@ -519,8 +519,13 @@
 		$('#preview_import').submit(function(e) {
 			if ($('#truncate').get(0).checked) {
 				if (truncateAuthorized) {
-					if (!confirm('{l s='Are you sure that you would like to delete this entity: ' js=1}' + ' ' + $.trim($('#entity > option:selected').text().toLowerCase()) + '?'))
+					const entityName = $.trim($('#entity > option:selected').text().toLowerCase());
+					if (! confirm('{l s='Are you sure you want to delete delete all %s?' js=1}'.replace('%s', entityName))) {
 						e.preventDefault();
+						return false;
+					} else {
+						return true;
+					}
 				}
 				else {
 					jAlert('{l s='You do not have permission to delete this. When the MultiStore mode is enabled, only a SuperAdmin can delete all items before an import.' js=1}');
