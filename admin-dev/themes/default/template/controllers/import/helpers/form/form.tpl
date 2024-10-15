@@ -520,7 +520,7 @@
 			if ($('#truncate').get(0).checked) {
 				if (truncateAuthorized) {
 					const entityName = $.trim($('#entity > option:selected').text().toLowerCase());
-					if (! confirm('{l s='Are you sure you want to delete delete all %s?' js=1}'.replace('%s', entityName))) {
+					if (! confirm('{l s='Are you sure you want to delete all %s?' js=1}'.replace('%s', entityName))) {
 						e.preventDefault();
 						return false;
 					} else {
