@@ -262,6 +262,10 @@
     grid-template-rows: 1fr;
 }
 
+.campaign-bar-on .tb-admin-header-with-hook {
+    grid-template-columns: 144px minmax(100px, max-content) minmax(60px, auto) max-content 1fr max-content;
+}
+
 .tb-admin-campaign-bar-fa-icon {
     display: inline-flex;
     align-items: center;

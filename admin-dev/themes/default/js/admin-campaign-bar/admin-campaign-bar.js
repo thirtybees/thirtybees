@@ -98,7 +98,7 @@
             $('.tb-admin-campaign-bar-cta a').attr("href", window[campaign.url]);
 
             /// Remove previous class and add the selected class
-            $('.tb-admin-campaign-bar').removeClass().addClass('tb-admin-campaign-bar ' + window[campaign.class]);
+            $('.tb-admin-campaign-bar').addClass(window[campaign.class]);
             var checkForTechSupportClass = $('.tb-admin-campaign-bar').hasClass("campaign-bar-technical-support");
             if (checkForTechSupportClass) {
                 $(".campaign-bar-technical-support .tb-admin-campaign-bar-cta a").attr("target", "_blank");

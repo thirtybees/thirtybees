@@ -145,7 +145,7 @@
 	{* begin  HEADER *}
 	<header id="header" class="bootstrap">
 		<nav id="header_infos" role="navigation">
-			<div class="navbar-header tb-admin-campaign-bar">
+			<div class="navbar-header tb-admin-campaign-bar {if isset($displayBackOfficeTop) && $displayBackOfficeTop}tb-admin-header-with-hook{/if}">
 				<button id="header_nav_toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-primary">
 					<i class="icon-reorder"></i>
 				</button>
@@ -306,6 +306,12 @@
 					{/if}
 				</section>
 
+				{if isset($displayBackOfficeTop) && $displayBackOfficeTop}
+				<div class="display-back-office-top-hook">
+					{$displayBackOfficeTop}
+				</div>
+				{/if}
+
 				{* /// Campaign Bar /// *}
 				<div class="campaign-bar-holder">
 					<div class="campaign-bar-holder-inner-outer">
@@ -372,7 +378,7 @@
 					<i class="icon-refresh icon-spin icon-fw"></i>
 				</span>
 
-	{if isset($displayBackOfficeTop)}{$displayBackOfficeTop}{/if}
+
 			</div>
 		</nav>{* end header_infos*}
 	</header>
