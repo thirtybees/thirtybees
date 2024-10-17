@@ -843,12 +843,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
                     // If this table is linked to multishop system, update / insert for all shops from context
                     if ($this->isLangMultishop()) {
-                        if (is_array($this->id_shop_list)
-                            && count($this->id_shop_list)) {
-                            $idShopList = $this->id_shop_list;
-                        } else {
-                            $idShopList = Shop::getContextListShopID();
-                        }
                         foreach ($idShopList as $idShop) {
                             $field['id_shop'] = (int) $idShop;
                             $where = pSQL($this->def['primary']).' = '.$id .' AND id_lang = '.(int) $field['id_lang'].' AND id_shop = '.(int) $idShop;
