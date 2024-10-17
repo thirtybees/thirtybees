@@ -5213,15 +5213,19 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public function setAvailableDate($availableDate = '0000-00-00')
     {
         if (Validate::isDateFormat($availableDate) && $this->available_date != $availableDate) {
-            $fieldsToUpdate = $this->update_fields;
-            try {
-                $this->available_date = $availableDate;
-                $this->setFieldsToUpdate(['available_date' => true]);
-                return $this->update();
-            } finally {
-                if (! is_null($fieldsToUpdate)) {
-                    $this->setFieldsToUpdate($fieldsToUpdate);
+            $this->available_date = $availableDate;
+            if ($this->id) {
+                $fieldsToUpdate = $this->update_fields;
+                try {
+                    $this->setFieldsToUpdate(['available_date' => true]);
+                    return $this->update();
+                } finally {
+                    if (!is_null($fieldsToUpdate)) {
+                        $this->setFieldsToUpdate($fieldsToUpdate);
+                    }
                 }
+            } else {
+                return true;
             }
         }
 
