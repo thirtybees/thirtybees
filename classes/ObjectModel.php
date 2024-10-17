@@ -746,6 +746,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public function update($nullValues = false)
     {
+        $id = (int)$this->id;
+
+        if (!$id) {
+            trigger_error("Attempt to update unsaved object", E_USER_WARNING);
+            return false;
+        }
+
         // @hook actionObject*UpdateBefore
         Hook::triggerEvent('actionObjectUpdateBefore', ['object' => $this]);
         Hook::triggerEvent('actionObject'.get_class($this).'UpdateBefore', ['object' => $this]);
@@ -782,7 +789,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         // Database update
         $primaryFields = $this->getFieldsPrimary();
         $conn = Db::getInstance();
-        if (!$result = $conn->update($this->def['table'], $primaryFields, '`'.pSQL($this->def['primary']).'` = '.(int) $this->id, 0, $nullValues)) {
+        if (!$result = $conn->update($this->def['table'], $primaryFields, '`'.pSQL($this->def['primary']).'` = '.$id, 0, $nullValues)) {
             return false;
         }
 
@@ -791,7 +798,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // for insert operation we need all multishop fields
             $insertFields = $this->getFieldsShop();
-            $insertFields[$this->def['primary']] = (int) $this->id;
+            $insertFields[$this->def['primary']] = $id;
 
             // by default update all fields except primary key
             $updateFields = $insertFields;
@@ -809,7 +816,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // update or create multishop entries
             foreach ($idShopList as $idShop) {
-                $where = $this->def['primary'].' = '.(int) $this->id.' AND id_shop = '.(int) $idShop;
+                $where = $this->def['primary'].' = '.$id .' AND id_shop = '.(int) $idShop;
 
                 $shopEntryExists = $conn->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
                 if ($shopEntryExists) {
@@ -844,7 +851,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         }
                         foreach ($idShopList as $idShop) {
                             $field['id_shop'] = (int) $idShop;
-                            $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'].' AND id_shop = '.(int) $idShop;
+                            $where = pSQL($this->def['primary']).' = '.$id .' AND id_lang = '.(int) $field['id_lang'].' AND id_shop = '.(int) $idShop;
 
                             if ($conn->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
                                 $result = $conn->update($this->def['table'].'_lang', $field, $where) && $result;
@@ -854,7 +861,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         }
                     } else {
                         // If this table is not linked to multishop system ...
-                        $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'];
+                        $where = pSQL($this->def['primary']).' = '.$id .' AND id_lang = '.(int) $field['id_lang'];
                         if ($conn->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
                             $result = $conn->update($this->def['table'].'_lang', $field, $where) && $result;
                         } else {
