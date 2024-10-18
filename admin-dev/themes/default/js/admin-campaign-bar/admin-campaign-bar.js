@@ -89,7 +89,6 @@
     function updateCampaignBar(campaign) {
         /// Check if campaign is defined
         if (campaign && campaign.intro) {
-            console.log(campaign);
             /// Update the campaign bar with the selected campaign
             $('.tb-admin-campaign-bar-text-inner').html(window[campaign.intro]);
             $('.tb-admin-campaign-bar-cta-inline a').html(window[campaign.cta]);
