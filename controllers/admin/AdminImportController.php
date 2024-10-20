@@ -856,6 +856,7 @@ class AdminImportControllerCore extends AdminController
                 'regenerate'               => Tools::getValue('regenerate'),
                 'forceCat'                 => Tools::getValue('forceCat'),
                 'match_ref'                => Tools::getValue('match_ref'),
+                'only_file_product'        => Tools::getValue('only_file_product'),
                 'separator'                => $this->separator,
                 'multiple_value_separator' => $this->multiple_value_separator,
             ],
@@ -3621,6 +3622,11 @@ class AdminImportControllerCore extends AdminController
             $attributes[$attribute['attribute_group'].'_'.$attribute['name']] = (int) $attribute['id_attribute'];
         }
 
+        $deletedProducts = [];
+        if (is_array($crossStepsVariables) && array_key_exists('deletedProducts', $crossStepsVariables) && is_array($crossStepsVariables['deletedProducts'])) {
+            $deletedProducts = $crossStepsVariables['deletedProducts'];
+        }
+
         $this->receiveTab();
         $datasource = $this->openDataSource($offset);
 
@@ -3650,7 +3656,8 @@ class AdminImportControllerCore extends AdminController
                     $attributes, // by ref
                     $regenerate,
                     $shopIsFeatureActive,
-                    $validateOnly
+                    $validateOnly,
+                    $deletedProducts // by ref
                 );
             } catch (PrestaShopException $e) {
                 $this->errors[] = $e->getMessage();
@@ -3661,6 +3668,7 @@ class AdminImportControllerCore extends AdminController
         if ($crossStepsVariables !== false) {
             $crossStepsVariables['groups'] = $groups;
             $crossStepsVariables['attributes'] = $attributes;
+            $crossStepsVariables['deletedProducts'] = $deletedProducts;
         }
 
         return $lineCount;
@@ -3674,13 +3682,14 @@ class AdminImportControllerCore extends AdminController
      * @param bool $regenerate
      * @param bool $shopIsFeatureActive
      * @param bool $validateOnly
+     * @param int[] $deletedProducts
      *
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly = false)
+    protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly, &$deletedProducts)
     {
         static::setDefaultValues($info);
 
@@ -3721,6 +3730,13 @@ class AdminImportControllerCore extends AdminController
             }
         } else {
             return;
+        }
+
+        // delete combinations for product
+        $deleteCombinationsForProduct = Tools::getValue('only_file_product');
+        if ($deleteCombinationsForProduct && !in_array((int)$product->id, $deletedProducts)) {
+            $deletedProducts[] = (int)$product->id;
+            $product->deleteProductAttributes();
         }
 
         $idImage = [];
