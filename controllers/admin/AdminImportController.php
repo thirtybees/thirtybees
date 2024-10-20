@@ -1247,11 +1247,7 @@ class AdminImportControllerCore extends AdminController
         // Check if the CSV file exist
         if (Tools::getValue('filename')) {
             $entityType = $this->getSelectedEntity();
-            $shopIsFeatureActive = Shop::isFeatureActive();
-            // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
-            if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
-                $this->truncateTables($entityType);
-            }
+
             $doneCount = 0;
             // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
             // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
@@ -3629,6 +3625,13 @@ class AdminImportControllerCore extends AdminController
         $regenerate = Tools::getValue('regenerate');
         $shopIsFeatureActive = Shop::isFeatureActive();
 
+        $processedProducts = [];
+        $truncateOnlyProductCombinations = false;
+
+        if (!$offset  && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
+            $truncateOnlyProductCombinations = true;
+        }
+
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
@@ -3643,6 +3646,10 @@ class AdminImportControllerCore extends AdminController
             $info = array_map('trim', $info);
 
             try {
+                if ($truncateOnlyProductCombinations) {
+                    $this->deleteCombinationsByProductId($info['id_product'], $processedProducts);
+                }
+
                 $this->attributeImportOne(
                     $info,
                     $defaultLanguage,
@@ -3664,6 +3671,48 @@ class AdminImportControllerCore extends AdminController
         }
 
         return $lineCount;
+    }
+
+    private function deleteCombinationsByProductId($productId, &$processedProducts = [])
+    {
+        $productId = (int)$productId;
+
+        if ($productId <= 0) {
+            return false; // Invalid product ID
+        }
+
+        // Check if the product ID is already in the processed array
+        if (in_array($productId, $processedProducts)) {
+            return false; // Skip deletion if the product ID was already processed
+        }
+
+        // Step 1: Get all product attribute IDs for the given product
+        $sqlGetProductAttributes = 'SELECT id_product_attribute FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE id_product = ' . $productId;
+        $productAttributeIds = Db::getInstance()->executeS($sqlGetProductAttributes);
+
+        if (!$productAttributeIds) {
+            return false; // No combinations found for the product
+        }
+
+        // Convert product attribute IDs to a simple array of IDs
+        $attributeIds = array_map(function ($item) {
+            return (int)$item['id_product_attribute'];
+        }, $productAttributeIds);
+
+        $attributeIdsList = implode(',', $attributeIds);
+
+        // Step 2: Delete from related tables using the product attribute IDs
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE id_product = ' . $productId);
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE id_product_attribute IN (' . $attributeIdsList . ')');
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE id_product_attribute IN (' . $attributeIdsList . ')');
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'stock_available` WHERE id_product = ' . $productId . ' AND id_product_attribute IN (' . $attributeIdsList . ')');
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_image` WHERE id_product_attribute IN (' . $attributeIdsList . ')');
+        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'specific_price` WHERE id_product = ' . $productId . ' AND id_product_attribute IN (' . $attributeIdsList . ')');
+
+        // Add the product ID to the processed array
+        $processedProducts[] = $productId;
+
+        return true;
     }
 
     /**
