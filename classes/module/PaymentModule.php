@@ -849,7 +849,7 @@ abstract class PaymentModuleCore extends Module
 
                     // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
                     // The copied cart rule is converted into a product specific cart rule
-                    if ($cartRule->product_restriction) {
+                    if ($cartRule->product_restriction && $cartRule->reduction_percent && $cartRule->applyDiscountToCheapestProductFromSelection()) {
                         // Create a new voucher from the original
                         $voucher = new CartRule((int) $cartRule->id); // We need to instantiate the CartRule without lang parameter to allow saving it
                         if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
