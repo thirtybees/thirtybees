@@ -584,8 +584,8 @@ class AdminCartRulesControllerCore extends AdminController
         }
 
         $reductionProductFilter = '';
-        if (Validate::isUnsignedId($currentObject->reduction_product) &&
-            ($product = new Product($currentObject->reduction_product, false, $this->context->language->id)) &&
+        if ($currentObject->applyDiscountToSpecificProduct() &&
+            ($product = new Product($currentObject->getSpecificProductId(), false, $this->context->language->id)) &&
             Validate::isLoadedObject($product)
         ) {
             $reductionProductFilter = (!empty($product->reference) ? $product->reference : $product->name);
@@ -669,11 +669,12 @@ class AdminCartRulesControllerCore extends AdminController
                 'hasAttribute'                  => $product->hasAttributes(),
             ]
         );
-        Media::addJsDef(
-            [
-                'baseHref' => $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.Tools::getIntValue('id_cart_rule').'&action=loadCartRules&limit='.(int) $limit.'&count=0',
-            ]
-        );
+        Media::addJsDef([
+            'baseHref' => $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.Tools::getIntValue('id_cart_rule').'&action=loadCartRules&limit='.(int) $limit.'&count=0',
+            'APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING' => CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING,
+            'APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION' => CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION,
+            'APPLY_DISCOUNT_TO_SELECTED_PRODUCTS' => CartRule::APPLY_DISCOUNT_TO_SELECTED_PRODUCTS,
+        ]);
         $this->content .= $this->createTemplate('form.tpl')->fetch();
 
         $this->addJqueryUI('ui.datepicker');

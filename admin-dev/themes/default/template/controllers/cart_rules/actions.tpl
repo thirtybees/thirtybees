@@ -100,24 +100,25 @@
 	</div>
 </div>
 
+{$reductionProduct = $currentTab->getFieldValue($currentObject, 'reduction_product')|intval}
 <div id="apply_discount_to_div" class="form-group">
 	<label class="control-label col-lg-3">{l s='Apply a discount to'}</label>
 	<div class="col-lg-7">
 		<p class="radio">
 			<label for="apply_discount_to_order">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_order" value="order"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == 0} checked="checked"{/if} />
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_order" value="order"{if $reductionProduct === CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING} checked="checked"{/if} />
 				 {l s='Order (without shipping)'}
 			</label>
 		</p>
 		<p class="radio">
 			<label for="apply_discount_to_product">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_product" value="specific"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval > 0} checked="checked"{/if} />
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_product" value="specific"{if $reductionProduct > 0} checked="checked"{/if} />
 				{l s='Specific product'}
 			</label>
 		</p>
 		<p class="radio">
 			<label for="apply_discount_to_cheapest">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_cheapest" value="cheapest"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -1} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_cheapest" value="cheapest"{if $reductionProduct === CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
 				 {l s='Cheapest product from selection'}
 				<span class="no_selection_warning text-muted clearfix">
 					<i class="icon-warning-sign"></i>
@@ -127,7 +128,7 @@
 		</p>
 		<p class="radio">
 			<label for="apply_discount_to_selection">
-				<input type="radio" name="apply_discount_to" id="apply_discount_to_selection" value="selection"{if $currentTab->getFieldValue($currentObject, 'reduction_product')|intval == -2} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_selection" value="selection"{if $reductionProduct === CartRule::APPLY_DISCOUNT_TO_SELECTED_PRODUCTS} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
 				{l s='Selected product(s)'}
 				<span class="no_selection_warning text-muted clearfix">
 					<i class="icon-warning-sign"></i>
@@ -143,7 +144,7 @@
 	<div class="col-lg-9">
 		<div class="input-group col-lg-5">
 			<input type="text" id="reductionProductFilter" name="reductionProductFilter" value="{$reductionProductFilter|escape:'html':'UTF-8'}" />
-			<input type="hidden" id="reduction_product" name="reduction_product" value="{$currentTab->getFieldValue($currentObject, 'reduction_product')|intval}" />
+			<input type="hidden" id="reduction_product" name="reduction_product" value="{$reductionProduct}" />
 			<span class="input-group-addon"><i class="icon-search"></i></span>
 		</div>
 	</div>

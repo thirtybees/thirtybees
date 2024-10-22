@@ -873,7 +873,7 @@ abstract class PaymentModuleCore extends Module
                             $voucher->quantity_per_user = 0;
                             $voucher->active = 0;
                             $voucher->product_restriction = 1;
-                            $voucher->reduction_product = 0;
+                            $voucher->reduction_product = CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING;
                             $voucher->description = json_encode([
                                 'id_product'           => $cheapestProduct[0],
                                 'id_product_attribute' => $cheapestProduct[1],

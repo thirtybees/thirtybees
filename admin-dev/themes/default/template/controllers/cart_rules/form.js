@@ -202,12 +202,15 @@ function toggleApplyDiscountTo()
 	{
 		$('#apply_discount_to_product_div').hide(200);
 		$('#reductionProductFilter').val('');
-		if ($('#apply_discount_to_order').prop('checked'))
-			$('#reduction_product').val('0');
-		if ($('#apply_discount_to_cheapest').prop('checked'))
-			$('#reduction_product').val('-1');
-		if ($('#apply_discount_to_selection').prop('checked'))
-			$('#reduction_product').val('-2');
+		if ($('#apply_discount_to_order').prop('checked')) {
+			$('#reduction_product').val(APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING);
+		}
+		if ($('#apply_discount_to_cheapest').prop('checked')) {
+			$('#reduction_product').val(APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION);
+		}
+		if ($('#apply_discount_to_selection').prop('checked')) {
+			$('#reduction_product').val(APPLY_DISCOUNT_TO_SELECTED_PRODUCTS);
+		}
 	}
 }
 
