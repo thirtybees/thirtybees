@@ -2860,14 +2860,16 @@ class OrderCore extends ObjectModel
             }
 
             $cartRule = new CartRule($orderCartRule['id_cart_rule']);
-            if ($cartRule->product_restriction) {
-                if (!isset($productSpecificDiscounts[(int) $cartRule->reduction_product]) || empty($productSpecificDiscounts[(int) $cartRule->reduction_product])) {
-                    $productSpecificDiscounts[(int) $cartRule->reduction_product] = 0;
-                }
 
-                $productSpecificDiscounts[(int) $cartRule->reduction_product] += $orderCartRule['value_tax_excl'];
+            if ($cartRule->applyDiscountToSpecificProduct()) {
+                $reductionProduct = $cartRule->getSpecificProductId();
+                if (array_key_exists($reductionProduct, $productSpecificDiscounts)) {
+                    $productSpecificDiscounts[$reductionProduct] = 0;
+                }
+                $productSpecificDiscounts[$reductionProduct] += $orderCartRule['value_tax_excl'];
                 $orderDiscountTaxExcl -= $orderCartRule['value_tax_excl'];
             }
+
             if ($cheapestProduct = json_decode($cartRule->description)) {
                 if (!isset($cheapestProductDiscounts[(int) $cheapestProduct->id_product]) || empty($cheapestProductDiscounts[(int) $cheapestProduct->id_product])) {
                     $cheapestProductDiscounts[(int) $cheapestProduct->id_product] = ['tax_amount' => 0, 'tax_base'  => 0];
