@@ -108,6 +108,9 @@
 			{if $fields_value.match_ref}
 				<input type="hidden" name="match_ref" value="1" />
 			{/if}
+			{if $fields_value.only_file_product}
+				<input type="hidden" name="only_file_product" value="1" />
+			{/if}
 			{if $fields_value.forceCat}
 				<input type="hidden" name="forceCat" value="1" />
 			{/if}

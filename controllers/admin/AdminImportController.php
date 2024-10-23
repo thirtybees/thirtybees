@@ -856,6 +856,7 @@ class AdminImportControllerCore extends AdminController
                 'regenerate'               => Tools::getValue('regenerate'),
                 'forceCat'                 => Tools::getValue('forceCat'),
                 'match_ref'                => Tools::getValue('match_ref'),
+                'only_file_product'        => Tools::getValue('only_file_product'),
                 'separator'                => $this->separator,
                 'multiple_value_separator' => $this->multiple_value_separator,
             ],
@@ -1247,7 +1248,11 @@ class AdminImportControllerCore extends AdminController
         // Check if the CSV file exist
         if (Tools::getValue('filename')) {
             $entityType = $this->getSelectedEntity();
-
+            $shopIsFeatureActive = Shop::isFeatureActive();
+            // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
+            if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
+                $this->truncateTables($entityType);
+            }
             $doneCount = 0;
             // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
             // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
@@ -1410,7 +1415,7 @@ class AdminImportControllerCore extends AdminController
                     return false;
                 }
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(-(.*))?\.('.implode('|', $mainImageExtensions).')$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_CAT_IMG_DIR_.$d);
                     }
                 }
@@ -1470,6 +1475,10 @@ class AdminImportControllerCore extends AdminController
                 }
                 break;
             case static::ENTITY_TYPE_COMBINATIONS:
+                $onlyFileProduct = Tools::getValue('only_file_product');
+                if ($onlyFileProduct) {
+                    break;
+                }
                 foreach ([
                              'attribute',
                              'attribute_impact',
@@ -3625,13 +3634,6 @@ class AdminImportControllerCore extends AdminController
         $regenerate = Tools::getValue('regenerate');
         $shopIsFeatureActive = Shop::isFeatureActive();
 
-        $processedProducts = [];
-        $truncateOnlyProductCombinations = false;
-
-        if (!$offset  && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
-            $truncateOnlyProductCombinations = true;
-        }
-
         $lineCount = 0;
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
@@ -3646,10 +3648,16 @@ class AdminImportControllerCore extends AdminController
             $info = array_map('trim', $info);
 
             try {
-                if ($truncateOnlyProductCombinations) {
-                    $this->deleteCombinationsByProductId($info['id_product'], $processedProducts);
-                }
+                $onlyFileProduct = Tools::getValue('only_file_product');
+                $truncate = Tools::getValue('truncate');
 
+                if ($onlyFileProduct && $truncate) {
+                    if (!array_key_exists('deletedProdcuts', $crossStepsVariables)) {
+                        $crossStepsVariables['deletedProdcuts'] = [];
+                    }
+
+                    $this->deleteCombinationsByProductId($info['id_product'], $crossStepsVariables);
+                }
                 $this->attributeImportOne(
                     $info,
                     $defaultLanguage,
@@ -3673,7 +3681,7 @@ class AdminImportControllerCore extends AdminController
         return $lineCount;
     }
 
-    private function deleteCombinationsByProductId($productId, &$processedProducts = [])
+    private function deleteCombinationsByProductId($productId, &$crossStepsVariables = [])
     {
         $productId = (int)$productId;
 
@@ -3682,7 +3690,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         // Check if the product ID is already in the processed array
-        if (in_array($productId, $processedProducts)) {
+        if (in_array($productId, $crossStepsVariables['deletedProdcuts'])) {
             return false; // Skip deletion if the product ID was already processed
         }
 
@@ -3710,7 +3718,7 @@ class AdminImportControllerCore extends AdminController
         Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'specific_price` WHERE id_product = ' . $productId . ' AND id_product_attribute IN (' . $attributeIdsList . ')');
 
         // Add the product ID to the processed array
-        $processedProducts[] = $productId;
+        $crossStepsVariables['deletedProdcuts'][] = $productId;
 
         return true;
     }
