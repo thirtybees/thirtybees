@@ -555,7 +555,7 @@ class CartRuleCore extends ObjectModel
         $resultBak = $result;
         $result = [];
         $countryRestriction = false;
-        foreach ($resultBak as $key => $cartRule) {
+        foreach ($resultBak as $cartRule) {
             if ($cartRule['country_restriction']) {
                 $countryRestriction = true;
                 $countries = $conn->getArray(
@@ -575,12 +575,12 @@ class CartRuleCore extends ObjectModel
                             ->where('crc.`id_country` = '.(int) $country['id_country'])
                     );
                     if ($idCartRule) {
-                        $result[] = $resultBak[$key];
+                        $result[] = $cartRule;
                         break;
                     }
                 }
             } else {
-                $result[] = $resultBak[$key];
+                $result[] = $cartRule;
             }
         }
 
