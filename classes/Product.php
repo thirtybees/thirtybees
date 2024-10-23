@@ -3063,7 +3063,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             $impactSql = 'INSERT INTO `'._DB_PREFIX_.'attribute_impact` (`id_product`, `id_attribute`, `weight`, `price`) VALUES ';
 
             foreach ($impacts as $idAttribute => $impact) {
-                $impactSql .= '('.(int) $idProductNew.', '.(int) $idAttribute.', '.(float) $impacts[$idAttribute]['weight'].', '.(float) $impacts[$idAttribute]['price'].'),';
+                $impactSql .= '('.(int) $idProductNew.', '.(int) $idAttribute.', '.(float) $impact['weight'].', '.(float) $impact['price'].'),';
             }
 
             $impactSql = substr_replace($impactSql, '', -1);

@@ -1110,7 +1110,7 @@ class OrderCore extends ObjectModel
             );
 
             if ($res2) {
-                $res[$key] = array_merge($res[$key], $res2[0]);
+                $res[$key] = array_merge($val, $res2[0]);
             }
         }
 

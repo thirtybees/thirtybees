@@ -480,7 +480,7 @@ class AdminEmployeesControllerCore extends AdminController
             // if employee is not SuperAdmin (id_profile = 1), don't make it possible to select the admin profile
             if ($this->context->employee->id_profile != _PS_ADMIN_PROFILE_) {
                 foreach ($availableProfiles as $i => $profile) {
-                    if ($availableProfiles[$i]['id_profile'] == _PS_ADMIN_PROFILE_) {
+                    if ($profile['id_profile'] == _PS_ADMIN_PROFILE_) {
                         unset($availableProfiles[$i]);
                         break;
                     }

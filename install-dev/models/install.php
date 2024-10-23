@@ -628,8 +628,8 @@ class InstallModelInstall extends InstallAbstractModel
 
         if (is_array($groups) && count($groups)) {
             foreach ($groups as $key => $group) {
-                if (Configuration::get($groupsDefault[$key]) != $groups[$key]['id_group']) {
-                    Configuration::updateGlobalValue($groupsDefault[$key], (int) $groups[$key]['id_group']);
+                if (Configuration::get($groupsDefault[$key]) != $group['id_group']) {
+                    Configuration::updateGlobalValue($groupsDefault[$key], (int) $group['id_group']);
                 }
             }
         }
@@ -645,8 +645,8 @@ class InstallModelInstall extends InstallAbstractModel
 
         if (count($states)) {
             foreach ($states as $key => $state) {
-                if (Configuration::get($statesDefault[$key]) != $states[$key]['id_order_state']) {
-                    Configuration::updateGlobalValue($statesDefault[$key], (int) $states[$key]['id_order_state']);
+                if (Configuration::get($statesDefault[$key]) != $state['id_order_state']) {
+                    Configuration::updateGlobalValue($statesDefault[$key], (int) $state['id_order_state']);
                 }
             }
             /* deprecated order state */
