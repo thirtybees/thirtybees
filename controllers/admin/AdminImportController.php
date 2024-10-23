@@ -1415,7 +1415,7 @@ class AdminImportControllerCore extends AdminController
                     return false;
                 }
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
-                    if (preg_match('/^[0-9]+(-(.*))?\.jpg$/', $d)) {
+                    if (preg_match('/^[0-9]+(-(.*))?\.('.implode('|', $mainImageExtensions).')$/', $d)) {
                         unlink(_PS_CAT_IMG_DIR_.$d);
                     }
                 }
