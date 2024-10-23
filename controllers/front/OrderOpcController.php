@@ -658,11 +658,12 @@ class OrderOpcControllerCore extends ParentOrderController
         parent::initContent();
 
         /* id_carrier is not defined in database before choosing a carrier, set it to a default one to match a potential cart _rule */
-        if (empty($this->context->cart->id_carrier)) {
-            $checked = $this->context->cart->simulateCarrierSelectedOutput();
-            $checked = ((int) Cart::desintifier($checked));
-            $this->context->cart->id_carrier = $checked;
-            $this->context->cart->update();
+        $cart = $this->context->cart;
+        if (Validate::isLoadedObject($cart) && empty($cart->id_carrier)) {
+            $checked = $cart->simulateCarrierSelectedOutput();
+            $checked = (int)Cart::desintifier($checked);
+            $cart->id_carrier = $checked;
+            $cart->update();
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
         }
@@ -680,7 +681,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
         // If a rule offer free-shipping, force hidding shipping prices
         $freeShipping = false;
-        foreach ($this->context->cart->getCartRules() as $rule) {
+        foreach ($cart->getCartRules() as $rule) {
             if ($rule['free_shipping'] && !$rule['carrier_restriction']) {
                 $freeShipping = true;
                 break;
