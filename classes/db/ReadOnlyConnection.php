@@ -30,7 +30,7 @@ interface ReadOnlyConnection
      *
      * @param string|DbQuery $sql the select query
      *
-     * @return array
+     * @return array[]
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
