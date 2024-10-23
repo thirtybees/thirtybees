@@ -256,8 +256,8 @@
 				</div>
 				<div class="form-group" style="display: none">
 					<label for="only_file_product" class="control-label col-lg-4">
-						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If enabled, the product\'s from file will be deleted'}">
-							{l s='Only products file will be deleted'}
+						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If enabled, delete combinations for products referenced in CSV file'}">
+							{l s='Delete combinations for products referenced in CSV file'}
 						</span>
 					</label>
 					<div class="col-lg-8">
