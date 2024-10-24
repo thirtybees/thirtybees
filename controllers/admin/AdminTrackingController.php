@@ -102,6 +102,7 @@ class AdminTrackingControllerCore extends AdminController
      * @return void
      *
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function initContent()
     {
@@ -117,13 +118,11 @@ class AdminTrackingControllerCore extends AdminController
             $this->warnings[] = $this->l('List of products without available quantities for sale are not displayed because stock management is disabled.');
         }
 
-        $methods = get_class_methods($this);
-        foreach ($methods as $methodName) {
-            if (preg_match('#getCustomList(.+)#', $methodName, $matches)) {
-                $this->clearListOptions();
-                $this->content .= call_user_func([$this, $matches[0]]);
-            }
-        }
+        $this->content .= $this->getCustomListCategoriesEmpty();
+        $this->content .= $this->getCustomListProductsAttributesNoStock();
+        $this->content .= $this->getCustomListProductsNoStock();
+        $this->content .= $this->getCustomListProductsDisabled();
+
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
@@ -150,6 +149,7 @@ class AdminTrackingControllerCore extends AdminController
         $this->_filter = '';
         $this->_group = '';
         $this->_where = '';
+        $this->_list_error = '';
     }
 
     /**
@@ -160,6 +160,7 @@ class AdminTrackingControllerCore extends AdminController
      */
     public function getCustomListCategoriesEmpty()
     {
+        $this->clearListOptions();
         $this->table = 'category';
         $this->list_id = 'empty_categories';
         $this->lang = true;
@@ -169,6 +170,7 @@ class AdminTrackingControllerCore extends AdminController
         $this->_orderWay = 'DESC';
         $this->_list_index = 'index.php?controller=AdminCategories';
         $this->_list_token = Tools::getAdminTokenLite('AdminCategories');
+        $this->_select = 'category_shop.active';
 
         $this->addRowAction('edit');
         $this->addRowAction('view');
@@ -176,12 +178,29 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowActionSkipList('delete', [(int) Configuration::get('PS_ROOT_CATEGORY')]);
         $this->addRowActionSkipList('edit', [(int) Configuration::get('PS_ROOT_CATEGORY')]);
 
-        $this->fields_list = ([
-            'id_category' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
-            'name'        => ['title' => $this->l('Name'), 'filter_key' => 'b!name'],
-            'description' => ['title' => $this->l('Description'), 'callback' => 'getDescriptionClean'],
-            'active'      => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs'],
-        ]);
+        $this->fields_list = [
+            'id_category' => [
+                'title' => $this->l('ID'),
+                'class' => 'fixed-width-xs',
+                'align' => 'center',
+            ],
+            'name'        => [
+                'title' => $this->l('Name'),
+                'filter_key' => 'b!name',
+            ],
+            'description' => [
+                'title' => $this->l('Description'),
+                'callback' => 'getDescriptionClean',
+            ],
+            'active'      => [
+                'title' => $this->l('Status'),
+                'type' => 'bool',
+                'active' => 'status',
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'filter_key' => 'category_shop!active',
+            ],
+        ];
         $this->clearFilters();
 
         $this->_join = Shop::addSqlAssociation('category', 'a');
@@ -279,6 +298,7 @@ class AdminTrackingControllerCore extends AdminController
             return '';
         }
 
+        $this->clearListOptions();
         $this->table = 'product';
         $this->list_id = 'no_stock_products_attributes';
         $this->lang = true;
@@ -289,15 +309,31 @@ class AdminTrackingControllerCore extends AdminController
         $this->_list_index = 'index.php?controller=AdminProducts';
         $this->_list_token = Tools::getAdminTokenLite('AdminProducts');
         $this->show_toolbar = false;
+        $this->_select = 'product_shop.active';
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
         $this->fields_list = [
-            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
-            'reference'  => ['title' => $this->l('Reference')],
-            'name'       => ['title' => $this->l('Name'), 'filter_key' => 'b!name'],
-            'active'     => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active'],
+            'id_product' => [
+                'title' => $this->l('ID'),
+                'class' => 'fixed-width-xs',
+                'align' => 'center'],
+            'reference'  => [
+                'title' => $this->l('Reference'),
+            ],
+            'name'       => [
+                'title' => $this->l('Name'),
+                'filter_key' => 'b!name',
+            ],
+            'active'     => [
+                'title' => $this->l('Status'),
+                'type' => 'bool',
+                'active' => 'status',
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'filter_key' => 'product_shop!active',
+            ],
         ];
 
         $this->clearFilters();
@@ -330,10 +366,12 @@ class AdminTrackingControllerCore extends AdminController
             return '';
         }
 
+        $this->clearListOptions();
         $this->table = 'product';
         $this->list_id = 'no_stock_products';
         $this->className = 'Product';
         $this->lang = true;
+        $this->_select = 'product_shop.active';
         $this->identifier = 'id_product';
         $this->_orderBy = 'id_product';
         $this->_orderWay = 'DESC';
@@ -345,10 +383,25 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $this->fields_list = [
-            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
-            'reference'  => ['title' => $this->l('Reference')],
-            'name'       => ['title' => $this->l('Name')],
-            'active'     => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active'],
+            'id_product' => [
+                'title' => $this->l('ID'),
+                'class' => 'fixed-width-xs',
+                'align' => 'center',
+            ],
+            'reference'  => [
+                'title' => $this->l('Reference'),
+            ],
+            'name'       => [
+                'title' => $this->l('Name'),
+            ],
+            'active'     => [
+                'title' => $this->l('Status'),
+                'type' => 'bool',
+                'active' => 'status',
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'filter_key' => 'product_shop!active',
+            ],
         ];
         $this->clearFilters();
 
@@ -377,6 +430,7 @@ class AdminTrackingControllerCore extends AdminController
      */
     public function getCustomListProductsDisabled()
     {
+        $this->clearListOptions();
         $this->table = 'product';
         $this->list_id = 'disabled_products';
         $this->className = 'Product';
@@ -384,6 +438,7 @@ class AdminTrackingControllerCore extends AdminController
         $this->identifier = 'id_product';
         $this->_orderBy = 'id_product';
         $this->_orderWay = 'DESC';
+        $this->_select = 'product_shop.active';
         $this->_filter = 'AND product_shop.`active` = 0';
         $this->show_toolbar = false;
         $this->_list_index = 'index.php?controller=AdminProducts';
@@ -393,9 +448,27 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $this->fields_list = [
-            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
-            'reference'  => ['title' => $this->l('Reference')],
-            'name'       => ['title' => $this->l('Name'), 'filter_key' => 'b!name'],
+            'id_product' => [
+                'title' => $this->l('ID'),
+                'class' => 'fixed-width-xs',
+                'align' => 'center',
+            ],
+            'reference'  => [
+                'title' => $this->l('Reference'),
+            ],
+            'name'       => [
+                'title' => $this->l('Name'),
+                'filter_key' => 'b!name',
+            ],
+            'active'     => [
+                'title' => $this->l('Status'),
+                'type' => 'bool',
+                'active' => 'status',
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'filter_key' => 'product_shop!active',
+                'search' => false,
+            ],
         ];
 
         $this->clearFilters();
