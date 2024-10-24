@@ -257,37 +257,6 @@ class HelperOptionsCore extends Helper
     }
 
     /**
-     * Type = image
-     *
-     * @param string $key
-     * @param array $field
-     * @param string $value
-     */
-    public function displayOptionTypeImage($key, $field, $value)
-    {
-        echo '<table cellspacing="0" cellpadding="0">';
-        echo '<tr>';
-
-        $i = 0;
-        foreach ($field['list'] as $theme) {
-            echo '<td class="center" style="width: 180px; padding:0px 20px 20px 0px;">';
-            echo '<input type="radio" name="'.$key.'" id="'.$key.'_'.$theme['name'].'_on" style="vertical-align: text-bottom;" value="'.$theme['name'].'"'.(_THEME_NAME_ == $theme['name'] ? 'checked="checked"' : '').' />';
-            echo '<label class="t" for="'.$key.'_'.$theme['name'].'_on"> '.mb_strtolower($theme['name']).'</label>';
-            echo '<br />';
-            echo '<label class="t" for="'.$key.'_'.$theme['name'].'_on">';
-            echo '<img src="../themes/'.$theme['name'].'/preview.jpg" alt="'.mb_strtolower($theme['name']).'">';
-            echo '</label>';
-            echo '</td>';
-            if (isset($field['max']) && ($i + 1) % $field['max'] == 0) {
-                echo '</tr><tr>';
-            }
-            $i++;
-        }
-        echo '</tr>';
-        echo '</table>';
-    }
-
-    /**
      * @param string $key
      * @param array $field
      *
