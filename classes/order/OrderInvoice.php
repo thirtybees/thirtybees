@@ -569,6 +569,8 @@ class OrderInvoiceCore extends ObjectModel
 
         $shippingTaxAmount = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
 
+        $shippingBreakdown = [];
+
         if (Configuration::get('PS_INVOICE_TAXES_BREAKDOWN') || Carrier::useProportionateTax()) {
             $shippingBreakdown = Db::readOnly()->getArray(
                 (new DbQuery())
@@ -579,36 +581,40 @@ class OrderInvoiceCore extends ObjectModel
                     ->where('oit.`id_order_invoice` = '.(int) $this->id)
             );
 
-            $sumOfSplitTaxes = 0;
-            $sumOfTaxBases = 0;
-            foreach ($shippingBreakdown as &$row) {
-                if (Carrier::useProportionateTax()) {
-                    $rate = (float)$row['rate'];
-                    $row['total_tax_excl'] = $rate !== 0.0
-                        ? round($row['total_amount'] / $rate * 100, _TB_PRICE_DATABASE_PRECISION_)
-                        : round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
-                    $sumOfTaxBases += $row['total_tax_excl'];
-                } else {
-                    $row['total_tax_excl'] = $this->total_shipping_tax_excl;
+            if ($shippingBreakdown) {
+                $sumOfSplitTaxes = 0;
+                $sumOfTaxBases = 0;
+                foreach ($shippingBreakdown as &$row) {
+                    if (Carrier::useProportionateTax()) {
+                        $rate = (float)$row['rate'];
+                        $row['total_tax_excl'] = $rate !== 0.0
+                            ? round($row['total_amount'] / $rate * 100, _TB_PRICE_DATABASE_PRECISION_)
+                            : round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
+                        $sumOfTaxBases += $row['total_tax_excl'];
+                    } else {
+                        $row['total_tax_excl'] = $this->total_shipping_tax_excl;
+                    }
+
+                    $row['total_amount'] = round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
+                    $sumOfSplitTaxes += $row['total_amount'];
+                }
+                unset($row);
+
+                $deltaAmount = $shippingTaxAmount - $sumOfSplitTaxes;
+
+                if ($deltaAmount != 0) {
+                    Tools::spreadAmount($deltaAmount, _TB_PRICE_DATABASE_PRECISION_, $shippingBreakdown, 'total_amount');
                 }
 
-                $row['total_amount'] = round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_);
-                $sumOfSplitTaxes += $row['total_amount'];
+                $deltaBase = $this->total_shipping_tax_excl - $sumOfTaxBases;
+
+                if ($deltaBase != 0) {
+                    Tools::spreadAmount($deltaBase, _TB_PRICE_DATABASE_PRECISION_, $shippingBreakdown, 'total_tax_excl');
+                }
             }
-            unset($row);
+        }
 
-            $deltaAmount = $shippingTaxAmount - $sumOfSplitTaxes;
-
-            if ($deltaAmount != 0) {
-                Tools::spreadAmount($deltaAmount, _TB_PRICE_DATABASE_PRECISION_, $shippingBreakdown, 'total_amount');
-            }
-
-            $deltaBase = $this->total_shipping_tax_excl - $sumOfTaxBases;
-
-            if ($deltaBase != 0) {
-                Tools::spreadAmount($deltaBase, _TB_PRICE_DATABASE_PRECISION_, $shippingBreakdown, 'total_tax_excl');
-            }
-        } else {
+        if (! $shippingBreakdown) {
             $shippingBreakdown = [
                 [
                     'total_tax_excl' => $this->total_shipping_tax_excl,
