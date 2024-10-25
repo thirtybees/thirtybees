@@ -483,7 +483,7 @@ class MailCore extends ObjectModel
 
         // return first template file in paths
         foreach ($paths as $path) {
-            if (file_exists($path)) {
+            if (file_exists($path) && filesize($path)) {
                 return $path;
             }
         }
