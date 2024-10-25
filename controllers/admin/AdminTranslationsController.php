@@ -1415,17 +1415,19 @@ class AdminTranslationsControllerCore extends AdminController
                         $content = preg_replace('/<title>.*<\/title>/', '<title>'.$title.'</title>', $content);
                     }
 
-                    if (Validate::isCleanHTML($content)) {
-                        $path = $arrMailPath[$groupName];
-                        if ($moduleName) {
-                            $path = str_replace('{module}', $moduleName, $path);
+                    if ($content) {
+                        if (Validate::isCleanHTML($content)) {
+                            $path = $arrMailPath[$groupName];
+                            if ($moduleName) {
+                                $path = str_replace('{module}', $moduleName, $path);
+                            }
+                            if (!file_exists($path) && !mkdir($path, 0777, true)) {
+                                throw new PrestaShopException(sprintf(Tools::displayError('Directory "%s" cannot be created'), dirname($path)));
+                            }
+                            file_put_contents($path . $mailName . '.' . $typeContent, $content);
+                        } else {
+                            throw new PrestaShopException(Tools::displayError('Your HTML email templates cannot contain JavaScript code.'));
                         }
-                        if (!file_exists($path) && !mkdir($path, 0777, true)) {
-                            throw new PrestaShopException(sprintf(Tools::displayError('Directory "%s" cannot be created'), dirname($path)));
-                        }
-                        file_put_contents($path.$mailName.'.'.$typeContent, $content);
-                    } else {
-                        throw new PrestaShopException(Tools::displayError('Your HTML email templates cannot contain JavaScript code.'));
                     }
                 }
             }
