@@ -1126,7 +1126,7 @@ class AdminCartsControllerCore extends AdminController
 		$sql->from('cart');
 		$sql->where('id_cart NOT IN (SELECT id_cart FROM '._DB_PREFIX_.'cart_product)');
 
-		$emptyCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+		$emptyCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
 
 		$deletedCount = 0;
 
@@ -1168,7 +1168,7 @@ class AdminCartsControllerCore extends AdminController
 		$sql->from('cart');
 		$sql->where('date_add < "'.pSQL($cutoffDate).'" AND id_cart NOT IN (SELECT id_cart FROM '._DB_PREFIX_.'orders)');
 
-		$oldCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+		$oldCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
 
 		$deletedCount = 0;
 

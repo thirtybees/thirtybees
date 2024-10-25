@@ -609,7 +609,7 @@ class ImageManagerCore
             ];
         }
 
-        $watermarkModules = Db::getInstance()->executeS(
+        $watermarkModules = Db::getInstance()->getArray(
             (new DbQuery())
                 ->select('m.`name`')
                 ->from('module', 'm')
