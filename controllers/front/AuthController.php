@@ -503,6 +503,8 @@ class AuthControllerCore extends FrontController
         // Check the requires fields which are settings in the BO
         $this->errors = $this->errors + $customer->validateFieldsRequiredDatabase();
 
+        $cart = $this->context->cart;
+
         if (!Configuration::get('PS_REGISTRATION_PROCESS_TYPE') && !$this->ajax && !Tools::isSubmit('submitGuestAccount')) {
             if (!count($this->errors)) {
                 $this->processCustomerNewsletter($customer);
@@ -524,7 +526,10 @@ class AuthControllerCore extends FrontController
 
                         $this->updateContext($customer);
 
-                        $this->context->cart->update();
+                        if (Validate::isLoadedObject($cart)) {
+                            $cart->update();
+                        }
+
                         Hook::triggerEvent(
                             'actionCustomerAccountAdd',
                             [
@@ -538,8 +543,8 @@ class AuthControllerCore extends FrontController
                                 'errors'              => $this->errors,
                                 'isSaved'             => true,
                                 'id_customer'         => (int) $this->context->cookie->id_customer,
-                                'id_address_delivery' => $this->context->cart->id_address_delivery,
-                                'id_address_invoice'  => $this->context->cart->id_address_invoice,
+                                'id_address_delivery' => $cart->id_address_delivery,
+                                'id_address_invoice'  => $cart->id_address_invoice,
                                 'token'               => Tools::getToken(false),
                             ];
                             $this->ajaxDie(json_encode($return));
@@ -550,7 +555,7 @@ class AuthControllerCore extends FrontController
                         }
 
                         // redirection: if cart is not empty : redirection to the cart
-                        if (count($this->context->cart->getProducts(true)) > 0) {
+                        if (count($cart->getProducts(true)) > 0) {
                             $multi = Tools::getIntValue('multi-shipping');
                             Tools::redirect('index.php?controller=order'.($multi ? '&multi-shipping='.$multi : ''));
                         } else {
@@ -685,22 +690,24 @@ class AuthControllerCore extends FrontController
                             $customer->addGroups([(int) Configuration::get('PS_GUEST_GROUP')]);
                         }
                         $this->updateContext($customer);
-                        $this->context->cart->id_address_delivery = (int) Address::getFirstCustomerAddressId((int) $customer->id);
-                        $this->context->cart->id_address_invoice = (int) Address::getFirstCustomerAddressId((int) $customer->id);
+                        $cart->id_address_delivery = (int) Address::getFirstCustomerAddressId((int) $customer->id);
+                        $cart->id_address_invoice = (int) Address::getFirstCustomerAddressId((int) $customer->id);
                         if (isset($addressInvoice) && Validate::isLoadedObject($addressInvoice)) {
-                            $this->context->cart->id_address_invoice = (int) $addressInvoice->id;
+                            $cart->id_address_invoice = (int) $addressInvoice->id;
                         }
 
                         if ($this->ajax && Configuration::get('PS_ORDER_PROCESS_TYPE')) {
-                            $deliveryOption = [(int) $this->context->cart->id_address_delivery => (int) $this->context->cart->id_carrier.','];
-                            $this->context->cart->setDeliveryOption($deliveryOption);
+                            $deliveryOption = [(int) $cart->id_address_delivery => (int) $cart->id_carrier.','];
+                            $cart->setDeliveryOption($deliveryOption);
                         }
 
                         // If a logged guest logs in as a customer, the cart secure key was already set and needs to be updated
-                        $this->context->cart->update();
+                        if (Validate::isLoadedObject($cart)) {
+                            $cart->update();
 
-                        // Avoid articles without delivery address on the cart
-                        $this->context->cart->autosetProductAddress();
+                            // Avoid articles without delivery address on the cart
+                            $cart->autosetProductAddress();
+                        }
 
                         Hook::triggerEvent(
                             'actionCustomerAccountAdd',
@@ -715,8 +722,8 @@ class AuthControllerCore extends FrontController
                                 'errors'              => $this->errors,
                                 'isSaved'             => true,
                                 'id_customer'         => (int) $this->context->cookie->id_customer,
-                                'id_address_delivery' => $this->context->cart->id_address_delivery,
-                                'id_address_invoice'  => $this->context->cart->id_address_invoice,
+                                'id_address_delivery' => $cart->id_address_delivery,
+                                'id_address_invoice'  => $cart->id_address_invoice,
                                 'token'               => Tools::getToken(false),
                             ];
                             $this->ajaxDie(json_encode($return));
@@ -731,7 +738,7 @@ class AuthControllerCore extends FrontController
                         }
 
                         // redirection: if cart is not empty : redirection to the cart
-                        if (count($this->context->cart->getProducts(true)) > 0) {
+                        if ($cart->getProducts(true)) {
                             Tools::redirect('index.php?controller=order'.(($multi = Tools::getIntValue('multi-shipping')) ? '&multi-shipping='.$multi : ''));
                         } else {
                             // else : redirection to the account
