@@ -484,6 +484,7 @@ class OrderHistoryCore extends ObjectModel
                 '{order_name}' => $order->getUniqReference(),
                 '{followup}' => str_replace('@', $order->getWsShippingNumber(), $carrierUrl),
                 '{shipping_number}' => $order->getWsShippingNumber(),
+ 		'{invoice_number}' => $order->invoice_number,
             ];
 
             if ($result['module_name']) {
