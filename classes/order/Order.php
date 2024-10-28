@@ -2870,13 +2870,17 @@ class OrderCore extends ObjectModel
                 $orderDiscountTaxExcl -= $orderCartRule['value_tax_excl'];
             }
 
-            if ($cheapestProduct = json_decode($cartRule->description)) {
-                if (!isset($cheapestProductDiscounts[(int) $cheapestProduct->id_product]) || empty($cheapestProductDiscounts[(int) $cheapestProduct->id_product])) {
-                    $cheapestProductDiscounts[(int) $cheapestProduct->id_product] = ['tax_amount' => 0, 'tax_base'  => 0];
+            if ($cartRule->isCheapestProductSystemRule()) {
+                $cheapestProductId = $cartRule->getCheapestProductId();
+                if (! isset($cheapestProductDiscounts[$cheapestProductId])) {
+                    $cheapestProductDiscounts[$cheapestProductId] = [
+                        'tax_amount' => 0,
+                        'tax_base'  => 0
+                    ];
                 }
 
-                $cheapestProductDiscounts[(int) $cheapestProduct->id_product]['tax_amount'] += ($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
-                $cheapestProductDiscounts[(int) $cheapestProduct->id_product]['tax_base'] += ($orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[$cheapestProductId]['tax_amount'] += (float)($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[$cheapestProductId]['tax_base'] += (float)t ($orderCartRule['value_tax_excl']);
             }
         }
 

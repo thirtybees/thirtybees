@@ -874,11 +874,7 @@ abstract class PaymentModuleCore extends Module
                             $voucher->active = 0;
                             $voucher->product_restriction = 1;
                             $voucher->reduction_product = CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING;
-                            $voucher->description = json_encode([
-                                'id_product'           => $cheapestProduct[0],
-                                'id_product_attribute' => $cheapestProduct[1],
-                                'type'                 => 'cheapest_product',
-                            ]);
+                            $voucher->setCheapestProductSystemRule((int)$cheapestProduct[0], (int)$cheapestProduct[1]);
                             $voucher->add();
 
                             // load new cart rule in single language context

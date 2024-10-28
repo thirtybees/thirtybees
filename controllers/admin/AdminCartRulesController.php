@@ -558,12 +558,9 @@ class AdminCartRulesControllerCore extends AdminController
         /** @var CartRule $currentObject */
         $currentObject = $this->loadObject(true);
 
-        if ($description = json_decode((string)$currentObject->description)) {
-            if (isset($description->type) && $description->type === 'cheapest_product') {
-                $this->errors[] = $this->l('This cart rule cannot be edited: it is managed by the system.');
-
-                return '';
-            }
+        if ($currentObject->isCheapestProductSystemRule()) {
+            $this->errors[] = $this->l('This cart rule cannot be edited: it is managed by the system.');
+            return '';
         }
 
         // All the filter are prefilled with the correct information

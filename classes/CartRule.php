@@ -47,6 +47,8 @@ class CartRuleCore extends ObjectModel
     const APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION = -1;
     const APPLY_DISCOUNT_TO_SELECTED_PRODUCTS = -2;
 
+    const SYSTEM_RULE_CHEAPEST_PRODUCT = 'cheapest_product';
+
     /**
      * This variable controls that a free gift is offered only once, even when multi-shipping is activated and the same product is delivered in both addresses
      *
@@ -2008,6 +2010,53 @@ class CartRuleCore extends ObjectModel
     {
         if ($this->applyDiscountToSpecificProduct()) {
             return (int)$this->reduction_product;
+        }
+        return 0;
+    }
+
+    /**
+     * Returns true, if this cart rule is a special system cart rule generated for selected cheapest
+     * product during cart-to-order conversion
+     *
+     * @return bool
+     */
+    public function isCheapestProductSystemRule(): bool
+    {
+        $object = json_decode((string)$this->description);
+        return (
+            is_object($object) &&
+            isset($object->type) &&
+            $object->type === static::SYSTEM_RULE_CHEAPEST_PRODUCT &&
+            isset($object->id_product)
+        );
+    }
+
+    /**
+     * Mark this cart rule as a special system rule for cheapest product from selection
+     *
+     * @param int $productId
+     * @param int $combinationId
+     * @return void
+     */
+    public function setCheapestProductSystemRule(int $productId, int $combinationId)
+    {
+        $this->description = json_encode([
+            'id_product'           => $productId,
+            'id_product_attribute' => $combinationId,
+            'type'                 => static::SYSTEM_RULE_CHEAPEST_PRODUCT,
+        ]);
+    }
+
+    /**
+     * Returns product id of the selected cheapest product
+     *
+     * @return int
+     */
+    public function getCheapestProductId(): int
+    {
+        if ($this->isCheapestProductSystemRule()) {
+            $object = json_decode((string)$this->description);
+            return $object->id_product ?? 0;
         }
         return 0;
     }
