@@ -13,6 +13,7 @@ class ProductViewModelCore extends Product
     const LEGACY_PROPERTY_GETTER = [
         'id_image' => 'getCoverImageId',
         'allow_oosp' => 'availableWhenOutOfStock',
+        'id_product_attribute' => 'getSelectedCombinationId',
     ];
 
     /**
