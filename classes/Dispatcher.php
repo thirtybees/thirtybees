@@ -773,15 +773,19 @@ class DispatcherCore
                     $module = Module::getInstanceByName($moduleName);
                     if (Validate::isLoadedObject($module) && $module->active) {
                         $controllers = Dispatcher::getControllers(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/');
-                        if (isset($controllers[strtolower($this->controller)])) {
-                            include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/' . $this->controller . '.php');
-                            $controllerClass = $moduleName . $this->controller . 'ModuleFrontController';
+                        if ($controllerFileName = $controllers[strtolower($this->controller)] ?? null) {
+                            if (file_exists(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/' . $controllerFileName . '.php')) {
+                                include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/front/' . $controllerFileName . '.php');
+                                $controllerClass = $moduleName . $this->controller . 'ModuleFrontController';
+                            }
                         }
 
                         $ajaxControllers = Dispatcher::getControllers(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/');
-                        if (isset($ajaxControllers[strtolower($this->controller)])) {
-                            include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/' . $this->controller . '.php');
-                            $controllerClass = $moduleName . $this->controller . 'ModuleAjaxController';
+                        if ($ajaxControllerFileName = $ajaxControllers[strtolower($this->controller)] ?? null) {
+                            if (file_exists(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/' . $ajaxControllerFileName . '.php')) {
+                                include_once(_PS_MODULE_DIR_ . $moduleName . '/controllers/ajax/' . $ajaxControllerFileName . '.php');
+                                $controllerClass = $moduleName . $this->controller . 'ModuleAjaxController';
+                            }
                         }
                     }
                 }
