@@ -797,38 +797,47 @@ class AdminOrdersControllerCore extends AdminController
         } /* Partial refund from order */
         elseif (Tools::isSubmit('partialRefund') && isset($order)) {
             if ($this->hasEditPermission()) {
-                if (Tools::isSubmit('partialRefundProduct') && ($refunds = Tools::getValue('partialRefundProduct')) && is_array($refunds)) {
+                if (Tools::isSubmit('partialRefundProduct') &&
+                    ($refunds = Tools::getArrayValue('partialRefundProduct', [])) &&
+                    ($quantitites = Tools::getArrayValue('partialRefundProductQuantity'))
+                ) {
                     $amount = 0;
                     $orderDetailList = [];
                     $fullQuantityList = [];
-                    foreach ($refunds as $idOrderDetail => $amountDetail) {
-                        $quantity = Tools::getValue('partialRefundProductQuantity');
-                        if (!$quantity[$idOrderDetail]) {
-                            continue;
-                        }
 
-                        $fullQuantityList[$idOrderDetail] = (int) $quantity[$idOrderDetail];
+                    foreach ($refunds as $idOrderDetail => $providedAmountStr) {
+                        $idOrderDetail = (int)$idOrderDetail;
+                        $quantity = (int)($quantitites[$idOrderDetail] ?? 0);
+                        if ($quantity > 0) {
+                            $orderDetail = new OrderDetail($idOrderDetail);
 
-                        $orderDetailList[$idOrderDetail] = [
-                            'quantity'        => (int) $quantity[$idOrderDetail],
-                            'id_order_detail' => (int) $idOrderDetail,
-                        ];
+                            $resume = OrderSlip::getProductSlipResume($idOrderDetail);
+                            $quantityRefundable = (int)$orderDetail->product_quantity - (int)$resume['product_quantity'];
+                            if ($quantity <= $quantityRefundable) {
+                                $amountRefundableTaxIncl = Tools::roundPrice($orderDetail->total_price_tax_incl - $resume['amount_tax_incl']);
 
-                        $orderDetail = new OrderDetail((int) $idOrderDetail);
-                        if (empty($amountDetail)) {
-                            $orderDetailList[$idOrderDetail]['unit_price'] = (!Tools::getValue('TaxMethod') ? $orderDetail->unit_price_tax_excl : $orderDetail->unit_price_tax_incl);
-                            $orderDetailList[$idOrderDetail]['amount'] = $orderDetail->unit_price_tax_incl * $orderDetailList[$idOrderDetail]['quantity'];
-                        } else {
-                            $orderDetailList[$idOrderDetail]['amount'] = Tools::parseNumber($amountDetail);
-                            $orderDetailList[$idOrderDetail]['unit_price'] = round(
-                                $orderDetailList[$idOrderDetail]['amount']
-                                / $orderDetailList[$idOrderDetail]['quantity'],
-                                _TB_PRICE_DATABASE_PRECISION_
-                            );
-                        }
-                        $amount += $orderDetailList[$idOrderDetail]['amount'];
-                        if (!$order->hasBeenDelivered() || ($order->hasBeenDelivered() && Tools::isSubmit('reinjectQuantities')) && $orderDetailList[$idOrderDetail]['quantity'] > 0) {
-                            $this->reinjectQuantity($orderDetail, $orderDetailList[$idOrderDetail]['quantity']);
+                                $fullQuantityList[$idOrderDetail] = $quantity;
+
+                                if (empty($providedAmountStr)) {
+                                    $refundAmount = Tools::roundPrice($orderDetail->unit_price_tax_incl * $quantity);
+                                } else {
+                                    $refundAmount = Tools::parseNumber($providedAmountStr);
+                                }
+                                $refundAmount = min($refundAmount, $amountRefundableTaxIncl);
+
+                                $amount += $refundAmount;
+
+                                $orderDetailList[$idOrderDetail] = [
+                                    'id_order_detail' => $idOrderDetail,
+                                    'quantity' => $quantity,
+                                    'amount' => $refundAmount,
+                                    'unit_price' => Tools::roundPrice($refundAmount / $quantity),
+                                ];
+
+                                if (!$order->hasBeenDelivered() || ($order->hasBeenDelivered() && Tools::isSubmit('reinjectQuantities'))) {
+                                    $this->reinjectQuantity($orderDetail, $quantity);
+                                }
+                            }
                         }
                     }
 
@@ -847,10 +856,12 @@ class AdminOrdersControllerCore extends AdminController
                     $voucher = 0;
 
                     if (Tools::getIntValue('refund_voucher_off') === 1) {
-                        $amount -= $voucher = Tools::getNumberValue('order_discount_price');
+                        $voucher = Tools::getNumberValue('order_discount_price');
+                        $amount -= $voucher;
                     } elseif (Tools::getIntValue('refund_voucher_off') === 2) {
                         $chosen = true;
-                        $amount = $voucher = Tools::getNumberValue('refund_voucher_choose');
+                        $voucher = Tools::getNumberValue('refund_voucher_choose');
+                        $amount = $voucher;
                     }
 
                     if ($shippingCostAmount > 0) {

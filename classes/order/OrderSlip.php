@@ -273,8 +273,8 @@ class OrderSlipCore extends ObjectModel
      * @param array $productList List of arrays with product descriptions.
      * @param float|bool $shippingCost Shipping costs to be refunded. Explicit shipping costs amount can be passed,
      *                                 or boolean value to indicate if total shipping costs should be refunded
-     * @param int $amount Appears to be always zero as of 1.0.8.
-     * @param bool $amountChoosen Appears to be always false as of 1.0.8.
+     * @param int $amount
+     * @param bool $amountChoosen
      * @param bool $addTax True if prices are without tax, else false.
      *
      * @return bool
@@ -395,15 +395,17 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
-     * @return array|false
-     * @throws PrestaShopDatabaseException
+     * @return array
+     *
      * @throws PrestaShopException
      */
     public static function getProductSlipResume($idOrderDetail)
     {
         return Db::readOnly()->getRow(
             (new DbQuery())
-                ->select('SUM(`product_quantity`) AS `product_quantity`, SUM(`amount_tax_excl`) AS `amount_tax_excl`, SUM(`amount_tax_incl`) AS `amount_tax_incl`')
+                ->select('COALESCE(SUM(`product_quantity`), 0) AS `product_quantity`')
+                ->select('COALESCE(SUM(`amount_tax_excl`), 0) AS `amount_tax_excl`')
+                ->select('COALESCE(SUM(`amount_tax_incl`), 0) AS `amount_tax_incl`')
                 ->from('order_slip_detail')
                 ->where('`id_order_detail` = '.(int) $idOrderDetail)
         );
