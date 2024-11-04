@@ -2880,7 +2880,7 @@ class OrderCore extends ObjectModel
                 }
 
                 $cheapestProductDiscounts[$cheapestProductId]['tax_amount'] += (float)($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
-                $cheapestProductDiscounts[$cheapestProductId]['tax_base'] += (float)t ($orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[$cheapestProductId]['tax_base'] += (float)($orderCartRule['value_tax_excl']);
             }
         }
 
