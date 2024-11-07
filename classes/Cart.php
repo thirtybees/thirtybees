@@ -4111,6 +4111,7 @@ class CartCore extends ObjectModel
         }
 
         $reasons = [];
+        $errors = [];
         $addressesWithoutCarriers = $this->getDeliveryAddressesWithoutCarriers(false, $errors);
         if ($addressesWithoutCarriers) {
             if ($errors) {
