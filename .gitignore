@@ -26,6 +26,8 @@ composer.dev.lock
 /log/*
 /upload/*
 /vendor/*
+!/vendor/.htaccess
+!/vendor/index.php
 
 /admin-dev/autoupgrade/*
 /admin-dev/backups/*
