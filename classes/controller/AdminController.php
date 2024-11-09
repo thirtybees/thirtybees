@@ -1617,7 +1617,7 @@ class AdminControllerCore extends Controller
     /**
      * Gathering ObjectModel data and setting $fieldImageSettings as a multidimensional array
      */
-    private function cleanFieldImageSettings()
+    protected function cleanFieldImageSettings()
     {
         // Make sure, that fieldImageSettings is a multidimensional array
         if (isset($this->fieldImageSettings['name']) && isset($this->fieldImageSettings['dir'])) {
