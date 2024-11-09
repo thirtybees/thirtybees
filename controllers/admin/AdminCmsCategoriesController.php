@@ -69,13 +69,37 @@ class AdminCmsCategoriesControllerCore extends AdminController
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = $this->l('Categories');
         $this->fields_list = [
-            'id_cms_category' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'name'            => ['title' => $this->l('Name'), 'width' => 'auto', 'callback' => 'hideCMSCategoryPosition', 'callback_object' => 'CMSCategory'],
-            'description'     => ['title' => $this->l('Description'), 'maxlength' => 90, 'orderby' => false],
-            'position'        => ['title' => $this->l('Position'), 'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
-            'active'          => [
-                'title' => $this->l('Displayed'), 'class' => 'fixed-width-sm', 'active' => 'status',
-                'align' => 'center', 'type' => 'bool', 'orderby' => false,
+            'id_cms_category' => [
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+            ],
+            'name' => [
+                'title' => $this->l('Name'),
+                'width' => 'auto',
+                'callback' => 'hideCMSCategoryPosition',
+                'callback_object' => 'CMSCategory',
+            ],
+            'description' => [
+                'title' => $this->l('Description'),
+                'callback' => 'getDescriptionClean',
+                'callback_object' => $this,
+                'orderby' => false,
+            ],
+            'position' => [
+                'title' => $this->l('Position'),
+                'filter_key' => 'position',
+                'align' => 'center',
+                'class' => 'fixed-width-sm',
+                'position' => 'position',
+            ],
+            'active' => [
+                'title' => $this->l('Displayed'),
+                'class' => 'fixed-width-sm',
+                'active' => 'status',
+                'align' => 'center',
+                'type' => 'bool',
+                'orderby' => false,
             ],
         ];
 
@@ -325,5 +349,15 @@ class AdminCmsCategoriesControllerCore extends AdminController
         $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int) Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
 
         return parent::renderForm();
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return string
+     */
+    public static function getDescriptionClean($description)
+    {
+        return substr(Tools::getDescriptionClean((string)$description), 0, 100);
     }
 }
