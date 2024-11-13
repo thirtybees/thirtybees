@@ -205,7 +205,7 @@ class MailCore extends ObjectModel
             $templateVars = static::getTemplateVars($template, $templateVars, $idShop, $idLang);
 
             // resolve subject
-            $subject = static::formatSubject($subject, $idShop);
+            $subject = static::formatSubject($subject, $idShop, $templateVars);
 
             $attachements = static::getFileAttachements($fileAttachment);
 
@@ -612,16 +612,23 @@ class MailCore extends ObjectModel
      * Format email subject using email subject template
      *
      * @param string $subject email subject
+     * @param int $idShop
+     * @param array $templateVars
      *
      * @return string
      *
      * @throws PrestaShopException
      */
-    protected static function formatSubject($subject, $idShop)
+    protected static function formatSubject($subject, int $idShop, array $templateVars)
     {
         if (!Validate::isMailSubject($subject)) {
             throw new PrestaShopException(Tools::displayError('Error: invalid e-mail subject'));
         }
+
+        // replace template vars inside subject
+        $search = array_keys($templateVars);
+        $replace = array_values($templateVars);
+        $subject = str_replace($search, $replace, $subject);
 
         $template = Configuration::get('TB_MAIL_SUBJECT_TEMPLATE', null, null, $idShop);
         if (!$template || strpos($template, '{subject}') === false) {
