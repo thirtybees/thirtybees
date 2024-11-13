@@ -626,9 +626,7 @@ class MailCore extends ObjectModel
         }
 
         // replace template vars inside subject
-        $search = array_keys($templateVars);
-        $replace = array_values($templateVars);
-        $subject = str_replace($search, $replace, $subject);
+        $subject = static::substituteTemplateVars($subject, $templateVars);
 
         $template = Configuration::get('TB_MAIL_SUBJECT_TEMPLATE', null, null, $idShop);
         if (!$template || strpos($template, '{subject}') === false) {
@@ -877,5 +875,33 @@ class MailCore extends ObjectModel
             $errorHandler->logFatalError(ErrorUtils::describeException($e));
             return false;
         }
+    }
+
+    /**
+     * @param string $content
+     * @param array $templateVars
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public static function substituteTemplateVars(string $content, array $templateVars): string
+    {
+        // convert iamgeFile parameters to url. This is used, for example, by {shop_logo} parameter
+        $vars = [];
+        foreach ($templateVars as $name => $parameter) {
+            if (is_array($parameter) && isset($parameter['type']) && $parameter['type'] === 'imageFile') {
+                $filepath = $parameter['filepath'] ?? '';
+                $filepath = str_replace(_PS_ROOT_DIR_, '', $filepath);
+                $vars[$name] = Context::getContext()->link->getMediaLink($filepath);
+            } else {
+                $vars[$name] = $parameter;
+            }
+        }
+
+        $search = array_keys($vars);
+        $replace = array_values($vars);
+        return str_replace($search, $replace, $content);
+
     }
 }
