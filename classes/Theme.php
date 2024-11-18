@@ -134,6 +134,8 @@ class ThemeCore extends ObjectModel
     }
 
     /**
+     * Returns all installed themes
+     *
      * @return PrestaShopCollection
      *
      * @throws PrestaShopException
@@ -144,6 +146,25 @@ class ThemeCore extends ObjectModel
         $themes->orderBy('name');
 
         return $themes;
+    }
+
+    /**
+     * Returns all installed themes that are actually used by some shop
+     *
+     * @return Theme[]
+     *
+     * @throws PrestaShopException
+     */
+    public static function getUsedThemes()
+    {
+        $usedThemes = [];
+        /** @var Theme $theme */
+        foreach (static::getThemes() as $theme) {
+            if ($theme->isUsed()) {
+                $usedThemes[] = $theme;
+            }
+        }
+        return $usedThemes;
     }
 
     /**
