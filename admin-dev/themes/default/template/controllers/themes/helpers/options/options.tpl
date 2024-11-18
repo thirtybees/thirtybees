@@ -46,6 +46,11 @@
                         </button>
                         <ul class="dropdown-menu">
                           <li>
+                            {if !$theme->isUsed()}
+                              <a href="{$link->getAdminLink('AdminThemes')|escape:'html':'UTF-8'}&amp;action=uninstallTheme&amp;id_theme={$theme->id}" title="Uninstall this theme" class="uninstall">
+                                <i class="icon-remove"></i> {l s='Uninstall this theme'}
+                              </a>
+                            {/if}
                             <a href="{$link->getAdminLink('AdminThemes')|escape:'html':'UTF-8'}&amp;deletetheme&amp;id_theme={$theme->id}" title="Delete this theme" class="delete">
                               <i class="icon-trash"></i> {l s='Delete this theme'}
                             </a>
