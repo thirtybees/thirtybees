@@ -1408,7 +1408,6 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function getNumberOfDays()
@@ -1417,17 +1416,21 @@ class OrderCore extends ObjectModel
         if (!$nbReturnDays) {
             return true;
         }
-        $days = (int)Db::readOnly()->getValue(
-            (new DbQuery())
-                ->select('TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(`delivery_date`)')
-                ->from('orders')
-                ->where('`id_order` = '.(int) $this->id)
-        );
-        if ($days <= $nbReturnDays) {
-            return true;
+
+        $deliveryDate = $this->getDeliveryDate();
+        if (! $deliveryDate) {
+            return false;
         }
 
-        return false;
+        try {
+            $threshold = $deliveryDate
+                ->add(new DateInterval('P' . $nbReturnDays . 'D'))
+                ->setTime(23, 59, 59);
+            $now = new DateTime();
+            return $now < $threshold;
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
@@ -3029,5 +3032,22 @@ class OrderCore extends ObjectModel
         // this should be the only place in the core that modifies this deprecated property
         /** @noinspection PhpDeprecationInspection */
         $this->total_paid_real += $amountOrderCurrency;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDeliveryDate(): ?DateTime
+    {
+        $deliveryDate = DateTime::createFromFormat('Y-m-d H:i:s', (string)$this->delivery_date);
+        if (! $deliveryDate) {
+            return null;
+        }
+        // filter out invalid date 0000-00-00
+        $threshold = DateTime::createFromFormat('Y-m-d', '1980-01-01');
+        if ($deliveryDate > $threshold) {
+            return $deliveryDate;
+        }
+        return null;
     }
 }
