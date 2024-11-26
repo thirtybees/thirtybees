@@ -686,7 +686,7 @@ class HelperListCore extends Helper
                     } else {
                         $this->_list[$index][$key] = [
                             'src' => $iconValue,
-                            'alt' => sprintf($this->l("Value: %s"), $dataValue),
+                            'alt' => sprintf($this->l('Value: %s'), $dataValue),
                         ];
                     }
                     // backwards compatibility for build-in icon files stored in img/admin directory

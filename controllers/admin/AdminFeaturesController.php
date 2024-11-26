@@ -84,7 +84,7 @@ class AdminFeaturesControllerCore extends AdminController
                 'callback'=> 'getProductsLink',
             ],
             'allows_multiple_values' => [
-                'title' => $this->l("Allows multiple values"),
+                'title' => $this->l('Allows multiple values'),
                 'active'     => 'set_allow_multiple_values',
                 'filter_key' => 'a!allows_multiple_values',
                 'align'      => 'text-center',
