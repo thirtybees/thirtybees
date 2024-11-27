@@ -1331,16 +1331,12 @@ class AdminOrdersControllerCore extends AdminController
             } else {
                 $this->errors[] = Tools::displayError('The invoice for edit note was unable to load. ');
             }
-        } elseif (Tools::isSubmit('submitAddOrder') && ($idCart = Tools::getIntValue('id_cart')) &&
-            ($moduleName = Tools::getValue('payment_module_name')) &&
-            ($idOrderState = Tools::getIntValue('id_order_state')) && Validate::isModuleName($moduleName)
+        } elseif (Tools::isSubmit('submitAddOrder') &&
+            ($idCart = Tools::getIntValue('id_cart')) &&
+            ($idOrderState = Tools::getIntValue('id_order_state'))
         ) {
             if ($this->hasEditPermission()) {
-                if (!Configuration::get('PS_CATALOG_MODE')) {
-                    $paymentModule = Module::getInstanceByName($moduleName);
-                } else {
-                    $paymentModule = new BoOrder();
-                }
+                $paymentModule = $this->getPaymentModule();
 
                 $cart = new Cart((int) $idCart);
                 $this->context->currency = new Currency((int) $cart->id_currency);
@@ -3411,5 +3407,22 @@ class AdminOrdersControllerCore extends AdminController
             return 0.0;
         }
         return $value;
+    }
+
+    /**
+     * @return PaymentModule
+     *
+     * @throws PrestaShopException
+     */
+    public function getPaymentModule(): PaymentModule
+    {
+        $moduleName = Tools::getValue('payment_module_name');
+        if ($moduleName && Validate::isModuleName($moduleName)) {
+            $paymentModule = Module::getInstanceByName($moduleName);
+            if ($paymentModule instanceof PaymentModule) {
+                return $paymentModule;
+            }
+        }
+        return new BoOrder();
     }
 }
