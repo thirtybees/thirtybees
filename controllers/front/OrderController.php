@@ -426,26 +426,35 @@ class OrderControllerCore extends ParentOrderController
      */
     public function autoStep()
     {
-        if ($this->step >= 2 && (!$this->context->cart->id_address_delivery || !$this->context->cart->id_address_invoice)) {
+        $cart = $this->context->cart;
+        if ($this->step >= 2 && (!$cart->id_address_delivery || !$cart->id_address_invoice)) {
             Tools::redirect('index.php?controller=order&step=1');
         }
 
-        if ($this->step > 2 && !$this->context->cart->isVirtualCart()) {
+        if ($this->step > 2 && !$cart->isVirtualCart()) {
             $redirect = false;
-            if (count($this->context->cart->getDeliveryOptionList()) == 0) {
+            if (count($cart->getDeliveryOptionList()) == 0) {
                 $redirect = true;
             }
 
-            $deliveryOption = $this->context->cart->getDeliveryOption();
+            $deliveryOption = $cart->getDeliveryOption();
             if (is_array($deliveryOption)) {
-                $carrier = explode(',', $deliveryOption[(int) $this->context->cart->id_address_delivery]);
+                $carrier = explode(',', $deliveryOption[(int) $cart->id_address_delivery]);
             } else {
                 $carrier = [];
             }
 
-            if (!$redirect && !$this->context->cart->isMultiAddressDelivery()) {
-                foreach ($this->context->cart->getProducts() as $product) {
-                    $carrierList = Carrier::getAvailableCarrierList(new Product($product['id_product']), null, $this->context->cart->id_address_delivery);
+            if (!$redirect && !$cart->isMultiAddressDelivery()) {
+                foreach ($cart->getProducts() as $product) {
+                    $carrierList = Carrier::getAvailableCarrierList(
+                        new Product((int)$product['id_product']),
+                        0,
+                        (int)$cart->id_address_delivery,
+                        null,
+                        $cart,
+                        $error,
+                        (int)$product['id_product_attribute']
+                    );
                     foreach ($carrier as $idCarrier) {
                         if (!in_array($idCarrier, $carrierList)) {
                             $redirect = true;
@@ -465,15 +474,15 @@ class OrderControllerCore extends ParentOrderController
             }
         }
 
-        $delivery = new Address((int) $this->context->cart->id_address_delivery);
-        $invoice = new Address((int) $this->context->cart->id_address_invoice);
+        $delivery = new Address((int) $cart->id_address_delivery);
+        $invoice = new Address((int) $cart->id_address_invoice);
 
         if ($delivery->deleted || $invoice->deleted) {
             if ($delivery->deleted) {
-                unset($this->context->cart->id_address_delivery);
+                unset($cart->id_address_delivery);
             }
             if ($invoice->deleted) {
-                unset($this->context->cart->id_address_invoice);
+                unset($cart->id_address_invoice);
             }
             Tools::redirect('index.php?controller=order&step=1');
         }

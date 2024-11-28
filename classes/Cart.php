@@ -1711,7 +1711,16 @@ class CartCore extends ObjectModel
             $idWarehouse = 0;
             foreach ($warehouseCountByAddress[$product['id_address_delivery']] as $idWar => $val) {
                 if (array_key_exists((int) $idWar, $product['warehouse_list'])) {
-                    $product['carrier_list'] = array_replace($product['carrier_list'], Carrier::getAvailableCarrierList(new Product($product['id_product']), $idWar, $product['id_address_delivery'], null, $this));
+                    $carrierList = Carrier::getAvailableCarrierList(
+                        new Product((int)$product['id_product']),
+                        (int)$idWar,
+                        (int)$product['id_address_delivery'],
+                        null,
+                        $this,
+                        $error,
+                        (int)$product['id_product_attribute']
+                    );
+                    $product['carrier_list'] = array_replace($product['carrier_list'], $carrierList);
                     if (!$idWarehouse) {
                         $idWarehouse = (int) $idWar;
                     }
@@ -4154,10 +4163,19 @@ class CartCore extends ObjectModel
     {
         $addressesWithoutCarriers = [];
         foreach ($this->getProducts() as $product) {
-            if (!in_array($product['id_address_delivery'], $addressesWithoutCarriers)
-                && !count(Carrier::getAvailableCarrierList(new Product($product['id_product']), null, $product['id_address_delivery'], null, null, $error))
-            ) {
-                $addressesWithoutCarriers[] = $product['id_address_delivery'];
+            if (!in_array($product['id_address_delivery'], $addressesWithoutCarriers)) {
+                $carrierList = Carrier::getAvailableCarrierList(
+                    new Product((int)$product['id_product']),
+                    0,
+                    (int)$product['id_address_delivery'],
+                    null,
+                    $this,
+                    $error,
+                    (int)$product['id_product_attribute']
+                );
+                if (! $carrierList) {
+                    $addressesWithoutCarriers[] = $product['id_address_delivery'];
+                }
             }
         }
         if (!$returnCollection) {

@@ -576,14 +576,22 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @param int $idShop
      * @param Cart $cart
      * @param array $error contains an error message if an error occurs
+     * @param int|null $combinationId calculate for specific product combination
      *
      * @return array
      * @throws PrestaShopDatabaseException
      *
      * @throws PrestaShopException
      */
-    public static function getAvailableCarrierList(Product $product, $idWarehouse, $idAddressDelivery = null, $idShop = null, $cart = null, &$error = [])
-    {
+    public static function getAvailableCarrierList(
+        Product $product,
+        $idWarehouse,
+        $idAddressDelivery = null,
+        $idShop = null,
+        $cart = null,
+        &$error = [],
+        $combinationId = 0
+    ) {
         static $psCountryDefault = null;
 
         if ($psCountryDefault === null) {
@@ -601,7 +609,10 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             $error = [];
         }
 
-        $idAddress = (int) ((!is_null($idAddressDelivery) && $idAddressDelivery != 0) ? $idAddressDelivery : $cart->id_address_delivery);
+        $idAddress = (int)$idAddressDelivery;
+        if (! $idAddress) {
+            $idAddress = (int)$cart->id_address_delivery;
+        }
         if ($idAddress) {
             $idZone = Address::getZoneById($idAddress);
 
@@ -693,12 +704,18 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
         }
 
+        $productWeight = $product->getWeight($combinationId);
+
         foreach ($carrierList as $key => $idCarrier) {
             $carrier = new Carrier($idCarrier);
 
             // Get the sizes of the carrier and the product and sort them to check if the carrier can take the product.
             $carrierSizes = [(int) $carrier->max_width, (int) $carrier->max_height, (int) $carrier->max_depth];
-            $productSizes = [(int) $product->width, (int) $product->height, (int) $product->depth];
+            $productSizes = [
+                (int)round($product->getWidth($combinationId)),
+                (int)round($product->getHeight($combinationId)),
+                (int)round($product->getDepth($combinationId))
+            ];
             rsort($carrierSizes, SORT_NUMERIC);
             rsort($productSizes, SORT_NUMERIC);
 
@@ -726,6 +743,11 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             }
 
             if ($carrier->max_weight > 0 && $cartWeight > $carrier->max_weight) {
+                $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
+                unset($carrierList[$key]);
+            }
+
+            if ($carrier->max_weight > 0 && $productWeight > $carrier->max_weight) {
                 $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                 unset($carrierList[$key]);
             }

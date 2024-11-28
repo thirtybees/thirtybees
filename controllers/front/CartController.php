@@ -356,10 +356,21 @@ class CartControllerCore extends FrontController
             return;
         }
 
+        $cart = $this->context->cart;
+
         $oldIdAddressDelivery = Tools::getIntValue('old_id_address_delivery');
         $newIdAddressDelivery = Tools::getIntValue('new_id_address_delivery');
 
-        if (!count(Carrier::getAvailableCarrierList(new Product($this->id_product), null, $newIdAddressDelivery))) {
+        $carrierList = Carrier::getAvailableCarrierList(
+            new Product((int)$this->id_product),
+            0,
+            $newIdAddressDelivery,
+            null,
+            $cart,
+            $error,
+            (int)$this->id_product_attribute
+        );
+        if (! $carrierList) {
             $this->ajaxDie(
                 json_encode(
                     [
@@ -370,7 +381,7 @@ class CartControllerCore extends FrontController
             );
         }
 
-        $this->context->cart->setProductAddressDelivery(
+        $cart->setProductAddressDelivery(
             $this->id_product,
             $this->id_product_attribute,
             $oldIdAddressDelivery,

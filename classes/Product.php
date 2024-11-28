@@ -8323,4 +8323,96 @@ class ProductCore extends ObjectModel implements InitializationCallback
     {
         ImageEntity::rebuildImageEntities('Product', self::$definition['images']);
     }
+
+    /**
+     * Returns weight of product, including combination impact
+     *
+     * @param int $combinationId
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getWeight(int $combinationId = 0): float
+    {
+        $weight = (float)$this->weight;
+        if ($this->hasAttributes()) {
+            if (! $combinationId) {
+                $combinationId = $this->getDefaultIdProductAttribute();
+            }
+            $combination = new Combination($combinationId);
+            if (Validate::isLoadedObject($combination)) {
+                $weight += (float)$combination->weight;
+            }
+        }
+        return $weight;
+    }
+
+    /**
+     * Returns width of product, including combination impact
+     *
+     * @param int $combinationId
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getWidth(int $combinationId = 0): float
+    {
+        $width = (float)$this->width;
+        if ($this->hasAttributes()) {
+            if (! $combinationId) {
+                $combinationId = $this->getDefaultIdProductAttribute();
+            }
+            $combination = new Combination($combinationId);
+            if (Validate::isLoadedObject($combination)) {
+                $width += (float)$combination->width;
+            }
+        }
+        return $width;
+    }
+
+    /**
+     * Returns height of product, including combination impact
+     *
+     * @param int $combinationId
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getHeight(int $combinationId = 0): float
+    {
+        $height = (float)$this->height;
+        if ($this->hasAttributes()) {
+            if (! $combinationId) {
+                $combinationId = $this->getDefaultIdProductAttribute();
+            }
+            $combination = new Combination($combinationId);
+            if (Validate::isLoadedObject($combination)) {
+                $height += (float)$combination->height;
+            }
+        }
+        return $height;
+    }
+
+    /**
+     * Returns depth of product, including combination impact
+     *
+     * @param int $combinationId
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getDepth(int $combinationId = 0): float
+    {
+        $depth = (float)$this->depth;
+        if ($this->hasAttributes()) {
+            if (! $combinationId) {
+                $combinationId = $this->getDefaultIdProductAttribute();
+            }
+            $combination = new Combination($combinationId);
+            if (Validate::isLoadedObject($combination)) {
+                $depth += (float)$combination->depth;
+            }
+        }
+        return $depth;
+    }
 }
