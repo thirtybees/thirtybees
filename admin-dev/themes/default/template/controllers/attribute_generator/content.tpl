@@ -106,16 +106,27 @@
 						<table class="table" style="display:none">
 							<thead>
 								<tr>
-									<th id="tab_h1" class="fixed-width-md"><span class="title_box">{$attribute_group['name']|escape:'html':'UTF-8'}</span></th>
-                                    <th id="tab_h2"><span class="title_box">
-                                        {l s='Impact on the product price'}<br>
-                                        ({$currency_sign}, {l s='tax excluded'})
-                                    </span></th>
-                                    <th id="tab_h2"><span class="title_box">
-                                        &nbsp;<br>
-                                        ({$currency_sign}, {l s='tax included'})
-                                    </span></th>
-									<th><span class="title_box">{l s='Impact on the product weight'} ({$weight_unit})</span></th>
+									<th class="fixed-width-md">
+										<span class="title_box">{$attribute_group['name']|escape:'html':'UTF-8'}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Price tax excl [%s]' sprintf=[$currency_sign]}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Price tax incl [%s]' sprintf=[$currency_sign]}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Weight [%s]' sprintf=[$weight_unit]}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Width [%s]' sprintf=[$dimension_unit]}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Length [%s]' sprintf=[$dimension_unit]}</span>
+									</th>
+									<th>
+										<span class="title_box">{l s='Depth [%s]' sprintf=[$dimension_unit]}</span>
+									</th>
 								</tr>
 							</thead>
 							<tbody id="table_{$attribute_group['id_attribute_group']}" name="result_table">
@@ -125,7 +136,18 @@
 						{if isset($attributes[$attribute_group['id_attribute_group']])}
 							{foreach $attributes[$attribute_group['id_attribute_group']] AS $k => $attribute}
 								<script type="text/javascript">
-									$('#table_{$attribute_group['id_attribute_group']}').append(create_attribute_row({$k}, {$attribute_group['id_attribute_group']}, '{$attribute['attribute_name']|addslashes}', {$attribute['price']}, {$attribute['weight']}));
+									$('#table_{$attribute_group['id_attribute_group']}').append(
+											create_attribute_row(
+												{$k},
+												{$attribute_group['id_attribute_group']},
+												'{$attribute['attribute_name']|addslashes}',
+												{$attribute['price']},
+												{$attribute['weight']},
+												{$attribute['width']},
+												{$attribute['height']},
+												{$attribute['depth']}
+											)
+									);
 									toggle(getE('table_' + {$attribute_group['id_attribute_group']}).parentNode, true);
 								</script>
 							{/foreach}

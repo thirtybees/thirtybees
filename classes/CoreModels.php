@@ -72,6 +72,9 @@ class CoreModelsCore
                 'id_attribute'        => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'weight'              => ['type' => ObjectModel::TYPE_FLOAT, 'required' => true],
                 'price'               => ['type' => ObjectModel::TYPE_FLOAT, 'required' => true],
+                'width'               => ['type' => ObjectModel::TYPE_FLOAT, 'required' => true, 'dbDefault' => '0.000000'],
+                'height'              => ['type' => ObjectModel::TYPE_FLOAT, 'required' => true, 'dbDefault' => '0.000000'],
+                'depth'               => ['type' => ObjectModel::TYPE_FLOAT, 'required' => true, 'dbDefault' => '0.000000'],
             ],
             'keys' => [
                 'attribute_impact' => [

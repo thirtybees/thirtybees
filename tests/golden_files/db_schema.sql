@@ -118,6 +118,9 @@ CREATE TABLE `PREFIX_attribute_impact` (
   `id_attribute` int(11) unsigned NOT NULL,
   `weight` decimal(20,6) NOT NULL,
   `price` decimal(20,6) NOT NULL,
+  `width` decimal(20,6) NOT NULL DEFAULT '0.000000',
+  `height` decimal(20,6) NOT NULL DEFAULT '0.000000',
+  `depth` decimal(20,6) NOT NULL DEFAULT '0.000000',
   PRIMARY KEY (`id_attribute_impact`),
   UNIQUE KEY `id_product` (`id_product`,`id_attribute`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -142,13 +142,16 @@ function del_attr_multiple() {
   }
 }
 
-function create_attribute_row(id, idGroup, name, price, weight) {
+function create_attribute_row(id, idGroup, name, price, weight, width, height, depth) {
   var html = '';
   html += '<tr id="result_' + id + '">';
   html += '<td><input type="hidden" value="' + id + '" name="options[' + idGroup + '][' + id + ']" />' + name + '</td>';
   html += '<td><input type="text" id="related_to_price_impact_ti_' + id + '" class="price_impact" value="' + displayPriceValue(price) + '" name="price_impact_' + id + '" onkeyup="calcPrice($(this), false)"></td>';
   html += '<td><input type="text" id="related_to_price_impact_' + id + '" class="price_impact_ti" value="" name="price_impact_ti_' + id + '" onkeyup="calcPrice($(this), true)"></td>';
   html += '<td><input type="text" value="' + weight + '" name="weight_impact_' + id + '"></td>';
+  html += '<td><input type="text" value="' + width + '" name="width_impact_' + id + '"></td>';
+  html += '<td><input type="text" value="' + height + '" name="height_impact_' + id + '"></td>';
+  html += '<td><input type="text" value="' + depth + '" name="depth_impact_' + id + '"></td>';
   html += '</tr>';
 
   return html;

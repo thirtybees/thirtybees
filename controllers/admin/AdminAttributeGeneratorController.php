@@ -98,21 +98,23 @@ class AdminAttributeGeneratorControllerCore extends AdminController
      */
     protected static function setAttributesImpacts($idProduct, array $tab)
     {
-        $attributes = [];
+        $res = true;
+        $conn = Db::getInstance();
         foreach ($tab as $group) {
-            foreach ($group as $attribute) {
-                $price = Tools::getNumberValue('price_impact_'.(int) $attribute);
-                $weight = Tools::getNumberValue('weight_impact_'.(int) $attribute);
-                $attributes[] = '('.(int) $idProduct.', '.(int) $attribute.', '.$price.', '.$weight.')';
+            foreach ($group as $attributeId) {
+                $attributeId = (int)$attributeId;
+                $res = $conn->insert('attribute_impact', [
+                    'id_product' => (int)$idProduct,
+                    'id_attribute' => (int)$attributeId,
+                    'weight' => Tools::getNumberValue('weight_impact_'.$attributeId),
+                    'price' => Tools::getNumberValue('price_impact_'.$attributeId),
+                    'width' => Tools::getNumberValue('width_impact_'.$attributeId),
+                    'height' => Tools::getNumberValue('height_impact_'.$attributeId),
+                    'depth' => Tools::getNumberValue('depth_impact_'.$attributeId),
+                ], false, true, Db::ON_DUPLICATE_KEY) && $res;
             }
         }
-
-        return Db::getInstance()->execute(
-            '
-		INSERT INTO `'._DB_PREFIX_.'attribute_impact` (`id_product`, `id_attribute`, `price`, `weight`)
-		VALUES '.implode(',', $attributes).'
-		ON DUPLICATE KEY UPDATE `price` = VALUES(price), `weight` = VALUES(weight)'
-        );
+        return $res;
     }
 
     /**
@@ -305,18 +307,20 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $combinationsGroups = $this->product->getAttributesGroups($this->context->language->id);
         $attributes = [];
         $impacts = Product::getAttributesImpacts($this->product->id);
-        foreach ($combinationsGroups as &$combination) {
+        foreach ($combinationsGroups as $combination) {
             $target = &$attributes[$combination['id_attribute_group']][$combination['id_attribute']];
             $target = $combination;
-            if (isset($impacts[$combination['id_attribute']])) {
-                $target['price'] = $impacts[$combination['id_attribute']]['price'];
-                $target['weight'] = $impacts[$combination['id_attribute']]['weight'];
-            }
+            $target['price'] = $impacts[$combination['id_attribute']]['price'] ?? 0;
+            $target['weight'] = $impacts[$combination['id_attribute']]['weight'] ?? 0;
+            $target['width'] = $impacts[$combination['id_attribute']]['width'] ?? 0;
+            $target['height'] = $impacts[$combination['id_attribute']]['height'] ?? 0;
+            $target['depth'] = $impacts[$combination['id_attribute']]['depth'] ?? 0;
         }
         $this->context->smarty->assign([
             'currency_sign'     => $this->context->currency->sign,
             'currency_decimals' => $this->context->currency->decimals,
             'weight_unit'       => Configuration::get('PS_WEIGHT_UNIT'),
+            'dimension_unit'     => Configuration::get('PS_DIMENSION_UNIT'),
             'attributes'        => $attributes,
         ]);
     }
@@ -332,17 +336,28 @@ class AdminAttributeGeneratorControllerCore extends AdminController
      */
     protected function addAttribute($attributes, $reference)
     {
-        if ($this->product->id) {
+        $productId = (int)$this->product->id;
+        if ($productId) {
             $price = 0.0;
             $weight = 0.0;
-            foreach ($attributes as $attribute) {
-                $price += Tools::getNumberValue('price_impact_'.(int) $attribute);
-                $weight += Tools::getNumberValue('weight_impact_'.(int) $attribute);
+            $width = 0.0;
+            $height = 0.0;
+            $depth = 0.0;
+            foreach ($attributes as $attributeId) {
+                $attributeId = (int)$attributeId;
+                $price += Tools::getNumberValue('price_impact_'.$attributeId);
+                $weight += Tools::getNumberValue('weight_impact_'.$attributeId);
+                $width += Tools::getNumberValue('width_impact_'.$attributeId);
+                $height += Tools::getNumberValue('height_impact_'.$attributeId);
+                $depth += Tools::getNumberValue('depth_impact_'.$attributeId);
             }
             return [
-                'id_product'     => (int) $this->product->id,
+                'id_product'     => $productId,
                 'price'          => $price,
                 'weight'         => $weight,
+                'width'          => $width,
+                'height'         => $height,
+                'depth'          => $depth,
                 'ecotax'         => 0,
                 'quantity'       => Tools::getIntValue('quantity'),
                 'reference'      => pSQL($reference),

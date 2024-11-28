@@ -3057,19 +3057,18 @@ class ProductCore extends ObjectModel implements InitializationCallback
             }
         }
 
+        // duplicate attribute impacts
         $impacts = static::getAttributesImpacts($idProductOld);
-
-        if (is_array($impacts) && count($impacts)) {
-            $impactSql = 'INSERT INTO `'._DB_PREFIX_.'attribute_impact` (`id_product`, `id_attribute`, `weight`, `price`) VALUES ';
-
-            foreach ($impacts as $idAttribute => $impact) {
-                $impactSql .= '('.(int) $idProductNew.', '.(int) $idAttribute.', '.(float) $impact['weight'].', '.(float) $impact['price'].'),';
-            }
-
-            $impactSql = substr_replace($impactSql, '', -1);
-            $impactSql .= ' ON DUPLICATE KEY UPDATE `price` = VALUES(price), `weight` = VALUES(weight)';
-
-            $conn->execute($impactSql);
+        foreach ($impacts as $idAttribute => $impact) {
+            $conn->insert('attribute_impact', [
+                'id_product' => (int)$idProductNew,
+                'id_attribute' => (int)$idAttribute,
+                'weight' => (float)$impact['weight'],
+                'price' => (float)$impact['price'],
+                'width' => (float)$impact['width'],
+                'height' => (float)$impact['height'],
+                'depth' => (float)$impact['depth']
+            ]);
         }
 
         return !$return ? false : $combinationImages;
@@ -3112,18 +3111,26 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public static function getAttributesImpacts($idProduct)
     {
         $return = [];
-        $result = Db::readOnly()->getArray(
-            'SELECT ai.`id_attribute`, ai.`price`, ai.`weight`
-			FROM `'._DB_PREFIX_.'attribute_impact` ai
-			WHERE ai.`id_product` = '.(int) $idProduct
+        $result = Db::readOnly()->getArray((new DbQuery())
+            ->select('ai.id_attribute')
+            ->select('ai.price')
+            ->select('ai.weight')
+            ->select('ai.width')
+            ->select('ai.height')
+            ->select('ai.depth')
+            ->from('attribute_impact', 'ai')
+            ->where('ai.id_product = '.(int) $idProduct)
         );
 
-        if (!$result) {
-            return [];
-        }
         foreach ($result as $impact) {
-            $return[$impact['id_attribute']]['price'] = (float) $impact['price'];
-            $return[$impact['id_attribute']]['weight'] = (float) $impact['weight'];
+            $attributeId = (int)$impact['id_attribute'];
+            $return[$attributeId] = [
+                'price' => (float)$impact['price'],
+                'weight' => (float)$impact['weight'],
+                'width' => (float)$impact['width'],
+                'height' => (float)$impact['height'],
+                'depth' => (float)$impact['depth'],
+            ];
         }
 
         return $return;
@@ -6223,7 +6230,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
 					a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
 					IFNULL(stock.quantity, 0) AS quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
 					product_attribute_shop.`default_on`, pa.`reference`, product_attribute_shop.`unit_price_impact`,
-					product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`
+					product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`,
+					product_attribute_shop.`width`, product_attribute_shop.`height`, product_attribute_shop.`depth`
 				FROM `'._DB_PREFIX_.'product_attribute` pa
 				'.Shop::addSqlAssociation('product_attribute', 'pa').'
 				'.static::sqlStock('pa', 'pa').'
