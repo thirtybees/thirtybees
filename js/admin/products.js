@@ -366,6 +366,9 @@ window.product_tabs.Combinations = new function () {
           var wholesalePrice = data[0].wholesale_price;
           var price = data[0].price;
           var weight = data[0].weight;
+          var width = data[0].width;
+          var height = data[0].height;
+          var depth = data[0].depth;
           var unitImpact = data[0].unit_price_impact;
           var reference = data[0].reference;
           var ean = data[0].ean13;
@@ -399,7 +402,10 @@ window.product_tabs.Combinations = new function () {
             ecoTax,
             upc,
             minimalQuantity,
-            availableDate
+            availableDate,
+            width,
+            height,
+            depth
           );
           calcImpactPriceTI();
         }
@@ -552,6 +558,9 @@ window.product_tabs.Combinations = new function () {
    * @param {string}    upc
    * @param {number}    minimalQuantity
    * @param {string}    availableDate
+   * @param {number}    widthImpact
+   * @param {number}    heightImpact
+   * @param {number}    depthImpact
    *
    * @return {undefined}
    */
@@ -570,7 +579,10 @@ window.product_tabs.Combinations = new function () {
     ecoTax,
     upc,
     minimalQuantity,
-    availableDate
+    availableDate,
+    widthImpact,
+    heightImpact,
+    depthImpact
   ) {
     self.init_elems();
     $('#stock_mvt_attribute').show();
@@ -590,6 +602,10 @@ window.product_tabs.Combinations = new function () {
     getE('attribute_price').value = displayPriceValue(Math.abs(priceImpact));
     getE('attribute_priceTEReal').value = displayPriceValue(Math.abs(priceImpact));
     getE('attribute_weight').value = Math.abs(weightImpact);
+    getE('attribute_width').value = Math.abs(widthImpact);
+    getE('attribute_height').value = Math.abs(heightImpact);
+    getE('attribute_depth').value = Math.abs(depthImpact);
+
     getE('attribute_unity').value = Math.abs(unitImpact);
     if ($('#attribute_ecotax').length > 0) {
       getE('attribute_ecotax').value = displayPriceValue(ecoTax);
@@ -616,6 +632,36 @@ window.product_tabs.Combinations = new function () {
     } else if (weightImpact > 0) {
       getE('attribute_weight_impact').options[getE('attribute_weight_impact').selectedIndex].value = 1;
       getE('attribute_weight_impact').selectedIndex = 1;
+    }
+    if (widthImpact < 0) {
+      getE('attribute_width_impact').options[getE('attribute_width_impact').selectedIndex].value = -1;
+      getE('attribute_width_impact').selectedIndex = 2;
+    } else if (!widthImpact) {
+      getE('attribute_width_impact').options[getE('attribute_width_impact').selectedIndex].value = 0;
+      getE('attribute_width_impact').selectedIndex = 0;
+    } else if (widthImpact > 0) {
+      getE('attribute_width_impact').options[getE('attribute_width_impact').selectedIndex].value = 1;
+      getE('attribute_width_impact').selectedIndex = 1;
+    }
+    if (heightImpact < 0) {
+      getE('attribute_height_impact').options[getE('attribute_height_impact').selectedIndex].value = -1;
+      getE('attribute_height_impact').selectedIndex = 2;
+    } else if (!heightImpact) {
+      getE('attribute_height_impact').options[getE('attribute_height_impact').selectedIndex].value = 0;
+      getE('attribute_height_impact').selectedIndex = 0;
+    } else if (heightImpact > 0) {
+      getE('attribute_height_impact').options[getE('attribute_height_impact').selectedIndex].value = 1;
+      getE('attribute_height_impact').selectedIndex = 1;
+    }
+    if (depthImpact < 0) {
+      getE('attribute_depth_impact').options[getE('attribute_depth_impact').selectedIndex].value = -1;
+      getE('attribute_depth_impact').selectedIndex = 2;
+    } else if (!depthImpact) {
+      getE('attribute_depth_impact').options[getE('attribute_depth_impact').selectedIndex].value = 0;
+      getE('attribute_depth_impact').selectedIndex = 0;
+    } else if (depthImpact > 0) {
+      getE('attribute_depth_impact').options[getE('attribute_depth_impact').selectedIndex].value = 1;
+      getE('attribute_depth_impact').selectedIndex = 1;
     }
     if (unitImpact < 0) {
       getE('attribute_unit_impact').options[getE('attribute_unit_impact').selectedIndex].value = -1;
@@ -644,6 +690,9 @@ window.product_tabs.Combinations = new function () {
     }
     window.check_impact();
     window.check_weight_impact();
+    window.check_height_impact();
+    window.check_width_impact();
+    window.check_depth_impact();
     window.check_unit_impact();
 
     var elem = getE('product_att_list');
@@ -665,8 +714,8 @@ window.product_tabs.Combinations = new function () {
   };
 
   this.init_elems = function () {
-    var impact = getE('attribute_price_impact');
-    var impact2 = getE('attribute_weight_impact');
+    var priceImpact = getE('attribute_price_impact');
+    var weightImpact = getE('attribute_weight_impact');
     var elem = getE('product_att_list');
 
     if (elem.length) {
@@ -697,10 +746,10 @@ window.product_tabs.Combinations = new function () {
       }
     }
     try {
-      if (parseInt(impact.options[impact.selectedIndex].value, 10) === 0) {
+      if (parseInt(priceImpact.options[priceImpact.selectedIndex].value, 10) === 0) {
         $('#span_impact').hide();
       }
-      if (parseInt(impact2.options[impact.selectedIndex].value, 10) === 0) {
+      if (parseInt(weightImpact.options[priceImpact.selectedIndex].value, 10) === 0) {
         getE('span_weight_impact').style.display = 'none';
       }
     } catch (e) {
@@ -1921,6 +1970,18 @@ window.ProductMultishop = new function () {
         $('#attribute_weight_impact').attr('disabled', checked);
         $('#attribute_weight').attr('disabled', checked);
         break;
+      case 'attribute_width_impact' :
+        $('#attribute_width_impact').attr('disabled', checked);
+        $('#attribute_width').attr('disabled', checked);
+        break;
+      case 'attribute_height_impact' :
+        $('#attribute_height_impact').attr('disabled', checked);
+        $('#attribute_height').attr('disabled', checked);
+        break;
+      case 'attribute_depth_impact' :
+        $('#attribute_depth_impact').attr('disabled', checked);
+        $('#attribute_depth').attr('disabled', checked);
+        break;
       case 'attribute_unit_impact' :
         $('#attribute_unit_impact').attr('disabled', checked);
         $('#attribute_unity').attr('disabled', checked);
@@ -2010,6 +2071,9 @@ window.ProductMultishop = new function () {
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_wholesale_price]\']').prop('checked'), 'attribute_wholesale_price');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_price_impact]\']').prop('checked'), 'attribute_price_impact', 'attribute_price_impact');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_weight_impact]\']').prop('checked'), 'attribute_weight_impact', 'attribute_weight_impact');
+    window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_width_impact]\']').prop('checked'), 'attribute_width_impact', 'attribute_width_impact');
+    window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_height_impact]\']').prop('checked'), 'attribute_height_impact', 'attribute_height_impact');
+    window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_depth_impact]\']').prop('checked'), 'attribute_depth_impact', 'attribute_depth_impact');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_unit_impact]\']').prop('checked'), 'attribute_unit_impact', 'attribute_unit_impact');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_ecotax]\']').prop('checked'), 'attribute_ecotax');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[attribute_minimal_quantity]\']').prop('checked'), 'attribute_minimal_quantity');

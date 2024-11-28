@@ -2994,7 +2994,12 @@ class AdminProductsControllerCore extends AdminController
                                 Tools::getValue('attribute_upc'),
                                 $this->isProductFieldUpdated('attribute_minimal_quantity') ? Tools::getValue('attribute_minimal_quantity') : null,
                                 $this->isProductFieldUpdated('available_date_attribute') ? Tools::getValue('available_date_attribute') : null,
-                                false
+                                false,
+                                [],
+                                $this->isProductFieldUpdated('attribute_width_impact') ? Tools::getNumberValue('attribute_width') * Tools::getNumberValue('attribute_width_impact') : null,
+                                $this->isProductFieldUpdated('attribute_height_impact') ? Tools::getNumberValue('attribute_height') * Tools::getNumberValue('attribute_height_impact') : null,
+                                $this->isProductFieldUpdated('attribute_depth_impact') ? Tools::getNumberValue('attribute_depth') * Tools::getNumberValue('attribute_depth_impact') : null,
+
                             );
                             StockAvailable::setProductDependsOnStock((int) $product->id, $product->depends_on_stock, null, (int) $idProductAttribute);
                             StockAvailable::setProductOutOfStock((int) $product->id, $product->out_of_stock, null, (int) $idProductAttribute);
@@ -5187,6 +5192,7 @@ class AdminProductsControllerCore extends AdminController
                 $images = Image::getImages($this->context->language->id, $product->id);
                 $data->assign('tax_exclude_option', Tax::excludeTaxeOption());
                 $data->assign('ps_weight_unit', Configuration::get('PS_WEIGHT_UNIT'));
+                $data->assign('ps_dimension_unit', Configuration::get('PS_DIMENSION_UNIT'));
                 $data->assign('ps_use_ecotax', Configuration::get('PS_USE_ECOTAX'));
                 $data->assign('field_value_unity', $this->getFieldValue($product, 'unity'));
                 $data->assign('reasons', StockMvtReason::getStockMvtReasons($this->context->language->id));

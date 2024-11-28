@@ -5543,6 +5543,9 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @param string|null $availableDate
      * @param bool $updateAllFields
      * @param array $idShopList
+     * @param float|null $widthImpact
+     * @param float|null $heightImpact
+     * @param float|null $depthImpact
      *
      * @return bool Update result
      * @throws PrestaShopException
@@ -5563,7 +5566,10 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $minimalQuantity = null,
         $availableDate = null,
         $updateAllFields = true,
-        array $idShopList = []
+        array $idShopList = [],
+        $widthImpact = null,
+        $heightImpact = null,
+        $depthImpact = null,
     ) {
         $combination = new Combination($idProductAttribute);
 
@@ -5574,6 +5580,9 @@ class ProductCore extends ObjectModel implements InitializationCallback
                     'wholesale_price'   => !is_null($wholesalePrice),
                     'ecotax'            => !is_null($ecotax),
                     'weight'            => !is_null($weight),
+                    'width'             => !is_null($widthImpact),
+                    'height'            => !is_null($heightImpact),
+                    'depth'             => !is_null($depthImpact),
                     'unit_price_impact' => !is_null($unit),
                     'default_on'        => !is_null($default),
                     'minimal_quantity'  => !is_null($minimalQuantity),
@@ -5586,6 +5595,9 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $combination->wholesale_price = Tools::parseNumber($wholesalePrice);
         $combination->ecotax = Tools::parseNumber($ecotax);
         $combination->weight = Tools::parseNumber($weight);
+        $combination->width = Tools::parseNumber($widthImpact);
+        $combination->height = Tools::parseNumber($heightImpact);
+        $combination->depth = Tools::parseNumber($depthImpact);
         $combination->unit_price_impact = Tools::parseNumber($unit);
         $combination->reference = pSQL($reference);
         $combination->location = pSQL($location);

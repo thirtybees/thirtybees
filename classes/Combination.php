@@ -54,6 +54,9 @@ class CombinationCore extends ObjectModel
             'ecotax'             => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'quantity'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 10, 'signed' => true, 'dbDefault' => '0'],
             'weight'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat', 'dbDefault' => '0.000000'],
+            'width'              => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isUnsignedFloat', 'dbDefault' => '0.000000'],
+            'height'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isUnsignedFloat', 'dbDefault' => '0.000000'],
+            'depth'              => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isUnsignedFloat', 'dbDefault' => '0.000000'],
             'unit_price_impact'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20, 'dbDefault' => '0.000000'],
             'default_on'         => ['type' => self::TYPE_BOOL, 'allow_null' => true, 'shop' => true, 'validate' => 'isBool'],
             'minimal_quantity'   => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '1'],
@@ -72,35 +75,95 @@ class CombinationCore extends ObjectModel
             ],
         ],
     ];
-    /** @var int $id_product */
+
+    /**
+     * @var int $id_product
+     */
     public $id_product;
-    /** @var string $location */
+
+    /**
+     * @var string $location
+     */
     public $location;
-    /** @var string $ean13 */
+
+    /**
+     * @var string $ean13
+     */
     public $ean13;
-    /** @var string $upc */
+
+    /**
+     * @var string $upc
+     */
     public $upc;
-    /** @var int $quantity */
+
+    /**
+     * @var int $quantity
+     */
     public $quantity;
-    /** @var string $reference */
+
+    /**
+     * @var string $reference
+     */
     public $reference;
-    /** @var string $supplier_reference */
+
+    /**
+     * @var string $supplier_reference
+     */
     public $supplier_reference;
-    /** @var float $wholesale_price */
+
+    /**
+     * @var float $wholesale_price
+     */
     public $wholesale_price;
-    /** @var float $price */
+
+    /**
+     * @var float $price
+     */
     public $price;
-    /** @var float $ecotax */
+
+    /**
+     * @var float $ecotax
+     */
     public $ecotax;
-    /** @var float $weight */
+
+    /**
+     * @var float $weight
+     */
     public $weight;
-    /** @var float $unit_price_impact */
+
+    /**
+     * @var float $width Impact on width dimension
+     */
+    public $width;
+
+    /**
+     * @var float $height Impact on height dimension
+     */
+    public $height;
+
+    /**
+     * @var float height Impact on depth dimension
+     */
+    public $depth;
+
+    /**
+     * @var float $unit_price_impact
+     */
     public $unit_price_impact;
-    /** @var int $minimal_quantity */
+
+    /**
+     * @var int $minimal_quantity
+     */
     public $minimal_quantity = 1;
-    /** @var bool $default_on */
+
+    /**
+     * @var bool $default_on
+     */
     public $default_on;
-    /** @var string $available_date */
+
+    /**
+     * @var string $available_date
+     */
     public $available_date = '0000-00-00';
 
     /**

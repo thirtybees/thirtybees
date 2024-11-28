@@ -263,6 +263,100 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="form-group">
+			<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="attribute_width_impact" type="attribute_width_impact"}</span></div>
+			<label class="control-label col-lg-2" for="attribute_width_impact">
+				{l s='Impact on width'}
+			</label>
+			<div class="col-lg-9">
+				<div class="row">
+					<div class="col-lg-4">
+						<select name="attribute_width_impact" id="attribute_width_impact" onchange="check_width_impact();">
+							<option value="0">{l s='None'}</option>
+							<option value="1">{l s='Increase'}</option>
+							<option value="-1">{l s='Reduction'}</option>
+						</select>
+					</div>
+					<div id="span_width_impact" class="col-lg-8">
+						<div class="row">
+							<label class="control-label col-lg-1" for="attribute_width">
+								{l s='of'}
+							</label>
+							<div class="input-group col-lg-5">
+								<div class="input-group-addon">
+									{$ps_dimension_unit}
+								</div>
+								<input type="text" name="attribute_width" id="attribute_width" value="0.00" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="attribute_height_impact" type="attribute_height_impact"}</span></div>
+			<label class="control-label col-lg-2" for="attribute_height_impact">
+				{l s='Impact on height'}
+			</label>
+			<div class="col-lg-9">
+				<div class="row">
+					<div class="col-lg-4">
+						<select name="attribute_height_impact" id="attribute_height_impact" onchange="check_height_impact();">
+							<option value="0">{l s='None'}</option>
+							<option value="1">{l s='Increase'}</option>
+							<option value="-1">{l s='Reduction'}</option>
+						</select>
+					</div>
+					<div id="span_height_impact" class="col-lg-8">
+						<div class="row">
+							<label class="control-label col-lg-1" for="attribute_height">
+								{l s='of'}
+							</label>
+							<div class="input-group col-lg-5">
+								<div class="input-group-addon">
+									{$ps_dimension_unit}
+								</div>
+								<input type="text" name="attribute_height" id="attribute_height" value="0.00" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="attribute_depth_impact" type="attribute_depth_impact"}</span></div>
+			<label class="control-label col-lg-2" for="attribute_depth_impact">
+				{l s='Impact on depth'}
+			</label>
+			<div class="col-lg-9">
+				<div class="row">
+					<div class="col-lg-4">
+						<select name="attribute_depth_impact" id="attribute_depth_impact" onchange="check_depth_impact();">
+							<option value="0">{l s='None'}</option>
+							<option value="1">{l s='Increase'}</option>
+							<option value="-1">{l s='Reduction'}</option>
+						</select>
+					</div>
+					<div id="span_depth_impact" class="col-lg-8">
+						<div class="row">
+							<label class="control-label col-lg-1" for="attribute_depth">
+								{l s='of'}
+							</label>
+							<div class="input-group col-lg-5">
+								<div class="input-group-addon">
+									{$ps_dimension_unit}
+								</div>
+								<input type="text" name="attribute_depth" id="attribute_depth" value="0.00" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div id="tr_unit_impact" class="form-group">
 			<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="attribute_unit_impact" type="attribute_unit_impact"}</span></div>
 			<label class="control-label col-lg-2" for="attribute_unit_impact">

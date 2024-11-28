@@ -73,6 +73,33 @@ function check_weight_impact() {
   }
 }
 
+function check_width_impact() {
+  if (parseInt($('#attribute_width_impact').get(0).selectedIndex, 10) === 0) {
+    $('#span_width_impact').hide();
+    $('#attribute_width').val('0.00');
+  } else {
+    $('#span_width_impact').show();
+  }
+}
+
+function check_height_impact() {
+  if (parseInt($('#attribute_height_impact').get(0).selectedIndex, 10) === 0) {
+    $('#span_height_impact').hide();
+    $('#attribute_height').val('0.00');
+  } else {
+    $('#span_height_impact').show();
+  }
+}
+
+function check_depth_impact() {
+  if (parseInt($('#attribute_depth_impact').get(0).selectedIndex, 10) === 0) {
+    $('#span_depth_impact').hide();
+    $('#attribute_depth').val('0.00');
+  } else {
+    $('#span_depth_impact').show();
+  }
+}
+
 function check_unit_impact() {
   if (parseInt($('#attribute_unit_impact').get(0).selectedIndex, 10) === 0) {
     $('#span_unit_impact').hide();
