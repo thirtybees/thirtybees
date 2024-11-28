@@ -199,6 +199,9 @@ class AdminImportControllerCore extends AdminController
                         'label' => $this->l('Warehouse'),
                         'help'  => $this->l('ID of the warehouse to set as storage.'),
                     ],
+                    'width'                     => ['label' => $this->l('Impact on width')],
+                    'height'                    => ['label' => $this->l('Impact on height')],
+                    'depth'                     => ['label' => $this->l('Impact on depth')],
                 ];
 
                 static::$defaultValues = [
@@ -212,6 +215,9 @@ class AdminImportControllerCore extends AdminController
                     'quantity'                  => 0,
                     'minimal_quantity'          => 1,
                     'weight'                    => 0,
+                    'width'                     => 0,
+                    'height'                    => 0,
+                    'depth'                     => 0,
                     'default_on'                => 0,
                     'advanced_stock_management' => 0,
                     'depends_on_stock'          => 0,
@@ -3964,8 +3970,11 @@ class AdminImportControllerCore extends AdminController
                                         (string) $info['upc'],
                                         (int) $info['minimal_quantity'],
                                         $info['available_date'],
-                                        null,
-                                        $idShopList
+                                        false,
+                                        $idShopList,
+                                        $info['width'],
+                                        $info['height'],
+                                        $info['depth']
                                     );
                                     $idProductAttributeUpdate = true;
                                     if (!empty($info['supplier_reference'])) {
