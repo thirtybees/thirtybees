@@ -5576,7 +5576,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         array $idShopList = [],
         $widthImpact = null,
         $heightImpact = null,
-        $depthImpact = null,
+        $depthImpact = null
     ) {
         $combination = new Combination($idProductAttribute);
 

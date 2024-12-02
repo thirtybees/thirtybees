@@ -1702,7 +1702,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->l('Memcache via PHP::Memcache'),
             CacheMemcache::checkEnvironment(),
             $this->l('(you must install [1]memcache[/1] extension)'),
-            "https://www.php.net/manual/en/memcache.installation.php",
+            "https://www.php.net/manual/en/memcache.installation.php"
         );
     }
 
@@ -1715,7 +1715,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->l('Memcache via PHP::Memcached'),
             CacheMemcached::checkEnvironment(),
             $this->l('(you must install [1]memcached[/1] extension)'),
-            "https://www.php.net/manual/en/memcached.installation.php",
+            "https://www.php.net/manual/en/memcached.installation.php"
         );
     }
 
@@ -1728,7 +1728,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->l('APCu'),
             CacheApcu::checkEnvironment(),
             $this->l('(you must install [1]apcu[/1] extension)'),
-            "https://www.php.net/manual/en/apcu.installation.php",
+            "https://www.php.net/manual/en/apcu.installation.php"
         );
     }
 
@@ -1741,7 +1741,7 @@ class AdminPerformanceControllerCore extends AdminController
             $this->l('Redis'),
             CacheRedis::checkEnvironment(),
             $this->l('(you must install [1]redis[/1] extension)'),
-            "https://pecl.php.net/package/redis",
+            "https://pecl.php.net/package/redis"
         );
     }
 

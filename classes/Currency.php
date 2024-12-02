@@ -334,7 +334,7 @@ class CurrencyCore extends ObjectModel
                 [
                     'currencies' => $currencies,
                     'baseCurrency' => mb_strtoupper($defaultCurrency->iso_code)
-                ],
+                ]
             );
             if (is_array($rates)) {
                 foreach ($rates as $isoCode => $rate) {

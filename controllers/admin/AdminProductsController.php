@@ -2998,8 +2998,7 @@ class AdminProductsControllerCore extends AdminController
                                 [],
                                 $this->isProductFieldUpdated('attribute_width_impact') ? Tools::getNumberValue('attribute_width') * Tools::getNumberValue('attribute_width_impact') : null,
                                 $this->isProductFieldUpdated('attribute_height_impact') ? Tools::getNumberValue('attribute_height') * Tools::getNumberValue('attribute_height_impact') : null,
-                                $this->isProductFieldUpdated('attribute_depth_impact') ? Tools::getNumberValue('attribute_depth') * Tools::getNumberValue('attribute_depth_impact') : null,
-
+                                $this->isProductFieldUpdated('attribute_depth_impact') ? Tools::getNumberValue('attribute_depth') * Tools::getNumberValue('attribute_depth_impact') : null
                             );
                             StockAvailable::setProductDependsOnStock((int) $product->id, $product->depends_on_stock, null, (int) $idProductAttribute);
                             StockAvailable::setProductOutOfStock((int) $product->id, $product->out_of_stock, null, (int) $idProductAttribute);
