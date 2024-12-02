@@ -32,37 +32,37 @@
 /**
  * Manage session for install script
  *
- * @property string installType
- * @property string step
- * @property string lastStep
- * @property array processValidated
+ * @property string $installType
+ * @property string $step
+ * @property string $lastStep
+ * @property array $processValidated
  *
- * @property string lang
- * @property string shopTimezone
- * @property boolean rewriteEngine
+ * @property string $lang
+ * @property string $shopTimezone
+ * @property boolean $rewriteEngine
  *
- * @property string databaseServer
- * @property string databaseLogin
- * @property string databasePassword
- * @property string databaseName
- * @property string databasePrefix
- * @property boolean databaseClear
+ * @property string $databaseServer
+ * @property string $databaseLogin
+ * @property string $databasePassword
+ * @property string $databaseName
+ * @property string $databasePrefix
+ * @property boolean $databaseClear
  *
- * @property string shopName
- * @property string shopActivity
- * @property string shopCountry
+ * @property string $shopName
+ * @property string $shopActivity
+ * @property string $shopCountry
  *
- * @property string adminFirstname
- * @property string adminLastname
- * @property string adminPassword
- * @property string adminPasswordConfirm
- * @property string adminEmail
+ * @property string $adminFirstname
+ * @property string $adminLastname
+ * @property string $adminPassword
+ * @property string $adminPasswordConfirm
+ * @property string $adminEmail
  *
- * @property boolean sendInformations
- * @property boolean licenseAgreement
- * @property boolean configurationAgreement
+ * @property boolean $sendInformations
+ * @property boolean $licenseAgreement
+ * @property boolean $configurationAgreement
  *
- * @property array xmlLoaderIds
+ * @property array $xmlLoaderIds
  */
 class InstallSession
 {
