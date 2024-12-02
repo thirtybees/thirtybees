@@ -53,7 +53,7 @@ class AdminPaymentControllerCore extends AdminController
         $modules = Module::getModulesOnDisk(true);
 
         foreach ($modules as $module) {
-            if ($module->tab == 'payments_gateways' && Module::isEnabled($module->name)) {
+            if ($this->isEnabledPaymentModule($module)) {
                 $instance = Module::getInstanceByName($module->name);
 
                 // sync settings
@@ -346,5 +346,25 @@ class AdminPaymentControllerCore extends AdminController
         ];
 
         return parent::renderView();
+    }
+
+    /**
+     * @param stdClass $module
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    protected function isEnabledPaymentModule(stdClass $module): bool
+    {
+        if (Module::isEnabled($module->name)) {
+            if ($module->tab == 'payments_gateways') {
+                return true;
+            } else {
+                $instance = Module::getInstanceByName($module->name);
+                return ($instance instanceof PaymentModule);
+            }
+        }
+        return false;
     }
 }
