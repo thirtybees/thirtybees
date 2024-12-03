@@ -180,6 +180,15 @@ class AdminMetaControllerCore extends AdminController
                 'cast' => 'intval',
                 'type' => 'bool',
             ];
+
+            $generalFields['TB_REMOVE_DEFAULT_LANGUAGE_ISO_URL'] = [
+                'title' => $this->l('Remove ISO code in the default language URLs'),
+                'desc' => $this->l('When multiple languages are enabled in the store, all URLs automatically include the language\'s ISO code (e.g., /en/ for English).') . '<br/>' . 
+                         $this->l('If your store initially has only one language, the URLs won\'t include an ISO code. However, if you later add another language, enabling this option is recommended to maintain the SEO integrity of your default language.'),
+                'validation' => 'isBool',
+                'cast' => 'intval',
+                'type' => 'bool',
+            ];
         } else {
             $urlDescription = $this->l('Before you can use this tool, you need to:');
             $urlDescription .= $this->l('1) Create a blank .htaccess file in your root directory.');

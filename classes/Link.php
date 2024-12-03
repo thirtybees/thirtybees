@@ -293,14 +293,21 @@ class LinkCore
             $context = Context::getContext();
         }
 
-        if ((!$this->allow && in_array($idShop, [$context->shop->id, null])) || !Language::isMultiLanguageActivated($idShop) || !(int) Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop)) {
-            return '';
-        }
-
         if (!$idLang) {
             $idLang = $context->language->id;
         }
 
+        // Check conditions for returning an empty string in the URL
+        if ((!$this->allow && in_array($idShop, [$context->shop->id, null])) 
+            || !Language::isMultiLanguageActivated($idShop) 
+            || !(int) Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop)
+            || ($idLang == Configuration::get('PS_LANG_DEFAULT') 
+                && Configuration::get('TB_REMOVE_DEFAULT_LANGUAGE_ISO_URL', null, null, $idShop))
+        ) {
+            return '';
+        }
+
+        // Return the ISO code of the language
         return Language::getIsoById($idLang).'/';
     }
 
