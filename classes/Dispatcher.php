@@ -499,10 +499,15 @@ class DispatcherCore
         }
 
         // remove language from uri
-        if ($this->use_routes && Language::isMultiLanguageActivated()) {
-            if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $requestUri, $m)) {
-                $_GET['isolang'] = $m[1];
-                $requestUri = substr($requestUri, 3);
+        if ($this->use_routes) {
+
+            $urlLanguage = $this->getLanguageFromUri($requestUri);
+            if ($urlLanguage) {
+                $requestUri = substr($requestUri, strlen($urlLanguage->iso_code) + 1);
+                $_GET['isolang'] = $urlLanguage->iso_code;
+            } else {
+                // no iso code in url, we will fallback to default language
+                $_GET['isolang'] = $this->getDefaultLanguageIsoCode();
             }
         }
 
@@ -1781,5 +1786,39 @@ class DispatcherCore
             return rawurldecode((string)$_SERVER['HTTP_X_REWRITE_URL']);
         }
         return '';
+    }
+
+    /**
+     * @param string $requestUri
+     *
+     * @return Language|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function getLanguageFromUri(string $requestUri): ?Language
+    {
+        if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $requestUri, $m)) {
+            $isoCode = strtolower((string)$m[1]);
+            // test that the iso code is enabled language for the current shop
+            $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+            foreach ($languages as $language) {
+                if ($isoCode === strtolower((string)$language['iso_code'])) {
+                    $lang = new Language();
+                    $lang->hydrate($language);
+                    return $lang;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected function getDefaultLanguageIsoCode(): string
+    {
+        return (string)Language::getIsoById((int)Configuration::get('PS_LANG_DEFAULT'));
     }
 }

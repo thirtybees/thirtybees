@@ -160,7 +160,29 @@ class AdminMetaControllerCore extends AdminController
                 'validation' => 'isBool',
                 'cast'       => 'intval',
                 'type'       => 'bool',
-            ]
+            ],
+            Configuration::LANGUAGE_CODE_IN_URL => [
+                'title' => $this->l('Include language code in URLs'),
+                'hint' => $this->l('Decide when should language ISO code be part of URLs'),
+                'validation' => 'isUnsignedInt',
+                'cast' => 'intval',
+                'type' => 'select',
+                'list' => [
+                    [
+                        'value' => Language::LANG_CODE_IN_URL_WHEN_MULTI_LANGUAGES,
+                        'name' => $this->l('When multiple languages exists')
+                    ],
+                    [
+                        'value' => Language::LANG_CODE_IN_URL_ALWAYS,
+                        'name' => $this->l('Always, even if only one language exists')
+                    ],
+                    [
+                        'value' => Language::LANG_CODE_IN_URL_FOR_NON_DEFAULT_LANGUAGES,
+                        'name' => $this->l('Only for non-default languages')
+                    ],
+                ],
+                'identifier' => 'value',
+            ],
         ];
 
         $urlDescription = '';

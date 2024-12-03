@@ -277,6 +277,7 @@ class ConfigurationCore extends ObjectModel
     const CONNECTED = 'TB_CONNECTED';
     const CONNECT_CODE = 'TB_CONNECT_CODE';
     const MAINTENANCE_IP_ADDRESSES = 'PS_MAINTENANCE_IP';
+    const LANGUAGE_CODE_IN_URL = 'TB_LANGUAGE_CODE_IN_URL';
 
     /**
      * List of configuration keys that will raise warnings

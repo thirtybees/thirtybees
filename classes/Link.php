@@ -293,14 +293,30 @@ class LinkCore
             $context = Context::getContext();
         }
 
-        if ((!$this->allow && in_array($idShop, [$context->shop->id, null])) || !Language::isMultiLanguageActivated($idShop) || !(int) Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop)) {
-            return '';
-        }
-
         if (!$idLang) {
             $idLang = $context->language->id;
         }
+        $idLang = (int)$idLang;
 
+        // friendly urls must be enabled
+        $friendlyUrlEnabled = (bool)Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop);
+        if (! $friendlyUrlEnabled) {
+            return '';
+        }
+
+        // language code can be hidden, depending on settings
+        $langInUrlSettings = (int)Configuration::get(Configuration::LANGUAGE_CODE_IN_URL, null, null, $idShop);
+
+        if ($langInUrlSettings === Language::LANG_CODE_IN_URL_WHEN_MULTI_LANGUAGES && !Language::isMultiLanguageActivated($idShop)) {
+            return '';
+        }
+
+        $defaultLanguageId = (int)Configuration::get('PS_LANG_DEFAULT', null, null, $idShop);
+        if ($langInUrlSettings === Language::LANG_CODE_IN_URL_FOR_NON_DEFAULT_LANGUAGES && ($idLang === $defaultLanguageId)) {
+            return '';
+        }
+
+        // Return the ISO code of the language
         return Language::getIsoById($idLang).'/';
     }
 

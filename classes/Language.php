@@ -34,6 +34,10 @@
  */
 class LanguageCore extends ObjectModel
 {
+    const LANG_CODE_IN_URL_WHEN_MULTI_LANGUAGES = 0;
+    const LANG_CODE_IN_URL_ALWAYS = 1;
+    const LANG_CODE_IN_URL_FOR_NON_DEFAULT_LANGUAGES = 2;
+
     /** @var array Languages cache */
     protected static $_checkedLangs;
 
