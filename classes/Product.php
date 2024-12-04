@@ -2022,7 +2022,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $row['specific_prices'] = $specificPrices;
 
-        $row['quantity'] = static::getQuantity(
+        $row['quantity'] = (int)static::getQuantity(
             (int) $row['id_product'],
             0,
             $row['cache_is_pack'] ?? null
@@ -2030,13 +2030,28 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $row['quantity_all_versions'] = $row['quantity'];
 
-        if ($row['id_product_attribute']) {
-            $row['quantity'] = static::getQuantity(
+        if ($idProductAttribute) {
+            $row['quantity'] = (int)static::getQuantity(
                 (int) $row['id_product'],
                 $idProductAttribute,
                 $row['cache_is_pack'] ?? null
             );
+
+            // $quantity_all_versions is a sum of quantities of all combinations. It is possible that
+            // the value is zero or negative even when some combination is in stock.
+            // Example: product has 3 combinations with quantities (-12, 10, 1), sum is -1
+            if ($row['quantity_all_versions'] <= 0) {
+                $totalPositiveQuantity = 0;
+                $combinationQuantities = StockAvailable::getCombinationQuantities((int)$row['id_product']);
+                foreach ($combinationQuantities as $quantity) {
+                    if ($quantity > 0) {
+                        $totalPositiveQuantity += $quantity;
+                    }
+                }
+                $row['quantity_all_versions'] = $totalPositiveQuantity;
+            }
         }
+
 
         $row['features'] = static::getFrontFeaturesStatic((int) $idLang, $row['id_product']);
 
@@ -5768,9 +5783,10 @@ class ProductCore extends ObjectModel implements InitializationCallback
             return [];
         }
 
+        $quantities = StockAvailable::getCombinationQuantities((int)$this->id);
         foreach ($combinations as &$combination) {
             $productAttributeId = (int)$combination['id_product_attribute'];
-            $combination['quantity'] = StockAvailable::getQuantityAvailableByProduct($this->id, $productAttributeId);
+            $combination['quantity'] = $quantities[$productAttributeId] ?? 0;
         }
 
         return $combinations;

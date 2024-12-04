@@ -466,6 +466,40 @@ class StockAvailableCore extends ObjectModel
     }
 
     /**
+     * Returns information about combination quantities
+     *
+     * @param int $idProduct
+     * @param int|null $idShop
+     *
+     * @return array<int, int> Map from combinationId -> quantity
+     *
+     * @throws PrestaShopException
+     */
+    public static function getCombinationQuantities(int $idProduct, int $idShop = null): array
+    {
+        $idProduct = (int)$idProduct;
+        $key = 'StockAvailable::getCombinationQuantities'.$idProduct.'-'.(int) $idShop;
+        if (!Cache::isStored($key)) {
+            $result = [];
+            $query = (new DbQuery())
+                ->select('id_product_attribute, quantity')
+                ->from('stock_available')
+                ->where('`id_product` = '. (int)$idProduct)
+                ->where('`id_product_attribute` != 0')
+                ->orderBy('id_product_attribute');
+            static::addSqlShopRestriction($query, $idShop);
+            foreach (Db::readOnly()->getArray($query) as $row) {
+                $combinationId = (int)$row['id_product_attribute'];
+                $quantity = (int)$row['quantity'];
+                $result[$combinationId] = $quantity;
+            }
+            Cache::store($key, $result);
+            return $result;
+        }
+        return Cache::retrieve($key);
+    }
+
+    /**
      * Upgrades total_quantity_available after having saved
      *
      *
@@ -990,6 +1024,7 @@ class StockAvailableCore extends ObjectModel
     {
         $productId = (int)$productId;
         Cache::clean('StockAvailable::getQuantityAvailableByProduct_'.$productId.'-*');
+        Cache::clean('StockAvailable::getCombinationQuantities'.$productId.'-*');
         Cache::clean('StockAvailable::getStockAvailableIdByProductId_'.$productId.'-*');
     }
 
