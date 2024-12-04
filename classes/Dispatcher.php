@@ -505,7 +505,7 @@ class DispatcherCore
             if ($urlLanguage) {
                 $requestUri = substr($requestUri, strlen($urlLanguage->getUrlCode()) + 1);
                 $_GET['isolang'] = $urlLanguage->iso_code;
-            } else {
+            } elseif (! Tools::getValue('isolang')) {
                 // no iso code in url, we will fallback to default language
                 $_GET['isolang'] = $this->getDefaultLanguageIsoCode();
             }

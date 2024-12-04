@@ -224,6 +224,13 @@ class DispatcherTest extends Unit
     {
         $dispatcher = $this->getDispatcher($useFriendlyUrl, $uri, $additionalRoutes);
 
+        if ($useFriendlyUrl) {
+            $expectedGet = array_merge($expectedGet, [
+                'isolang' => 'en',
+                'id_lang' => 1,
+            ]);
+        }
+
         // resolve controller
         static::assertEquals($expected, $dispatcher->getController(), "URI $uri should be resolved as $expected controller");
 
