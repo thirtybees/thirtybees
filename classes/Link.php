@@ -316,8 +316,8 @@ class LinkCore
             return '';
         }
 
-        // Return the ISO code of the language
-        return Language::getIsoById($idLang).'/';
+        // Return the language friendly url code
+        return Language::getUrlCodeById($idLang).'/';
     }
 
     /**

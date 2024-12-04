@@ -64,6 +64,8 @@ class AdminLanguagesControllerCore extends AdminController
             ],
         ];
 
+        $this->_select = 'COALESCE(NULLIF(a.url_code, ""), a.iso_code) AS friendly_url_code';
+
         $this->fields_list = [
             'id_lang'          => [
                 'title' => $this->l('ID'),
@@ -90,6 +92,12 @@ class AdminLanguagesControllerCore extends AdminController
                 'title' => $this->l('Language code'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
+            ],
+            'friendly_url_code'    => [
+                'title' => $this->l('Frindly URL code'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
+                'tmpTableFilter' => true,
             ],
             'date_format_lite' => [
                 'title' => $this->l('Date format'),
@@ -200,6 +208,13 @@ class AdminLanguagesControllerCore extends AdminController
                     'required'  => true,
                     'maxlength' => 5,
                     'hint'      => $this->l('IETF language tag (e.g. en-US, pt-BR).'),
+                ],
+                [
+                    'type'      => 'text',
+                    'label'     => $this->l('Friendly URL code'),
+                    'name'      => 'url_code',
+                    'maxlength' => 40,
+                    'hint'      => $this->l('Code used in URLs. If not set, ISO Code will be used'),
                 ],
                 [
                     'type'     => 'text',

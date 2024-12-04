@@ -1152,6 +1152,7 @@ CREATE TABLE `PREFIX_lang` (
   `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `iso_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `language_code` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url_code` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_format_lite` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d',
   `date_format_full` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y-m-d H:i:s',
   `is_rtl` tinyint(1) NOT NULL DEFAULT '0',

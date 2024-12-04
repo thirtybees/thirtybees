@@ -56,19 +56,44 @@ class LanguageCore extends ObjectModel
      */
     protected static $_cache_language_installation = null;
 
-    /** @var string Name */
+    /**
+     * @var string Name
+     */
     public $name;
-    /** @var string 2-letter iso code */
+
+    /**
+     * @var string 2-letter iso code
+     */
     public $iso_code;
-    /** @var string 5-letter iso code */
+
+    /**
+     * @var string 5-letter iso code
+     */
     public $language_code;
-    /** @var string date format http://http://php.net/manual/en/function.date.php with the date only */
+
+    /**
+     * @var string friendly url code
+     */
+    public $url_code;
+
+    /**
+     * @var string date format http://http://php.net/manual/en/function.date.php with the date only
+     */
     public $date_format_lite = 'Y-m-d';
-    /** @var string date format http://http://php.net/manual/en/function.date.php with hours and minutes */
+
+    /**
+     * @var string date format http://http://php.net/manual/en/function.date.php with hours and minutes
+     */
     public $date_format_full = 'Y-m-d H:i:s';
-    /** @var bool true if this language is right to left language */
+
+    /**
+     * @var bool true if this language is right to left language
+     */
     public $is_rtl = false;
-    /** @var bool Status */
+
+    /**
+     * @var bool Status
+     */
     public $active = true;
 
     /**
@@ -82,6 +107,7 @@ class LanguageCore extends ObjectModel
             'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned', 'dbDefault' => '0'],
             'iso_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2, 'dbType' => 'char(2)'],
             'language_code'    => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageCode', 'size' => 5, 'dbType' => 'char(5)', 'dbNullable' => false],
+            'url_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLinkRewrite', 'size' => 40, 'dbNullable' => true],
             'date_format_lite' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32, 'dbType' => 'char(32)', 'dbDefault' => 'Y-m-d'],
             'date_format_full' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32, 'dbType' => 'char(32)', 'dbDefault' => 'Y-m-d H:i:s'],
             'is_rtl'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
@@ -1379,5 +1405,40 @@ class LanguageCore extends ObjectModel
         }
 
         return $themes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlCode(): string
+    {
+        $urlCode = (string)$this->url_code;
+        if ($urlCode) {
+            return $urlCode;
+        } else {
+            return (string)$this->iso_code;
+        }
+    }
+
+    /**
+     * @param int $languageId
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public static function getUrlCodeById(int $languageId): string
+    {
+        if (!static::$_LANGUAGES) {
+            static::loadLanguages();
+        }
+
+        if (isset(static::$_LANGUAGES[$languageId])) {
+            $language = new Language();
+            $language->hydrate(static::$_LANGUAGES[$languageId]);
+            return $language->getUrlCode();
+        }
+
+        return '';
     }
 }

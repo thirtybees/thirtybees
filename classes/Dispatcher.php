@@ -503,7 +503,7 @@ class DispatcherCore
 
             $urlLanguage = $this->getLanguageFromUri($requestUri);
             if ($urlLanguage) {
-                $requestUri = substr($requestUri, strlen($urlLanguage->iso_code) + 1);
+                $requestUri = substr($requestUri, strlen($urlLanguage->getUrlCode()) + 1);
                 $_GET['isolang'] = $urlLanguage->iso_code;
             } else {
                 // no iso code in url, we will fallback to default language
@@ -1797,17 +1797,23 @@ class DispatcherCore
      */
     protected function getLanguageFromUri(string $requestUri): ?Language
     {
-        if (preg_match('#^/([a-z]{2})(?:/.*)?$#', $requestUri, $m)) {
-            $isoCode = strtolower((string)$m[1]);
-            // test that the iso code is enabled language for the current shop
-            $languages = Language::getLanguages(true, Context::getContext()->shop->id);
-            foreach ($languages as $language) {
-                if ($isoCode === strtolower((string)$language['iso_code'])) {
-                    $lang = new Language();
-                    $lang->hydrate($language);
-                    return $lang;
-                }
-            }
+        $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+        if (! $languages) {
+            return null;
+        }
+
+        $codes = [];
+        foreach ($languages as $data) {
+            $lang = new Language();
+            $lang->hydrate($data);
+            $urlCode = $lang->getUrlCode();
+            $codes[$urlCode] = $lang;
+        }
+
+        $regexpCodes = implode('|', array_map('preg_quote', array_keys($codes)));
+        if (preg_match('#^/('.$regexpCodes.')(?:/.*)?$#', $requestUri, $m)) {
+            $urlCode = strtolower((string)$m[1]);
+            return $codes[$urlCode];
         }
         return null;
     }
