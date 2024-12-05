@@ -506,8 +506,10 @@ class DispatcherCore
                 $requestUri = substr($requestUri, strlen($urlLanguage->getUrlCode()) + 1);
                 $_GET['isolang'] = $urlLanguage->iso_code;
             } elseif (! Tools::getValue('isolang')) {
-                // no iso code in url, we will fallback to default language
-                $_GET['isolang'] = $this->getDefaultLanguageIsoCode();
+                if (! $this->isPhpScriptUrl($requestUri)) {
+                    // no iso code in url, we will fallback to default language
+                    $_GET['isolang'] = $this->getDefaultLanguageIsoCode();
+                }
             }
         }
 
@@ -1826,5 +1828,31 @@ class DispatcherCore
     protected function getDefaultLanguageIsoCode(): string
     {
         return (string)Language::getIsoById((int)Configuration::get('PS_LANG_DEFAULT'));
+    }
+
+    /**
+     * Returns true, if $requestUri points to PHP script file
+     *
+     * This means that php script included thirty bees core and triggerd dispatcher
+     *
+     * @param string $requestUri
+     * @return bool
+     */
+    protected function isPhpScriptUrl(string $requestUri): bool
+    {
+        $path = parse_url($requestUri, PHP_URL_PATH);
+        $path = '/' . ltrim($path, '/');
+
+        if (str_ends_with($path, '/')) {
+            $path .= 'index.php';
+        }
+
+        // special handling for root index.php, we will consider this to be
+        // php script file only for non GET requests
+        if ($path === '/index.php') {
+            return Tools::getRequestMethod() !== 'GET';
+        }
+
+        return file_exists(_PS_ROOT_DIR_ . $path);
     }
 }
