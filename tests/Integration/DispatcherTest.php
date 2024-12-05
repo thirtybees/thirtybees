@@ -54,17 +54,17 @@ class DispatcherTest extends Unit
     {
         return array_merge($this->getUnfriendlyRoutes(), [
             // friendly url
-            'Rewrite on | category controller' => [true, '/tea', 'category', ['controller' => 'category', 'id_category' => '5']],
-            'Rewrite on | supplier controller' => [true, '/bee-keeper', 'supplier', ['controller' => 'supplier', 'id_supplier' => '1']],
-            'Rewrite on | manufacturer controller' => [true, '/bee-hive', 'manufacturer', ['controller' => 'manufacturer', 'id_manufacturer' => '1']],
-            'Rewrite on | cms controller' => [true, '/info/about-us', 'cms', ['controller' => 'cms', 'id_cms' => '4']],
-            'Rewrite on | product controller' => [true, '/gifts/candle', 'product', ['controller' => 'product', 'id_product' => '1']],
-            'Rewrite on | module controller' => [true, '/module/mod/modcontroller', 'modcontroller', ['controller' => 'modcontroller', 'module' => 'mod', 'fc' => 'module']],
-            'Rewrite on | my-account controller' => [true, '/my-account', 'myaccount', ['controller' => 'myaccount']],
-            'Rewrite on | beesblog post controller' => [true, '/blog/organic-gifts', 'post', ['controller' => 'post', 'module' => 'beesblog', 'fc' => 'module', 'blog_rewrite' => 'organic-gifts']],
+            'Rewrite on | category controller' => [true, '/tea', 'category', ['controller' => 'category', 'id_category' => '5', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | supplier controller' => [true, '/bee-keeper', 'supplier', ['controller' => 'supplier', 'id_supplier' => '1', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | manufacturer controller' => [true, '/bee-hive', 'manufacturer', ['controller' => 'manufacturer', 'id_manufacturer' => '1', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | cms controller' => [true, '/info/about-us', 'cms', ['controller' => 'cms', 'id_cms' => '4', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | product controller' => [true, '/gifts/candle', 'product', ['controller' => 'product', 'id_product' => '1', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | module controller' => [true, '/module/mod/modcontroller', 'modcontroller', ['controller' => 'modcontroller', 'module' => 'mod', 'fc' => 'module', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | my-account controller' => [true, '/my-account', 'myaccount', ['controller' => 'myaccount', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | beesblog post controller' => [true, '/blog/organic-gifts', 'post', ['controller' => 'post', 'module' => 'beesblog', 'fc' => 'module', 'blog_rewrite' => 'organic-gifts', 'isolang' => 'en', 'id_lang' => 1]],
 
             // not found
-            'Rewrite on  | invalid url' => [true, '/gifts/whatever', 'pagenotfound', ['controller' => 'pagenotfound']],
+            'Rewrite on  | invalid url' => [true, '/gifts/whatever', 'pagenotfound', ['controller' => 'pagenotfound', 'isolang' => 'en', 'id_lang' => 1]],
 
             // this should probably be fixed
             'Rewrite on | invalid url (old)' => [true, 'index.php?controller=product&id_product=100000', 'product', ['controller' => 'product', 'id_product' => '100000']],
@@ -79,9 +79,9 @@ class DispatcherTest extends Unit
     {
         return array_merge($this->urlDefaultRoutes(), [
             // modified default routes
-            'Rewrite on | category controller' => [true, '/coffee-and-tea/tea', 'category', ['controller' => 'category', 'id_category' => '5']],
-            'Rewrite on | product controller' => [true, '/gifts/1-candle', 'product', ['controller' => 'product', 'id_product' => '1']],
-            'Rewrite on | product controller - wrong rewrite' => [true, '/gifts/2-not-existing-rewrite', 'product', ['controller' => 'product', 'id_product' => '2']],
+            'Rewrite on | category controller' => [true, '/coffee-and-tea/tea', 'category', ['controller' => 'category', 'id_category' => '5', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | product controller' => [true, '/gifts/1-candle', 'product', ['controller' => 'product', 'id_product' => '1', 'isolang' => 'en', 'id_lang' => 1]],
+            'Rewrite on | product controller - wrong rewrite' => [true, '/gifts/2-not-existing-rewrite', 'product', ['controller' => 'product', 'id_product' => '2', 'isolang' => 'en', 'id_lang' => 1]],
             'Rewrite on | custom controller | backwards support' => [true, '/custom-url/2/friendly.html', 'controllername', [
                 'fc' => 'module',
                 'module' => 'samplemodule',
@@ -90,6 +90,8 @@ class DispatcherTest extends Unit
                 // for backwards compatibility we populate 'keyword' as well as param
                 'id_key' => '2',
                 'id_param' => '2',
+                'isolang' => 'en',
+                'id_lang' => 1,
             ]],
         ]);
     }
@@ -223,13 +225,6 @@ class DispatcherTest extends Unit
     private function performTest($useFriendlyUrl, $uri, $additionalRoutes, $expected, $expectedGet)
     {
         $dispatcher = $this->getDispatcher($useFriendlyUrl, $uri, $additionalRoutes);
-
-        if ($useFriendlyUrl) {
-            $expectedGet = array_merge($expectedGet, [
-                'isolang' => 'en',
-                'id_lang' => 1,
-            ]);
-        }
 
         // resolve controller
         static::assertEquals($expected, $dispatcher->getController(), "URI $uri should be resolved as $expected controller");
