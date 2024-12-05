@@ -89,6 +89,10 @@ class CookieCore
 {
     const VERSION = 'v2';
 
+    const CSV_SEPARATOR = ",";
+    const CSV_ENCLOSURE = '"';
+    const CSV_ESCAPE = "";
+
     /**
      * @var array Contain cookie content in a key => value format
      */
@@ -247,7 +251,7 @@ class CookieCore
 
                 if ($storedChecksum === $calculatedChecksum) {
                     if ($data) {
-                        $array = str_getcsv($data);
+                        $array = str_getcsv($data, static::CSV_SEPARATOR, static::CSV_ENCLOSURE, static::CSV_ESCAPE);
                         $len = count($array);
                         if ($len % 2 === 0) {
                             $fields = $len / 2;
@@ -524,7 +528,7 @@ class CookieCore
             $data[] = $value;
         }
         $f = fopen('php://memory', 'r+');
-        if (fputcsv($f, $data) === false) {
+        if (fputcsv($f, $data, static::CSV_SEPARATOR, static::CSV_ENCLOSURE, static::CSV_ESCAPE) === false) {
             return false;
         }
         rewind($f);
