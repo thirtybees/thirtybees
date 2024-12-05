@@ -64,6 +64,11 @@ if (!file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
     exit;
 }
 
+// install bootstrap error handler
+require_once(_PS_ROOT_DIR_ . '/classes/error/BootstrapErrorHandler.php');
+$bootstrapErrorHandler = \Thirtybees\Core\Error\BootstrapErrorHandler::getInstance();
+$bootstrapErrorHandler->installErrorHandler();
+
 /* include settings file only if we are not in multi-tenancy mode */
 require_once(_PS_ROOT_DIR_.'/config/settings.inc.php');
 require_once(_PS_CONFIG_DIR_.'autoload.php');
@@ -326,3 +331,6 @@ if (!defined('_PS_CACHE_ENABLED_')) {
 
 Hook::triggerEvent('actionRegisterAutoloader');
 Hook::triggerEvent('actionRegisterErrorHandlers');
+
+$errorHandler = \Thirtybees\Core\DependencyInjection\ServiceLocator::getInstance()->getErrorHandler();
+$errorHandler->replay($bootstrapErrorHandler);

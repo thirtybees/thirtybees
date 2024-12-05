@@ -34,6 +34,7 @@ class TestClassIndex
 
     const NOT_OVERRIDABLE = [
         'PrestaShopAutoload',
+        'Thirtybees\Core\Error\BootstrapErrorHandler'
     ];
 
     const ALIASES = [

@@ -83,6 +83,23 @@ class ErrorHandlerCore
     }
 
     /**
+     * @param BootstrapErrorHandler $bootstrapErrorHandler
+     *
+     * @return void
+     */
+    public function replay(BootstrapErrorHandler $bootstrapErrorHandler)
+    {
+        foreach ($bootstrapErrorHandler->getCollectedErrors() as $error) {
+            $this->errorHandler(
+                $error['errno'],
+                $error['errstr'],
+                $error['errfile'],
+                $error['errline'],
+            );
+        }
+    }
+
+    /**
      * @param ErrorResponseInterface $errorResponse
      */
     public function setErrorResponseHandler(ErrorResponseInterface $errorResponse)
