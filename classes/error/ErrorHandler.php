@@ -70,7 +70,7 @@ class ErrorHandlerCore
         $this->errorResponse = $errorResponse;
 
         @ini_set('display_errors', 'off');
-        @error_reporting(E_ALL | E_STRICT);
+        @error_reporting(E_ALL);
 
         // Set uncaught exception handler
         set_exception_handler([$this, 'uncaughtExceptionHandler']);
