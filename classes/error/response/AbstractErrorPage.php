@@ -138,12 +138,12 @@ abstract class AbstractErrorPageCore implements ErrorResponseInterface
     /**
      * @return string
      */
-    protected abstract function getContentType();
+    abstract protected function getContentType();
 
     /**
      * @param ErrorDescription $errorDescription
      * @return string
      */
-    protected abstract function renderError(ErrorDescription $errorDescription);
+    abstract protected function renderError(ErrorDescription $errorDescription);
 
 }

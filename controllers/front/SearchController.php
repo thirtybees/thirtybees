@@ -83,7 +83,7 @@ class SearchControllerCore extends FrontController
             $searchResults = Search::find(Tools::getIntValue('id_lang'), $query, 1, 10, 'position', 'desc', true);
 
             if (! $searchResults && Configuration::get('TB_SEARCH_SIMILAR')) {
-                $searchResults = Search::find(Tools::getIntValue('id_lang'), self::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
+                $searchResults = Search::find(Tools::getIntValue('id_lang'), static::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
             }
 
             if (is_array($searchResults)) {
@@ -245,7 +245,7 @@ class SearchControllerCore extends FrontController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    static function findFirstClosestWords($searchString)
+    public static function findFirstClosestWords($searchString)
     {
         $closestWords = [];
         $lenghtWordCoefMin = 0.7;

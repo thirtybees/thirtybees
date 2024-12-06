@@ -97,20 +97,20 @@ abstract class DataExtractorCore
      *
      * @return string
      */
-    public abstract function getName();
+    abstract public function getName();
 
     /**
      * Returns detailed information about this data
      *
      * @return string
      */
-    public abstract function getDescription();
+    abstract public function getDescription();
 
     /**
      * Extracts value
      *
      * @return mixed
      */
-    public abstract function extractValue();
+    abstract public function extractValue();
 
 }

@@ -34,7 +34,7 @@ class WorkQueueImmediateExecutorCore implements WorkQueueExecutor
     /**
      * @var static
      */
-    static $instance = null;
+    protected static $instance = null;
 
     /**
      * Immediately runs work queue task
