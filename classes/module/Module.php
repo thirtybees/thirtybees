@@ -32,6 +32,7 @@
 use GuzzleHttp\Client;
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
+use GuzzleHttp\Promise\Utils;
 
 /**
  * Class ModuleCore
@@ -1020,7 +1021,7 @@ abstract class ModuleCore
         }
         // Download images simultaneously
         if ($imagePromises) {
-            GuzzleHttp\Promise\Utils::settle($imagePromises)->wait();
+            Utils::settle($imagePromises)->wait();
         }
 
         foreach ($moduleList as &$module) {
@@ -3630,7 +3631,7 @@ abstract class ModuleCore
         if ($force || $lastCheck < (time() - $checkInterval) || !file_exists(static::MODULES_CACHE_FILE)) {
             Configuration::updateGlobalValue(static::LAST_MODULES_CHECK, time());
 
-            $guzzle = new GuzzleHttp\Client([
+            $guzzle = new Client([
                 'base_uri' => Configuration::getApiServer(),
                 'verify'   => Configuration::getSslTrustStore(),
             ]);

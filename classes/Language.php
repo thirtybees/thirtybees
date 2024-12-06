@@ -1,4 +1,6 @@
 <?php
+
+use GuzzleHttp\Client;
 /**
  * 2007-2016 PrestaShop
  *
@@ -479,7 +481,7 @@ class LanguageCore extends ObjectModel
         $file = _PS_TRANSLATIONS_DIR_.$iso.'.gzip';
         $baseUri = "https://translations.thirtybees.com/packs/{$version}/";
 
-        $guzzle = new GuzzleHttp\Client([
+        $guzzle = new Client([
             'base_uri' => $baseUri,
             'timeout'  => 20,
             'verify'   => Configuration::getSslTrustStore(),
@@ -611,7 +613,7 @@ class LanguageCore extends ObjectModel
         // If the language pack has not been provided, retrieve it from translations.thirtybees.com
         if (!$langPack) {
             $version = implode('.', array_map('intval', explode('.', _TB_VERSION_, 3)));
-            $guzzle = new GuzzleHttp\Client([
+            $guzzle = new Client([
                 'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
                 'timeout'  => 20,
                 'verify'   => Configuration::getSslTrustStore(),

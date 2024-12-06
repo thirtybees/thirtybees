@@ -30,6 +30,7 @@
  */
 
 use Thirtybees\Core\Package\PackageExtractor;
+use GuzzleHttp\Client;
 
 /**
  * Class AdminModulesControllerCore
@@ -1733,7 +1734,7 @@ class AdminModulesControllerCore extends AdminController
 
         $zipLocation = _PS_MODULE_DIR_.$moduleName.'.zip';
         if (!file_exists($zipLocation)) {
-            $guzzle = new GuzzleHttp\Client([
+            $guzzle = new Client([
                 'timeout' => 30,
                 'verify'  => Configuration::getSslTrustStore(),
             ]);

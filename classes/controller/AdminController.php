@@ -32,6 +32,7 @@
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 use Thirtybees\Core\Error\Response\JSendErrorResponse;
+use GuzzleHttp\Client;
 
 /**
  * Class AdminControllerCore
@@ -3384,7 +3385,7 @@ class AdminControllerCore extends Controller
      */
     public function refresh($fileToRefresh, $externalFile)
     {
-        $guzzle = new GuzzleHttp\Client([
+        $guzzle = new Client([
             'timeout' => 5,
             'verify' => Configuration::getSslTrustStore(),
         ]);
