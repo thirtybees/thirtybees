@@ -82,7 +82,7 @@ class PrestaShopAutoload
     {
         $this->root_dir = rtrim(_PS_ROOT_DIR_, '/\\').DIRECTORY_SEPARATOR;
         $file = $this->root_dir . PrestaShopAutoload::INDEX_FILE;
-        if (@filemtime($file) && is_readable($file)) {
+        if (file_exists($file) && is_readable($file)) {
             $this->index = include($file);
         } else {
             $this->generateIndex();
