@@ -5390,7 +5390,7 @@ FileETag none
             $timestamp = date_create('@' . $timestamp);
             if ($timestamp) {
                 try {
-                    $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
+                    $timestamp->setTimezone(new DateTimeZone(date_default_timezone_get()));
                 } catch (Exception $e) {
                     throw new PrestaShopException('Failed to resolve timezone', 0, $e);
                 }
