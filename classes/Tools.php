@@ -5573,7 +5573,7 @@ FileETag none
         if ($cast) {
             // this allows us to override build-in casts ('stringval', 'intval')
             // or define new cast types without polluting global namespace 'priceval'
-            $method = 'cast' . ucFirst($cast);
+            $method = 'cast' . ucfirst($cast);
             if (method_exists(static::class, $method)) {
                 return static::$method($input);
             }

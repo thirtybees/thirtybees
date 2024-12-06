@@ -424,7 +424,7 @@ class LanguageCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function updateModulesTranslations(Array $modulesList)
+    public static function updateModulesTranslations(array $modulesList)
     {
         $languages = Language::getLanguages(false);
         clearstatcache();
