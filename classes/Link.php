@@ -236,7 +236,7 @@ class LinkCore
         if (!$ipa && ($product instanceof ProductViewModel)) {
             $ipa = (int)$product->getSelectedCombinationId();
         }
-        if ($ipa) {
+        if ($ipa && ((int)$ipa !== (int)$product->getDefaultIdProductAttribute())) {
             $params['combination'] = (int)$ipa;
         }
 

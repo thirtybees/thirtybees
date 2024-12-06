@@ -962,14 +962,20 @@ class ProductControllerCore extends FrontController
      */
     protected function resolveCombinationId(int $productId): int
     {
-        $combinationId = Tools::getIntValue('combination');
-        if ($combinationId) {
-            $combinationIds = array_map('intval', array_column(Product::getProductAttributesIds($productId, true), 'id_product_attribute'));
-            if (! in_array($combinationId, $combinationIds, true)) {
-                Tools::redirect($this->context->link->getProductLink($productId));
+        $product = new Product($productId);
+        if ($product->hasAttributes()) {
+            $combinationId = Tools::getIntValue('combination');
+            if ($combinationId) {
+                $combinationIds = array_map('intval', array_column(Product::getProductAttributesIds($productId, true), 'id_product_attribute'));
+                if (!in_array($combinationId, $combinationIds, true)) {
+                    Tools::redirect($this->context->link->getProductLink($productId));
+                }
+                return $combinationId;
+            } else {
+                return (int)$product->getDefaultIdProductAttribute();
             }
         }
-        return $combinationId;
+        return 0;
     }
 
     /**
