@@ -3235,10 +3235,10 @@ class AdminImportControllerCore extends AdminController
             $customer->date_upd = date('Y-m-d H:i:s');
         }
 
-        if($birthday = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['birthday'], 'Y-m-d')){
+        if($birthday = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['birthday'], 'Y-m-d')) {
             $customer->birthday = $birthday;
         }
-        if($dateAdd = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['date_add'], 'Y-m-d')){
+        if($dateAdd = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['date_add'], 'Y-m-d')) {
             $customer->date_add = $dateAdd;
         }
 

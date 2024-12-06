@@ -1249,7 +1249,8 @@ class DbCore implements ReadOnlyConnection
                 try {
                     $rand = floor(random_int(0, $wait));
                     $wait = $rand;
-                } catch (Exception $ignored) {}
+                } catch (Exception $ignored) {
+                }
                 if ($wait > 0) {
                     usleep($wait);
                 }

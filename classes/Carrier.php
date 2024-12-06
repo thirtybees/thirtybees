@@ -2058,7 +2058,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                 $this->display_name = static::expandName($this->name);
             } else {
                 $this->display_name = [];
-                foreach (Language::getLanguages(false, false, true) as $lang)  {
+                foreach (Language::getLanguages(false, false, true) as $lang) {
                     $this->display_name[$lang] = static::expandName($this->name);
                 }
             }

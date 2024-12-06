@@ -1852,8 +1852,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
 
         $subcats = $this->getAllSubcategories();
         $catsToSearchIn = [$this->id];
-        if($subcats && $this->display_from_sub)
-        {
+        if($subcats && $this->display_from_sub) {
             foreach ($subcats as $scat) {
                 $catsToSearchIn[] = $scat['id_category'];
             }

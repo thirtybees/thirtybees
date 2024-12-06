@@ -154,8 +154,7 @@ class MailCore extends ObjectModel
         $idShop = null,
         $bcc = null,
         $replyTo = null
-    )
-    {
+    ) {
         try {
             // allow hooks to modify input parameters
             $result = Hook::getResponses('actionEmailSendBefore', [

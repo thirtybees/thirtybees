@@ -675,7 +675,8 @@ class PackCore extends Product
             if (self::isValidStockType($stockType)) {
                 return $stockType;
             }
-        } catch (Exception $ignored) {}
+        } catch (Exception $ignored) {
+        }
         return static::STOCK_TYPE_DECREMENT_PACK;
     }
 

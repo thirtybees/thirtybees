@@ -344,7 +344,7 @@ class CacheMemcachedCore extends Cache
      */
     protected static function mapKey($key)
     {
-        if (strlen($key) > 250)  {
+        if (strlen($key) > 250) {
             return Tools::encrypt($key);
         }
         return $key;

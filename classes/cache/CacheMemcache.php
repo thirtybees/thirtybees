@@ -276,8 +276,7 @@ class CacheMemcacheCore extends Cache
             if (isset($allSlabs) && is_array($allSlabs)) {
                 foreach ($allSlabs as $slabs) {
                     if (is_array($slabs)) {
-                        foreach (array_keys($slabs) as $i => $slabId) // $slab_id is not an int but a string, using the key instead ?
-                        {
+                        foreach (array_keys($slabs) as $i => $slabId) {
                             if (is_int($i)) {
                                 $dump = $this->memcache->getStats('cachedump', (int) $i);
                                 if ($dump) {
@@ -363,7 +362,7 @@ class CacheMemcacheCore extends Cache
      */
     protected static function mapKey($key)
     {
-        if (strlen($key) > 250)  {
+        if (strlen($key) > 250) {
             return Tools::encrypt($key);
         }
         return $key;

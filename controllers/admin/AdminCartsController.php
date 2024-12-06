@@ -171,7 +171,7 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
-	{
+    {
 		// Get the cookie lifetime setting in hours
 		$cookieLifetimeHours = (int) Configuration::get('PS_COOKIE_LIFETIME_FO');
 
@@ -1120,7 +1120,7 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public function processDeleteEmptyCarts()
-	{
+    {
 		$sql = new DbQuery();
 		$sql->select('id_cart');
 		$sql->from('cart');
@@ -1194,7 +1194,7 @@ class AdminCartsControllerCore extends AdminController
      * @throws PrestaShopException
      */
     public function postProcess()
-	{
+    {
 		if (Tools::isSubmit('delete_empty_carts')) {
 			$this->processDeleteEmptyCarts();
             $this->redirect_after = Context::getContext()->link->getAdminLink('AdminCarts');

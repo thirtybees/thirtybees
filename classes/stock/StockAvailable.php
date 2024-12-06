@@ -259,8 +259,7 @@ class StockAvailableCore extends ObjectModel
                         ]
                     );
                 } // else this product has attributes, hence loops on $ids_product_attribute
-                else
-                {
+                else {
                     foreach ($idsProductAttribute as $idProductAttribute) {
                         $allowedWarehouseForCombination = Warehouse::getProductWarehouseList((int) $idProduct, (int) $idProductAttribute, (int) $idShop);
                         $allowedWarehouseForCombinationClean = [];

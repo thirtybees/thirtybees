@@ -871,7 +871,7 @@ class ThemeCore extends ObjectModel
         $module->enable();
 
         // theme can mark some modules as un-managed - module hooks will not be modified during theme installation
-        if (! $manageHooks){
+        if (! $manageHooks) {
             return true;
         }
 

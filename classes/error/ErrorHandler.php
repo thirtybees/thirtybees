@@ -415,7 +415,8 @@ class ErrorHandlerCore
      *
      * @return boolean
      */
-    public static function displayErrorEnabled() {
+    public static function displayErrorEnabled()
+    {
         $value = @ini_get('display_errors');
         switch (strtolower($value)) {
             case 'on':

@@ -398,7 +398,8 @@ class ErrorUtilsCore
      *
      * @return array
      */
-    protected static function readFile($file, $line, $total) {
+    protected static function readFile($file, $line, $total)
+    {
         $ret = [];
         if (! file_exists($file)) {
             return $ret;

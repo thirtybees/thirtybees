@@ -62,7 +62,8 @@ class ProductionErrorPageCore extends AbstractErrorPage
             if ($email) {
                 return $email;
             }
-        } catch (Throwable $ignored) {}
+        } catch (Throwable $ignored) {
+        }
         return 'contact@thirtybees.com';
     }
 

@@ -78,7 +78,8 @@ class DbExtractorCore extends DataExtractor
             if (isset($result[0]['Value'])) {
                 return $result[0]['Value'];
             }
-        } catch (Exception $ignored) {}
+        } catch (Exception $ignored) {
+        }
         return '';
     }
 }

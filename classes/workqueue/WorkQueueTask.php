@@ -262,7 +262,7 @@ class WorkQueueTaskCore extends ObjectModel
         if (isset($error['file'])) {
             $this->error .= " in file " . $error['file'];
         }
-        if (isset($error['line'])){
+        if (isset($error['line'])) {
             $this->error .= " at line " . $error['line'];
         }
         $this->duration = microtime(true) - $this->start;

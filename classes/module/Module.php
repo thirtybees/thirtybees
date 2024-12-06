@@ -3451,20 +3451,20 @@ abstract class ModuleCore
                 $limitedCountries = $this->limited_countries[0];
             }
 
-            foreach ([
-                         'name' => $this->name,
-                         'displayName' => $this->displayName,
-                         'version' => $this->version,
-                         'description' => $this->description,
-                         'author' => $this->author,
-                         'author_uri' => $authorUri,
-                         'tab' => $this->tab,
-                         'confirmUninstall' => $this->confirmUninstall,
-                         'is_configurable' => $this->isModuleConfigurable(),
-                         'need_instance' => $this->need_instance,
-                         'limited_countries' => $limitedCountries,
-                     ] as $node => $value)
-            {
+            $nodeData = [
+                'name' => $this->name,
+                'displayName' => $this->displayName,
+                'version' => $this->version,
+                'description' => $this->description,
+                'author' => $this->author,
+                'author_uri' => $authorUri,
+                'tab' => $this->tab,
+                'confirmUninstall' => $this->confirmUninstall,
+                'is_configurable' => $this->isModuleConfigurable(),
+                'need_instance' => $this->need_instance,
+                'limited_countries' => $limitedCountries,
+            ];
+            foreach ($nodeData as $node => $value) {
                 if (is_bool($value)) {
                     $value = (int)$value;
                 }

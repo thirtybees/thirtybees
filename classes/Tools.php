@@ -147,7 +147,8 @@ class ToolsCore
         if ($length > 0) {
             try {
                 return random_bytes($length);
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
         }
 
         return '';

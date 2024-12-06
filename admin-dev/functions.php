@@ -99,7 +99,8 @@ function includeDatepicker($id, $time = false)
  *
  * @return float Casted price, rounded to _TB_PRICE_DATABASE_PRECISION_.
  */
-function priceval($price) {
+function priceval($price)
+{
     Tools::displayAsDeprecated(sprintf("Function '%s' will be removed in thirty bees 1.6.0", __FUNCTION__));
 
     return Tools::parseNumber($price);

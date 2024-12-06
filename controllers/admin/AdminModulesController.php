@@ -610,7 +610,7 @@ class AdminModulesControllerCore extends AdminController
             ) < 1) {
                 return true;
             }
-        } elseif ($selectedCategory === static::CATEGORY_PREMIUM)  {
+        } elseif ($selectedCategory === static::CATEGORY_PREMIUM) {
             if (! $module->premium) {
                 return true;
             }

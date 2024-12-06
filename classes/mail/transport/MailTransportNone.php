@@ -80,8 +80,7 @@ class MailTransportNoneCore implements MailTransport
         array       $templates,
         array       $templateVars,
         array       $attachements
-    ): bool
-    {
+    ): bool {
         return true;
     }
 }

@@ -5407,8 +5407,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $idCurrency = null,
         $supplierProductName = null,
         $comment = null
-    )
-    {
+    ) {
         //Try to set the default supplier reference
         if (($idSupplier > 0) && ($this->id > 0)) {
             $idProductSupplier = (int) ProductSupplier::getIdByProductAndSupplier($this->id, $idProductAttribute, $idSupplier);

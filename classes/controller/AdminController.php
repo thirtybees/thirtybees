@@ -1630,7 +1630,8 @@ class AdminControllerCore extends Controller
                 if (!empty($definition['images'])) {
                     $this->fieldImageSettings = $definition['images'];
                 }
-            } catch (PrestaShopException $ignore) {}
+            } catch (PrestaShopException $ignore) {
+            }
         }
 
         if (!empty($this->fieldImageSettings)) {
@@ -2671,7 +2672,8 @@ class AdminControllerCore extends Controller
                             $disabled = true;
                         }
                     }
-                } catch (Throwable $ignored) {}
+                } catch (Throwable $ignored) {
+                }
             }
             if (! $disabled) {
                 $campaignClass .= ' show-campaign-bar';

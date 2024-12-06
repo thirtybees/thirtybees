@@ -736,7 +736,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         if (Tools::isSubmit('deleteTexture')) {
             $attribute = new ProductAttribute(Tools::getIntValue('id_attribute'));
-            if (Validate::isLoadedObject($attribute))  {
+            if (Validate::isLoadedObject($attribute)) {
                 if ($sourceImage = ProductAttribute::getTextureFilePath((int)$attribute->id)) {
                     unlink($sourceImage);
                     $this->confirmations[] = $this->l('Texture image was deleted');
