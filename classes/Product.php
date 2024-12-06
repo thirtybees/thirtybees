@@ -713,7 +713,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function __construct($idProduct = null, $full = false, $idLang = null, $idShop = null, Context $context = null)
+    public function __construct($idProduct = null, $full = false, $idLang = null, $idShop = null, ?Context $context = null)
     {
         parent::__construct($idProduct, $idLang, $idShop);
         if ($full && $this->id) {
@@ -778,7 +778,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function getTaxesRate(Address $address = null)
+    public function getTaxesRate(?Address $address = null)
     {
         if (!$address || !$address->id_country) {
             $address = Address::initialize();
@@ -864,7 +864,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         &$specificPriceOutput = null,
         $withEcotax = true,
         $useGroupReduction = true,
-        Context $context = null,
+        ?Context $context = null,
         $useCustomerPrice = true
     ) {
         if (!$context) {
@@ -1370,7 +1370,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function sqlStock($productAlias, $productAttribute = null, $innerJoin = false, Shop $shop = null)
+    public static function sqlStock($productAlias, $productAttribute = null, $innerJoin = false, ?Shop $shop = null)
     {
         $idShop = ($shop !== null ? (int) $shop->id : null);
         $sql = (($innerJoin) ? ' INNER ' : ' LEFT ')
@@ -1400,7 +1400,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function getIdTaxRulesGroupByIdProduct($idProduct, Context $context = null)
+    public static function getIdTaxRulesGroupByIdProduct($idProduct, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1595,7 +1595,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $orderWay,
         $idCategory = false,
         $onlyActive = false,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
             throw new PrestaShopException(sprintf(Tools::displayError('Invalid ordering parameters: orderBy=[%s] orderWay=[%s]'), $orderBy, $orderWay));
@@ -1646,7 +1646,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function getTaxesInformations($row, Context $context = null)
+    public static function getTaxesInformations($row, ?Context $context = null)
     {
         static $address = null;
 
@@ -1677,7 +1677,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getSimpleProducts($idLang, Context $context = null)
+    public static function getSimpleProducts($idLang, ?Context $context = null)
     {
         $sql = 'SELECT p.`id_product`, pl.`name`
 				FROM `'._DB_PREFIX_.'product` p
@@ -1731,7 +1731,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getNewProducts($idLang, $pageNumber = 0, $nbProducts = 10, $count = false, $orderBy = null, $orderWay = null, Context $context = null)
+    public static function getNewProducts($idLang, $pageNumber = 0, $nbProducts = 10, $count = false, $orderBy = null, $orderWay = null, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1927,7 +1927,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function getProductProperties($idLang, $row, Context $context = null)
+    public static function getProductProperties($idLang, $row, ?Context $context = null)
     {
         if (!$row['id_product']) {
             return false;
@@ -2311,7 +2311,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getRandomSpecial($idLang, $beginning = false, $ending = false, Context $context = null)
+    public static function getRandomSpecial($idLang, $beginning = false, $ending = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -2402,7 +2402,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function _getProductIdByDate($beginning, $ending, Context $context = null, $withCombination = false)
+    protected static function _getProductIdByDate($beginning, $ending, ?Context $context = null, $withCombination = false)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -2453,7 +2453,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $orderWay = null,
         $beginning = false,
         $ending = false,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!Validate::isBool($count)) {
             throw new PrestaShopException(sprintf(Tools::displayError('Invalid value for parameter [%s]'), 'count'));
@@ -2613,7 +2613,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function convertAndFormatPrice($price, $currency = false, Context $context = null)
+    public static function convertAndFormatPrice($price, $currency = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -2634,7 +2634,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function isDiscounted($idProduct, $quantity = 1, Context $context = null)
+    public static function isDiscounted($idProduct, $quantity = 1, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -2916,7 +2916,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function searchByName($idLang, $query, Context $context = null)
+    public static function searchByName($idLang, $query, ?Context $context = null)
     {
         $sql = new DbQuery();
         $sql->select('p.id_product');
@@ -5176,7 +5176,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function productAttributeExists($attributesList, $currentProductAttribute = false, Context $context = null, $allShops = false, $returnId = false)
+    public function productAttributeExists($attributesList, $currentProductAttribute = false, ?Context $context = null, $allShops = false, $returnId = false)
     {
         if (!Combination::isFeatureActive()) {
             return false;
@@ -6002,7 +6002,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getImages($idLang, Context $context = null)
+    public function getImages($idLang, ?Context $context = null)
     {
         return Db::readOnly()->getArray(
             '
@@ -6392,7 +6392,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @return string
      * @throws PrestaShopException
      */
-    public function getLink(Context $context = null)
+    public function getLink(?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -6753,7 +6753,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function hasAllRequiredCustomizableFields(Context $context = null)
+    public function hasAllRequiredCustomizableFields(?Context $context = null)
     {
         if (!Customization::isFeatureActive()) {
             return true;
@@ -7465,7 +7465,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getCover($idProduct, Context $context = null)
+    public static function getCover($idProduct, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

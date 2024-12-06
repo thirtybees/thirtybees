@@ -559,7 +559,7 @@ class TabCore extends ObjectModel
      * @throws PrestaShopException
      * @todo    this should not be public static but protected
      */
-    public static function initAccess($idTab, Context $context = null)
+    public static function initAccess($idTab, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

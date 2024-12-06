@@ -284,7 +284,7 @@ class ProductAttributeCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function checkAttributeQty($idProductAttribute, $qty, Shop $shop = null)
+    public static function checkAttributeQty($idProductAttribute, $qty, ?Shop $shop = null)
     {
         if (!$shop) {
             $shop = Context::getContext()->shop;

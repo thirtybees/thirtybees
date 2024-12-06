@@ -134,7 +134,7 @@ class CMSCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getLinks($idLang, $selection = null, $active = true, Link $link = null)
+    public static function getLinks($idLang, $selection = null, $active = true, ?Link $link = null)
     {
         if (!$link) {
             $link = Context::getContext()->link;

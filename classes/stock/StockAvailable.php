@@ -475,7 +475,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function getCombinationQuantities(int $idProduct, int $idShop = null): array
+    public static function getCombinationQuantities(int $idProduct, ?int $idShop = null): array
     {
         $idProduct = (int)$idProduct;
         $key = 'StockAvailable::getCombinationQuantities'.$idProduct.'-'.(int) $idShop;

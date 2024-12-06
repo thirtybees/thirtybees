@@ -129,7 +129,7 @@ class SearchCore
         $orderWay = 'desc',
         $ajax = false,
         $use_cookie = true,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!$context) {
             $context = Context::getContext();
@@ -879,7 +879,7 @@ class SearchCore
         $orderBy = false,
         $orderWay = false,
         $useCookie = true,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!$context) {
             $context = Context::getContext();

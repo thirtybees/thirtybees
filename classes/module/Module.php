@@ -167,7 +167,7 @@ abstract class ModuleCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function __construct($name = null, Context $context = null)
+    public function __construct($name = null, ?Context $context = null)
     {
         if (isset($this->ps_versions_compliancy) && !isset($this->ps_versions_compliancy['min'])) {
             $this->ps_versions_compliancy['min'] = '1.4.0.0';

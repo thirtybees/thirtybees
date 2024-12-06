@@ -2598,7 +2598,7 @@ class AdminOrdersControllerCore extends AdminController
      *
      * @throws PrestaShopException
      */
-    public function sendChangedNotification(Order $order = null)
+    public function sendChangedNotification(?Order $order = null)
     {
         if (is_null($order)) {
             $order = new Order(Tools::getIntValue('id_order'));
@@ -3069,7 +3069,7 @@ class AdminOrdersControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function doEditProductValidation(OrderDetail $orderDetail, Order $order, OrderInvoice $orderInvoice = null)
+    protected function doEditProductValidation(OrderDetail $orderDetail, Order $order, ?OrderInvoice $orderInvoice = null)
     {
         if (!Validate::isLoadedObject($orderDetail)) {
             $this->ajaxDie(json_encode([

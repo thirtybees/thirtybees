@@ -412,7 +412,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getRootCategory($idLang = null, Shop $shop = null)
+    public static function getRootCategory($idLang = null, ?Shop $shop = null)
     {
         $context = Context::getContext();
         if (is_null($idLang)) {
@@ -610,7 +610,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getChildrenWithNbSelectedSubCat($idParent, $selectedCat, $idLang, Shop $shop = null, $useShopContext = true)
+    public static function getChildrenWithNbSelectedSubCat($idParent, $selectedCat, $idLang, ?Shop $shop = null, $useShopContext = true)
     {
         if (!$shop) {
             $shop = Context::getContext()->shop;
@@ -942,7 +942,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function inShopStatic($idCategory, Shop $shop = null)
+    public static function inShopStatic($idCategory, ?Shop $shop = null)
     {
         if (!$shop || !is_object($shop)) {
             $shop = Context::getContext()->shop;
@@ -1837,7 +1837,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function getProducts($idLang, $p, $n, $orderBy = null, $orderWay = null, $getTotal = false, $active = true, $random = false, $randomNumberProducts = 1, $checkAccess = true, Context $context = null)
+    public function getProducts($idLang, $p, $n, $orderBy = null, $orderWay = null, $getTotal = false, $active = true, $random = false, $randomNumberProducts = 1, $checkAccess = true, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -2058,7 +2058,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function getLink(Link $link = null, $idLang = null)
+    public function getLink(?Link $link = null, $idLang = null)
     {
         if (!$link) {
             $link = Context::getContext()->link;
@@ -2323,7 +2323,7 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function inShop(Shop $shop = null)
+    public function inShop(?Shop $shop = null)
     {
         if (!$shop) {
             $shop = Context::getContext()->shop;

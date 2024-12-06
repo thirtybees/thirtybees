@@ -1136,7 +1136,7 @@ class CartCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getTotalShippingCost($deliveryOption = null, $useTax = true, Country $defaultCountry = null)
+    public function getTotalShippingCost($deliveryOption = null, $useTax = true, ?Country $defaultCountry = null)
     {
         if (isset(Context::getContext()->cookie->id_country)) {
             $defaultCountry = new Country(Context::getContext()->cookie->id_country);
@@ -1306,7 +1306,7 @@ class CartCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getDeliveryOptionList(Country $defaultCountry = null, $flush = false)
+    public function getDeliveryOptionList(?Country $defaultCountry = null, $flush = false)
     {
         $countryId = $defaultCountry ? $defaultCountry->id : 0;
         $cacheKey = "Cart::getDeliveryOptionList_" . $this->id . '_' . $countryId;
@@ -1326,7 +1326,7 @@ class CartCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function calculateDeliveryOptionList(Country $defaultCountry = null)
+    protected function calculateDeliveryOptionList(?Country $defaultCountry = null)
     {
         $deliveryOptionList = [];
         $carriersPrice = [];
@@ -1885,7 +1885,7 @@ class CartCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public function getPackageShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null, $idZone = null)
+    public function getPackageShippingCost($idCarrier = null, $useTax = true, ?Country $defaultCountry = null, $productList = null, $idZone = null)
     {
         if ($this->isVirtualCart()) {
             return 0.0;
@@ -3139,7 +3139,7 @@ class CartCore extends ObjectModel
         $idCustomization = false,
         $operator = 'up',
         $idAddressDelivery = 0,
-        Shop $shop = null,
+        ?Shop $shop = null,
         $autoAddCartRule = true
     ) {
         if (!$shop) {
@@ -3749,7 +3749,7 @@ class CartCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function simulateCarriersOutput(Country $defaultCountry = null, $flush = false)
+    public function simulateCarriersOutput(?Country $defaultCountry = null, $flush = false)
     {
         $deliveryOptionList = $this->getDeliveryOptionList($defaultCountry, $flush);
 
@@ -3850,7 +3850,7 @@ class CartCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getCarrierCost($idCarrier, $useTax = true, Country $defaultCountry = null, $deliveryOption = null)
+    public function getCarrierCost($idCarrier, $useTax = true, ?Country $defaultCountry = null, $deliveryOption = null)
     {
         if (is_null($deliveryOption)) {
             $deliveryOption = $this->getDeliveryOption($defaultCountry);
@@ -3886,7 +3886,7 @@ class CartCore extends ObjectModel
      * @return bool|float
      * @throws PrestaShopException
      */
-    public function getOrderShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null)
+    public function getOrderShippingCost($idCarrier = null, $useTax = true, ?Country $defaultCountry = null, $productList = null)
     {
         Tools::displayAsDeprecated();
 

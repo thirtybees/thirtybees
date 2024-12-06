@@ -1077,7 +1077,7 @@ class OrderCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getCustomerOrders($idCustomer, $showHiddenStatus = false, Context $context = null)
+    public static function getCustomerOrders($idCustomer, $showHiddenStatus = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1157,7 +1157,7 @@ class OrderCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getOrdersWithInformations($limit = null, Context $context = null)
+    public static function getOrdersWithInformations($limit = null, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

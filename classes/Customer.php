@@ -488,7 +488,7 @@ class CustomerCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getCurrentCountry($idCustomer, Cart $cart = null)
+    public static function getCurrentCountry($idCustomer, ?Cart $cart = null)
     {
         if (!$cart) {
             $cart = Context::getContext()->cart;

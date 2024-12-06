@@ -73,7 +73,7 @@ class Adapter_ProductPriceCalculator
         &$specificPriceOutput = null,
         $withEcotax = true,
         $useGroupReduction = true,
-        Context $context = null,
+        ?Context $context = null,
         $useCustomerPrice = true
     ) {
         return Product::getPriceStatic(

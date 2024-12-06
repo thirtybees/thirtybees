@@ -436,7 +436,7 @@ class CartRuleCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function getCustomerCartRules($idLang, $idCustomer, $active = false, $includeGeneric = true, $inStock = false, Cart $cart = null, $freeShippingOnly = false, $highlightOnly = false)
+    public static function getCustomerCartRules($idLang, $idCustomer, $active = false, $includeGeneric = true, $inStock = false, ?Cart $cart = null, $freeShippingOnly = false, $highlightOnly = false)
     {
         if (!static::isFeatureActive()) {
             return [];
@@ -976,7 +976,7 @@ class CartRuleCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function autoAddToCart(Context $context = null)
+    public static function autoAddToCart(?Context $context = null)
     {
         if ($context === null) {
             $context = Context::getContext();
@@ -1460,7 +1460,7 @@ class CartRuleCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getContextualValue($useTax, Context $context = null, $filter = null, $package = null, $useCache = true)
+    public function getContextualValue($useTax, ?Context $context = null, $filter = null, $package = null, $useCache = true)
     {
         if (!static::isFeatureActive()) {
             return 0;

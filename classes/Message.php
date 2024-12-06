@@ -106,7 +106,7 @@ class MessageCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getMessagesByOrderId($idOrder, $private = false, Context $context = null)
+    public static function getMessagesByOrderId($idOrder, $private = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -140,7 +140,7 @@ class MessageCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getMessagesByCartId($idCart, $private = false, Context $context = null)
+    public static function getMessagesByCartId($idCart, $private = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

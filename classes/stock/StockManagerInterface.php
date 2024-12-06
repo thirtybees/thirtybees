@@ -83,7 +83,7 @@ interface StockManagerInterface
         $idOrder = null,
         $ignorePack = 0,
         $employee = null,
-        Stock $stock = null
+        ?Stock $stock = null
     );
 
     /**

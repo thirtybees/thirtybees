@@ -352,7 +352,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
         $getTotal = false,
         $active = true,
         $activeCategory = true,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!$context) {
             $context = Context::getContext();

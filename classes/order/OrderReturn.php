@@ -270,7 +270,7 @@ class OrderReturnCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getOrdersReturn($customerId, $orderId = false, $noDenied = false, Context $context = null)
+    public static function getOrdersReturn($customerId, $orderId = false, $noDenied = false, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

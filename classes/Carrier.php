@@ -320,7 +320,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public function getIdTaxRulesGroup(Context $context = null)
+    public function getIdTaxRulesGroup(?Context $context = null)
     {
         return static::getIdTaxRulesGroupByIdCarrier((int) $this->id, $context);
     }
@@ -333,7 +333,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      *
      * @throws PrestaShopException
      */
-    public static function getIdTaxRulesGroupByIdCarrier($idCarrier, Context $context = null)
+    public static function getIdTaxRulesGroupByIdCarrier($idCarrier, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1311,7 +1311,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function deleteTaxRulesGroup(array $shops = null)
+    public function deleteTaxRulesGroup(?array $shops = null)
     {
         if (!$shops) {
             $shops = Shop::getContextListShopID();

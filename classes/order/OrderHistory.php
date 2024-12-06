@@ -420,7 +420,7 @@ class OrderHistoryCore extends ObjectModel
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function addWithemail($autodate = true, $templateVars = false, Context $context = null)
+    public function addWithemail($autodate = true, $templateVars = false, ?Context $context = null)
     {
         $order = new Order($this->id_order);
 

@@ -237,7 +237,7 @@ class HookCore extends ObjectModel
      *
      * @since 1.5.0
      */
-    public static function displayHook(string $hookName, array $hookArgs = [], int $moduleId = null):string
+    public static function displayHook(string $hookName, array $hookArgs = [], ?int $moduleId = null):string
     {
         return (string)static::exec($hookName, $hookArgs, $moduleId);
     }
@@ -258,7 +258,7 @@ class HookCore extends ObjectModel
      *
      * @since 1.5.0
      */
-    public static function triggerEvent(string $hookName, array $hookArgs = [], int $idShop = null, int $idModule = null): void
+    public static function triggerEvent(string $hookName, array $hookArgs = [], ?int $idShop = null, ?int $idModule = null): void
     {
         static::execWithoutCache($hookName, $hookArgs, $idModule, true, false, false, $idShop);
     }
@@ -280,7 +280,7 @@ class HookCore extends ObjectModel
      *
      * @since 1.5.0
      */
-    public static function getResponses(string $hookName, array $hookArgs = [], int $idModule = null): array
+    public static function getResponses(string $hookName, array $hookArgs = [], ?int $idModule = null): array
     {
         $ret = static::execWithoutCache($hookName, $hookArgs, $idModule, true, false);
         if (is_array($ret)) {

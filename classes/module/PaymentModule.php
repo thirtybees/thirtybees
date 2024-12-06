@@ -386,7 +386,7 @@ abstract class PaymentModuleCore extends Module
         $currencySpecial = null,
         $dontTouchAmount = false,
         $secureKey = false,
-        Shop $shop = null
+        ?Shop $shop = null
     ) {
         $idCart = (int)$idCart;
 

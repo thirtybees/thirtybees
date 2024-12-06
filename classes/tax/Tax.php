@@ -295,7 +295,7 @@ class TaxCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function getProductTaxRate($idProduct, $idAddress = null, Context $context = null)
+    public static function getProductTaxRate($idProduct, $idAddress = null, ?Context $context = null)
     {
         if ($context == null) {
             $context = Context::getContext();

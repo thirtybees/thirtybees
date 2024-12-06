@@ -345,7 +345,7 @@ class MetaCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function completeMetaTags($metaTags, $defaultValue, Context $context = null)
+    public static function completeMetaTags($metaTags, $defaultValue, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

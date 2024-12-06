@@ -120,7 +120,7 @@ class SceneCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getProducts($onlyActive = true, $idLang = null, $liteResult = true, Context $context = null)
+    public function getProducts($onlyActive = true, $idLang = null, $liteResult = true, ?Context $context = null)
     {
         if (!Scene::isFeatureActive()) {
             return [];
@@ -204,7 +204,7 @@ class SceneCore extends ObjectModel implements InitializationCallback
         $onlyActive = true,
         $liteResult = true,
         $hideScenePosition = true,
-        Context $context = null
+        ?Context $context = null
     ) {
         if (!Scene::isFeatureActive()) {
             return [];

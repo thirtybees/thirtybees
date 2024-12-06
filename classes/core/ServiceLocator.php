@@ -66,7 +66,7 @@ class ServiceLocatorCore
      * @param Core_Foundation_IoC_Container|null $container
      * @throws PrestaShopException
      */
-    protected function __construct(Core_Foundation_IoC_Container $container = null)
+    protected function __construct(?Core_Foundation_IoC_Container $container = null)
     {
         $this->container = is_null($container)
             ? new Core_Foundation_IoC_Container()
@@ -186,7 +186,7 @@ class ServiceLocatorCore
      * Method to initialize service locator
      * @param Core_Foundation_IoC_Container|null $container
      */
-    public static function initialize(Core_Foundation_IoC_Container $container = null)
+    public static function initialize(?Core_Foundation_IoC_Container $container = null)
     {
         if (! is_null(static::$instance)) {
             die("Service locator is already initialized");

@@ -41,7 +41,7 @@ class Core_Foundation_Exception_Exception extends Exception
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($message = null, $code = 0, Exception $previous = null)
+    public function __construct($message = null, $code = 0, ?Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -166,7 +166,7 @@ class ProductSaleCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getBestSalesLight($idLang, $pageNumber = 0, $nbProducts = 10, Context $context = null)
+    public static function getBestSalesLight($idLang, $pageNumber = 0, $nbProducts = 10, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

@@ -287,7 +287,7 @@ class LinkCore
      *
      * @throws PrestaShopException
      */
-    public function getLangLink($idLang = null, Context $context = null, $idShop = null)
+    public function getLangLink($idLang = null, ?Context $context = null, $idShop = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -530,7 +530,7 @@ class LinkCore
      *
      * @throws PrestaShopException
      */
-    public function getLanguageLink($idLang, Context $context = null)
+    public function getLanguageLink($idLang, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

@@ -518,7 +518,7 @@ abstract class ModuleStatsCore extends Module
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function getEmployee($employee = null, Context $context = null)
+    protected static function getEmployee($employee = null, ?Context $context = null)
     {
         if (!Validate::isLoadedObject($employee)) {
             if (!$context) {

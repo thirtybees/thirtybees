@@ -752,7 +752,7 @@ class MailCore extends ObjectModel
      *
      * @throws PrestaShopException
      */
-    public static function l($string, $idLang = null, Context $context = null)
+    public static function l($string, $idLang = null, ?Context $context = null)
     {
         global $_LANGMAIL;
 

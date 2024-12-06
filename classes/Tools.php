@@ -163,7 +163,7 @@ class ToolsCore
      *
      * @throws PrestaShopException
      */
-    public static function redirect($url, $baseUri = __PS_BASE_URI__, Link $link = null, $headers = null)
+    public static function redirect($url, $baseUri = __PS_BASE_URI__, ?Link $link = null, $headers = null)
     {
         $url = (string)$url;
 
@@ -440,7 +440,7 @@ class ToolsCore
      *
      * @throws PrestaShopException
      */
-    public static function setCookieLanguage(Cookie $cookie = null)
+    public static function setCookieLanguage(?Cookie $cookie = null)
     {
         if (!$cookie) {
             $cookie = Context::getContext()->cookie;
@@ -607,7 +607,7 @@ class ToolsCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function switchLanguage(Context $context = null)
+    public static function switchLanguage(?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -795,7 +795,7 @@ class ToolsCore
      *              For them, the auto option is now available.
      * @throws PrestaShopException
      */
-    public static function displayPrice($price, $tbCurrency = null, $noUtf8 = false, Context $context = null, $auto = null)
+    public static function displayPrice($price, $tbCurrency = null, $noUtf8 = false, ?Context $context = null, $auto = null)
     {
         if (!is_numeric($price)) {
             return $price;
@@ -1034,7 +1034,7 @@ class ToolsCore
      *
      * @throws PrestaShopException
      */
-    public static function convertPrice($price, $currency = null, $toCurrency = true, Context $context = null)
+    public static function convertPrice($price, $currency = null, $toCurrency = true, ?Context $context = null)
     {
         static $defaultCurrency = null;
 
@@ -1090,7 +1090,7 @@ class ToolsCore
      *
      * @throws PrestaShopException
      */
-    public static function convertPriceFull($amount, Currency $currencyFrom = null, Currency $currencyTo = null, $round = true)
+    public static function convertPriceFull($amount, ?Currency $currencyFrom = null, ?Currency $currencyTo = null, $round = true)
     {
         if ($round !== true) {
             static::displayParameterAsDeprecated('round');
@@ -1544,7 +1544,7 @@ class ToolsCore
      * @deprecated 1.0.0
      * @throws PrestaShopException
      */
-    public static function completeMetaTags($metaTags, $defaultValue, Context $context = null)
+    public static function completeMetaTags($metaTags, $defaultValue, ?Context $context = null)
     {
         Tools::displayAsDeprecated();
 
@@ -1583,7 +1583,7 @@ class ToolsCore
      *
      * @return string
      */
-    public static function getToken($page = true, Context $context = null)
+    public static function getToken($page = true, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1626,7 +1626,7 @@ class ToolsCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getAdminTokenLite($tab, Context $context = null)
+    public static function getAdminTokenLite($tab, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1749,7 +1749,7 @@ class ToolsCore
      * @return string
      * @throws PrestaShopException
      */
-    public static function getFullPath($idCategory, $end, $typeCat = 'products', Context $context = null)
+    public static function getFullPath($idCategory, $end, $typeCat = 'products', ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1789,7 +1789,7 @@ class ToolsCore
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getPath($idCategory, $path = '', $linkOnTheItem = false, $categoryType = 'products', Context $context = null)
+    public static function getPath($idCategory, $path = '', $linkOnTheItem = false, $categoryType = 'products', ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -1884,7 +1884,7 @@ class ToolsCore
      *
      * @return string
      */
-    public static function displayError($string = 'Fatal error', $htmlentities = true, Context $context = null)
+    public static function displayError($string = 'Fatal error', $htmlentities = true, ?Context $context = null)
     {
         global $_ERRORS;
 
@@ -3492,7 +3492,7 @@ FileETag none
      *
      * @throws PrestaShopException
      */
-    public static function enableCache($level = 1, Context $context = null)
+    public static function enableCache($level = 1, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -3514,7 +3514,7 @@ FileETag none
     /**
      * @param Context|null $context
      */
-    public static function restoreCacheSettings(Context $context = null)
+    public static function restoreCacheSettings(?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

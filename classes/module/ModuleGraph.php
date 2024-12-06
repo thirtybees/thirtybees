@@ -381,7 +381,7 @@ abstract class ModuleGraphCore extends Module
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getEmployee($employee = null, Context $context = null)
+    public static function getEmployee($employee = null, ?Context $context = null)
     {
         if (!Validate::isLoadedObject($employee)) {
             if (!$context) {

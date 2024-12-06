@@ -371,7 +371,7 @@ class TagCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getProducts($associated = true, Context $context = null)
+    public function getProducts($associated = true, ?Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();

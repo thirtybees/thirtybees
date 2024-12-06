@@ -60,7 +60,7 @@ class TaxRulesTaxManagerCore implements TaxManagerInterface
      * @param Core_Business_ConfigurationInterface|null $configurationManager
      * @throws PrestaShopException
      */
-    public function __construct(Address $address, $type, Core_Business_ConfigurationInterface $configurationManager = null)
+    public function __construct(Address $address, $type, ?Core_Business_ConfigurationInterface $configurationManager = null)
     {
         if ($configurationManager === null) {
             $this->configurationManager = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
