@@ -38,39 +38,44 @@ class ErrorUtilsCore
      */
     public static function describeError($error)
     {
+        $file = $error['file'];
+        $line = $error['line'];
         $errorDescription = new ErrorDescription();
         $errorDescription->setErrorName('Fatal Error');
         $errorDescription->setMessage($error['message']);
+        $errorDescription->setSource('php', $file, $line, []);
 
-        $smartyTrace = SmartyCustom::$trace;
-        $file = $error['file'];
-        $line = $error['line'];
-        $isTemplate = SmartyCustom::isCompiledTemplate($file);
-        if ($isTemplate) {
-            $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
-            $errorDescription->setRealSource($file, $line, $compiledContent);
-            $file = array_pop($smartyTrace);
-            $content = static::readFile($file, 0, -1);
-            $errorDescription->setSource('smarty', $file, 0, $content);
-        } else {
-            $content = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
-            $errorDescription->setSource('php', $file, $line, $content);
+        try {
+
+            $smartyTrace = static::getSmartyTrace();
+            $isTemplate = static::isCompiledTemplate($smartyTrace, $file);
+            if ($isTemplate) {
+                $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
+                $errorDescription->setRealSource($file, $line, $compiledContent);
+                $file = array_pop($smartyTrace);
+                $content = static::readFile($file, 0, -1);
+                $errorDescription->setSource('smarty', $file, 0, $content);
+            } else {
+                $content = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
+                $errorDescription->setSource('php', $file, $line, $content);
+            }
+
+            $stacktrace = [
+                1 => [
+                    'class' => '',
+                    'function' => '',
+                    'type' => '',
+                    'fileType' => $isTemplate ? 'template' : 'php',
+                    'fileName' => static::getRelativeFile($error['file']),
+                    'line' => $line,
+                    'args' => null,
+                    'fileContent' => $content,
+                    'suppressed' => false,
+                ]
+            ];
+            $errorDescription->setStackTrace($stacktrace);
+        } catch (Throwable $ignored) {
         }
-
-        $stacktrace = [
-            1 => [
-                'class' => '',
-                'function' => '',
-                'type' => '',
-                'fileType' => $isTemplate ? 'template' : 'php',
-                'fileName' => static::getRelativeFile($error['file']),
-                'line' => $line,
-                'args' => null,
-                'fileContent' => $content,
-                'suppressed' => false,
-            ]
-        ];
-        $errorDescription->setStackTrace($stacktrace);
         return $errorDescription;
     }
 
@@ -82,73 +87,78 @@ class ErrorUtilsCore
      */
     public static function describeException(Throwable $e)
     {
+        $file = $e->getFile();
+        $line = $e->getLine();
         $errorDescription = new ErrorDescription();
         $errorDescription->setErrorName(str_replace('PrestaShop', 'ThirtyBees', get_class($e)));
         $errorDescription->setMessage($e->getMessage());
+        $errorDescription->setSource('php', $file, $line, []);
 
-        $smartyTrace = SmartyCustom::$trace;
-        $file = $e->getFile();
-        $line = $e->getLine();
-        if (SmartyCustom::isCompiledTemplate($file)) {
-            $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
-            $errorDescription->setRealSource($file, $e->getLine(), $compiledContent);
-            $file = array_pop($smartyTrace);
-            $errorDescription->setSource('smarty', $file, 0, static::readFile($file, 0, -1));
-        } else {
-            $errorDescription->setSource('php', $file, $line, static::readFile($file, $line, static::FILE_CONTEXT_LINES));
-        }
+        try {
 
-        if ($e instanceof PrestaShopExceptionCore) {
-            $traces = $e->getCustomTrace();
-            $errorDescription->setExtraSections($e->getExtraSections());
-        } else {
-            $traces = $e->getTrace();
-        }
-
-        $stacktrace = [];
-
-        foreach ($traces as $id => $trace) {
-            $class = $trace['class'] ?? '';
-            $function = $trace['function'] ?? '';
-            $type = $trace['type'] ?? '';
-            $fileName = $trace['file'] ?? '';
-            $lineNumber = $trace['line'] ?? 0;
-            $args = $trace['args'] ?? [];
-            $isTemplate = false;
-            $showLines = static::FILE_CONTEXT_LINES;
-            if ($smartyTrace && SmartyCustom::isCompiledTemplate($fileName)) {
-                $isTemplate = true;
-                $fileName = array_pop($smartyTrace);
-                $lineNumber = 0;
-                $showLines = -1;
+            $smartyTrace = static::getSmartyTrace();
+            if (static::isCompiledTemplate($smartyTrace, $file)) {
+                $compiledContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
+                $errorDescription->setRealSource($file, $e->getLine(), $compiledContent);
+                $file = array_pop($smartyTrace);
+                $errorDescription->setSource('smarty', $file, 0, static::readFile($file, 0, -1));
+            } else {
+                $errorDescription->setSource('php', $file, $line, static::readFile($file, $line, static::FILE_CONTEXT_LINES));
             }
-            $relativeFile = static::getRelativeFile($fileName);
-            $nextId = $id + 1;
-            $currentFunction = '';
-            $currentClass = '';
-            if (isset($traces[$nextId]['class'])) {
-                $currentClass = $traces[$nextId]['class'];
-                $currentFunction = $traces[$nextId]['function'];
+
+            if ($e instanceof PrestaShopExceptionCore) {
+                $traces = $e->getCustomTrace();
+                $errorDescription->setExtraSections($e->getExtraSections());
+            } else {
+                $traces = $e->getTrace();
             }
-            $stacktrace[] = [
-                'class' => $class,
-                'function' => $function,
-                'type' => $type,
-                'fileType' => $isTemplate ? 'template' : 'php',
-                'fileName' => $relativeFile,
-                'line' => $lineNumber,
-                'args' => array_map([__CLASS__, 'displayArgument'], $args),
-                'fileContent' => static::readFile($fileName, $lineNumber, $showLines),
-                'description' => static::describeOperation($class, $function, $args),
-                'suppressed' => static::isSuppressed($relativeFile, $currentClass, $currentFunction, $class, $function)
-            ];
-        }
 
-        $errorDescription->setStackTrace($stacktrace);
+            $stacktrace = [];
 
-        $previous = $e->getPrevious();
-        if ($previous) {
-            $errorDescription->setCause(static::describeException($previous));
+            foreach ($traces as $id => $trace) {
+                $class = $trace['class'] ?? '';
+                $function = $trace['function'] ?? '';
+                $type = $trace['type'] ?? '';
+                $fileName = $trace['file'] ?? '';
+                $lineNumber = $trace['line'] ?? 0;
+                $args = $trace['args'] ?? [];
+                $isTemplate = false;
+                $showLines = static::FILE_CONTEXT_LINES;
+                if (static::isCompiledTemplate($smartyTrace, $fileName)) {
+                    $isTemplate = true;
+                    $fileName = array_pop($smartyTrace);
+                    $lineNumber = 0;
+                    $showLines = -1;
+                }
+                $relativeFile = static::getRelativeFile($fileName);
+                $nextId = $id + 1;
+                $currentFunction = '';
+                $currentClass = '';
+                if (isset($traces[$nextId]['class'])) {
+                    $currentClass = $traces[$nextId]['class'];
+                    $currentFunction = $traces[$nextId]['function'];
+                }
+                $stacktrace[] = [
+                    'class' => $class,
+                    'function' => $function,
+                    'type' => $type,
+                    'fileType' => $isTemplate ? 'template' : 'php',
+                    'fileName' => $relativeFile,
+                    'line' => $lineNumber,
+                    'args' => array_map([__CLASS__, 'displayArgument'], $args),
+                    'fileContent' => static::readFile($fileName, $lineNumber, $showLines),
+                    'description' => static::describeOperation($class, $function, $args),
+                    'suppressed' => static::isSuppressed($relativeFile, $currentClass, $currentFunction, $class, $function)
+                ];
+            }
+
+            $errorDescription->setStackTrace($stacktrace);
+
+            $previous = $e->getPrevious();
+            if ($previous) {
+                $errorDescription->setCause(static::describeException($previous));
+            }
+        } catch (Throwable $ignored) {
         }
 
         return $errorDescription;
@@ -416,6 +426,31 @@ class ErrorUtilsCore
             }
         }
         return $ret;
+    }
+
+    /**
+     * @return array
+     */
+    protected static function getSmartyTrace(): array
+    {
+        if (class_exists('SmartyCustom')) {
+            return SmartyCustom::$trace;
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * @param array $smartyTrace
+     * @param string $file
+     * @return bool
+     */
+    protected static function isCompiledTemplate(array $smartyTrace, string $file): bool
+    {
+        if ($smartyTrace) {
+            return SmartyCustom::isCompiledTemplate($file);
+        }
+        return false;
     }
 
 }

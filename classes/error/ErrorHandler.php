@@ -215,7 +215,7 @@ class ErrorHandlerCore
         $realLine = 0;
         $errno = (int)$errno;
 
-        if (SmartyCustom::isCompiledTemplate($file)) {
+        if (class_exists('SmartyCustom') && SmartyCustom::isCompiledTemplate($file)) {
             $realFile = ErrorUtils::getRelativeFile($errfile);
             $realLine = $errline;
             $file = SmartyCustom::getCurrentTemplate();
