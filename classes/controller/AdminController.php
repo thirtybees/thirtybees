@@ -4750,7 +4750,7 @@ class AdminControllerCore extends Controller
 
     /**
      * Method that allows controllers to define their own custom permissions. To be overridden by subclasses
-
+     *
      * Returns array of permission definitions. Example entry:
      *
      *  [

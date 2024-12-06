@@ -82,44 +82,40 @@ abstract class AbstractLoggerCore
     }
 
     /**
-    * Log a debug message
-    *
-    * @param string $message
-    *
-    */
+     * Log a debug message
+     *
+     * @param string $message
+     */
     public function logDebug($message)
     {
         $this->log($message, static::DEBUG);
     }
 
     /**
-    * Log an info message
-    *
-    * @param string $message
+     * Log an info message
      *
-    */
+     * @param string $message
+     */
     public function logInfo($message)
     {
         $this->log($message, static::INFO);
     }
 
     /**
-    * Log a warning message
-    *
-    * @param string $message
+     * Log a warning message
      *
-    */
+     * @param string $message
+     */
     public function logWarning($message)
     {
         $this->log($message, static::WARNING);
     }
 
     /**
-    * Log an error message
-    *
-    * @param string $message
+     * Log an error message
      *
-    */
+     * @param string $message
+     */
     public function logError($message)
     {
         $this->log($message, static::ERROR);
@@ -129,6 +125,7 @@ abstract class AbstractLoggerCore
      * Log the message
      *
      * @param string $message
-     * @param int $level */
+     * @param int $level
+     */
     abstract protected function logMessage($message, $level);
 }

@@ -51,11 +51,12 @@ class CSVCore
     public $delimiter;
 
     /**
-    * Loads objects, filename and optionnaly a delimiter.
-    * @param array|Iterator $collection Collection of objects / arrays (of non-objects)
-    * @param string $filename : used later to save the file
-    * @param string $delimiter Optional : delimiter used
-    */
+     * Loads objects, filename and optionnaly a delimiter.
+     *
+     * @param array|Iterator $collection Collection of objects / arrays (of non-objects)
+     * @param string $filename : used later to save the file
+     * @param string $delimiter Optional : delimiter used
+     */
     public function __construct($collection, $filename, $delimiter = ';')
     {
         $this->filename = $filename;

@@ -656,10 +656,10 @@ class PDFGeneratorCore extends TCPDF
      */
     public static $uni_LRE = 8234;
      /**
-     * Unicode code for Right-to-Left Embedding.
-     *
-     * @var int
-     */
+      * Unicode code for Right-to-Left Embedding.
+      *
+      * @var int
+      */
     public static $uni_RLE = 8235; // end of web colors
     /**
      * Unicode code for Pop Directional Format.
@@ -669,10 +669,10 @@ class PDFGeneratorCore extends TCPDF
     public static $uni_PDF = 8236;
 
      /**
-     * Unicode code for Left-to-Right Override.
-     *
-     * @var int
-     */
+      * Unicode code for Left-to-Right Override.
+      *
+      * @var int
+      */
     public static $uni_LRO = 8237; // end of spot colors
     /**
      * Unicode code for Right-to-Left Override.

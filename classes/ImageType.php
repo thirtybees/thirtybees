@@ -380,7 +380,7 @@ class ImageTypeCore extends ObjectModel
     /**
      * Helper method to resolve image type name to canonical version. If this method fails to
      * resolve image type, input $name value is returned
-
+     *
      * @param string $name image type name
      * @param string $themeName theme name
      * @param string $themeDirectory theme directory name

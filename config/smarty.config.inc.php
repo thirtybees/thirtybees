@@ -408,7 +408,7 @@ function smartyTranslate($params, $smarty)
  * @param string $format strftime format for output
  * @param string $defaultDate default date if $string is empty
  * @param string $formatter either 'strftime' or 'auto'
-
+ *
  * @return string|void
  * @throws PrestaShopException
  */

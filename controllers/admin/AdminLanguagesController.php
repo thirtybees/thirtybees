@@ -616,7 +616,7 @@ class AdminLanguagesControllerCore extends AdminController
      * @param int|null $height
      *
      * @return bool
-
+     *
      * @throws PrestaShopException
      */
     protected function uploadImage($id, $name, $dir, $imageExtension = false, $width = null, $height = null, $generateImageTypes = [])

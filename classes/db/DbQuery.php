@@ -316,7 +316,7 @@ class DbQueryCore
      *
      * @param string $tableAlias
      * @param string|false $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
-
+     *
      * @return static
      *
      * @throws PrestaShopDatabaseException

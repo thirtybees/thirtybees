@@ -74,12 +74,12 @@ class ConsentCore extends ObjectModel implements InitializationCallback
     public $consent;
 
     /**
-    /* @var string Object creation date
+     * @var string Object creation date
      */
     public $date_add;
 
     /**
-    /* @var string Object update date
+     * @var string Object update date
      */
     public $date_upd;
 

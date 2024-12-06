@@ -119,12 +119,12 @@ class ScheduledTaskCore extends ObjectModel
     public $id_language_context;
 
     /**
-    /* @var string Object creation date
+     * @var string Object creation date
      */
     public $date_add;
 
     /**
-    /* @var string Object update date
+     * @var string Object update date
      */
     public $date_upd;
 
