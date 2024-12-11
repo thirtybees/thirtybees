@@ -81,6 +81,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getCmsCategoryUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getSupplierUrls($idLang));
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getManufacturerUrls($idLang));
+            $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getMetaLangUrls($idLang));
         }
         $duplicates = [];
         foreach ($languages as $idLang) {
@@ -300,6 +301,47 @@ class AdminDuplicateUrlsControllerCore extends AdminController
 
         return $manufacturerUrls;
     }
+    
+    /**
+     * Get all meta_lang URLs for the selected language
+     *
+     * @param int $idLang
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getMetaLangUrls($idLang)
+    {
+        if (empty($idLang)) {
+            return [];
+        }
+
+        $sql = 'SELECT ml.id_meta, ml.url_rewrite, m.page 
+                FROM '._DB_PREFIX_.'meta_lang ml
+                LEFT JOIN '._DB_PREFIX_.'meta m ON ml.id_meta = m.id_meta
+                WHERE ml.id_lang = '.(int)$idLang.'
+                AND ml.url_rewrite IS NOT NULL 
+                AND ml.url_rewrite != ""';
+        $metaLangEntries = Db::readOnly()->getArray($sql);
+
+        $metaLangUrls = [];
+        foreach ($metaLangEntries as $entry) {
+            $urlRewrite = $entry['url_rewrite'];
+
+            // Get the base URL and append the language prefix and slug
+            $baseUrl = $this->context->link->getBaseLink();
+            $langLink = $this->context->link->getLangLink($idLang);
+            $fullUrl = rtrim($baseUrl, '/') . '/' . ltrim($langLink, '/') . ltrim($urlRewrite, '/');
+
+            $metaLangUrls[] = [
+                'id_meta' => $entry['id_meta'],
+                'url'     => $fullUrl,
+            ];
+        }
+
+        return $metaLangUrls;
+    }
 
     /**
      * @param array $item
@@ -357,6 +399,13 @@ class AdminDuplicateUrlsControllerCore extends AdminController
                     (int) $item['id_cms_category'].'&updatecms_category&token='.
                     Tools::getAdminTokenLite('AdminCmsContent');
                 unset($item['id_cms_category']);
+                break;
+            case 'id_meta':
+                $item[$prefix.'_type'] = Translate::getAdminTranslation('URL Rewrite', 'AdminMeta');
+                $item[$prefix.'_id'] = $item['id_meta'];
+                $item[$prefix.'_view'] = $link->getAdminLink('AdminMeta', false).'&id_meta='.
+                    (int) $item['id_meta'].'&updatemeta&token='.Tools::getAdminTokenLite('AdminMeta');
+                unset($item['id_meta']);
                 break;
         }
         $item[$prefix.'_url'] = $item['url'];
