@@ -2236,7 +2236,7 @@ class FrontControllerCore extends Controller
             $dispatcher = Dispatcher::getInstance();
             if ($info = $dispatcher->isModuleControllerRoute($routeId)) {
                 // include only required $_GET parameters and ignore others
-                $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($routeId));
+                $params = array_intersect_key($_GET, $dispatcher->getRouteRequiredParams($routeId, $languageId));
                 return $this->context->link->getModuleLink($info['module'], $info['controller'], $params, null, $languageId, $shopId);
             } else {
                 return $this->context->link->getPageLink($routeId, null, $languageId, null, false, $shopId);

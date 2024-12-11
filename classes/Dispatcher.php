@@ -1752,12 +1752,15 @@ class DispatcherCore
     /**
      * Returns parameters names required by route with id $routeId
      *
+     * @param string $routeId
+     * @param int|null $langId
+     *
      * @return array
      */
-    public function getRouteRequiredParams($routeId)
+    public function getRouteRequiredParams(string $routeId, int $langId)
     {
         $params = [];
-        $route = $this->getRoute($routeId);
+        $route = $this->getRoute($routeId, $langId);
         if ($route) {
             $aliases = array_flip($route['aliases']);
             foreach ($route['keywords'] as $keyword => $info) {
