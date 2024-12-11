@@ -32,6 +32,7 @@ composer.dev.lock
 /admin-dev/autoupgrade/*
 /admin-dev/backups/*
 /admin-dev/import/*
+/admin-dev/export/*.csv
 /admin-dev/themes/*/cache/*
 
 # Config
