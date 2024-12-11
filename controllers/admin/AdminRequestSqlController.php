@@ -300,20 +300,6 @@ class AdminRequestSqlControllerCore extends AdminController
     }
 
     /**
-     * Initialize processing
-     *
-     * @return void
-     */
-    public function initProcess()
-    {
-        parent::initProcess();
-        if (Tools::getValue('export'.$this->table)) {
-            $this->display = 'export';
-            $this->action = 'export';
-        }
-    }
-
-    /**
      * Initialize content
      *
      * @return void
@@ -339,8 +325,6 @@ class AdminRequestSqlControllerCore extends AdminController
                 $this->loadObject(true);
             }
             $this->content .= $this->renderView();
-        } elseif ($this->display == 'export') {
-            $this->generateExport();
         } elseif (!$this->ajax) {
             $this->content .= $this->renderList();
             $this->content .= $this->renderOptions();
@@ -491,56 +475,73 @@ class AdminRequestSqlControllerCore extends AdminController
     /**
      * Generating a export file
      *
+     * @param string $textDelimiter
      * @return void
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function generateExport()
+    public function processExport($textDelimiter = '"')
     {
-        $id = Tools::getValue($this->identifier);
+        $id = Tools::getIntValue($this->identifier);
+        $sql = RequestSql::getRequestSqlById($id);
+        if (! $sql) {
+            $this->errors[] =Tools::displayError("SQL with not found");
+            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminRequestSql');
+            return;
+        }
+
+        // export settings
         $exportDir = _PS_ADMIN_DIR_.'/export/';
-        if (!Validate::isFileName($id)) {
-            throw new PrestaShopException(sprintf(Tools::displayError("Invalid filename [%s]"), Tools::safeOutput($id)));
-        }
         $file = 'request_sql_'.$id.'.csv';
-        if ($csv = fopen($exportDir.$file, 'w')) {
-            $sql = RequestSql::getRequestSqlById($id);
+        $separator = Configuration::get('TB_EXPORT_FIELD_DELIMITER') ? Configuration::get('TB_EXPORT_FIELD_DELIMITER') : ',';
+        $enclosure = '"';
+        $escape = "";
 
-            if ($sql) {
-                $results = Db::readOnly()->getArray($sql[0]['sql']);
-                foreach (array_keys($results[0]) as $key) {
-                    $tabKey[] = $key;
-                    fputs($csv, $key.';');
-                }
-                foreach ($results as $result) {
-                    fputs($csv, "\n");
-                    foreach ($tabKey as $name) {
-                        fputs($csv, '"'.strip_tags($result[$name]).'";');
-                    }
-                }
-                if (file_exists($exportDir.$file)) {
-                    $filesize = filesize($exportDir.$file);
-                    $uploadMaxFilesize = Tools::convertBytes(ini_get('upload_max_filesize'));
-                    if ($filesize < $uploadMaxFilesize) {
-                        if (Configuration::get('PS_ENCODING_FILE_MANAGER_SQL')) {
-                            $charset = Configuration::get('PS_ENCODING_FILE_MANAGER_SQL');
-                        } else {
-                            $charset = static::$encoding_file[0]['name'];
-                        }
-
-                        header('Content-Type: text/csv; charset='.$charset);
-                        header('Cache-Control: no-store, no-cache');
-                        header('Content-Disposition: attachment; filename="'.$file.'"');
-                        header('Content-Length: '.$filesize);
-                        readfile($exportDir.$file);
-                        exit;
-                    } else {
-                        $this->errors[] = Tools::DisplayError('The file is too large and can not be downloaded. Please use the LIMIT clause in this query.');
-                    }
-                }
-            }
+        $conn = Db::readOnly();
+        try {
+            $results = $conn->getArray($sql);
+        } catch (PrestaShopDatabaseException $e) {
+            $this->errors[] = $e->getMessage();
+            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminRequestSql');
+            return;
         }
+
+        if (! $results) {
+            $this->errors[] =Tools::displayError('This SQL query has no result.');
+            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminRequestSql');
+            return;
+        }
+
+        $filepath = $exportDir . $file;
+        $csv = fopen($filepath, 'w');
+        if (! $csv) {
+            $this->errors[] = sprintf(Tools::displayError('Failed to create export file: %s'), $filepath);
+            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminRequestSql');
+            return;
+        }
+
+        // export csv
+        $keys = array_keys($results[0]);
+        fputcsv($csv, $keys, $separator, $enclosure, $escape);
+        foreach ($results as $result) {
+            fputcsv($csv, $result, $separator, $enclosure, $escape);
+        }
+        fclose($csv);
+        $filesize = filesize($filepath);
+
+        if (Configuration::get('PS_ENCODING_FILE_MANAGER_SQL')) {
+            $charset = Configuration::get('PS_ENCODING_FILE_MANAGER_SQL');
+        } else {
+            $charset = static::$encoding_file[0]['name'];
+        }
+
+        header('Content-Type: text/csv; charset='.$charset);
+        header('Cache-Control: no-store, no-cache');
+        header('Content-Disposition: attachment; filename="'.$file.'"');
+        header('Content-Length: '.$filesize);
+        readfile($filepath);
+        exit;
     }
 
     /**

@@ -123,24 +123,22 @@ class RequestSqlCore extends ObjectModel
     }
 
     /**
-     * Get list of request SQL by id request
+     * Get request SQL by id request
      *
      * @param int $id
      *
-     * @return array
+     * @return string
+     *
+     * @throws PrestaShopException
      */
     public static function getRequestSqlById($id)
     {
-        try {
-            return Db::readOnly()->getArray(
-                (new DbQuery())
-                    ->select('`sql`')
-                    ->from(bqSQL(static::$definition['table']))
-                    ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
-            );
-        } catch (PrestaShopException $e) {
-            return [];
-        }
+        return (string)Db::readOnly()->getValue(
+            (new DbQuery())
+                ->select('`sql`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
+        );
     }
 
     /**
