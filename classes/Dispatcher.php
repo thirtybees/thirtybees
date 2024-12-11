@@ -1840,7 +1840,7 @@ class DispatcherCore
      */
     protected function isPhpScriptUrl(string $requestUri): bool
     {
-        $path = parse_url($requestUri, PHP_URL_PATH);
+        $path = (string)parse_url($requestUri, PHP_URL_PATH);
         $path = '/' . ltrim($path, '/');
 
         if (str_ends_with($path, '/')) {
