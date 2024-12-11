@@ -36,13 +36,6 @@
  */
 class AdminRequestSqlControllerCore extends AdminController
 {
-    /**
-     * @var array : List of encoding type for a file
-     */
-    public static $encoding_file = [
-        ['value' => 1, 'name' => 'utf-8'],
-        ['value' => 2, 'name' => 'iso-8859-1'],
-    ];
 
     /**
      * AdminRequestSqlControllerCore constructor.
@@ -62,23 +55,6 @@ class AdminRequestSqlControllerCore extends AdminController
             'id_request_sql' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs'],
             'name'           => ['title' => $this->l('SQL query Name')],
             'sql'            => ['title' => $this->l('SQL query')],
-        ];
-
-        $this->fields_options = [
-            'general' => [
-                'title'  => $this->l('Settings'),
-                'fields' => [
-                    'PS_ENCODING_FILE_MANAGER_SQL' => [
-                        'title'      => $this->l('Select your default file encoding'),
-                        'cast'       => 'intval',
-                        'type'       => 'select',
-                        'identifier' => 'value',
-                        'list'       => static::$encoding_file,
-                        'visibility' => Shop::CONTEXT_ALL,
-                    ],
-                ],
-                'submit' => ['title' => $this->l('Save')],
-            ],
         ];
 
         $this->bulk_actions = [
@@ -530,13 +506,7 @@ class AdminRequestSqlControllerCore extends AdminController
         fclose($csv);
         $filesize = filesize($filepath);
 
-        if (Configuration::get('PS_ENCODING_FILE_MANAGER_SQL')) {
-            $charset = Configuration::get('PS_ENCODING_FILE_MANAGER_SQL');
-        } else {
-            $charset = static::$encoding_file[0]['name'];
-        }
-
-        header('Content-Type: text/csv; charset='.$charset);
+        header('Content-Type: text/csv; charset=utf-8');
         header('Cache-Control: no-store, no-cache');
         header('Content-Disposition: attachment; filename="'.$file.'"');
         header('Content-Length: '.$filesize);
