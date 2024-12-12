@@ -48,7 +48,7 @@ function tinySetup(config) {
 
   let defaultConfig = {
     selector: ".rte",
-    plugins: "colorpicker link image paste pagebreak table contextmenu filemanager table code media autoresize textcolor anchor directionality",
+    plugins: "colorpicker link image paste pagebreak table contextmenu filemanager table code media autoresize textcolor anchor directionality codemirror",
     browser_spellcheck: true,
     toolbar1: "code,|,bold,italic,underline,strikethrough,|,alignleft,aligncenter,alignright,alignfull,rtl,ltr,formatselect,|,blockquote,colorpicker,pasteword,|,bullist,numlist,|,outdent,indent,|,link,unlink,|,anchor,|,media,image",
     toolbar2: "",
@@ -78,7 +78,17 @@ function tinySetup(config) {
       table: { title: 'Table', items: 'inserttable tableprops deletetable | cell row column' },
       tools: { title: 'Tools', items: 'code' }
     },
-    autoresize_min_height: 100
+    autoresize_min_height: 100,
+    codemirror: {
+      indentOnInit: true,
+      path: 'codemirror-5.65',
+      config: {
+        lineNumbers: true,
+      },
+      width: 1200,
+      height: 600,
+      saveCursorPosition: false,
+    }
   };
 
   // allow extending default config
