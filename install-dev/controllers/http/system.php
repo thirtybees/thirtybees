@@ -126,6 +126,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                         ConfigurationTest::TEST_UPLOAD => $this->l('Can upload files'),
                         ConfigurationTest::TEST_XML => $this->l('The PHP xml extension is enabled'),
                         ConfigurationTest::TEST_ZIP => $this->l('The PHP zip extension/functionality is enabled'),
+                        ConfigurationTest::TEST_YAML => $this->l('The PHP yaml extension/functionality is enabled'),
                     ],
                 ],
                 [

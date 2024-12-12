@@ -63,6 +63,7 @@ class ConfigurationTestCore
     const TEST_GZ = 'Gz';
     const TEST_INTL = 'Intl';
     const TEST_SOAP = 'Soap';
+    const TEST_YAML = 'Yaml';
 
     /**
      * @var array $testFiles
@@ -127,6 +128,7 @@ class ConfigurationTestCore
             static::TEST_PDO_MYSQL => static::NO_ARGUMENTS,
             static::TEST_XML => static::NO_ARGUMENTS,
             static::TEST_ZIP => static::NO_ARGUMENTS,
+            static::TEST_YAML => static::NO_ARGUMENTS,
         ];
     }
 
@@ -275,6 +277,14 @@ class ConfigurationTestCore
     public static function testSoap()
     {
         return extension_loaded('soap');
+    }
+
+    /**
+     * @return bool
+     */
+    public static function testYaml()
+    {
+        return extension_loaded('yaml');
     }
 
     /**

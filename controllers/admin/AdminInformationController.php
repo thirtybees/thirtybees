@@ -176,6 +176,7 @@ class AdminInformationControllerCore extends AdminController
             ConfigurationTest::TEST_GD => $this->l('Enable the GD library on your server.'),
             ConfigurationTest::TEST_INTL => $this->l('Install the \'intl\' PHP extension on your server.'),
             ConfigurationTest::TEST_SOAP => $this->l('Install the \'soap\' PHP extension on your server.'),
+            ConfigurationTest::TEST_YAML => $this->l('Install the \'yaml\' PHP extension on your server.'),
             ConfigurationTest::TEST_JSON => $this->l('Install the `json` PHP extension on your server.'),
             ConfigurationTest::TEST_MBSTRING => $this->l('The `mbstring` extension has not been installed/enabled. This has a severe impact on the store\'s performance.'),
             ConfigurationTest::TEST_OPENSSL => $this->l('The `openssl` extension has not been installed/enabled.'),
