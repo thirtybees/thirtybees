@@ -24,7 +24,7 @@ class BootstrapErrorHandler
     {
         static $instance = null;
         if ($instance === null) {
-            $instance = new BootstrapErrorHandler();
+            $instance = new static();
         }
         return $instance;
     }

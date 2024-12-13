@@ -945,7 +945,7 @@ class HookCore extends ObjectModel
      */
     public static function isDisplayableHook($hookName, $includeBackOfficeHooks=false)
     {
-        $variants = [ $hookName, HookCore::getRetroHookName($hookName) ];
+        $variants = [ $hookName, static::getRetroHookName($hookName) ];
         foreach ($variants as $hook) {
             $hook = strtolower($hook);
             if ((strpos($hook, 'display') === 0)) {

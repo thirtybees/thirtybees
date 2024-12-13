@@ -4833,7 +4833,7 @@ class AdminControllerCore extends Controller
                 $className = $controllerName . 'Controller';
                 try {
                     $reflection = new ReflectionMethod($className, 'getPermDefinitions');
-                    if ($reflection->getDeclaringClass()->getName() != AdminControllerCore::class) {
+                    if ($reflection->getDeclaringClass()->getName() != 'AdminControllerCore') {
                         /** @var AdminControllerCore $instance - subclass of admin controller */
                         $instance = new $className();
                         $permissions[$controllerName] = $instance->getPermDefinitions();

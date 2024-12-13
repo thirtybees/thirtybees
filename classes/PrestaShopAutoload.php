@@ -81,7 +81,7 @@ class PrestaShopAutoload
     protected function __construct()
     {
         $this->root_dir = rtrim(_PS_ROOT_DIR_, '/\\').DIRECTORY_SEPARATOR;
-        $file = $this->root_dir . PrestaShopAutoload::INDEX_FILE;
+        $file = $this->root_dir . static::INDEX_FILE;
         if (file_exists($file) && is_readable($file)) {
             $this->index = include($file);
         } else {
@@ -115,7 +115,7 @@ class PrestaShopAutoload
         $content = '<?php return '.var_export($classes, true).'; ?>';
 
         // Write classes index on disc to cache it
-        $filename = $this->root_dir . PrestaShopAutoload::INDEX_FILE;
+        $filename = $this->root_dir . static::INDEX_FILE;
         $dirname = dirname($filename);
         $filenameTmp = tempnam($dirname, basename($filename.'.'));
         if ($filenameTmp !== false && file_put_contents($filenameTmp, $content) !== false) {
@@ -207,15 +207,15 @@ class PrestaShopAutoload
     /**
      * Get instance of autoload (singleton)
      *
-     * @return PrestaShopAutoload
+     * @return static
      */
     public static function getInstance()
     {
-        if (!PrestaShopAutoload::$instance) {
-            PrestaShopAutoload::$instance = new PrestaShopAutoload();
+        if (!static::$instance) {
+            static::$instance = new static();
         }
 
-        return PrestaShopAutoload::$instance;
+        return static::$instance;
     }
 
     /**
@@ -230,8 +230,8 @@ class PrestaShopAutoload
         $className = strtolower($requestClassName);
 
         // Retrocompatibility
-        if (isset(PrestaShopAutoload::$class_aliases[$className]) && !interface_exists($className, false) && !class_exists($className, false)) {
-            return eval('class '.$requestClassName.' extends '.PrestaShopAutoload::$class_aliases[$className].' {}');
+        if (isset(static::$class_aliases[$className]) && !interface_exists($className, false) && !class_exists($className, false)) {
+            return eval('class '.$requestClassName.' extends '.static::$class_aliases[$className].' {}');
         }
 
         // regenerate the class index if the requested file doesn't exists

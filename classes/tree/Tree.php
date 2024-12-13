@@ -146,7 +146,7 @@ class TreeCore
     public function setActions($value)
     {
         if (!isset($this->_toolbar)) {
-            $this->setToolbar(new TreeToolbarCore());
+            $this->setToolbar(new TreeToolbar());
         }
 
         $this->getToolbar()->setTemplateDirectory($this->getTemplateDirectory())->setActions($value);
@@ -160,7 +160,7 @@ class TreeCore
     public function getActions()
     {
         if (!isset($this->_toolbar)) {
-            $this->setToolbar(new TreeToolbarCore());
+            $this->setToolbar(new TreeToolbar());
         }
 
         return $this->getToolbar()->setTemplateDirectory($this->getTemplateDirectory())->getActions();
@@ -572,7 +572,7 @@ class TreeCore
     public function addAction($action)
     {
         if (!isset($this->_toolbar)) {
-            $this->setToolbar(new TreeToolbarCore());
+            $this->setToolbar(new TreeToolbar());
         }
 
         $this->getToolbar()->setTemplateDirectory($this->getTemplateDirectory())->addAction($action);
@@ -586,7 +586,7 @@ class TreeCore
     public function removeActions()
     {
         if (!isset($this->_toolbar)) {
-            $this->setToolbar(new TreeToolbarCore());
+            $this->setToolbar(new TreeToolbar());
         }
 
         $this->getToolbar()->setTemplateDirectory($this->getTemplateDirectory())->removeActions();

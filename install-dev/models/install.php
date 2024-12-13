@@ -670,7 +670,7 @@ class InstallModelInstall extends InstallAbstractModel
         $version = substr($version, 0, 2);
         $localizationFileContent = $this->getLocalizationPackContent($version, $data['shopCountry']);
 
-        $locale = new LocalizationPackCore();
+        $locale = new LocalizationPack();
         $locale->loadLocalisationPack($localizationFileContent, [], true);
 
         // Create default employee

@@ -116,7 +116,7 @@ class GenderCore extends ObjectModel
                 'alt' => 'Unknown',
             ]
         ];
-        foreach (GenderCore::getGenders() as $gender) {
+        foreach (static::getGenders() as $gender) {
             /** @var Gender $gender */
             $gendersIcon[$gender->id] = [
                 'src' => $gender->getImage(),

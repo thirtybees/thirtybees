@@ -29,7 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-use Thirtybees\Core\DependencyInjection\ServiceLocatorCore;
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 use Thirtybees\Core\Mail\MailAddress;
 use Thirtybees\Core\Mail\MailAttachement;
@@ -870,7 +870,7 @@ class MailCore extends ObjectModel
                 throw new PrestaShopException("Failed to send email", 0, $e);
             }
         } else {
-            $errorHandler = ServiceLocatorCore::getInstance()->getErrorHandler();
+            $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
             $errorHandler->logFatalError(ErrorUtils::describeException($e));
             return false;
         }

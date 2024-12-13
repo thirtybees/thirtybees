@@ -347,7 +347,7 @@ class AdminAccessControllerCore extends AdminController
                 }
 
                 $tab = Tab::getInstanceFromClassName($controller, $this->context->language->id);
-                if (ValidateCore::isLoadedObject($tab)) {
+                if (Validate::isLoadedObject($tab)) {
                     $name = $tab->name;
                 } else {
                     $name = $controller;

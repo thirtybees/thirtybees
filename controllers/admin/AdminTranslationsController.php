@@ -171,7 +171,7 @@ class AdminTranslationsControllerCore extends AdminController
             'theme'               => $this->theme_selected,
             'url_submit'          => static::$currentIndex.'&submitTranslations'.ucfirst($this->type_selected).'=1&token='.$this->token,
             'toggle_button'       => $this->displayToggleButton(),
-            'textarea_sized'      => AdminTranslationsControllerCore::TEXTAREA_SIZED,
+            'textarea_sized'      => static::TEXTAREA_SIZED,
         ];
 
         // Call method initForm for a type
@@ -3172,7 +3172,7 @@ class AdminTranslationsControllerCore extends AdminController
                 [
                     'count'                => $this->total_expression,
                     'mod_security_warning' => Tools::apacheModExists('mod_security'),
-                    'textarea_sized'       => AdminTranslationsControllerCore::TEXTAREA_SIZED,
+                    'textarea_sized'       => static::TEXTAREA_SIZED,
                     'cancel_url'           => $this->context->link->getAdminLink('AdminTranslations'),
                     'theme_translations'   => $this->modules_translations[$this->theme_selected] ?? [],
                     'missing_translations' => $this->missing_translations,

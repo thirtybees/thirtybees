@@ -270,13 +270,13 @@ class Core_Business_Payment_PaymentOption
         foreach ($legacyOption as $option) {
             $option = array_merge($defaults, $option);
 
-            $newOption = new Core_Business_Payment_PaymentOption();
-            $newOption->setCallToActionText($option['cta_text'])
-                      ->setAction($option['action'])
-                      ->setForm($option['form'])
-                      ->setInputs($option['inputs'])
-                      ->setLogo($option['logo'])
-                      ->setMethod($option['method']);
+            $newOption = (new static())
+                ->setCallToActionText($option['cta_text'])
+                ->setAction($option['action'])
+                ->setForm($option['form'])
+                ->setInputs($option['inputs'])
+                ->setLogo($option['logo'])
+                ->setMethod($option['method']);
 
             $newOptions[] = $newOption;
         }
