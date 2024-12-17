@@ -181,9 +181,9 @@ class ThemeCore extends ObjectModel
     {
         $idTheme = (int) Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('`id_theme`')
-            ->from('theme')
-            ->where('`name` = \''.pSQL($name).'\'')
+                ->select('`id_theme`')
+                ->from('theme')
+                ->where('`name` = \''.pSQL($name).'\'')
         );
 
         if ($idTheme) {

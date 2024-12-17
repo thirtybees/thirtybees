@@ -839,10 +839,10 @@ class AdminProductsControllerCore extends AdminController
 	                // Set stock quantity
 	                $quantityAttributeOld = Db::readOnly()->getValue(
 		                (new DbQuery())
-			                ->select('`quantity`')
-			                ->from('stock_available')
-			                ->where('`id_product` = '.(int) $idProductOld)
-			                ->where('`id_product_attribute` = 0')
+		                    ->select('`quantity`')
+		                    ->from('stock_available')
+		                    ->where('`id_product` = '.(int) $idProductOld)
+		                    ->where('`id_product_attribute` = 0')
 	                );
 	                StockAvailable::setQuantity((int) $product->id, 0, (int) $quantityAttributeOld);
                 }
@@ -5380,9 +5380,9 @@ class AdminProductsControllerCore extends AdminController
                 if (Combination::isFeatureActive()) {
                     $data->assign('countAttributes', (int) Db::readOnly()->getValue(
                         (new DbQuery())
-                        ->select('COUNT(`id_product`)')
-                        ->from('product_attribute')
-                        ->where('`id_product` = '.(int) $obj->id)
+                            ->select('COUNT(`id_product`)')
+                            ->from('product_attribute')
+                            ->where('`id_product` = '.(int) $obj->id)
                     ));
                 } else {
                     $data->assign('countAttributes', false);
@@ -5850,9 +5850,9 @@ class AdminProductsControllerCore extends AdminController
     {
         $idModule = (int)Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('`id_module`')
-            ->from('module')
-            ->where('`name` = \''.pSQL($this->tab_display_module).'\'')
+                ->select('`id_module`')
+                ->from('module')
+                ->where('`name` = \''.pSQL($this->tab_display_module).'\'')
         );
         $this->tpl_form_vars['custom_form'] = Hook::displayHook('displayAdminProductsExtra', [], $idModule);
     }

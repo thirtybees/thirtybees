@@ -180,21 +180,21 @@ class AdminCartsControllerCore extends AdminController
 
 		if (empty($this->display)) {
 			$this->page_header_toolbar_btn['export_cart'] = [
-				'href' => static::$currentIndex.'&exportcart&token='.$this->token,
-				'desc' => $this->l('Export carts', null, null, false),
-				'icon' => 'process-icon-export',
+			    'href' => static::$currentIndex.'&exportcart&token='.$this->token,
+			    'desc' => $this->l('Export carts', null, null, false),
+			    'icon' => 'process-icon-export',
 			];
 
 			$this->page_header_toolbar_btn['delete_empty_carts'] = [
-				'href' => static::$currentIndex.'&delete_empty_carts&token='.$this->token,
-				'desc' => $this->l('Delete empty carts', null, null, false),
-				'icon' => 'process-icon-delete',
+			    'href' => static::$currentIndex.'&delete_empty_carts&token='.$this->token,
+			    'desc' => $this->l('Delete empty carts', null, null, false),
+			    'icon' => 'process-icon-delete',
 			];
 
 			$this->page_header_toolbar_btn['delete_old_carts'] = [
-				'href' => self::$currentIndex.'&deleteoldcarts&token='.$this->token,
-				'desc' => $this->l(sprintf('Delete carts older than %d days', $cookieLifetimeDays), null, null, false),
-				'icon' => 'process-icon-delete',
+			    'href' => self::$currentIndex.'&deleteoldcarts&token='.$this->token,
+			    'desc' => $this->l(sprintf('Delete carts older than %d days', $cookieLifetimeDays), null, null, false),
+			    'icon' => 'process-icon-delete',
 			];
 		}
 
@@ -339,18 +339,18 @@ class AdminCartsControllerCore extends AdminController
             if (isset($product['id_product_attribute']) && (int) $product['id_product_attribute']) {
                 $image = (int)$conn->getValue(
                     (new DbQuery())
-                    ->select('`id_image`')
-                    ->from('product_attribute_image')
-                    ->where('`id_product_attribute` = '.(int) $product['id_product_attribute'])
+                        ->select('`id_image`')
+                        ->from('product_attribute_image')
+                        ->where('`id_product_attribute` = '.(int) $product['id_product_attribute'])
                 );
             }
             if (! $image) {
                 $image = (int)$conn->getValue(
                     (new DbQuery())
-                    ->select('`id_image`')
-                    ->from('image')
-                    ->where('`id_product` = '.(int) $product['id_product'])
-                    ->where('`cover` = 1')
+                        ->select('`id_image`')
+                        ->from('image')
+                        ->where('`id_product` = '.(int) $product['id_product'])
+                        ->where('`cover` = 1')
                 );
             }
 

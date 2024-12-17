@@ -273,9 +273,9 @@ class AdminModulesControllerCore extends AdminController
         $modulesPreferences = [];
         $modulesPreferencesTmp = Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('*')
-            ->from('module_preference')
-            ->where('`id_employee` = '.(int) $this->id_employee)
+                ->select('*')
+                ->from('module_preference')
+                ->where('`id_employee` = '.(int) $this->id_employee)
         );
 
         foreach ($modulesPreferencesTmp as $k => $v) {
@@ -588,11 +588,11 @@ class AdminModulesControllerCore extends AdminController
             }
         } elseif ((int) Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('`id_module_preference`')
-            ->from('module_preference')
-            ->where('`module` = \''.pSQL($module->name).'\'')
-            ->where('`id_employee` = '.(int) $this->id_employee)
-            ->where('`interest` = 0')
+                ->select('`id_module_preference`')
+                ->from('module_preference')
+                ->where('`module` = \''.pSQL($module->name).'\'')
+                ->where('`id_employee` = '.(int) $this->id_employee)
+                ->where('`interest` = 0')
         ) > 0) {
             return true;
         }
@@ -602,12 +602,12 @@ class AdminModulesControllerCore extends AdminController
         if ($selectedCategory === static::CATEGORY_FAVORITES) {
             if ((int) Db::readOnly()->getValue(
                 (new DbQuery())
-                ->select('`id_module_preference`')
-                ->from('module_preference')
-                ->where('`module` = \''.pSQL($module->name).'\'')
-                ->where('`id_employee` = '.(int) $this->id_employee)
-                ->where('`favorite` = 1')
-                ->where('`interest` = 1 OR `interest` IS NULL')
+                    ->select('`id_module_preference`')
+                    ->from('module_preference')
+                    ->where('`module` = \''.pSQL($module->name).'\'')
+                    ->where('`id_employee` = '.(int) $this->id_employee)
+                    ->where('`favorite` = 1')
+                    ->where('`interest` = 1 OR `interest` IS NULL')
             ) < 1) {
                 return true;
             }
@@ -853,10 +853,10 @@ class AdminModulesControllerCore extends AdminController
         $module = Tools::getValue('module_pref');
         $idModulePreference = (int) Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('`id_module_preference`')
-            ->from('module_preference')
-            ->where('`id_employee` = '.(int) $this->id_employee)
-            ->where('`module` = \''.pSQL($module).'\'')
+                ->select('`id_module_preference`')
+                ->from('module_preference')
+                ->where('`id_employee` = '.(int) $this->id_employee)
+                ->where('`module` = \''.pSQL($module).'\'')
         );
         if ($idModulePreference > 0) {
             if ($action == 'i') {

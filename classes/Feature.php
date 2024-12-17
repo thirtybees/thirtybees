@@ -301,10 +301,10 @@ class FeatureCore extends ObjectModel implements InitializationCallback
 
             $exists = (bool)$conn->getValue(
                 (new DbQuery())
-                ->select('1')
-                ->from($tableName)
-                ->where("id_feature = $featureId")
-                ->where("id_lang = $langId")
+                    ->select('1')
+                    ->from($tableName)
+                    ->where("id_feature = $featureId")
+                    ->where("id_lang = $langId")
             );
 
             if (! $exists) {

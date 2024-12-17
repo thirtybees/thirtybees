@@ -507,11 +507,11 @@ class CurrencyCore extends ObjectModel
         if (!isset(static::$countActiveCurrencies[$idShop])) {
             static::$countActiveCurrencies[$idShop] = Db::readOnly()->getValue(
                 (new DbQuery())
-                ->select('COUNT(DISTINCT c.`id_currency`)')
-                ->from('currency', 'c')
-                ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
-                ->where('cs.`id_shop` = '.(int) $idShop)
-                ->where('c.`active` = 1')
+                    ->select('COUNT(DISTINCT c.`id_currency`)')
+                    ->from('currency', 'c')
+                    ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
+                    ->where('cs.`id_shop` = '.(int) $idShop)
+                    ->where('c.`active` = 1')
             );
         }
 

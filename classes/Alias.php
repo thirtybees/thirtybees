@@ -81,10 +81,10 @@ class AliasCore extends ObjectModel
             } else {
                 $row = Db::readOnly()->getRow(
                     (new DbQuery())
-                    ->select('a.`id_alias`, a.`search`, a.`alias`')
-                    ->from('alias', 'a')
-                    ->where('`alias` = \''.pSQL($alias).'\'')
-                    ->where('`active` = 1')
+                        ->select('a.`id_alias`, a.`search`, a.`alias`')
+                        ->from('alias', 'a')
+                        ->where('`alias` = \''.pSQL($alias).'\'')
+                        ->where('`active` = 1')
                 );
 
                 if ($row) {
@@ -153,9 +153,9 @@ class AliasCore extends ObjectModel
 
         $aliases = Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('a.`alias`')
-            ->from('alias', 'a')
-            ->where('a.`search` = \''.pSQL($this->search).'\'')
+                ->select('a.`alias`')
+                ->from('alias', 'a')
+                ->where('a.`search` = \''.pSQL($this->search).'\'')
         );
 
         $aliases = array_map('implode', $aliases);
@@ -192,9 +192,9 @@ class AliasCore extends ObjectModel
 
         $row = Db::readOnly()->getRow(
             (new DbQuery())
-            ->select('`id_alias`')
-            ->from('alias', 'a')
-            ->where('a.`id_alias` = '.(int) $idAlias)
+                ->select('`id_alias`')
+                ->from('alias', 'a')
+                ->where('a.`id_alias` = '.(int) $idAlias)
         );
 
         return isset($row['id_alias']);

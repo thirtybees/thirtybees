@@ -642,9 +642,9 @@ class AddressFormatCore extends ObjectModel
         if (!Cache::isStored('AddressFormat::_getFormatDB'.$idCountry)) {
             $format = Db::readOnly()->getValue(
                 (new DbQuery())
-                ->select('`format`')
-                ->from(bqSQL(static::$definition['table']))
-                ->where('`id_country` = '.(int) $idCountry)
+                    ->select('`format`')
+                    ->from(bqSQL(static::$definition['table']))
+                    ->where('`id_country` = '.(int) $idCountry)
             );
             $format = trim($format);
             Cache::store('AddressFormat::_getFormatDB'.$idCountry, $format);

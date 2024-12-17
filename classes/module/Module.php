@@ -1196,8 +1196,8 @@ abstract class ModuleCore
     public static function getModulesInstalled($position = 0)
     {
         $sql = (new DbQuery())
-                ->select('m.*')
-                ->from('module', 'm');
+            ->select('m.*')
+            ->from('module', 'm');
         if ($position) {
             $sql->leftJoin('hook_module', 'hm', 'm.`id_module` = hm.`id_module`');
             $sql->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`');
@@ -2967,11 +2967,11 @@ abstract class ModuleCore
 
         return Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('COUNT(*)')
-            ->FROM('hook_module', 'hm')
-            ->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
-            ->where('h.`name` = \''.pSQL($hook).'\'')
-            ->where('hm.`id_module` = '.(int) $this->id)
+                ->select('COUNT(*)')
+                ->FROM('hook_module', 'hm')
+                ->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
+                ->where('h.`name` = \''.pSQL($hook).'\'')
+                ->where('hm.`id_module` = '.(int) $this->id)
         );
     }
 

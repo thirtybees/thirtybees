@@ -514,10 +514,10 @@ class MetaCore extends ObjectModel
         if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
-            ->from('supplier_lang', 'sl')
-            ->leftJoin('supplier', 's', 'sl.`id_supplier` = s.`id_supplier`')
-            ->where('sl.`id_lang` = '.(int) $idLang)
-            ->where('sl.`id_supplier` = '.(int) $idSupplier)
+                ->from('supplier_lang', 'sl')
+                ->leftJoin('supplier', 's', 'sl.`id_supplier` = s.`id_supplier`')
+                ->where('sl.`id_lang` = '.(int) $idLang)
+                ->where('sl.`id_supplier` = '.(int) $idSupplier)
         )) {
             if (!empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['meta_description']);
@@ -579,10 +579,10 @@ class MetaCore extends ObjectModel
         if ($row = Db::readOnly()->getRow(
             (new DbQuery())
                 ->select('`meta_title`, `meta_description`, `meta_keywords`')
-            ->from('cms_category_lang')
-            ->where('`id_lang` = '.(int) $idLang)
-            ->where('`id_cms_category` = '.(int) $idCmsCategory)
-            ->where(Context::getContext()->shop->id ? '`id_shop` = '.(int) Context::getContext()->shop->id : '')
+                ->from('cms_category_lang')
+                ->where('`id_lang` = '.(int) $idLang)
+                ->where('`id_cms_category` = '.(int) $idCmsCategory)
+                ->where(Context::getContext()->shop->id ? '`id_shop` = '.(int) Context::getContext()->shop->id : '')
         )) {
             $row['meta_title'] = $row['meta_title'].' - '.Configuration::get('PS_SHOP_NAME');
 

@@ -636,8 +636,8 @@ class AdminCarriersControllerCore extends AdminController
         }
         $groups = Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('`id_group`')
-            ->from('group')
+                ->select('`id_group`')
+                ->from('group')
         );
 
         $selectedGroups = array_map('intval', Tools::getArrayValue('groupBox'));

@@ -227,15 +227,15 @@ class ProductAttributeCore extends ObjectModel
 
         return Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('DISTINCT ag.*, agl.*, a.`id_attribute`, al.`name`, agl.`name` AS `attribute_group`')
-            ->from('attribute_group', 'ag')
-            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang)
-            ->leftJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
-            ->leftJoin('attribute_lang', 'al', 'al.`id_attribute` = a.`id_attribute` AND al.`id_lang` = '.(int) $idLang)
-            ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
-            ->join(Shop::addSqlAssociation('attribute', 'a'))
-            ->where($notNull ? 'a.`id_attribute` IS NOT NULL AND al.`name` IS NOT NULL AND agl.`id_attribute_group` IS NOT NULL' : '')
-            ->orderBy('agl.`name` ASC, a.`position` ASC')
+                ->select('DISTINCT ag.*, agl.*, a.`id_attribute`, al.`name`, agl.`name` AS `attribute_group`')
+                ->from('attribute_group', 'ag')
+                ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
+                ->leftJoin('attribute_lang', 'al', 'al.`id_attribute` = a.`id_attribute` AND al.`id_lang` = '.(int) $idLang)
+                ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
+                ->join(Shop::addSqlAssociation('attribute', 'a'))
+                ->where($notNull ? 'a.`id_attribute` IS NOT NULL AND al.`name` IS NOT NULL AND agl.`id_attribute_group` IS NOT NULL' : '')
+                ->orderBy('agl.`name` ASC, a.`position` ASC')
         );
     }
 
@@ -256,16 +256,16 @@ class ProductAttributeCore extends ObjectModel
 
         $result = Db::readOnly()->getValue(
             (new DbQuery())
-            ->select('COUNT(*)')
-            ->from('attribute_group', 'ag')
-            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang)
-            ->leftJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
-            ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang)
-            ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
-            ->join(Shop::addSqlAssociation('attribute', 'a'))
-            ->where('al.`name` = \''.pSQL($name).'\'')
-            ->where('ag.`id_attribute_group` = '.(int) $idAttributeGroup)
-            ->orderBy('agl.`name` ASC, a.`position` ASC')
+                ->select('COUNT(*)')
+                ->from('attribute_group', 'ag')
+                ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('attribute', 'a', 'a.`id_attribute_group` = ag.`id_attribute_group`')
+                ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang)
+                ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
+                ->join(Shop::addSqlAssociation('attribute', 'a'))
+                ->where('al.`name` = \''.pSQL($name).'\'')
+                ->where('ag.`id_attribute_group` = '.(int) $idAttributeGroup)
+                ->orderBy('agl.`name` ASC, a.`position` ASC')
         );
 
         return ((int) $result > 0);

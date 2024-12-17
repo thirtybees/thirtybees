@@ -239,9 +239,9 @@ class AdminQuickAccessesControllerCore extends AdminController
             $this->copyFromPost($this->object, $this->table);
             $exists = Db::readOnly()->getValue(
                 (new DbQuery())
-                ->select('`id_quick_access`')
-                ->from('quick_access')
-                ->where('`link` = \''.pSQL($this->object->link).'\'')
+                    ->select('`id_quick_access`')
+                    ->from('quick_access')
+                    ->where('`link` = \''.pSQL($this->object->link).'\'')
             );
             if ($exists) {
                 return true;

@@ -126,9 +126,9 @@ class AdminStatusesControllerCore extends AdminController
         $unremovableOs = [];
         $buf = Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('`id_order_state`')
-            ->from('order_state')
-            ->where('`unremovable` = 1')
+                ->select('`id_order_state`')
+                ->from('order_state')
+                ->where('`unremovable` = 1')
         );
         foreach ($buf as $row) {
             $unremovableOs[] = $row['id_order_state'];

@@ -1564,8 +1564,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
     {
         Db::getInstance()->update(
             'product', [
-            'is_virtual' => (bool) $isVirtual,
-        ], 'id_product = '.(int) $idProduct
+                'is_virtual' => (bool) $isVirtual,
+            ], 'id_product = '.(int) $idProduct
         );
     }
 
@@ -3002,10 +3002,10 @@ class ProductCore extends ObjectModel implements InitializationCallback
             $idProductAttributeOld = (int) $row['id_product_attribute'];
 	        $quantityAttributeOld = $conn->getValue(
 		        (new DbQuery())
-			        ->select('`quantity`')
-			        ->from('stock_available')
-			        ->where('`id_product` = '.(int) $idProductOld)
-			        ->where('`id_product_attribute` = '.(int) $row['id_product_attribute'])
+		            ->select('`quantity`')
+		            ->from('stock_available')
+		            ->where('`id_product` = '.(int) $idProductOld)
+		            ->where('`id_product_attribute` = '.(int) $row['id_product_attribute'])
 	        );
 	        if (!isset($combinations[$idProductAttributeOld])) {
                 $idCombination = null;

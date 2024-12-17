@@ -1428,20 +1428,20 @@ class AdminImportControllerCore extends AdminController
                 break;
             case static::ENTITY_TYPE_PRODUCTS:
                 foreach ([
-                             'product',
-                             'product_shop',
-                             'feature_product',
-                             'product_lang',
-                             'category_product',
-                             'product_tag',
-                             'image',
-                             'image_lang',
-                             'image_shop',
-                             'specific_price',
-                             'specific_price_priority',
-                             'product_carrier',
-                             'cart_product',
-                         ] as $table) {
+                    'product',
+                    'product_shop',
+                    'feature_product',
+                    'product_lang',
+                    'category_product',
+                    'product_tag',
+                    'image',
+                    'image_lang',
+                    'image_shop',
+                    'specific_price',
+                    'specific_price_priority',
+                    'product_carrier',
+                    'cart_product',
+                ] as $table) {
                     try {
                         $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {
@@ -1449,26 +1449,26 @@ class AdminImportControllerCore extends AdminController
                     }
                 }
                 foreach ([
-                             'product_attachment',
-                             'product_country_tax',
-                             'product_download',
-                             'product_group_reduction_cache',
-                             'product_sale',
-                             'product_supplier',
-                             'warehouse_product_location',
-                             'stock',
-                             'stock_available',
-                             'stock_mvt',
-                             'customization',
-                             'customization_field',
-                             'supply_order_detail',
-                             'attribute_impact',
-                             'product_attribute',
-                             'product_attribute_shop',
-                             'product_attribute_combination',
-                             'product_attribute_image',
-                             'pack',
-                         ] as $table) {
+                    'product_attachment',
+                    'product_country_tax',
+                    'product_download',
+                    'product_group_reduction_cache',
+                    'product_sale',
+                    'product_supplier',
+                    'warehouse_product_location',
+                    'stock',
+                    'stock_available',
+                    'stock_mvt',
+                    'customization',
+                    'customization_field',
+                    'supply_order_detail',
+                    'attribute_impact',
+                    'product_attribute',
+                    'product_attribute_shop',
+                    'product_attribute_combination',
+                    'product_attribute_image',
+                    'pack',
+                ] as $table) {
                     try {
                         $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {
@@ -1482,18 +1482,18 @@ class AdminImportControllerCore extends AdminController
                 break;
             case static::ENTITY_TYPE_COMBINATIONS:
                 foreach ([
-                             'attribute',
-                             'attribute_impact',
-                             'attribute_lang',
-                             'attribute_group',
-                             'attribute_group_lang',
-                             'attribute_group_shop',
-                             'attribute_shop',
-                             'product_attribute',
-                             'product_attribute_shop',
-                             'product_attribute_combination',
-                             'product_attribute_image',
-                         ] as $table) {
+                    'attribute',
+                    'attribute_impact',
+                    'attribute_lang',
+                    'attribute_group',
+                    'attribute_group_lang',
+                    'attribute_group_shop',
+                    'attribute_shop',
+                    'product_attribute',
+                    'product_attribute_shop',
+                    'product_attribute_combination',
+                    'product_attribute_image',
+                ] as $table) {
                     try {
                         $conn->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
                     } catch (PrestaShopException $e) {

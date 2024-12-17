@@ -126,11 +126,11 @@ class CustomizationCore extends ObjectModel
     {
         $result = Db::readOnly()->getArray(
             (new DbQuery())
-            ->select('ore.`id_order_return`, ord.`id_order_detail`, ord.`id_customization`, ord.`product_quantity`')
-            ->from('order_return', 'ore')
-            ->innerJoin('order_return_detail', 'ord', 'ord.`id_order_return` = ore.`id_order_return`')
-            ->where('ore.`id_order` = '.(int) $idOrder)
-            ->where('ord.`id_customization` != 0')
+                ->select('ore.`id_order_return`, ord.`id_order_detail`, ord.`id_customization`, ord.`product_quantity`')
+                ->from('order_return', 'ore')
+                ->innerJoin('order_return_detail', 'ord', 'ord.`id_order_return` = ore.`id_order_return`')
+                ->where('ore.`id_order` = '.(int) $idOrder)
+                ->where('ord.`id_customization` != 0')
         );
         $customizations = [];
         foreach ($result as $row) {

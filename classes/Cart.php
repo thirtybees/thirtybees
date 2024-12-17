@@ -1511,9 +1511,9 @@ class CartCore extends ObjectModel
         if ($this->id) {
             $result = Db::readOnly()->getArray(
                 (new DbQuery())
-                ->select('*')
-                ->from('cart_cart_rule')
-                ->where('`id_cart` = '.(int) $this->id)
+                    ->select('*')
+                    ->from('cart_cart_rule')
+                    ->where('`id_cart` = '.(int) $this->id)
             );
             foreach ($result as $row) {
                 $cartRulesInCart[] = $row['id_cart_rule'];

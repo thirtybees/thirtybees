@@ -662,8 +662,8 @@ class AdminModulesPositionsControllerCore extends AdminController
             $hookableModulesList = [];
             $modules = Db::readOnly()->getArray(
                 (new DbQuery())
-                ->select('`id_module`, `name`')
-                ->from('module')
+                    ->select('`id_module`, `name`')
+                    ->from('module')
             );
             foreach ($modules as $module) {
                 if (!Validate::isModuleName($module['name'])) {

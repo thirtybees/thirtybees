@@ -464,7 +464,7 @@ class OrderHistoryCore extends ObjectModel
             ->innerJoin('order_state', 'os', '(oh.id_order_state = os.id_order_state)')
             ->innerJoin('order_state_lang', 'osl', '(os.id_order_state = osl.id_order_state AND osl.id_lang = o.id_lang)')
             ->where('os.send_email = 1')
-			->where('oh.id_order_history = ' . (int) $this->id);
+            ->where('oh.id_order_history = ' . (int) $this->id);
         $result = Db::readOnly()->getRow($sql);
 
         if ($result && $result['template'] && Validate::isEmail($result['email'])) {
