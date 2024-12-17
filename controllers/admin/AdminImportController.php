@@ -1265,7 +1265,7 @@ class AdminImportControllerCore extends AdminController
             $crossStepsVariables = [];
             if ($crossStepsVars = Tools::getValue('crossStepsVars')) {
                 $crossStepsVars = json_decode($crossStepsVars, true);
-                if (sizeof($crossStepsVars) > 0) {
+                if (count($crossStepsVars) > 0) {
                     $crossStepsVariables = $crossStepsVars;
                 }
             }

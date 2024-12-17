@@ -1156,7 +1156,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
 
         Db::getInstance()->delete(
             'carrier_group',
-            '`id_group` IN ('.join(',', $idGroupList).')'
+            '`id_group` IN ('.implode(',', $idGroupList).')'
         );
 
         $carrierList = Db::readOnly()->getArray(
@@ -1164,7 +1164,7 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                 ->select('`id_carrier`')
                 ->from('carrier')
                 ->where('`deleted` = 0')
-                ->where(is_array($exception) ? '`id_carrier` NOT IN ('.join(',', $exception).')' : '')
+                ->where(is_array($exception) ? '`id_carrier` NOT IN ('.implode(',', $exception).')' : '')
         );
 
         if ($carrierList) {

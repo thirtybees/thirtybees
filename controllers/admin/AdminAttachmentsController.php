@@ -285,7 +285,7 @@ class AdminAttachmentsControllerCore extends AdminController
                         }
                         $_POST['file_name'] = $_FILES['file']['name'];
                         @unlink($_FILES['file']['tmp_name']);
-                        if (!sizeof($this->errors) && isset($a) && file_exists($a->getFilePath())) {
+                        if (!count($this->errors) && isset($a) && file_exists($a->getFilePath())) {
                             @unlink($a->getFilePath());
                         }
                         $_POST['file'] = $uniqid;

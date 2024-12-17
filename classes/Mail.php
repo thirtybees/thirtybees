@@ -538,7 +538,7 @@ class MailCore extends ObjectModel
             'Email template %s for language %s not found in [%s]',
             $filename,
             $iso,
-            join(', ', $localPaths)
+            implode(', ', $localPaths)
         ), 3);
     }
 
