@@ -32,7 +32,8 @@ class CartPackageListTest extends Unit
      *
      * @throws PrestaShopException
      */
-    protected function _before() {
+    protected function _before()
+    {
         $this->reset();
         $this->associateCarrierWithZone(1, static::ZONE_EUROPE);
     }
@@ -556,7 +557,8 @@ class CartPackageListTest extends Unit
      *
      * @throws PrestaShopException
      */
-    private function reset() {
+    private function reset()
+    {
         $this->resetProducts();
         $this->deleteWarehouses();
         $this->setASM(false);
@@ -590,7 +592,8 @@ class CartPackageListTest extends Unit
      *
      * @throws PrestaShopException
      */
-    private function resetProducts() {
+    private function resetProducts()
+    {
         $repository = Adapter_ServiceLocator::get('Core_Foundation_Database_EntityManager')->getRepository('WarehouseProductLocation');
         foreach ([1, 2, 8] as $productId) {
             $product = new Product($productId);
@@ -613,7 +616,8 @@ class CartPackageListTest extends Unit
      * @param bool $value
      * @throws PrestaShopException
      */
-    private function setASM($value) {
+    private function setASM($value)
+    {
         Configuration::updateValue('PS_ADVANCED_STOCK_MANAGEMENT', $value ? 1 : 0);
     }
 
@@ -624,7 +628,8 @@ class CartPackageListTest extends Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function setOOS($value) {
+    private function setOOS($value)
+    {
         Db::getInstance()->update("stock_available", ['out_of_stock' => $value]);
         Cache::clean("*");
     }
@@ -637,7 +642,8 @@ class CartPackageListTest extends Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function createCart($products) {
+    private function createCart($products)
+    {
         $cart = new Cart();
         $cart->id_currency = 1;
         $cart->save();
@@ -657,7 +663,8 @@ class CartPackageListTest extends Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    private function createWarehouse($name, $carriers) {
+    private function createWarehouse($name, $carriers)
+    {
         $warehouse = new Warehouse();
         $warehouse->id_currency = 1;
         $warehouse->id_address = 1;

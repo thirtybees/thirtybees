@@ -7,7 +7,6 @@ use Context;
 use Employee;
 use PrestaShopDatabaseException;
 use PrestaShopException;
-use Tab;
 use Tools;
 use Validate;
 

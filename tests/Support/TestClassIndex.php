@@ -68,7 +68,7 @@ class TestClassIndex
      * @param string|null $coreDir
      * @param string|null $overrideDir
      */
-    public  function __construct($coreDir = null, $overrideDir = null)
+    public function __construct($coreDir = null, $overrideDir = null)
     {
         $this->coreDir = $coreDir ?? realpath(__DIR__ . '/../../');
         $this->overrideDir = $overrideDir ?? realpath(__DIR__ . '/override/');

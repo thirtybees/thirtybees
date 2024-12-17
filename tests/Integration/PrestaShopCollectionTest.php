@@ -57,7 +57,7 @@ class PrestaShopCollectionTest extends Unit
                             $definition = ObjectModel::getDefinition($className);
                             if ($definition && isset($definition['associations'])) {
                                 foreach ($definition['associations'] as $key => $assoc) {
-                                   if ($key !== PrestaShopCollection::LANG_ALIAS)  {
+                                   if ($key !== PrestaShopCollection::LANG_ALIAS) {
                                        $ret[$className.':'.$key] = [$className, $key, $assoc];
                                    }
                                 }

@@ -7,6 +7,7 @@ use PrestaShopCollection;
 use PrestaShopException;
 use Tests\Support\FunctionalTester;
 use Validate;
+use WebserviceRequest;
 
 class WebserviceWalkerCest
 {
@@ -40,7 +41,7 @@ class WebserviceWalkerCest
             ['url' => '/']
         ];
 
-        foreach (\WebserviceRequest::getResources() as $key => $resource) {
+        foreach (WebserviceRequest::getResources() as $key => $resource) {
             $url = '/' . $key;
             if ($key === 'search') {
                 $url .= '?query=candle&language=1';

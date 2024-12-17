@@ -16,7 +16,7 @@ class ImageTypeTest extends Unit
     /**
      * @var string[]
      */
-    static $imageTypes1 = [
+    public static $imageTypes1 = [
         'Niara_cart',
         'Niara_small',
     ];
@@ -24,7 +24,7 @@ class ImageTypeTest extends Unit
     /**
      * @var string[]
      */
-    static $imageTypes2 = [
+    public static $imageTypes2 = [
         'Niara_cart_default',
         'Niara_small_default',
     ];
@@ -32,7 +32,7 @@ class ImageTypeTest extends Unit
     /**
      * @var string[]
      */
-    static $imageTypes3 = [
+    public static $imageTypes3 = [
         'Niara_cart',
         'Niara_small',
         'community-theme-default_cart',
@@ -124,8 +124,7 @@ class ImageTypeTest extends Unit
         $themeName,
         $themeDir,
         $imageTypesRef
-    )
-    {
+    ) {
         $imageTypes = [];
         foreach (static::$$imageTypesRef as $imageType) {
             $imageTypes[$imageType] = $imageType;

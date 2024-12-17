@@ -87,7 +87,8 @@ class ModuleTest extends Unit
      * @return void
      * @throws PrestaShopException
      */
-    public function testValidModuleNameGetModuleId() {
+    public function testValidModuleNameGetModuleId()
+    {
         $this->assertTrue(!!Module::getModuleIdByName("coreupdater"));
     }
 
@@ -104,7 +105,8 @@ class ModuleTest extends Unit
      * @return void
      * @throws PrestaShopException
      */
-    public function testBackwardCompatibilityModuleNameGetModuleId() {
+    public function testBackwardCompatibilityModuleNameGetModuleId()
+    {
         $this->assertTrue(!!Module::getModuleIdByName("CoreUpdater"));
     }
 
@@ -113,7 +115,8 @@ class ModuleTest extends Unit
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function testMultipleInstantiation() {
+    public function testMultipleInstantiation()
+    {
         $this->assertTrue(!!Module::getInstanceByName("coreupdater"));
         $this->assertTrue(!!Module::getInstanceByName("CoreUpdater"));
     }

@@ -9,6 +9,42 @@ use ReflectionException;
 use Tests\Support\UnitTester;
 use Tests\Support\Utils\ObjectModelUtils;
 use WebserviceRequest;
+use AddressFormat;
+use Alias;
+use Attachment;
+use CMSRole;
+use CompareProduct;
+use ConfigurationKPI;
+use Connection;
+use ConnectionsSource;
+use DateRange;
+use Gender;
+use GroupReduction;
+use Hook;
+use Image;
+use Mail;
+use Message;
+use Meta;
+use OrderDetailPack;
+use OrderMessage;
+use OrderReturn;
+use OrderReturnState;
+use Pack;
+use Page;
+use PaymentCC;
+use PrestaShopLogger;
+use ProductDownload;
+use Profile;
+use QuickAccess;
+use Referrer;
+use RequestSql;
+use Risk;
+use Scene;
+use StockMvt;
+use Tab;
+use Theme;
+use UrlRewrite;
+use WebserviceKey;
 
 class WebserviceMetadataTest extends Unit
 {
@@ -18,42 +54,42 @@ class WebserviceMetadataTest extends Unit
     protected UnitTester $tester;
 
     const NOT_EXPOSED = [
-        \AddressFormat::class,
-        \Alias::class,
-        \Attachment::class,
-        \CMSRole::class,
-        \CompareProduct::class,
-        \ConfigurationKPI::class,
-        \Connection::class,
-        \ConnectionsSource::class,
-        \DateRange::class,
-        \Gender::class,
-        \GroupReduction::class,
-        \Hook::class,
-        \Image::class, // specific handler
-        \Mail::class,
-        \Message::class,
-        \Meta::class,
-        \OrderDetailPack::class,
-        \OrderMessage::class,
-        \OrderReturn::class,
-        \OrderReturnState::class,
-        \Pack::class,
-        \Page::class,
-        \PaymentCC::class,
-        \PrestaShopLogger::class,
-        \ProductDownload::class,
-        \Profile::class,
-        \QuickAccess::class,
-        \Referrer::class,
-        \RequestSql::class,
-        \Risk::class,
-        \Scene::class,
-        \StockMvt::class, // exposed as StockMvtWs
-        \Tab::class,
-        \Theme::class,
-        \UrlRewrite::class,
-        \WebserviceKey::class,
+        AddressFormat::class,
+        Alias::class,
+        Attachment::class,
+        CMSRole::class,
+        CompareProduct::class,
+        ConfigurationKPI::class,
+        Connection::class,
+        ConnectionsSource::class,
+        DateRange::class,
+        Gender::class,
+        GroupReduction::class,
+        Hook::class,
+        Image::class, // specific handler
+        Mail::class,
+        Message::class,
+        Meta::class,
+        OrderDetailPack::class,
+        OrderMessage::class,
+        OrderReturn::class,
+        OrderReturnState::class,
+        Pack::class,
+        Page::class,
+        PaymentCC::class,
+        PrestaShopLogger::class,
+        ProductDownload::class,
+        Profile::class,
+        QuickAccess::class,
+        Referrer::class,
+        RequestSql::class,
+        Risk::class,
+        Scene::class,
+        StockMvt::class, // exposed as StockMvtWs
+        Tab::class,
+        Theme::class,
+        UrlRewrite::class,
+        WebserviceKey::class,
     ];
 
     /**

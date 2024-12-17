@@ -17,7 +17,7 @@ class FunctionalTester extends Actor
      *
      * @return void
      */
-   function amLoggedInToBackOffice()
+   public function amLoggedInToBackOffice()
    {
        $this->amOnPage('/admin-dev/index.php?controller=AdminLogin');
        $this->fillField('#email', 'test@thirty.bees');
