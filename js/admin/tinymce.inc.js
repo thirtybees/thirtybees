@@ -88,7 +88,12 @@ function tinySetup(config) {
       width: 1200,
       height: 600,
       saveCursorPosition: false,
-    }
+    },
+    init_instance_callback: function (editor) {
+      editor.on('PostProcess', function (e) {
+        e.content = e.content.replace(/\s*\/>/g, '>');
+      });
+    },
   };
 
   // allow extending default config
