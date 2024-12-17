@@ -44,7 +44,7 @@ class Tools extends ToolsCore
      * @return void
      * @throws PrestaShopException
      */
-    public static function redirect($url, $baseUri = __PS_BASE_URI__, Link $link = null, $headers = null)
+    public static function redirect($url, $baseUri = __PS_BASE_URI__, ?Link $link = null, $headers = null)
     {
         if (!$link) {
             $link = Context::getContext()->link;
@@ -57,7 +57,7 @@ class Tools extends ToolsCore
             if (strpos($url, 'index.php?controller=') !== false && strpos($url, 'index.php/') == 0) {
                 $url = substr($url, strlen('index.php?controller='));
                 if (Configuration::get('PS_REWRITING_SETTINGS')) {
-                    $url = Tools::strReplaceFirst('&', '?', $url);
+                    $url = static::strReplaceFirst('&', '?', $url);
                 }
             }
 
@@ -127,7 +127,7 @@ class Tools extends ToolsCore
     {
         if (!is_object(Context::getContext()->controller)) {
             try {
-                $controller = ServiceLocator::getInstance()->getController(Tools::getDefaultControllerClass());
+                $controller = ServiceLocator::getInstance()->getController(static::getDefaultControllerClass());
                 $controller->setRedirectAfter($url);
                 $controller->run();
                 Context::getContext()->controller = $controller;
