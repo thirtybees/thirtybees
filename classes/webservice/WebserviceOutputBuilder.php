@@ -825,7 +825,7 @@ class WebserviceOutputBuilderCore
      */
     public function setIndent($depth)
     {
-        $number_of_tabs = $this->depth - $depth;
+        $number_of_tabs = (int)max($this->depth - $depth, 0);
         $string = str_repeat("\t", $number_of_tabs);
 
         return $string;
