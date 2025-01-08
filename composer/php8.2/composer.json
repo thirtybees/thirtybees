@@ -14,12 +14,12 @@
         "pclzip/pclzip": "~2.8.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0",
-        "codeception/codeception": "^5.0",
-        "codeception/module-asserts": "^3.0",
-        "codeception/module-webdriver": "^3.0",
-        "codeception/module-db": "^3.0",
-        "codeception/module-phpbrowser": "^3.0"
+        "phpunit/phpunit": "^11",
+        "codeception/codeception": "^5",
+        "codeception/module-asserts": "^3",
+        "codeception/module-webdriver": "^4",
+        "codeception/module-db": "^3",
+        "codeception/module-phpbrowser": "^3"
     },
     "config": {
         "platform": {
