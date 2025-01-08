@@ -290,6 +290,7 @@ class DispatcherTest extends Unit
         Dispatcher::$instance = null;
         Configuration::set('PS_REWRITING_SETTINGS', $useFriendlyUrl ? 1 : 0);
         $data = parse_url($uri);
+        $_GET = [];
         if (isset($data['query']) && $data['query']) {
             parse_str($data['query'], $output);
             $_GET = array_merge($_GET, $output);
