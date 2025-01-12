@@ -640,12 +640,12 @@ class ImageManagerCore
                     }
 
                     $dstFile = $baseName . '-' . stripslashes($imageType['name']) . '.' . $defaultImageExtension;
-                    $success = self::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
+                    $success = static::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
 
                     // Only generate if size of sourceImage is big enough
                     if (self::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
                         $dstFileRetina = $baseName . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
-                        $success = self::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
+                        $success = static::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
                     }
                 }
 
