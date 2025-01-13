@@ -83,7 +83,7 @@ class ImageManagerCore
      */
     public static function getThumbnailUrl($image, $cacheImage, $size, $imageExtension = null, $disableCache = true, $regenerate = false)
     {
-        if (!file_exists($image) && (!$image = self::tryRestoreImage($image))) {
+        if (!file_exists($image) && (!$image = static::tryRestoreImage($image))) {
             return '';
         }
 
@@ -473,7 +473,7 @@ class ImageManagerCore
             throw new PrestaShopException("Image quality value needs to be between 0 and 100!");
         }
 
-        if (!in_array($imageExtension, self::getAllowedImageExtensions(false, true))) {
+        if (!in_array($imageExtension, static::getAllowedImageExtensions(false, true))) {
             throw new PrestaShopException("The image extensions {$imageExtension} is not supported!");
         }
 
@@ -540,12 +540,12 @@ class ImageManagerCore
             return false;
         }
 
-        if (!in_array($newImageExtension, self::getAllowedImageExtensions(false, true))) {
+        if (!in_array($newImageExtension, static::getAllowedImageExtensions(false, true))) {
             $error = static::ERROR_FORBIDDEN_IMAGE_EXTENSION;
             return false;
         }
 
-        if ($resource = self::create($info[2], $sourceImage)) {
+        if ($resource = static::create($info[2], $sourceImage)) {
 
             if (!$newImageDest) {
                 $oldImageExtension = pathinfo($sourceImage, PATHINFO_EXTENSION);
@@ -553,7 +553,7 @@ class ImageManagerCore
             }
 
             // Note: when we copy/convert an image, we don't want to lose quality
-            if (self::write($newImageExtension, $resource, $newImageDest, 100)) {
+            if (static::write($newImageExtension, $resource, $newImageDest, 100)) {
                 if ($unlinkOldImage) {
                     unlink($sourceImage);
                 }
@@ -643,7 +643,7 @@ class ImageManagerCore
                     $success = static::resize($sourceImage, $dstFile, $imageType['width'], $imageType['height'], $defaultImageExtension) && $success;
 
                     // Only generate if size of sourceImage is big enough
-                    if (self::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
+                    if (static::retinaSupport() && (($sourceWidth >= $imageType['width'] * 2) || ($sourceHeight >= $imageType['height'] * 2))) {
                         $dstFileRetina = $baseName . '-' . stripslashes($imageType['name']) . '2x.' . $defaultImageExtension;
                         $success = static::resize($sourceImage, $dstFileRetina, $imageType['width'] * 2, $imageType['height'] * 2, $defaultImageExtension) && $success;
                     }
@@ -697,7 +697,7 @@ class ImageManagerCore
             !ImageManager::isCorrectImageFileExt($file['name'], $allowedExtensions) ||
             preg_match('/%00/', $file['name'])
         ) {
-            return Tools::displayError('Image format not recognized, allowed formats are: ').implode(', ',self::getAllowedImageExtensions());
+            return Tools::displayError('Image format not recognized, allowed formats are: ').implode(', ',static::getAllowedImageExtensions());
         }
         return false;
     }

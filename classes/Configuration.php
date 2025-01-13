@@ -717,7 +717,7 @@ class ConfigurationCore extends ObjectModel
             }
         }
 
-        return self::updateValueRaw($key, $values, $idShopGroup, $idShop);
+        return static::updateValueRaw($key, $values, $idShopGroup, $idShop);
     }
 
     /**

@@ -672,7 +672,7 @@ class PackCore extends Product
     {
         try {
             $stockType = (int)Configuration::get(Configuration::PACK_STOCK_TYPE);
-            if (self::isValidStockType($stockType)) {
+            if (static::isValidStockType($stockType)) {
                 return $stockType;
             }
         } catch (Exception $ignored) {

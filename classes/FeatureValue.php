@@ -200,7 +200,7 @@ class FeatureValueCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         if (!$this->position) {
-            $this->position = self::getHighestPosition($this->id_feature)+1;
+            $this->position = static::getHighestPosition($this->id_feature)+1;
         }
 
         $return = parent::add($autoDate, $nullValues);
@@ -226,7 +226,7 @@ class FeatureValueCore extends ObjectModel
             Hook::triggerEvent('actionFeatureValueDelete', ['id_feature_value' => $this->id]);
         }
 
-        self::cleanPositions($this->id_feature);
+        static::cleanPositions($this->id_feature);
 
         return $return;
     }
