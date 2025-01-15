@@ -41,9 +41,15 @@ class MobileDetectHelperCore
     private static $isMobile = null;
 
     /**
+     * @var string|null
+     */
+    private static $userAgent = null;
+
+    /**
      * @return bool
      */
-    public function isTablet() {
+    public function isTablet(): bool
+    {
         static::detect();
         return (bool)static::$isTablet;
     }
@@ -51,9 +57,19 @@ class MobileDetectHelperCore
     /**
      * @return bool
      */
-    public function isMobile() {
+    public function isMobile(): bool
+    {
         static::detect();
         return (bool)static::$isMobile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserAgent(): string
+    {
+        static::detect();;
+        return (string)static::$userAgent;
     }
 
     /**
@@ -64,6 +80,7 @@ class MobileDetectHelperCore
         if (is_null(static::$isTablet)) {
             static::$isMobile = false;
             static::$isTablet = false;
+            static::$userAgent = (string)$_SERVER['HTTP_USER_AGENT'];
 
             try {
                 foreach (static::getModulesResponses() as $response) {
@@ -72,6 +89,9 @@ class MobileDetectHelperCore
                     }
                     if (isset($response['isMobile']) && $response['isMobile']) {
                         static::$isMobile = true;
+                    }
+                    if (isset($response['userAgent'])) {
+                        static::$userAgent = (string)$response['userAgent'];
                     }
                 }
             } catch (Throwable $e) {
