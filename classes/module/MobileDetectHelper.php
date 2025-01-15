@@ -80,7 +80,7 @@ class MobileDetectHelperCore
         if (is_null(static::$isTablet)) {
             static::$isMobile = false;
             static::$isTablet = false;
-            static::$userAgent = (string)$_SERVER['HTTP_USER_AGENT'];
+            static::$userAgent = (string)($_SERVER['HTTP_USER_AGENT'] ?? '');
 
             try {
                 foreach (static::getModulesResponses() as $response) {
