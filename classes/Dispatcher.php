@@ -1836,7 +1836,7 @@ class DispatcherCore
     /**
      * Returns true, if $requestUri points to PHP script file
      *
-     * This means that php script included thirty bees core and triggerd dispatcher
+     * This means that php script included thirty bees core and triggered dispatcher
      *
      * @param string $requestUri
      * @return bool
@@ -1849,6 +1849,9 @@ class DispatcherCore
         if (str_ends_with($path, '/')) {
             $path .= 'index.php';
         }
+
+        // remove extra path that after actual php script file, for example /index.php/extra/path => /index.php
+        $path = preg_replace("#\.php\/.*$#", ".php", $path);
 
         // special handling for root index.php, we will consider this to be
         // php script file only for non GET requests
