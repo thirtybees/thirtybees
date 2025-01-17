@@ -100,20 +100,20 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
         // Check shop name
         if ($this->session->shopName && !Validate::isGenericName($this->session->shopName)) {
             $this->errors['shopName'] = $this->l('Invalid shop name');
-        } elseif (strlen($this->session->shopName) > 64) {
+        } elseif (strlen($this->session->shopName ?? '') > 64) {
             $this->errors['shopName'] = $this->l('The field %s is limited to %d characters', $this->l('shop name'), 64);
         }
 
         // Check admin name
         if ($this->session->adminFirstname && !Validate::isName($this->session->adminFirstname)) {
             $this->errors['adminFirstname'] = $this->l('Your firstname contains some invalid characters');
-        } elseif (strlen($this->session->adminFirstname) > 32) {
+        } elseif (strlen($this->session->adminFirstname ?? '') > 32) {
             $this->errors['adminFirstname'] = $this->l('The field %s is limited to %d characters', $this->l('firstname'), 32);
         }
 
         if ($this->session->adminLastname && !Validate::isName($this->session->adminLastname)) {
             $this->errors['adminLastname'] = $this->l('Your lastname contains some invalid characters');
-        } elseif (strlen($this->session->adminLastname) > 32) {
+        } elseif (strlen($this->session->adminLastname ?? '') > 32) {
             $this->errors['adminLastname'] = $this->l('The field %s is limited to %d characters', $this->l('lastname'), 32);
         }
 
