@@ -3227,7 +3227,8 @@ class ToolsCore
         }
 
         fwrite($write_fd, "RewriteEngine on\n");
-
+        fwrite($write_fd, "RewriteRule ^robots\.txt$ robots.php [L]\n");
+        
         $mediaDomains = array_reduce(static::getMediaServersUrls(), function($acc, $mediaServer) {
             return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
         }, '');
