@@ -3,7 +3,7 @@
  * 2007-2016 PrestaShop
  *
  * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017-2024 thirty bees
+ * Copyright (C) 2017-2025 thirty bees
  *
  * NOTICE OF LICENSE
  *
@@ -23,7 +23,7 @@
  *
  *  @author    thirty bees <contact@thirtybees.com>
  *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017-2024 thirty bees
+ *  @copyright 2017-2025 thirty bees
  *  @copyright 2007-2016 PrestaShop SA
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
@@ -266,46 +266,34 @@ class AdminMetaControllerCore extends AdminController
             $this->fields_options['routes']['submit'] = ['title' => $this->l('Save')];
         }
 
-        // Options to generate robot.txt
-        $robotsDescription = $this->l('Your robots.txt file MUST be in your website\'s root directory and nowhere else (e.g. http://www.example.com/robots.txt).').' ';
-        if ($this->checkConfiguration($this->rb_file)) {
-            $robotsDescription .= $this->l('Generate your "robots.txt" file by clicking on the following button (this will erase the old robots.txt file)');
-            $robotsSubmit = [];
-        } else {
-            $robotsDescription .= $this->l('Before you can use this tool, you need to:');
-            $robotsDescription .= $this->l('1) Create a blank robots.txt file in your root directory.');
-            $robotsDescription .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
-        }
-
         $this->fields_options['robots'] = [
-            'title'  => $this->l('General'),
-            'description' => $robotsDescription,
-            'icon'   => 'icon-cogs',
-            'fields' => [
-                'robots' => [
-                    'title'                     => $this->l('robots.txt'),
+            'title'       => $this->l('Robots.txt Management'),
+            'icon'        => 'icon-cogs',
+            'description' => $this->l("Edit the robots.txt file for this shop. WARNING: when using Multistore, ensure you edit this section individually for each shop, as certain records might be unique to each shop. Please note that thirtybees 1.7 and later does not utilize a traditional robots.txt file in the root folder, instead, the records are stored in the database table. Neverthless you should have robots.php file in your root folder which facilitates this."),
+            'fields'      => [
+                'robots_content' => [
+                    'title' => $this->l('robots.txt Content'),
                     'type'                      => 'code',
                     'mode'                      => 'text',
                     'enableBasicAutocompletion' => true,
                     'enableSnippets'            => true,
                     'enableLiveAutocompletion'  => true,
                     'maxLines'                  => 400,
-                    'visibility'                => Shop::CONTEXT_ALL,
-                    'value'                     => Tools::isSubmit('robots') ? Tools::getValue('robots') : $this->loadRobotsFile(),
-                    'auto_value'                => false,
+                    'value'                     => $this->getRobotsContentForShop($this->context->shop->id),
                 ],
             ],
-            'submit' => isset($robotsSubmit) ? ['title' => $this->l('Save')] : null,
-            'buttons' => [
-                'generateRobots' => [
-                    'class' => 'btn btn-default pull-left',
-                    'title' => $this->l('Generate robots.txt file'),
-                    'icon' => 'process-icon-cogs',
-                    'href' => $this->context->link->getAdminLink('AdminMeta').'&submitGenerateRobots',
-                ],
+            'submit'      => [
+                'title' => $this->l('Save'),
             ],
         ];
 
+        $this->fields_options['robots']['buttons']['generateShopRobots'] = [
+            'class' => 'btn btn-default pull-left',
+            'title' => $this->l('Generate dummy robots.txt file'),
+            'icon'  => 'process-icon-cogs',
+            'href'  => $this->context->link->getAdminLink('AdminMeta').'&submitGenerateShopRobots',
+        ];
+        
         $this->fields_options['htaccess'] = [
             'title'  => $this->l('.htaccess file'),
             'icon'   => 'icon-cogs',
@@ -560,15 +548,20 @@ class AdminMetaControllerCore extends AdminController
             }
 
             Hook::triggerEvent('actionAdminMetaSave');
-        } elseif (Tools::isSubmit('submitGenerateRobots')) {
-            $this->generateRobotsFile();
-        } elseif (Tools::isSubmit('submitGenerateHtaccess')) {
-            Tools::generateHtaccess();
-        }
+                } elseif (Tools::isSubmit('submitGenerateShopRobots')) {
+                    $id_shop = $this->context->shop->id;
+                    $this->generateShopRobotsFile($id_shop);
+                } elseif (Tools::isSubmit('submitGenerateHtaccess')) {
+                    Tools::generateHtaccess();
+                }
 
-        if (Tools::isSubmit('robots')) {
-            $this->saveRobotsFile();
-            unset($_POST['robots']);
+        if (Tools::isSubmit('submitOptionsmeta') && Tools::getValue('robots_content')) {
+            $id_shop = $this->context->shop->id;
+            $robotsContent = Tools::getValue('robots_content');
+
+            $this->saveRobotsContent($id_shop, $robotsContent);
+
+            $this->confirmations[] = $this->l('The robots.txt content has been successfully updated.');
         }
 
         if (Tools::isSubmit('htaccess')) {
@@ -608,95 +601,12 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
+     * @deprecated 1.7.0 Use generateShopRobotsFile($id_shop) instead.
      * @throws PrestaShopException
      */
     public function generateRobotsFile()
     {
-        if (!$writeFd = @fopen($this->rb_file, 'w')) {
-            $this->errors[] = sprintf(Tools::displayError('Cannot write into file: %s. Please check write permissions.'), $this->rb_file);
-        } else {
-            Hook::triggerEvent(
-                'actionAdminMetaBeforeWriteRobotsFile',
-                [
-                    'rb_data' => &$this->rb_data,
-                ]
-            );
-
-            // PS Comments
-            fwrite($writeFd, "# robots.txt automatically generated by thirty bees e-commerce open-source solution\n");
-            fwrite($writeFd, "# http://www.thirtybees.com - http://www.thirtybees.com/forums\n");
-            fwrite($writeFd, "# This file is to prevent the crawling and indexing of certain parts\n");
-            fwrite($writeFd, "# of your site by web crawlers and spiders run by sites like Yahoo!\n");
-            fwrite($writeFd, "# and Google. By telling these \"robots\" where not to go on your site,\n");
-            fwrite($writeFd, "# you save bandwidth and server resources.\n");
-            fwrite($writeFd, "# For more information about the robots.txt standard, see:\n");
-            fwrite($writeFd, "# http://www.robotstxt.org/robotstxt.html\n");
-
-            // User-Agent
-            fwrite($writeFd, "User-agent: *\n");
-
-            // Allow Directives
-            if (count($this->rb_data['Allow'])) {
-                fwrite($writeFd, "# Allow Directives\n");
-                foreach ($this->rb_data['Allow'] as $allow) {
-                    fwrite($writeFd, 'Allow: '.$allow."\n");
-                }
-            }
-
-            // Private pages
-            if (count($this->rb_data['GB'])) {
-                fwrite($writeFd, "# Private pages\n");
-                foreach ($this->rb_data['GB'] as $gb) {
-                    fwrite($writeFd, 'Disallow: /*'.$gb."\n");
-                }
-            }
-
-            // Directories
-            if (count($this->rb_data['Directories'])) {
-                fwrite($writeFd, "# Directories\n");
-                foreach ($this->rb_data['Directories'] as $dir) {
-                    fwrite($writeFd, 'Disallow: */'.$dir."\n");
-                }
-            }
-
-            // Files
-            if (count($this->rb_data['Files'])) {
-                $activeLanguageCount = count(Language::getIDs());
-                fwrite($writeFd, "# Files\n");
-                foreach ($this->rb_data['Files'] as $isoCode => $files) {
-                    foreach ($files as $file) {
-                        if ($activeLanguageCount > 1) {
-                            // Friendly URLs have language ISO code when multiple languages are active
-                            fwrite($writeFd, 'Disallow: /'.$isoCode.'/'.$file."\n");
-                        } elseif ($activeLanguageCount == 1) {
-                            // Friendly URL does not have language ISO when only one language is active
-                            fwrite($writeFd, 'Disallow: /'.$file."\n");
-                        } else {
-                            fwrite($writeFd, 'Disallow: /'.$file."\n");
-                        }
-                    }
-                }
-            }
-
-            // Sitemap
-            if (file_exists($this->sm_file) && filesize($this->sm_file)) {
-                fwrite($writeFd, "# Sitemap\n");
-                $sitemapFilename = basename($this->sm_file);
-                fwrite($writeFd, 'Sitemap: '.(Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].__PS_BASE_URI__.$sitemapFilename."\n");
-            }
-
-            Hook::triggerEvent(
-                'actionAdminMetaAfterWriteRobotsFile',
-                [
-                    'rb_data'  => $this->rb_data,
-                    'write_fd' => &$writeFd,
-                ]
-            );
-
-            fclose($writeFd);
-
-            $this->redirect_after = static::$currentIndex.'&conf=4&token='.$this->token;
-        }
+       Tools::displayAsDeprecated('The generateRobotsFile() method is deprecated. Use generateShopRobotsFile($id_shop) instead.');
     }
 
     /**
@@ -917,13 +827,14 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
+     * @deprecated 1.7.0
      * Save robots.txt file
      *
      * @return void
      */
     public function saveRobotsFile()
     {
-        @file_put_contents(_PS_ROOT_DIR_.'/robots.txt', Tools::getValue('robots'));
+        Tools::displayAsDeprecated('The saveRobotsFile() method is deprecated - since version 1.7.0 thirtybees uses DB to store robots.txt data.');
     }
 
     /**
@@ -1080,16 +991,144 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
+     * @deprecated 1.7.0
      * Loads content of robots.txt file
      *
      * @return false|string
      */
     protected function loadRobotsFile()
     {
-        if (file_exists($this->rb_file)) {
-            return file_get_contents($this->rb_file);
-        } else {
+        Tools::displayAsDeprecated('The loadRobotsFile() method is deprecated - since version 1.7.0 thirtybees uses DB to store robots.txt data.');
+    }
+    
+    protected function ensureRobotsTableExists()
+    {
+        // Check if the `robots` table exists
+        $tableExists = Db::getInstance()->executeS(
+            'SHOW TABLES LIKE "' . _DB_PREFIX_ . 'robots"'
+        );
+
+        if (!$tableExists) {
+            // Create the table if it doesn't exist
+            $sql = 'CREATE TABLE `' . _DB_PREFIX_ . 'robots` (
+                        `id_shop` INT UNSIGNED NOT NULL,
+                        `robots_content` TEXT NOT NULL,
+                        PRIMARY KEY (`id_shop`)
+                    ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4';
+
+            Db::getInstance()->execute($sql);
+        }
+    }
+
+    protected function saveRobotsContent($id_shop, $content)
+    {
+        // Ensure the `robots` table exists
+        $this->ensureRobotsTableExists();
+
+        // Insert or update the robots content
+        Db::getInstance()->execute('
+            INSERT INTO `' . _DB_PREFIX_ . 'robots` (`id_shop`, `robots_content`)
+            VALUES (' . (int) $id_shop . ', \'' . pSQL($content, true) . '\')
+            ON DUPLICATE KEY UPDATE `robots_content` = \'' . pSQL($content, true) . '\'
+        ');
+    }
+
+    /**
+     * Fetch robots.txt content for the given shop.
+     *
+     * @param int $id_shop
+     * @return string|null
+     */
+    protected function getRobotsContentForShop($id_shop)
+    {
+        // Ensure the `robots` table exists
+        $this->ensureRobotsTableExists();
+
+        // Fetch the robots content
+        $query = '
+            SELECT `robots_content`
+            FROM `' . _DB_PREFIX_ . 'robots`
+            WHERE `id_shop` = ' . (int) $id_shop;
+
+        $result = Db::getInstance()->getValue($query);
+
+        return $result;
+    }
+    
+    public function generateShopRobotsFile($id_shop)
+    {
+        $shop = new Shop($id_shop);
+        if (!Validate::isLoadedObject($shop)) {
+            $this->errors[] = Tools::displayError('Invalid shop ID.');
             return false;
         }
+
+        // Fetch robots.txt data for the current shop
+        $robots_data = $this->getRobotsContent();
+
+        // Generate robots.txt content
+        $content = "# robots.txt automatically generated by thirty bees e-commerce open-source solution\n";
+        $content .= "# http://www.thirtybees.com - http://www.thirtybees.com/forums\n";
+        $content .= "# This file is to prevent the crawling and indexing of certain parts\n";
+        $content .= "# of your site by web crawlers and spiders run by sites like Yahoo!\n";
+        $content .= "# and Google. By telling these \"robots\" where not to go on your site,\n";
+        $content .= "# you save bandwidth and server resources.\n";
+        $content .= "# For more information about the robots.txt standard, see:\n";
+        $content .= "# http://www.robotstxt.org/robotstxt.html\n\n";
+
+        $content .= "User-agent: *\n";
+
+        // Add Allow directives
+        if (!empty($robots_data['Allow'])) {
+            $content .= "# Allow Directives\n";
+            foreach ($robots_data['Allow'] as $allow) {
+                $content .= "Allow: $allow\n";
+            }
+        }
+
+        // Add private pages
+        if (!empty($robots_data['GB'])) {
+            $content .= "# Private pages\n";
+            foreach ($robots_data['GB'] as $gb) {
+                $content .= "Disallow: /*$gb\n";
+            }
+        }
+
+        // Add directories
+        if (!empty($robots_data['Directories'])) {
+            $content .= "# Directories\n";
+            foreach ($robots_data['Directories'] as $dir) {
+                $content .= "Disallow: */$dir\n";
+            }
+        }
+
+        // Add files
+        if (!empty($robots_data['Files'])) {
+            $activeLanguageCount = count(Language::getIDs());
+            $content .= "# Files\n";
+            foreach ($robots_data['Files'] as $isoCode => $files) {
+                foreach ($files as $file) {
+                    if ($activeLanguageCount > 1) {
+                        $content .= "Disallow: /$isoCode/$file\n";
+                    } else {
+                        $content .= "Disallow: /$file\n";
+                    }
+                }
+            }
+        }
+
+        // Add sitemap
+        $sitemapFile = _PS_ROOT_DIR_.'/'.$shop->id.'_index_sitemap.xml';
+        if (file_exists($sitemapFile)) {
+            $content .= "# Sitemap\n";
+            $content .= 'Sitemap: '.(Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://')
+                .$shop->domain.__PS_BASE_URI__.$shop->id.'_index_sitemap.xml'."\n";
+        }
+
+        $this->saveRobotsContent($id_shop, $content);
+
+        $_POST['robots_content'] = $content;
+
+        $this->confirmations[] = $this->l('The robots.txt file has been successfully generated for this shop.');
     }
 }

@@ -144,6 +144,10 @@
 			<page>products-comparison</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="robots">
+			<page>robots</page>
+			<configurable>0</configurable>
+		</meta>
 		<meta id="search">
 			<page>search</page>
 			<configurable>1</configurable>

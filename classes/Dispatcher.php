@@ -753,6 +753,17 @@ class DispatcherCore
         switch ($this->front_controller) {
             // Dispatch front office controller
             case static::FC_FRONT:
+            
+                 // Handle robots.txt without relying on URL rewriting
+                if (strtolower($_SERVER['REQUEST_URI']) === '/robots.txt') {
+                    require_once _PS_ROOT_DIR_ . '/controllers/front/RobotsController.php';
+
+                    // Instantiate RobotsController directly
+                    $controller = new RobotsController();
+                    $controller->run();
+                    exit; // Stop further processing
+                }
+                
                 $controllers = Dispatcher::getControllers([_PS_FRONT_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/front/']);
                 $controllers['index'] = 'IndexController';
                 if (isset($controllers['auth'])) {
