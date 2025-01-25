@@ -1121,8 +1121,7 @@ class AdminMetaControllerCore extends AdminController
         $sitemapFile = _PS_ROOT_DIR_.'/'.$shop->id.'_index_sitemap.xml';
         if (file_exists($sitemapFile)) {
             $content .= "# Sitemap\n";
-            $content .= 'Sitemap: '.(Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://')
-                .$shop->domain.__PS_BASE_URI__.$shop->id.'_index_sitemap.xml'."\n";
+            $content .= 'Sitemap: ' . $shop->getBaseURL() . $shop->id . '_index_sitemap.xml' . "\n";
         }
 
         $this->saveRobotsContent($id_shop, $content);
