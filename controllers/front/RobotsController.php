@@ -61,7 +61,6 @@ class RobotsController extends FrontController
             $message = sprintf('No robots.txt content found for shop ID: %d. Please fix this in your SEO & URLs section.', $id_shop);
             error_log($message);
 
-            // Optionally log to Collect Logs module
             if (class_exists('Logger')) {
                 Logger::addLog($message, 3, null, 'RobotsController', null, true); // Severity 3 = Warning
             }
@@ -104,7 +103,6 @@ class RobotsController extends FrontController
      */
     private function ensureRobotsTableExists()
     {
-        // Check if the robots table exists and create it if it doesn't
         $sql = 'CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'robots (
                     id_shop INT UNSIGNED NOT NULL,
                     robots_content TEXT NOT NULL,
@@ -112,12 +110,10 @@ class RobotsController extends FrontController
                 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4';
 
         if (Db::getInstance()->execute($sql)) {
-            // Log successful table creation (only if it was created for the first time)
             if (class_exists('Logger')) {
                 Logger::addLog('Checked and ensured existence of the robots table.', 1, null, 'RobotsController', null, true);
             }
         } else {
-            // Log failure to create table
             $errorMessage = 'Failed to create or ensure the existence of the robots table.';
             if (class_exists('Logger')) {
                 Logger::addLog($errorMessage, 3, null, 'RobotsController', null, true);
@@ -133,51 +129,44 @@ class RobotsController extends FrontController
     {
         $robotsFilePath = _PS_ROOT_DIR_ . '/robots.txt';
 
-        // Check if robots.txt exists
         if (!file_exists($robotsFilePath)) {
-            return; // No file to migrate
+            return;
         }
 
         $fileContents = file_get_contents($robotsFilePath);
-        $sitemapRegex = '/Sitemap:.*/i'; // Regex to find Sitemap entries
-        $cleanedContent = preg_replace($sitemapRegex, '', $fileContents); // Clean the file once instead of per shop
+        $sitemapRegex = '/Sitemap:.*/i';
+        $cleanedContent = preg_replace($sitemapRegex, '', $fileContents);
 
         $shops = Shop::getShops(false);
 
-        // Prepare the insert query for multiple rows
         $dataToInsert = [];
         foreach ($shops as $shop) {
             $id_shop = (int) $shop['id_shop'];
 
-            // Check if robots content already exists for this shop
             $exists = Db::getInstance()->getValue(
                 'SELECT 1 FROM ' . _DB_PREFIX_ . 'robots WHERE id_shop = ' . $id_shop
             );
 
             if ($exists) {
-                continue; // Skip migration if content already exists
+                continue;
             }
 
             // Append the correct Sitemap URL for this shop
-            $sitemapUrl = Context::getContext()->shop->getBaseURL() . $id_shop . '_index_sitemap.xml';
+            $sitemapUrl = Context::getContext()->shop->getBaseURL(true) . $id_shop . '_index_sitemap.xml';
             $finalContent = $cleanedContent . "\nSitemap: " . $sitemapUrl;
 
-            // Add the data to the batch insert array
             $dataToInsert[] = [
                 'id_shop' => $id_shop,
                 'robots_content' => pSQL($finalContent, true),
             ];
         }
 
-        // Perform batch insert if there are entries to insert
         if (!empty($dataToInsert)) {
             Db::getInstance()->insert('robots', $dataToInsert);
         }
 
-        // Rename the robots.txt file to robots.txt.old after migration
         $newRobotsFilePath = _PS_ROOT_DIR_ . '/robots.txt.old';
         if (!rename($robotsFilePath, $newRobotsFilePath)) {
-            // Log the error if renaming fails
             if (class_exists('Logger')) {
                 Logger::addLog('Failed to rename robots.txt to robots.txt.old', 3, null, 'RobotsController', null, true);
             }
@@ -190,7 +179,6 @@ class RobotsController extends FrontController
      */
     private function ensureMetaEntryExists()
     {
-        // Attempt to insert the 'robots' entry if it doesn't exist
         $insertQuery = '
             INSERT IGNORE INTO ' . _DB_PREFIX_ . 'meta (page, configurable)
             VALUES ("robots", 0)
@@ -210,7 +198,7 @@ class RobotsController extends FrontController
         );
 
         if (!$id_meta) {
-            return; // Safety check, should not happen
+            return;
         }
 
         $shops = Shop::getShops(false);
@@ -221,7 +209,6 @@ class RobotsController extends FrontController
                 $id_lang = (int) $language['id_lang'];
                 $id_shop = (int) $shop['id_shop'];
 
-                // Use raw SQL with interpolated values
                 $insertQuery = '
                     INSERT IGNORE INTO ' . _DB_PREFIX_ . 'meta_lang (id_meta, id_lang, id_shop, url_rewrite, title)
                     VALUES (' . (int) $id_meta . ', ' . $id_lang . ', ' . $id_shop . ', "robots.txt", "robots.txt")

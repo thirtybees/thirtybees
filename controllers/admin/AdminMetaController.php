@@ -269,7 +269,7 @@ class AdminMetaControllerCore extends AdminController
         $this->fields_options['robots'] = [
             'title'       => $this->l('Robots.txt Management'),
             'icon'        => 'icon-cogs',
-            'description' => $this->l("Edit the robots.txt file for this shop. WARNING: when using Multistore, ensure you edit this section individually for each shop, as certain records might be unique to each shop. Please note that thirtybees 1.7 and later does not utilize a traditional robots.txt file in the root folder, instead, the records are stored in the database table. Neverthless you should have robots.php file in your root folder which facilitates this."),
+            'description' => $this->l("Edit the robots.txt file for this shop. WARNING: when using Multistore, ensure you edit this section individually for each shop, as certain records might be unique to each shop. Please note that thirtybees 1.7 and later does not utilize a traditional robots.txt file in the root folder, instead, the records are stored in the database table. Neverthless you should have robots.php file in your root folder which facilitates this. Don't forget to regenerate robots.txt when turning ON Friendly URLs."),
             'fields'      => [
                 'robots_content' => [
                     'title' => $this->l('robots.txt Content'),
@@ -1104,13 +1104,16 @@ class AdminMetaControllerCore extends AdminController
 
         // Add files
         if (!empty($robots_data['Files'])) {
-            $activeLanguageCount = count(Language::getIDs());
+            $defaultLanguageId = (int) Configuration::get('PS_LANG_DEFAULT');
             $content .= "# Files\n";
             foreach ($robots_data['Files'] as $isoCode => $files) {
                 foreach ($files as $file) {
-                    if ($activeLanguageCount > 1) {
+                    $id_lang = (int) Language::getIdByIso($isoCode);
+                    if ($id_lang !== $defaultLanguageId) {
+                        // Only add ISO code for non-default languages
                         $content .= "Disallow: /$isoCode/$file\n";
                     } else {
+                        // Add without ISO code for the default language
                         $content .= "Disallow: /$file\n";
                     }
                 }
@@ -1121,7 +1124,7 @@ class AdminMetaControllerCore extends AdminController
         $sitemapFile = _PS_ROOT_DIR_.'/'.$shop->id.'_index_sitemap.xml';
         if (file_exists($sitemapFile)) {
             $content .= "# Sitemap\n";
-            $content .= 'Sitemap: ' . $shop->getBaseURL() . $shop->id . '_index_sitemap.xml' . "\n";
+            $content .= 'Sitemap: ' . $shop->getBaseURL(true) . $shop->id . '_index_sitemap.xml' . "\n";
         }
 
         $this->saveRobotsContent($id_shop, $content);
