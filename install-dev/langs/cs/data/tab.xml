@@ -103,4 +103,5 @@
   <tab id="Duplicate_URLs" name="Duplicitní URLs"/>
   <tab id="CustomerMerge" name="Sloučit zákaznické účty"/>
   <tab id="SystemNotifications" name="Systémové notifikace"/>
+  <tab id="StoreCredits" name="Store credits"/>
 </entity_tab>

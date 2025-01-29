@@ -1461,6 +1461,7 @@ class ShopCore extends ObjectModel
             'zone'                         => ['type' => 'shop'],
             'manufacturer'                 => ['type' => 'shop'],
             'supplier'                     => ['type' => 'shop'],
+            'store_credit'                 => ['type' => 'shop'],
         ];
 
         foreach ($assoTables as $tableName => $tableDetails) {
