@@ -102,4 +102,5 @@
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
   <tab id="CustomerMerge" name="Merge customers"/>
   <tab id="SystemNotifications" name="System notifications"/>
+  <tab id="StoreCredits" name="Store credits"/>
 </entity_tab>

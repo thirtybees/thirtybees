@@ -104,4 +104,5 @@
   <tab id="Image_Mapping" name="מיפוי תמונה"/>
   <tab id="CustomerMerge" name="Merge customers"/>
   <tab id="SystemNotifications" name="System notifications"/>
+  <tab id="StoreCredits" name="Store credits"/>
 </entity_tab>

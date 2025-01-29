@@ -34,6 +34,7 @@
  */
 class ParentOrderControllerCore extends FrontController
 {
+    const STORE_CREDIT_CODE = 'store_credit';
     /**
      * @var bool $ssl
      */
@@ -71,7 +72,9 @@ class ParentOrderControllerCore extends FrontController
      */
     public function init()
     {
-        $this->isLogged = $this->context->customer->id && Customer::customerIdExistsStatic((int) $this->context->cookie->id_customer);
+
+        $customerId = (int)$this->context->customer->id;
+        $this->isLogged = $customerId && Customer::customerIdExistsStatic((int) $this->context->cookie->id_customer);
 
         parent::init();
 
@@ -105,7 +108,7 @@ class ParentOrderControllerCore extends FrontController
             && $this->context->customer->isLogged()
             && $idOrder = Tools::getIntValue('id_order')
         ) {
-            $oldCart = new Cart(Order::getCartIdStatic($idOrder, $this->context->customer->id));
+            $oldCart = new Cart(Order::getCartIdStatic($idOrder, $customerId));
             $duplication = $oldCart->duplicate();
             if (!$duplication || !Validate::isLoadedObject($duplication['cart'])) {
                 $this->errors[] = Tools::displayError('Sorry. We cannot renew your order.');
@@ -125,14 +128,26 @@ class ParentOrderControllerCore extends FrontController
         }
 
         if ($this->nbProducts) {
-            if (CartRule::isFeatureActive()) {
+            if ($this->vouchersAllowed()) {
                 if (Tools::isSubmit('submitAddDiscount')) {
                     if (!($code = trim(Tools::getValue('discount_name')))) {
                         $this->errors[] = Tools::displayError('You must enter a voucher code.');
                     } elseif (!Validate::isCleanHtml($code)) {
                         $this->errors[] = Tools::displayError('The voucher code is invalid.');
                     } else {
-                        if (($cartRule = new CartRule(CartRule::getIdByCode($code))) && Validate::isLoadedObject($cartRule)) {
+                        if ($customerId && ($code === static::STORE_CREDIT_CODE)) {
+                            $credit = StoreCredit::getByCustomerId($customerId, $this->context->shop->id);
+                            if ($credit <= 0.0) {
+                                $this->errors[] = Tools::displayError('You don\'t have store credit.');
+                            } else {
+                                $cart = $this->context->cart;
+                                if (Validate::isLoadedObject($cart) && !$cart->use_store_credit) {
+                                    $cart->use_store_credit = true;
+                                    $cart->update();
+                                }
+                                $code = '';
+                            }
+                        } elseif (($cartRule = new CartRule(CartRule::getIdByCode($code))) && Validate::isLoadedObject($cartRule)) {
                             if ($error = $cartRule->checkValidity($this->context, false, true)) {
                                 $this->errors[] = $error;
                             } else {
@@ -142,6 +157,19 @@ class ParentOrderControllerCore extends FrontController
                                     Tools::redirect('index.php?controller=order-opc&addingCartRule=1');
                                 }
                                 Tools::redirect('index.php?controller=order&addingCartRule=1');
+                            }
+                        } elseif (($storeCredit = StoreCredit::getByCode($code))) {
+                            if ($customerId) {
+                                $storeCredit->id_customer = $customerId;
+                                $storeCredit->update();
+                                $cart = $this->context->cart;
+                                if (Validate::isLoadedObject($cart) && !$cart->use_store_credit) {
+                                    $cart->use_store_credit = true;
+                                    $cart->update();
+                                }
+                                $code = '';
+                            } else {
+                                $this->errors[] = Tools::displayError('You need to sign in before your can redeem store credit vouchers');
                             }
                         } else {
                             $this->errors[] = Tools::displayError('This voucher does not exists.');
@@ -153,10 +181,17 @@ class ParentOrderControllerCore extends FrontController
                             'discount_name' => Tools::safeOutput($code),
                         ]
                     );
-                } elseif (($idCartRule = Tools::getIntValue('deleteDiscount')) && Validate::isUnsignedId($idCartRule)) {
-                    $this->context->cart->removeCartRule($idCartRule);
-                    CartRule::autoAddToCart($this->context);
-                    Tools::redirect('index.php?controller=order-opc');
+                } elseif (Tools::isSubmit('deleteDiscount')) {
+                    $discount = Tools::getValue('deleteDiscount');
+                    if (Validate::isUnsignedId($discount)) {
+                        $this->context->cart->removeCartRule((int)$discount);
+                        CartRule::autoAddToCart($this->context);
+                        Tools::redirect('index.php?controller=order-opc');
+                    } elseif ($discount === static::STORE_CREDIT_CODE) {
+                        $this->context->cart->use_store_credit = false;
+                        $this->context->cart->save();
+                        Tools::redirect('index.php?controller=order-opc');
+                    }
                 }
             }
             /* Is there only virtual product in cart */
@@ -422,8 +457,10 @@ class ParentOrderControllerCore extends FrontController
             $product['is_discounted'] = $product['reduction_applies'];
         }
 
+        $customerId = (int)$this->context->customer->id;
+
         // Get available cart rules and unset the cart rules already in the cart
-        $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, ($this->context->customer->id ?? 0), true, true, true, $this->context->cart, false, true);
+        $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, $customerId, true, true, true, $this->context->cart, false, true);
         $cartCartRules = $this->context->cart->getCartRules();
         foreach ($availableCartRules as $key => $availableCartRule) {
             foreach ($cartCartRules as $cartCartRule) {
@@ -431,6 +468,19 @@ class ParentOrderControllerCore extends FrontController
                     unset($availableCartRules[$key]);
                     continue 2;
                 }
+            }
+        }
+
+
+        if ($customerId && !$this->context->cart->use_store_credit) {
+            $credit = StoreCredit::getByCustomerId($customerId, $this->context->shop->id);
+            if ($credit > 0.0) {
+                $availableCartRules[] = [
+                    'id_cart_rule' => -1,
+                    'id_customer' => $customerId,
+                    'code' => static::STORE_CREDIT_CODE,
+                    'name' => sprintf('Store credit (%s)', Tools::displayPrice($credit)),
+                ];
             }
         }
 
@@ -444,7 +494,7 @@ class ParentOrderControllerCore extends FrontController
                 'isLogged'                           => $this->isLogged,
                 'isVirtualCart'                      => $this->context->cart->isVirtualCart(),
                 'productNumber'                      => $this->context->cart->nbProducts(),
-                'voucherAllowed'                     => CartRule::isFeatureActive(),
+                'voucherAllowed'                     => $this->vouchersAllowed(),
                 'shippingCost'                       => $this->context->cart->getOrderTotal(true, Cart::ONLY_SHIPPING),
                 'shippingCostTaxExc'                 => $this->context->cart->getOrderTotal(false, Cart::ONLY_SHIPPING),
                 'customizedDatas'                    => $customizedDatas,
@@ -763,5 +813,15 @@ class ParentOrderControllerCore extends FrontController
         }
 
         return 0;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    protected function vouchersAllowed()
+    {
+        return CartRule::isFeatureActive() || StoreCredit::isFeatureActive();
     }
 }
