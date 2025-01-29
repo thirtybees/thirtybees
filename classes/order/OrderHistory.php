@@ -115,6 +115,17 @@ class OrderHistoryCore extends ObjectModel
             'order' => $order
         ], $order->id_shop);
 
+        // Give spent store credit back when the order lands in an error or
+        // cancelled state (the money mirror of the stock re-injection below):
+        // an order that will never complete must not keep the customer's
+        // balance. Refund states deliberately do NOT auto-restore, because how
+        // a refund is paid back is the merchant's call. restoreForOrder() is
+        // idempotent, so a state bouncing between error and cancelled can only
+        // restore once.
+        if ($newOs->isErrorOrCanceled() && (!Validate::isLoadedObject($oldOs) || !$oldOs->isErrorOrCanceled())) {
+            StoreCredit::restoreForOrder($orderId);
+        }
+
         // An email is sent the first time a virtual item is validated
         $virtualProducts = $order->getVirtualProducts();
         if (is_array($virtualProducts) && !empty($virtualProducts) && (!$oldOs || !$oldOs->logable) && $newOs->logable) {

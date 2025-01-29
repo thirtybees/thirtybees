@@ -227,6 +227,7 @@ CREATE TABLE `PREFIX_cart` (
   `gift_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `mobile_theme` tinyint(1) NOT NULL DEFAULT '0',
   `allow_seperated_package` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `use_store_credit` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_cart`),
@@ -2479,6 +2480,40 @@ CREATE TABLE `PREFIX_store` (
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
   PRIMARY KEY (`id_store`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_store_credit` (
+  `id_store_credit` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_customer` int(11) unsigned DEFAULT NULL,
+  `code` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `date_from` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_to` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `amount` decimal(20,6) DEFAULT NULL,
+  `amount_used` decimal(20,6) DEFAULT NULL,
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_store_credit`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_store_credit_shop` (
+  `id_store_credit` int(11) unsigned NOT NULL,
+  `id_shop` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id_store_credit`,`id_shop`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_store_credit_spend` (
+  `id_store_credit_spend` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_store_credit` int(11) unsigned NOT NULL,
+  `id_order` int(11) unsigned NOT NULL,
+  `amount` decimal(20,6) DEFAULT NULL,
+  `date_reverted` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_add` datetime NOT NULL,
+  PRIMARY KEY (`id_store_credit_spend`),
+  KEY `id_store_credit` (`id_store_credit`),
+  KEY `id_order` (`id_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_store_shop` (

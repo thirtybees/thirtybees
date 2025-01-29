@@ -382,6 +382,8 @@ class WebserviceRequestCore
             'shop_urls'                      => ['description' => 'Shop URLs from multi-shop feature', 'class' => 'ShopUrl'],
             'product_customization_fields'   => ['description' => 'Customization Field', 'class' => 'CustomizationField'],
             'customizations'                 => ['description' => 'Customization values', 'class' => 'Customization'],
+            'store_credits'                  => ['description' => 'Store credits', 'class' => StoreCredit::class],
+            'store_credit_spends'            => ['description' => 'Store credits usage', 'class' => StoreCreditSpend::class],
         ];
         ksort($resources);
 

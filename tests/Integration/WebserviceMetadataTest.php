@@ -127,7 +127,7 @@ class WebserviceMetadataTest extends Unit
      * @throws ReflectionException
      * @throws PrestaShopException
      */
-    public function getObjectModels()
+    public static function getObjectModels()
     {
          return ObjectModelUtils::getObjectModels();
     }
