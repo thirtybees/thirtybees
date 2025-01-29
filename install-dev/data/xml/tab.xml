@@ -315,5 +315,8 @@
     <tab id="Configuration" id_parent="Stock" active="1">
       <class_name>AdminStockConfiguration</class_name>
     </tab>
+    <tab id="StoreCredits" id_parent="Customers" active="1">
+      <class_name>AdminStoreCredit</class_name>
+    </tab>
   </entities>
 </entity_tab>
