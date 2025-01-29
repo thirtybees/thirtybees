@@ -1251,34 +1251,43 @@ class AdminImportControllerCore extends AdminController
      */
     public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
     {
-        // Check if the CSV file exist
+        // Check if the CSV file exists
         if (Tools::getValue('filename')) {
             $entityType = $this->getSelectedEntity();
             $shopIsFeatureActive = Shop::isFeatureActive();
-            // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
+
+            // If I am a superadmin, truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
             if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
                 $this->truncateTables($entityType);
             }
+
             $doneCount = 0;
-            // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
-            // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
             $crossStepsVariables = [];
+
+            // Get crossStepsVariables from the previous AJAX call
             if ($crossStepsVars = Tools::getValue('crossStepsVars')) {
                 $crossStepsVars = json_decode($crossStepsVars, true);
-                if (count($crossStepsVars) > 0) {
+
+                if (!empty($crossStepsVars) && is_array($crossStepsVars)) {
                     $crossStepsVariables = $crossStepsVars;
+                } else {
+                    $crossStepsVariables = ['groups' => [], 'attributes' => [], 'deletedProducts' => []];
                 }
+            } else {
+                $crossStepsVariables = ['groups' => [], 'attributes' => [], 'deletedProducts' => []];
             }
 
+            // Process based on entity type
             if (static::hasEntityType($entityType)) {
                 $doneCount += $this->importGroup(static::getEntityType($entityType), $offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
             } else {
-                // fallback to original implementation
+                // Fallback to original implementation
                 switch ($entityType) {
                     case static::ENTITY_TYPE_CATEGORIES:
                         $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
                         $this->clearSmartyCache();
                         break;
+
                     case static::ENTITY_TYPE_PRODUCTS:
                         if (!defined('PS_MASS_PRODUCT_CREATION')) {
                             define('PS_MASS_PRODUCT_CREATION', true);
@@ -1287,71 +1296,86 @@ class AdminImportControllerCore extends AdminController
                         $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
                         $this->clearSmartyCache();
                         break;
-                    case static::ENTITY_TYPE_CUSTOMERS:
-                        $doneCount += $this->customerImport($offset, $limit, $validateOnly);
-                        break;
-                    case static::ENTITY_TYPE_ADDRESSES:
-                        $doneCount += $this->addressImport($offset, $limit, $validateOnly);
-                        break;
+
                     case static::ENTITY_TYPE_COMBINATIONS:
                         $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
                         $this->clearSmartyCache();
                         break;
+
+                    // Add other cases if needed
+                    case static::ENTITY_TYPE_CUSTOMERS:
+                        $doneCount += $this->customerImport($offset, $limit, $validateOnly);
+                        break;
+
+                    case static::ENTITY_TYPE_ADDRESSES:
+                        $doneCount += $this->addressImport($offset, $limit, $validateOnly);
+                        break;
+
                     case static::ENTITY_TYPE_MANUFACTURERS:
                         $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
                         $this->clearSmartyCache();
                         break;
+
                     case static::ENTITY_TYPE_SUPPLIERS:
                         $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
                         $this->clearSmartyCache();
                         break;
+
                     case static::ENTITY_TYPE_ALIAS:
                         $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
                         break;
+
                     case static::ENTITY_TYPE_STORE_CONTACTS:
                         $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
                         $this->clearSmartyCache();
                         break;
+
                     case static::ENTITY_TYPE_SUPPLY_ORDERS:
                         $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
                         break;
+
                     case static::ENTITY_TYPE_SUPPLY_ORDER_DETAILS:
                         $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
                         break;
                 }
             }
 
+            // Handle results and progress
             if ($results !== null) {
                 $results['isFinished'] = ($doneCount < $limit);
                 $results['doneCount'] = $offset + $doneCount;
+
                 if ($offset === 0) {
-                    // compute total count only once, because it takes time
+                    // Compute total count only once
                     $datasource = $this->openDataSource(0);
                     $results['totalCount'] = $datasource->getNumberOfRows() - Tools::getIntValue('skip');
                     $datasource->close();
                 }
+
                 if (!isset($moreStepLabels)) {
                     $moreStepLabels = [];
                 }
+
                 if (!$results['isFinished'] || (!$validateOnly && ($moreStep < count($moreStepLabels)))) {
-                    // Since we'll have to POST this array from ajax for the next call, we should care about it size.
                     $nextPostSize = mb_strlen(json_encode($crossStepsVariables));
                     $results['crossStepsVariables'] = $crossStepsVariables;
-                    $results['nextPostSize'] = $nextPostSize + (1024 * 64); // 64KB more for the rest of the POST query.
+                    $results['nextPostSize'] = $nextPostSize + (1024 * 64); // Reserve additional size
                     $results['postSizeLimit'] = Tools::getMaxUploadSize();
                 }
+
                 if ($results['isFinished'] && !$validateOnly && ($moreStep < count($moreStepLabels))) {
                     $results['oneMoreStep'] = $moreStep + 1;
                     $results['moreStepLabel'] = $moreStepLabels[$moreStep];
                 }
             }
 
+            // Final log for current step
             $logMessage = sprintf($this->l('%s import'), $entityType);
             if ($offset !== false && $limit !== false) {
-                $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
+                $logMessage .= ' ' . sprintf($this->l('(from %s to %s)'), $offset, $limit);
             }
             if (Tools::getValue('truncate')) {
-                $logMessage .= ' '.$this->l('with truncate');
+                $logMessage .= ' ' . $this->l('with truncate');
             }
             Logger::addLog($logMessage, 1, null, $entityType, null, true, (int) $this->context->employee->id);
         } else {
@@ -3612,26 +3636,20 @@ class AdminImportControllerCore extends AdminController
     {
         $defaultLanguage = Configuration::get('PS_LANG_DEFAULT');
 
-        $groups = [];
-        if (is_array($crossStepsVariables) && array_key_exists('groups', $crossStepsVariables)) {
-            $groups = $crossStepsVariables['groups'];
-        }
+        // Initialize groups
+        $groups = is_array($crossStepsVariables) && array_key_exists('groups', $crossStepsVariables) ? $crossStepsVariables['groups'] : [];
         foreach (AttributeGroup::getAttributesGroups($defaultLanguage) as $group) {
             $groups[$group['name']] = (int) $group['id_attribute_group'];
         }
 
-        $attributes = [];
-        if (is_array($crossStepsVariables) && array_key_exists('attributes', $crossStepsVariables)) {
-            $attributes = $crossStepsVariables['attributes'];
-        }
+        // Initialize attributes
+        $attributes = is_array($crossStepsVariables) && array_key_exists('attributes', $crossStepsVariables) ? $crossStepsVariables['attributes'] : [];
         foreach (ProductAttribute::getAttributes($defaultLanguage) as $attribute) {
             $attributes[$attribute['attribute_group'].'_'.$attribute['name']] = (int) $attribute['id_attribute'];
         }
 
-        $deletedProducts = [];
-        if (is_array($crossStepsVariables) && array_key_exists('deletedProducts', $crossStepsVariables) && is_array($crossStepsVariables['deletedProducts'])) {
-            $deletedProducts = $crossStepsVariables['deletedProducts'];
-        }
+        // Initialize deleted products
+        $deletedProducts = is_array($crossStepsVariables) && array_key_exists('deletedProducts', $crossStepsVariables) ? $crossStepsVariables['deletedProducts'] : [];
 
         $this->receiveTab();
         $datasource = $this->openDataSource($offset);
@@ -3645,8 +3663,7 @@ class AdminImportControllerCore extends AdminController
         for ($currentLine = 0; ($line = $datasource->getRow()) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
 
-
-            if (count($line) == 1 && $line[0] == null) {
+            if (empty($line) || !is_array($line) || count(array_filter($line)) == 0) {
                 $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
                 continue;
             }
@@ -3669,12 +3686,13 @@ class AdminImportControllerCore extends AdminController
                 $this->errors[] = $e->getMessage();
             }
         }
+
         $datasource->close();
 
         if ($crossStepsVariables !== false) {
-            $crossStepsVariables['groups'] = $groups;
-            $crossStepsVariables['attributes'] = $attributes;
-            $crossStepsVariables['deletedProducts'] = $deletedProducts;
+            $crossStepsVariables['groups'] = is_array($groups) ? $groups : [];
+            $crossStepsVariables['attributes'] = is_array($attributes) ? $attributes : [];
+            $crossStepsVariables['deletedProducts'] = is_array($deletedProducts) ? $deletedProducts : [];
         }
 
         return $lineCount;
