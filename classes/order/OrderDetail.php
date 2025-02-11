@@ -652,6 +652,7 @@ class OrderDetailCore extends ObjectModel
                     ->where('od.`id_order` IN ('.$list.')')
                     ->where('od.`product_id` != '.(int) $idProduct)
                     ->where($front ? '`product_shop`.`visibility` IN ("both", "catalog")' : '')
+                    ->where('product_shop.active = 1')
                     ->orderBy('RAND()')
                     ->limit((int) $limit)
             );
