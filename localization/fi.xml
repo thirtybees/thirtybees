@@ -7,7 +7,7 @@
     <language name="Suomi (Finnish)" iso_code="fi" language_code="fi-fi" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
-    <tax id="1" name="ALV FI 24%" rate="24" eu-tax-group="virtual"/>
+    <tax id="1" name="ALV FI 25.5%" rate="25.5" eu-tax-group="virtual"/>
     <tax id="2" name="ALV FI 14%" rate="14"/>
     <tax id="3" name="ALV FI 10%" rate="10"/>
     <tax id="4" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
@@ -17,16 +17,16 @@
     <tax id="8" name="DPH CZ 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="9" name="MwSt. DE 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="10" name="moms DK 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="11" name="km EE 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="11" name="km EE 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="12" name="IVA ES 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="13" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="14" name="ΦΠΑ GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="15" name="Croatia PDV 25%" rate="25.000" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="15" name="PDV HR 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="16" name="ÁFA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="17" name="VAT IE 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="18" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="19" name="PVM LT 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="20" name="TVA LU 16%" rate="16" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="20" name="TVA LU 17%" rate="17" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="21" name="PVN LV 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="22" name="VAT MT 18%" rate="18" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="23" name="BTW NL 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
@@ -35,8 +35,8 @@
     <tax id="26" name="TVA RO 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="27" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="28" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="29" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
-    <taxRulesGroup name="FI Standard Rate (23%)">
+    <tax id="29" name="DPH SK 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
+    <taxRulesGroup name="FI Standard Rate (25.5%)">
       <taxRule iso_code_country="be" id_tax="1"/>
       <taxRule iso_code_country="bg" id_tax="1"/>
       <taxRule iso_code_country="cz" id_tax="1"/>
@@ -65,7 +65,7 @@
       <taxRule iso_code_country="se" id_tax="1"/>
       <taxRule iso_code_country="hr" id_tax="1"/>
     </taxRulesGroup>
-    <taxRulesGroup name="FI Reduced Rate (13%)">
+    <taxRulesGroup name="FI Reduced Rate (14%)">
       <taxRule iso_code_country="be" id_tax="2"/>
       <taxRule iso_code_country="bg" id_tax="2"/>
       <taxRule iso_code_country="cz" id_tax="2"/>
@@ -94,7 +94,7 @@
       <taxRule iso_code_country="se" id_tax="2"/>
       <taxRule iso_code_country="hr" id_tax="2"/>
     </taxRulesGroup>
-    <taxRulesGroup name="FI Super Reduced Rate (9%)">
+    <taxRulesGroup name="FI Super Reduced Rate (10%)">
       <taxRule iso_code_country="be" id_tax="3"/>
       <taxRule iso_code_country="bg" id_tax="3"/>
       <taxRule iso_code_country="cz" id_tax="3"/>
@@ -123,7 +123,7 @@
       <taxRule iso_code_country="se" id_tax="3"/>
       <taxRule iso_code_country="hr" id_tax="3"/>
     </taxRulesGroup>
-    <taxRulesGroup name="FI Foodstuff Rate (13%)">
+    <taxRulesGroup name="FI Foodstuff Rate (14%)">
       <taxRule iso_code_country="be" id_tax="2"/>
       <taxRule iso_code_country="bg" id_tax="2"/>
       <taxRule iso_code_country="cz" id_tax="2"/>
@@ -152,7 +152,7 @@
       <taxRule iso_code_country="se" id_tax="2"/>
       <taxRule iso_code_country="hr" id_tax="2"/>
     </taxRulesGroup>
-    <taxRulesGroup name="FI Books Rate (9%)">
+    <taxRulesGroup name="FI Books Rate (10%)">
       <taxRule iso_code_country="be" id_tax="3"/>
       <taxRule iso_code_country="bg" id_tax="3"/>
       <taxRule iso_code_country="cz" id_tax="3"/>

@@ -15,17 +15,17 @@
     <tax id="6" name="DPH CZ 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="7" name="MwSt. DE 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="8" name="moms DK 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="9" name="km EE 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="9" name="km EE 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="10" name="IVA ES 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="11" name="ALV FI 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="11" name="ALV FI 25.5%" rate="25.5" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="12" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="13" name="ΦΠΑ GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="14" name="Croatia PDV 25%" rate="25.000" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="14" name="PDV HR 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="15" name="ÁFA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="16" name="VAT IE 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="17" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="18" name="PVM LT 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="19" name="TVA LU 16%" rate="16" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="19" name="TVA LU 17%" rate="17" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="20" name="PVN LV 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="21" name="VAT MT 18%" rate="18" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="22" name="BTW NL 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
@@ -34,7 +34,7 @@
     <tax id="25" name="TVA RO 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="26" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="27" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="28" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="28" name="DPH SK 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <taxRulesGroup name="AT Standard rate (20%)">
       <taxRule iso_code_country="be" id_tax="1"/>
       <taxRule iso_code_country="bg" id_tax="1"/>
@@ -152,11 +152,22 @@
       <taxRule iso_code_country="sk" id_tax="28"/>
     </taxRulesGroup>
   </taxes>
+  <states>
+    <state name="Burgenland" iso_code="AT-1" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Kärnten" iso_code="AT-2" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Niederösterreich" iso_code="AT-3" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Oberösterreich" iso_code="AT-4" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Salzburg" iso_code="AT-5" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Steiermark" iso_code="AT-6" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Tirol" iso_code="AT-7" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Vorarlberg" iso_code="AT-8" country="AT" zone="Europe" tax_behavior="0"/>
+    <state name="Wien" iso_code="AT-9" country="AT" zone="Europe" tax_behavior="0"/>
+  </states>
   <units>
     <unit type="weight" value="kg"/>
     <unit type="volume" value="L"/>
-    <unit type="short_distance" value="faden"/>
-    <unit type="base_distance" value="faden"/>
-    <unit type="long_distance" value="meile"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
   </units>
 </localizationPack>
