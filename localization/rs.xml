@@ -4,9 +4,18 @@
     <currency name="Dinar" iso_code="RSD" iso_code_num="941" sign="RSD" blank="1" conversion_rate="115.680000" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="&#x441;&#x440;&#x43F;&#x441;&#x43A;&#x438; (Serbian)" iso_code="sr" date_format_lite="d. m. Y." date_format_full="d. m. Y. H:i:s" is_rtl="0"/>
+    <language name="српски (Serbian)" iso_code="sr" language_code="sr-rs" date_format_lite="d. m. Y." date_format_full="d. m. Y. H:i:s" is_rtl="0"/>
   </languages>
-  <taxes/>
+  <taxes>
+    <tax id="1" name="PDV RS 20%" rate="20"/>
+    <tax id="2" name="PDV RS 10%" rate="10"/>
+    <taxRulesGroup name="RS Standard Rate (20%)">
+      <taxRule iso_code_country="rs" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="RS Reduced Rate (10%)">
+      <taxRule iso_code_country="rs" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
   <units>
     <unit type="weight" value="kg"/>
     <unit type="volume" value="L"/>

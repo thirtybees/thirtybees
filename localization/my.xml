@@ -8,17 +8,17 @@
   </languages>
   <taxes>
     <taxRulesGroup name="Malaysia Sales Tax Standard Rate">
-      <taxRule iso_code_country="my" behavior="0" id_tax="60"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="1"/>
     </taxRulesGroup>
     <taxRulesGroup name="Malaysia Sales Tax Reduced Rate">
-      <taxRule iso_code_country="my" behavior="0" id_tax="61"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="2"/>
     </taxRulesGroup>
     <taxRulesGroup name="Malaysia Service Tax">
-      <taxRule iso_code_country="my" behavior="0" id_tax="62"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="3"/>
     </taxRulesGroup>
-    <tax id="60" name="Malaysia Sales Tax Standard Rate" rate="10.000"/>
-    <tax id="61" name="Malaysia Sales Tax Reduced Rate" rate="5.000"/>
-    <tax id="62" name="Malaysia Service Tax" rate="6.000"/>
+    <tax id="1" name="Malaysia Sales Tax Standard Rate" rate="10"/>
+    <tax id="2" name="Malaysia Sales Tax Reduced Rate" rate="5"/>
+    <tax id="3" name="Malaysia Service Tax" rate="6"/>
   </taxes>
   <states>
     <state name="W.P Kuala Lumpur" iso_code="MY-14" country="MY" zone="Asia" tax_behavior="0"/>

@@ -9,8 +9,8 @@
     <language name="中文 (Simplified Chinese)" iso_code="zh" language_code="zh-zh" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
-    <tax id="1" name="GST SG 7%" rate="7"/>
-    <taxRulesGroup name="SG Standard Rate (7%)">
+    <tax id="1" name="GST SG 9%" rate="9"/>
+    <taxRulesGroup name="SG Standard Rate (9%)">
       <taxRule iso_code_country="sg" id_tax="1"/>
     </taxRulesGroup>
   </taxes>

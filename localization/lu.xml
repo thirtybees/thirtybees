@@ -4,8 +4,9 @@
     <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="Deutsch (German)" iso_code="de" language_code="de-de" is_rtl="0" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s"/>
+    <language name="Deutsch (German)" iso_code="de" language_code="de-de" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
     <language name="Français (French)" iso_code="fr" language_code="fr-fr" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Lëtzebuergesch (Luxembourgish)" iso_code="lb" language_code="lb-lu" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="TVA LU 17%" rate="17" eu-tax-group="virtual"/>
