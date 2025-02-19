@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Timor-Leste" version="1.0">
+  <currencies>
+    <currency name="Dollar" iso_code="USD" iso_code_num="840" sign="$" blank="0" conversion_rate="1.000000" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Tetum" iso_code="tet" language_code="tet-tl" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Português (Portuguese)" iso_code="pt" language_code="pt-tl" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT TL 10%" rate="10"/>
+    <taxRulesGroup name="TL Standard Rate (10%)">
+      <taxRule iso_code_country="tl" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Namibia" version="1.0">
+  <currencies>
+    <currency name="Namibian Dollar" iso_code="NAD" iso_code_num="516" sign="N$" blank="1" conversion_rate="17.6500" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (United Kingdom)" iso_code="en" language_code="en-za" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT NA 15%" rate="15"/>
+    <taxRulesGroup name="NA Standard Rate (15%)">
+      <taxRule iso_code_country="na" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

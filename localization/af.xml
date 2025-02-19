@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Afghanistan" version="1.0">
+  <currencies>
+    <currency name="Afghani" iso_code="AFN" iso_code_num="971" sign="؋" blank="1" conversion_rate="72.00" format="2" decimals="0" decimal_places="0"/>
+  </currencies>
+  <languages>
+    <language name="دری (Dari)" iso_code="fa" language_code="fa-af" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="1"/>
+    <language name="پښتو (Pashto)" iso_code="ps" language_code="ps-af" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="1"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT AF 10%" rate="10"/>
+    <taxRulesGroup name="AF Standard Rate (10%)">
+      <taxRule iso_code_country="af" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

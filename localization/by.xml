@@ -16,9 +16,9 @@
     <taxRulesGroup name="ПДВ 0.5%">
       <taxRule iso_code_country="by" behavior="0" id_tax="67"/>
     </taxRulesGroup>
-    <tax id="65" name="ПДВ 20%" rate="20.000"/>
-    <tax id="66" name="ПДВ 10%" rate="10.000"/>
-    <tax id="67" name="ПДВ 0.5%" rate="0.500"/>
+    <tax id="65" name="ПДВ 20%" rate="20"/>
+    <tax id="66" name="ПДВ 10%" rate="10"/>
+    <tax id="67" name="ПДВ 0.5%" rate="0"/>
   </taxes>
   <units>
     <unit type="weight" value="kg"/>

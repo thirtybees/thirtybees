@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Fiji" version="1.0">
   <languages>
-    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+    <language name="English (United States)" iso_code="en" language_code="en-fj" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
   </languages>
   <currencies>
     <currency name="Dollar" iso_code="FJD" iso_code_num="242" sign="$" blank="0" conversion_rate="2.57483" format="1" decimals="1" decimal_places="2"/>
@@ -15,8 +15,8 @@
   <units>
     <unit type="weight" value="kg"/>
     <unit type="volume" value="L"/>
-    <unit type="short_distance" value="in"/>
-    <unit type="base_distance" value="ft"/>
-    <unit type="long_distance" value="mi"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
   </units>
 </localizationPack>

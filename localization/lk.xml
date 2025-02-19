@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Sri Lanka" version="1.0">
+  <currencies>
+    <currency name="Rupee" iso_code="LKR" iso_code_num="144" sign="Rs" blank="1" conversion_rate="325.50" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="සිංහල (Sinhala)" iso_code="si" language_code="si-lk" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+    <language name="தமிழ் (Tamil)" iso_code="ta" language_code="ta-lk" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+    <language name="English (United Kingdom)" iso_code="en" language_code="en-gb" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT LK 15%" rate="15"/>
+    <tax id="2" name="NBT LK 2.5%" rate="2.5"/>
+    <tax id="3" name="SSCL LK 2%" rate="2"/>
+    <taxRulesGroup name="LK Standard Rate (15%)">
+      <taxRule iso_code_country="lk" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="LK Nation Building Tax (2.5%)">
+      <taxRule iso_code_country="lk" id_tax="2"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="LK Social Security Contribution Levy (2%)">
+      <taxRule iso_code_country="lk" id_tax="3"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

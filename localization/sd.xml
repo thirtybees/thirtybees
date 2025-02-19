@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Sudan" version="1.0">
+  <currencies>
+    <currency name="Sudanese Pound" iso_code="SDG" iso_code_num="938" sign="ج.س" blank="1" conversion_rate="1.000000" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Arabic" iso_code="ar" language_code="ar-ly" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT SD 17%" rate="17"/>
+    <taxRulesGroup name="SD Standard Rate (17%)">
+      <taxRule iso_code_country="sd" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

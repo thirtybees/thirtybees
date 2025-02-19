@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Lebanon" version="1.0">
+  <currencies>
+    <currency name="Lebanese Pound" iso_code="LBP" iso_code_num="422" sign="ل.ل" blank="1" conversion_rate="1.00" format="2" decimals="0" decimal_places="0"/>
+  </currencies>
+  <languages>
+    <language name="العربية (Arabic)" iso_code="ar" language_code="ar-lb" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>
+    <language name="Français (French)" iso_code="fr" language_code="fr-lb" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT LB 11%" rate="11"/>
+    <taxRulesGroup name="LB Standard Rate (11%)">
+      <taxRule iso_code_country="lb" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

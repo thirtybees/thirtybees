@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Malawi" version="1.0">
+  <currencies>
+    <currency name="Kwacha" iso_code="MWK" iso_code_num="454" sign="MK" blank="1" conversion_rate="800.0000" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Chichewa" iso_code="ny" language_code="ny-mw" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="English (United Kingdom)" iso_code="en" language_code="en-gb" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT MW 16.5%" rate="16.5"/>
+    <taxRulesGroup name="MW Standard Rate (16.5%)">
+      <taxRule iso_code_country="mw" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Ireland" version="1.0">
   <languages>
-    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+    <language name="English (Ireland)" iso_code="en" language_code="en-ie" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <currencies>
     <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
@@ -18,16 +18,16 @@
     <tax id="9" name="DPH CZ 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="10" name="MwSt. DE 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="11" name="moms DK 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="12" name="km EE 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="12" name="km EE 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="13" name="IVA ES 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="14" name="ALV FI 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="14" name="ALV FI 25.5%" rate="25.5" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="15" name="TVA FR 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="16" name="ΦΠΑ GR 24%" rate="24" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="17" name="Croatia PDV 25%" rate="25.000" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="17" name="PDV HR 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="18" name="ÁFA HU 27%" rate="27" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="19" name="IVA IT 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="20" name="PVM LT 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="21" name="TVA LU 16%" rate="16" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="21" name="TVA LU 17%" rate="17" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="22" name="PVN LV 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="23" name="VAT MT 18%" rate="18" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="24" name="BTW NL 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual"/>
@@ -36,7 +36,7 @@
     <tax id="27" name="TVA RO 19%" rate="19" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="28" name="Moms SE 25%" rate="25" auto-generated="1" from-eu-tax-group="virtual"/>
     <tax id="29" name="DDV SI 22%" rate="22" auto-generated="1" from-eu-tax-group="virtual"/>
-    <tax id="30" name="DPH SK 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
+    <tax id="30" name="DPH SK 23%" rate="23" auto-generated="1" from-eu-tax-group="virtual"/>
     <taxRulesGroup name="IE Standard Rate (23%)">
       <taxRule iso_code_country="be" id_tax="1"/>
       <taxRule iso_code_country="bg" id_tax="1"/>

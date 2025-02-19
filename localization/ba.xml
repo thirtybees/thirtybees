@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Bosnia and Herzegovina" version="1.0">
+  <currencies>
+    <currency name="Convertible Mark" iso_code="BAM" iso_code_num="977" sign="KM" blank="1" conversion_rate="1.95583" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Bosanski (Bosnian)" iso_code="bs" language_code="bs-ba" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+    <language name="Hrvatski (Croatian)" iso_code="hr" language_code="hr-ba" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+    <language name="Српски (Serbian - Cyrillic)" iso_code="sr" language_code="sr-ba" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="PDV BIH 17%" rate="17"/>
+    <taxRulesGroup name="BIH Standard Rate (17%)">
+      <taxRule iso_code_country="ba" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Uganda" version="1.0">
+  <currencies>
+    <currency name="Ugandan Shilling" iso_code="UGX" iso_code_num="800" sign="USh" blank="1" conversion_rate="1.000000" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English" iso_code="en" language_code="en-ug" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT UG 18%" rate="18"/>
+    <taxRulesGroup name="UG Standard Rate (18%)">
+      <taxRule iso_code_country="ug" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
