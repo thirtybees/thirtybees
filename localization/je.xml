@@ -5,7 +5,7 @@
   </currencies>
   <languages>
     <language name="Français (French)" iso_code="fr" language_code="fr-fr" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
-    <language name="English GB (English)" iso_code="gb" language_code="en-gb" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+    <language name="English GB (English)" iso_code="en" language_code="en-gb" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="GST JE 5%" rate="5"/>

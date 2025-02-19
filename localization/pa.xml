@@ -4,7 +4,7 @@
     <currency name="Dollar" iso_code="USD" iso_code_num="840" sign="$" blank="0" conversion_rate="1.000000" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="Español (Spanish)" iso_code="es" language_code="es-es" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Español (Panamá)" iso_code="es" language_code="es-pa" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <taxRulesGroup name="ITBMS 7%">
@@ -13,8 +13,8 @@
     <taxRulesGroup name="ITBMS 0%">
       <taxRule iso_code_country="pa" behavior="0" id_tax="75"/>
     </taxRulesGroup>
-    <tax id="74" name="ITBMS 7%" rate="7.000"/>
-    <tax id="75" name="ITBMS 0%" rate="0.000"/>
+    <tax id="74" name="ITBMS 7%" rate="7"/>
+    <tax id="75" name="ITBMS 0%" rate="0"/>
   </taxes>
   <units>
     <unit type="weight" value="kg"/>

@@ -4,7 +4,7 @@
     <currency name="Dollar" iso_code="USD" iso_code_num="840" sign="$" blank="0" conversion_rate="1.36550" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="Español (Spanish)" iso_code="es" language_code="es-es" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Español (Spanish)" iso_code="es" language_code="es-ec" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="IVA EC 12%" rate="12"/>

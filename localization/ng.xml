@@ -4,17 +4,17 @@
     <currency name="Nigerian naira" iso_code="NGN" iso_code_num="566" sign="₦" blank="1" conversion_rate="1.000000" format="1" decimals="0" decimal_places="0"/>
   </currencies>
   <languages>
-    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+    <language name="English (Nigeria)" iso_code="en" language_code="en-ng" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
-    <taxRulesGroup name="Nigeria Standard Rate 5%">
-      <taxRule iso_code_country="ng" behavior="0" id_tax="72"/>
+    <taxRulesGroup name="Nigeria Standard Rate 7.5%">
+      <taxRule iso_code_country="ng" behavior="0" id_tax="1/>
     </taxRulesGroup>
     <taxRulesGroup name="Nigeria Reduced Rate 0%">
-      <taxRule iso_code_country="ng" behavior="0" id_tax="73"/>
+      <taxRule iso_code_country="ng" behavior="0" id_tax="2"/>
     </taxRulesGroup>
-    <tax id="72" name="Nigeria Standard VAT 5%" rate="5.000"/>
-    <tax id="73" name="Nigeria Reduced VAT 0%" rate="0.000"/>
+    <tax id="1" name="Nigeria Standard VAT 7.5%" rate="7.5"/>
+    <tax id="2" name="Nigeria Reduced VAT 0%" rate="0"/>
   </taxes>
   <units>
     <unit type="weight" value="kg"/>
