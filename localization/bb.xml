@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Barbados" version="1.0">
+  <currencies>
+    <currency name="Barbadian Dollar" iso_code="BBD" iso_code_num="052" sign="Bds$" blank="1" conversion_rate="2.00000" format="1" decimals="2" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (Barbados)" iso_code="en" language_code="en-bb" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT BB 17.5%" rate="17.5"/>
+    <taxRulesGroup name="BB Standard Rate (17.5%)">
+      <taxRule iso_code_country="bb" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

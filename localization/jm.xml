@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Jamaica" version="1.0">
+  <currencies>
+    <currency name="Jamaican Dollar" iso_code="JMD" iso_code_num="388" sign="J$" blank="1" conversion_rate="155.7500" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (Jamaica)" iso_code="en" language_code="en-jm" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="GCT JM 15%" rate="15"/>
+    <tax id="2" name="GCT JM 10%" rate="10"/>
+    <taxRulesGroup name="JM Standard Rate (15%)">
+      <taxRule iso_code_country="jm" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="JM Reduced Rate (10%)">
+      <taxRule iso_code_country="jm" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

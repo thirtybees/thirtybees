@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Kazakhstan" version="1.0">
+  <currencies>
+    <currency name="Kazakhstani Tenge" iso_code="KZT" iso_code_num="398" sign="₸" blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Қазақ тілі (Kazakh)" iso_code="kk" language_code="kk-kz" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+    <language name="Русский (Russian)" iso_code="ru" language_code="ru-kz" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="ҚҚС KZ 12%" rate="12"/>
+    <taxRulesGroup name="KZ Standard Rate (12%)">
+      <taxRule iso_code_country="kz" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

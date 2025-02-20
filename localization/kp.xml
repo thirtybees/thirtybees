@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="North Korea" version="1.0">
+  <currencies>
+    <currency name="North Korean Won" iso_code="KPW" iso_code_num="408" sign="₩" blank="1" conversion_rate="1.00" format="1" decimals="0" decimal_places="0"/>
+  </currencies>
+  <languages>
+    <language name="조선말 (Korean - DPRK)" iso_code="ko" language_code="ko-kp" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

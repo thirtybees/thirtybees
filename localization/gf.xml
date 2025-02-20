@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="French Guiana" version="1.0">
+  <currencies>
+    <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Français (French)" iso_code="fr" language_code="fr-fr" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="TVA GF 0%" rate="0"/>
+    <taxRulesGroup name="GF Standard Rate (0%)">
+      <taxRule iso_code_country="gf" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

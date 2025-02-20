@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Tajikistan" version="1.0">
+  <currencies>
+    <currency name="Somoni" iso_code="TJS" iso_code_num="972" sign="SM" blank="1" conversion_rate="11.2494" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Тоҷики (Tajik)" iso_code="tg" language_code="tg-tj" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT TJ 18%" rate="18"/>
+    <taxRulesGroup name="TJ Standard Rate (18%)">
+      <taxRule iso_code_country="tj" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
