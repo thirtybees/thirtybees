@@ -41,6 +41,8 @@ class PackCore extends Product
 
     const STOCK_TYPE_ITEMS = 1;
 
+    const VIRTUAL_PRODUCT_ATTRIBUTE = 4294967295;
+
     /**
      * @param int $idProduct
      *
@@ -483,20 +485,27 @@ class PackCore extends Product
      */
     public static function addItem($idProduct, $idItem, $qty, $idAttributeItem = 0)
     {
-        $idAttributeItem = (int)$idAttributeItem ? (int)$idAttributeItem : Product::getDefaultAttribute((int)$idItem);
+        $idAttributeItem = (int)$idAttributeItem
+            ? (int)$idAttributeItem
+            : Product::getDefaultAttribute((int)$idItem);
+
+        if ($idAttributeItem === static::VIRTUAL_PRODUCT_ATTRIBUTE) {
+            $attributeGroup = AttributeGroup::createAttributeGroupForCombinationProduct((int)$idItem);
+            if (! $attributeGroup) {
+                $idAttributeItem = 0;
+            }
+        }
 
         $conn = Db::getInstance();
-        return $conn->update('product', ['cache_is_pack' => 1], 'id_product = ' . (int)$idProduct) &&
-            $conn->insert(
-                'pack',
-                [
-                    'id_product_pack' => (int)$idProduct,
-                    'id_product_item' => (int)$idItem,
-                    'id_product_attribute_item' => (int)$idAttributeItem,
-                    'quantity' => (int)$qty,
-                ]
-            )
-            && Configuration::updateGlobalValue('PS_PACK_FEATURE_ACTIVE', '1');
+        return (
+            $conn->update('product', ['cache_is_pack' => 1], 'id_product = ' . (int)$idProduct) &&
+            $conn->insert('pack', [
+                'id_product_pack' => (int)$idProduct,
+                'id_product_item' => (int)$idItem,
+                'id_product_attribute_item' => (int)$idAttributeItem,
+                'quantity' => (int)$qty,
+            ]) && Configuration::updateGlobalValue('PS_PACK_FEATURE_ACTIVE', '1')
+        );
     }
 
     /**

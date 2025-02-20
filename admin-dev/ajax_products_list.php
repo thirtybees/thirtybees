@@ -70,8 +70,10 @@ if ($excludeIds && $excludeIds != 'NaN') {
 // Excluding downloadable products from packs because download from pack is not supported
 $excludeVirtuals = Tools::getBoolValue('excludeVirtuals', true);
 $exclude_packs = Tools::getBoolValue('exclude_packs', true);
+$allowDynamicCombination = Tools::getBoolValue('allowDynamicCombination', false);
 
 $context = Context::getContext();
+$link = Context::getContext()->link;
 
 $sql = 'SELECT p.`id_product`, pl.`link_rewrite`, p.`reference`, pl.`name`, image_shop.`id_image` id_image, il.`legend`, p.`cache_default_attribute`
 		FROM `'._DB_PREFIX_.'product` p
@@ -122,6 +124,15 @@ if (
 
             $combinations = $conn->getArray($sql);
             if (!empty($combinations)) {
+                if ($allowDynamicCombination) {
+                    $results[] = [
+                        'id' => (int)($item['id_product']),
+                        'id_product_attribute' => Pack::VIRTUAL_PRODUCT_ATTRIBUTE,
+                        'name' => $item['name'] . ' ' . Translate::getAdminTranslation('(virtual attribute)'),
+                        'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
+                        'image' => $link->getImageLink($item['link_rewrite'], (int)$item['id_image'], 'backoffice_product_medium'),
+                    ];
+                }
                 foreach ($combinations as $k => $combination) {
                     $results[$combination['id_product_attribute']]['id'] = $item['id_product'];
                     $results[$combination['id_product_attribute']]['id_product_attribute'] = $combination['id_product_attribute'];
@@ -133,7 +144,7 @@ if (
                         $results[$combination['id_product_attribute']]['ref'] = !empty($item['reference']) ? $item['reference'] : '';
                     }
                     if (empty($results[$combination['id_product_attribute']]['image'])) {
-                        $results[$combination['id_product_attribute']]['image'] = str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $combination['id_image'], 'home_default'));
+                        $results[$combination['id_product_attribute']]['image'] = $link->getImageLink($item['link_rewrite'], $combination['id_image'], 'backoffice_product_medium');
                     }
                 }
             } else {
@@ -141,7 +152,7 @@ if (
                     'id' => (int)($item['id_product']),
                     'name' => $item['name'],
                     'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
-                    'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
+                    'image' => $link->getImageLink($item['link_rewrite'], $item['id_image'], 'backoffice_product_medium'),
                 ];
                 $results[] = $product;
             }
@@ -150,7 +161,7 @@ if (
                 'id' => (int)($item['id_product']),
                 'name' => $item['name'],
                 'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
-                'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
+                'image' => $link->getImageLink($item['link_rewrite'], $item['id_image'], 'backoffice_product_medium'),
             ];
             $results[] = $product;
         }

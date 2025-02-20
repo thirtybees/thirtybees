@@ -85,6 +85,7 @@ CREATE TABLE `PREFIX_attribute` (
   `id_attribute_group` int(11) unsigned NOT NULL,
   `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `position` int(11) unsigned NOT NULL DEFAULT '0',
+  `id_product_attribute_ref` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_attribute`),
   KEY `attribute_group` (`id_attribute_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -94,6 +95,7 @@ CREATE TABLE `PREFIX_attribute_group` (
   `is_color_group` tinyint(1) NOT NULL DEFAULT '0',
   `group_type` enum('select','radio','color') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
   `position` int(11) unsigned NOT NULL DEFAULT '0',
+  `id_product_ref` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_attribute_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
