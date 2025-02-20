@@ -111,7 +111,6 @@
 				if (product_type == product_type_pack)
 				{
 					$('a[id*="VirtualProduct"]').hide();
-					$('a[id*="Combinations"]').hide();
 				}
 				else if (product_type == product_type_virtual)
 				{

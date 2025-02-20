@@ -1328,31 +1328,24 @@ window.product_tabs.Informations = new function () {
 
       window.product_type = parseInt($(this).val(), 10);
       $('#warn_virtual_combinations').hide();
-      $('#warn_pack_combinations').hide();
       // until a product is added in the pack
       // if product is PTYPE_PACK, save buttons will be disabled
       if (window.product_type === window.product_type_pack) {
-        if (window.has_combinations) {
-          $('#simple_product').attr('checked', true);
-          $('#warn_pack_combinations').show();
-        } else {
-          $('#product-pack-container').show();
-          // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
-          $('#product-tab-content-Pack').on('loaded', function () {
-            $('#ppack').val(1).attr('checked', true).attr('disabled', true);
-          });
-          $('#product-tab-content-Quantities').on('loaded', function () {
-            $('.stockForVirtualProduct').show();
-          });
-
-          $('a[id*="Combinations"]').hide();
-          $('a[id*="Shipping"]').show();
-
-          $('#condition').removeAttr('disabled');
-          $('#condition option[value=new]').removeAttr('selected');
+        $('#product-pack-container').show();
+        // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
+        $('#product-tab-content-Pack').on('loaded', function () {
+          $('#ppack').val(1).attr('checked', true).attr('disabled', true);
+        });
+        $('#product-tab-content-Quantities').on('loaded', function () {
           $('.stockForVirtualProduct').show();
-          // if pack is enabled, if you choose pack, automatically switch to pack page
-        }
+        });
+
+        $('a[id*="Shipping"]').show();
+
+        $('#condition').removeAttr('disabled');
+        $('#condition option[value=new]').removeAttr('selected');
+        $('.stockForVirtualProduct').show();
+        // if pack is enabled, if you choose pack, automatically switch to pack page
       } else if (window.product_type === window.product_type_virtual) {
           $('a[id*="VirtualProduct"]').show();
           $('#is_virtual').val(1);
@@ -1443,7 +1436,8 @@ window.product_tabs.Pack = new function () {
         data: function (term) {
           return {
             q: term,
-            packItself: $('input[name=\'id_product\']').val()
+            packItself: $('input[name=\'id_product\']').val(),
+            allowDynamicCombination: true
           };
         },
         results: function (data) {

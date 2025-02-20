@@ -4439,10 +4439,15 @@ class AdminProductsControllerCore extends AdminController
                     $packItems[$i]['reference'] = $packItem->reference;
                     $productAttributeId = (int)($packItem->id_pack_product_attribute ?? 0);
                     $packItems[$i]['id_product_attribute'] = $productAttributeId;
-                    $cover = $productAttributeId
-                        ? Product::getCombinationImageById($productAttributeId, $this->context->language->id)
-                        : Product::getCover($packItem->id);
-                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'] ?? 0, 'home');
+                    if ($productAttributeId === Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
+                        $packItems[$i]['name'] .= ' ' . $this->l('(virtual attribute)');
+                        $cover = Product::getCover($packItem->id);
+                    } else {
+                        $cover = $productAttributeId
+                            ? Product::getCombinationImageById($productAttributeId, $this->context->language->id)
+                            : Product::getCover($packItem->id);
+                    }
+                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'] ?? 0, 'backoffice_product_medium');
                     $i++;
                 }
             }
@@ -5176,6 +5181,7 @@ class AdminProductsControllerCore extends AdminController
             );
         } elseif (Validate::isLoadedObject($product)) {
             if ($this->product_exists_in_shop) {
+                $attributesGroups = AttributeGroup::getAttributesGroupsForProduct($product, (int)$this->context->language->id);
                 $attributeJs = [];
                 $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
                 foreach ($attributes as $attribute) {
@@ -5186,7 +5192,7 @@ class AdminProductsControllerCore extends AdminController
                 }
                 $currency = $this->context->currency;
                 $data->assign('attributeJs', $attributeJs);
-                $data->assign('attributes_groups', AttributeGroup::getAttributesGroups($this->context->language->id));
+                $data->assign('attributes_groups', $attributesGroups);
                 $data->assign('currency', $currency);
                 $images = Image::getImages($this->context->language->id, $product->id);
                 $data->assign('tax_exclude_option', Tax::excludeTaxeOption());
@@ -5214,7 +5220,7 @@ class AdminProductsControllerCore extends AdminController
                         'defaultReference'   => Tools::nextAvailableReference($product->reference),
                         'id_category'        => $product->getDefaultCategory(),
                         'token_generator'    => Tools::getAdminTokenLite('AdminAttributeGenerator'),
-                        'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count(AttributeGroup::getAttributesGroups($this->context->language->id)) > 0 && $product->hasAttributes()),
+                        'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count($attributesGroups) > 0 && $product->hasAttributes()),
                     ]
                 );
             } else {
