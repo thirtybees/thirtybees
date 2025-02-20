@@ -1962,13 +1962,22 @@ class AdminOrdersControllerCore extends AdminController
                 $product['warehouse_name'] = '--';
                 $product['warehouse_location'] = false;
             }
-            if (OrderDetailPack::isPack((int) $product['id_order_detail'])) {
-                $productPackItems = OrderDetailPack::getItems((int) $product['id_order_detail'], $this->context->language->id);
-                $namePackItems = '';
-                foreach ($productPackItems as $packItem) {
-                    $namePackItems .= $packItem->pack_quantity.' x <b>'.$packItem->reference.'</b> '.$packItem->name.'<br>';
-                }
-                $product['pack_items'] = $namePackItems;
+
+            $pack = OrderDetailPack::getPack((int)$product['id_order_detail']);
+            if ($pack) {
+                $product['pack_items'] = array_map(function (PackItem $packItem) {
+                    return [
+                        'productId' => $packItem->getProductId(),
+                        'combinationId' => $packItem->getCombinationId(),
+                        'name' => $packItem->getName((int)Context::getContext()->language->id),
+                        'reference' => $packItem->getReference(),
+                        'quantity' => $packItem->getQuantity(),
+                        'productLink' => Context::getContext()->link->getAdminLink('AdminProducts', true, [
+                            'updateproduct' => 1,
+                            'id_product' => $packItem->getProductId(),
+                        ]),
+                    ];
+                }, $pack->getPackItems());
             }
         }
 
@@ -2138,7 +2147,7 @@ class AdminOrdersControllerCore extends AdminController
                 $product['stock'][0] = StockAvailable::getQuantityAvailableByProduct((int) $product['id_product'], 0, (int) $this->context->shop->id);
 
                 foreach ($combinations as &$combination) {
-                    $combination['attributes'] = rtrim($combination['attributes'], ' - ');
+                    $combination['attributes'] = rtrim($combination['attributes'], ' -');
                 }
                 $product['combinations'] = $combinations;
 
@@ -3213,13 +3222,17 @@ class AdminOrdersControllerCore extends AdminController
         // Reinject product
         $reinjectableQuantity = (int) $orderDetail->product_quantity - (int) $orderDetail->product_quantity_reinjected;
         $quantityToReinject = $qtyCancelProduct > $reinjectableQuantity ? $reinjectableQuantity : $qtyCancelProduct;
-        // @since 1.5.0 : Advanced Stock Management
-        // FIXME: this should do something
-        // $product_to_inject = new Product($orderDetail->product_id, false, (int) $this->context->language->id, (int) $orderDetail->id_shop);
 
-        $product = new Product($orderDetail->product_id, false, (int) $this->context->language->id, (int) $orderDetail->id_shop);
+        $productId = (int)$orderDetail->product_id;
 
-        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $product->advanced_stock_management && $orderDetail->id_warehouse != 0) {
+        $product = new Product($productId, false, (int) $this->context->language->id, (int) $orderDetail->id_shop);
+
+        if (Validate::isLoadedObject($product) &&
+            Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') &&
+            $product->advanced_stock_management &&
+            (int)$orderDetail->id_warehouse !== 0
+        ) {
+            $combinationId = (int)$orderDetail->product_attribute_id;
             $manager = StockManagerFactory::getManager();
             $movements = StockMvt::getNegativeStockMvts(
                 $orderDetail->id_order,
@@ -3228,24 +3241,24 @@ class AdminOrdersControllerCore extends AdminController
                 $quantityToReinject
             );
             $leftToReinject = $quantityToReinject;
+            $pack = Pack::getPack($productId, $combinationId);
             foreach ($movements as $movement) {
                 if ($leftToReinject > $movement['physical_quantity']) {
                     $quantityToReinject = $movement['physical_quantity'];
                 }
 
                 $leftToReinject -= $quantityToReinject;
-                if (Pack::isPack((int) $product->id)) {
+                if ($pack) {
                     // Gets items
-                    if ($product->shouldAdjustPackItemsQuantities()) {
-                        $productsPack = Pack::getItems((int) $product->id, (int) Configuration::get('PS_LANG_DEFAULT'));
+                    if ($pack->shouldAdjustItemsQuantities()) {
                         // Foreach item
-                        foreach ($productsPack as $productPack) {
-                            if ($productPack->advanced_stock_management == 1) {
+                        foreach ($pack->getPackItems() as $item) {
+                            if ($item->usesAdvancedStockManagement()) {
                                 $manager->addProduct(
-                                    $productPack->id,
-                                    $productPack->id_pack_product_attribute,
+                                    $item->getProductId(),
+                                    $item->getCombinationId(),
                                     new Warehouse($movement['id_warehouse']),
-                                    $productPack->pack_quantity * $quantityToReinject,
+                                    $item->getQuantity() * $quantityToReinject,
                                     null,
                                     $movement['price_te'],
                                     true
@@ -3253,7 +3266,7 @@ class AdminOrdersControllerCore extends AdminController
                             }
                         }
                     }
-                    if ($product->shouldAdjustPackQuantity()) {
+                    if ($pack->shouldAdjustQuantity()) {
                         $manager->addProduct(
                             $orderDetail->product_id,
                             $orderDetail->product_attribute_id,

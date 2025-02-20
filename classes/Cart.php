@@ -1646,22 +1646,25 @@ class CartCore extends ObjectModel
         $stockManagementActive = Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT');
 
         foreach ($productList as &$product) {
-            if ((int) $product['id_address_delivery'] == 0) {
+
+            $productId = (int)$product['id_product'];
+            $combinationId = (int)$product['id_product_attribute'];
+            $deliveryAddressId = (int)$product['id_address_delivery'];
+
+            if ($deliveryAddressId === 0) {
                 $product['id_address_delivery'] = (int) $this->id_address_delivery;
             }
 
-            if (!isset($warehouseCountByAddress[$product['id_address_delivery']])) {
-                $warehouseCountByAddress[$product['id_address_delivery']] = [];
+            if (!isset($warehouseCountByAddress[$deliveryAddressId])) {
+                $warehouseCountByAddress[$deliveryAddressId] = [];
             }
 
             $product['warehouse_list'] = [];
 
-            if ($stockManagementActive &&
-                (int) $product['advanced_stock_management'] == 1
-            ) {
-                $warehouseList = Warehouse::getProductWarehouseList($product['id_product'], $product['id_product_attribute'], $this->id_shop);
+            if ($stockManagementActive && $product['advanced_stock_management']) {
+                $warehouseList = Warehouse::getProductWarehouseList($productId, $combinationId, $this->id_shop);
                 if (! $warehouseList) {
-                    $warehouseList = Warehouse::getProductWarehouseList($product['id_product'], $product['id_product_attribute']);
+                    $warehouseList = Warehouse::getProductWarehouseList($productId, $combinationId);
                 }
                 if (! $warehouseList) {
                     $warehouseList = [['id_warehouse' => 0]];
@@ -1672,15 +1675,16 @@ class CartCore extends ObjectModel
                 $warehouseInStock = [];
                 $manager = StockManagerFactory::getManager();
 
+                $pack = Pack::getPack($productId, $combinationId);
                 foreach ($warehouseList as $warehouse) {
                     $productRealQuantities = $manager->getProductRealQuantities(
-                        $product['id_product'],
-                        $product['id_product_attribute'],
+                        $productId,
+                        $combinationId,
                         [$warehouse['id_warehouse']],
                         true
                     );
 
-                    if ($productRealQuantities > 0 || Pack::isPack((int) $product['id_product'])) {
+                    if ($productRealQuantities > 0 || $pack) {
                         $warehouseInStock[] = $warehouse;
                     }
                 }
@@ -1694,16 +1698,17 @@ class CartCore extends ObjectModel
             } else {
                 //simulate default warehouse
                 $warehouseList = [['id_warehouse' => 0]];
-                $product['in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], $product['id_product_attribute']) > 0;
+                $product['in_stock'] = StockAvailable::getQuantityAvailableByProduct($productId, $combinationId) > 0;
             }
 
             foreach ($warehouseList as $warehouse) {
-                $product['warehouse_list'][$warehouse['id_warehouse']] = $warehouse['id_warehouse'];
-                if (!isset($warehouseCountByAddress[$product['id_address_delivery']][$warehouse['id_warehouse']])) {
-                    $warehouseCountByAddress[$product['id_address_delivery']][$warehouse['id_warehouse']] = 0;
+                $warehouseId = (int)$warehouse['id_warehouse'];
+                $product['warehouse_list'][$warehouseId] = $warehouseId;
+                if (!isset($warehouseCountByAddress[$deliveryAddressId][$warehouseId])) {
+                    $warehouseCountByAddress[$deliveryAddressId][$warehouseId] = 0;
                 }
 
-                $warehouseCountByAddress[$product['id_address_delivery']][$warehouse['id_warehouse']]++;
+                $warehouseCountByAddress[$deliveryAddressId][$warehouseId]++;
             }
         }
         unset($product);
@@ -3189,7 +3194,7 @@ class CartCore extends ObjectModel
         }
 
         /* If we have a product combination, the minimal quantity is set with the one of this combination */
-        if (!empty($idProductAttribute)) {
+        if ($idProductAttribute) {
             $minimalQuantity = (int) ProductAttribute::getAttributeMinimalQty($idProductAttribute);
         } else {
             $minimalQuantity = (int) $product->minimal_quantity;
@@ -3225,6 +3230,7 @@ class CartCore extends ObjectModel
         } else {
             /* Check if the product is already in the cart */
             $result = $this->containsProduct($idProduct, $idProductAttribute, (int) $idCustomization, (int) $idAddressDelivery);
+            $pack = Pack::getPack($idProduct, $idProductAttribute);
 
             /* Update quantity if product already exist */
             $conn = Db::getInstance();
@@ -3239,8 +3245,8 @@ class CartCore extends ObjectModel
                     );
                     $productQty = (int) $result2['quantity'];
                     // Quantity for product pack
-                    if (Pack::isPack($idProduct)) {
-                        $productQty = Pack::getQuantity($idProduct, $idProductAttribute);
+                    if ($pack) {
+                        $productQty = Product::getQuantity($idProduct, $idProductAttribute);
                     }
                     $newQty = (int) $result['quantity'] + (int) $quantity;
                     $qty = '+ '.(int) $quantity;
@@ -3287,8 +3293,8 @@ class CartCore extends ObjectModel
                 );
 
                 // Quantity for product pack
-                if (Pack::isPack($idProduct)) {
-                    $result2['quantity'] = Pack::getQuantity($idProduct, $idProductAttribute);
+                if ($pack) {
+                    $result2['quantity'] = Product::getQuantity($idProduct, $idProductAttribute);
                 }
 
                 if (!Product::isAvailableWhenOutOfStock((int) $result2['out_of_stock'])) {

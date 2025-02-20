@@ -94,8 +94,7 @@
 			var error_heading_msg = '{l s='Error' js=1}';
 			var error_continue_msg = '{l s='Continue' js=1}';
 
-			var product_type = {$product_type};
-			{*var mce_maximum = '{l s='Maximum'}';*}
+			var product_type = {$product_type|intval};
 			{if isset($display_multishop_checkboxes) && $display_multishop_checkboxes}
 				var display_multishop_checkboxes = true;
 			{else}
@@ -111,7 +110,6 @@
 				if (product_type == product_type_pack)
 				{
 					$('a[id*="VirtualProduct"]').hide();
-					$('a[id*="Combinations"]').hide();
 				}
 				else if (product_type == product_type_virtual)
 				{
@@ -230,8 +228,7 @@
 				function checkIfProductTypeIsPack() {
 					var typeIsPack = $('#pack_product').is(':checked');
 					if (typeIsPack && $('#inputPackItems').val()=='' ) {
-						$('.pack-empty-warning').removeClass('alert-warning').addClass('alert-danger');
-						$('#curPackItemName').select2('open');
+						$('#curPackItemName_0').select2('open');
 					}
 					return typeIsPack;
 				}

@@ -8,7 +8,7 @@
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is packd with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
@@ -228,7 +228,8 @@ class ProductControllerCore extends FrontController
         parent::initContent();
 
         if (!$this->errors) {
-            if (Pack::isPack((int) $this->product->id) && !Pack::isInStock((int) $this->product->id)) {
+            $pack = Pack::getPack((int)$this->product->id, (int)$this->product->getSelectedCombinationId());
+            if ($pack && !$pack->canBeOrdered()) {
                 $this->product->quantity = 0;
             }
 
@@ -275,8 +276,9 @@ class ProductControllerCore extends FrontController
                 ]
             );
 
+            $langId = (int)$this->context->language->id;
             $customizationFields = $this->product->customizable
-                ? $this->product->getCustomizationFields($this->context->language->id)
+                ? $this->product->getCustomizationFields($langId)
                 : false;
 
             // Assign template vars related to the category + execute hooks related to the category
@@ -293,9 +295,12 @@ class ProductControllerCore extends FrontController
             $this->assignAttributesCombinations();
 
             // Pack management
-            $packItems = Pack::isPack($this->product->id) ? Pack::getItemTable($this->product->id, $this->context->language->id, true) : [];
+            $packItems = [];
+            if ($pack) {
+                $packItems = $pack->getItemsInformations($langId, true);
+            }
             $this->context->smarty->assign('packItems', $packItems);
-            $this->context->smarty->assign('packs', Pack::getPacksTable($this->product->id, $this->context->language->id, true, 1));
+            $this->context->smarty->assign('packs', []);
 
             if (isset($this->category->id) && $this->category->id) {
                 $returnLink = Tools::safeOutput($this->context->link->getCategoryLink($this->category));
@@ -303,7 +308,7 @@ class ProductControllerCore extends FrontController
                 $returnLink = 'javascript: history.back();';
             }
 
-            $accessories = $this->product->getAccessories($this->context->language->id);
+            $accessories = $this->product->getAccessories($langId);
             if ($this->product->cache_is_pack || is_array($accessories) && ($accessories)) {
                 $this->context->controller->addCSS(_THEME_CSS_DIR_.'product_list.css');
             }
@@ -320,10 +325,10 @@ class ProductControllerCore extends FrontController
                     'accessories'              => $accessories,
                     'return_link'              => $returnLink,
                     'product'                  => $this->product,
-                    'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id),
+                    'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $langId),
                     'token'                    => Tools::getToken(false),
-                    'features'                 => $this->product->getFrontFeatures($this->context->language->id),
-                    'attachments'              => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : []),
+                    'features'                 => $this->product->getFrontFeatures($langId),
+                    'attachments'              => (($this->product->cache_has_attachments) ? $this->product->getAttachments($langId) : []),
                     'allow_oosp'               => $this->product->isAvailableWhenOutOfStock((int) $this->product->out_of_stock),
                     'last_qties'               => (int) Configuration::get('PS_LAST_QTIES'),
                     'HOOK_EXTRA_LEFT'          => Hook::displayHook('displayLeftColumnProduct'),
