@@ -112,3 +112,34 @@
 		<button type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save and stay'}</button>
 	</div>
 </div>
+
+{if $includedInPacks}
+<div id="included-in-packs" class="panel product-tab">
+	<h3>{l s='Included in packs'}</h3>
+	<div class="panel-body">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>{l s='Pack'}</th>
+					<th>{l s='Item variant'}</th>
+					<th>{l s='Quantity'}</th>
+				</tr>
+			</thead>
+			<tbody>
+			{foreach $includedInPacks as $packInfo}
+				<tr>
+					<td>
+						<a href="{$packInfo.link}" target="_blank">{$packInfo.name|escape:'htmlall'}</a>
+						{if $packInfo.reference}
+							<span class="small">[{$packInfo.reference|escape:'htmlall'}]</span>
+						{/if}
+					</td>
+					<td>{if $packInfo.variant}{$packInfo.variant|escape:'htmlall'}{else}--{/if}</td>
+					<td>{$packInfo.quantity|escape:'htmlall'}</td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
+</div>
+{/if}

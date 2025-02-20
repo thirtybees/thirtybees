@@ -8,7 +8,7 @@
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is packd with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
@@ -822,12 +822,12 @@ class AdminProductsControllerCore extends AdminController
             if ($product->add()
                 && Category::duplicateProductCategories($idProductOld, $product->id)
                 && Product::duplicateSuppliers($idProductOld, $product->id)
-                && ($combinationImages = Product::duplicateAttributes($idProductOld, $product->id)) !== false
+                && ($attributesData = Product::duplicateAttributes($idProductOld, $product->id)) !== false
                 && GroupReduction::duplicateReduction($idProductOld, $product->id)
                 && Product::duplicateAccessories($idProductOld, $product->id)
                 && Product::duplicateFeatures($idProductOld, $product->id)
                 && Product::duplicateSpecificPrices($idProductOld, $product->id)
-                && Pack::duplicate($idProductOld, $product->id)
+                && $this->duplicatePacks($idProductOld, $product->id, $attributesData)
                 && Product::duplicateCustomizationFields($idProductOld, $product->id)
                 && Product::duplicateTags($idProductOld, $product->id)
                 && Product::duplicateDownload($idProductOld, $product->id)
@@ -849,7 +849,7 @@ class AdminProductsControllerCore extends AdminController
 
                 StockAvailable::setProductOutOfStock((int)$product->id, StockAvailable::outOfStock($idProductOld));
 
-                if (!Tools::getValue('noimage') && !Image::duplicateProductImages($idProductOld, $product->id, $combinationImages)) {
+                if (!Tools::getValue('noimage') && !Image::duplicateProductImages($idProductOld, $product->id, $attributesData)) {
                     $this->errors[] = Tools::displayError('An error occurred while copying images.');
                 } else {
                     Hook::triggerEvent('actionProductAdd', ['id_product' => (int) $product->id, 'product' => $product]);
@@ -1174,8 +1174,13 @@ class AdminProductsControllerCore extends AdminController
             $this->object = new Product($idProduct);
 
             if ($typeProduct !== Product::PTYPE_PACK) {
-                if (!Pack::deleteItems($idProduct)) {
-                    $this->errors[] = Tools::displayError('Cannot delete product pack items.');
+                $packs = Pack::getPacks($idProduct);
+                if ($packs) {
+                    foreach ($packs as $pack) {
+                        if (! $pack->delete()) {
+                            $this->errors[] = Tools::displayError('Cannot delete product pack items.');
+                        }
+                    }
                 }
             }
             if ($typeProduct !== Product::PTYPE_VIRTUAL) {
@@ -1489,15 +1494,28 @@ class AdminProductsControllerCore extends AdminController
         if ($this->hasEditPermission()) {
             $idProduct = Tools::getIntValue('id_product');
             $idProductAttribute = Tools::getIntValue('id_product_attribute');
-            if ($idProduct && Validate::isUnsignedId($idProduct) && Validate::isLoadedObject($product = new Product((int) $idProduct))) {
+            $product = new Product((int) $idProduct);
+            if (Validate::isLoadedObject($product)) {
                 $combinations = $product->getAttributeCombinationsById($idProductAttribute, $this->context->language->id);
-                foreach ($combinations as $key => $combination) {
-                    $combinations[$key]['attributes'][] = [$combination['group_name'], $combination['attribute_name'], $combination['id_attribute']];
+                if ($combinations) {
+                    $combination = $combinations[0];
+                    $combination['attributes'] = [];
+                    foreach ($combinations as $comb) {
+                        $combination['attributes'][] = [
+                            'group_name' => $comb['group_name'],
+                            'attribute_name' => $comb['attribute_name'],
+                            'id_attribute' => (int)$comb['id_attribute']
+                        ];
+                    }
+                    unset($combination['group_name']);
+                    unset($combination['attribute_name']);
+                    unset($combination['id_attribute']);
+                    $combination['packItems'] = $this->getPackItems(Pack::getPack($idProduct, $idProductAttribute));
+                    $this->ajaxDie(json_encode($combination));
                 }
-
-                $this->ajaxDie(json_encode($combinations));
             }
         }
+        $this->ajaxDie(json_encode([]));
     }
 
     /**
@@ -1904,7 +1922,7 @@ class AdminProductsControllerCore extends AdminController
             return false;
         }
 
-        $this->object = new $this->className();
+        $this->object = new Product();
         $this->_removeTaxFromEcotax();
         $this->copyFromPost($this->object, $this->table);
         if ($this->object->add()) {
@@ -1914,6 +1932,7 @@ class AdminProductsControllerCore extends AdminController
             $this->addCarriers($this->object);
             $this->updateAccessories($this->object);
             $this->updatePackItems($this->object);
+            $this->deleteUnusedPacks($this->object);
             $this->updateDownloadProduct($this->object);
 
             if (Configuration::get('PS_FORCE_ASM_NEW_PRODUCT') && Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $this->object->getType() != Product::PTYPE_VIRTUAL) {
@@ -2197,38 +2216,51 @@ class AdminProductsControllerCore extends AdminController
      * if yes, add the pack items from input "inputPackItems"
      *
      * @param Product $product
-     *
+     * @param int $combinationId
      * @return void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function updatePackItems($product)
+    public function updatePackItems(Product $product, int $combinationId = Pack::PRODUCT_LEVEL_PACK)
     {
-        Pack::deleteItems($product->id);
-        // lines format: QTY x ID-QTY x ID
-        if (Tools::getValue('type_product') == Product::PTYPE_PACK) {
-            $product->setDefaultAttribute(0);//reset cache_default_attribute
-            $items = Tools::getValue('inputPackItems');
-            $lines = array_unique(explode('-', $items));
-
-            // lines is an array of string with format : QTYxIDxID_PRODUCT_ATTRIBUTE
-            if (count($lines)) {
-                foreach ($lines as $line) {
-                    if (!empty($line)) {
-                        $itemIdAttribute = 0;
-                        count($array = explode('x', $line)) == 3 ? list($qty, $itemId, $itemIdAttribute) = $array : list($qty, $itemId) = $array;
-                        if ($qty > 0 && isset($itemId)) {
-                            if (Pack::isPack((int) $itemId || $product->id == (int) $itemId)) {
-                                $this->errors[] = Tools::displayError('You can\'t add product packs into a pack');
-                            } elseif (!Pack::addItem((int) $product->id, (int) $itemId, (int) $qty, (int) $itemIdAttribute)) {
-                                $this->errors[] = Tools::displayError('An error occurred while attempting to add products to the pack.');
-                            }
-                        }
+        if (Tools::getIntValue('type_product', $product->getType()) === Product::PTYPE_PACK) {
+            $pack = $this->getPackFromRequest($combinationId);
+            if ($pack) {
+                foreach ($pack->getPackItems() as $item) {
+                    if (Pack::getPack($item->getProductId(), $item->getCombinationId())) {
+                        $this->errors[] = Tools::displayError('You can\'t add product packs into a pack');
+                        $pack->removeItem($item->getProductId(), $item->getCombinationId());
                     }
+                }
+                $pack->save();
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @return void
+     * @throws PrestaShopException
+     */
+    protected function deleteUnusedPacks(Product $product)
+    {
+        $productId = (int)$product->id;
+        $type = Tools::getIntValue('type_product', $product->getType());
+        $packType = Tools::getIntValue('pack_type', $product->getPackType());
+        foreach (Pack::getPacks($productId) as $pack) {
+            if ($type !== Product::PTYPE_PACK) {
+                $pack->delete();
+            } else {
+                if ($packType === Product::PACK_TYPE_PRODUCT && $pack->getCombinationId() !== Pack::PRODUCT_LEVEL_PACK) {
+                    $pack->delete();
+                }
+                if ($packType === Product::PACK_TYPE_COMBINATION && $pack->getCombinationId() === Pack::PRODUCT_LEVEL_PACK) {
+                    $pack->delete();
                 }
             }
         }
     }
+
 
     /**
      * Update product download
@@ -2446,8 +2478,7 @@ class AdminProductsControllerCore extends AdminController
         $id = Tools::getIntValue('id_'.$this->table);
         /* Update an existing product */
         if ($id) {
-            /** @var Product $object */
-            $object = new $this->className((int) $id);
+            $object = new Product((int) $id);
             $this->object = $object;
 
             if (Validate::isLoadedObject($object)) {
@@ -2526,6 +2557,8 @@ class AdminProductsControllerCore extends AdminController
                         }
 
                         $this->updatePackItems($object);
+                        $this->deleteUnusedPacks($object);
+
                         // Disallow avanced stock management if the product become a pack
                         if ($productTypeBefore == Product::PTYPE_SIMPLE && $object->getType() == Product::PTYPE_PACK) {
                             StockAvailable::setProductDependsOnStock((int) $object->id, false);
@@ -2910,13 +2943,15 @@ class AdminProductsControllerCore extends AdminController
     /**
      * Process product attribute
      *
+     * @return int
+     *
      * @throws PrestaShopException
      */
     public function processProductAttribute()
     {
         // Don't process if the combination fields have not been submitted
         if (!Combination::isFeatureActive() || !Tools::getValue('attribute_combination_list')) {
-            return;
+            return 0;
         }
 
         if (Validate::isLoadedObject($product = $this->object)) {
@@ -3002,6 +3037,7 @@ class AdminProductsControllerCore extends AdminController
                             );
                             StockAvailable::setProductDependsOnStock((int) $product->id, $product->depends_on_stock, null, (int) $idProductAttribute);
                             StockAvailable::setProductOutOfStock((int) $product->id, $product->out_of_stock, null, (int) $idProductAttribute);
+                            $this->updatePackItems($product, $idProductAttribute);
                         }
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to add this.');
@@ -3032,6 +3068,7 @@ class AdminProductsControllerCore extends AdminController
                             );
                             StockAvailable::setProductDependsOnStock((int) $product->id, $product->depends_on_stock, null, (int) $idProductAttribute);
                             StockAvailable::setProductOutOfStock((int) $product->id, $product->out_of_stock, null, (int) $idProductAttribute);
+                            $this->updatePackItems($product, $idProductAttribute);
                         }
                     } else {
                         $this->errors[] = Tools::displayError('You do not have permission to').'<hr>'.Tools::displayError('edit here.');
@@ -3061,8 +3098,11 @@ class AdminProductsControllerCore extends AdminController
                         }
                     }
                 }
+
+                return (int)$idProductAttribute;
             }
         }
+        return 0;
     }
 
     /**
@@ -3671,6 +3711,7 @@ class AdminProductsControllerCore extends AdminController
         $this->tpl_form_vars['tabs_preloaded'] = $this->available_tabs;
 
         $this->tpl_form_vars['product_type'] = Tools::getIntValue('type_product', $product->getType());
+        $this->tpl_form_vars['pack_type'] = Tools::getIntValue('pack_type', $product->getPackType());
 
         $this->getLanguages();
 
@@ -3744,7 +3785,6 @@ class AdminProductsControllerCore extends AdminController
                 $this->copyFromPost($this->object, $this->table);
             }
 
-            $this->initPack($this->object);
             $this->{'initForm'.$this->tab_display}($this->object);
             $this->tpl_form_vars['product'] = $this->object;
 
@@ -3820,35 +3860,25 @@ class AdminProductsControllerCore extends AdminController
      * @return void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @deprecated 1.7.0
      */
     protected function initPack(Product $product)
     {
-        $this->tpl_form_vars['is_pack'] = ($product->id && Pack::isPack($product->id)) || Tools::getValue('type_product') == Product::PTYPE_PACK;
-        $product->packItems = Pack::getItems($product->id, $this->context->language->id);
+        Tools::displayAsDeprecated();
+        $productId = (int)$product->id;
+        $pack = Pack::getProductLevelPack($productId);
+        $this->tpl_form_vars['is_pack'] = $pack || Tools::getValue('type_product') == Product::PTYPE_PACK;
 
         $inputPackItems = '';
-        if (Tools::getValue('inputPackItems')) {
-            $inputPackItems = Tools::getValue('inputPackItems');
-        } else {
-            if (is_array($product->packItems)) {
-                foreach ($product->packItems as $packItem) {
-                    $inputPackItems .= $packItem->pack_quantity.'x'.$packItem->id.'-';
-                }
+        if (Tools::getValue('inputPackItems_0')) {
+            $inputPackItems = Tools::getValue('inputPackItems_0');
+        } elseif ($pack) {
+            foreach ($pack->getPackItems() as $item) {
+                $inputPackItems .= $item->getQuantity() . 'x' . $item->getProductId() . 'x' . $item->getCombinationId() . '-';
             }
         }
-        $this->tpl_form_vars['input_pack_items'] = $inputPackItems;
 
-        $inputNamepackItems = '';
-        if (Tools::getValue('namePackItems')) {
-            $inputNamepackItems = Tools::getValue('namePackItems');
-        } else {
-            if (is_array($product->packItems)) {
-                foreach ($product->packItems as $packItem) {
-                    $inputNamepackItems .= $packItem->pack_quantity.' x '.$packItem->name.'¤';
-                }
-            }
-        }
-        $this->tpl_form_vars['input_namepack_items'] = $inputNamepackItems;
+        $this->tpl_form_vars['input_pack_items'] = $inputPackItems;
     }
 
     /**
@@ -3864,13 +3894,16 @@ class AdminProductsControllerCore extends AdminController
         // Prepare Categories tree for display in Associations tab
         $root = Category::getRootCategory();
         $defaultCategory = $this->context->cookie->id_category_products_filter ? $this->context->cookie->id_category_products_filter : $this->context->shop->id_category;
-        if (!$product->id || !$product->isAssociatedToShop()) {
+        $productId = (int)$product->id;
+        $languageId = (int)$this->context->language->id;
+
+        if (!$productId || !$product->isAssociatedToShop()) {
             $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]));
         } else {
             if (Tools::isSubmit('categoryBox')) {
                 $selectedCat = Category::getCategoryInformations(Tools::getArrayValue('categoryBox', [$defaultCategory]));
             } else {
-                $selectedCat = Product::getProductCategoriesFull($product->id);
+                $selectedCat = Product::getProductCategoriesFull($productId);
             }
         }
 
@@ -3878,7 +3911,7 @@ class AdminProductsControllerCore extends AdminController
         $data->assign('feature_shop_active', Shop::isFeatureActive());
 
         // Accessories block
-        $accessories = Product::getAccessoriesLight($this->context->language->id, $product->id);
+        $accessories = Product::getAccessoriesLight($languageId, $productId);
 
         if ($postAccessories = Tools::getValue('inputAccessories')) {
             $postAccessoriesTab = explode('-', $postAccessories);
@@ -3905,6 +3938,36 @@ class AdminProductsControllerCore extends AdminController
             ->setUseSearch(true)
             ->setSelectedCategories($categories);
 
+        $packs = Pack::getPacksContaining($productId, Pack::ANY_COMBINATION);
+        $includedInPacks = [];
+        foreach ($packs as $pack) {
+            $packProduct = new Product($pack->getProductId(), false, $languageId);
+            $name = (string)$packProduct->name;
+            $reference = (string)$packProduct->reference;
+            if ($pack->getCombinationId()) {
+                $combination = new Combination($pack->getCombinationId(), $languageId);
+                $name .= ': ' . $combination->getName();
+                $reference = (string)$combination->reference;
+            }
+
+            foreach ($pack->getPackItems() as $item) {
+                if ($item->getProductId() === $productId) {
+                    $includedInPacks[] = [
+                        'productId' => $pack->getProductId(),
+                        'combinationId' => $pack->getCombinationId(),
+                        'name' => $name,
+                        'reference' => $reference,
+                        'variant' => $item->getCombinationName($languageId),
+                        'quantity' => $item->getQuantity(),
+                        'link' => $this->context->link->getAdminLink('AdminProducts', true, [
+                            'id_product' => $pack->getProductId(),
+                            'updateproduct' => true
+                        ])
+                    ];
+                }
+            }
+        }
+
         $data->assign(
             [
                 'default_category'    => $defaultCategory,
@@ -3915,6 +3978,7 @@ class AdminProductsControllerCore extends AdminController
                 'product'             => $product,
                 'link'                => $this->context->link,
                 'is_shop_context'     => Shop::getContext() == Shop::CONTEXT_SHOP,
+                'includedInPacks'     => $includedInPacks,
             ]
         );
 
@@ -3984,10 +4048,14 @@ class AdminProductsControllerCore extends AdminController
             $this->_applyTaxToEcotax($obj);
 
             $packInfo = null;
-            if (Pack::isPack($productId)) {
+
+            $packs = Pack::getPacks($productId);
+            if (isset($packs[Pack::PRODUCT_LEVEL_PACK]) && count($packs) === 1) {
+                $pack = $packs[Pack::PRODUCT_LEVEL_PACK];
+                $withTax = Product::getTaxCalculationMethod() === PS_TAX_INC;
                 $packInfo = [
-                    'itemsWholesalePriceSum' => Pack::noPackWholesalePrice($productId),
-                    'itemsPriceSum' => Pack::noPackPrice($productId),
+                    'itemsWholesalePriceSum' => $pack->getWholesalePrice(),
+                    'itemsPriceSum' => $pack->getPrice($withTax),
                 ];
             }
 
@@ -4323,98 +4391,92 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * @param Product $product
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
      */
     public function initFormPack($product)
     {
-        $data = $this->createTemplate($this->tpl_form);
+        Tools::displayAsDeprecated();
+        $this->tpl_form_vars['custom_form'] = '';
+    }
 
-        // If pack items have been submitted, we want to display them instead of the actuel content of the pack
-        // in database. In case of a submit error, the posted data is not lost and can be sent again.
-        if (Tools::getValue('namePackItems')) {
-            $inputPackItems = Tools::getValue('inputPackItems');
-            $inputNamepackItems = Tools::getValue('namePackItems');
-            $packItems = $this->getPackItems();
-        } else {
-            $product->packItems = Pack::getItems($product->id, $this->context->language->id);
-            $packItems = $this->getPackItems($product);
-            $inputNamepackItems = '';
-            $inputPackItems = '';
-            foreach ($packItems as $packItem) {
-                $inputPackItems .= $packItem['pack_quantity'].'x'.$packItem['id'].'x'.$packItem['id_product_attribute'].'-';
-                $inputNamepackItems .= $packItem['pack_quantity'].' x '.$packItem['name'].'¤';
-            }
+    /**
+     * @param Product $product
+     * @param Smarty_Internal_Template $data
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    protected function assignPackData(Product $product, $data)
+    {
+        $pack = Pack::getPack((int)$product->id, Pack::PRODUCT_LEVEL_PACK);
+        $packItems = $this->getPackItems($pack);
+        $inputPackItems = '';
+        foreach ($packItems as $packItem) {
+            $inputPackItems .= $packItem['pack_quantity'] . 'x' . $packItem['id'] . 'x' . $packItem['id_product_attribute'] . '-';
         }
-
         $data->assign(
             [
                 'input_pack_items'     => $inputPackItems,
-                'input_namepack_items' => $inputNamepackItems,
                 'pack_items'           => $packItems,
                 'product_type'         => Tools::getIntValue('type_product', $product->getType()),
+                'packType'             => Product::PACK_TYPE_PRODUCT,
+                'is_in_pack'           => (bool)Pack::getPacksContaining((int)$product->id, Pack::ANY_COMBINATION),
             ]
         );
-
-        $this->tpl_form_vars['custom_form'] = $data->fetch();
     }
 
     /**
      * Get an array of pack items for display from the product object if specified, else from POST/GET values
      *
-     * @param Product|null $product
-     *
+     * @param Pack|null $pack
      * @return array of pack items
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getPackItems($product = null)
+    public function getPackItems(?Pack $pack): array
     {
-        $packItems = [];
-
-        if (!$product) {
-            $namesInput = Tools::getValue('namePackItems');
-            $idsInput = Tools::getValue('inputPackItems');
-            if (!$namesInput || !$idsInput) {
-                return [];
-            }
-            // ids is an array of string with format : QTYxID
-            $ids = array_unique(explode('-', $idsInput));
-            $names = array_unique(explode('¤', $namesInput));
-
-            if (!empty($ids)) {
-                $length = count($ids);
-                for ($i = 0; $i < $length; $i++) {
-                    if (!empty($ids[$i]) && !empty($names[$i])) {
-                        list($packItems[$i]['pack_quantity'], $packItems[$i]['id']) = explode('x', $ids[$i]);
-                        $explodedName = explode('x', $names[$i]);
-                        $packItems[$i]['name'] = $explodedName[1];
-                    }
-                }
-            }
-        } else {
-            if (is_array($product->packItems)) {
-                $i = 0;
-                foreach ($product->packItems as $packItem) {
-                    $packItems[$i]['id'] = $packItem->id;
-                    $packItems[$i]['pack_quantity'] = $packItem->pack_quantity;
-                    $packItems[$i]['name'] = $packItem->name;
-                    $packItems[$i]['reference'] = $packItem->reference;
-                    $productAttributeId = (int)($packItem->id_pack_product_attribute ?? 0);
-                    $packItems[$i]['id_product_attribute'] = $productAttributeId;
-                    $cover = $productAttributeId
-                        ? Product::getCombinationImageById($productAttributeId, $this->context->language->id)
-                        : Product::getCover($packItem->id);
-                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'] ?? 0, 'home');
-                    $i++;
-                }
-            }
+        if (!$pack) {
+            return [];
         }
 
-        return $packItems;
+        return array_map(function(PackItem $item) {
+            $languageId = (int)$this->context->language->id;
+            $link = $this->context->link;
+            return [
+                'id' => $item->getProductId(),
+                'id_product_attribute' => $item->getCombinationId(),
+                'pack_quantity' => $item->getQuantity(),
+                'name' => $item->getName($languageId),
+                'reference' => $item->getReference(),
+                'image' => $link->getImageLink($item->getLinkRewrite($languageId), $item->getImageId(), 'backoffice_product_medium'),
+            ];
+        }, $pack->getPackItems());
+    }
+
+    /**
+     * @param int $combinationId
+     *
+     * @return Pack|null
+     */
+    protected function getPackFromRequest(int $combinationId): ?Pack
+    {
+        $packType = $combinationId === Pack::PRODUCT_LEVEL_PACK ? Product::PACK_TYPE_PRODUCT : Product::PACK_TYPE_COMBINATION;
+        $idsInput = (string)Tools::getValue('inputPackItems_' . $packType);
+        if (! $idsInput) {
+            return null;
+        }
+        $pack = new Pack((int)$this->object->id, $combinationId);
+        foreach (explode('-', $idsInput) as $ids) {
+            $explodedIds = explode('x', (string)$ids);
+            if (count($explodedIds) === 3) {
+                $pack->addOrUpdateItem(
+                    (int)$explodedIds[1],
+                    (int)$explodedIds[2],
+                    (int)$explodedIds[0]
+                );
+            }
+        }
+        return $pack;
     }
 
     /**
@@ -4777,8 +4839,7 @@ class AdminProductsControllerCore extends AdminController
 
         $product->tags = Tag::getProductTags($product->id);
 
-        $data->assign('product_type', Tools::getIntValue('type_product', $product->getType()));
-        $data->assign('is_in_pack', (int) Pack::isPacked($product->id));
+        $this->assignPackData($product, $data);
 
         $checkProductAssociationAjax = false;
         if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL) {
@@ -4871,20 +4932,9 @@ class AdminProductsControllerCore extends AdminController
             ]
         );
         $productId = (int)$obj->id;
-        if ($productId && Pack::isPack($productId)) {
-            $packWeight = 0.0;
-            foreach (Pack::getPackContent($productId) as $packItem) {
-                $item = new Product((int)$packItem['id_product']);
-                $quantity = (int)$packItem['quantity'];
-                $weight = (float)$item->weight;
-                $combinationId = (int)$packItem['id_product_attribute'];
-                if ($combinationId) {
-                    $combination = new Combination($combinationId);
-                    $weight += (float)$combination->weight;
-                }
-                $packWeight += ($weight * $quantity);
-            }
-            $data->assign('packWeight', sprintf("%.2f", $packWeight));
+        $pack = Pack::getProductLevelPack($productId);
+        if ($pack) {
+            $data->assign('packWeight', sprintf("%.2f", $pack->getWeight()));
         }
         $this->tpl_form_vars['custom_form'] = $data->fetch();
     }
@@ -5142,6 +5192,7 @@ class AdminProductsControllerCore extends AdminController
             );
         } elseif (Validate::isLoadedObject($product)) {
             if ($this->product_exists_in_shop) {
+                $attributesGroups = AttributeGroup::getAttributesGroupsForProduct($product, (int)$this->context->language->id);
                 $attributeJs = [];
                 $attributes = ProductAttribute::getAttributes($this->context->language->id, true);
                 foreach ($attributes as $attribute) {
@@ -5152,7 +5203,7 @@ class AdminProductsControllerCore extends AdminController
                 }
                 $currency = $this->context->currency;
                 $data->assign('attributeJs', $attributeJs);
-                $data->assign('attributes_groups', AttributeGroup::getAttributesGroups($this->context->language->id));
+                $data->assign('attributes_groups', $attributesGroups);
                 $data->assign('currency', $currency);
                 $images = Image::getImages($this->context->language->id, $product->id);
                 $data->assign('tax_exclude_option', Tax::excludeTaxeOption());
@@ -5166,6 +5217,8 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
                 $data->assign('imageType', 'backoffice_product_medium');
                 $data->assign('imageExtension', ImageManager::getDefaultImageExtension());
+                $data->assign('product_type', $product->getType());
+                $data->assign('pack_type', $product->getPackType());
                 $i = 0;
                 foreach ($images as $k => $image) {
                     $images[$k]['obj'] = new Image($image['id_image']);
@@ -5180,7 +5233,7 @@ class AdminProductsControllerCore extends AdminController
                         'defaultReference'   => Tools::nextAvailableReference($product->reference),
                         'id_category'        => $product->getDefaultCategory(),
                         'token_generator'    => Tools::getAdminTokenLite('AdminAttributeGenerator'),
-                        'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count(AttributeGroup::getAttributesGroups($this->context->language->id)) > 0 && $product->hasAttributes()),
+                        'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count($attributesGroups) > 0 && $product->hasAttributes()),
                     ]
                 );
             } else {
@@ -5222,9 +5275,19 @@ class AdminProductsControllerCore extends AdminController
             'upc'        => ['title' => $this->l('UPC'), 'align' => 'left'],
         ];
 
+        if ($product->getPackType() === Product::PACK_TYPE_COMBINATION) {
+            $this->fields_list['pack'] = [
+                'title' => $this->l('Pack items'),
+                'class' => 'fixed-width-xs',
+                'callback_object' => $this,
+                'callback' => 'renderPackInfo'
+            ];
+        }
+
         $combArray = [];
 
-        if ($product->id) {
+        $productId = (int)$product->id;
+        if ($productId) {
             /* Build attributes combinations */
             $combinations = $product->getAttributeCombinations($this->context->language->id);
             if (is_array($combinations)) {
@@ -5256,6 +5319,7 @@ class AdminProductsControllerCore extends AdminController
             }
 
             foreach ($combArray as $id_product_attribute => $product_attribute) {
+                $id_product_attribute = (int)$id_product_attribute;
                 $list = '';
 
                 /* In order to keep the same attributes order */
@@ -5273,6 +5337,11 @@ class AdminProductsControllerCore extends AdminController
 
                 if ($product_attribute['default_on']) {
                     $combArray[$id_product_attribute]['class'] = $defaultClass;
+                }
+
+                if ($product->getPackType() === Product::PACK_TYPE_COMBINATION) {
+                    $pack = Pack::getPack($productId, $id_product_attribute);
+                    $combArray[$id_product_attribute]['pack'] = $pack;
                 }
             }
         }
@@ -5298,6 +5367,18 @@ class AdminProductsControllerCore extends AdminController
         $helper->override_folder = $this->tpl_folder.'combination/';
 
         return $helper->generateList($combArray, $this->fields_list);
+    }
+
+    /**
+     * @param Pack|null $pack
+     * @return string|null
+     */
+    public function renderPackInfo(?Pack $pack): ?string
+    {
+        if ($pack) {
+            return count($pack->getPackItems());
+        }
+        return null;
     }
 
     /**
@@ -5380,19 +5461,19 @@ class AdminProductsControllerCore extends AdminController
 
                 $pack_quantity = null;
                 // if product is a pack
-                if (Pack::isPack($productId)) {
-                    $items = Pack::getItems($productId, Configuration::get('PS_LANG_DEFAULT'));
+                $pack = Pack::getProductLevelPack($productId);
+                if ($pack) {
+                    $isPack = true;
+                    $items = $pack->getPackItems();
                     $pack_quantity = PHP_INT_MAX;
                     foreach ($items as $item) {
-                        if ($item->pack_quantity > 0) {
-                            $itemQuantity = StockAvailable::getQuantityAvailableByProduct($item->id, $item->id_pack_product_attribute);
-                            $pack_quantity = min($pack_quantity, floor($itemQuantity / $item->pack_quantity));
+                        if ($item->getQuantity() > 0) {
+                            $itemQuantity = StockAvailable::getQuantityAvailableByProduct($item->getProductId(), $item->getCombinationId());
+                            $pack_quantity = min($pack_quantity, floor($itemQuantity / $item->getQuantity()));
                         }
                     }
-
-                    if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && !Warehouse::getPackWarehouses($productId)) {
-                        $this->displayWarning($this->l('You must have a common warehouse between this pack and its product.'));
-                    }
+                } else {
+                    $isPack = (bool)Pack::getPacks($productId);
                 }
 
                 $data->assign(
@@ -5403,7 +5484,7 @@ class AdminProductsControllerCore extends AdminController
                         'stock_management_active' => Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
                         'product_designation'     => $product_designation,
                         'product'                 => $obj,
-                        'isPack'                  => Pack::isPack($productId),
+                        'isPack'                  => $isPack,
                         'show_quantities'         => $show_quantities,
                         'order_out_of_stock'      => Configuration::get('PS_ORDER_OUT_OF_STOCK'),
                         'pack_stock_type'         => Pack::getGlobalStockTypeSettings(),
@@ -5646,7 +5727,8 @@ class AdminProductsControllerCore extends AdminController
             $this->ajaxDie(json_encode(['error' => $this->l('Undefined action')]));
         }
 
-        $product = new Product(Tools::getIntValue('id_product'), true);
+        $productId = Tools::getIntValue('id_product');
+        $product = new Product($productId, true);
         if (! Validate::isLoadedObject($product)) {
             $this->ajaxDie(json_encode(['error' => $this->l('Product not found')]));
         }
@@ -5667,9 +5749,11 @@ class AdminProductsControllerCore extends AdminController
                     $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
                 $product->pack_stock_type = $value;
+
                 if ($product->depends_on_stock &&
-                    !Pack::allUsesAdvancedStockManagement($product->id) &&
-                    $product->shouldAdjustPackItemsQuantities()
+                    ($pack = Pack::getProductLevelPack($productId)) &&
+                    !$pack->allItemsUsesAdvancedStockManagement() &&
+                    $pack->shouldAdjustItemsQuantities()
                 ) {
                     $this->ajaxDie(
                         json_encode(
@@ -5682,7 +5766,7 @@ class AdminProductsControllerCore extends AdminController
                     );
                 }
 
-                Product::setPackStockType($product->id, $value);
+                Product::setPackStockType($productId, $value);
                 break;
 
             case 'out_of_stock':
@@ -5693,7 +5777,7 @@ class AdminProductsControllerCore extends AdminController
                     $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
 
-                StockAvailable::setProductOutOfStock($product->id, Tools::getIntValue('value'));
+                StockAvailable::setProductOutOfStock($productId, Tools::getIntValue('value'));
                 break;
 
             case 'set_qty':
@@ -5704,8 +5788,8 @@ class AdminProductsControllerCore extends AdminController
                     $this->ajaxDie(json_encode(['error' => $this->l('Undefined id product attribute')]));
                 }
 
-                StockAvailable::setQuantity($product->id, Tools::getIntValue('id_product_attribute'), Tools::getIntValue('value'));
-                Hook::triggerEvent('actionProductUpdate', ['id_product' => (int) $product->id, 'product' => $product]);
+                StockAvailable::setQuantity($productId, Tools::getIntValue('id_product_attribute'), Tools::getIntValue('value'));
+                Hook::triggerEvent('actionProductUpdate', ['id_product' => $productId, 'product' => $product]);
                 break;
             case 'advanced_stock_management' :
                 if (Tools::getValue('value') === false) {
@@ -5720,8 +5804,8 @@ class AdminProductsControllerCore extends AdminController
 
                 $useAdvancedStockManagement = Tools::getBoolValue('value');
                 $product->setAdvancedStockManagement($useAdvancedStockManagement);
-                if (StockAvailable::dependsOnStock($product->id) && !$useAdvancedStockManagement) {
-                    StockAvailable::setProductDependsOnStock($product->id, 0);
+                if (StockAvailable::dependsOnStock($productId) && !$useAdvancedStockManagement) {
+                    StockAvailable::setProductDependsOnStock($productId, 0);
                 }
                 break;
 
@@ -5740,10 +5824,11 @@ class AdminProductsControllerCore extends AdminController
     protected function setQuantitiesMethod($method, Product $product)
     {
         // validate input
+        $productId = (int)$product->id;
         switch ($method) {
             case static::QUANTITY_METHOD_MANUAL:
-                StockAvailable::setProductDependsOnStock($product->id, 0);
-                Product::setDynamicPack($product->id, false);
+                StockAvailable::setProductDependsOnStock($productId, 0);
+                Product::setDynamicPack($productId, false);
                 break;
 
             case static::QUANTITY_METHOD_ASM:
@@ -5758,38 +5843,20 @@ class AdminProductsControllerCore extends AdminController
                     $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled.')]));
                 }
 
-                // if the product is pack, and pack quantities settings is set to decrement pack items, then verify that
-                // all items use advances stock management feature as well
-                if (Pack::isPack($product->id) &&
-                    $product->shouldAdjustPackItemsQuantities() &&
-                    !Pack::allUsesAdvancedStockManagement($product->id)
-                ) {
-                    $this->ajaxDie(
-                        json_encode(
-                            [
-                                'error' => (
-                                    $this->l('You cannot use advanced stock management for this pack because').'<br />'.
-                                    $this->l('- advanced stock management is not enabled for these products').'<br />'.
-                                    $this->l('- you have chosen to decrement products quantities.')
-                                )
-                            ]
-                        )
-                    );
-                }
-
                 // set asm for this product
-                StockAvailable::setProductDependsOnStock($product->id, 1);
-                Product::setDynamicPack($product->id, false);
+                StockAvailable::setProductDependsOnStock($productId, 1);
+                Product::setDynamicPack($productId, false);
                 break;
 
             case static::QUANTITY_METHOD_DYNAMIC_PACK:
-                if (!Pack::isPack($product->id)) {
+                $packs = Pack::getPacks($productId);
+                if (! $packs) {
                     $this->ajaxDie(json_encode(['error' => $this->l('Product is not a pack')]));
                 }
 
-                StockAvailable::setProductDependsOnStock($product->id, 0);
-                Product::setPackStockType($product->id, Pack::STOCK_TYPE_DECREMENT_PRODUCTS);
-                Product::setDynamicPack($product->id, true);
+                StockAvailable::setProductDependsOnStock($productId, 0);
+                Product::setPackStockType($productId, Pack::STOCK_TYPE_DECREMENT_PRODUCTS);
+                Product::setDynamicPack($productId, true);
 
                 $this->ajaxDie(json_encode([
                     'error' => false,
@@ -5817,24 +5884,6 @@ class AdminProductsControllerCore extends AdminController
                 ->where('`name` = \''.pSQL($this->tab_display_module).'\'')
         );
         $this->tpl_form_vars['custom_form'] = Hook::displayHook('displayAdminProductsExtra', [], $idModule);
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     */
-    public function getL($key)
-    {
-        $trad = [
-            'Default category:'                                                 => $this->l('Default category'),
-            'Catalog:'                                                          => $this->l('Catalog'),
-            'Consider changing the default category.'                           => $this->l('Consider changing the default category.'),
-            'ID'                                                                => $this->l('ID'),
-            'Name'                                                              => $this->l('Name'),
-            'Mark all checkbox(es) of categories in which product is to appear' => $this->l('Mark the checkbox of each categories in which this product will appear.'),
-        ];
-
-        return $trad[$key];
     }
 
     /**
@@ -6382,5 +6431,29 @@ class AdminProductsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param int $productIdOld
+     * @param int $productIdNew
+     * @param array $attributesData
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected function duplicatePacks(int $productIdOld, int $productIdNew, array $attributesData): bool
+    {
+        $res = true;
+        $map = $attributesData['map'] ?? [];
+        foreach (Pack::getPacks($productIdOld) as $oldPack) {
+            $combinationIdNew = ($oldPack->getCombinationId() === Pack::PRODUCT_LEVEL_PACK)
+                ? Pack::PRODUCT_LEVEL_PACK
+                : ($map[$oldPack->getCombinationId()] ?? 0);
+            $newPack = new Pack($productIdNew, $combinationIdNew);
+            foreach ($oldPack->getPackItems() as $item) {
+                $newPack->addOrUpdateItem($item->getProductId(), $item->getCombinationId(), $item->getQuantity());
+            }
+            $res = $newPack->save() && $res;
+        }
+        return $res;
+    }
 
 }
