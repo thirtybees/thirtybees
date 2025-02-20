@@ -121,7 +121,6 @@
 			</div>
 			<div class="row row-padding-top">
 				<div id="warn_virtual_combinations" class="alert alert-warning" style="display:none">{l s='You cannot use combinations with a virtual product.'}</div>
-				<div id="warn_pack_combinations" class="alert alert-warning" style="display:none">{l s='You cannot use combinations with a pack.'}</div>
 			</div>
 		</div>
 	</div>

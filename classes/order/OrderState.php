@@ -189,11 +189,38 @@ class OrderStateCore extends ObjectModel
         return (bool) $result;
     }
 
+
     /**
      * @return bool
      */
     public function isRemovable()
     {
         return !($this->unremovable);
+    }
+
+    /**
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public function isErrorOrCanceled(): bool
+    {
+        return in_array((int)$this->id, static::getErrorOrCanceledIds());
+    }
+
+
+    /**
+     * @return int[]
+     * @throws PrestaShopException
+     */
+    public static function getErrorOrCanceledIds(): array
+    {
+        static $errorOrCanceledStatuses = null;
+        if (is_null($errorOrCanceledStatuses)) {
+            $errorOrCanceledStatuses = [
+                (int)Configuration::get('PS_OS_ERROR'),
+                (int)Configuration::get('PS_OS_CANCELED')
+            ];
+        }
+        return $errorOrCanceledStatuses;
     }
 }

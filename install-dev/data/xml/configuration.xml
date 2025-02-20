@@ -436,9 +436,6 @@
     <configuration id="PS_CART_RULE_FEATURE_ACTIVE" name="PS_CART_RULE_FEATURE_ACTIVE">
       <value>0</value>
     </configuration>
-    <configuration id="PS_PACK_FEATURE_ACTIVE" name="PS_PACK_FEATURE_ACTIVE">
-      <value>0</value>
-    </configuration>
     <configuration id="PS_ALIAS_FEATURE_ACTIVE" name="PS_ALIAS_FEATURE_ACTIVE">
       <value>1</value>
     </configuration>

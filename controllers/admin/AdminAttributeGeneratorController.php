@@ -263,7 +263,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
             $attributeJs[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
         }
 
-        $attributeGroups = AttributeGroup::getAttributesGroups($this->context->language->id);
+        $attributeGroups = AttributeGroup::getAttributesGroupsForProduct($this->product, $this->context->language->id);
         $this->product = new Product(Tools::getIntValue('id_product'));
 
         $this->context->smarty->assign(

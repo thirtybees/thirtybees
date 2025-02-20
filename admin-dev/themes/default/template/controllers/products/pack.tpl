@@ -84,4 +84,3 @@
 </div>
 
 <input type="hidden" name="inputPackItems" id="inputPackItems" value="{$input_pack_items}" placeholder="inputs">
-<input type="hidden" name="namePackItems" id="namePackItems" value="{$input_namepack_items}" placeholder="name">
