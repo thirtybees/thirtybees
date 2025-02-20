@@ -83,7 +83,13 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->where('id_product IN (' .implode(',', $productIds). ')');
             $productIds = array_map('intval', array_column($conn->getArray($productIdsSql), 'id_product'));
         } else {
-            $productIds = Pack::getDynamicPacks();
+            $sql = (new DbQuery())
+                ->select('DISTINCT id_product')
+                ->from('product_shop')
+                ->where('pack_dynamic');
+            $conn = Db::readOnly();
+            $result = $conn->getArray($sql);
+            $productIds = array_map('intval', array_column($result, 'id_product'));
         }
 
         if (! $productIds) {
