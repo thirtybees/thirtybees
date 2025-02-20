@@ -113,13 +113,17 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 
         $orderDetails = $this->order_invoice->getProducts();
         foreach ($orderDetails as &$orderDetail) {
-            if (OrderDetailPack::isPack((int) $orderDetail['id_order_detail'])) {
-                $packItems = OrderDetailPack::getItems((int) $orderDetail['id_order_detail'], Context::getContext()->language->id);
-                $namePackItems = '';
-                foreach ($packItems as $packItem) {
-                    $namePackItems .= $packItem->pack_quantity.' x <b>'.$packItem->reference.'</b> '.$packItem->name.', ';
-                }
-                $orderDetail['pack_items'] = $namePackItems;
+            $pack = OrderDetailPack::getPack((int) $orderDetail['id_order_detail']);
+            if ($pack) {
+                $orderDetail['pack_items'] = array_map(function (PackItem $packItem) {
+                    return [
+                        'productId' => $packItem->getProductId(),
+                        'combinationId' => $packItem->getCombinationId(),
+                        'name' => $packItem->getName((int)Context::getContext()->language->id),
+                        'reference' => $packItem->getReference(),
+                        'quantity' => $packItem->getQuantity(),
+                    ];
+                }, $pack->getPackItems());
             }
         }
         if (Configuration::get('PS_PDF_IMG_DELIVERY')) {

@@ -85,6 +85,7 @@ CREATE TABLE `PREFIX_attribute` (
   `id_attribute_group` int(11) unsigned NOT NULL,
   `color` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `position` int(11) unsigned NOT NULL DEFAULT '0',
+  `id_product_attribute_ref` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_attribute`),
   KEY `attribute_group` (`id_attribute_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -94,6 +95,7 @@ CREATE TABLE `PREFIX_attribute_group` (
   `is_color_group` tinyint(1) NOT NULL DEFAULT '0',
   `group_type` enum('select','radio','color') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
   `position` int(11) unsigned NOT NULL DEFAULT '0',
+  `id_product_ref` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_attribute_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1720,10 +1722,11 @@ CREATE TABLE `PREFIX_orders` (
 
 CREATE TABLE `PREFIX_pack` (
   `id_product_pack` int(11) unsigned NOT NULL,
+  `id_product_attribute_pack` int(11) unsigned NOT NULL DEFAULT '0',
   `id_product_item` int(11) unsigned NOT NULL,
   `id_product_attribute_item` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id_product_pack`,`id_product_item`,`id_product_attribute_item`),
+  PRIMARY KEY (`id_product_pack`,`id_product_attribute_pack`,`id_product_item`,`id_product_attribute_item`),
   KEY `product_item` (`id_product_item`,`id_product_attribute_item`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1811,6 +1814,7 @@ CREATE TABLE `PREFIX_product` (
   `date_upd` datetime NOT NULL,
   `advanced_stock_management` tinyint(1) NOT NULL DEFAULT '0',
   `pack_stock_type` int(11) unsigned NOT NULL DEFAULT '3',
+  `pack_type` int(11) unsigned NOT NULL DEFAULT '0',
   `pack_dynamic` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_product`),
   KEY `date_add` (`date_add`),

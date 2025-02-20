@@ -612,4 +612,44 @@ class CombinationCore extends ObjectModel
             $table->reorderColumns(['id_product', 'id_product_attribute', 'id_shop']);
         }
     }
+
+    /**
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getName(): string
+    {
+        $languageId = (int)$this->id_lang;
+        if (! $languageId) {
+            $languageId = (int)Context::getContext()->language->id;
+        }
+        return static::getCombinationName((int)$this->id_product, (int)$this->id, $languageId);
+    }
+
+    /**
+     * @param int $productId
+     * @param int $combinationId
+     * @param int $languageId
+     * @param string $separator
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getCombinationName(int $productId, int $combinationId, int $languageId, string $separator = ", "): string
+    {
+        $sql = (new DbQuery())
+            ->select('GROUP_CONCAT(al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \''.pSQL($separator).'\') as name')
+            ->from('product_attribute', 'pa')
+            ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+            ->leftJoin('product_attribute_combination', 'pac', 'pac.id_product_attribute = pa.id_product_attribute')
+            ->leftJoin('attribute', 'atr', 'atr.id_attribute = pac.id_attribute')
+            ->leftJoin('attribute_lang', 'al', 'al.id_attribute = atr.id_attribute AND al.id_lang = ' . (int)$languageId)
+            ->leftJoin('attribute_group_lang', 'agl', 'agl.id_attribute_group = atr.id_attribute_group AND agl.id_lang = ' . (int)$languageId)
+            ->where("pa.id_product = " . (int)$productId)
+            ->where("pa.id_product_attribute = " . (int)$combinationId)
+            ->where("product_attribute_shop.id_shop = " . (int)Context::getContext()->shop->id);
+        return (string)Db::readOnly()->getValue($sql);
+    }
 }

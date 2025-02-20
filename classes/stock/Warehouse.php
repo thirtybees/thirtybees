@@ -572,7 +572,7 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given pack, returns the warehouse it can be shipped from
      *
-     * @param int $idProduct
+     * @param Pack $pack
      *
      * @param int|null $idShop
      *
@@ -581,20 +581,14 @@ class WarehouseCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getPackWarehouses($idProduct, $idShop = null)
+    public static function getPackWarehouses(Pack $pack, $idShop = null)
     {
-        if (!Pack::isPack($idProduct)) {
-            return [];
-        }
-
         if (is_null($idShop)) {
             $idShop = Context::getContext()->shop->id;
         }
 
         // warehouses of the pack
-        $packWarehouses = WarehouseProductLocation::getCollection((int) $idProduct);
-        // products in the pack
-        $products = Pack::getItems((int) $idProduct, Configuration::get('PS_LANG_DEFAULT'));
+        $packWarehouses = WarehouseProductLocation::getCollection($pack->getProductId());
 
         // array with all warehouses id to check
         $list = [
@@ -608,15 +602,11 @@ class WarehouseCore extends ObjectModel
         }
 
         // for each products in the pack
-        foreach ($products as $product) {
-            if ($product->advanced_stock_management) {
+        foreach ($pack->getPackItems() as $item) {
+            if ($item->usesAdvancedStockManagement()) {
                 // gets the warehouses of one product
-                $productWarehouses = Warehouse::getProductWarehouseList((int) $product->id, (int) $product->cache_default_attribute, (int) $idShop);
-                $list[(int) $product->id] = [];
-                // fills array with warehouses for this product
-                foreach ($productWarehouses as $productWarehouse) {
-                    $list[(int) $product->id][] = $productWarehouse['id_warehouse'];
-                }
+                $productWarehouses = Warehouse::getProductWarehouseList($item->getProductId(), $item->getCombinationId(), (int) $idShop);
+                $list[] = array_map('intval', array_column($productWarehouses, 'id_warehouse'));
             }
         }
 
