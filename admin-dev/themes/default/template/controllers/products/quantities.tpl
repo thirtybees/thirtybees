@@ -211,7 +211,6 @@
 				</div>
 				{if isset($pack_quantity)}
 					<div class="alert alert-info">
-						<p>{l s='When a product has combinations, quantities will be based on the default combination.'}</p>
 						<p>{l s='Given the quantities of the products in this pack, the maximum quantity should be:'} {$pack_quantity}</p>
 					</div>
 				{/if}

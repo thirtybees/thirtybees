@@ -311,24 +311,6 @@ function ProductTabsManager() {
   };
 }
 
-/**
- * Load pack data
- */
-function loadPack() {
-  var idProduct = $('input[name=id_product]').first().val();
-  $.ajax({
-    url: 'index.php?controller=AdminProducts&token=' + token + '&id_product=' + idProduct + '&action=Pack&updateproduct&ajax=1&rand=' + new Date().getTime(),
-    async: true,
-    cache: false, // cache needs to be set to false or IE will cache the page with outdated product values
-    type: 'GET',
-    headers: { 'cache-control': 'no-cache' },
-    success: function (responseData) {
-      $('#product-pack-container').html(responseData);
-      window.product_tabs.Pack.onReady();
-    }
-  });
-}
-
 // array of product tab objects containing methods and dom bindings
 // The ProductTabsManager instance will make sure the onReady() methods of each tabs are executed once the tab has loaded
 window.product_tabs = {};
@@ -363,49 +345,27 @@ window.product_tabs.Combinations = new function () {
           $('#product_att_list').html('');
           self.removeButtonCombination('update');
           window.scroll_if_anchor('#add_new_combination');
-          var wholesalePrice = data[0].wholesale_price;
-          var price = data[0].price;
-          var weight = data[0].weight;
-          var width = data[0].width;
-          var height = data[0].height;
-          var depth = data[0].depth;
-          var unitImpact = data[0].unit_price_impact;
-          var reference = data[0].reference;
-          var ean = data[0].ean13;
-          var quantity = data[0].quantity;
-          var image = false;
-          var productAttList = [];
-          for (var i = 0; i < data.length; i += 1) {
-            productAttList.push(data[i].group_name + ' : ' + data[i].attribute_name);
-            productAttList.push(data[i].id_attribute);
-          }
-
-          var idProductAttribute = data[0].id_product_attribute;
-          var defaultAttribute = data[0].default_on;
-          var ecoTax = data[0].ecotax;
-          var upc = data[0].upc;
-          var minimalQuantity = data[0].minimal_quantity;
-          var availableDate = data[0].available_date;
 
           self.fillCombination(
-            wholesalePrice,
-            price,
-            weight,
-            unitImpact,
-            reference,
-            ean,
-            quantity,
-            image,
-            productAttList,
-            idProductAttribute,
-            defaultAttribute,
-            ecoTax,
-            upc,
-            minimalQuantity,
-            availableDate,
-            width,
-            height,
-            depth
+            data.wholesale_price,
+            data.price,
+            data.weight,
+            data.unit_price_impact,
+            data.reference,
+            data.ean13,
+            data.quantity,
+            false,
+            data.attributes,
+            data.id_product_attribute,
+            data.default_on,
+            data.ecoTax,
+            data.upc,
+            data.minimal_quantity,
+            data.available_date,
+            data.width,
+            data.height,
+            data.depth,
+            data.packItems
           );
           calcImpactPriceTI();
         }
@@ -531,6 +491,8 @@ window.product_tabs.Combinations = new function () {
     $('#desc-product-newCombination').click(function (e) {
       e.preventDefault();
 
+      window.product_tabs.Pack.deletePackItems(1);
+
       if ($(this).children('i').first().hasClass('process-icon-new')) {
         self.removeButtonCombination('add');
       } else {
@@ -551,7 +513,7 @@ window.product_tabs.Combinations = new function () {
    * @param {string}    ean
    * @param {number}    quantity
    * @param {undefined} image
-   * @param {number}    oldAttr
+   * @param {array}     selectedAttributes
    * @param {number}    idProductAttribute
    * @param {number}    defaultAttribute
    * @param {float}     ecoTax
@@ -561,6 +523,7 @@ window.product_tabs.Combinations = new function () {
    * @param {number}    widthImpact
    * @param {number}    heightImpact
    * @param {number}    depthImpact
+   * @param {array}     packItems
    *
    * @return {undefined}
    */
@@ -573,7 +536,7 @@ window.product_tabs.Combinations = new function () {
     ean,
     quantity,
     image,
-    oldAttr,
+    selectedAttributes,
     idProductAttribute,
     defaultAttribute,
     ecoTax,
@@ -582,7 +545,8 @@ window.product_tabs.Combinations = new function () {
     availableDate,
     widthImpact,
     heightImpact,
-    depthImpact
+    depthImpact,
+    packItems
   ) {
     self.init_elems();
     $('#stock_mvt_attribute').show();
@@ -695,13 +659,13 @@ window.product_tabs.Combinations = new function () {
     window.check_depth_impact();
     window.check_unit_impact();
 
-    var elem = getE('product_att_list');
+    let elem = getE('product_att_list');
 
-    for (var j = 0; j < oldAttr.length; j += 1) {
-      var opt = document.createElement('option');
-      opt.text = oldAttr[j];
-      j += 1;
-      opt.value = oldAttr[j];
+    for (let j = 0; j < selectedAttributes.length; j++) {
+      let attr = selectedAttributes[j];
+      let opt = document.createElement('option');
+      opt.text = attr.group_name + ' : ' + attr.attribute_name;
+      opt.value = attr.id_attribute;
       try {
         elem.add(opt, null);
       } catch (ex) {
@@ -711,6 +675,20 @@ window.product_tabs.Combinations = new function () {
     getE('id_product_attribute').value = idProductAttribute;
 
     $('#available_date_attribute').val(availableDate);
+
+    window.product_tabs.Pack.deletePackItems(1);
+    for (let j = 0; j<packItems.length; j++) {
+      const packItem = packItems[j];
+      window.product_tabs.Pack.createPackItem(
+          1,
+          packItem.id,
+          packItem.id_product_attribute,
+          packItem.pack_quantity,
+          packItem.name,
+          packItem.reference,
+          packItem.image
+      );
+    }
   };
 
   this.init_elems = function () {
@@ -758,7 +736,16 @@ window.product_tabs.Combinations = new function () {
     }
   };
 
+  this.bindCombinationPackSearchInputs = function() {
+    if (window.product_tabs.Pack.bindCombinationPackSearchInputs) {
+      window.product_tabs.Pack.bindCombinationPackSearchInputs();
+    } else {
+      setTimeout(self.bindCombinationPackSearchInputs, 100);
+    }
+  }
+
   this.onReady = function () {
+    self.bindCombinationPackSearchInputs();
     self.bindEdit();
     self.bindDefault();
     self.bindDelete();
@@ -1308,8 +1295,14 @@ window.product_tabs.Informations = new function () {
 
   this.switchProductType = function () {
     window.product_type = parseInt(window.product_type, 10);
+
     if (window.product_type === window.product_type_pack) {
-      $('#pack_product').attr('checked', true);
+      const isCombinationPack = $('#pack_combination').is(':checked');
+      if (isCombinationPack) {
+        $('#pack_combination').attr('checked', true);
+      } else {
+        $('#pack_product').attr('checked', true);
+      }
     } else if (window.product_type === window.product_type_virtual) {
       $('#virtual_product').attr('checked', true);
       $('#condition').attr('disabled', true);
@@ -1318,7 +1311,7 @@ window.product_tabs.Informations = new function () {
       $('#simple_product').attr('checked', true);
     }
 
-    $('input[name="type_product"]').on('click', function(e) {
+    $('input[name="type_product"]').on('click', function() {
       // Reset settings
       $('a[id*="VirtualProduct"]').hide();
 
@@ -1328,31 +1321,32 @@ window.product_tabs.Informations = new function () {
 
       window.product_type = parseInt($(this).val(), 10);
       $('#warn_virtual_combinations').hide();
-      $('#warn_pack_combinations').hide();
       // until a product is added in the pack
       // if product is PTYPE_PACK, save buttons will be disabled
       if (window.product_type === window.product_type_pack) {
-        if (window.has_combinations) {
-          $('#simple_product').attr('checked', true);
-          $('#warn_pack_combinations').show();
-        } else {
+        const isCombinationPack = $('#pack_combination').is(':checked');
+        if (! isCombinationPack) {
           $('#product-pack-container').show();
-          // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
-          $('#product-tab-content-Pack').on('loaded', function () {
-            $('#ppack').val(1).attr('checked', true).attr('disabled', true);
-          });
-          $('#product-tab-content-Quantities').on('loaded', function () {
-            $('.stockForVirtualProduct').show();
-          });
-
-          $('a[id*="Combinations"]').hide();
-          $('a[id*="Shipping"]').show();
-
-          $('#condition').removeAttr('disabled');
-          $('#condition option[value=new]').removeAttr('selected');
-          $('.stockForVirtualProduct').show();
-          // if pack is enabled, if you choose pack, automatically switch to pack page
+          $('#combination-pack-container').hide();
+        } else {
+          $('#product-pack-container').hide();
+          $('#combination-pack-container').show();
         }
+        $('#pack_type').val(isCombinationPack ? 1 : 0);
+        // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
+        $('#product-tab-content-Pack').on('loaded', function () {
+          $('#ppack').val(1).attr('checked', true).attr('disabled', true);
+        });
+        $('#product-tab-content-Quantities').on('loaded', function () {
+          $('.stockForVirtualProduct').show();
+        });
+
+        $('a[id*="Shipping"]').show();
+
+        $('#condition').removeAttr('disabled');
+        $('#condition option[value=new]').removeAttr('selected');
+        $('.stockForVirtualProduct').show();
+        // if pack is enabled, if you choose pack, automatically switch to pack page
       } else if (window.product_type === window.product_type_virtual) {
           $('a[id*="VirtualProduct"]').show();
           $('#is_virtual').val(1);
@@ -1382,7 +1376,7 @@ window.product_tabs.Informations = new function () {
   };
 
   this.onReady = function () {
-    loadPack();
+    window.product_tabs.Pack.bindPackEvents(0);
     self.bindAvailableForOrder();
     self.bindTagImage();
     self.switchProductType();
@@ -1410,8 +1404,21 @@ window.product_tabs.Pack = new function () {
 
   this.bindPackEvents = function () {
     $('body').on('click', '.delPackItem', function () {
-      delPackItem($(this).data('delete'), $(this).data('delete-attr'));
+      delPackItem(
+          $(this).data('delete-pack-type'),
+          parseInt($(this).data('delete'), 10),
+          parseInt($(this).data('delete-attr'), 10)
+      );
     });
+    $('body').on('click', '.addPackItem', addPackItem);
+    bindPackSearchInputs(0);
+
+    self.bindCombinationPackSearchInputs = function() {
+      bindPackSearchInputs(1);
+    }
+
+    self.createPackItem = createPackItem;
+    self.deletePackItems = deletePackItems;
 
     function productFormatResult(item) {
       var itemTemplate = "<div class='media'>";
@@ -1432,54 +1439,58 @@ window.product_tabs.Pack = new function () {
     }
 
     var selectedProduct;
-    $('#curPackItemName').select2({
-      placeholder: window.search_product_msg,
-      minimumInputLength: 2,
-      width: '100%',
-      dropdownCssClass: 'bootstrap',
-      ajax: {
-        url: 'ajax_products_list.php',
-        dataType: 'json',
-        data: function (term) {
-          return {
-            q: term,
-            packItself: $('input[name=\'id_product\']').val()
-          };
-        },
-        results: function (data) {
-          var excludeIds = getSelectedIds();
-          var returnIds = [];
-          if (data) {
-            for (var i = data.length - 1; i >= 0; i--) {
-              var isIn = 0;
-              for (var j = 0; j < excludeIds.length; j++) {
-                if (data[i].id === excludeIds[j][0] && (typeof data[i].id_product_attribute === 'undefined' || data[i].id_product_attribute === excludeIds[j][1])) {
-                  isIn = 1;
+
+    function bindPackSearchInputs(packType) {
+      $('#curPackItemName_' + packType).select2({
+        placeholder: window.search_product_msg,
+        minimumInputLength: 2,
+        width: '100%',
+        dropdownCssClass: 'bootstrap',
+        ajax: {
+          url: 'ajax_products_list.php',
+          dataType: 'json',
+          data: function (term) {
+            return {
+              q: term,
+              packItself: $('input[name=\'id_product\']').val(),
+              allowDynamicCombination: packType === 0 ? 1 : 0
+            };
+          },
+          results: function (data) {
+            var excludeIds = getSelectedIds();
+            var returnIds = [];
+            if (data) {
+              for (var i = data.length - 1; i >= 0; i--) {
+                var isIn = 0;
+                for (var j = 0; j < excludeIds.length; j++) {
+                  if (data[i].id === excludeIds[j][0] && (typeof data[i].id_product_attribute === 'undefined' || data[i].id_product_attribute === excludeIds[j][1])) {
+                    isIn = 1;
+                  }
+                }
+                if (!isIn) {
+                  returnIds.push(data[i]);
                 }
               }
-              if (!isIn) {
-                returnIds.push(data[i]);
-              }
+              return {
+                results: returnIds
+              };
             }
             return {
-              results: returnIds
+              results: []
             };
           }
-          return {
-            results: []
-          };
-        }
-      },
-      formatResult: productFormatResult,
-      formatSelection: productFormatSelection
-    })
-      .on('select2-selecting', function (e) {
-        selectedProduct = e.object;
-      });
+        },
+        formatResult: productFormatResult,
+        formatSelection: productFormatSelection
+      }).on('select2-selecting', function (e) {
+          selectedProduct = e.object;
+        });
+    }
 
     function addPackItem() {
+      const packType = parseInt($(this).data('packType'), 10);
       if (selectedProduct) {
-        var $curPackItemQty = $('#curPackItemQty');
+        const $curPackItemQty = $('#curPackItemQty_' + packType);
         selectedProduct.qty = $curPackItemQty.val();
         if ((!selectedProduct.id || !selectedProduct.name) && $curPackItemQty.valid()) {
           window.error_modal(window.error_heading_msg, window.msg_select_one);
@@ -1495,29 +1506,18 @@ window.product_tabs.Pack = new function () {
           selectedProduct.id_product_attribute = 0;
         }
 
-        var $divPackItems = $('#divPackItems');
-        var divContent = $divPackItems.html();
-        divContent += '<tr class="product-pack-item" data-product-name="' + selectedProduct.name + '" data-product-qty="' + selectedProduct.qty + '" data-product-id="' + selectedProduct.id + '" data-product-id-attribute="' + selectedProduct.id_product_attribute + '">';
-        divContent += '<td class="fixed-width-xs text-center"><img class="img-thumbnail" alt="'+selectedProduct.name+'" src="'+selectedProduct.image+'"/></td>';
-        divContent += '<td><a href="'+packItemUrlTemplate.replace('PLACEHOLDER_PRODUCT_ID', selectedProduct.id)+'" target="_blank">' + selectedProduct.name + '</a></td>';
-        divContent += '<td>' + selectedProduct.ref + '</td>';
-        divContent += '<td class="text-center">' + selectedProduct.qty + '</td>';
-        divContent += '<td class="text-center"><button type="button" class="btn btn-default delPackItem" data-delete="' + selectedProduct.id + '" data-delete-attr="' + selectedProduct.id_product_attribute + '"><i class="icon-trash"></i></button></td>';
-        divContent += '</tr>';
-
-        // QTYxID-QTYxID
-        // @todo : it should be better to create input for each items and each qty
-        // instead of only one separated by x, - and ¤
-        var line = selectedProduct.qty + 'x' + selectedProduct.id + 'x' + selectedProduct.id_product_attribute;
-        var lineDisplay = selectedProduct.qty + 'x ' + selectedProduct.name;
-
-        $divPackItems.html(divContent);
-        $('#inputPackItems').val($('#inputPackItems').val() + line + '-');
-        $('#namePackItems').val($('#namePackItems').val() + lineDisplay + '¤');
+        createPackItem(
+            packType,
+            parseInt(selectedProduct.id, 10),
+            parseInt(selectedProduct.id_product_attribute, 10),
+            parseInt(selectedProduct.qty, 10),
+            selectedProduct.name,
+            selectedProduct.ref,
+            selectedProduct.image
+        );
 
         selectedProduct = null;
-        $('#curPackItemName').select2('val', '');
-        $('.pack-empty-warning').hide();
+        $('#curPackItemName_' + packType).select2('val', '');
       } else {
         window.error_modal(window.error_heading_msg, window.msg_select_one);
 
@@ -1525,35 +1525,79 @@ window.product_tabs.Pack = new function () {
       }
     }
 
-    $('#add_pack_item').on('click', addPackItem);
+    function createPackItem(
+        packType,
+        productId,
+        combinationId,
+        quantity,
+        name,
+        reference,
+        image
+    ) {
+      $('#pack-empty-warning-' + packType).hide();
 
-    function delPackItem(id, idAttribute) {
-      var reg = new RegExp('-', 'g');
-      var regx = new RegExp('x', 'g');
+      const $divPackItems = $('#divPackItems_'+packType);
+      const $input = $('#inputPackItems_' + packType);
 
-      var input = $('#inputPackItems');
-      var namePack = $('#namePackItems');
+      let divContent = $divPackItems.html();
+      divContent += '<tr class="product-pack-item" data-product-qty="' + quantity + '" data-pack-type="' + packType + '" data-product-id="' + productId + '" data-product-id-attribute="' + combinationId + '">';
+      divContent += '<td class="fixed-width-xs text-center"><img class="img-thumbnail" alt="'+name+'" src="'+image+'"/></td>';
+      divContent += '<td><a href="'+packItemUrlTemplate.replace('PLACEHOLDER_PRODUCT_ID', productId)+'" target="_blank">' + name + '</a></td>';
+      divContent += '<td>' + reference + '</td>';
+      divContent += '<td class="text-center">' + quantity + '</td>';
+      divContent += '<td class="text-center"><button type="button" class="btn btn-default delPackItem" data-delete-pack-type="' + packType + '" data-delete="' + productId + '" data-delete-attr="' + combinationId + '"><i class="icon-trash"></i></button></td>';
+      divContent += '</tr>';
+      $divPackItems.html(divContent);
 
-      var inputCut = input.val().split(reg);
-      var nameCut = namePack.val().split(new RegExp('¤', 'g'));
+      const line = quantity + 'x' + productId + 'x' + combinationId;
+      const oldVal = $input.val()
+      const newVal = oldVal
+          ? (oldVal + '-' + line)
+          : line;
+      $input.val(newVal);
+    }
 
-      input.val(null);
-      namePack.val(null);
-      for (var i = 0; i < inputCut.length; i += 1) {
+    function deletePackItems(packType)
+    {
+      const input = $('#inputPackItems_' + packType);
+      input.val('');
+      let elem = $('.product-pack-item[data-pack-type="'+packType+'"]');
+      elem.remove();
+      $('#pack-empty-warning-'+packType).show();
+    }
+
+
+    function delPackItem(packType, productId, combinationId) {
+      const reg = new RegExp('-', 'g');
+      const regx = new RegExp('x', 'g');
+
+      const input = $('#inputPackItems_' + packType);
+
+      const inputCut = input.val().split(reg);
+
+      let value = '';
+      for (let i = 0; i < inputCut.length; i += 1) {
         if (inputCut[i]) {
-          var inputQty = inputCut[i].split(regx);
-          if (inputQty[1] != id || inputQty[2] != idAttribute) {
-            input.val(input.val() + inputCut[i] + '-');
-            namePack.val(namePack.val() + nameCut[i] + '¤');
+          const data = inputCut[i].split(regx);
+          const itemProductId = parseInt(data[1], 10);
+          const itemCombinationId = parseInt(data[2], 10);
+
+          if (itemProductId !== productId || itemCombinationId !== combinationId) {
+            if (value) {
+              value += '-';
+            }
+            value += inputCut[i];
           }
         }
       }
 
-      var elem = $('.product-pack-item[data-product-id="' + id + '"][data-product-id-attribute="' + idAttribute + '"]');
+      input.val(value);
+
+      let elem = $('.product-pack-item[data-pack-type="'+packType+'"][data-product-id="' + productId + '"][data-product-id-attribute="' + combinationId + '"]');
       elem.remove();
 
-      if ($('.product-pack-item').length === 0) {
-        $('.pack-empty-warning').show();
+      if (! value) {
+        $('#pack-empty-warning-'+packType).show();
       }
     }
 

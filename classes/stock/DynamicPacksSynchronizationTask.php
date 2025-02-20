@@ -22,7 +22,6 @@ namespace Thirtybees\Core\Stock\Synchronization;
 use Configuration;
 use Db;
 use DbQuery;
-use Pack;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use StockAvailable;
@@ -84,23 +83,50 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         $conn = Db::getInstance();
         $fastUpdate = (bool)($parameters[static::PARAMETER_FAST_UPDATE] ?? false);
 
+        $products = [];
+        $hasCombinationPacks = (new DbQuery())
+            ->select('1')
+            ->from('pack', 'pack')
+            ->where('pack.id_product_pack = ps.id_product')
+            ->where('pack.id_product_attribute_pack != 0');
         if (isset($parameters[static::PARAMETER_PRODUCT_IDS])) {
             $productIds = array_filter(array_map('intval', $parameters[static::PARAMETER_PRODUCT_IDS]));
-            $productIdsSql = (new DbQuery())
-                ->select('DISTINCT id_product')
-                ->from('product_shop')
-                ->where('pack_dynamic')
-                ->where('id_product IN (' .implode(',', $productIds). ')');
-            $productIds = array_map('intval', array_column($conn->getArray($productIdsSql), 'id_product'));
+            $sql = (new DbQuery())
+                ->select("ps.id_product, EXISTS($hasCombinationPacks) as combination_packs")
+                ->from('product_shop', 'ps')
+                ->where('ps.pack_dynamic')
+                ->where('ps.id_product IN (' .implode(',', $productIds). ')');
+            foreach ($conn->getArray($sql) as $row) {
+                $productId = (int)$row['id_product'];
+                $combinationPacks = (bool)$row['combination_packs'];
+                $products[$productId] = $combinationPacks;
+            }
         } else {
-            $productIds = Pack::getDynamicPacks();
+            $sql = (new DbQuery())
+                ->select("ps.id_product, EXISTS($hasCombinationPacks) as combination_packs")
+                ->from('product_shop', 'ps')
+                ->where('ps.pack_dynamic');
+            foreach ($conn->getArray($sql) as $row) {
+                $productId = (int)$row['id_product'];
+                $combinationPacks = (bool)$row['combination_packs'];
+                $products[$productId] = $combinationPacks;
+            }
         }
 
-        if (! $productIds) {
+        if (! $products) {
             return 0;
         }
 
-        $productIds = implode(',', $productIds);
+        $productIds = implode(',', array_keys($products));
+        $productPacks = [];
+        $combinationPacks = [];
+        foreach ($products as $productId => $isCombinationPack) {
+            if ($isCombinationPack) {
+                $combinationPacks[] = $productId;
+            } else {
+                $productPacks[] = $productId;
+            }
+        }
 
         // figure out current stocks
         $currentStockSql = (new DbQuery())
@@ -122,22 +148,45 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         }
 
         // calculate dynamic stocks
-        $dynamicStockSql = (new DbQuery())
-            ->select('sa.id_shop')
-            ->select('sa.id_shop_group')
-            ->select('p.id_product_pack AS id_product')
-            ->select('0 AS id_product_attribute')
-            ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
-            ->from('pack', 'p')
-            ->innerJoin('stock_available', 'sa', '(sa.id_product = p.id_product_item AND sa.id_product_attribute = p.id_product_attribute_item)')
-            ->where("p.id_product_pack IN ($productIds)")
-            ->groupBy('sa.id_shop')
-            ->groupBy('sa.id_shop_group')
-            ->groupBy('p.id_product_pack');
+        $expectedQuantities = [];
+        if ($combinationPacks) {
+            $dynamicStockSql = (new DbQuery())
+                ->select('sa.id_shop')
+                ->select('sa.id_shop_group')
+                ->select('p.id_product_pack AS id_product')
+                ->select('pa.id_product_attribute AS id_product_attribute')
+                ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
+                ->from('pack', 'p')
+                ->leftJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack AND pa.id_product_attribute = p.id_product_attribute_pack)')
+                ->innerJoin('stock_available', 'sa', '(sa.id_product = p.id_product_item AND sa.id_product_attribute = p.id_product_attribute_item)')
+                ->where("p.id_product_pack IN ($productIds)")
+                ->groupBy('sa.id_shop')
+                ->groupBy('sa.id_shop_group')
+                ->groupBy('p.id_product_pack')
+                ->groupBy('pa.id_product_attribute');
+            $expectedQuantities = $conn->getArray($dynamicStockSql);
+        }
+        if ($productPacks) {
+            $dynamicStockSql = (new DbQuery())
+                ->select('sa.id_shop')
+                ->select('sa.id_shop_group')
+                ->select('p.id_product_pack AS id_product')
+                ->select('COALESCE(pa.id_product_attribute, 0) AS id_product_attribute')
+                ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
+                ->from('pack', 'p')
+                ->leftJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack)')
+                ->innerJoin('stock_available', 'sa', '(sa.id_product = p.id_product_item AND sa.id_product_attribute = p.id_product_attribute_item)')
+                ->where("p.id_product_pack IN ($productIds)")
+                ->groupBy('sa.id_shop')
+                ->groupBy('sa.id_shop_group')
+                ->groupBy('p.id_product_pack')
+                ->groupBy('COALESCE(pa.id_product_attribute, 0)');
+            $expectedQuantities = array_merge($expectedQuantities, $conn->getArray($dynamicStockSql));
+        }
 
         $cnt = 0;
         // update stock
-        foreach ($conn->getArray($dynamicStockSql) as $row) {
+        foreach ($expectedQuantities as $row) {
             $productId = (int)$row['id_product'];
             $productAttributeId = (int)$row['id_product_attribute'];
             $shopId = (int)$row['id_shop'];
