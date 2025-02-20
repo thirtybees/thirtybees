@@ -178,6 +178,19 @@ class StockAvailableCore extends ObjectModel
     }
 
     /**
+     * @param int $productId
+     * @param int|null $idProductAttribute
+     * @param int|null $idShop
+     *
+     * @return StockAvailable
+     * @throws PrestaShopException
+     */
+    public static function getStockAvailable(int $productId, $idProductAttribute, $idShop): StockAvailable
+    {
+        return new StockAvailable(static::getStockAvailableIdByProductId($productId, $idProductAttribute, $idShop));
+    }
+
+    /**
      * For a given id_product, synchronizes StockAvailable::quantity with Stock::usable_quantity
      *
      * @param int $idProduct
@@ -193,17 +206,15 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
-        //if product is pack sync recursivly product in pack
-        if (Pack::isPack($idProduct)) {
-            if (Validate::isLoadedObject($product = new Product((int) $idProduct))) {
-                if ($product->shouldAdjustPackItemsQuantities()) {
-                    $productsPack = Pack::getItems($idProduct, (int) Configuration::get('PS_LANG_DEFAULT'));
-                    foreach ($productsPack as $productPack) {
-                        static::synchronize($productPack->id, $orderIdShop);
+        //if product is pack sync recursivly products in packs
+        $packs = Pack::getPacks((int)$idProduct);
+        if ($packs) {
+            foreach ($packs as $pack) {
+                if ($pack->shouldAdjustItemsQuantities()) {
+                    foreach ($pack->getPackItems() as $item) {
+                        static::synchronize($item->getProductId(), $orderIdShop);
                     }
                 }
-            } else {
-                return false;
             }
         }
 
@@ -589,7 +600,7 @@ class StockAvailableCore extends ObjectModel
      * If $avoid_parent_pack_update is true, then packs containing the given product won't be updated
      *
      * @param int $idProduct
-     * @param int $idProductAttribute Optional
+     * @param int|null $idProductAttribute Optional
      * @param int $deltaQuantity The delta quantity to update
      * @param int $idShop Optional
      *
@@ -606,12 +617,94 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
-        /** @var Core_Business_Stock_StockManager $stockManager */
-        $stockManager = Adapter_ServiceLocator::get('Core_Business_Stock_StockManager');
-        $stockManager->updateQuantity($product, $idProductAttribute, $deltaQuantity);
+        $deltaQuantity = (int)$deltaQuantity;
+        if ($deltaQuantity !== 0) {
+            $productId = (int)$product->id;
+            $idProductAttribute = (int)$idProductAttribute;
+            $stockAvailable = static::getStockAvailable($productId, $idProductAttribute, $idShop);
 
+            if (Validate::isLoadedObject($stockAvailable)) {
+                // Update quantity of the pack products
+                $pack = Pack::getPack($productId, $idProductAttribute);
+                if ($pack) {
+                    // The product is a pack
+                    static::updatePackQuantity($product, $pack, $stockAvailable, $deltaQuantity, $idShop);
+                } else {
+                    // The product is not a pack
+                    $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
+                    $stockAvailable->update();
+
+                    // adjust packs this item might be in
+                    $packs = Pack::getPacksContaining($productId, $idProductAttribute);
+                    $dynamicPacks = [];
+                    foreach ($packs as $pack) {
+                        if ($pack->isDynamicPack()) {
+                            // dynamic pack, synchronize
+                            $dynamicPacks[] = $pack->getProductId();
+                        } else {
+                            if ($pack->getPackStockType() === Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
+                                // pack with 'Decrement both' settings, adjust quantity only when item quantity decreased
+                                if ($deltaQuantity < 0) {
+                                    $item = $pack->findItem($productId, $idProductAttribute);
+                                    $quantityByPack = $item->getQuantity();
+                                    $maxPackQuantity = max(0, floor($stockAvailable->quantity / $quantityByPack));
+
+                                    $stockAvailablePack = static::getStockAvailable($pack->getProductId(), $pack->getCombinationId(), $idShop);
+                                    if ($stockAvailablePack->quantity > $maxPackQuantity) {
+                                        $stockAvailablePack->quantity = $maxPackQuantity;
+                                        $stockAvailablePack->update();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($dynamicPacks) {
+                        StockAvailable::synchronizeDynamicPacks($dynamicPacks);
+                    }
+                }
+            }
+        }
         return true;
     }
+
+    /**
+     * This will update a Pack quantity and will decrease the quantity of containing Products if needed.
+     *
+     * @param Product $product A product pack object to update its quantity
+     * @param StockAvailable $stockAvailable the stock of the product to fix with correct quantity
+     * @param int $deltaQuantity The movement of the stock (negative for a decrease)
+     * @param int|null $idShop Opional shop ID
+     * @param Pack $pack
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function updatePackQuantity(Product $product, Pack $pack, StockAvailable $stockAvailable, int $deltaQuantity, ?int $idShop)
+    {
+        if ($deltaQuantity !== 0) {
+
+            // update pack items quantities, if necessary
+            if ($pack->isDynamicPack() || $pack->shouldAdjustItemsQuantities()) {
+                foreach ($pack->getPackItems() as $item) {
+                    $productStockAvailable = static::getStockAvailable($item->getProductId(), $item->getCombinationId(), $idShop);
+                    $productStockAvailable->quantity = $productStockAvailable->quantity + ($deltaQuantity * $item->getQuantity());
+                    $productStockAvailable->update();
+                }
+            }
+
+            // update pack quantity
+            if ($pack->isDynamicPack()) {
+                StockAvailable::synchronizeDynamicPack($product->id);
+            } else {
+                if ($pack->shouldAdjustQuantity()) {
+                    $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
+                    $stockAvailable->update();
+                }
+            }
+        }
+    }
+
 
     /**
      * For a given id_product and id_product_attribute sets the quantity available
@@ -653,11 +746,11 @@ class StockAvailableCore extends ObjectModel
                 $stockAvailable->update();
 
                 // adjust packs this item might be in
-                $packs = Pack::getPacksContainingItem($idProduct, $idProductAttribute, Configuration::get('PS_LANG_DEFAULT'));
+                $packs = Pack::getPacksContaining($idProduct, $idProductAttribute);
                 $dynamicPacks = [];
                 foreach ($packs as $pack) {
-                    if ($pack->pack_dynamic) {
-                        $dynamicPacks[] = $pack->id;
+                    if ($pack->isDynamicPack()) {
+                        $dynamicPacks[] = $pack->getProductId();
                     }
                 }
                 if ($dynamicPacks) {
@@ -1070,5 +1163,7 @@ class StockAvailableCore extends ObjectModel
             static::OUT_OF_STOCK_SYSTEM_DEFAULT
         ]);
     }
+
+
 
 }

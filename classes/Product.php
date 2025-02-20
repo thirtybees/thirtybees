@@ -8,7 +8,7 @@
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is packd with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
@@ -54,6 +54,9 @@ class ProductCore extends ObjectModel implements InitializationCallback
     const PTYPE_SIMPLE = 0;
     const PTYPE_PACK = 1;
     const PTYPE_VIRTUAL = 2;
+
+    const PACK_TYPE_PRODUCT = 0;
+    const PACK_TYPE_COMBINATION = 1;
 
     /**
      * @var int|null
@@ -434,6 +437,11 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $cache_is_pack;
 
     /**
+     * @var int|null
+     */
+    public $pack_type;
+
+    /**
      * @var bool|null
      */
     public $cache_has_attachments;
@@ -443,10 +451,6 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public $is_virtual;
 
-    /**
-     * @var int|null
-     */
-    public $id_pack_product_attribute;
 
     /**
      * @var int
@@ -469,14 +473,22 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $pack_dynamic = 0;
 
     /**
-     * @var Product[]|null
+     * @var int|null
+     * @deprecated
      */
-    public $packItems;
+    public $pack_quantity = null;
 
     /**
      * @var int|null
+     * @deprecated
      */
-    public $pack_quantity = null;
+    public $pack_item_quantity = null;
+
+    /**
+     * @var int|null
+     * @deprecated
+     */
+    public $id_pack_product_attribute;
 
     /**
      * @var array
@@ -534,6 +546,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             'date_upd'                  => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDate', 'dbNullable' => false],
             'advanced_stock_management' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'pack_stock_type'           => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '3'],
+            'pack_type'                 => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'pack_dynamic'              => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
 
             /* Lang fields */
@@ -700,7 +713,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
                     ],
                 ],
             ],
-            'product_bundle'        => [
+            'product_pack'        => [
                 'resource' => 'product',
                 'api'      => 'products',
                 'fields'   => [
@@ -1939,7 +1952,10 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public static function getProductProperties($idLang, $row, ?Context $context = null)
     {
-        if (!$row['id_product']) {
+        $productId = (int)$row['id_product'];
+        $idLang = (int)$idLang;
+
+        if (! $productId) {
             return false;
         }
 
@@ -1954,7 +1970,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $row['allow_oosp'] = static::isAvailableWhenOutOfStock($row['out_of_stock']);
         if (Combination::isFeatureActive() && $idProductAttribute === null
             && ((isset($row['cache_default_attribute']) && ($ipaDefault = $row['cache_default_attribute']) !== null)
-                || ($ipaDefault = static::getDefaultAttribute($row['id_product'], !$row['allow_oosp'])))
+                || ($ipaDefault = static::getDefaultAttribute($productId, !$row['allow_oosp'])))
         ) {
             $idProductAttribute = $row['id_product_attribute'] = $ipaDefault;
         }
@@ -1965,7 +1981,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         // Tax
         $usetax = Tax::excludeTaxeOption();
 
-        $cacheKey = $row['id_product'].'-'.$idProductAttribute.'-'.$idLang.'-'.(int) $usetax;
+        $cacheKey = $productId.'-'.$idProductAttribute.'-'.$idLang.'-'.(int) $usetax;
         if (isset($row['id_product_pack'])) {
             $cacheKey .= '-pack'.$row['id_product_pack'];
         }
@@ -1981,14 +1997,14 @@ class ProductCore extends ObjectModel implements InitializationCallback
                     ->select('product_shop.`id_category_default`')
                     ->from('product', 'p')
                     ->join(Shop::addSqlAssociation('product', 'p'))
-                    ->where('p.`id_product` = '.(int) $row['id_product'])
+                    ->where('p.`id_product` = '. $productId)
             );
             if (!$row['id_category_default']) {
                 $row['id_category_default'] = Context::getContext()->shop->id_category;
             }
         }
-        $row['category'] = Category::getLinkRewrite((int) $row['id_category_default'], (int) $idLang);
-        $row['link'] = $context->link->getProductLink((int) $row['id_product'], $row['link_rewrite'], $row['category'], $row['ean13']);
+        $row['category'] = Category::getLinkRewrite((int) $row['id_category_default'], $idLang);
+        $row['link'] = $context->link->getProductLink($productId, $row['link_rewrite'], $row['category'], $row['ean13']);
 
         $row['attribute_price'] = 0;
         if ($idProductAttribute) {
@@ -1996,18 +2012,19 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
 
         $row['price_tax_exc'] = static::getPriceStatic(
-            (int) $row['id_product'],
+            $productId,
             false,
             $idProductAttribute
         );
         $row['price'] = static::getPriceStatic(
-            (int) $row['id_product'],
+            $productId,
             true,
             $idProductAttribute
         );
+        $withTax = static::getTaxCalculationMethod() !== PS_TAX_EXC;
         $row['price_without_reduction'] = static::getPriceStatic(
-            (int) $row['id_product'],
-            static::$_taxCalculationMethod != PS_TAX_EXC,
+            $productId,
+            $withTax,
             $idProductAttribute,
             _TB_PRICE_DATABASE_PRECISION_,
             null,
@@ -2015,8 +2032,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
             false
         );
         $row['reduction'] = static::getPriceStatic(
-            (int) $row['id_product'],
-            static::$_taxCalculationMethod != PS_TAX_EXC,
+            $productId,
+            $withTax,
             $idProductAttribute,
             _TB_PRICE_DATABASE_PRECISION_,
             null,
@@ -2033,7 +2050,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $row['specific_prices'] = $specificPrices;
 
         $row['quantity'] = (int)static::getQuantity(
-            (int) $row['id_product'],
+            $productId,
             0,
             $row['cache_is_pack'] ?? null
         );
@@ -2042,7 +2059,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         if ($idProductAttribute) {
             $row['quantity'] = (int)static::getQuantity(
-                (int) $row['id_product'],
+                $productId,
                 $idProductAttribute,
                 $row['cache_is_pack'] ?? null
             );
@@ -2052,7 +2069,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             // Example: product has 3 combinations with quantities (-12, 10, 1), sum is -1
             if ($row['quantity_all_versions'] <= 0) {
                 $totalPositiveQuantity = 0;
-                $combinationQuantities = StockAvailable::getCombinationQuantities((int)$row['id_product']);
+                $combinationQuantities = StockAvailable::getCombinationQuantities($productId);
                 foreach ($combinationQuantities as $quantity) {
                     if ($quantity > 0) {
                         $totalPositiveQuantity += $quantity;
@@ -2063,26 +2080,33 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
 
 
-        $row['features'] = static::getFrontFeaturesStatic((int) $idLang, $row['id_product']);
+        $row['features'] = static::getFrontFeaturesStatic($idLang, $productId);
 
         $row['attachments'] = [];
         if (!isset($row['cache_has_attachments']) || $row['cache_has_attachments']) {
-            $row['attachments'] = static::getAttachmentsStatic((int) $idLang, $row['id_product']);
+            $row['attachments'] = static::getAttachmentsStatic($idLang, $productId);
         }
 
         $row['virtual'] = ((!isset($row['is_virtual']) || $row['is_virtual']) ? 1 : 0);
 
         // Pack management
-        $row['pack'] = (!isset($row['cache_is_pack']) ? Pack::isPack($row['id_product']) : (int) $row['cache_is_pack']);
-        $row['packItems'] = $row['pack'] ? Pack::getItemTable($row['id_product'], $idLang) : [];
-        $row['nopackprice'] = $row['pack'] ? Pack::noPackPrice($row['id_product']) : 0;
-        if ($row['pack'] && !Pack::isInStock($row['id_product'])) {
-            $row['quantity'] = 0;
+        $pack = Pack::getPack($productId, $idProductAttribute);
+        if ($pack) {
+            $row['pack'] = true;
+            $row['packItems'] = $pack->getItemsInformations($idLang, false);
+            $row['nopackprice'] = $pack->getPrice($withTax);
+            if (! $pack->canBeOrdered()) {
+                $row['quantity'] = 0;
+            }
+        } else {
+            $row['pack'] = false;
+            $row['packItems'] = [];
+            $row['nopackprice'] = 0.0;
         }
 
         $row['customization_required'] = false;
         if (isset($row['customizable']) && $row['customizable'] && Customization::isFeatureActive()) {
-            if (count(static::getRequiredCustomizableFieldsStatic((int) $row['id_product']))) {
+            if (count(static::getRequiredCustomizableFieldsStatic($productId))) {
                 $row['customization_required'] = true;
             }
         }
@@ -2148,13 +2172,13 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public static function getQuantity($idProduct, $idProductAttribute = null, $cacheIsPack = null)
     {
-        if ((int) $cacheIsPack || ($cacheIsPack === null && Pack::isPack((int) $idProduct))) {
-            if (!Pack::isInStock((int) $idProduct)) {
+        if ($cacheIsPack || is_null($cacheIsPack)) {
+            $pack = Pack::getPack((int)$idProduct, (int)$idProductAttribute);
+            if ($pack && !$pack->canBeOrdered()) {
                 return 0;
             }
         }
-
-        return (StockAvailable::getQuantityAvailableByProduct($idProduct, $idProductAttribute));
+        return StockAvailable::getQuantityAvailableByProduct($idProduct, $idProductAttribute);
     }
 
     /**
@@ -2996,7 +3020,11 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public static function duplicateAttributes($idProductOld, $idProductNew)
     {
         $return = true;
-        $combinationImages = [];
+        $attributesData = [
+            'old' => [],
+            'new' => [],
+            'map' => []
+        ];
         $conn = Db::getInstance();
 
         $result = $conn->getArray(
@@ -3045,14 +3073,16 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
             $idProductAttributeNew = (int) $combination->id;
 
+            $attributesData['map'][$idProductAttributeOld] = $idProductAttributeNew;
+
 	        // Set stock quantity
 	        StockAvailable::setQuantity((int) $idProductNew, $idProductAttributeNew, (int) $quantityAttributeOld, $idShop);
 
             StockAvailable::setProductOutOfStock((int)$idProductNew, StockAvailable::outOfStock($idProductOld), $idShop, $idProductAttributeNew);
 
             if ($resultImages = static::_getAttributeImageAssociations($idProductAttributeOld)) {
-                $combinationImages['old'][$idProductAttributeOld] = $resultImages;
-                $combinationImages['new'][$idProductAttributeNew] = $resultImages;
+                $attributesData['old'][$idProductAttributeOld] = $resultImages;
+                $attributesData['new'][$idProductAttributeNew] = $resultImages;
             }
 
             if (!isset($combinations[$idProductAttributeOld])) {
@@ -3096,7 +3126,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             ]);
         }
 
-        return !$return ? false : $combinationImages;
+        return !$return ? false : $attributesData;
     }
 
     /**
@@ -5281,6 +5311,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $return = parent::update($nullValues);
 
         $this->setGroupReduction();
+        $this->setIsPack();
 
         // Sync stock Reference, EAN13 and UPC
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && StockAvailable::dependsOnStock($this->id, Context::getContext()->shop->id)) {
@@ -5315,6 +5346,21 @@ class ProductCore extends ObjectModel implements InitializationCallback
     }
 
     /**
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function setIsPack()
+    {
+        $productId = (int)$this->id;
+        if ($this->id) {
+            $cacheIsPack = Pack::getPacks($productId) ? 1 : 0;
+            if ((int)$this->cache_is_pack !== $cacheIsPack) {
+                Db::getInstance()->update('product', ['cache_is_pack' => $cacheIsPack], 'id_product = ' . $productId);
+            }
+        }
+    }
+
+    /**
      * Get the product type (simple, virtual, pack)
      *
      * @return int
@@ -5323,10 +5369,12 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function getType()
     {
-        if (!$this->id) {
+        $productId = (int)$this->id;
+        if (! $productId) {
             return static::PTYPE_SIMPLE;
         }
-        if (Pack::isPack($this->id)) {
+        $packs = Pack::getPacks($productId);
+        if ($packs) {
             return static::PTYPE_PACK;
         }
         if ($this->is_virtual) {
@@ -6165,21 +6213,23 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function checkQty($qty)
     {
-        if (Pack::isPack((int) $this->id) && !Pack::isInStock((int) $this->id)) {
-            return false;
-        }
-
-        if ($this->isAvailableWhenOutOfStock(StockAvailable::outOfStock($this->id))) {
-            return true;
-        }
-
+        $productId = (int)$this->id;
         if (isset($this->id_product_attribute)) {
-            $idProductAttribute = $this->id_product_attribute;
+            $idProductAttribute = (int)$this->id_product_attribute;
         } else {
             $idProductAttribute = 0;
         }
 
-        return ($qty <= StockAvailable::getQuantityAvailableByProduct($this->id, $idProductAttribute));
+        $pack = Pack::getPack($productId, $idProductAttribute);
+        if ($pack && !$pack->canBeOrdered()) {
+            return false;
+        }
+
+        if ($this->isAvailableWhenOutOfStock(StockAvailable::outOfStock($productId))) {
+            return true;
+        }
+
+        return ($qty <= StockAvailable::getQuantityAvailableByProduct($productId, $idProductAttribute));
     }
 
     /**
@@ -6804,14 +6854,19 @@ class ProductCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @return int
+     * @return float
      *
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @deprecated 1.7.0
      */
     public function getNoPackPrice()
     {
-        return Pack::noPackPrice((int) $this->id);
+        $pack = Pack::getProductLevelPack((int)$this->id);
+        if ($pack) {
+            $withTax = Product::getTaxCalculationMethod() === PS_TAX_INC;
+            return $pack->getPrice($withTax);
+        }
+        return 0.0;
     }
 
     /**
@@ -7838,6 +7893,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
 
         $this->setGroupReduction();
+        $this->setIsPack();
         Hook::triggerEvent('actionProductSave', ['id_product' => (int) $this->id, 'product' => $this]);
 
         return true;
@@ -8094,7 +8150,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getWsProductBundle()
+    public function getWsPack()
     {
         $sql = (new DbQuery())
             ->select('id_product_item AS id, quantity, NULLIF(id_product_attribute_item, 0) AS combination_id')
@@ -8124,11 +8180,16 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $type = $reverseTypeInformation[$typeStr];
 
-        if (Pack::isPack((int) $this->id) && $type != static::PTYPE_PACK) {
-            Pack::deleteItems($this->id);
+        if ($type !== static::PTYPE_PACK) {
+            $packs = Pack::getPacks((int)$this->id);
+            foreach ($packs as $pack) {
+                $pack->delete();
+            }
+            $this->cache_is_pack = 0;
+        } else {
+            $this->cache_is_pack = 1;
         }
 
-        $this->cache_is_pack = ($type == static::PTYPE_PACK);
         $this->is_virtual = ($type == static::PTYPE_VIRTUAL);
 
         return true;
@@ -8142,26 +8203,22 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function setWsProductBundle($items)
+    public function setWsPack($items)
     {
         if ($this->is_virtual) {
             return false;
         }
-
-        Pack::deleteItems($this->id);
-
+        $pack = Pack::getOrCreate((int)$this->id, Pack::PRODUCT_LEVEL_PACK);
         foreach ($items as $item) {
             if (isset($item['id']) && (int)$item['id']) {
-                Pack::addItem(
-                    (int)$this->id,
+                $pack->addOrUpdateItem(
                     (int)$item['id'],
-                    isset($item['quantity']) ? (int)$item['quantity'] : 1,
-                    isset($item['combination_id']) ? (int)$item['combination_id'] : 0
+                    (int)($item['combination_id'] ?? 0),
+                    (int)($item['quantity'] ?? 1),
                 );
             }
         }
-
-        return true;
+        return $pack->save();
     }
 
     /**
@@ -8230,44 +8287,6 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
         // should never happen
         return Pack::STOCK_TYPE_DECREMENT_PACK;
-    }
-
-    /**
-     * Returns true, if quantities of pack items should be adjusted with sale of pack
-     *
-     * @return bool
-     */
-    public function shouldAdjustPackItemsQuantities()
-    {
-        switch ($this->getPackStockType()) {
-            case Pack::STOCK_TYPE_DECREMENT_PACK:
-                return false;
-            case Pack::STOCK_TYPE_DECREMENT_PRODUCTS:
-                return true;
-            case Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS:
-                return true;
-            default:
-                throw new RuntimeException('Invariant: getPackStockType returned invalid value');
-        }
-    }
-
-    /**
-     * Returns true, if quantity of pack itself should be adjusted with sale of pack
-     *
-     * @return bool
-     */
-    public function shouldAdjustPackQuantity()
-    {
-        switch ($this->getPackStockType()) {
-            case Pack::STOCK_TYPE_DECREMENT_PACK:
-                return true;
-            case Pack::STOCK_TYPE_DECREMENT_PRODUCTS:
-                return false;
-            case Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS:
-                return true;
-            default:
-                throw new RuntimeException('Invariant: getPackStockType returned invalid value');
-        }
     }
 
     /**
@@ -8494,5 +8513,13 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
 
         return $this->_cache_available_quantity[$cacheKey];
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackType(): int
+    {
+        return (int)$this->pack_type;
     }
 }
