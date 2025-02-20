@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Albania" version="1.0">
+  <currencies>
+    <currency name="Lek" iso_code="ALL" iso_code_num="008" sign="L" blank="1" conversion_rate="100.00" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Shqip (Albanian)" iso_code="sq" language_code="sq-al" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="TVSH AL 20%" rate="20"/>
+    <tax id="2" name="TVSH AL 6%" rate="6"/>
+    <taxRulesGroup name="AL Standard Rate (20%)">
+      <taxRule iso_code_country="al" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="AL Reduced Rate (6%)">
+      <taxRule iso_code_country="al" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

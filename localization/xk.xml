@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Kosovo" version="1.0">
+  <currencies>
+    <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Shqip (Albanian)" iso_code="sq" language_code="sq-xk" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+    <language name="Српски (Serbian)" iso_code="sr" language_code="sr-xk" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="TVSH XK 18%" rate="18"/>
+    <tax id="2" name="TVSH XK 8%" rate="8"/>
+    <taxRulesGroup name="XK Standard Rate (18%)">
+      <taxRule iso_code_country="xk" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="XK Reduced Rate (8%)">
+      <taxRule iso_code_country="xk" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="North Macedonia" version="1.0">
+  <currencies>
+    <currency name="Denar" iso_code="MKD" iso_code_num="807" sign="ден" blank="1" conversion_rate="61.5" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Македонски (Macedonian)" iso_code="mk" language_code="mk-mk" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="ДДВ MK 18%" rate="18"/>
+    <tax id="2" name="ДДВ MK 5%" rate="5"/>
+    <taxRulesGroup name="MK Standard Rate (18%)">
+      <taxRule iso_code_country="mk" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="MK Reduced Rate (5%)">
+      <taxRule iso_code_country="mk" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
