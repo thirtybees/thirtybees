@@ -287,15 +287,15 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         $groupType = [
             [
-                'id'   => 'select',
+                'id'   => AttributeGroup::GROUP_TYPE_SELECT,
                 'name' => $this->l('Drop-down list'),
             ],
             [
-                'id'   => 'radio',
+                'id'   => AttributeGroup::GROUP_TYPE_RADIO,
                 'name' => $this->l('Radio buttons'),
             ],
             [
-                'id'   => 'color',
+                'id'   => AttributeGroup::GROUP_TYPE_COLOR,
                 'name' => $this->l('Color or texture'),
             ],
         ];
@@ -570,7 +570,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 ],
             ];
 
-            if ($obj->group_type == 'color') {
+            if ($obj->group_type === AttributeGroup::GROUP_TYPE_COLOR) {
                 $this->fields_list['color'] = [
                     'title'      => $this->l('Color'),
                     'filter_key' => 'a!color',

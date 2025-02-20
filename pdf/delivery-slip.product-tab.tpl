@@ -70,9 +70,15 @@
 			</tr>
 			{if isset($order_detail.pack_items) && $order_detail.pack_items}
 				<tr class="pack_data {$bgcolor_class}">
-					{foreach $order_detail.pack_items as $pack_item}
-						<td class="small" colspan="3">{l s='Pack items:' pdf='true'} {$pack_item}</td>
-					{/foreach}
+					<td class="small">
+						{l s='Pack items:' pdf='true'}
+					</td>
+					<td colspan="2" class="small">
+						{foreach $order_detail.pack_items as $item}
+							{$item.quantity} x {if $item.reference}<b>{$item.reference}</b> {/if} {$item.name}
+							{if !$item@last}<br>{/if}
+						{/foreach}
+					</td>
 				</tr>
 			{/if}
 			{foreach $order_detail.customizedDatas as $customizationPerAddress}

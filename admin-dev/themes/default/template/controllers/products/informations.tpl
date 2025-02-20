@@ -108,25 +108,36 @@
 			<div class="radio">
 				<label for="simple_product">
 					<input type="radio" name="type_product" id="simple_product" value="{Product::PTYPE_SIMPLE}" {if $product_type == Product::PTYPE_SIMPLE}checked="checked"{/if} >
-					{l s='Standard product'}</label>
+					{l s='Standard product'}
+				</label>
 			</div>
 			<div class="radio">
 				<label for="pack_product">
-					<input type="radio" name="type_product" {if $is_in_pack}disabled="disabled"{/if} id="pack_product" value="{Product::PTYPE_PACK}" {if $product_type == Product::PTYPE_PACK}checked="checked"{/if} > {l s='Pack of existing products'}</label>
+					<input type="radio" name="type_product" {if $is_in_pack}disabled="disabled"{/if} id="pack_product" value="{Product::PTYPE_PACK}" {if $product_type == Product::PTYPE_PACK && $pack_type === Product::PACK_TYPE_PRODUCT}checked="checked"{/if} > {l s='Pack of existing products'}
+				</label>
+			</div>
+			<div class="radio">
+				<label for="pack_combination">
+					<input type="radio" name="type_product" {if $is_in_pack}disabled="disabled"{/if} id="pack_combination" value="{Product::PTYPE_PACK}" {if $product_type == Product::PTYPE_PACK && $pack_type === Product::PACK_TYPE_COMBINATION}checked="checked"{/if} > {l s='Pack of existing products - combinations'}
+				</label>
 			</div>
 			<div class="radio">
 				<label for="virtual_product">
 					<input type="radio" name="type_product" id="virtual_product" {if $is_in_pack}disabled="disabled"{/if} value="{Product::PTYPE_VIRTUAL}" {if $product_type == Product::PTYPE_VIRTUAL}checked="checked"{/if} >
-					{l s='Virtual product (services, booking, downloadable products, etc.)'}</label>
+					{l s='Virtual product (services, booking, downloadable products, etc.)'}
+				</label>
 			</div>
 			<div class="row row-padding-top">
-				<div id="warn_virtual_combinations" class="alert alert-warning" style="display:none">{l s='You cannot use combinations with a virtual product.'}</div>
-				<div id="warn_pack_combinations" class="alert alert-warning" style="display:none">{l s='You cannot use combinations with a pack.'}</div>
+				<div id="warn_virtual_combinations" class="alert alert-uypewarning" style="display:none">{l s='You cannot use combinations with a virtual product.'}</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="product-pack-container" {if $product_type != Product::PTYPE_PACK}style="display:none"{/if}></div>
+	<input type="hidden" id="pack_type" name="pack_type" value="{$pack_type|intval}">
+
+	<div id="product-pack-container" {if $product_type !== Product::PTYPE_PACK || $pack_type !== Product::PACK_TYPE_PRODUCT}style="display:none"{/if}>
+		{include file="./pack.tpl" packType=Product::PACK_TYPE_PRODUCT pack_items = $pack_items}
+	</div>
 
 	<hr />
 

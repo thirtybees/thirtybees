@@ -34,6 +34,10 @@
  */
 class AttributeGroupCore extends ObjectModel
 {
+    const GROUP_TYPE_SELECT = 'select';
+    const GROUP_TYPE_RADIO = 'radio';
+    const GROUP_TYPE_COLOR = 'color';
+
     /**
      * @var array Object model definition
      */
@@ -43,8 +47,9 @@ class AttributeGroupCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
-            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true, 'values' => ['select', 'radio', 'color'], 'dbDefault' => 'select'],
+            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true, 'values' => [self::GROUP_TYPE_SELECT, self::GROUP_TYPE_RADIO, self::GROUP_TYPE_COLOR], 'dbDefault' => self::GROUP_TYPE_SELECT],
             'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'id_product_ref' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
 
             /* Lang fields */
             'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -56,16 +61,37 @@ class AttributeGroupCore extends ObjectModel
             ],
         ],
     ];
-    /** @var string|string[] Name */
+
+    /**
+     * @var string|string[] Name
+     */
     public $name;
-    /** @var bool $is_color_group */
+
+    /**
+     * @var bool $is_color_group
+     */
     public $is_color_group;
-    /** @var int $position */
+
+    /**
+     * @var int $position
+     */
     public $position;
-    /** @var string $group_type */
+
+    /**
+     * @var string $group_type
+     */
     public $group_type;
-    /** @var string|string[] Public Name */
+
+    /**
+     * @var string|string[] Public Name
+     */
     public $public_name;
+
+    /**
+     * @var int|null
+     */
+    public $id_product_ref;
+
     /**
      * @var array Webservice parameters
      */
@@ -136,6 +162,37 @@ class AttributeGroupCore extends ObjectModel
     }
 
     /**
+     * @param Product $product
+     * @param int $langId
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getAttributesGroupsForProduct(Product $product, int $langId): array
+    {
+        $combinationAttributes = [];
+        $pack = Pack::getProductLevelPack((int)$product->id);
+        if ($pack) {
+            foreach ($pack->getPackItems() as $item) {
+                if ($item->getCombinationId() === Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
+                    $combinationAttributes[] = static::getAttributeGroupIdForCombinationProduct($item->getProductId());
+                }
+            }
+        }
+
+        $groups = static::getAttributesGroups($langId);
+        return array_filter($groups, function ($group) use ($combinationAttributes) {
+            if ((int)$group['id_product_ref']) {
+                $attributeGroupId = (int)$group['id_attribute_group'];
+                return in_array($attributeGroupId, $combinationAttributes);
+            }
+            return true;
+        });
+    }
+
+
+    /**
      * @param bool $autoDate
      * @param bool $nullValues
      *
@@ -145,11 +202,7 @@ class AttributeGroupCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        if ($this->group_type == 'color') {
-            $this->is_color_group = 1;
-        } else {
-            $this->is_color_group = 0;
-        }
+        $this->is_color_group = ($this->group_type === static::GROUP_TYPE_COLOR);
 
         if ($this->position <= 0) {
             $this->position = AttributeGroup::getHigherPosition() + 1;
@@ -194,12 +247,7 @@ class AttributeGroupCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        if ($this->group_type == 'color') {
-            $this->is_color_group = 1;
-        } else {
-            $this->is_color_group = 0;
-        }
-
+        $this->is_color_group = ($this->group_type === static::GROUP_TYPE_COLOR);
         $return = parent::update($nullValues);
         Hook::triggerEvent('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
 
@@ -449,5 +497,83 @@ class AttributeGroupCore extends ObjectModel
             ],
             '`id_attribute_group` = '.(int) $movedGroupAttribute['id_attribute_group']
         );
+    }
+
+    /**
+     * @param int $productId
+     * @return static|null
+     *
+     * @throws PrestaShopException
+     */
+    public static function createAttributeGroupForCombinationProduct(int $productId)
+    {
+        $product = new Product($productId);
+        if (! Validate::isLoadedObject($product) || !$product->hasAttributes()) {
+            static::deleteAttributeGroupForCombinationProduct($productId);
+            return null;
+        }
+
+        // create attribute group if none exists for product yet
+        $attributeGroupId = static::getAttributeGroupIdForCombinationProduct($productId);
+        if (! $attributeGroupId) {
+            $attributeGroup = new AttributeGroup();
+            $attributeGroup->group_type = static::GROUP_TYPE_SELECT;
+            $attributeGroup->id_product_ref = $productId;
+            foreach ($product->name as $langId => $name) {
+                $name = (string)$name;
+                $attributeGroup->name[$langId] = sprintf(Translate::getAdminTranslation('Product variant: %s'), $name);
+                $attributeGroup->public_name[$langId] = $name;
+            }
+            $attributeGroup->add();
+        } else {
+            $attributeGroup = new AttributeGroup($attributeGroupId);
+        }
+
+        // create attribute values
+        ProductAttribute::syncProductCombinationAttributes($attributeGroup);
+
+        return $attributeGroup;
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return int
+     *
+     * @throws PrestaShopException
+     */
+    public static function getAttributeGroupIdForCombinationProduct(int $productId): int
+    {
+        if (! $productId) {
+            return 0;
+        }
+
+        $id = (int)Db::readOnly()->getValue((new DbQuery())
+            ->select('ag.id_attribute_group')
+            ->from('attribute_group', 'ag')
+            ->where('ag.`id_product_ref` = '.(int) $productId)
+        );
+
+        if ($id) {
+            return $id;
+        }
+        return 0;
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public static function deleteAttributeGroupForCombinationProduct(int $productId): bool
+    {
+        $attributeGroupId = static::getAttributeGroupIdForCombinationProduct($productId);
+        if ($attributeGroupId) {
+            $attributeGroup = new AttributeGroup($attributeGroupId);
+            return $attributeGroup->delete();
+        }
+        return false;
     }
 }

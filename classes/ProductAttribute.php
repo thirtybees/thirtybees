@@ -34,17 +34,30 @@
  */
 class ProductAttributeCore extends ObjectModel
 {
-    /** @var int Group id which attribute belongs */
+    /**
+     * @var int Group id which attribute belongs
+     */
     public $id_attribute_group;
 
-    /** @var string|string[] Name */
+    /**
+     * @var string|string[] Name
+     */
     public $name;
 
-    /** @var string $color */
+    /**
+     * @var string $color
+     */
     public $color;
 
-    /** @var int $position */
+    /**
+     * @var int $position
+     */
     public $position;
+
+    /**
+     * @var int|null
+     */
+    public $id_product_attribute_ref;
 
     /**
      * @var array Object model definition
@@ -54,9 +67,10 @@ class ProductAttributeCore extends ObjectModel
         'primary'   => 'id_attribute',
         'multilang' => true,
         'fields'    => [
-            'id_attribute_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'color'              => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
-            'position'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'id_attribute_group'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'color'                    => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
+            'position'                 => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'id_product_attribute_ref' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => false],
 
             /* Lang fields */
             'name'               => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -494,5 +508,80 @@ class ProductAttributeCore extends ObjectModel
     public static function getTextureFilePath(int $attributeId)
     {
         return ImageManager::getSourceImage(_PS_COL_IMG_DIR_, $attributeId);
+    }
+
+    /**
+     * @param AttributeGroup $group
+     *
+     * @return void
+     *
+     * @throws PrestaShopException
+     */
+    public static function syncProductCombinationAttributes(AttributeGroup $group)
+    {
+        $conn = Db::getInstance();
+
+        // step 1) retrieve all existing combinations for referenced product
+        $attributeValueSeparator = ': ';
+        $attributeSeparator = ', ';
+
+        $data = $conn->getArray(
+            'SELECT
+                    pa.id_product_attribute,
+                    l.id_lang,
+                    COALESCE((
+                        SELECT GROUP_CONCAT(agl.`name`, \''.pSQL($attributeValueSeparator).'\',al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \''.pSQL($attributeSeparator).'\')
+                         FROM `'._DB_PREFIX_.'product_attribute_combination` pac
+                         LEFT JOIN `'._DB_PREFIX_.'attribute` a ON a.`id_attribute` = pac.`id_attribute`
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = l.id_lang)
+                         LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = l.id_lang)
+                         WHERE pac.id_product_attribute  = pa.id_product_attribute
+                         GROUP BY pac.id_product_attribute
+                   ), \'-\') as attribute_designation
+				FROM `'._DB_PREFIX_.'product_attribute` pa
+				INNER JOIN '._DB_PREFIX_.'lang l
+				WHERE pa.`id_product` = '.(int) $group->id_product_ref.'
+				GROUP BY pa.`id_product_attribute`, l.id_lang
+				ORDER BY pa.`id_product_attribute`'
+        );
+        $combinations = [];
+        foreach ($data as $row) {
+            $combinationId = (int)$row['id_product_attribute'];
+            $langId = (int)$row['id_lang'];
+            $combinations[$combinationId][$langId] = $row['attribute_designation'];
+        }
+
+        // step 2) retrieve all existing attributes and their
+        $existingAttributes = $conn->getArray((new DbQuery())
+            ->select('a.`id_attribute`, a.`id_product_attribute_ref`')
+            ->from('attribute', 'a')
+            ->where('a.id_attribute_group = ' . (int)$group->id)
+            ->where('a.id_product_attribute_ref')
+        );
+
+        $map = [];
+        foreach ($existingAttributes as $row) {
+            $combinationId = (int)$row['id_product_attribute_ref'];
+            $attributeId = (int)$row['id_attribute'];
+            if (! isset($combinations[$combinationId])) {
+                // remove extra attributes
+                $productAttribute = new ProductAttribute($attributeId);
+                $productAttribute->delete();
+            } else {
+                $map[$combinationId] = $attributeId;
+            }
+        }
+
+        // add missing attributes
+        foreach ($combinations as $combinationId => $values) {
+            if (! isset($map[$combinationId])) {
+                $attribute = new ProductAttribute();
+                $attribute->id_product_attribute_ref = $combinationId;
+                $attribute->id_attribute_group = (int)$group->id;
+                $attribute->name = $values;
+                $attribute->add();
+            }
+        }
     }
 }

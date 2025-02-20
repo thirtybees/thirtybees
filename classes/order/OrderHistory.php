@@ -105,15 +105,19 @@ class OrderHistoryCore extends ObjectModel
         $oldOs = $order->getCurrentOrderState();
 
         // executes hook
+        $orderId = (int)$order->id;
+        $shopId = (int)$order->id_shop;
         if (in_array($newOs->id, [Configuration::get('PS_OS_PAYMENT'), Configuration::get('PS_OS_WS_PAYMENT')])) {
-            Hook::triggerEvent('actionPaymentConfirmation', ['id_order' => (int) $order->id], $order->id_shop);
+            Hook::triggerEvent('actionPaymentConfirmation', [
+                'id_order' => $orderId
+            ], $shopId);
         }
 
         Hook::triggerEvent('actionOrderStatusUpdate', [
             'newOrderStatus' => $newOs,
-            'id_order' => (int) $order->id,
+            'id_order' => $orderId,
             'order' => $order
-        ], $order->id_shop);
+        ], $shopId);
 
         // An email is sent the first time a virtual item is validated
         $virtualProducts = $order->getVirtualProducts();
@@ -126,7 +130,7 @@ class OrderHistoryCore extends ObjectModel
                 if ($productDownload->display_filename != '') {
                     $assign[$key]['name'] = $productDownload->display_filename;
                     $downloadLink = $productDownload->getTextLink(false, $virtualProduct['download_hash'], [
-                        'id_order' => (int)$order->id,
+                        'id_order' => $orderId,
                         'secure_key' => $order->secure_key
                     ]);
                     $assign[$key]['link'] = $downloadLink;
@@ -157,14 +161,14 @@ class OrderHistoryCore extends ObjectModel
             $data = [
                 '{lastname}'        => $customer->lastname,
                 '{firstname}'       => $customer->firstname,
-                '{id_order}'        => (int) $order->id,
+                '{id_order}'        => $orderId,
                 '{order_name}'      => $order->getUniqReference(),
                 '{nbProducts}'      => count($virtualProducts),
                 '{virtualProducts}' => $links,
             ];
             // If there is at least one downloadable file
             if (!empty($assign)) {
-                Mail::Send((int) $order->id_lang, 'download_product', Mail::l('The virtual product that you bought is available for download', $order->id_lang), $data, $customer->email, $customer->firstname.' '.$customer->lastname, null, null, null, null, _PS_MAIL_DIR_, false, (int) $order->id_shop);
+                Mail::Send((int) $order->id_lang, 'download_product', Mail::l('The virtual product that you bought is available for download', $order->id_lang), $data, $customer->email, $customer->firstname.' '.$customer->lastname, null, null, null, null, _PS_MAIL_DIR_, false, $shopId);
             }
         }
 
@@ -173,8 +177,6 @@ class OrderHistoryCore extends ObjectModel
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $manager = StockManagerFactory::getManager();
         }
-
-        $errorOrCanceledStatuses = [Configuration::get('PS_OS_ERROR'), Configuration::get('PS_OS_CANCELED')];
 
         if (!(int) $this->id_employee || !Validate::isLoadedObject(($employee = new Employee((int) $this->id_employee)))) {
             if (!Validate::isLoadedObject($oldOs)) {
@@ -190,76 +192,76 @@ class OrderHistoryCore extends ObjectModel
 
         // foreach products of the order
         foreach ($order->getProductsDetail() as $product) {
+            $productId = (int)$product['product_id'];
+            $combinationId = (int)$product['product_attribute_id'];
+            $quantity = (int)$product['product_quantity'];
+
             if (Validate::isLoadedObject($oldOs)) {
-                // if becoming logable => adds sale
                 if ($newOs->logable && !$oldOs->logable) {
-                    ProductSale::addProductSale($product['product_id'], $product['product_quantity']);
-                    // @since 1.5.0 - Stock Management
-                    if (!Pack::isPack($product['product_id']) &&
-                        in_array($oldOs->id, $errorOrCanceledStatuses) &&
-                        !StockAvailable::dependsOnStock($product['id_product'], (int) $order->id_shop)) {
-                        StockAvailable::updateQuantity($product['product_id'], $product['product_attribute_id'], -(int) $product['product_quantity'], $order->id_shop);
+                    // if becoming logable => adds sale
+                    ProductSale::addProductSale($productId, $quantity);
+                    $pack = Pack::getPack($productId, $combinationId);
+                    if (!$pack && $oldOs->isErrorOrCanceled() && !StockAvailable::dependsOnStock($productId, $shopId)) {
+                        StockAvailable::updateQuantity($productId, $combinationId, -$quantity, $shopId);
                     }
                 } elseif (!$newOs->logable && $oldOs->logable) {
                     // if becoming unlogable => removes sale
-                    ProductSale::removeProductSale($product['product_id'], $product['product_quantity']);
-
-                    // @since 1.5.0 - Stock Management
-                    if (!Pack::isPack($product['product_id']) &&
-                        in_array($newOs->id, $errorOrCanceledStatuses) &&
-                        !StockAvailable::dependsOnStock($product['id_product'])) {
-                        StockAvailable::updateQuantity($product['product_id'], $product['product_attribute_id'], (int) $product['product_quantity'], $order->id_shop);
+                    ProductSale::removeProductSale($productId, $quantity);
+                    $pack = Pack::getPack($productId, $combinationId);
+                    if (!$pack && $newOs->isErrorOrCanceled() && !StockAvailable::dependsOnStock($productId)) {
+                        StockAvailable::updateQuantity($productId, $combinationId, $quantity, $shopId);
                     }
-                } elseif (!$newOs->logable && !$oldOs->logable &&
-                        in_array($newOs->id, $errorOrCanceledStatuses) &&
-                        !in_array($oldOs->id, $errorOrCanceledStatuses) &&
-                        !StockAvailable::dependsOnStock($product['id_product'])) {
+                } elseif (
+                    !$newOs->logable &&
+                    !$oldOs->logable &&
+                    !$oldOs->isErrorOrCanceled() &&
+                    $newOs->isErrorOrCanceled() &&
+                    !StockAvailable::dependsOnStock($productId)
+                ) {
                     // if waiting for payment => payment error/canceled
-                    StockAvailable::updateQuantity($product['product_id'], $product['product_attribute_id'], (int) $product['product_quantity'], $order->id_shop);
+                    StockAvailable::updateQuantity($productId, $combinationId, $quantity, $shopId);
                 }
             }
             // From here, there is 2 cases : $old_os exists, and we can test shipped state evolution,
             // Or old_os does not exists, and we should consider that initial shipped state is 0 (to allow decrease of stocks)
 
-            // @since 1.5.0 : if the order is being shipped and this products uses the advanced stock management :
+            // if the order is being shipped and this products uses the advanced stock management :
             // decrements the physical stock using $id_warehouse
-            if ($newOs->shipped == 1 && (!Validate::isLoadedObject($oldOs) || $oldOs->shipped == 0) &&
-                Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') &&
-                Warehouse::exists($product['id_warehouse']) &&
-                $manager != null &&
-                (int) $product['advanced_stock_management'] == 1) {
-                // gets the warehouse
-                $warehouse = new Warehouse($product['id_warehouse']);
+            $warehouseId = (int)$product['id_warehouse'];
+            if ($warehouseId && $manager && Warehouse::exists($warehouseId) && (int) $product['advanced_stock_management'] == 1) {
+                if ($newOs->shipped == 1 && (!Validate::isLoadedObject($oldOs) || $oldOs->shipped == 0)) {
+                    // gets the warehouse
+                    $warehouse = new Warehouse($warehouseId);
 
-                // decrements the stock (if it's a pack, the StockManager does what is needed)
-                $manager->removeProduct(
-                    $product['product_id'],
-                    $product['product_attribute_id'],
-                    $warehouse,
-                    ($product['product_quantity'] - $product['product_quantity_refunded'] - $product['product_quantity_return']),
-                    Configuration::get('PS_STOCK_CUSTOMER_ORDER_REASON'),
-                    true,
-                    (int) $order->id,
-                    0,
-                    $employee
-                );
-            } elseif ($newOs->shipped == 0 && Validate::isLoadedObject($oldOs) && $oldOs->shipped == 1 &&
-                    Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') &&
-                    Warehouse::exists($product['id_warehouse']) &&
-                    $manager != null &&
-                    (int) $product['advanced_stock_management'] == 1) {
-                // @since.1.5.0 : if the order was shipped, and is not anymore, we need to restock products
-                // if the product is a pack, we restock every products in the pack using the last negative stock mvts
-                if (Pack::isPack($product['product_id'])) {
-                    $packProducts = Pack::getItems($product['product_id'], Configuration::get('PS_LANG_DEFAULT', null, null, $order->id_shop));
-                    if ($packProducts) {
-                        foreach ($packProducts as $packProduct) {
-                            if ($packProduct->advanced_stock_management == 1) {
-                                $mvts = StockMvt::getNegativeStockMvts($order->id, $packProduct->id, 0, $packProduct->pack_quantity * $product['product_quantity']);
+                    // decrements the stock (if it's a pack, the StockManager does what is needed)
+                    $manager->removeProduct(
+                        $productId,
+                        $combinationId,
+                        $warehouse,
+                        ($quantity - $product['product_quantity_refunded'] - $product['product_quantity_return']),
+                        Configuration::get('PS_STOCK_CUSTOMER_ORDER_REASON'),
+                        true,
+                        $orderId,
+                        0,
+                        $employee
+                    );
+                } elseif ($newOs->shipped == 0 && Validate::isLoadedObject($oldOs) && $oldOs->shipped == 1) {
+                    // if the order was shipped, and is not anymore, we need to restock products
+                    // if the product is a pack, we restock every products in the pack using the last negative stock mvts
+                    $pack = Pack::getPack($productId, $combinationId);
+                    if ($pack) {
+                        foreach ($pack->getPackItems() as $item) {
+                            if ($item->usesAdvancedStockManagement()) {
+                                $mvts = StockMvt::getNegativeStockMvts(
+                                    $orderId,
+                                    $item->getProductId(),
+                                    $item->getCombinationId(),
+                                    $item->getQuantity() * $quantity
+                                );
                                 foreach ($mvts as $mvt) {
                                     $manager->addProduct(
-                                        $packProduct->id,
-                                        0,
+                                        $item->getProductId(),
+                                        $item->getCombinationId(),
                                         new Warehouse($mvt['id_warehouse']),
                                         $mvt['physical_quantity'],
                                         null,
@@ -268,31 +270,36 @@ class OrderHistoryCore extends ObjectModel
                                         null
                                     );
                                 }
-                                if (!StockAvailable::dependsOnStock($product['id_product'])) {
-                                    StockAvailable::updateQuantity($packProduct->id, 0, (int) $packProduct->pack_quantity * $product['product_quantity'], $order->id_shop);
+                                if (!StockAvailable::dependsOnStock($productId)) {
+                                    StockAvailable::updateQuantity(
+                                        $item->getProductId(),
+                                        $item->getCombinationId(),
+                                        $item->getQuantity() * $quantity,
+                                        $shopId
+                                    );
                                 }
                             }
                         }
-                    }
-                } else {
-                    // else, it's not a pack, re-stock using the last negative stock mvts
-                    $mvts = StockMvt::getNegativeStockMvts(
-                        $order->id,
-                        $product['product_id'],
-                        $product['product_attribute_id'],
-                        ($product['product_quantity'] - $product['product_quantity_refunded'] - $product['product_quantity_return'])
-                    );
-
-                    foreach ($mvts as $mvt) {
-                        $manager->addProduct(
-                            $product['product_id'],
-                            $product['product_attribute_id'],
-                            new Warehouse($mvt['id_warehouse']),
-                            $mvt['physical_quantity'],
-                            null,
-                            $mvt['price_te'],
-                            true
+                    } else {
+                        // else, it's not a pack, re-stock using the last negative stock mvts
+                        $mvts = StockMvt::getNegativeStockMvts(
+                            $orderId,
+                            $productId,
+                            $combinationId,
+                            ($quantity - $product['product_quantity_refunded'] - $product['product_quantity_return'])
                         );
+
+                        foreach ($mvts as $mvt) {
+                            $manager->addProduct(
+                                $productId,
+                                $combinationId,
+                                new Warehouse($mvt['id_warehouse']),
+                                $mvt['physical_quantity'],
+                                null,
+                                $mvt['price_te'],
+                                true
+                            );
+                        }
                     }
                 }
             }
@@ -352,7 +359,7 @@ class OrderHistoryCore extends ObjectModel
                         [
                             'id_order_invoice' => (int) $invoice->id,
                             'id_order_payment' => (int) $payment->id,
-                            'id_order'         => (int) $order->id,
+                            'id_order'         => $orderId,
                         ]
                     );
                 }
@@ -365,7 +372,11 @@ class OrderHistoryCore extends ObjectModel
         }
 
         // executes hook
-        Hook::triggerEvent('actionOrderStatusPostUpdate', ['newOrderStatus' => $newOs, 'id_order' => (int) $order->id, 'order' => $order], $order->id_shop);
+        Hook::triggerEvent('actionOrderStatusPostUpdate', [
+            'newOrderStatus' => $newOs,
+            'id_order' => $orderId,
+            'order' => $order
+        ], $shopId);
 
         ShopUrl::resetMainDomainCache();
 
