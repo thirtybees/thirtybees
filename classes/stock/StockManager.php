@@ -242,31 +242,32 @@ class StockManagerCore implements StockManagerInterface
     ) {
         $removedProducts = [];
 
+        $idProduct = (int)$idProduct;
+        $idProductAttribute = (int)$idProductAttribute;
+
         if ($this->shouldPreventStockOperation($warehouse, $idProduct, $quantity)) {
             return $removedProducts;
         }
 
         $idStockMvtReason = $this->ensureStockMovementReasonIsValid($idStockMvtReason);
 
-        if ($this->shouldHandleStockOperationForProductsPack($idProduct, $ignorePack)) {
-            if (Validate::isLoadedObject($product = new Product((int) $idProduct))) {
-                // Gets items
-                if ($product->shouldAdjustPackItemsQuantities()) {
-                    $productsPack = Pack::getItems((int) $idProduct, (int) Configuration::get('PS_LANG_DEFAULT'));
-                    // Foreach item
-                    foreach ($productsPack as $productPack) {
-                        if ($productPack->advanced_stock_management == 1) {
-                            $productWarehouses = Warehouse::getProductWarehouseList($productPack->id, $productPack->id_pack_product_attribute);
+        if ($this->shouldHandleStockOperationForProductsPack($idProduct, $idProductAttribute, $ignorePack)) {
+            $pack = Pack::getPack($idProduct, $idProductAttribute);
+            if ($pack) {
+                if ($pack->shouldAdjustItemsQuantities()) {
+                    foreach ($pack->getPackItems() as $item) {
+                        if ($item->usesAdvancedStockManagement()) {
+                            $productWarehouses = Warehouse::getProductWarehouseList($item->getProductId(), $item->getCombinationId());
                             $warehouseStockFound = false;
                             foreach ($productWarehouses as $productWarehouse) {
                                 if (!$warehouseStockFound) {
                                     if (Warehouse::exists($productWarehouse['id_warehouse'])) {
                                         $currentWarehouse = new Warehouse($productWarehouse['id_warehouse']);
                                         $removedProducts[] = $this->removeProduct(
-                                            $productPack->id,
-                                            $productPack->id_pack_product_attribute,
+                                            $item->getProductId(),
+                                            $item->getCombinationId(),
                                             $currentWarehouse,
-                                            $productPack->pack_quantity * $quantity,
+                                            $item->getQuantity() * $quantity,
                                             $idStockMvtReason,
                                             $isUsable,
                                             $idOrder
@@ -281,12 +282,12 @@ class StockManagerCore implements StockManagerInterface
                     }
                 }
 
-                if ($product->shouldAdjustPackQuantity()) {
+                if ($pack->shouldAdjustQuantity()) {
                     $removedProducts = array_merge(
                         $removedProducts,
                         $this->removeProduct(
-                            $idProduct,
-                            $idProductAttribute,
+                            $pack->getProductId(),
+                            $pack->getCombinationId(),
                             $warehouse,
                             $quantity,
                             $idStockMvtReason,
@@ -475,13 +476,8 @@ class StockManagerCore implements StockManagerInterface
                     break;
             }
 
-            if (Pack::isPacked($idProduct, $idProductAttribute)) {
-                $packs = Pack::getPacksContainingItem(
-                    $idProduct,
-                    $idProductAttribute,
-                    (int) Configuration::get('PS_LANG_DEFAULT')
-                );
-
+            $packs = Pack::getPacksContaining($idProduct, $idProductAttribute);
+            if ($packs) {
                 foreach ($packs as $pack) {
                     // Decrease stocks of the pack only if pack is in linked stock mode (option called 'Decrement both')
                     if ($pack->getPackStockType() !== Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
@@ -490,21 +486,22 @@ class StockManagerCore implements StockManagerInterface
 
                     // Decrease stocks of the pack only if there is not enough items to constitute the actual pack stocks.
                     // How many packs can be constituted with the remaining product stocks
-                    $quantityByPack = $pack->pack_item_quantity;
+                    $item = $pack->findItem($idProduct, $idProductAttribute);
+                    $quantityByPack = $item->getQuantity();
                     $stockAvailableQuantity = $quantityInStock - $quantity;
                     $maxPackQuantity = max([0, floor($stockAvailableQuantity / $quantityByPack)]);
-                    $quantityDelta = Pack::getQuantity($pack->id) - $maxPackQuantity;
+                    $quantityDelta = Product::getQuantity($pack->getProductId(), $pack->getCombinationId()) - $maxPackQuantity;
 
-                    if ($pack->advanced_stock_management == 1 && $quantityDelta > 0) {
-                        $productWarehouses = Warehouse::getPackWarehouses($pack->id);
+                    if ($pack->usesAdvancedStockManagement() && $quantityDelta > 0) {
+                        $productWarehouses = Warehouse::getPackWarehouses($pack);
                         $warehouseStockFound = false;
                         foreach ($productWarehouses as $productWarehouse) {
                             if (!$warehouseStockFound) {
                                 if (Warehouse::exists($productWarehouse)) {
                                     $currentWarehouse = new Warehouse($productWarehouse);
                                     $removedProducts[] = $this->removeProduct(
-                                        $pack->id,
-                                        null,
+                                        $pack->getProductId(),
+                                        $pack->getCombinationId(),
                                         $currentWarehouse,
                                         $quantityDelta,
                                         $idStockMvtReason,
@@ -661,29 +658,28 @@ class StockManagerCore implements StockManagerInterface
      */
     public function getProductRealQuantities($idProduct, $idProductAttribute, $idsWarehouse = null, $usable = false)
     {
+        $idProduct = (int)$idProduct;
+        $idProductAttribute = (int)$idProductAttribute;
         $idsWarehouse = $this->normalizeWarehouseIds($idsWarehouse);
 
         $clientOrdersQty = 0;
 
         // check if product is present in a pack
         $conn = Db::readOnly();
-        if (!Pack::isPack($idProduct) && $inPack = $conn->getArray(
-                'SELECT id_product_pack, quantity FROM '._DB_PREFIX_.'pack
-			WHERE id_product_item = '.(int) $idProduct.'
-			AND id_product_attribute_item = '.($idProductAttribute ? (int) $idProductAttribute : '0')
-            )
-        ) {
-            foreach ($inPack as $value) {
-                $product = new Product((int) $value['id_product_pack']);
-                if (Validate::isLoadedObject($product) && $product->shouldAdjustPackItemsQuantities()) {
+        $pack = Pack::getPack($idProduct, $idProductAttribute);
+        if (! $pack) {
+            $packs = Pack::getPacksContaining($idProduct, $idProductAttribute);
+            foreach ($packs as $pack) {
+                if ($pack->shouldAdjustItemsQuantities()) {
                     $query = new DbQuery();
                     $query->select('od.product_quantity, od.product_quantity_refunded, pk.quantity');
                     $query->from('order_detail', 'od');
                     $query->leftjoin('orders', 'o', 'o.id_order = od.id_order');
-                    $query->where('od.product_id = '.(int) $value['id_product_pack']);
+                    $query->where('od.product_id = '. $pack->getProductId());
+                    $query->where('od.product_attribute_id = '. $pack->getCombinationId());
                     $query->leftJoin('order_history', 'oh', 'oh.id_order = o.id_order AND oh.id_order_state = o.current_state');
                     $query->leftJoin('order_state', 'os', 'os.id_order_state = oh.id_order_state');
-                    $query->leftJoin('pack', 'pk', 'pk.id_product_item = '.(int) $idProduct.' AND pk.id_product_attribute_item = '.($idProductAttribute ? (int) $idProductAttribute : '0').' AND id_product_pack = od.product_id');
+                    $query->leftJoin('pack', 'pk', 'pk.id_product_item = '.$idProduct.' AND pk.id_product_attribute_item = '.$idProductAttribute.' AND id_product_pack = od.product_id and id_product_attribute_pack = od.product_attribute_id');
                     $query->where('os.shipped != 1');
                     $query->where(
                         'o.valid = 1 OR (os.id_order_state != '.(int) Configuration::get('PS_OS_ERROR').'
@@ -703,11 +699,7 @@ class StockManagerCore implements StockManagerInterface
             }
         }
 
-        $trackingProductQuantity = true;
-        if (Pack::isPack($idProduct)) {
-            $product = new Product((int) $idProduct);
-            $trackingProductQuantity = $product->shouldAdjustPackQuantity();
-        }
+        $trackingProductQuantity = $pack ? $pack->shouldAdjustQuantity() : true;
 
         // skip if product is a pack without
         if ($trackingProductQuantity) {
@@ -1039,15 +1031,16 @@ class StockManagerCore implements StockManagerInterface
 
     /**
      * @param int $productId
+     * @param int $combinationId
      * @param bool $shouldIgnorePack
      *
      * @return bool
      *
      * @throws PrestaShopException
      */
-    protected function shouldHandleStockOperationForProductsPack($productId, $shouldIgnorePack)
+    protected function shouldHandleStockOperationForProductsPack($productId, $combinationId, $shouldIgnorePack)
     {
-        return Pack::isPack((int) $productId) && !$shouldIgnorePack;
+        return Pack::getPack((int)$productId, (int)$combinationId) && !$shouldIgnorePack;
     }
 
     /**
