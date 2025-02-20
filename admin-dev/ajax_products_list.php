@@ -70,8 +70,10 @@ if ($excludeIds && $excludeIds != 'NaN') {
 // Excluding downloadable products from packs because download from pack is not supported
 $excludeVirtuals = Tools::getBoolValue('excludeVirtuals', true);
 $exclude_packs = Tools::getBoolValue('exclude_packs', true);
+$allowDynamicCombination = Tools::getBoolValue('allowDynamicCombination', false);
 
 $context = Context::getContext();
+$link = Context::getContext()->link;
 
 $sql = 'SELECT p.`id_product`, pl.`link_rewrite`, p.`reference`, pl.`name`, image_shop.`id_image` id_image, il.`legend`, p.`cache_default_attribute`
 		FROM `'._DB_PREFIX_.'product` p
@@ -106,8 +108,7 @@ if (
     foreach ($items as $item) {
         // check if product have combination
         if (Combination::isFeatureActive() && $item['cache_default_attribute']) {
-            $sql = 'SELECT pa.`id_product_attribute`, pa.`reference`, ag.`id_attribute_group`, pai.`id_image`, agl.`name` AS group_name, al.`name` AS attribute_name,
-						a.`id_attribute`
+            $sql = 'SELECT pa.`id_product_attribute`, pa.`reference`, pai.`id_image`, GROUP_CONCAT(al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \', \') as combination_name
 					FROM `'._DB_PREFIX_.'product_attribute` pa
 					'.Shop::addSqlAssociation('product_attribute', 'pa').'
 					LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON pac.`id_product_attribute` = pa.`id_product_attribute`
@@ -116,32 +117,37 @@ if (
 					LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)$context->language->id.')
 					LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)$context->language->id.')
 					LEFT JOIN `'._DB_PREFIX_.'product_attribute_image` pai ON pai.`id_product_attribute` = pa.`id_product_attribute`
-					WHERE pa.`id_product` = '.(int)$item['id_product'].'
-					GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
+					WHERE pa.`id_product` = '.(int)$item['id_product'].' AND product_attribute_shop.id_shop = '.(int)$context->shop->id.'
+					GROUP BY pa.`id_product_attribute`
 					ORDER BY pa.`id_product_attribute`';
 
             $combinations = $conn->getArray($sql);
-            if (!empty($combinations)) {
-                foreach ($combinations as $k => $combination) {
-                    $results[$combination['id_product_attribute']]['id'] = $item['id_product'];
-                    $results[$combination['id_product_attribute']]['id_product_attribute'] = $combination['id_product_attribute'];
-                    !empty($results[$combination['id_product_attribute']]['name']) ? $results[$combination['id_product_attribute']]['name'] .= ' '.$combination['group_name'].'-'.$combination['attribute_name']
-                    : $results[$combination['id_product_attribute']]['name'] = $item['name'].' '.$combination['group_name'].'-'.$combination['attribute_name'];
-                    if (!empty($combination['reference'])) {
-                        $results[$combination['id_product_attribute']]['ref'] = $combination['reference'];
-                    } else {
-                        $results[$combination['id_product_attribute']]['ref'] = !empty($item['reference']) ? $item['reference'] : '';
-                    }
-                    if (empty($results[$combination['id_product_attribute']]['image'])) {
-                        $results[$combination['id_product_attribute']]['image'] = str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $combination['id_image'], 'home_default'));
-                    }
+            if ($combinations) {
+                foreach ($combinations as $combination) {
+                    $combinationId = (int)$combination['id_product_attribute'];
+                    $results[] = [
+                        'id' => (int)$item['id_product'],
+                        'id_product_attribute' => (int)$combination['id_product_attribute'],
+                        'name' => $item['name'].': ' . $combination['combination_name'],
+                        'ref' => (string)$combination['reference'],
+                        'image' => $link->getImageLink($item['link_rewrite'], (int)$combination['id_image'], 'backoffice_product_medium'),
+                    ];
+                }
+                if ($allowDynamicCombination) {
+                    $results[] = [
+                        'id' => (int)($item['id_product']),
+                        'id_product_attribute' => Pack::VIRTUAL_PRODUCT_ATTRIBUTE,
+                        'name' => $item['name'] . ' ' . Translate::getAdminTranslation('(virtual attribute)'),
+                        'ref' => Translate::getAdminTranslation('(to be determined)'),
+                        'image' => $link->getImageLink($item['link_rewrite'], (int)$item['id_image'], 'backoffice_product_medium'),
+                    ];
                 }
             } else {
                 $product = [
                     'id' => (int)($item['id_product']),
                     'name' => $item['name'],
                     'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
-                    'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
+                    'image' => $link->getImageLink($item['link_rewrite'], $item['id_image'], 'backoffice_product_medium'),
                 ];
                 $results[] = $product;
             }
@@ -150,7 +156,7 @@ if (
                 'id' => (int)($item['id_product']),
                 'name' => $item['name'],
                 'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
-                'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
+                'image' => $link->getImageLink($item['link_rewrite'], $item['id_image'], 'backoffice_product_medium'),
             ];
             $results[] = $product;
         }

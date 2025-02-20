@@ -1002,8 +1002,9 @@ class OrderDetailCore extends ObjectModel
 
         $this->id = null;
 
-        $this->product_id = (int) $product['id_product'];
-        $this->product_attribute_id = $product['id_product_attribute'] ? (int) $product['id_product_attribute'] : 0;
+        $productCombinationId = (int)$product['id_product_attribute'];
+        $this->product_id = (int)$product['id_product'];
+        $this->product_attribute_id = $productCombinationId;
         $this->product_name = $product['name'].((isset($product['attributes']) && $product['attributes'] != null) ? ' - '.$product['attributes'] : '');
 
         $this->product_quantity = (int) $product['cart_quantity'];
@@ -1042,13 +1043,49 @@ class OrderDetailCore extends ObjectModel
         }
         unset($this->tax_calculator);
 
-        foreach (Pack::getPackContent($this->product_id) as $entry) {
-            $packItem = new OrderDetailPack();
-            $packItem->id_order_detail = (int)$this->id;
-            $packItem->id_product = (int)$entry['id_product'];
-            $packItem->id_product_attribute = (int)$entry['id_product_attribute'];
-            $packItem->quantity = (int)$entry['quantity'];
-            $packItem->add();
+        $pack = Pack::getPack((int)$this->product_id, $productCombinationId);
+        if ($pack) {
+            foreach ($pack->getPackItems() as $item) {
+                $itemProductId = $item->getProductId();
+                $itemAttributeId = $this->resolvePackItemAttribute($itemProductId, $item->getCombinationId(), $productCombinationId);
+                if (!is_null($itemAttributeId)) {
+                    $packItem = new OrderDetailPack();
+                    $packItem->id_order_detail = (int)$this->id;
+                    $packItem->id_product = $itemProductId;
+                    $packItem->id_product_attribute = $itemAttributeId;
+                    $packItem->quantity = $item->getQuantity();
+                    $packItem->add();
+                }
+            }
         }
+    }
+
+    /**
+     * @param int $itemProductId
+     * @param int $itemAttributeId
+     * @param int $productCombinationId
+     *
+     * @return int|null
+     *
+     * @throws PrestaShopException
+     */
+    protected function resolvePackItemAttribute(int $itemProductId, int $itemAttributeId, int $productCombinationId)
+    {
+        if ($itemAttributeId !== Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
+            return $itemAttributeId;
+        }
+        $attributeGroupId = AttributeGroup::getAttributeGroupIdForCombinationProduct($itemProductId);
+        if ($attributeGroupId) {
+            $combination = new Combination($productCombinationId);
+            $attributes = $combination->getAttributes();
+            if (isset($attributes[$attributeGroupId])) {
+                $attributeId = (int)$attributes[$attributeGroupId];
+                $productAttribute = new ProductAttribute($attributeId);
+                if (Validate::isLoadedObject($productAttribute) && $productAttribute->id_product_attribute_ref) {
+                    return (int)$productAttribute->id_product_attribute_ref;
+                }
+            }
+        }
+        return null;
     }
 }

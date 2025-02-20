@@ -780,13 +780,14 @@ class CoreModelsCore
             'table' => 'pack',
             'fields' => [
                 'id_product_pack'           => ['type' => ObjectModel::TYPE_INT, 'required' => true],
+                'id_product_attribute_pack' => ['type' => ObjectModel::TYPE_INT, 'required' => true, 'default' => 0],
                 'id_product_item'           => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'id_product_attribute_item' => ['type' => ObjectModel::TYPE_INT, 'required' => true],
                 'quantity'                  => ['type' => ObjectModel::TYPE_INT, 'default' => '1'],
             ],
             'keys' => [
                 'pack' => [
-                    'primary'      => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_product_pack', 'id_product_item', 'id_product_attribute_item']],
+                    'primary'      => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_product_pack', 'id_product_attribute_pack', 'id_product_item', 'id_product_attribute_item']],
                     'product_item' => ['type' => ObjectModel::KEY, 'columns' => ['id_product_item', 'id_product_attribute_item']],
                 ],
             ],

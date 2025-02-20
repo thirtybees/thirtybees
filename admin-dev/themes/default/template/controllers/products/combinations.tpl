@@ -478,6 +478,11 @@
 				</p>
 			</div>
 		</div>
+		<div id="combination-pack-container" {if $product_type !== Product::PTYPE_PACK || $pack_type !== Product::PACK_TYPE_COMBINATION}style="display:none"{/if}>
+			<hr/>
+			{include file="./pack.tpl" packType=Product::PACK_TYPE_COMBINATION pack_items = []}
+		</div>
+
 		<div class="panel-footer">
 			<span id="ResetSpan">
 				<button type="reset" name="ResetBtn" id="ResetBtn" onclick="$('#desc-product-newCombination').click();" class="btn btn-default">
