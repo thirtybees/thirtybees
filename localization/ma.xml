@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Morocco" version="1.0">
+  <currencies>
+    <currency name="Moroccan Dirham" iso_code="MAD" iso_code_num="504" sign="د.م." blank="1" conversion_rate="1" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Arabic (Morocco)" iso_code="ar" language_code="ar-ma" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>
+    <language name="French (Morocco)" iso_code="fr" language_code="fr-ma" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT MA 20%" rate="20"/>
+    <tax id="2" name="Reduced VAT MA 10%" rate="10"/>
+    <tax id="3" name="VAT MA 0%" rate="0"/>
+    <taxRulesGroup name="MA Standard Rate (20%)">
+      <taxRule iso_code_country="ma" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="MA Reduced Rate (10%)">
+      <taxRule iso_code_country="ma" id_tax="2"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="MA Zero Rate (0%)">
+      <taxRule iso_code_country="ma" id_tax="3"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
