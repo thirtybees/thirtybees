@@ -67,6 +67,13 @@ function tinySetup(config) {
     extended_valid_elements: "em[class|name|id]",
     valid_children: "+*[*]",
     valid_elements: "*[*]",
+    
+    // Prevents empty <p></p> generation fix
+    forced_root_block: false,  // Prevents automatically wrapping content in <p> tags
+    force_br_newlines: false,  // Prevents <br> from being inserted when pressing Enter
+    force_p_newlines: true,  // Ensures that new lines are wrapped in <p> tags
+    convert_newlines_to_brs: false,  // Prevents new lines from being converted into <br>
+    
     menu: {
       edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall' },
       insert: { title: 'Insert', items: 'media image link | pagebreak' },
