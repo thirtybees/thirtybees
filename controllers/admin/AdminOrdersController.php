@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Dataset\Filter\FilterField;
+use Thirtybees\Core\Dataset\Filter\Type\StringValueType;
+
 /**
  * Class AdminOrdersControllerCore
  *
@@ -206,6 +209,24 @@ class AdminOrdersControllerCore extends AdminController
 
         $this->bulk_actions = [
             'updateOrderStatus' => ['text' => $this->l('Change Order Status'), 'icon' => 'icon-refresh'],
+        ];
+
+        $this->filters_list = [
+            'customer_email' => [
+                'title' => $this->l('Customer - Email'),
+                'type' => 'text',
+                'filter_key' => 'c!email'
+            ],
+            'customer_first_name' => [
+                'title' => $this->l('Customer - First Name'),
+                'type' => 'text',
+                'filter_key' => 'c!firstname'
+            ],
+            'customer_last_name' => [
+                'title' => $this->l('Customer - Last Name'),
+                'type' => 'text',
+                'filter_key' => 'c!lastname'
+            ],
         ];
 
         parent::__construct();

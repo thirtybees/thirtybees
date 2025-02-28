@@ -29,6 +29,22 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Dataset\Filter\Filter;
+use Thirtybees\Core\Dataset\Filter\FilterField;
+use Thirtybees\Core\Dataset\Filter\Operator\BetweenOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\ContainsOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\EndsWithOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\EqualsOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\FilterOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\LessThanOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\MoreThanOperator;
+use Thirtybees\Core\Dataset\Filter\Operator\StartsWithOperator;
+use Thirtybees\Core\Dataset\Filter\Type\BoolValueType;
+use Thirtybees\Core\Dataset\Filter\Type\DatetimeValueType;
+use Thirtybees\Core\Dataset\Filter\Type\DecimalValueType;
+use Thirtybees\Core\Dataset\Filter\Type\IntValueType;
+use Thirtybees\Core\Dataset\Storage\CookieListViewStorage;
+use Thirtybees\Core\Dataset\Storage\ListViewStorage;
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 
@@ -257,6 +273,16 @@ class HelperListCore extends Helper
     protected $listError = null;
 
     /**
+     * @var FilterField[]
+     */
+    protected array $availableFilterFields = [];
+
+    /**
+     * @var ListViewStorage|null
+     */
+    protected $listViewStorage;
+
+    /**
      * HelperListCore constructor.
      */
     public function __construct()
@@ -354,26 +380,56 @@ class HelperListCore extends Helper
             $tableDnd = true;
         }
 
-        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
-        $ajax = false;
         $controller = $this->getController();
-        $cookie = $this->context->cookie;
+
+        $listViewStorage = $this->getListViewStorage();
+        $columnFilters = [];
+        $extraFilters = [];
+        $ajax = false;
+        $hasValue = false;
+        $hasSearchField = false;
+
+        foreach ($listViewStorage->getFilters() as $filter) {
+            $hasValue = true;
+            if ($filter->getFilterType() === Filter::TYPE_COLUMN) {
+                $operands = $filter->getOperands();
+                if ($operands) {
+                    $value = null;
+                    if (count($operands) === 1) {
+                        $value = $operands[0];
+                    } else {
+                        $value = $operands;
+                    }
+                    if (! is_null($value)) {
+                        $columnFilters[$filter->getFilterId()] = $value;
+                    }
+                }
+            } else {
+                $args = array_map(function($arg) use ($filter) {
+                    $valueType =  $filter->getField()->getValueType();
+                    return $valueType->toJavascriptValue($arg);
+                }, $filter->getOperands());
+                $extraFilters[] = [
+                    'field' => $filter->getField()->getId(),
+                    'operator' => $filter->getOperator()->getId(),
+                    'inverted' => $filter->isInverted(),
+                    'args' => $args,
+                ];
+            }
+        }
+
         foreach ($this->fields_list as $key => $params) {
-            if (!isset($params['type'])) {
+            if (! isset($params['type'])) {
                 $params['type'] = static::COLUMN_TYPE_TEXT;
             }
-
-            $valueKey = $prefix.$this->list_id.'Filter_'.(array_key_exists('filter_key', $params) ? $params['filter_key'] : $key);
-            if ($key == 'active' && strpos($key, '!') !== false) {
-                $keys = explode('!', $params['filter_key']);
-                $valueKey = $keys[1];
-            }
-            $value = $cookie->{$valueKey};
-            if (!$value && Tools::getIsset($valueKey)) {
-                $value = Tools::getValue($valueKey);
+            $type = $params['type'];
+            $filterKey = (string)($params['filter_key'] ?? $key);
+            $value = $columnFilters[$filterKey] ?? null;
+            if (isset($this->availableFilterFields[$filterKey])) {
+                $hasSearchField = true;
             }
 
-            switch ($params['type']) {
+            switch ($type) {
                 case static::COLUMN_TYPE_BOOL:
                     if (isset($params['ajax']) && $params['ajax']) {
                         $ajax = true;
@@ -382,61 +438,28 @@ class HelperListCore extends Helper
 
                 case static::COLUMN_TYPE_DATE:
                 case static::COLUMN_TYPE_DATETIME:
-                    if ($value) {
-                        if (is_string($value)) {
-                            $value = json_decode($value, true);
-                        }
-                        if (!Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
-                            $value = '';
-                        }
-                    }
                     $name = $this->list_id.'Filter_'.($params['filter_key'] ?? $key);
                     $nameId = str_replace('!', '__', $name);
 
                     $params['id_date'] = $nameId;
                     $params['name_date'] = $name;
+                    if ($value) {
+                        foreach ($value as &$val) {
+                            if ($val instanceof DateTime) {
+                                $val = $val->format('Y-m-d');
+                            }
+                        }
+                    }
 
                     $controller->addJqueryUI('ui.datepicker');
                     break;
-
-                case static::COLUMN_TYPE_SELECT:
-                    foreach ($params['list'] as $optionValue => $optionDisplay) {
-                        if (isset($cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']})
-                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} == $optionValue
-                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} != ''
-                        ) {
-                            $this->fields_list[$key]['select'][$optionValue]['selected'] = 'selected';
-                        }
-                    }
-                    break;
-
-                case static::COLUMN_TYPE_TEXT:
-                    if (!Validate::isCleanHtml($value)) {
-                        $value = '';
-                    }
             }
 
             $params['value'] = $value;
             $this->fields_list[$key] = $params;
         }
 
-        $hasValue = false;
-        $hasSearchField = false;
-
-        foreach ($this->fields_list as $field) {
-            if (isset($field['value']) && $field['value'] !== false && $field['value'] !== '') {
-                if (is_array($field['value']) && trim(implode('', $field['value'])) == '') {
-                    continue;
-                }
-
-                $hasValue = true;
-                break;
-            }
-            if (!(isset($field['search']) && $field['search'] === false)) {
-                $hasSearchField = true;
-            }
-        }
-
+        $controller->addJS(_PS_JS_DIR_. '/admin/list_filters.js');
         $this->context->smarty->assign(
             [
                 'page'                => $page,
@@ -466,6 +489,34 @@ class HelperListCore extends Helper
             ]);
         }
 
+        $filterFields = [];
+        foreach ($this->availableFilterFields as $id => $field) {
+
+            $filterField = [
+                'id' => $id,
+                'type' => $field->getValueType()->getType(),
+                'name' => $field->getDisplayName(),
+            ];
+
+            $extra = $field->getValueType()->getExtraOptions();
+            if ($extra) {
+                $filterField['extra'] = $extra;
+
+            }
+
+            $filterFields[] = $filterField;
+        }
+        usort($filterFields, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        Media::addJsDef([
+            'filterTranslations' => [
+                'delete' => $this->l('Delete'),
+                'not' => $this->l('Not'),
+            ]
+        ]);
+
         $this->header_tpl->assign(
             array_merge(
                 [
@@ -489,6 +540,8 @@ class HelperListCore extends Helper
                     'row_hover'         => $this->row_hover,
                     'list_id'           => $this->list_id ?? $this->table,
                     'token'             => $this->token,
+                    'filterFields'      => $filterFields,
+                    'filters'           => $extraFilters,
                 ],
                 $this->tpl_vars
             )
@@ -1126,4 +1179,42 @@ class HelperListCore extends Helper
         $this->listError = $listError;
         return $this;
     }
+
+    /**
+     * @param FilterField[] $availableFilterFields
+     * @return $this
+     */
+    public function setAvailableFilterFields(array $availableFilterFields)
+    {
+        $this->availableFilterFields = $availableFilterFields;
+        return $this;
+    }
+
+    /**
+     * @param ListViewStorage $listViewStorage
+     * @return void
+     */
+    public function setListViewStorage(ListViewStorage $listViewStorage)
+    {
+        $this->listViewStorage = $listViewStorage;
+    }
+
+    /**
+     * @return ListViewStorage
+     */
+    public function getListViewStorage(): ListViewStorage
+    {
+        if (is_null($this->listViewStorage)) {
+            $cookiePrefix = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
+            $listId = $this->list_id ?? $this->table;
+            $this->listViewStorage = new CookieListViewStorage(
+                $this->context->cookie,
+                $cookiePrefix,
+                $listId,
+                $this->availableFilterFields
+            );
+        }
+        return $this->listViewStorage;
+    }
 }
+

@@ -479,12 +479,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->_filterHaving = null;
 
         if (Tools::isSubmit('submitFilter'.$this->list_id)
-            || $this->context->cookie->{'submitFilter'.$this->list_id} !== false
             || Tools::getValue($this->list_id.'Orderby')
             || Tools::getValue($this->list_id.'Orderway')
         ) {
             $this->filter = true;
-            parent::processFilter();
+        }
+
+        if ($this->shouldProcessListFilter()) {
+            $this->processFilter();
         }
 
         $firstList = parent::renderList();
@@ -547,12 +549,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->_filterHaving = null;
 
         if (Tools::isSubmit('submitFilter'.$this->list_id)
-            || $this->context->cookie->{'submitFilter'.$this->list_id} !== false
             || Tools::getValue($this->list_id.'Orderby')
             || Tools::getValue($this->list_id.'Orderway')
         ) {
             $this->filter = true;
-            parent::processFilter();
+        }
+
+        if ($this->shouldProcessListFilter()) {
+            $this->processFilter();
         }
         // inits list
         $secondList = parent::renderList();
