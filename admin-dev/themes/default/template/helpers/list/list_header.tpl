@@ -95,7 +95,6 @@
 	{hook h=$hookName}
 {/if}
 
-<div class="alert alert-warning" id="{$list_id}-empty-filters-alert" style="display:none;">{l s='Please fill at least one field to perform a search in this list.'}</div>
 {if isset($sql) && $sql}
 	<form id="sql_form_{$list_id|escape:'html':'UTF-8'}" action="{$link->getAdminLink('AdminRequestSql')|escape}&amp;addrequest_sql" method="post" class="hide">
 		<input type="hidden" id="sql_query_{$list_id|escape:'html':'UTF-8'}" name="sql" value="{$sql|escape}"/>
@@ -103,9 +102,12 @@
 	</form>
 {/if}
 
+{$showFilters = !!$filters}
+
 {block name="startForm"}
 	<form method="post" action="{$action|escape:'html':'UTF-8'}" class="form-horizontal clearfix" id="form-{$list_id}">
 {/block}
+
 
 {if !$simple_header}
 	<input type="hidden" id="submitFilter{$list_id}" name="submitFilter{$list_id}" value="0"/>
@@ -120,39 +122,48 @@
 	<div class="panel col-lg-12">
 		<div class="panel-heading">
 			{if isset($icon)}<i class="{$icon}"></i> {/if}{if is_array($title)}{$title|end}{else}{$title}{/if}
-			{if isset($toolbar_btn) && is_array($toolbar_btn)}
 				<span class="badge">{$list_total}</span>
 				<span class="panel-heading-action">
-				{foreach from=$toolbar_btn item=btn key=k}
-					{if $k != 'back'}
-						<a id="desc-{$table}-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}" class="list-toolbar-btn{if isset($btn.target) && $btn.target} _blank{/if}"{if isset($btn.href)} href="{$btn.href|escape:'html':'UTF-8'}"{/if}{if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>
-							<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s=$btn.desc}" data-html="true" data-placement="top">
-								<i class="process-icon-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}{if isset($btn.class)} {$btn.class}{/if}"></i>
-							</span>
-						</a>
+
+					{if isset($toolbar_btn) && is_array($toolbar_btn)}
+						{foreach from=$toolbar_btn item=btn key=k}
+							{if $k != 'back'}
+								<a id="desc-{$table}-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}" class="list-toolbar-btn{if isset($btn.target) && $btn.target} _blank{/if}"{if isset($btn.href)} href="{$btn.href|escape:'html':'UTF-8'}"{/if}{if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>
+									<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s=$btn.desc}" data-html="true" data-placement="top">
+										<i class="process-icon-{if isset($btn.imgclass)}{$btn.imgclass}{else}{$k}{/if}{if isset($btn.class)} {$btn.class}{/if}"></i>
+									</span>
+								</a>
+							{/if}
+						{/foreach}
 					{/if}
-				{/foreach}
+
 					<a class="list-toolbar-btn" href="javascript:location.reload();">
 						<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='Refresh list'}" data-html="true" data-placement="top">
 							<i class="process-icon-refresh"></i>
 						</span>
 					</a>
-				{if isset($sql) && $sql}
-					{if Context::getContext()->employee->hasAccess(Tab::getIdFromClassName('AdminRequestSql'), Profile::PERMISSION_VIEW)}
-						<a class="list-toolbar-btn" href="javascript:void(0);" onclick="$('.leadin').first().append('<div class=\'alert alert-info\'>' + $('#sql_query_{$list_id|escape:'html':'UTF-8'}').val() + '</div>'); $(this).attr('onclick', '');">
-							<span class="label-tooltip" data-toggle="tooltip" data-original-title="{l s='Show SQL query'}" data-html="true" data-placement="top" >
-								<i class="process-icon-terminal"></i>
-							</span>
-						</a>
-						<a class="list-toolbar-btn" href="javascript:void(0);" onclick="$('#sql_name_{$list_id|escape:'html':'UTF-8'}').val(createSqlQueryName()); $('#sql_query_{$list_id|escape:'html':'UTF-8'}').val($('#sql_query_{$list_id|escape:'html':'UTF-8'}').val().replace(/\s+limit\s+[0-9,\s]+$/ig, '').trim()); $('#sql_form_{$list_id|escape:'html':'UTF-8'}').submit();">
-							<span class="label-tooltip" data-toggle="tooltip" data-original-title="{l s='Export to SQL Manager'}" data-html="true" data-placement="top" >
-								<i class="process-icon-database"></i>
-							</span>
-						</a>
+
+					{if isset($sql) && $sql && Context::getContext()->employee->hasAccess(Tab::getIdFromClassName('AdminRequestSql'), Profile::PERMISSION_VIEW)}
+							<a class="list-toolbar-btn" href="javascript:void(0);" onclick="$('.leadin').first().append('<div class=\'alert alert-info\'>' + $('#sql_query_{$list_id|escape:'html':'UTF-8'}').val() + '</div>'); $(this).attr('onclick', '');">
+								<span class="label-tooltip" data-toggle="tooltip" data-original-title="{l s='Show SQL query'}" data-html="true" data-placement="top" >
+									<i class="process-icon-terminal"></i>
+								</span>
+							</a>
+							<a class="list-toolbar-btn" href="javascript:void(0);" onclick="$('#sql_name_{$list_id|escape:'html':'UTF-8'}').val(createSqlQueryName()); $('#sql_query_{$list_id|escape:'html':'UTF-8'}').val($('#sql_query_{$list_id|escape:'html':'UTF-8'}').val().replace(/\s+limit\s+[0-9,\s]+$/ig, '').trim()); $('#sql_form_{$list_id|escape:'html':'UTF-8'}').submit();">
+								<span class="label-tooltip" data-toggle="tooltip" data-original-title="{l s='Export to SQL Manager'}" data-html="true" data-placement="top" >
+									<i class="process-icon-database"></i>
+								</span>
+							</a>
 					{/if}
-				{/if}
+
+					{if $filterFields}
+						<a class="list-toolbar-btn" href="javascript:void(0);" onclick="return toggleListFilters('{$list_id}')">
+								<span class="label-tooltip" data-toggle="tooltip" data-original-title="{l s='Filters'}" data-html="true" data-placement="top" >
+									<i id="toolbar-filter-icon-{$list_id}" class="process-icon-caret icon-caret-{if $showFilters}up{else}down{/if}"></i>
+								</span>
+							</a>
+					{/if}
 				</span>
-			{/if}
 		</div>
 		{if $show_toolbar}
 			<script type="text/javascript">
@@ -235,6 +246,22 @@
 		{/foreach}
 	}
 	</style>
+
+	{if $filterFields}
+	{block name="filtersBlock"}
+		<div id="list-filters-{$list_id}" style="display:{if $showFilters}block{else}none{/if}">
+			<div id="list-filters-{$list_id}-app"></div>
+		</div>
+		<script>
+			window.mountListFilters(document.getElementById('list-filters-{$list_id}-app'), {
+				listId: '{$list_id}',
+				filterFields: {$filterFields|json_encode},
+				filters: {$filters|json_encode},
+				translations: window.filterTranslations
+			});
+		</script>
+	{/block}
+	{/if}
 
 	{block name="preTable"}{/block}
 	<div class="table-responsive-row clearfix{if isset($use_overflow) && $use_overflow} overflow-y{/if}">

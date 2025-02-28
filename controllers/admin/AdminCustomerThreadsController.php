@@ -101,7 +101,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 'type'        => 'text',
                 'align'       => 'center',
                 'filter_key'  => 'a!status',
-                'filter_type' => 'string',
                 'callback'    => 'renderStatus',
             ],
             'employee'           => [
