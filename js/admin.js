@@ -775,29 +775,6 @@ $(document).ready(function () {
     clearTimeout(ajax_running_timeout);
   });
 
-  //Check filters value on submit filter
-  $("[name='submitFilter']").click(function (event) {
-    var list_id = $(this).data('list-id');
-    var empty_filters = true;
-
-    $(document.body).find("input[name*='" + list_id + "Filter']").each(function () {
-      if ($(this).val() != '') {
-        empty_filters = false;
-        return false;
-      }
-    });
-
-    $(document.body).find("select[name*='" + list_id + "Filter']").each(function () {
-      empty_filters = false;
-      return false;
-    });
-
-    if (empty_filters) {
-      event.preventDefault();
-      $('#' + list_id + '-empty-filters-alert').show();
-    }
-  });
-
   var message = $('.toolbarHead');
   var view = $(window);
 
@@ -1405,4 +1382,22 @@ function countDown($source, $target) {
   $source.keyup(function () {
     $target.html(max - $source.val().length);
   });
+}
+
+function toggleListFilters(listId) {
+  const $filters = $("#list-filters-" + listId);
+  const $filterIcon = $("#toolbar-filter-icon-" + listId);
+
+  if ($filters.is(':hidden')) {
+    $filters.show();
+    $filterIcon
+        .removeClass('icon-caret-down')
+        .addClass('icon-caret-up');
+  } else {
+    $filters.hide();
+    $filterIcon
+        .removeClass('icon-caret-up')
+        .addClass('icon-caret-down');
+  }
+  return false
 }
