@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Dataset\Filter\FilterField;
+use Thirtybees\Core\Dataset\Filter\Type\StringValueType;
+
 /**
  * Class AdminOrdersControllerCore
  *
@@ -206,6 +209,36 @@ class AdminOrdersControllerCore extends AdminController
 
         $this->bulk_actions = [
             'updateOrderStatus' => ['text' => $this->l('Change Order Status'), 'icon' => 'icon-refresh'],
+        ];
+
+        $currencies = [];
+        foreach (Currency::getCurrencies(false, true, true) as $currency) {
+            $currencies[(int)$currency['id_currency']] = $currency['name'];
+        }
+
+        $this->filters_list = [
+            'currency' => [
+                'title' => $this->l('Currency'),
+                'type' => 'select',
+                'filter_key' => 'a!id_currency',
+                'filter_type' => 'int',
+                'list' => $currencies
+            ],
+            'customer_email' => [
+                'title' => $this->l('Customer - Email'),
+                'type' => 'text',
+                'filter_key' => 'c!email'
+            ],
+            'customer_first_name' => [
+                'title' => $this->l('Customer - First Name'),
+                'type' => 'text',
+                'filter_key' => 'c!firstname'
+            ],
+            'customer_last_name' => [
+                'title' => $this->l('Customer - Last Name'),
+                'type' => 'text',
+                'filter_key' => 'c!lastname'
+            ],
         ];
 
         parent::__construct();
