@@ -138,6 +138,10 @@ abstract class ControllerCore
      */
     public function &__get($property)
     {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+
         // Property to camelCase for backwards compatibility
         $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
         if (property_exists($this, $camelCaseProperty)) {
