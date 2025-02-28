@@ -750,7 +750,7 @@ class AdminManufacturersControllerCore extends AdminController
         $this->addRowAction('delete');
 
         // test if a filter is applied for this list
-        if (Tools::isSubmit('submitFilter'.$this->table) || $this->context->cookie->{'submitFilter'.$this->table} !== false) {
+        if (Tools::isSubmit('submitFilter'.$this->table)) {
             $this->filter = true;
         }
 
