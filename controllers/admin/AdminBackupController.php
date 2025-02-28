@@ -306,29 +306,19 @@ class AdminBackupControllerCore extends AdminController
             $orderWay = 'desc';
         }
 
+        $storage = $this->getListViewStorage();
+        $listView = $this->getListView();
+
         if ($limit === false) {
             $limit = 0;
         } else {
-            $limit = HelperList::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
-            if ($limit !== $this->_default_pagination) {
-                $this->context->cookie->{$this->list_id.'_pagination'} = $limit;
-            } else {
-                unset($this->context->cookie->{$this->list_id.'_pagination'});
+            $limit = HelperList::resolvePagination($this->list_id, $listView, $this->_pagination, $this->_default_pagination);
+            if ($listView->getPageSize() !== $limit) {
+                $listView->setPageSize($limit);
+                $storage->saveListView($listView);
             }
         }
-
-        /* Determine offset from current page */
-        $start = 0;
-        if (Tools::getIntValue('submitFilter'.$this->list_id)) {
-            $start = (Tools::getIntValue('submitFilter'.$this->list_id) - 1) * $limit;
-        }
-
-        // Either save or reset the offset in the cookie
-        if ($start) {
-            $this->context->cookie->{$this->list_id.'_start'} = $start;
-        } elseif (isset($this->context->cookie->{$this->list_id.'_start'})) {
-            unset($this->context->cookie->{$this->list_id.'_start'});
-        }
+        $start = $this->resolvePaginationStart($limit);
 
         $this->_orderBy = $orderBy;
         $this->_orderWay = strtoupper($orderWay);
@@ -418,4 +408,5 @@ class AdminBackupControllerCore extends AdminController
             ? strcmp($a[$this->sort_by], $b[$this->sort_by])
             : strcmp($b[$this->sort_by], $a[$this->sort_by]);
     }
+
 }

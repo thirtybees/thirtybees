@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\Dataset\Filter\Filter;
+use Thirtybees\Core\Dataset\Filter\FilterField;
+use Thirtybees\Core\ListView\Model\ListView;
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\ErrorUtils;
 
@@ -46,7 +49,7 @@ class HelperListCore extends Helper
     const COLUMN_TYPE_PRICE = 'price';
     const COLUMN_TYPE_DECIMAL = 'decimal';
     const COLUMN_TYPE_PERCENT = 'percent';
-    const COLUMNT_TYPE_EDITABLE = 'editable';
+    const COLUMN_TYPE_EDITABLE = 'editable';
     const COLUMN_TYPE_INT = 'int';
 
     /**
@@ -257,6 +260,16 @@ class HelperListCore extends Helper
     protected $listError = null;
 
     /**
+     * @var FilterField[]
+     */
+    protected array $availableFilterFields = [];
+
+    /**
+     * @var ListView|null
+     */
+    protected $listView;
+
+    /**
      * HelperListCore constructor.
      */
     public function __construct()
@@ -354,26 +367,56 @@ class HelperListCore extends Helper
             $tableDnd = true;
         }
 
-        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
-        $ajax = false;
         $controller = $this->getController();
-        $cookie = $this->context->cookie;
+
+        $listView = $this->getListView();
+        $columnFilters = [];
+        $extraFilters = [];
+        $ajax = false;
+        $hasValue = false;
+        $hasSearchField = false;
+
+        foreach ($listView->getFilters() as $filter) {
+            $hasValue = true;
+            if ($filter->getFilterType() === Filter::TYPE_COLUMN) {
+                $operands = $filter->getOperands();
+                if ($operands) {
+                    $value = null;
+                    if (count($operands) === 1) {
+                        $value = $operands[0];
+                    } else {
+                        $value = $operands;
+                    }
+                    if (! is_null($value)) {
+                        $columnFilters[$filter->getFilterId()] = $value;
+                    }
+                }
+            } else {
+                $args = array_map(function($arg) use ($filter) {
+                    $valueType =  $filter->getField()->getValueType();
+                    return $valueType->toJavascriptValue($arg);
+                }, $filter->getOperands());
+                $extraFilters[] = [
+                    'field' => $filter->getField()->getId(),
+                    'operator' => $filter->getOperator()->getId(),
+                    'inverted' => $filter->isInverted(),
+                    'args' => $args,
+                ];
+            }
+        }
+
         foreach ($this->fields_list as $key => $params) {
-            if (!isset($params['type'])) {
+            if (! isset($params['type'])) {
                 $params['type'] = static::COLUMN_TYPE_TEXT;
             }
-
-            $valueKey = $prefix.$this->list_id.'Filter_'.(array_key_exists('filter_key', $params) ? $params['filter_key'] : $key);
-            if ($key == 'active' && strpos($key, '!') !== false) {
-                $keys = explode('!', $params['filter_key']);
-                $valueKey = $keys[1];
-            }
-            $value = $cookie->{$valueKey};
-            if (!$value && Tools::getIsset($valueKey)) {
-                $value = Tools::getValue($valueKey);
+            $type = $params['type'];
+            $filterKey = (string)($params['filter_key'] ?? $key);
+            $value = $columnFilters[$filterKey] ?? null;
+            if (isset($this->availableFilterFields[$filterKey])) {
+                $hasSearchField = true;
             }
 
-            switch ($params['type']) {
+            switch ($type) {
                 case static::COLUMN_TYPE_BOOL:
                     if (isset($params['ajax']) && $params['ajax']) {
                         $ajax = true;
@@ -382,61 +425,28 @@ class HelperListCore extends Helper
 
                 case static::COLUMN_TYPE_DATE:
                 case static::COLUMN_TYPE_DATETIME:
-                    if ($value) {
-                        if (is_string($value)) {
-                            $value = json_decode($value, true);
-                        }
-                        if (!Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
-                            $value = '';
-                        }
-                    }
                     $name = $this->list_id.'Filter_'.($params['filter_key'] ?? $key);
                     $nameId = str_replace('!', '__', $name);
 
                     $params['id_date'] = $nameId;
                     $params['name_date'] = $name;
+                    if ($value) {
+                        foreach ($value as &$val) {
+                            if ($val instanceof DateTime) {
+                                $val = $val->format('Y-m-d');
+                            }
+                        }
+                    }
 
                     $controller->addJqueryUI('ui.datepicker');
                     break;
-
-                case static::COLUMN_TYPE_SELECT:
-                    foreach ($params['list'] as $optionValue => $optionDisplay) {
-                        if (isset($cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']})
-                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} == $optionValue
-                            && $cookie->{$prefix.$this->list_id.'Filter_'.$params['filter_key']} != ''
-                        ) {
-                            $this->fields_list[$key]['select'][$optionValue]['selected'] = 'selected';
-                        }
-                    }
-                    break;
-
-                case static::COLUMN_TYPE_TEXT:
-                    if (!Validate::isCleanHtml($value)) {
-                        $value = '';
-                    }
             }
 
             $params['value'] = $value;
             $this->fields_list[$key] = $params;
         }
 
-        $hasValue = false;
-        $hasSearchField = false;
-
-        foreach ($this->fields_list as $field) {
-            if (isset($field['value']) && $field['value'] !== false && $field['value'] !== '') {
-                if (is_array($field['value']) && trim(implode('', $field['value'])) == '') {
-                    continue;
-                }
-
-                $hasValue = true;
-                break;
-            }
-            if (!(isset($field['search']) && $field['search'] === false)) {
-                $hasSearchField = true;
-            }
-        }
-
+        $controller->addJS(_PS_JS_DIR_. '/admin/list_filters.js');
         $this->context->smarty->assign(
             [
                 'page'                => $page,
@@ -466,6 +476,34 @@ class HelperListCore extends Helper
             ]);
         }
 
+        $filterFields = [];
+        foreach ($this->availableFilterFields as $id => $field) {
+
+            $filterField = [
+                'id' => $id,
+                'type' => $field->getValueType()->getType(),
+                'name' => $field->getDisplayName(),
+            ];
+
+            $extra = $field->getValueType()->getExtraOptions();
+            if ($extra) {
+                $filterField['extra'] = $extra;
+
+            }
+
+            $filterFields[] = $filterField;
+        }
+        usort($filterFields, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        Media::addJsDef([
+            'filterTranslations' => [
+                'delete' => $this->l('Delete'),
+                'not' => $this->l('Not'),
+            ]
+        ]);
+
         $this->header_tpl->assign(
             array_merge(
                 [
@@ -489,6 +527,8 @@ class HelperListCore extends Helper
                     'row_hover'         => $this->row_hover,
                     'list_id'           => $this->list_id ?? $this->table,
                     'token'             => $this->token,
+                    'filterFields'      => $filterFields,
+                    'filters'           => $extraFilters,
                 ],
                 $this->tpl_vars
             )
@@ -1035,21 +1075,22 @@ class HelperListCore extends Helper
      */
     protected function getSelectedPagination()
     {
-        return static::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
+        $listView = $this->getListView();
+        return static::resolvePagination($this->list_id, $listView, $this->_pagination, $this->_default_pagination);
     }
 
     /**
      * @param string $listId
-     * @param Cookie $cookie
+     * @param ListView $listView
      * @param array $pagination
      * @param int $defaultPagination
      *
      * @return int
      */
-    public static function resolvePagination(string $listId, Cookie $cookie, array $pagination, int $defaultPagination)
+    public static function resolvePagination(string $listId, ListView $listView, array $pagination, int $defaultPagination)
     {
         if ($pagination) {
-            $value = static::resolvePaginationValue($listId, $cookie, $defaultPagination);
+            $value = static::resolvePaginationValue($listId, $listView, $defaultPagination);
             if (in_array($value, $pagination)) {
                 return $value;
             }
@@ -1065,23 +1106,21 @@ class HelperListCore extends Helper
 
     /**
      * @param string $listId
-     * @param Cookie $cookie
+     * @param ListView $listView
      * @param int $defaultPagination
      *
      * @return int
      */
-    protected static function resolvePaginationValue(string $listId, Cookie $cookie, int $defaultPagination)
+    protected static function resolvePaginationValue(string $listId, ListView $listView, int $defaultPagination)
     {
         $paginationKey = $listId.'_pagination';
         $pagination = Tools::getIntValue($paginationKey);
         if ($pagination > 0) {
             return $pagination;
         }
-        if (isset($cookie->{$paginationKey})) {
-            $pagination = (int)$cookie->{$paginationKey};
-            if ($pagination > 0) {
-                return $pagination;
-            }
+        $pagination = $listView->getPageSize();
+        if ($pagination) {
+            return $pagination;
         }
         return $defaultPagination;
     }
@@ -1113,7 +1152,16 @@ class HelperListCore extends Helper
                 ];
             }
         }
-        return $fields;
+        $columns = $this->getListView()->getListColumns();
+        if (! $columns) {
+            $columns = $this->getDefaultColumns($fields);
+        }
+
+        $result = [];
+        foreach ($columns as $column) {
+            $result[$column] = $fields[$column];
+        }
+        return $result;
     }
 
     /**
@@ -1126,4 +1174,62 @@ class HelperListCore extends Helper
         $this->listError = $listError;
         return $this;
     }
+
+    /**
+     * @param FilterField[] $availableFilterFields
+     * @return $this
+     */
+    public function setAvailableFilterFields(array $availableFilterFields)
+    {
+        $this->availableFilterFields = $availableFilterFields;
+        return $this;
+    }
+
+    /**
+     * @param ListView $listView
+     * @return void
+     */
+    public function setListView(ListView $listView)
+    {
+        $this->listView = $listView;
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    public function getListView(): ListView
+    {
+        if (is_null($this->listView)) {
+            $listViewStorage = ServiceLocator::getInstance()->getListViewStorage();
+            $namespace = str_replace(['admin', 'controller'], '', mb_strtolower((string)$this->controller_name));
+            $listId = $this->list_id ?? $this->table;
+            $this->listView = $listViewStorage->getListView($namespace, $listId, $this->availableFilterFields);
+        }
+        return $this->listView;
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     */
+    protected function getDefaultColumns(array $fields): array
+    {
+        $columns = [];
+        foreach ($fields as $fieldId => $field) {
+            if (! $this->isHiddenField($field)) {
+                $columns[] = $fieldId;
+            }
+        }
+        return $columns;
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     */
+    private function isHiddenField(array $field): bool
+    {
+        return isset($field['hidden']) && $field['hidden'];
+    }
 }
+

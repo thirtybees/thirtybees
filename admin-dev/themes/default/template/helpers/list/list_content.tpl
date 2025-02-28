@@ -127,7 +127,7 @@
 					{elseif $params.type === HelperList::COLUMN_TYPE_INT}
 						{$tr.$key|intval}
 					{* If type is 'editable', an input is created *}
-					{elseif $params.type === HelperList::COLUMNT_TYPE_EDITABLE && isset($tr.id)}
+					{elseif $params.type === HelperList::COLUMN_TYPE_EDITABLE && isset($tr.id)}
 						<input type="text" name="{$key}_{$tr.id}" value="{$tr.$key|escape:'html':'UTF-8'}" class="{$key}" />
 					{elseif $key == 'color'}
 						{if !is_array($tr.$key)}

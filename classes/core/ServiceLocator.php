@@ -29,6 +29,8 @@ use Thirtybees\Core\Error\Response\CliErrorResponse;
 use Thirtybees\Core\Error\Response\DebugErrorPage;
 use Thirtybees\Core\Error\Response\ErrorResponseInterface;
 use Thirtybees\Core\Error\Response\ProductionErrorPage;
+use Thirtybees\Core\ListView\Storage\CookieListViewStorage;
+use Thirtybees\Core\ListView\Storage\ListViewStorage;
 use Thirtybees\Core\WorkQueue\Scheduler;
 use Thirtybees\Core\WorkQueue\WorkQueueClient;
 use Throwable;
@@ -46,6 +48,7 @@ class ServiceLocatorCore
     const SERVICE_READ_WRITE_CONNECTION = 'Db';
     const SERVICE_ERROR_HANDLER = 'Thirtybees\Core\Error\ErrorHandler';
     const SERVICE_ERROR_RESPONSE = 'Thirtybees\Core\Error\Response\ErrorResponseInterface';
+    const SERVICE_LISTVIEW_STORAGE = 'Thirtybees\Core\ListView\Storage\ListViewStorage';
 
     // Legacy services
     const SERVICE_ADAPTER_CONFIGURATION = 'Core_Business_ConfigurationInterface';
@@ -86,6 +89,13 @@ class ServiceLocatorCore
         $this->container->bind(static::SERVICE_WORK_QUEUE_CLIENT, static::SERVICE_WORK_QUEUE_CLIENT, true);
         $this->container->bind(static::SERVICE_SCHEDULER, static::SERVICE_SCHEDULER, true);
         $this->container->bind(static::SERVICE_READ_WRITE_CONNECTION, [Db::class, 'getInstance'],true);
+
+        if (! $this->container->knows(static::SERVICE_LISTVIEW_STORAGE)) {
+            $listViewStorage = defined('TB_LISTVIEW_STORAGE')
+                ? constant('TB_LISTVIEW_STORAGE')
+                : CookieListViewStorage::class;
+            $this->container->bind(static::SERVICE_LISTVIEW_STORAGE, $listViewStorage, true);
+        }
 
         // legacy services
         $this->container->bind(static::SERVICE_ADAPTER_CONFIGURATION, 'Adapter_Configuration', true);
@@ -132,6 +142,15 @@ class ServiceLocatorCore
     public function getWorkQueueClient()
     {
         return $this->getByServiceName(static::SERVICE_WORK_QUEUE_CLIENT);
+    }
+
+    /**
+     * @return ListViewStorage
+     * @throws PrestaShopException
+     */
+    public function getListViewStorage(): ListViewStorage
+    {
+        return $this->getByServiceName(static::SERVICE_LISTVIEW_STORAGE);
     }
 
     /**
