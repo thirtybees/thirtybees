@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Angola" version="1.0">
   <currencies>
-    <currency name="Kwanza" iso_code="AOA" iso_code_num="973" sign="Kz" blank="1" conversion_rate="832.50" format="1" decimals="2" decimal_places="2"/>
+    <currency name="Kwanza" iso_code="AOA" iso_code_num="973" sign="Kz" blank="1" conversion_rate="832.50" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Português (Portuguese)" iso_code="pt" language_code="pt-ao" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>

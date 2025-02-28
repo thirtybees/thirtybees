@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Maldives" version="1.0">
   <currencies>
-    <currency name="Rufiyaa" iso_code="MVR" iso_code_num="462" sign="ރ." blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+    <currency name="Rufiyaa" iso_code="MVR" iso_code_num="462" sign="ރ." blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="ދިވެހި (Dhivehi)" iso_code="dv" language_code="dv-mv" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>

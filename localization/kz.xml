@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Kazakhstan" version="1.0">
   <currencies>
-    <currency name="Kazakhstani Tenge" iso_code="KZT" iso_code_num="398" sign="₸" blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+    <currency name="Kazakhstani Tenge" iso_code="KZT" iso_code_num="398" sign="₸" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Қазақ тілі (Kazakh)" iso_code="kk" language_code="kk-kz" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

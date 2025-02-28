@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Kyrgyzstan" version="1.0">
   <currencies>
-    <currency name="Som" iso_code="KGS" iso_code_num="417" sign="с" blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+    <currency name="Som" iso_code="KGS" iso_code_num="417" sign="с" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Кыргызча (Kyrgyz)" iso_code="ky" language_code="ky-kg" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="The Bahamas" version="1.0">
   <currencies>
-    <currency name="Bahamian Dollar" iso_code="BSD" iso_code_num="044" sign="B$" blank="1" conversion_rate="1.00000" format="1" decimals="2" decimal_places="2"/>
+    <currency name="Bahamian Dollar" iso_code="BSD" iso_code_num="044" sign="B$" blank="1" conversion_rate="1.00000" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="English (Bahamas)" iso_code="en" language_code="en-bs" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>

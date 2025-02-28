@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Palestine" version="1.0">
   <currencies>
-    <currency name="Israeli New Shekel" iso_code="ILS" iso_code_num="376" sign="₪" blank="1" conversion_rate="1.00" format="1" decimals="2" decimal_places="2"/>
+    <currency name="Israeli New Shekel" iso_code="ILS" iso_code_num="376" sign="₪" blank="1" conversion_rate="1.00" format="1" decimals="1" decimal_places="2"/>
     <currency name="Jordanian Dinar" iso_code="JOD" iso_code_num="400" sign="JD" blank="1" conversion_rate="1.00" format="1" decimals="3" decimal_places="3"/>
-    <currency name="United States Dollar" iso_code="USD" iso_code_num="840" sign="$" blank="1" conversion_rate="1.00" format="1" decimals="2" decimal_places="2"/>
+    <currency name="United States Dollar" iso_code="USD" iso_code_num="840" sign="$" blank="1" conversion_rate="1.00" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="العربية (Arabic)" iso_code="ar" language_code="ar-ps" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>

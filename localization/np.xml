@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Nepal" version="1.0">
   <currencies>
-    <currency name="Nepalese Rupee" iso_code="NPR" iso_code_num="524" sign="Rs" blank="1" conversion_rate="1.00" format="2" decimals="2" decimal_places="2"/>
+    <currency name="Nepalese Rupee" iso_code="NPR" iso_code_num="524" sign="Rs" blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="नेपाली (Nepali)" iso_code="ne" language_code="ne-np" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>

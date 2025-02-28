@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Brunei" version="1.0">
   <currencies>
-    <currency name="Brunei Dollar" iso_code="BND" iso_code_num="096" sign="B$" blank="1" conversion_rate="1.00" format="1" decimals="2" decimal_places="2"/>
+    <currency name="Brunei Dollar" iso_code="BND" iso_code_num="096" sign="B$" blank="1" conversion_rate="1.00" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
     <language name="Bahasa Melayu (Malay)" iso_code="ms" language_code="ms-bn" date_format_lite="d MMMM yyyy" date_format_full="d MMMM yyyy H:i:s" is_rtl="0"/>
