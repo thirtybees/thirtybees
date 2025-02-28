@@ -8,7 +8,7 @@
   </languages>
   <taxes>
     <taxRulesGroup name="Nigeria Standard Rate 7.5%">
-      <taxRule iso_code_country="ng" behavior="0" id_tax="1/>
+      <taxRule iso_code_country="ng" behavior="0" id_tax="1"/>
     </taxRulesGroup>
     <taxRulesGroup name="Nigeria Reduced Rate 0%">
       <taxRule iso_code_country="ng" behavior="0" id_tax="2"/>
