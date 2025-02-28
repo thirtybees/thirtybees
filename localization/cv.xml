@@ -1,4 +1,4 @@
-	<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="Cape Verde" version="1.0">
   <currencies>
     <currency name="Cape Verdean Escudo" iso_code="CVE" iso_code_num="132" sign="Esc" blank="1" conversion_rate="110.27" format="2" decimals="0" decimal_places="0"/>
