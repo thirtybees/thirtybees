@@ -1497,13 +1497,13 @@ window.product_tabs.Pack = new function () {
 
         var $divPackItems = $('#divPackItems');
         var divContent = $divPackItems.html();
-        divContent += '<li class="product-pack-item media-product-pack" data-product-name="' + selectedProduct.name + '" data-product-qty="' + selectedProduct.qty + '" data-product-id="' + selectedProduct.id + '" data-product-id-attribute="' + selectedProduct.id_product_attribute + '">';
-        divContent += '<img class="media-product-pack-img" src="' + selectedProduct.image + '"/>';
-        divContent += '<span class="media-product-pack-title">' + selectedProduct.name + '</span>';
-        divContent += '<span class="media-product-pack-ref">REF: ' + selectedProduct.ref + '</span>';
-        divContent += '<span class="media-product-pack-quantity"><span class="text-muted">x</span> ' + selectedProduct.qty + '</span>';
-        divContent += '<button type="button" class="btn btn-default delPackItem media-product-pack-action" data-delete="' + selectedProduct.id + '" data-delete-attr="' + selectedProduct.id_product_attribute + '"><i class="icon-trash"></i></button>';
-        divContent += '</li>';
+        divContent += '<tr class="product-pack-item" data-product-name="' + selectedProduct.name + '" data-product-qty="' + selectedProduct.qty + '" data-product-id="' + selectedProduct.id + '" data-product-id-attribute="' + selectedProduct.id_product_attribute + '">';
+        divContent += '<td class="fixed-width-xs text-center"><img class="img-thumbnail" alt="'+selectedProduct.name+'" src="'+selectedProduct.image+'"/></td>';
+        divContent += '<td><a href="'+packItemUrlTemplate.replace('PLACEHOLDER_PRODUCT_ID', selectedProduct.id)+'" target="_blank">' + selectedProduct.name + '</a></td>';
+        divContent += '<td>' + selectedProduct.ref + '</td>';
+        divContent += '<td class="text-center">' + selectedProduct.qty + '</td>';
+        divContent += '<td class="text-center"><button type="button" class="btn btn-default delPackItem" data-delete="' + selectedProduct.id + '" data-delete-attr="' + selectedProduct.id_product_attribute + '"><i class="icon-trash"></i></button></td>';
+        divContent += '</tr>';
 
         // QTYxID-QTYxID
         // @todo : it should be better to create input for each items and each qty

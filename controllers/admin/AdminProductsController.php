@@ -3763,6 +3763,13 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
+        Media::addJsDef([
+	        'packItemUrlTemplate' => $this->context->link->getAdminLink('AdminProducts', true, [
+                'id_product' => 'PLACEHOLDER_PRODUCT_ID',
+                'updateproduct' => 1
+            ])
+        ]);
+
         $parent = parent::renderForm();
         $this->addJqueryPlugin(['autocomplete', 'fancybox', 'typewatch']);
 
