@@ -119,7 +119,10 @@ class PackCore extends Product
                 $combinations = Db::readOnly()->getArray($sql);
                 foreach ($combinations as $combination) {
                     $p->name .= ' ' . $combination['group_name'] . '-' . $combination['attribute_name'];
-		    $p->reference = $combination['attribute_reference'];
+                    $reference = (string)$combination['attribute_reference'];
+                    if ($reference) {
+                        $p->reference = $combination['attribute_reference'];
+                    }
                 }
             }
             $arrayResult[] = $p;
