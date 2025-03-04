@@ -469,6 +469,11 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $packItems;
 
     /**
+     * @var int|null
+     */
+    public $pack_quantity = null;
+
+    /**
      * @var array
      */
     public static $definition = [
