@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Iceland" version="1.0">
+  <currencies>
+    <currency name="Icelandic Króna" iso_code="ISK" iso_code_num="352" sign="kr" blank="1" conversion_rate="1.00000" format="2" decimals="0" decimal_places="0"/>
+  </currencies>
+  <languages>
+    <language name="Íslenska (Icelandic)" iso_code="is" language_code="is-is" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VSK IS 24%" rate="24"/>
+    <tax id="2" name="VSK IS 11%" rate="11"/>
+    <tax id="3" name="VSK IS 0%" rate="0"/>
+    <taxRulesGroup name="IS Standard Rate (24%)">
+      <taxRule iso_code_country="is" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="IS Reduced Rate (11%)">
+      <taxRule iso_code_country="is" id_tax="2"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="IS Zero Rate (0%)">
+      <taxRule iso_code_country="is" id_tax="3"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Maldives" version="1.0">
+  <currencies>
+    <currency name="Rufiyaa" iso_code="MVR" iso_code_num="462" sign="ރ." blank="1" conversion_rate="1.00" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="ދިވެހި (Dhivehi)" iso_code="dv" language_code="dv-mv" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>
+    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="GST MV 6%" rate="6"/>
+    <tax id="2" name="Tourism GST MV 12%" rate="12"/>
+    <taxRulesGroup name="MV Standard GST (6%)">
+      <taxRule iso_code_country="mv" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="MV Tourism GST (12%)">
+      <taxRule iso_code_country="mv" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

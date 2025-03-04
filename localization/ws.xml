@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Samoa" version="1.0">
+  <currencies>
+    <currency name="Tala" iso_code="WST" iso_code_num="882" sign="T" blank="1" conversion_rate="2.350000" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+    <language name="Samoan (Samoa)" iso_code="sm" language_code="sm-samoa" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT WS 15%" rate="15"/>
+    <taxRulesGroup name="WS Standard Rate (15%)">
+      <taxRule iso_code_country="ws" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

@@ -4,7 +4,7 @@
     <currency name="Peso" iso_code="CLP" iso_code_num="152" sign="$" blank="1" conversion_rate="658.996" format="2" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="Español (Spanish)" iso_code="es" language_code="es-es" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Español (Spanish)" iso_code="es" language_code="es-cl" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="IVA CL 19%" rate="19"/>
