@@ -3131,35 +3131,28 @@ class ToolsCore
             return true;
         }
 
-        // Default values for parameters
+        // Default parameters
         if (is_null($path)) {
-            $path = _PS_ROOT_DIR_.'/.htaccess';
+            $path = _PS_ROOT_DIR_ . '/.htaccess';
         }
-
         if (is_null($cache_control)) {
             $cache_control = (int) Configuration::get('PS_HTACCESS_CACHE_CONTROL');
         }
         if (is_null($disable_multiviews)) {
             $disable_multiviews = (int) Configuration::get('PS_HTACCESS_DISABLE_MULTIVIEWS');
         }
-
         if ($disable_modsec === null) {
             $disable_modsec = (int) Configuration::get('PS_HTACCESS_DISABLE_MODSEC');
         }
 
-        // Check current content of .htaccess and save all code outside of thirty bees comments
+        // Preserve custom code (outside our generated block)
         $specific_before = $specific_after = '';
         if (file_exists($path)) {
-            if (static::isSubmit('htaccess')) {
-                $content = $_POST['htaccess'];
-            } else {
-                $content = file_get_contents($path);
-            }
+            $content = static::isSubmit('htaccess') ? $_POST['htaccess'] : file_get_contents($path);
             if (preg_match('#^(.*)\# ~~start~~.*\# ~~end~~[^\n]*(.*)$#s', $content, $m)) {
                 $specific_before = $m[1];
-                $specific_after = $m[2];
+                $specific_after  = $m[2];
             } else {
-                // For retrocompatibility
                 if (preg_match('#\# http://www\.thirtybees\.com - http://www\.thirtybees\.com/forums\s*(.*)<IfModule mod_rewrite\.c>#si', $content, $m)) {
                     $specific_before = $m[1];
                 } else {
@@ -3167,44 +3160,49 @@ class ToolsCore
                 }
             }
         }
-
-        // Write .htaccess data
         if (!$write_fd = @fopen($path, 'w')) {
             return false;
         }
         if ($specific_before) {
-            fwrite($write_fd, trim($specific_before)."\n\n");
+            fwrite($write_fd, trim($specific_before) . "\n\n");
         }
 
-        $domains = [];
-        foreach (ShopUrl::getShopUrls() as $shop_url) {
-            /** @var ShopUrl $shop_url */
-            if (!isset($domains[$shop_url->domain])) {
-                $domains[$shop_url->domain] = [];
+        // -----------------------------------------------------------
+        // 1) Build groups for multi-shop: each group key is a combination
+        //    of physical URI, virtual URI and its individual rewriting setting.
+        // -----------------------------------------------------------
+        $groups = [];
+        $shopUrls = ShopUrl::getShopUrls();
+        foreach ($shopUrls as $shop_url) {
+            $shopRewrite = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, (int)$shop_url->id_shop);
+            $group_key = md5($shop_url->physical_uri . '|' . $shop_url->virtual_uri . '|' . $shopRewrite);
+            if (!isset($groups[$group_key])) {
+                $groups[$group_key] = [
+                    'physical'         => $shop_url->physical_uri,
+                    'virtual'          => $shop_url->virtual_uri,
+                    'rewrite_settings' => $shopRewrite,
+                    'domains'          => []
+                ];
             }
-
-            $domains[$shop_url->domain][] = [
-                'physical' => $shop_url->physical_uri,
-                'virtual'  => $shop_url->virtual_uri,
-                'id_shop'  => $shop_url->id_shop,
-            ];
-
-            if ($shop_url->domain == $shop_url->domain_ssl) {
-                continue;
+            if (!in_array($shop_url->domain, $groups[$group_key]['domains'])) {
+                $groups[$group_key]['domains'][] = $shop_url->domain;
             }
-
-            if (!isset($domains[$shop_url->domain_ssl])) {
-                $domains[$shop_url->domain_ssl] = [];
+            if ($shop_url->domain != $shop_url->domain_ssl && !in_array($shop_url->domain_ssl, $groups[$group_key]['domains'])) {
+                $groups[$group_key]['domains'][] = $shop_url->domain_ssl;
             }
-
-            $domains[$shop_url->domain_ssl][] = [
-                'physical' => $shop_url->physical_uri,
-                'virtual'  => $shop_url->virtual_uri,
-                'id_shop'  => $shop_url->id_shop,
-            ];
         }
 
-        // Write data in .htaccess file
+        // -----------------------------------------------------------
+        // 2) Merge media server domains into each group as they are the same for all shops.
+        // -----------------------------------------------------------
+        $mediaServers = static::getMediaServersUrls(); // array of media server domains
+        foreach ($groups as $key => $group) {
+            $groups[$key]['domains'] = array_unique(array_merge($group['domains'], $mediaServers));
+        }
+
+        // -----------------------------------------------------------
+        // 3) Write header comments and open mod_rewrite block.
+        // -----------------------------------------------------------
         fwrite($write_fd, "# ~~start~~ Do not remove this comment, thirty bees will keep automatically the code outside this comment when .htaccess will be generated again\n");
         fwrite($write_fd, "# .htaccess automatically generated by thirty bees e-commerce open-source solution\n");
         fwrite($write_fd, "# http://www.thirtybees.com - http://www.thirtybees.com/forums\n\n");
@@ -3212,181 +3210,177 @@ class ToolsCore
         if ($disable_modsec) {
             fwrite($write_fd, "<IfModule mod_security.c>\nSecFilterEngine Off\nSecFilterScanPOST Off\n</IfModule>\n\n");
         }
-
-        // RewriteEngine
         fwrite($write_fd, "<IfModule mod_rewrite.c>\n");
 
         // Ensure HTTP_MOD_REWRITE variable is set in environment
         fwrite($write_fd, "<IfModule mod_env.c>\n");
-        fwrite($write_fd, "SetEnv HTTP_MOD_REWRITE On\n");
+        fwrite($write_fd, "    SetEnv HTTP_MOD_REWRITE On\n");
         fwrite($write_fd, "</IfModule>\n\n");
 
-        // Disable multiviews ?
         if ($disable_multiviews) {
             fwrite($write_fd, "\n# Disable Multiviews\nOptions -Multiviews\n\n");
         }
+        fwrite($write_fd, "RewriteEngine on\n\n");
 
-        fwrite($write_fd, "RewriteEngine on\n");
+        // -----------------------------------------------------------
+        // 4) Loop over each group and write its rewrite rules.
+        // -----------------------------------------------------------
+        foreach ($groups as $group) {
+            // Build a combined RewriteCond for all domains in this group (including media servers).
+            $escapedDomains = array_map(function ($d) {
+                return preg_quote($d, '/');
+            }, $group['domains']);
+            if (count($escapedDomains) > 1) {
+                $groupCondition = "RewriteCond %{HTTP_HOST} ^(" . implode('|', $escapedDomains) . ")$\n";
+            } else {
+                $groupCondition = "RewriteCond %{HTTP_HOST} ^" . reset($escapedDomains) . "$\n";
+            }
 
-        $mediaDomains = array_reduce(static::getMediaServersUrls(), function($acc, $mediaServer) {
-            return $acc . 'RewriteCond %{HTTP_HOST} ^' . $mediaServer . '$ [OR]' . "\n";
-        }, '');
+            // Write base rule for the group.
+            fwrite($write_fd, "# Domains: " . implode(', ', $group['domains']) . "\n");
+            fwrite($write_fd, $groupCondition);
+            fwrite($write_fd, "RewriteRule . - [E=REWRITEBASE:" . $group['physical'] . "]\n\n");
 
+            // Webservice API block.
+            fwrite($write_fd, "# Webservice API\n");
+            fwrite($write_fd, $groupCondition);
+            fwrite($write_fd, "RewriteRule ^api$ api/ [L]\n");
+            fwrite($write_fd, $groupCondition);
+            fwrite($write_fd, "RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]\n\n");
 
-        $supportedMainImageExtensions = ImageManager::getAllowedImageExtensions(true, true);
-        $supportedMainImageExtensions[] = 'jpeg';
-        $supportedMainImageExtensions = array_unique($supportedMainImageExtensions);
-        sort($supportedMainImageExtensions);
-        $extensionsPattern = implode('|', $supportedMainImageExtensions);
-
-        foreach ($domains as $domain => $list_uri) {
-            $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n";
-            foreach ($list_uri as $uri) {
-                fwrite($write_fd, PHP_EOL.PHP_EOL.'# Domain: '.$domain.PHP_EOL);
-                if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^'.$domain.'$'."\n");
+            // Virtual URI block (if set).
+            if (!empty($group['virtual'])) {
+                fwrite($write_fd, "# Virtual uri\n");
+                if (!$group['rewrite_settings']) {
+                    fwrite($write_fd, $groupCondition);
+                    fwrite($write_fd, "RewriteRule ^" . trim($group['virtual'], '/') . "/?$ " . $group['physical'] . $group['virtual'] . "index.php [L,R]\n");
+                } else {
+                    fwrite($write_fd, $groupCondition);
+                    fwrite($write_fd, "RewriteRule ^" . trim($group['virtual'], '/') . "$ " . $group['physical'] . $group['virtual'] . " [L,R]\n");
                 }
-                fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:'.$uri['physical'].']'."\n\n");
+                fwrite($write_fd, $groupCondition);
+                fwrite($write_fd, "RewriteRule ^" . ltrim($group['virtual'], '/') . "(.*) " . $group['physical'] . "$1 [L]\n\n");
+            }
 
-                // Webservice
-                fwrite($write_fd, "# Webservice API\n");
-                fwrite($write_fd, 'RewriteRule ^api$ api/ [L]'."\n");
-                fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]'."\n\n");
-
-                if (!$rewrite_settings) {
-                    $rewrite_settings = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, (int) $uri['id_shop']);
-                }
-
-                // Rewrite virtual multishop uri
-                if ($uri['virtual']) {
-                    fwrite($write_fd, "# Virtual uri\n");
-                    if (!$rewrite_settings) {
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'/?$ '.$uri['physical'].$uri['virtual']."index.php [L,R]\n");
+            // If rewriting is enabled for this group, output Images and Dispatcher blocks.
+            if ($group['rewrite_settings']) {
+                // Images block
+                fwrite($write_fd, "# Images\n");
+                $supportedExtensions = ImageManager::getAllowedImageExtensions(true, true);
+                $supportedExtensions[] = 'jpeg';
+                $supportedExtensions = array_unique($supportedExtensions);
+                sort($supportedExtensions);
+                $extensionsPattern = implode('|', $supportedExtensions);
+                foreach (ImageEntity::getImageEntities() as $entity) {
+                    $name = $entity['name'];
+                    $pathForEntity = trim(str_replace(_PS_ROOT_DIR_, '', $entity['path']), '/') . '/';
+                    fwrite($write_fd, "\n# $name images\n");
+                    if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
+                        fwrite($write_fd, $groupCondition);
+                        fwrite(
+                            $write_fd,
+                            'RewriteRule ^' . $name . '/([0-9]+)(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' .
+                            $extensionsPattern . ')$ %{ENV:REWRITEBASE}' . $pathForEntity . '$1$2$3.$4 [L]' . "\n"
+                        );
                     } else {
-                        fwrite($write_fd, $mediaDomains);
-                        fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^'.trim($uri['virtual'], '/').'$ '.$uri['physical'].$uri['virtual']." [L,R]\n");
-                    }
-                    fwrite($write_fd, $mediaDomains);
-                    fwrite($write_fd, $domain_rewrite_cond);
-                    fwrite($write_fd, 'RewriteRule ^'.ltrim($uri['virtual'], '/').'(.*) '.$uri['physical']."$1 [L]\n\n");
-                }
-
-                if ($rewrite_settings) {
-                    fwrite($write_fd, "# Images\n");
-                    foreach (ImageEntity::getImageEntities() as $entity) {
-                        $name = $entity['name'];
-                        $path = trim(str_replace(_PS_ROOT_DIR_, '', $entity['path']), '/') . '/';
-                        fwrite($write_fd, "\n# $name images\n");
-
-                        if ($name !== ImageEntity::ENTITY_TYPE_PRODUCTS) {
-                            fwrite($write_fd, $mediaDomains);
-                            fwrite($write_fd, $domain_rewrite_cond);
-                            fwrite($write_fd, 'RewriteRule ^'.$name.'/([0-9]+)(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' . $extensionsPattern . ')$ %{ENV:REWRITEBASE}'.$path.'$1$2$3.$4 [L]' . "\n");
-                        } else {
-                            for ($i = 1; $i <= 8; $i++) {
-                                $img_path = $img_name = '';
-                                for ($j = 1; $j <= $i; $j++) {
-                                    $img_path .= '$'.$j.'/';
-                                    $img_name .= '$'.$j;
-                                }
-                                $img_name .= '$'.$j;
-
-                                fwrite($write_fd, $mediaDomains);
-                                fwrite($write_fd, $domain_rewrite_cond);
-                                fwrite($write_fd, 'RewriteRule ^'.$name.'/'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.('.$extensionsPattern.')$ %{ENV:REWRITEBASE}'.$path.$img_path.$img_name.'$'.($j + 1).'.$'.($j+2)." [L]\n");
+                        for ($i = 1; $i <= 8; $i++) {
+                            $img_path = '';
+                            $img_name = '';
+                            for ($j = 1; $j <= $i; $j++) {
+                                $img_path .= '$' . $j . '/';
+                                $img_name .= '$' . $j;
                             }
+                            $img_name .= '$' . ($j);
+                            fwrite($write_fd, $groupCondition);
+                            fwrite(
+                                $write_fd,
+                                'RewriteRule ^' . $name . '/' . str_repeat('([0-9])', $i) .
+                                '(\-[_a-zA-Z0-9\s-]*)?/.+?([2-4]x)?\.(' . $extensionsPattern . ')$ %{ENV:REWRITEBASE}' .
+                                $pathForEntity . $img_path . $img_name . '$' . ($j + 1) . '.$' . ($j + 2) . " [L]\n"
+                            );
                         }
                     }
                 }
-            }
-
-            // Redirections to dispatcher
-            if ($rewrite_settings) {
-                fwrite($write_fd, "\n# Dispatcher\n");
+                fwrite($write_fd, "\n");
+                // Dispatcher block
+                fwrite($write_fd, "# Dispatcher\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -s [OR]\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -l [OR]\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -d\n");
-                if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, $domain_rewrite_cond);
-                }
+                fwrite($write_fd, $groupCondition);
                 fwrite($write_fd, "RewriteRule ^.*$ - [NC,L]\n");
-                if (Shop::isFeatureActive()) {
-                    fwrite($write_fd, $domain_rewrite_cond);
-                }
-                fwrite($write_fd, "RewriteRule ^.*\$ %{ENV:REWRITEBASE}index.php [NC,L]\n");
+                fwrite($write_fd, $groupCondition);
+                fwrite($write_fd, "RewriteRule ^.*$ %{ENV:REWRITEBASE}index.php [NC,L]\n\n");
             }
         }
 
+        // Close mod_rewrite block
         fwrite($write_fd, "</IfModule>\n\n");
 
+        // -----------------------------------------------------------
+        // Additional MIME types and caching settings
+        // -----------------------------------------------------------
         fwrite($write_fd, "AddType application/vnd.ms-fontobject .eot\n");
         fwrite($write_fd, "AddType font/ttf .ttf\n");
         fwrite($write_fd, "AddType font/otf .otf\n");
         fwrite($write_fd, "AddType font/woff .woff\n");
-        fwrite($write_fd, "AddType font/woff2 .woff2\n");
-        fwrite(
-            $write_fd, "<IfModule mod_headers.c>
-	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
-		Header set Access-Control-Allow-Origin \"*\"
-	</FilesMatch>
-</IfModule>\n\n"
-        );
+        fwrite($write_fd, "AddType font/woff2 .woff2\n\n");
+        fwrite($write_fd, "<IfModule mod_headers.c>\n");
+        fwrite($write_fd, "    <FilesMatch \"\\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">\n");
+        fwrite($write_fd, "        Header set Access-Control-Allow-Origin \"*\"\n");
+        fwrite($write_fd, "    </FilesMatch>\n");
+        fwrite($write_fd, "</IfModule>\n\n");
 
         // Cache control
         if ($cache_control) {
-            $cache_control = "<IfModule mod_expires.c>
-	ExpiresActive On
-	ExpiresByType image/gif \"access plus 1 year\"
-	ExpiresByType image/jpeg \"access plus 1 year\"
-	ExpiresByType image/png \"access plus 1 year\"
-	ExpiresByType image/webp \"access plus 1 year\"
-	ExpiresByType image/avif \"access plus 1 year\"
-	ExpiresByType text/css \"access plus 1 year\"
-	ExpiresByType text/javascript \"access plus 1 year\"
-	ExpiresByType application/javascript \"access plus 1 year\"
-	ExpiresByType application/x-javascript \"access plus 1 year\"
-	ExpiresByType image/x-icon \"access plus 1 year\"
-	ExpiresByType image/svg+xml \"access plus 1 year\"
-	ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
-	ExpiresByType application/font-woff \"access plus 1 year\"
-	ExpiresByType application/x-font-woff \"access plus 1 year\"
-	ExpiresByType font/woff \"access plus 1 year\"
-	ExpiresByType application/font-woff2 \"access plus 1 year\"
-	ExpiresByType font/woff2 \"access plus 1 year\"
-	ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
-	ExpiresByType font/opentype \"access plus 1 year\"
-	ExpiresByType font/ttf \"access plus 1 year\"
-	ExpiresByType font/otf \"access plus 1 year\"
-	ExpiresByType application/x-font-ttf \"access plus 1 year\"
-	ExpiresByType application/x-font-otf \"access plus 1 year\"
+            $cache_control_content = "<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/gif \"access plus 1 year\"
+    ExpiresByType image/jpeg \"access plus 1 year\"
+    ExpiresByType image/png \"access plus 1 year\"
+    ExpiresByType image/webp \"access plus 1 year\"
+    ExpiresByType image/avif \"access plus 1 year\"
+    ExpiresByType text/css \"access plus 1 year\"
+    ExpiresByType text/javascript \"access plus 1 year\"
+    ExpiresByType application/javascript \"access plus 1 year\"
+    ExpiresByType application/x-javascript \"access plus 1 year\"
+    ExpiresByType image/x-icon \"access plus 1 year\"
+    ExpiresByType image/svg+xml \"access plus 1 year\"
+    ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
+    ExpiresByType application/font-woff \"access plus 1 year\"
+    ExpiresByType application/x-font-woff \"access plus 1 year\"
+    ExpiresByType font/woff \"access plus 1 year\"
+    ExpiresByType application/font-woff2 \"access plus 1 year\"
+    ExpiresByType font/woff2 \"access plus 1 year\"
+    ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
+    ExpiresByType font/opentype \"access plus 1 year\"
+    ExpiresByType font/ttf \"access plus 1 year\"
+    ExpiresByType font/otf \"access plus 1 year\"
+    ExpiresByType application/x-font-ttf \"access plus 1 year\"
+    ExpiresByType application/x-font-otf \"access plus 1 year\"
 </IfModule>
 
 <IfModule mod_headers.c>
-	Header unset Etag
+    Header unset Etag
 </IfModule>
 FileETag none
 <IfModule mod_deflate.c>
-	<IfModule mod_filter.c>
-		AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/x-javascript font/ttf application/x-font-ttf font/otf application/x-font-otf font/opentype
-	</IfModule>
+    <IfModule mod_filter.c>
+        AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/x-javascript font/ttf application/x-font-ttf font/otf application/x-font-otf font/opentype
+    </IfModule>
 </IfModule>\n\n";
-            fwrite($write_fd, $cache_control);
+
+            fwrite($write_fd, $cache_control_content);
         }
 
-        // In case the user hasn't rewrite mod enabled
+        // In case mod_rewrite is not enabled, set the default error document.
         fwrite($write_fd, "#If rewrite mod isn't enabled\n");
-
-        // Do not remove ($domains is already iterated upper)
-        reset($domains);
-        $domain = current($domains);
-        fwrite($write_fd, 'ErrorDocument 404 '.$domain[0]['physical']."index.php?controller=404\n\n");
+        $firstGroup = reset($groups);
+        fwrite($write_fd, 'ErrorDocument 404 ' . $firstGroup['physical'] . "index.php?controller=404\n\n");
 
         fwrite($write_fd, "# ~~end~~ Do not remove this comment, thirty bees will keep automatically the code outside this comment when .htaccess will be generated again");
         if ($specific_after) {
-            fwrite($write_fd, "\n\n".trim($specific_after));
+            fwrite($write_fd, "\n\n" . trim($specific_after));
         }
         fclose($write_fd);
 
