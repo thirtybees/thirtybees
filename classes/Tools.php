@@ -3174,20 +3174,32 @@ class ToolsCore
         $groups = [];
         $shopUrls = ShopUrl::getShopUrls();
         foreach ($shopUrls as $shop_url) {
+            // Skip disabled shops
+            if (!$shop_url->active) {
+                continue;
+            }
+
+            // Only add the domain/SSL if the shop is active
             $shopRewrite = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, (int)$shop_url->id_shop);
             $group_key = md5($shop_url->physical_uri . '|' . $shop_url->virtual_uri . '|' . $shopRewrite);
+
             if (!isset($groups[$group_key])) {
                 $groups[$group_key] = [
                     'physical'         => $shop_url->physical_uri,
                     'virtual'          => $shop_url->virtual_uri,
                     'rewrite_settings' => $shopRewrite,
-                    'domains'          => []
+                    'domains'          => [],
                 ];
             }
+
+            // Add the primary domain if not already present
             if (!in_array($shop_url->domain, $groups[$group_key]['domains'])) {
                 $groups[$group_key]['domains'][] = $shop_url->domain;
             }
-            if ($shop_url->domain != $shop_url->domain_ssl && !in_array($shop_url->domain_ssl, $groups[$group_key]['domains'])) {
+
+            // Add the SSL domain if different and not already present
+            if ($shop_url->domain_ssl !== $shop_url->domain
+                && !in_array($shop_url->domain_ssl, $groups[$group_key]['domains'])) {
                 $groups[$group_key]['domains'][] = $shop_url->domain_ssl;
             }
         }
