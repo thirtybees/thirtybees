@@ -3,7 +3,7 @@
  * 2007-2016 PrestaShop
  *
  * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017-2024 thirty bees
+ * Copyright (C) 2017-2025 thirty bees
  *
  * NOTICE OF LICENSE
  *
@@ -23,7 +23,7 @@
  *
  * @author    thirty bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2017-2024 thirty bees
+ * @copyright 2017-2025 thirty bees
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
@@ -77,7 +77,7 @@ class AdminBackupControllerCore extends AdminController
             'general' => [
                 'title'  => $this->l('Backup options'),
                 'fields' => [
-                    'PS_BACKUP_ALL'        => [
+                    'PS_BACKUP_ALL' => [
                         'title' => $this->l('Ignore statistics tables'),
                         'desc'  => $this->l('Drop existing tables during import.').'<br />'._DB_PREFIX_.'connections, '._DB_PREFIX_.'connections_page, '._DB_PREFIX_.'connections_source, '._DB_PREFIX_.'guest, '._DB_PREFIX_.'statssearch',
                         'cast'  => 'intval',
@@ -91,6 +91,23 @@ class AdminBackupControllerCore extends AdminController
                         ],
                         'cast'  => 'intval',
                         'type'  => 'bool',
+                    ],
+                    'TB_DB_AUTO_BACKUP' => [
+                        'title' => $this->l('Automatic DB Backup'),
+                        'desc'  => $this->l('Note: Automatic backups are a secondary safeguard. Always maintain manual backups!'),
+                        'hint'  => $this->l('A backup will be created once per day.'),
+                        'cast'  => 'intval',
+                        'type'  => 'bool',
+                    ],
+                    'TB_DB_BACKUP_RETENTION_PERIOD' => [
+                        'title'   => $this->l('DB Backup Retention Period (in days)'),
+                        'desc'    => $this->l('Specify the number of days to keep database backups. Enter 0 to disable automatic deletion of old backups.'),
+                        'hint'    => $this->l('Applies to both manual and automatic backups.'),
+                        'cast'    => 'intval',
+                        'type'    => 'text',
+                        'class'   => 'fixed-width-xs',
+                        'suffix'  => $this->l('days'),
+                        'default' => 30,
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
