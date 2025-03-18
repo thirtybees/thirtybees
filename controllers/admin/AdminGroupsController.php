@@ -77,6 +77,14 @@ class AdminGroupsControllerCore extends AdminController
                 'align' => 'right',
                 'type' => 'percent'
             ],
+            'price_display_method' => [
+                'title' => $this->l('Price display method'),
+                'align' => 'center',
+                'callback' => 'printPriceDisplayMethod',
+                'type' => 'select',
+                'list' => $this->getPriceDisplayMethods(),
+                'filter_key' => 'a!price_display_method'
+            ],
             'nb' => [
                 'title' => $this->l('Members'),
                 'align' => 'center',
@@ -304,6 +312,14 @@ class AdminGroupsControllerCore extends AdminController
             return;
         }
 
+        $priceDisplaMethods = [];
+        foreach ($this->getPriceDisplayMethods() as $method => $name) {
+            $priceDisplaMethods[] = [
+                'id_method' => $method,
+                'name' => $name
+            ];
+        }
+
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Customer group'),
@@ -337,16 +353,7 @@ class AdminGroupsControllerCore extends AdminController
                     'col' => 2,
                     'hint' => $this->l('How prices are displayed in the order summary for this customer group.'),
                     'options' => [
-                        'query' => [
-                            [
-                                'id_method' => PS_TAX_EXC,
-                                'name' => $this->l('Tax excluded')
-                            ],
-                            [
-                                'id_method' => PS_TAX_INC,
-                                'name' => $this->l('Tax included')
-                            ]
-                        ],
+                        'query' => $priceDisplaMethods,
                         'id' => 'id_method',
                         'name' => 'name'
                     ]
@@ -644,11 +651,25 @@ class AdminGroupsControllerCore extends AdminController
     {
         $group = new Group($tr['id_group']);
         if (!Validate::isLoadedObject($group)) {
-            return;
+            return '';
         }
         return '<a class="list-action-enable'.($group->show_prices ? ' action-enabled' : ' action-disabled').'" href="index.php?tab=AdminGroups&amp;id_group='.(int)$group->id.'&amp;changeShowPricesVal&amp;token='.Tools::getAdminTokenLite('AdminGroups').'">
 				'.($group->show_prices ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>').
             '</a>';
+    }
+
+    /**
+     * Print price display method
+     *
+     * @param int $displayMethod
+     * @param array $row
+     *
+     * @return string
+     */
+    public function printPriceDisplayMethod($displayMethod, $row)
+    {
+        $methods = $this->getPriceDisplayMethods();
+        return $methods[$displayMethod] ?? (string)$displayMethod;
     }
 
     /**
@@ -733,5 +754,16 @@ class AdminGroupsControllerCore extends AdminController
             return '<a href="'.$link.'">' . Tools::safeOutput($category->name) . '</a>';
         }, $path);
         return implode(' > ', $names);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPriceDisplayMethods(): array
+    {
+        return [
+            PS_TAX_EXC => $this->l('Tax excluded'),
+            PS_TAX_INC => $this->l('Tax included'),
+        ];
     }
 }
