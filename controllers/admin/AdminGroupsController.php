@@ -77,6 +77,11 @@ class AdminGroupsControllerCore extends AdminController
                 'align' => 'right',
                 'type' => 'percent'
             ],
+            'price_display_method' => [
+                'title' => $this->l('Price display method'),
+                'align' => 'center',
+                'callback' => 'printPriceDisplayMethod',
+            ],
             'nb' => [
                 'title' => $this->l('Members'),
                 'align' => 'center',
@@ -649,6 +654,19 @@ class AdminGroupsControllerCore extends AdminController
         return '<a class="list-action-enable'.($group->show_prices ? ' action-enabled' : ' action-disabled').'" href="index.php?tab=AdminGroups&amp;id_group='.(int)$group->id.'&amp;changeShowPricesVal&amp;token='.Tools::getAdminTokenLite('AdminGroups').'">
 				'.($group->show_prices ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>').
             '</a>';
+    }
+
+    /**
+     * Print price display method
+     *
+     * @param int $id_group
+     * @param array $tr
+     *
+     * @return string
+     */
+    public function printPriceDisplayMethod($id_group, $tr)
+    {
+        return ($tr['price_display_method'] ? $this->l('Tax excluded') : $this->l('Tax included'));
     }
 
     /**
