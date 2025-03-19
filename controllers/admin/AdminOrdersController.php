@@ -834,7 +834,7 @@ class AdminOrdersControllerCore extends AdminController
                                     'unit_price' => Tools::roundPrice($refundAmount / $quantity),
                                 ];
 
-                                if (!$order->hasBeenDelivered() || ($order->hasBeenDelivered() && Tools::isSubmit('reinjectQuantities'))) {
+                                if (Tools::isSubmit('reinjectQuantities')) {
                                     $this->reinjectQuantity($orderDetail, $quantity);
                                 }
                             }
@@ -1094,7 +1094,7 @@ class AdminOrdersControllerCore extends AdminController
                                 $qtyCancelProduct = abs($qtyList[$key]);
                                 $orderDetail = new OrderDetail((int) ($idOrderDetail));
 
-                                if (!$order->hasBeenDelivered() || ($order->hasBeenDelivered() && Tools::isSubmit('reinjectQuantities')) && $qtyCancelProduct > 0) {
+                                if (Tools::isSubmit('reinjectQuantities') && $qtyCancelProduct > 0) {
                                     $this->reinjectQuantity($orderDetail, $qtyCancelProduct);
                                 }
 

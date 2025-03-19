@@ -1166,7 +1166,7 @@
           </div>
           <div style="display: none;" class="standard_refund_fields form-horizontal panel">
             <div class="form-group">
-              {if ($order->hasBeenDelivered() && Configuration::get('PS_ORDER_RETURN'))}
+              {if Configuration::get('PS_ORDER_RETURN')}
                 <p class="checkbox">
                   <label for="reinjectQuantities">
                     <input type="checkbox" id="reinjectQuantities" name="reinjectQuantities"/>
