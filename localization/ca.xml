@@ -5,7 +5,7 @@
   </currencies>
   <languages>
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
-    <language name="Français CA (Canadian French)" iso_code="qc" language_code="fr-ca" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Français CA (Canadian French)" iso_code="fr" language_code="fr-ca" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
   </languages>
   <states>
     <state name="Alberta" iso_code="AB" country="CA" zone="North America"/>
@@ -49,9 +49,9 @@
   <units>
     <unit type="weight" value="kg"/>
     <unit type="volume" value="L"/>
-    <unit type="short_distance" value="in"/>
-    <unit type="base_distance" value="ft"/>
-    <unit type="long_distance" value="mi"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
   </units>
   <configurations>
     <configuration name="PS_TAX_DISPLAY" value="1"/>

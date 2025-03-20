@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Somalia" version="1.0">
+  <currencies>
+    <currency name="Somali Shilling" iso_code="SOS" iso_code_num="706" sign="Sh" blank="1" conversion_rate="1.000000" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Somali" iso_code="so" language_code="so-so" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>
+    <language name="Arabic" iso_code="ar" language_code="ar-sa" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="1"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT SO 10%" rate="10"/>
+    <taxRulesGroup name="SO Standard Rate (10%)">
+      <taxRule iso_code_country="so" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

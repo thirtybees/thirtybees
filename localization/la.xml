@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Laos" version="1.0">
+  <currencies>
+    <currency name="Kip" iso_code="LAK" iso_code_num="418" sign="₭" blank="1" conversion_rate="1.00" format="2" decimals="0" decimal_places="0"/>
+  </currencies>
+  <languages>
+    <language name="ພາສາລາວ (Lao)" iso_code="lo" language_code="lo-la" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT LA 10%" rate="10"/>
+    <taxRulesGroup name="LA Standard Rate (10%)">
+      <taxRule iso_code_country="la" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
