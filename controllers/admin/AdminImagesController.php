@@ -399,33 +399,31 @@ class AdminImagesControllerCore extends AdminController
                 $imageTypeId = (int)$this->object->id;
                 $db = Db::getInstance();
 
-                $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = '. $imageTypeId);
+                // Reset old id_image_type_parent value
+                $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = ' . $imageTypeId);
 
-                if (!empty($ids = Tools::getValue('ids_image_type_parent'))) {
-                    foreach ($ids as $parentId) {
-                        $parentId = (int)$parentId;
-                        if ($imageTypeId !== $parentId) {
-                            $db->update(
-                                'image_type',
-                                ['id_image_type_parent' => $imageTypeId],
-                                "id_image_type = $parentId OR id_image_type_parent = $parentId"
-                            );
+                if (!empty($ids_image_type_parent = Tools::getValue('ids_image_type_parent'))) {
+                    foreach ($ids_image_type_parent as $id_image_type_parent) {
+                        $id_image_type_parent = (int)$id_image_type_parent;
+                        if ($imageTypeId !== $id_image_type_parent) {
+                            $db->update('image_type', ['id_image_type_parent' => $imageTypeId], "id_image_type = $id_image_type_parent OR id_image_type_parent = $id_image_type_parent");
                         }
                     }
                 }
 
                 // Delete old image_entity_type entries
-                $db->delete('image_entity_type', 'id_image_type='. $imageTypeId);
+                $db->delete('image_entity_type', 'id_image_type=' . $imageTypeId);
 
+                // BC: keep legacy properties in tb_image_type synchronized
                 $values = [];
                 foreach (ImageEntity::getLegacyImageEntities() as $column) {
                     $values[$column] = 0;
                 }
                 $db->update('image_type', $values, 'id_image_type = ' . $imageTypeId);
 
-                foreach (ImageEntity::getAll() as $entity) {
-                    if (Tools::getValue($entity->name)) {
-                        $entity->associateImageType($imageTypeId);
+                foreach (ImageEntity::getAll() as $imageEntity) {
+                    if (Tools::getValue($imageEntity->name)) {
+                        $imageEntity->associateImageType($imageTypeId);
                     }
                 }
             }
