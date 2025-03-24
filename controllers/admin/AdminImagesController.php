@@ -338,10 +338,7 @@ class AdminImagesControllerCore extends AdminController
     {
         // When moving images, if duplicate images were found they are moved to a folder named duplicates/
         if (file_exists(_PS_PROD_IMG_DIR_.'duplicates/')) {
-            $this->warnings[] = sprintf(
-                $this->l('Duplicate images were found when moving the product images. This is likely caused by unused demonstration images. Please make sure that the folder %s only contains demonstration images, and then delete it.'),
-                _PS_PROD_IMG_DIR_.'duplicates/'
-            );
+            $this->warnings[] = sprintf($this->l('Duplicate images were found when moving the product images. This is likely caused by unused demonstration images. Please make sure that the folder %s only contains demonstration images, and then delete it.'), _PS_PROD_IMG_DIR_.'duplicates/');
         }
 
         if (Tools::isSubmit('submitRegenerate'.$this->table)) {
