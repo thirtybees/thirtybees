@@ -395,11 +395,11 @@ class AdminImagesControllerCore extends AdminController
             parent::postProcess();
 
             // Save image type aliases & image type entities
-            if (Tools::isSubmit('submitAdd'.$this->table) && $this->object->id) {
+            if (Tools::isSubmit('submitAdd' . $this->table) && $this->object->id) {
                 $imageTypeId = (int)$this->object->id;
                 $db = Db::getInstance();
 
-                $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = '.$imageTypeId);
+                $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = '. $imageTypeId);
 
                 if (!empty($ids = Tools::getValue('ids_image_type_parent'))) {
                     foreach ($ids as $parentId) {
@@ -414,10 +414,14 @@ class AdminImagesControllerCore extends AdminController
                     }
                 }
 
-                $db->delete('image_entity_type', 'id_image_type='.$imageTypeId);
+                // Delete old image_entity_type entries
+                $db->delete('image_entity_type', 'id_image_type='. $imageTypeId);
 
-                $values = array_fill_keys(ImageEntity::getLegacyImageEntities(), 0);
-                $db->update('image_type', $values, 'id_image_type = '.$imageTypeId);
+                $values = [];
+                foreach (ImageEntity::getLegacyImageEntities() as $column) {
+                    $values[$column] = 0;
+                }
+                $db->update('image_type', $values, 'id_image_type = ' . $imageTypeId);
 
                 foreach (ImageEntity::getAll() as $entity) {
                     if (Tools::getValue($entity->name)) {
