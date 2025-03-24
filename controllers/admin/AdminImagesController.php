@@ -334,77 +334,100 @@ class AdminImagesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      */
-    public function postProcess()
-    {
-        // When moving images, if duplicate images were found they are moved to a folder named duplicates/
-        if (file_exists(_PS_PROD_IMG_DIR_.'duplicates/')) {
-            $this->warnings[] = sprintf($this->l('Duplicate images were found when moving the product images. This is likely caused by unused demonstration images. Please make sure that the folder %s only contains demonstration images, and then delete it.'), _PS_PROD_IMG_DIR_.'duplicates/');
-        }
-
-        if (Tools::isSubmit('submitRegenerate'.$this->table)) {
-            if ($this->hasEditPermission()) {
-                if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
-                    Tools::redirectAdmin(static::$currentIndex.'&conf=9'.'&token='.$this->token);
-                }
-            } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+        public function postProcess()
+        {
+            // When moving images, if duplicate images were found they are moved to a folder named duplicates/
+            if (file_exists(_PS_PROD_IMG_DIR_.'duplicates/')) {
+                $this->warnings[] = sprintf(
+                    $this->l('Duplicate images were found when moving the product images. This is likely caused by unused demonstration images. Please make sure that the folder %s only contains demonstration images, and then delete it.'),
+                    _PS_PROD_IMG_DIR_.'duplicates/'
+                );
             }
-        } elseif (Tools::isSubmit('submitOptions'.$this->table)) {
-            if ($this->hasEditPermission()) {
-                if (Tools::getIntValue('TB_IMAGE_QUALITY') < 0 || Tools::getIntValue('TB_IMAGE_QUALITY') > 100) {
-                    $this->errors[] = Tools::displayError('Incorrect value for the image quality.');
-                } elseif (
-                    !Configuration::updateValue('TB_IMAGE_EXTENSION', Tools::getValue('TB_IMAGE_EXTENSION')) ||
-                    !Configuration::updateValue('TB_IMAGE_QUALITY', Tools::getValue('TB_IMAGE_QUALITY'))
-                ) {
-                    $this->errors[] = Tools::displayError('Unknown error.');
+
+            if (Tools::isSubmit('submitRegenerate'.$this->table)) {
+                if ($this->hasEditPermission()) {
+                    if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=9&token='.$this->token);
+                    }
                 } else {
-                    $this->confirmations[] = $this->_conf[6];
+                    $this->errors[] = Tools::displayError('You do not have permission to edit this.');
                 }
+            } elseif (Tools::isSubmit('submitOptions'.$this->table)) {
+                if ($this->hasEditPermission()) {
+                    if (Tools::getIntValue('TB_IMAGE_QUALITY') < 0 || Tools::getIntValue('TB_IMAGE_QUALITY') > 100) {
+                        $this->errors[] = Tools::displayError('Incorrect value for the image quality.');
+                    } elseif (
+                        !Configuration::updateValue('TB_IMAGE_EXTENSION', Tools::getValue('TB_IMAGE_EXTENSION')) ||
+                        !Configuration::updateValue('TB_IMAGE_QUALITY', Tools::getValue('TB_IMAGE_QUALITY'))
+                    ) {
+                        $this->errors[] = Tools::displayError('Unknown error.');
+                    } else {
+                        $this->confirmations[] = $this->_conf[6];
+                    }
 
-                parent::postProcess();
+                    parent::postProcess();
+                } else {
+                    $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+                }
+            } elseif (Tools::isSubmit('submitCleanImages'.$this->table)) {
+                if ($this->tabAccess['edit'] == 1) {
+                    if (Tools::getValue('cleanImages')) {
+                        // 1) Call the method
+                        $results = Image::cleanOrphanedImages();
+
+                        // 2) Add the green confirmation for the orphaned images
+                        $this->confirmations[] = $results['orphaned_count'].' '
+                            .$this->l('orphaned images found. Temporary product images deleted if found.');
+
+                        // 3) If suspicious files exist, display them as a warning
+                        if (!empty($results['suspicious_files'])) {
+                            $message = '<strong>'.$this->l('Suspicious files found in img/p:').'</strong><br>';
+                            $message .= implode('<br>', $results['suspicious_files']);
+                            $this->warnings[] = $message;
+                        }
+
+                        unset($_POST['submitCleanImages'.$this->table]);
+                        return parent::postProcess();
+                    }
+                } else {
+                    $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+                }
             } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
-            }
-        } else {
-            parent::postProcess();
+                parent::postProcess();
 
-            // Save image type aliases & image type entities
-            if (Tools::isSubmit('submitAdd' . $this->table) && $this->object->id) {
+                // Save image type aliases & image type entities
+                if (Tools::isSubmit('submitAdd'.$this->table) && $this->object->id) {
+                    $imageTypeId = (int)$this->object->id;
+                    $db = Db::getInstance();
 
-                $imageTypeId = (int)$this->object->id;
-                $db = Db::getInstance();
+                    $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = '.$imageTypeId);
 
-                // Reset old id_image_type_parent value
-                $db->update('image_type', ['id_image_type_parent' => 0], 'id_image_type_parent = ' . $imageTypeId);
+                    if (!empty($ids = Tools::getValue('ids_image_type_parent'))) {
+                        foreach ($ids as $parentId) {
+                            $parentId = (int)$parentId;
+                            if ($imageTypeId !== $parentId) {
+                                $db->update(
+                                    'image_type',
+                                    ['id_image_type_parent' => $imageTypeId],
+                                    "id_image_type = $parentId OR id_image_type_parent = $parentId"
+                                );
+                            }
+                        }
+                    }
 
-                if (!empty($ids_image_type_parent = Tools::getValue('ids_image_type_parent'))) {
-                    foreach ($ids_image_type_parent as $id_image_type_parent) {
-                        $id_image_type_parent = (int)$id_image_type_parent;
-                        if ($imageTypeId !== $id_image_type_parent) {
-                            $db->update('image_type', ['id_image_type_parent' => $imageTypeId], "id_image_type = $id_image_type_parent OR id_image_type_parent = $id_image_type_parent");
+                    $db->delete('image_entity_type', 'id_image_type='.$imageTypeId);
+
+                    $values = array_fill_keys(ImageEntity::getLegacyImageEntities(), 0);
+                    $db->update('image_type', $values, 'id_image_type = '.$imageTypeId);
+
+                    foreach (ImageEntity::getAll() as $entity) {
+                        if (Tools::getValue($entity->name)) {
+                            $entity->associateImageType($imageTypeId);
                         }
                     }
                 }
-
-                // Delete old image_entity_type entries
-                $db->delete('image_entity_type', 'id_image_type=' . $imageTypeId);
-
-                // BC: keep legacy properties in tb_image_type synchronized
-                $values = [];
-                foreach (ImageEntity::getLegacyImageEntities() as $column) {
-                    $values[$column] = 0;
-                }
-                $db->update('image_type', $values, 'id_image_type = ' . $imageTypeId);
-
-                foreach (ImageEntity::getAll() as $imageEntity) {
-                    if (Tools::getValue($imageEntity->name)) {
-                        $imageEntity->associateImageType($imageTypeId);
-                    }
-                }
             }
         }
-    }
 
     /**
      * @return void
