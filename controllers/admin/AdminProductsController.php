@@ -4080,6 +4080,7 @@ class AdminProductsControllerCore extends AdminController
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function _displaySpecificPriceModificationForm($defaultCurrency, $shops, $currencies, $countries, $groups)
     {
@@ -4238,66 +4239,21 @@ class AdminProductsControllerCore extends AdminController
         $content .= '
 		</script>';
 
-        // Not use id_customer
-        if ($specificPricePriorities[0] == 'id_customer') {
-            unset($specificPricePriorities[0]);
-        }
-        // Reindex array starting from 0
-        $specificPricePriorities = array_values($specificPricePriorities);
 
-        $content .= '<div class="panel">
-		<h3>'.$this->l('Priority management').'</h3>
-		<div class="alert alert-info">
-				'.$this->l('Sometimes one customer can fit into multiple price rules. Priorities allow you to define which rule applies to the customer.').'
-		</div>';
-
-        $content .= '
-		<div class="form-group">
-			<label class="control-label col-lg-3" for="specificPricePriority1">'.$this->l('Priorities').'</label>
-			<div class="input-group col-lg-9">
-				<select id="specificPricePriority1" name="specificPricePriority[]">
-					<option value="id_shop"'.($specificPricePriorities[0] == 'id_shop' ? ' selected="selected"' : '').'>'.$this->l('Shop').'</option>
-					<option value="id_currency"'.($specificPricePriorities[0] == 'id_currency' ? ' selected="selected"' : '').'>'.$this->l('Currency').'</option>
-					<option value="id_country"'.($specificPricePriorities[0] == 'id_country' ? ' selected="selected"' : '').'>'.$this->l('Country').'</option>
-					<option value="id_group"'.($specificPricePriorities[0] == 'id_group' ? ' selected="selected"' : '').'>'.$this->l('Group').'</option>
-				</select>
-				<span class="input-group-addon"><i class="icon-chevron-right"></i></span>
-				<select name="specificPricePriority[]">
-					<option value="id_shop"'.($specificPricePriorities[1] == 'id_shop' ? ' selected="selected"' : '').'>'.$this->l('Shop').'</option>
-					<option value="id_currency"'.($specificPricePriorities[1] == 'id_currency' ? ' selected="selected"' : '').'>'.$this->l('Currency').'</option>
-					<option value="id_country"'.($specificPricePriorities[1] == 'id_country' ? ' selected="selected"' : '').'>'.$this->l('Country').'</option>
-					<option value="id_group"'.($specificPricePriorities[1] == 'id_group' ? ' selected="selected"' : '').'>'.$this->l('Group').'</option>
-				</select>
-				<span class="input-group-addon"><i class="icon-chevron-right"></i></span>
-				<select name="specificPricePriority[]">
-					<option value="id_shop"'.($specificPricePriorities[2] == 'id_shop' ? ' selected="selected"' : '').'>'.$this->l('Shop').'</option>
-					<option value="id_currency"'.($specificPricePriorities[2] == 'id_currency' ? ' selected="selected"' : '').'>'.$this->l('Currency').'</option>
-					<option value="id_country"'.($specificPricePriorities[2] == 'id_country' ? ' selected="selected"' : '').'>'.$this->l('Country').'</option>
-					<option value="id_group"'.($specificPricePriorities[2] == 'id_group' ? ' selected="selected"' : '').'>'.$this->l('Group').'</option>
-				</select>
-				<span class="input-group-addon"><i class="icon-chevron-right"></i></span>
-				<select name="specificPricePriority[]">
-					<option value="id_shop"'.($specificPricePriorities[3] == 'id_shop' ? ' selected="selected"' : '').'>'.$this->l('Shop').'</option>
-					<option value="id_currency"'.($specificPricePriorities[3] == 'id_currency' ? ' selected="selected"' : '').'>'.$this->l('Currency').'</option>
-					<option value="id_country"'.($specificPricePriorities[3] == 'id_country' ? ' selected="selected"' : '').'>'.$this->l('Country').'</option>
-					<option value="id_group"'.($specificPricePriorities[3] == 'id_group' ? ' selected="selected"' : '').'>'.$this->l('Group').'</option>
-				</select>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-lg-9 col-lg-offset-3">
-				<p class="checkbox">
-					<label for="specificPricePriorityToAll"><input type="checkbox" name="specificPricePriorityToAll" id="specificPricePriorityToAll" />'.$this->l('Apply to all products').'</label>
-				</p>
-			</div>
-		</div>
-		<div class="panel-footer">
-				<a href="'.$this->context->link->getAdminLink('AdminProducts').($page > 1 ? '&submitFilter'.$this->table.'='.(int) $page : '').'" class="btn btn-default"><i class="process-icon-cancel"></i> '.$this->l('Cancel').'</a>
-				<button id="product_form_submit_btn"  type="submit" name="submitAddproduct" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> '.$this->l('Save').'</button>
-				<button id="product_form_submit_btn"  type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> '.$this->l('Save and stay').'</button>
-			</div>
-		</div>
-		';
+        $template = $this->createTemplate('specific_price_priorities.tpl');
+        $template->assign([
+            'cancelUrl' => $this->context->link->getAdminLink('AdminProducts').($page > 1 ? '&submitFilter'.$this->table.'='.(int) $page : ''),
+            'priorities' => $specificPricePriorities,
+            'priorityOptions' => [
+                SpecificPrice::PRIORITY_QUANTITY_DISCOUNT => $this->l('Quantity discounts'),
+                SpecificPrice::PRIORITY_CUSTOMER => $this->l('Customer'),
+                SpecificPrice::PRIORITY_SHOP => $this->l('Shop'),
+                SpecificPrice::PRIORITY_CURRENCY => $this->l('Currency'),
+                SpecificPrice::PRIORITY_COUNTRY => $this->l('Country'),
+                SpecificPrice::PRIORITY_GROUP => $this->l('Group'),
+            ]
+        ]);
+        $content .= $template->fetch();
 
         return $content;
     }
