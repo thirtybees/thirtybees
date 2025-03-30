@@ -1955,6 +1955,14 @@ class AdminOrdersControllerCore extends AdminController
                 $product['warehouse_name'] = '--';
                 $product['warehouse_location'] = false;
             }
+            if (OrderDetailPack::isPack((int) $product['id_order_detail'])) {
+                $productPackItems = OrderDetailPack::getItems((int) $product['id_order_detail'], $this->context->language->id);
+                $namePackItems = '';
+                foreach ($productPackItems as $packItem) {
+                    $namePackItems .= $packItem->pack_quantity.' x <b>'.$packItem->reference.'</b> '.$packItem->name.'<br>';
+                }
+                $product['pack_items'] = $namePackItems;
+            }
         }
 
         $gender = new Gender((int) $customer->id_gender, $this->context->language->id);
