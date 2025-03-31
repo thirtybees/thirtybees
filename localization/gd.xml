@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Grenada" version="1.0">
+  <currencies>
+    <currency name="East Caribbean Dollar" iso_code="XCD" iso_code_num="951" sign="EC$" blank="1" conversion_rate="2.7000" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (Grenada)" iso_code="en" language_code="en-gd" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT GD 15%" rate="15"/>
+    <tax id="2" name="VAT GD Reduced 10%" rate="10"/>
+    <taxRulesGroup name="GD Standard Rate (15%)">
+      <taxRule iso_code_country="gd" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="GD Reduced Rate (10%)">
+      <taxRule iso_code_country="gd" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

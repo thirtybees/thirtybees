@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Rwanda" version="1.0">
+  <currencies>
+    <currency name="Rwandan Franc" iso_code="RWF" iso_code_num="646" sign="FRW" blank="1" conversion_rate="0.9455" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Kinyarwanda (Kinyarwanda)" iso_code="rw" language_code="rw-rw" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="Français (French)" iso_code="fr" language_code="fr-fr" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+    <language name="English (United Kingdom)" iso_code="en" language_code="en-gb" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT RW 18%" rate="18"/>
+    <taxRulesGroup name="RW Standard Rate (18%)">
+      <taxRule iso_code_country="rw" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
