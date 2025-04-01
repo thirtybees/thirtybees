@@ -34,6 +34,13 @@
  */
 class SpecificPriceCore extends ObjectModel
 {
+    const PRIORITY_QUANTITY_DISCOUNT = 'quantity_discount';
+    const PRIORITY_CUSTOMER = 'id_customer';
+    const PRIORITY_SHOP = 'id_shop';
+    const PRIORITY_CURRENCY = 'id_currency';
+    const PRIORITY_COUNTRY = 'id_country';
+    const PRIORITY_GROUP = 'id_group';
+
     /** @var array $_specificPriceCache */
     protected static $_specificPriceCache = [];
     /** @var array $_filterOutCache */
@@ -234,6 +241,12 @@ class SpecificPriceCore extends ObjectModel
         if (!array_key_exists($key, static::$_specificPriceCache)) {
             $queryExtra = static::computeExtraConditions($idProduct, $idProductAttribute, $idCustomer, $idCart);
             $fromQuantity = (Configuration::get('PS_QTY_DISCOUNT_ON_COMBINATION') || !$idCart || !$realQuantity) ? (int) $quantity : max(1, (int) $realQuantity);
+
+            if ($fromQuantity > 1) {
+                if (static::areQuantityDiscountDisabled($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute, $idCustomer)) {
+                    $fromQuantity = 1;
+                }
+            }
 
             static::$_specificPriceCache[$key] = Db::readOnly()->getRow(
                 (new DbQuery())
@@ -448,7 +461,7 @@ class SpecificPriceCore extends ObjectModel
     public static function getPriority($idProduct)
     {
         if (!static::isFeatureActive()) {
-            return explode(';', (string)Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES'));
+            return static::adjustPriorities(explode(';', (string)Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES')));
         }
 
         if (!isset(static::$_cache_priorities[(int) $idProduct])) {
@@ -467,9 +480,45 @@ class SpecificPriceCore extends ObjectModel
         if (!$priority) {
             $priority = Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES');
         }
-        $priority = 'id_customer;'.$priority;
 
-        return explode(';', $priority);
+        return static::adjustPriorities(explode(';', $priority));
+    }
+
+    /**
+     * Make sure that priority list is always fully populated with correct values
+     *
+     * @param array $priorities
+     * @return array
+     */
+    protected static function adjustPriorities(array $priorities): array
+    {
+        $priorities = array_intersect(array_unique($priorities), [
+            static::PRIORITY_QUANTITY_DISCOUNT,
+            static::PRIORITY_CUSTOMER,
+            static::PRIORITY_SHOP,
+            static::PRIORITY_CURRENCY,
+            static::PRIORITY_COUNTRY,
+            static::PRIORITY_GROUP,
+        ]);
+        if (! in_array(static::PRIORITY_CUSTOMER, $priorities)) {
+            array_unshift($priorities, static::PRIORITY_CUSTOMER);
+        }
+        if (! in_array(static::PRIORITY_QUANTITY_DISCOUNT, $priorities)) {
+            array_unshift($priorities, static::PRIORITY_QUANTITY_DISCOUNT);
+        }
+        if (! in_array(static::PRIORITY_SHOP, $priorities)) {
+            $priorities[] = static::PRIORITY_SHOP;
+        }
+        if (! in_array(static::PRIORITY_CURRENCY, $priorities)) {
+            $priorities[] = static::PRIORITY_CURRENCY;
+        }
+        if (! in_array(static::PRIORITY_COUNTRY, $priorities)) {
+            $priorities[] = static::PRIORITY_COUNTRY;
+        }
+        if (! in_array(static::PRIORITY_GROUP, $priorities)) {
+            $priorities[] = static::PRIORITY_GROUP;
+        }
+        return array_values($priorities);
     }
 
     /**
@@ -481,16 +530,12 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function setPriorities($priorities)
     {
-        $value = '';
-        if (is_array($priorities)) {
-            foreach ($priorities as $priority) {
-                $value .= pSQL($priority).';';
-            }
-        }
+        $priorities = static::adjustPriorities((array)$priorities);
+        $value = implode(';', $priorities);
 
         static::deletePriorities();
 
-        return Configuration::updateValue('PS_SPECIFIC_PRICE_PRIORITIES', rtrim($value, ';'));
+        return Configuration::updateValue('PS_SPECIFIC_PRICE_PRIORITIES', $value);
     }
 
     /**
@@ -513,18 +558,12 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function setSpecificPriority($idProduct, $priorities)
     {
-        $value = '';
-        foreach ($priorities as $priority) {
-            $value .= pSQL($priority).';';
-        }
-
-        return Db::getInstance()->execute(
-            '
-		INSERT INTO `'._DB_PREFIX_.'specific_price_priority` (`id_product`, `priority`)
-		VALUES ('.(int) $idProduct.',\''.pSQL(rtrim($value, ';')).'\')
-		ON DUPLICATE KEY UPDATE `priority` = \''.pSQL(rtrim($value, ';')).'\'
-		'
-        );
+        $priorities = static::adjustPriorities((array)$priorities);
+        $value = implode(';', $priorities);
+        return Db::getInstance()->insert('specific_price_priority', [
+            'id_product' => (int)$idProduct,
+            'priority' => pSQL($value),
+        ], false, true, Db::ON_DUPLICATE_KEY);
     }
 
     /**
@@ -545,6 +584,10 @@ class SpecificPriceCore extends ObjectModel
     public static function getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute = null, $allCombinations = false, $idCustomer = 0)
     {
         if (!static::isFeatureActive()) {
+            return [];
+        }
+
+        if (static::areQuantityDiscountDisabled($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute, $idCustomer)) {
             return [];
         }
 
@@ -579,6 +622,7 @@ class SpecificPriceCore extends ObjectModel
         return $targetedPrices;
     }
 
+
     /**
      * @param int $idProduct
      * @param int $idShop
@@ -600,6 +644,10 @@ class SpecificPriceCore extends ObjectModel
             return [];
         }
 
+        if (static::areQuantityDiscountDisabled($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute, $idCustomer)) {
+            return [];
+        }
+
         $queryExtra = static::computeExtraConditions($idProduct, $idProductAttribute, $idCustomer, null);
 
         return Db::readOnly()->getRow(
@@ -613,6 +661,56 @@ class SpecificPriceCore extends ObjectModel
                 ->where('`from_quantity` >= '.(int) $quantity.' '.$queryExtra)
                 ->orderBy('`from_quantity` DESC, `score` DESC, `to` DESC, `from` DESC')
         );
+    }
+
+    /**
+     * @param int $idProduct
+     * @param int $idShop
+     * @param int $idCurrency
+     * @param int $idCountry
+     * @param int $idGroup
+     * @param int|null $idProductAttribute
+     * @param int $idCustomer
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public static function areQuantityDiscountDisabled($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, $idProductAttribute, $idCustomer): bool
+    {
+        $priorities = static::getPriority($idProduct);
+        $index = (int)array_search(static::PRIORITY_QUANTITY_DISCOUNT, $priorities);
+        if (! $index) {
+            return false;
+        }
+
+        $precedence = array_slice($priorities, 0, $index);
+        if ($precedence) {
+            $conditions = [];
+            $fields = array_keys(static::$definition['fields']);
+            foreach ($precedence as $field) {
+                $snakeCaseField = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $field))));
+                if (in_array($field, $fields) && isset($$snakeCaseField) && $$snakeCaseField) {
+                    $conditions[] = '`'.$field.'` = ' . (int)($$snakeCaseField);
+                }
+            }
+
+            if ($conditions) {
+                $sql = (new DbQuery())
+                    ->select(1)
+                    ->from('specific_price')
+                    ->where('`from_quantity` = 1')
+                    ->where('`id_product` = '.(int)$idProduct)
+                    ->where('(`from` = \'0000-00-00 00:00:00\' OR \''. date('Y-m-d H:i:00').'\' >= `from`)')
+                    ->where('(`to` = \'0000-00-00 00:00:00\' OR \''. date('Y-m-d H:i:00').'\' <= `to`)')
+                    ->where(implode(' OR ', $conditions));
+                if ($idProductAttribute) {
+                    $sql->where('`id_product_attribute` '. static::formatIntInQuery((int)$idProductAttribute, 0));
+                }
+                return (bool)Db::readOnly()->getValue($sql);
+            }
+        }
+        return false;
     }
 
     /**
