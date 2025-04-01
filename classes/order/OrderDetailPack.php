@@ -62,4 +62,171 @@ class OrderDetailPackCore extends ObjectModel
      */
     public $quantity;
 
+    /**
+     * Is product a pack?
+     *
+     * @param int $idOrder
+     * @param int $idProduct
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public static function isPack($idOrder, $idProduct)
+    {
+        $idOrder = (int) $idOrder;
+        return (bool) static::getPackContent($idOrder, $idProduct);
+    }
+
+    /**
+     * @param int $idOrder
+     * @param int $idProduct
+     * @param int $idLang
+     * @return Product[]
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getItems($idOrder, $idProduct, $idLang)
+    {
+        if (!static::isFeatureActive()) {
+            return [];
+        }
+        $idOrder = (int) $idOrder;
+        $idProduct = (int) $idProduct;
+        $idLang = (int) $idLang;
+        $cacheKey = "OrderDetailPack::getItems($idOrder,$idProduct,$idLang)";
+        if (!Cache::isStored($cacheKey)) {
+            Cache::store($cacheKey, static::retrieveItems($idOrder, $idProduct, $idLang));
+        }
+        return Cache::retrieve($cacheKey);
+    }
+
+    /**
+     * @param int $idOrder
+     * @param int $idProduct
+     * @param int $idLang
+     * @return Product[]
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function retrieveItems($idOrder, $idProduct, $idLang)
+    {
+        $idOrder = (int) $idOrder;
+        $idProduct = (int) $idProduct;
+        $idLang = (int) $idLang;
+        $arrayResult = [];
+        foreach (static::getPackContent($idOrder, $idProduct) as $row) {
+            $p = new Product($row['id_product'], false, $idLang);
+            $p->loadStockData();
+            $p->pack_quantity = $row['quantity'];
+            $p->id_pack_product_attribute = $row['id_product_attribute'];
+            if ($p->id_pack_product_attribute) {
+                $sql = 'SELECT agl.`name` AS group_name, al.`name` AS attribute_name, pa.`reference` AS attribute_reference
+                    FROM `' . _DB_PREFIX_ . 'product_attribute` pa
+                    ' . Shop::addSqlAssociation('product_attribute', 'pa') . '
+                    LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_combination` pac ON pac.`id_product_attribute` = pa.`id_product_attribute`
+                    LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a ON a.`id_attribute` = pac.`id_attribute`
+                    LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
+                    LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . $idLang . ')
+                    LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . $idLang . ')
+                    WHERE pa.`id_product_attribute` = ' . $p->id_pack_product_attribute . '
+                    GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
+                    ORDER BY pa.`id_product_attribute`';
+                $combinations = Db::readOnly()->getArray($sql);
+                foreach ($combinations as $combination) {
+                    $p->name .= ' ' . $combination['group_name'] . '-' . $combination['attribute_name'];
+                    $reference = (string) $combination['attribute_reference'];
+                    if ($reference) {
+                        $p->reference = $combination['attribute_reference'];
+                    }
+                }
+            }
+            $arrayResult[] = $p;
+        }
+        return $arrayResult;
+    }
+
+    /**
+     * Returns information about pack items.
+     *
+     * @param int $idOrder
+     * @param int $idProduct
+     * @return array
+     * @throws PrestaShopException
+     */
+    public static function getPackContent($idOrder, $idProduct)
+    {
+        $idOrder = (int) $idOrder;
+        $idProduct = (int) $idProduct;
+        if (!$idProduct || !static::isFeatureActive()) {
+            return [];
+        }
+        $cacheKey = "OrderDetailPack::getPackContent($idOrder,$idProduct)";
+        if (!Cache::isStored($cacheKey)) {
+            Cache::store($cacheKey, static::retrievePackContent($idOrder, $idProduct));
+        }
+        return Cache::retrieve($cacheKey);
+    }
+
+    /**
+     * Retrieves information about pack items from database
+     *
+     * @param int $idOrder
+     * @param int $idProduct
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function retrievePackContent($idOrder, $idProduct)
+    {
+        $idOrder = (int) $idOrder;
+        $idProduct = (int) $idProduct;
+        $idOrderDetail = static::getOrderDetailId($idOrder, $idProduct);
+        $content = [];
+        $sql = (new DbQuery())
+            ->select('id_product')
+            ->select('id_product_attribute')
+            ->select('quantity')
+            ->from('order_detail_pack')
+            ->where('id_order_detail = ' . $idOrderDetail)
+            ->orderBy('id_product, id_product_attribute');
+        $result = Db::readOnly()->getArray($sql);
+        foreach ($result as $row) {
+            $content[] = [
+                'id_product' => (int) $row['id_product'],
+                'id_product_attribute' => (int) $row['id_product_attribute'],
+                'quantity' => (int) $row['quantity']
+            ];
+        }
+        return $content;
+    }
+
+    /**
+     * Get a order detail Id
+     *
+     * @param int $idOrder
+     * @param int $idProduct
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getOrderDetailId($idOrder, $idProduct)
+    {
+        return Db::readOnly()->getValue(
+            (new DbQuery())
+                ->select('id_order_detail')
+                ->from('order_detail')
+                ->where('`id_order` = '.(int) $idOrder)
+                ->where('`product_id` = '.(int) $idProduct)
+        );
+    }
+
+    /**
+     * This method is allow to know if a feature is used or active
+     *
+     * @return bool
+     * @throws PrestaShopException
+     */
+    public static function isFeatureActive()
+    {
+        return Configuration::get('PS_PACK_FEATURE_ACTIVE');
+    }
 }
