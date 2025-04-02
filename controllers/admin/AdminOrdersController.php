@@ -1955,8 +1955,8 @@ class AdminOrdersControllerCore extends AdminController
                 $product['warehouse_name'] = '--';
                 $product['warehouse_location'] = false;
             }
-            if (OrderDetailPack::isPack($order->id, $product['product_id'])) {
-                $productPackItems = OrderDetailPack::getItems($order->id, $product['product_id'], $this->context->language->id);
+            if (OrderDetailPack::isPack((int) $product['id_order_detail'])) {
+                $productPackItems = OrderDetailPack::getItems((int) $product['id_order_detail'], $this->context->language->id);
                 $namePackItems = '';
                 if (is_array($productPackItems)) {
                     foreach ($productPackItems as $packItem) {
