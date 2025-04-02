@@ -250,4 +250,11 @@
 			</tr>
 		{/foreach}
 	{/foreach}
+	{if isset($product['pack_items']) && $product['pack_items']}
+		<tr>
+		{foreach $product['pack_items'] as $pack_item}
+			<td><strong>{l s='Pack items:'}</strong> </td><td colspan="8">{$pack_item}</td>
+		{/foreach}
+		</tr>
+	{/if}
 {/if}
