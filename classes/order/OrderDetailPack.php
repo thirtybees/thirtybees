@@ -65,55 +65,50 @@ class OrderDetailPackCore extends ObjectModel
     /**
      * Is product a pack?
      *
-     * @param int $idOrder
-     * @param int $idProduct
+     * @param int $idOrderDetail
      * @return bool
      * @throws PrestaShopException
      */
-    public static function isPack($idOrder, $idProduct)
+    public static function isPack($idOrderDetail)
     {
-        $idOrder = (int) $idOrder;
-        return (bool) static::getPackContent($idOrder, $idProduct);
+        $$idOrderDetail = (int) $idOrderDetail;
+        return (bool) static::getPackContent($idOrderDetail);
     }
 
     /**
-     * @param int $idOrder
-     * @param int $idProduct
+     * @param int $idOrderDetail
      * @param int $idLang
      * @return Product[]
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getItems($idOrder, $idProduct, $idLang)
+    public static function getItems($idOrderDetail, $idLang)
     {
         if (!static::isFeatureActive()) {
             return [];
         }
-        $idOrder = (int) $idOrder;
-        $idProduct = (int) $idProduct;
+        $idOrderDetail = (int) $idOrderDetail;
         $idLang = (int) $idLang;
-        $cacheKey = "OrderDetailPack::getItems($idOrder,$idProduct,$idLang)";
+        $cacheKey = "OrderDetailPack::getItems($idOrderDetail,$idLang)";
         if (!Cache::isStored($cacheKey)) {
-            Cache::store($cacheKey, static::retrieveItems($idOrder, $idProduct, $idLang));
+            Cache::store($cacheKey, static::retrieveItems($idOrderDetail, $idLang));
         }
         return Cache::retrieve($cacheKey);
     }
 
     /**
-     * @param int $idOrder
-     * @param int $idProduct
+     * @param int $idOrderDetail
      * @param int $idLang
      * @return Product[]
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function retrieveItems($idOrder, $idProduct, $idLang)
+    protected static function retrieveItems($idOrderDetail, $idLang)
     {
-        $idOrder = (int) $idOrder;
-        $idProduct = (int) $idProduct;
+        $idOrderDetail = (int) $idOrderDetail;
         $idLang = (int) $idLang;
         $arrayResult = [];
-        foreach (static::getPackContent($idOrder, $idProduct) as $row) {
+        foreach (static::getPackContent($idOrderDetail) as $row) {
             $p = new Product($row['id_product'], false, $idLang);
             $p->loadStockData();
             $p->pack_quantity = $row['quantity'];
@@ -147,21 +142,19 @@ class OrderDetailPackCore extends ObjectModel
     /**
      * Returns information about pack items.
      *
-     * @param int $idOrder
-     * @param int $idProduct
+     * @param int $idOrderDetail
      * @return array
      * @throws PrestaShopException
      */
-    public static function getPackContent($idOrder, $idProduct)
+    public static function getPackContent($idOrderDetail)
     {
-        $idOrder = (int) $idOrder;
-        $idProduct = (int) $idProduct;
-        if (!$idProduct || !static::isFeatureActive()) {
+        $idOrderDetail = (int) $idOrderDetail;
+        if (!$idOrderDetail || !static::isFeatureActive()) {
             return [];
         }
-        $cacheKey = "OrderDetailPack::getPackContent($idOrder,$idProduct)";
+        $cacheKey = "OrderDetailPack::getPackContent($idOrderDetail)";
         if (!Cache::isStored($cacheKey)) {
-            Cache::store($cacheKey, static::retrievePackContent($idOrder, $idProduct));
+            Cache::store($cacheKey, static::retrievePackContent($idOrderDetail));
         }
         return Cache::retrieve($cacheKey);
     }
@@ -169,17 +162,14 @@ class OrderDetailPackCore extends ObjectModel
     /**
      * Retrieves information about pack items from database
      *
-     * @param int $idOrder
-     * @param int $idProduct
+     * @param int $idOrderDetail
      * @return array
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected static function retrievePackContent($idOrder, $idProduct)
+    protected static function retrievePackContent($idOrderDetail)
     {
-        $idOrder = (int) $idOrder;
-        $idProduct = (int) $idProduct;
-        $idOrderDetail = static::getOrderDetailId($idOrder, $idProduct);
+        $idOrderDetail = (int) $idOrderDetail;
         $content = [];
         $sql = (new DbQuery())
             ->select('id_product')
@@ -197,26 +187,6 @@ class OrderDetailPackCore extends ObjectModel
             ];
         }
         return $content;
-    }
-
-    /**
-     * Get a order detail Id
-     *
-     * @param int $idOrder
-     * @param int $idProduct
-     * @return int
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public static function getOrderDetailId($idOrder, $idProduct)
-    {
-        return Db::readOnly()->getValue(
-            (new DbQuery())
-                ->select('id_order_detail')
-                ->from('order_detail')
-                ->where('`id_order` = '.(int) $idOrder)
-                ->where('`product_id` = '.(int) $idProduct)
-        );
     }
 
     /**
