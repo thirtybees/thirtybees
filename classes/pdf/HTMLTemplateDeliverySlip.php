@@ -112,6 +112,16 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
         $carrier = new Carrier($this->order->id_carrier);
 
         $orderDetails = $this->order_invoice->getProducts();
+        foreach ($orderDetails as &$orderDetail) {
+            if (OrderDetailPack::isPack((int) $orderDetail['id_order_detail'])) {
+                $packItems = OrderDetailPack::getItems((int) $orderDetail['id_order_detail'], Context::getContext()->language->id);
+                $namePackItems = '';
+                foreach ($packItems as $packItem) {
+                    $namePackItems .= $packItem->pack_quantity.' x <b>'.$packItem->reference.'</b> '.$packItem->name.', ';
+                }
+                $orderDetail['pack_items'] = $namePackItems;
+            }
+        }
         if (Configuration::get('PS_PDF_IMG_DELIVERY')) {
             foreach ($orderDetails as &$orderDetail) {
                 if ($orderDetail['image'] instanceof Image) {
