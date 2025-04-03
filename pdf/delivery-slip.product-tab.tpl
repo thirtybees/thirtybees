@@ -67,9 +67,14 @@
 				<td class="product center">
 					{$order_detail.product_quantity}
 				</td>
-				
 			</tr>
-			
+			{if isset($order_detail.pack_items) && $order_detail.pack_items}
+				<tr class="pack_data {$bgcolor_class}">
+					{foreach $order_detail.pack_items as $pack_item}
+						<td class="small" colspan="3">{l s='Pack items:' pdf='true'} {$pack_item}</td>
+					{/foreach}
+				</tr>
+			{/if}
 			{foreach $order_detail.customizedDatas as $customizationPerAddress}
 				{foreach $customizationPerAddress as $customizationId => $customization}
 					<tr class="customization_data {$bgcolor_class}">
