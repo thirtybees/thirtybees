@@ -74,6 +74,14 @@
 		border-bottom: 1px solid {$color_border_lighter};
 	}
 
+	tr.pack_data td {
+		border-bottom: 1px solid {$color_border_lighter};
+	}
+
+	tr.product-with-pack td {
+		border-bottom: none;
+	}
+
 	tr.color_line_even {
 		background-color: {$color_line_even};
 	}
