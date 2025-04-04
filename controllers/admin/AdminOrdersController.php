@@ -1843,7 +1843,15 @@ class AdminOrdersControllerCore extends AdminController
         if (!Validate::isLoadedObject($order)) {
             $this->errors[] = Tools::displayError('The order cannot be found within your database.');
         }
-
+        
+        $shopActive = Shop::isFeatureActive();
+        if ($shopActive) {
+            $shop = new Shop((int)$order->id_shop);
+            $this->tpl_view_vars['shop_name'] = $shop->name;
+        }
+        $this->tpl_view_vars['shop_feature_active'] = $shopActive;
+        $this->context->smarty->assign($this->tpl_view_vars);
+        
         $customer = new Customer($order->id_customer);
         $carrier = new Carrier($order->id_carrier);
         $products = $this->getProducts($order);
