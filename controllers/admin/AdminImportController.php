@@ -1265,8 +1265,10 @@ class AdminImportControllerCore extends AdminController
             $crossStepsVariables = [];
             if ($crossStepsVars = Tools::getValue('crossStepsVars')) {
                 $crossStepsVars = json_decode($crossStepsVars, true);
-                if (count($crossStepsVars) > 0) {
+                if (is_array($crossStepsVars)) {
                     $crossStepsVariables = $crossStepsVars;
+                } else {
+                    $this->warnings[] = $this->l('Failed to deserialize cross-requests variables');
                 }
             }
 
