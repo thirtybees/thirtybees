@@ -112,6 +112,9 @@
           {l s='Order'}
           <span class="badge">{$order->reference}</span>
           <span class="badge">{l s="#"}{$order->id}</span>
+          {if $shop_feature_active|default:false}
+            <span class="badge">{$shop_name}</span>
+          {/if}
           <div class="panel-heading-action">
             <div class="btn-group">
               <a class="btn btn-default{if !$previousOrder} disabled{/if}" href="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;vieworder&amp;id_order={$previousOrder|intval}">
