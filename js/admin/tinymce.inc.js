@@ -67,7 +67,11 @@ function tinySetup(config) {
     extended_valid_elements: "em[class|name|id]",
     valid_children: "+*[*]",
     valid_elements: "*[*]",
-    
+    video_template_callback: (data) =>
+      `<div class="embed-responsive embed-responsive-16by9"><video class="embed-responsive-item" width="${data.width}" height="${data.height}"${data.poster ? ` poster="${data.poster}"` : ''} preload="none" controls="controls">\n`
+      + `<source src="${data.source1}"${data.source1mime ? ` type="${data.source1mime}"` : ''}>\n`
+      + (data.source2 ? `<source src="${data.source2}"${data.source2mime ? ` type="${data.source2mime}"` : ''}>\n` : '')
+      + '</video></div>',
     // Prevents empty <p></p> generation fix
     forced_root_block: false,  // Prevents automatically wrapping content in <p> tags
     force_br_newlines: false,  // Prevents <br> from being inserted when pressing Enter
