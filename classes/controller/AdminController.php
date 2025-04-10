@@ -3166,7 +3166,11 @@ class AdminControllerCore extends Controller
     {
         $this->setHelperCommonDisplay($helper);
         if ($this->object && $this->object->id) {
-            $helper->id = $this->object->id;
+            if (strlen((string)$helper->id) ==0) {
+                $helper->id = (string)$this->object->id;
+            } else {
+                $helper->id .= '-' . $this->object->id;
+            }
         }
     }
 
@@ -3737,10 +3741,84 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @return void
+     * @return string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderKpis()
     {
+        $kpis = $this->getKpis();
+        $hookParams = [
+            'object' => $this,
+            'className' => get_class($this),
+            'display' => (string)($this->display ?? 'list')
+        ];
+        $responses = Hook::getResponses('actionGetKpis', $hookParams);
+        foreach ($responses as $response) {
+            if (is_array($response)) {
+                $kpis = array_merge($kpis, $response);
+            }
+        }
+        if ($kpis) {
+            $rendered = [];
+            foreach ($kpis as $kpi) {
+                if ($kpi instanceof HelperKpi) {
+                    if ($this->canDisplayKpi((string)$kpi->id)) {
+                        $rendered[] = $kpi->generate();
+                    }
+                } elseif (is_array($kpi) && array_key_exists('content', $kpi) && array_key_exists('id', $kpi)) {
+                    if ($this->canDisplayKpi((string)$kpi['id'])) {
+                        $rendered[] = (string)$kpi['content'];
+                    }
+                }
+            }
+
+            if ($rendered) {
+                $helper = new HelperKpiRow();
+                $helper->kpis = $rendered;
+                return $helper->generate();
+            }
+        }
+        return '';
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return true
+     *
+     * @throws PrestaShopException
+     */
+    public function canDisplayKpi(string $id): bool
+    {
+        $hookParams = [
+            'object' => $this,
+            'className' => get_class($this),
+            'display' => (string)($this->display ?? 'list'),
+            'kpi' => $id,
+        ];
+        foreach (Hook::getResponses('actionCanDisplayKpi', $hookParams) as $response) {
+            if (is_bool($response)) {
+                if (! $response) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns KPIs for this controllers.
+     * Allowed returned values are
+     *      - HelperKPI object
+     *      - Array with keys ['id', 'title', 'content']
+     *
+     * @return array
+     */
+    public function getKpis(): array
+    {
+        return [];
     }
 
     /**

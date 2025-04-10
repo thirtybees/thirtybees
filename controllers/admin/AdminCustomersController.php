@@ -765,14 +765,11 @@ class AdminCustomersControllerCore extends AdminController
     }
 
     /**
-     * Render kpis
-     *
-     * @return false|string
+     * @return HelperKpi[]
      *
      * @throws PrestaShopException
-     * @throws SmartyException
      */
-    public function renderKpis()
+    public function getKpis(): array
     {
         $time = time();
         $kpis = [];
@@ -790,7 +787,7 @@ class AdminCustomersControllerCore extends AdminController
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=customer_main_gender';
         $helper->refresh = (bool) (ConfigurationKPI::get('CUSTOMER_MAIN_GENDER_EXPIRE', $this->context->language->id) < $time);
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
         $helper = new HelperKpi();
         $helper->id = 'box-age';
@@ -803,7 +800,7 @@ class AdminCustomersControllerCore extends AdminController
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=avg_customer_age';
         $helper->refresh = (bool) (ConfigurationKPI::get('AVG_CUSTOMER_AGE_EXPIRE', $this->context->language->id) < $time);
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
         $helper = new HelperKpi();
         $helper->id = 'box-orders';
@@ -816,7 +813,7 @@ class AdminCustomersControllerCore extends AdminController
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=orders_per_customer';
         $helper->refresh = (bool) (ConfigurationKPI::get('ORDERS_PER_CUSTOMER_EXPIRE') < $time);
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
         $helper = new HelperKpi();
         $helper->id = 'box-newsletter';
@@ -829,12 +826,9 @@ class AdminCustomersControllerCore extends AdminController
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=newsletter_registrations';
         $helper->refresh = (bool) (ConfigurationKPI::get('NEWSLETTER_REGISTRATIONS_EXPIRE') < $time);
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
-        $helper = new HelperKpiRow();
-        $helper->kpis = $kpis;
-
-        return $helper->generate();
+        return $kpis;
     }
 
     /**

@@ -3419,14 +3419,11 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * Render KPIs
-     *
-     * @return false|string
+     * @return HelperKpi[]
      *
      * @throws PrestaShopException
-     * @throws SmartyException
      */
-    public function renderKpis()
+    public function getKpis(): array
     {
         $time = time();
         $kpis = [];
@@ -3446,7 +3443,7 @@ class AdminProductsControllerCore extends AdminController
             $helper->tooltip = $this->l('X% of your products for sale are out of stock.', null, null, false);
             $helper->refresh = (bool) (ConfigurationKPI::get('PERCENT_PRODUCT_OUT_OF_STOCK_EXPIRE') < $time);
             $helper->href = $this->context->link->getAdminLink('AdminProducts').'&productFilter_sav!quantity=0&productFilter_active=1&submitFilterproduct=1';
-            $kpis[] = $helper->generate();
+            $kpis[] = $helper;
         }
 
         $helper = new HelperKpi();
@@ -3460,7 +3457,7 @@ class AdminProductsControllerCore extends AdminController
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=product_avg_gross_margin';
         $helper->tooltip = $this->l('Gross margin expressed in percentage assesses how cost-effectively you sell your goods. Out of $100, you will retain $X to cover profit and expenses.', null, null, false);
         $helper->refresh = (bool) (ConfigurationKPI::get('PRODUCT_AVG_GROSS_MARGIN_EXPIRE') < $time);
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
         $helper = new HelperKpi();
         $helper->id = 'box-8020-sales-catalog';
@@ -3477,7 +3474,7 @@ class AdminProductsControllerCore extends AdminController
         if (Module::isInstalled('statsbestproducts')) {
             $helper->href = $this->context->link->getAdminLink('AdminStats').'&module=statsbestproducts&datepickerFrom='.date('Y-m-d', strtotime('-30 days')).'&datepickerTo='.date('Y-m-d');
         }
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
         $helper = new HelperKpi();
         $helper->id = 'box-disabled-products';
@@ -3492,12 +3489,9 @@ class AdminProductsControllerCore extends AdminController
         $helper->refresh = (bool) (ConfigurationKPI::get('DISABLED_PRODUCTS_EXPIRE') < $time);
         $helper->tooltip = $this->l('X% of your products are disabled and not visible to your customers', null, null, false);
         $helper->href = $this->context->link->getAdminLink('AdminProducts').'&productFilter_active=0&submitFilterproduct=1';
-        $kpis[] = $helper->generate();
+        $kpis[] = $helper;
 
-        $helper = new HelperKpiRow();
-        $helper->kpis = $kpis;
-
-        return $helper->generate();
+        return $kpis;
     }
 
     /**
