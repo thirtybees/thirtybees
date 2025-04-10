@@ -183,11 +183,35 @@ class ShopMaintenanceCore
      */
     public static function autoDbBackup()
     {
-        if (Configuration::get('TB_DB_AUTO_BACKUP')) {
+        if (Configuration::get('TB_BACKUP_RUNNING')) {
+            return;
+        }
+        
+        Configuration::updateValue('TB_BACKUP_RUNNING', 1);
+        
+        try {
             $backup = new PrestaShopBackup();
             if ($backup->add()) {
-                PrestaShopLogger::addLog('Automatic backup created: ' . basename($backup->id), 1, null, 'ShopMaintenance', null, true);
+                PrestaShopLogger::addLog(
+                    'Automatic backup created: ' . basename($backup->id),
+                    1,
+                    null,
+                    'ShopMaintenance',
+                    null,
+                    true
+                );
             }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                'Backup error: ' . $e->getMessage(),
+                3,
+                null,
+                'ShopMaintenance',
+                null,
+                true
+            );
+        } finally {
+            Configuration::updateValue('TB_BACKUP_RUNNING', 0);
         }
     }
     
