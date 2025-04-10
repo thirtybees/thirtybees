@@ -183,7 +183,7 @@ class ShopMaintenanceCore
      */
     public static function autoDbBackup()
     {
-        if (Configuration::get('TB_BACKUP_RUNNING')) {
+        if (!Configuration::get('TB_DB_AUTO_BACKUP') || Configuration::get('TB_BACKUP_RUNNING')) {
             return;
         }
         
