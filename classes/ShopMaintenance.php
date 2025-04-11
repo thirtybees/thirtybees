@@ -27,6 +27,11 @@
 class ShopMaintenanceCore
 {
     /**
+     * Database lock name.
+     */
+    const LOCK_NAME = 'TB_AUTO_BACKUP_LOCK';
+    
+    /**
      * Run tasks as needed. Should take care of running tasks not more often
      * than needed and that one run takes not longer than a few seconds.
      *
@@ -183,35 +188,52 @@ class ShopMaintenanceCore
      */
     public static function autoDbBackup()
     {
-        if (!Configuration::get('TB_DB_AUTO_BACKUP') || Configuration::get('TB_BACKUP_RUNNING')) {
+        if (!Configuration::get('TB_DB_AUTO_BACKUP')) {
             return;
         }
         
-        Configuration::updateValue('TB_BACKUP_RUNNING', 1);
+        if (!self::lock()) {
+            throw new Exception('Automatic backup skipped - lock not acquired');
+        }
         
         try {
             $backup = new PrestaShopBackup();
-            if ($backup->add()) {
-                PrestaShopLogger::addLog(
-                    'Automatic backup created: ' . basename($backup->id),
-                    1,
-                    null,
-                    'ShopMaintenance',
-                    null,
-                    true
-                );
+            if (!$backup->add()) {
+                throw new Exception('Automatic backup failed: backup->add() returned false');
             }
         } catch (Exception $e) {
-            PrestaShopLogger::addLog(
-                'Backup error: ' . $e->getMessage(),
-                3,
-                null,
-                'ShopMaintenance',
-                null,
-                true
-            );
+            throw new Exception('Backup error: ' . $e->getMessage(), 0, $e);
         } finally {
-            Configuration::updateValue('TB_BACKUP_RUNNING', 0);
+            self::releaseLock();
+        }
+    }
+
+    /**
+     * Attempts to acquire the MySQL lock defined by static::LOCK_NAME.
+     *
+     * @return bool True if the lock was acquired, false otherwise.
+     */
+    protected static function lock()
+    {
+        try {
+            $connection = Db::getInstance();
+            return (bool)(int)$connection->getValue("SELECT GET_LOCK('" . static::LOCK_NAME . "', 3)");
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Releases the MySQL lock identified by static::LOCK_NAME.
+     *
+     * @return void
+     */
+    protected static function releaseLock()
+    {
+        try {
+            $connection = Db::getInstance();
+            $connection->execute("SELECT RELEASE_LOCK('" . static::LOCK_NAME . "')");
+        } catch (Exception $ignored) {
         }
     }
     
