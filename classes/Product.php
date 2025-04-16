@@ -109,6 +109,11 @@ class ProductCore extends ObjectModel implements InitializationCallback
     protected static $cacheStock = [];
 
     /**
+     * @var array
+     */
+    protected $_cache_available_quantity = [];
+
+    /**
      * @var string Tax name
      */
     public $tax_name;
@@ -4130,7 +4135,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $result = $conn->execute('
             UPDATE `'._DB_PREFIX_.'category_product`
             SET `position`= `position` '.($way ? '-1' : '+1').'
-            WHERE `position` '.($way ? '>': '<').$currentPosition.' 
+            WHERE `position` '.($way ? '>': '<').$currentPosition.'
               AND `position` '.($way ? '<=' : '>=').$newPosition.'
               AND `id_category` ='.$categoryId
         );
@@ -8434,5 +8439,60 @@ class ProductCore extends ObjectModel implements InitializationCallback
             }
         }
         return $depth;
+    }
+
+    /**
+     * Returns the available product quantity.
+     * If combinations exist, sums only positive stocks (if $ignoreNegativeStocks is true).
+     * Falls back to main product stock if no combinations are found.
+     * Uses static cache unless $fresh is true.
+     *
+     * @param $ignoreNegativeStocks bool If should ignore negative stocks
+     * @param $fresh bool If true, then cache is refreshed
+     * @param $idShop int|null ID shop for which to take stocks from
+     *
+     * @return int
+     *
+     * @throws PrestaShopException
+     * @since thirty bees 1.7.0
+     */
+    public function getAvailableQuantity(bool $ignoreNegativeStocks = true, bool $fresh = false, int $idShop = null): int
+    {
+        $productId = (int)$this->id;
+        if (! $productId) {
+            return 0;
+        }
+
+        $cacheKey = ($ignoreNegativeStocks ? 'p' : 'n') . '_' . $idShop;
+        if ($fresh) {
+            unset($this->_cache_available_quantity[$cacheKey]);
+        }
+
+        if (isset($this->_cache_available_quantity[$cacheKey])) {
+            return $this->_cache_available_quantity[$cacheKey];
+        }
+
+        $this->_cache_available_quantity[$cacheKey] = 0;
+
+        if (Combination::isFeatureActive()) {
+            $combinations = static::getProductAttributesIds($productId);
+            if ($combinations) {
+                foreach ($combinations as $row) {
+                    $combinationId = (int)$row['id_product_attribute'];
+                    $stock = StockAvailableCore::getQuantityAvailableByProduct($productId, $combinationId, $idShop);
+                    if ($stock > 0 || !$ignoreNegativeStocks) {
+                        $this->_cache_available_quantity[$cacheKey] += $stock;
+                    }
+                }
+                return $this->_cache_available_quantity[$cacheKey];
+            }
+        }
+
+        $stock = StockAvailableCore::getQuantityAvailableByProduct($productId, null, $idShop);
+        if ($stock > 0 || !$ignoreNegativeStocks) {
+            $this->_cache_available_quantity[$cacheKey] = $stock;
+        }
+
+        return $this->_cache_available_quantity[$cacheKey];
     }
 }
