@@ -4130,7 +4130,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $result = $conn->execute('
             UPDATE `'._DB_PREFIX_.'category_product`
             SET `position`= `position` '.($way ? '-1' : '+1').'
-            WHERE `position` '.($way ? '>': '<').$currentPosition.' 
+            WHERE `position` '.($way ? '>': '<').$currentPosition.'
               AND `position` '.($way ? '<=' : '>=').$newPosition.'
               AND `id_category` ='.$categoryId
         );
@@ -8434,5 +8434,52 @@ class ProductCore extends ObjectModel implements InitializationCallback
             }
         }
         return $depth;
+    }
+
+    /**
+     * Returns the available product quantity.
+     * If combinations exist, sums only positive stocks (if $ignoreNegativeStocks is true).
+     * Falls back to main product stock if no combinations are found.
+     * Uses static cache unless $fresh is true.
+     *
+     * @param $ignoreNegativeStocks bool If should ignore negative stocks
+     * @param $fresh bool If true, then cache is refreshed
+     * @param $idShop int|null ID shop for which to take stocks from
+     * @return int
+     * @since thirty bees 1.7.0
+     *
+     */
+    public function getAvailableQuantity(bool $ignoreNegativeStocks = true, bool $fresh = false, int $idShop = null): int {
+        static $cache = [];
+        $key = ($ignoreNegativeStocks ? 'p' : 'n') . '_' . $idShop;
+        if(!$this->id)
+            return 0;
+
+        if($fresh)
+            unset($cache[$key]);
+
+        if(isset($cache[$key])){
+            return $cache[$key];
+        }
+
+        $cache[$key] = 0;
+        if(Combination::isFeatureActive()){
+            $result = Db::readOnly()->getArray(
+                'SELECT `id_product_attribute` as id FROM `'._DB_PREFIX_.'product_attribute` WHERE `id_product` = '.(int) $this->id
+            );
+            if($result){
+                foreach($result as $r){
+                    $stock = StockAvailableCore::getQuantityAvailableByProduct($this->id, (int)$r['id'], $idShop);
+                    if($stock > 0 || !$ignoreNegativeStocks){
+                        $cache[$key] += $stock;
+                    }
+                }
+                return $cache[$key];
+            }
+        }
+        if($stock = StockAvailableCore::getQuantityAvailableByProduct($this->id, null, $idShop) > 0){
+            $cache[$key] = $stock;
+        }
+        return $cache[$key];
     }
 }
