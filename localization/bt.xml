@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Bhutan" version="1.0">
+  <currencies>
+    <currency name="Ngultrum" iso_code="BTN" iso_code_num="064" sign="Nu." blank="1" conversion_rate="83.00" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="རྫོང་ཁ (Dzongkha)" iso_code="dz" language_code="dz-bt" date_format_lite="Y-m-d" date_format_full="Y-m-d H:i:s" is_rtl="0"/>
+    <language name="English (English)" iso_code="en" language_code="en-bt" date_format_lite="d/m/Y" date_format_full="d/m/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="GST BT 7%" rate="7"/>
+    <taxRulesGroup name="BT Standard Rate (7%)">
+      <taxRule iso_code_country="bt" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

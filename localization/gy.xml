@@ -4,7 +4,7 @@
     <currency name="Dollar" iso_code="GYD" iso_code_num="328" sign="$" blank="0" conversion_rate="276.712" format="1" decimals="1" decimal_places="2"/>
   </currencies>
   <languages>
-    <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+    <language name="English (United States)" iso_code="en" language_code="en-gy" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="VAT GY 16%" rate="16"/>
@@ -15,8 +15,8 @@
   <units>
     <unit type="weight" value="kg"/>
     <unit type="volume" value="L"/>
-    <unit type="short_distance" value="in"/>
-    <unit type="base_distance" value="ft"/>
-    <unit type="long_distance" value="mi"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
   </units>
 </localizationPack>

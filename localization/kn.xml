@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Saint Kitts and Nevis" version="1.0">
+  <currencies>
+    <currency name="East Caribbean Dollar" iso_code="XCD" iso_code_num="951" sign="$" blank="1" conversion_rate="2.7000" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (Saint Kitts and Nevis)" iso_code="en" language_code="en-kn" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT KN 17%" rate="17"/>
+    <tax id="2" name="VAT KN 10%" rate="10"/>
+    <tax id="3" name="VAT KN 0%" rate="0"/>
+    <taxRulesGroup name="KN Standard Rate (17%)">
+      <taxRule iso_code_country="kn" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="KN Reduced Rate (10%)">
+      <taxRule iso_code_country="kn" id_tax="2"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="KN Zero Rate (0%)">
+      <taxRule iso_code_country="kn" id_tax="3"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
