@@ -8436,6 +8436,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
         return $depth;
     }
 
+    protected $_cache_available_quantity = [];
+
     /**
      * Returns the available product quantity.
      * If combinations exist, sums only positive stocks (if $ignoreNegativeStocks is true).
@@ -8450,19 +8452,18 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      */
     public function getAvailableQuantity(bool $ignoreNegativeStocks = true, bool $fresh = false, int $idShop = null): int {
-        static $cache = [];
         $key = ($ignoreNegativeStocks ? 'p' : 'n') . '_' . $idShop;
         if(!$this->id)
             return 0;
 
         if($fresh)
-            unset($cache[$key]);
+            unset($this->_cache_available_quantity[$key]);
 
-        if(isset($cache[$key])){
-            return $cache[$key];
+        if(isset($this->_cache_available_quantity[$key])){
+            return $this->_cache_available_quantity[$key];
         }
 
-        $cache[$key] = 0;
+        $this->_cache_available_quantity[$key] = 0;
         if(Combination::isFeatureActive()){
             $result = Db::readOnly()->getArray(
                 'SELECT `id_product_attribute` as id FROM `'._DB_PREFIX_.'product_attribute` WHERE `id_product` = '.(int) $this->id
@@ -8471,15 +8472,15 @@ class ProductCore extends ObjectModel implements InitializationCallback
                 foreach($result as $r){
                     $stock = StockAvailableCore::getQuantityAvailableByProduct($this->id, (int)$r['id'], $idShop);
                     if($stock > 0 || !$ignoreNegativeStocks){
-                        $cache[$key] += $stock;
+                        $this->_cache_available_quantity[$key] += $stock;
                     }
                 }
-                return $cache[$key];
+                return $this->_cache_available_quantity[$key];
             }
         }
         if($stock = StockAvailableCore::getQuantityAvailableByProduct($this->id, null, $idShop) > 0){
-            $cache[$key] = $stock;
+            $this->_cache_available_quantity[$key] = $stock;
         }
-        return $cache[$key];
+        return $this->_cache_available_quantity[$key];
     }
 }
