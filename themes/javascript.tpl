@@ -27,7 +27,7 @@
 *  International Trademark & Property of thirty bees
 *}
 {if isset($js_def) && is_array($js_def) && $js_def|@count}
-<script type="text/javascript">
+<script>
 {foreach from=$js_def key=k item=def}
 {if !empty($k) && is_string($k)}
 {if is_bool($def)}
@@ -51,11 +51,11 @@ var {$k} = '{$def|@addcslashes:'\''}';
 {/if}
 {if isset($js_files) && $js_files|@count}
 {foreach from=$js_files key=k item=js_uri}
-<script type="text/javascript" src="{$js_uri}"></script>
+<script src="{$js_uri}"></script>
 {/foreach}
 {/if}
 {if isset($js_inline) && $js_inline|@count}
-<script type="text/javascript">
+<script>
 {foreach from=$js_inline key=k item=inline}
 {$inline}
 {/foreach}
