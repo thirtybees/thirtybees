@@ -512,9 +512,7 @@ class AdminModulesControllerCore extends AdminController
     {
         foreach ($modules as $k => $module) {
             // Check add permissions, if add permissions not set, addons modules and uninstalled modules will not be displayed
-            if (!$this->hasAddPermission()) {
-                unset($modules[$k]);
-            } elseif (!$this->hasAddPermission() && (!isset($module->id) || $module->id < 1)) {
+            if (!$this->hasAddPermission() && (!isset($module->id) || $module->id < 1)) {
                 unset($modules[$k]);
             } elseif ($module->id && !Module::getPermissionStatic($module->id, 'view') && !Module::getPermissionStatic($module->id, 'configure')) {
                 unset($modules[$k]);
