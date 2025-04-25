@@ -193,6 +193,7 @@ class CurrencyCore extends ObjectModel
                 ->from('currency', 'c')
                 ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
                 ->where($idShop ? 'cs.`id_shop` = '.(int) $idShop : '')
+                ->where('c.`deleted` = 0')
                 ->orderBy('`name` ASC')
         );
     }
@@ -511,6 +512,7 @@ class CurrencyCore extends ObjectModel
                     ->from('currency', 'c')
                     ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
                     ->where('cs.`id_shop` = '.(int) $idShop)
+                    ->where('c.`deleted` = 0')
                     ->where('c.`active` = 1')
             );
         }
