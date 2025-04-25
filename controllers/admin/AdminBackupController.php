@@ -275,7 +275,7 @@ class AdminBackupControllerCore extends AdminController
      * @param string|null $orderBy
      * @param string|null $orderWay
      * @param int $start
-     * @param int|null $limit
+     * @param int|false|null $limit
      * @param int|null $idLangShop
      *
      * @throws PrestaShopException
@@ -288,13 +288,9 @@ class AdminBackupControllerCore extends AdminController
         $limit = null,
         $idLangShop = null
     ) {
-        if (!Validate::isTableOrIdentifier($this->table)) {
-            throw new PrestaShopException(Tools::displayError('Filter is corrupted'));
-        }
-
         // Try and obtain getList arguments from $_GET
-        $orderBy = strtolower((string)Tools::getValue($this->table.'Orderby'));
-        $orderWay = strtolower((string)Tools::getValue($this->table.'Orderway'));
+        $orderBy = strtolower((string)Tools::getValue($this->list_id.'Orderby'));
+        $orderWay = strtolower((string)Tools::getValue($this->list_id.'Orderway'));
 
         // Validate the orderBy and orderWay fields
         if (! in_array($orderBy, [
@@ -310,17 +306,28 @@ class AdminBackupControllerCore extends AdminController
             $orderWay = 'desc';
         }
 
-        if (empty($limit)) {
-            $limit = isset($this->context->cookie->{$this->table.'_pagination'})
-                ? (int)$this->context->cookie->{$this->table.'_pagination'}
-                : $this->_pagination[0];
+        if ($limit === false) {
+            $limit = 0;
+        } else {
+            $limit = HelperList::resolvePagination($this->list_id, $this->context->cookie, $this->_pagination, $this->_default_pagination);
+            if ($limit !== $this->_default_pagination) {
+                $this->context->cookie->{$this->list_id.'_pagination'} = $limit;
+            } else {
+                unset($this->context->cookie->{$this->list_id.'_pagination'});
+            }
         }
-        $limit = Tools::getIntValue('pagination', $limit);
-        $this->context->cookie->{$this->table.'_pagination'} = $limit;
 
         /* Determine offset from current page */
-        if (!empty($_POST['submitFilter'.$this->list_id]) && is_numeric($_POST['submitFilter'.$this->list_id])) {
-            $start = (int) $_POST['submitFilter'.$this->list_id] - $limit;
+        $start = 0;
+        if (Tools::getIntValue('submitFilter'.$this->list_id)) {
+            $start = (Tools::getIntValue('submitFilter'.$this->list_id) - 1) * $limit;
+        }
+
+        // Either save or reset the offset in the cookie
+        if ($start) {
+            $this->context->cookie->{$this->list_id.'_start'} = $start;
+        } elseif (isset($this->context->cookie->{$this->list_id.'_start'})) {
+            unset($this->context->cookie->{$this->list_id.'_start'});
         }
 
         $this->_orderBy = $orderBy;
