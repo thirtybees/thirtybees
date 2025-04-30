@@ -919,8 +919,7 @@ class AdminControllerCore extends Controller
         header('Content-type: text/csv');
         header('Content-Type: application/force-download; charset=UTF-8');
         header('Cache-Control: no-store, no-cache');
-        header('Content-disposition: attachment; filename="'.$this->table.'_'.date('Y-m-d_His').'.csv"');
-
+        header('Content-disposition: attachment; filename="' . $this->getExportFileName() . '"');
         $headers = [];
         foreach ($this->fields_list as $key => $datas) {
             if ($datas['title'] === 'PDF') {
@@ -978,6 +977,14 @@ class AdminControllerCore extends Controller
         );
 
         $this->layout = 'layout-export.tpl';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getExportFileName(): string
+    {
+        return $this->table.'_'.date('Y-m-d_His').'.csv';
     }
 
     /**
