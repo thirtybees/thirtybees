@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Tuvalu" version="1.0">
+  <currencies>
+    <currency name="Australian Dollar" iso_code="AUD" iso_code_num="36" sign="A$" blank="1" conversion_rate="1.34402" format="1" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="English (United States)" iso_code="en" language_code="en-au" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="GST AU 10%" rate="10"/>
+    <taxRulesGroup name="AU Standard Rate (10%)">
+      <taxRule iso_code_country="tv" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

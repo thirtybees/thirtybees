@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Uzbekistan" version="1.0">
+  <currencies>
+    <currency name="Som" iso_code="UZS" iso_code_num="860" sign="сўм" blank="1" conversion_rate="10700.00" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Ўзбек (Uzbek)" iso_code="uz" language_code="uz-uz" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="VAT UZ 15%" rate="15"/>
+    <taxRulesGroup name="UZ Standard Rate (15%)">
+      <taxRule iso_code_country="uz" id_tax="1"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>

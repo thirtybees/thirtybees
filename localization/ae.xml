@@ -5,7 +5,7 @@
   </currencies>
   <languages>
     <language name="English (United States)" iso_code="en" language_code="en-us" date_format_lite="m/d/Y" date_format_full="m/d/Y H:i:s" is_rtl="0"/>
-    <language name="اللغة العربية (Arabic)" iso_code="ar" language_code="ar-sa" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>
+    <language name="اللغة العربية (Arabic)" iso_code="ar" language_code="ar-ae" date_format_lite="d-m-Y" date_format_full="d-m-Y H:i:s" is_rtl="1"/>
   </languages>
   <taxes/>
   <units>

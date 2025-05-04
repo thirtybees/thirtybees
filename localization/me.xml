@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localizationPack name="Montenegro" version="1.0">
+  <currencies>
+    <currency name="Euro" iso_code="EUR" iso_code_num="978" sign="€" blank="1" conversion_rate="1.00000" format="2" decimals="1" decimal_places="2"/>
+  </currencies>
+  <languages>
+    <language name="Crnogorski (Montenegrin)" iso_code="me" language_code="me-me" date_format_lite="d.m.Y" date_format_full="d.m.Y H:i:s" is_rtl="0"/>
+  </languages>
+  <taxes>
+    <tax id="1" name="PDV ME 21%" rate="21"/>
+    <tax id="2" name="PDV ME 7%" rate="7"/>
+    <taxRulesGroup name="ME Standard Rate (21%)">
+      <taxRule iso_code_country="me" id_tax="1"/>
+    </taxRulesGroup>
+    <taxRulesGroup name="ME Reduced Rate (7%)">
+      <taxRule iso_code_country="me" id_tax="2"/>
+    </taxRulesGroup>
+  </taxes>
+  <units>
+    <unit type="weight" value="kg"/>
+    <unit type="volume" value="L"/>
+    <unit type="short_distance" value="cm"/>
+    <unit type="base_distance" value="m"/>
+    <unit type="long_distance" value="km"/>
+  </units>
+</localizationPack>
