@@ -3949,7 +3949,8 @@ class AdminProductsControllerCore extends AdminController
     {
         $data = $this->createTemplate($this->tpl_form);
         $product = $obj;
-        if ($obj->id) {
+        $productId = (int)$obj->id;
+        if ($productId) {
             $shops = Shop::getShops();
             $countries = Country::getCountries($this->context->language->id);
             $groups = Group::getGroups($this->context->language->id, true);
@@ -3965,7 +3966,7 @@ class AdminProductsControllerCore extends AdminController
 
                 $combinations[$attribute['id_product_attribute']]['price'] = Tools::displayPrice(
                     Tools::convertPrice(
-                        Product::getPriceStatic((int) $obj->id, false, $attribute['id_product_attribute']),
+                        Product::getPriceStatic($productId, false, $attribute['id_product_attribute']),
                         $this->context->currency
                     ),
                     $this->context->currency
@@ -3982,6 +3983,14 @@ class AdminProductsControllerCore extends AdminController
             $data->assign('ecotax_tax_excl', (float) $obj->ecotax);
             $this->_applyTaxToEcotax($obj);
 
+            $packInfo = null;
+            if (Pack::isPack($productId)) {
+                $packInfo = [
+                    'itemsWholesalePriceSum' => Pack::noPackWholesalePrice($productId),
+                    'itemsPriceSum' => Pack::noPackPrice($productId),
+                ];
+            }
+
             $data->assign(
                 [
                     'shops'          => $shops,
@@ -3992,7 +4001,7 @@ class AdminProductsControllerCore extends AdminController
                     'combinations'   => $combinations,
                     'multi_shop'     => Shop::isFeatureActive(),
                     'link'           => new Link(),
-                    'pack'           => new Pack(),
+                    'packInfo'       => $packInfo
                 ]
             );
         } else {
