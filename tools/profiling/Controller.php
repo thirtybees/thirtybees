@@ -560,8 +560,7 @@ abstract class Controller extends ControllerCore
 					width: 100%;
 				}
 			}
-		</style>
-		<script type="text/javascript" src="https://raw.githubusercontent.com/drvic10k/bootstrap-sortable/1.11.2/Scripts/bootstrap-sortable.js"></script>';
+		</style>';
     }
 
     /**
