@@ -50,6 +50,11 @@ class MetaCore extends ObjectModel
     public $configurable = 1;
 
     /**
+     * @var bool
+     */
+    public $nobots = 0;
+
+    /**
      * @var string|string[]
      */
     public $title;
@@ -80,6 +85,7 @@ class MetaCore extends ObjectModel
         'fields'         => [
             'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 128, 'unique' => true],
             'configurable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'nobots'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
 
             /* Lang fields */
             'title'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
@@ -381,7 +387,10 @@ class MetaCore extends ObjectModel
         $ret['meta_title'] = (isset($metas['title']) && $metas['title']) ? $metas['title'].' - '.Configuration::get('PS_SHOP_NAME') : Configuration::get('PS_SHOP_NAME');
         $ret['meta_description'] = (isset($metas['description']) && $metas['description']) ? $metas['description'] : '';
         $ret['meta_keywords'] = (isset($metas['keywords']) && $metas['keywords']) ? $metas['keywords'] : '';
-
+        if ($metas['nobots'] == 1) {
+            $ret['nobots'] = true;
+            $ret['nofollow'] = true;
+        }
         return $ret;
     }
 

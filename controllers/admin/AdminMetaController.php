@@ -506,6 +506,25 @@ class AdminMetaControllerCore extends AdminController
                         $this->l('Only letters and hyphens are allowed.'),
                     ],
                 ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Noindex for search engines'),
+                    'name'     => 'nobots',
+                    'required' => false,
+                    'is_bool'  => true,
+                    'values'   => [
+                        [
+                            'id'    => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
