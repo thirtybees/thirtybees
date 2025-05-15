@@ -592,6 +592,8 @@ class CartCore extends ObjectModel
                 $cartShopContext
             );
 
+            $row['base_price'] = $row['price'];
+
             $row['price'] = $row['price_with_reduction_without_tax'] = Product::getPriceStatic(
                 (int) $row['id_product'],
                 false,
