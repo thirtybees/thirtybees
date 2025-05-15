@@ -643,8 +643,16 @@ class CartCore extends ObjectModel
                 }
             }
 
-            $row['reduction_applies'] = ($specificPriceOutput && (float) $specificPriceOutput['reduction']);
-            $row['quantity_discount_applies'] = ($specificPriceOutput && $quantity >= (int) $specificPriceOutput['from_quantity']);
+            $row['reduction_applies'] = null;
+            if ($specificPriceOutput && $specificPriceOutput['reduction'] && $specificPriceOutput['reduction_type']) {
+                if ($specificPriceOutput['reduction_type'] == 'amount') {
+                    $row['reduction_applies'] = $specificPriceOutput['reduction'];
+                } elseif ($specificPriceOutput['reduction_type'] == 'percentage') {
+                    $row['reduction_applies'] = round((float) $specificPriceOutput['reduction'] * 100);
+                }
+            }
+
+            $row['quantity_discount_applies'] = (int) ($specificPriceOutput['from_quantity'] ?? 0);
             $row['allow_oosp'] = Product::isAvailableWhenOutOfStock($row['out_of_stock']);
             $row['features'] = Product::getFeaturesStatic((int) $row['id_product']);
 
