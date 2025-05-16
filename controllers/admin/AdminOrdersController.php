@@ -97,6 +97,7 @@ class AdminOrdersControllerCore extends AdminController
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs',
+                'type'  => HelperList::COLUMN_TYPE_INT
             ],
             'reference' => [
                 'title' => $this->l('Reference'),
@@ -125,6 +126,11 @@ class AdminOrdersControllerCore extends AdminController
                     ],
                 ]
             );
+        }
+
+        $currencies = [];
+        foreach (Currency::getCurrencies(false, true, true) as $currency) {
+            $currencies[(int)$currency['id_currency']] = $currency['name'];
         }
 
         $this->fields_list = array_merge(
@@ -163,6 +169,32 @@ class AdminOrdersControllerCore extends AdminController
                     'orderby'        => false,
                     'search'         => false,
                     'remove_onclick' => true,
+                ],
+                'currency' => [
+                    'title' => $this->l('Currency'),
+                    'type' => HelperList::COLUMN_TYPE_SELECT,
+                    'filter_key' => 'a!id_currency',
+                    'filter_type' => HelperList::COLUMN_TYPE_INT,
+                    'list' => $currencies,
+                    'hidden' => true,
+                ],
+                'customer_email' => [
+                    'title' => $this->l('Customer Email'),
+                    'type' => HelperList::COLUMN_TYPE_TEXT,
+                    'filter_key' => 'c!email',
+                    'hidden' => true,
+                ],
+                'customer_first_name' => [
+                    'title' => $this->l('First Name'),
+                    'type' =>HelperList::COLUMN_TYPE_TEXT,
+                    'filter_key' => 'c!firstname',
+                    'hidden' => true,
+                ],
+                'customer_last_name' => [
+                    'title' => $this->l('Last Name'),
+                    'type' => HelperList::COLUMN_TYPE_TEXT,
+                    'filter_key' => 'c!lastname',
+                    'hidden' => true,
                 ],
             ]
         );
@@ -211,35 +243,7 @@ class AdminOrdersControllerCore extends AdminController
             'updateOrderStatus' => ['text' => $this->l('Change Order Status'), 'icon' => 'icon-refresh'],
         ];
 
-        $currencies = [];
-        foreach (Currency::getCurrencies(false, true, true) as $currency) {
-            $currencies[(int)$currency['id_currency']] = $currency['name'];
-        }
 
-        $this->filters_list = [
-            'currency' => [
-                'title' => $this->l('Currency'),
-                'type' => 'select',
-                'filter_key' => 'a!id_currency',
-                'filter_type' => 'int',
-                'list' => $currencies
-            ],
-            'customer_email' => [
-                'title' => $this->l('Customer - Email'),
-                'type' => 'text',
-                'filter_key' => 'c!email'
-            ],
-            'customer_first_name' => [
-                'title' => $this->l('Customer - First Name'),
-                'type' => 'text',
-                'filter_key' => 'c!firstname'
-            ],
-            'customer_last_name' => [
-                'title' => $this->l('Customer - Last Name'),
-                'type' => 'text',
-                'filter_key' => 'c!lastname'
-            ],
-        ];
 
         parent::__construct();
     }

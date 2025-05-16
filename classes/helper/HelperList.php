@@ -1166,7 +1166,16 @@ class HelperListCore extends Helper
                 ];
             }
         }
-        return $fields;
+        $columns = $this->getListViewStorage()->getListColumns();
+        if (! $columns) {
+            $columns = $this->getDefaultColumns($fields);
+        }
+
+        $result = [];
+        foreach ($columns as $column) {
+            $result[$column] = $fields[$column];
+        }
+        return $result;
     }
 
     /**
@@ -1215,6 +1224,30 @@ class HelperListCore extends Helper
             );
         }
         return $this->listViewStorage;
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     */
+    protected function getDefaultColumns(array $fields): array
+    {
+        $columns = [];
+        foreach ($fields as $fieldId => $field) {
+            if (! $this->isHiddenField($field)) {
+                $columns[] = $fieldId;
+            }
+        }
+        return $columns;
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     */
+    private function isHiddenField(array $field): bool
+    {
+        return isset($field['hidden']) && $field['hidden'];
     }
 }
 

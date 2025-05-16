@@ -162,6 +162,14 @@ class CookieListViewStorageCore implements ListViewStorage
     }
 
     /**
+     * @return array
+     */
+    public function getListColumns(): array
+    {
+        return [];
+    }
+
+    /**
      * @param string $filterId
      * @param string $serializedValue
      * @return Filter|null

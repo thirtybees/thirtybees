@@ -6,6 +6,7 @@ use Thirtybees\Core\Dataset\Filter\Filter;
 
 interface ListViewStorage
 {
+
     /**
      * @return Filter[]
      */
@@ -31,4 +32,9 @@ interface ListViewStorage
      * @return string|null
      */
     public function getOrderBy(): ?string;
+
+    /**
+     * @return array
+     */
+    public function getListColumns(): array;
 }
