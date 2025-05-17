@@ -501,13 +501,23 @@ class CartCore extends ObjectModel
                     $this->id_customer,
                     $this->id
                 );
+                $reductionRows = [
+                    'reduction_type' => 0,
+                    'reduction_amount' => 0,
+                    'reduction_from_quantity' => 0
+                ];
                 if ($specificPrice) {
-                    $reductionTypeRow = ['reduction_type' => $specificPrice['reduction_type']];
-                } else {
-                    $reductionTypeRow = ['reduction_type' => 0];
+                    $reductionRows['reduction_type'] = $specificPrice['reduction_type'];
+                    if ($specificPrice['reduction_type'] == 'amount') {
+                        $specificPriceReductionAmount = Tools::convertPrice($specificPrice['reduction'], $this->id_currency);
+                    } elseif ($specificPrice['reduction_type'] == 'percentage') {
+                        $specificPriceReductionAmount = round((float) $specificPrice['reduction'] * 100);
+                    }
+                    $reductionRows['reduction_amount'] = $specificPriceReductionAmount ?? 0;
+                    $reductionRows['reduction_from_quantity'] = (int) $specificPrice['from_quantity'];
                 }
 
-                $result[$key] = array_merge($row, $reductionTypeRow);
+                $result[$key] = array_merge($row, $reductionRows);
             }
         }
         // Thus you can avoid one query per product, because there will be only one query for all the products of the cart
@@ -554,62 +564,49 @@ class CartCore extends ObjectModel
             $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $row['id_product'], $cartShopContext);
             $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
 
-            $row['price_without_reduction'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                true,
-                isset($row['id_product_attribute']) ? (int) $row['id_product_attribute'] : null,
-                _TB_PRICE_DATABASE_PRECISION_,
-                null,
-                false,
-                false,
-                $quantity,
-                false,
-                (int) $this->id_customer ? (int) $this->id_customer : null,
-                (int) $this->id,
-                $addressId,
-                $specificPriceOutput,
-                true,
-                true,
-                $cartShopContext
-            );
-
-            $row['price_with_reduction'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                true,
-                isset($row['id_product_attribute']) ? (int) $row['id_product_attribute'] : null,
-                _TB_PRICE_DATABASE_PRECISION_,
-                null,
-                false,
-                true,
-                $quantity,
-                false,
-                (int) $this->id_customer ? (int) $this->id_customer : null,
-                (int) $this->id,
-                $addressId,
-                $specificPriceOutput,
-                true,
-                true,
-                $cartShopContext
-            );
-
-            $row['price'] = $row['price_with_reduction_without_tax'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                false,
-                isset($row['id_product_attribute']) ? (int) $row['id_product_attribute'] : null,
-                _TB_PRICE_DATABASE_PRECISION_,
-                null,
-                false,
-                true,
-                $quantity,
-                false,
-                (int) $this->id_customer ? (int) $this->id_customer : null,
-                (int) $this->id,
-                $addressId,
-                $specificPriceOutput,
-                true,
-                true,
-                $cartShopContext
-            );
+            // Prices params array
+            $pricesParams = [
+                'price_without_reduction' => [
+                    'usetax' => true,
+                    'usereduc' => false
+                ],
+                'price_without_reduction_without_tax' => [
+                    'usetax' => false,
+                    'usereduc' => false
+                ],
+                'price_with_reduction' => [
+                    'usetax' => true,
+                    'usereduc' => true
+                ],
+                'price_with_reduction_without_tax' => [
+                    'alias' => 'price',
+                    'usetax' => false,
+                    'usereduc' => true
+                ]
+            ];
+            foreach ($pricesParams as $paramKey => $paramSettings) {
+                $row[$paramKey] = Product::getPriceStatic(
+                    (int) $row['id_product'],
+                    $paramSettings['usetax'],
+                    isset($row['id_product_attribute']) ? (int) $row['id_product_attribute'] : null,
+                    _TB_PRICE_DATABASE_PRECISION_,
+                    null,
+                    false,
+                    $paramSettings['usereduc'],
+                    $quantity,
+                    false,
+                    (int) $this->id_customer ? (int) $this->id_customer : null,
+                    (int) $this->id,
+                    $addressId,
+                    $specificPriceOutput,
+                    true,
+                    true,
+                    $cartShopContext
+                );
+                if (!empty($paramSettings['alias'])) {
+                    $row[$paramSettings['alias']] = $row[$paramKey];
+                }
+            }
 
             $row['total'] = $this->roundPrice(
                 $row['price_with_reduction_without_tax'],
