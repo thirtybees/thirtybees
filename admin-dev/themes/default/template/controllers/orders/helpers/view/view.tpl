@@ -1001,7 +1001,7 @@
                 <th style="display:none" class="partial_refund_fields">
                   <span class="title_box ">{l s='Partial refund'}</span>
                 </th>
-                {if !$order->hasBeenDelivered()}
+                {if $order->canEditProducts()}
                   <th></th>
                 {/if}
               </tr>
@@ -1022,7 +1022,7 @@
 
           {if $can_edit}
             <div class="row-margin-bottom row-margin-top order_action">
-              {if !$order->hasBeenDelivered()}
+              {if $order->canEditProducts()}
                 <button type="button" id="add_product" class="btn btn-default">
                   <i class="icon-plus-sign"></i>
                   {l s='Add a product'}

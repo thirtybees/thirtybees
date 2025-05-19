@@ -100,7 +100,7 @@
 		</td>
 		<td class="edit_product_fields" colspan="2" style="display:none">&nbsp;</td>
 		<td class="partial_refund_fields current-edit" style="text-align:left;display:none;"></td>
-		{if ($can_edit && !$order->hasBeenDelivered())}
+		{if ($can_edit && $order->canEditProducts())}
 			<td class="product_action text-right">
 				{* edit/delete controls *}
 				<div class="btn-group">
@@ -243,7 +243,7 @@
 					</div>
 					{/if}
 				</td>
-				{if ($can_edit && !$order->hasBeenDelivered())}
+				{if ($can_edit && $order->canEditProducts())}
 					<td class="edit_product_fields" colspan="2" style="display:none"></td>
 					<td class="product_action" style="text-align:right"></td>
 				{/if}

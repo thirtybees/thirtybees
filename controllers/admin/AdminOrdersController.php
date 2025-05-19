@@ -3110,10 +3110,10 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         // We can't edit a delivered order
-        if ($order->hasBeenDelivered()) {
+        if (! $order->canEditProducts()) {
             $this->ajaxDie(json_encode([
                 'result' => false,
-                'error'  => Tools::displayError('You cannot edit a delivered order.'),
+                'error'  => Tools::displayError('You cannot edit this order.'),
             ]));
         }
 
@@ -3185,10 +3185,10 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         // We can't edit a delivered order
-        if ($order->hasBeenDelivered()) {
+        if (! $order->canEditProducts()) {
             $this->ajaxDie(json_encode([
                 'result' => false,
-                'error'  => Tools::displayError('You cannot edit a delivered order.'),
+                'error'  => Tools::displayError('You cannot edit this order.'),
             ]));
         }
     }

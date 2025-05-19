@@ -216,7 +216,7 @@
 		</div>
 		{/if}
 	</td>
-	{if ($can_edit && !$order->hasBeenDelivered())}
+	{if ($can_edit && $order->canEditProducts())}
 	<td class="product_invoice" style="display: none;">
 		{if $invoices}
 		<select name="product_invoice" class="edit_product_invoice">
