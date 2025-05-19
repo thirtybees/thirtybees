@@ -2782,35 +2782,38 @@ class CartCore extends ObjectModel
      */
     public function updateAddressId($idAddress, $idAddressNew)
     {
-        $toUpdate = false;
-        if (!isset($this->id_address_invoice) || $this->id_address_invoice == $idAddress) {
-            $toUpdate = true;
-            $this->id_address_invoice = $idAddressNew;
-        }
-        if (!isset($this->id_address_delivery) || $this->id_address_delivery == $idAddress) {
-            $toUpdate = true;
-            $this->id_address_delivery = $idAddressNew;
-        }
-        if ($toUpdate) {
-            $this->update();
-        }
+        if (Validate::isLoadedObject($this)) {
+            $toUpdate = false;
+            if (!isset($this->id_address_invoice) || $this->id_address_invoice == $idAddress) {
+                $toUpdate = true;
+                $this->id_address_invoice = $idAddressNew;
+            }
+            if (!isset($this->id_address_delivery) || $this->id_address_delivery == $idAddress) {
+                $toUpdate = true;
+                $this->id_address_delivery = $idAddressNew;
+            }
+            if ($toUpdate) {
+                $this->update();
+            }
 
-        $conn = Db::getInstance();
-        $conn->update(
-            'cart_product',
-            [
-                'id_address_delivery' => (int) $idAddressNew,
-            ],
-            '`id_cart` = '.(int) $this->id.' AND `id_address_delivery` = '.(int) $idAddress
-        );
+            $conn = Db::getInstance();
+            $cartId = (int)$this->id;
+            $conn->update(
+                'cart_product',
+                [
+                    'id_address_delivery' => (int)$idAddressNew,
+                ],
+                '`id_cart` = ' . $cartId . ' AND `id_address_delivery` = ' . (int)$idAddress
+            );
 
-        $conn->update(
-            'customization',
-            [
-                'id_address_delivery' => (int) $idAddressNew,
-            ],
-            '`id_cart` = '.(int) $this->id.' AND `id_address_delivery` = '.(int) $idAddress
-        );
+            $conn->update(
+                'customization',
+                [
+                    'id_address_delivery' => (int)$idAddressNew,
+                ],
+                '`id_cart` = ' . $cartId . ' AND `id_address_delivery` = ' . (int)$idAddress
+            );
+        }
     }
 
     /**
@@ -4933,34 +4936,37 @@ class CartCore extends ObjectModel
      */
     public function autosetProductAddress()
     {
-        // Get the main address of the customer
-        if ((int) $this->id_address_delivery > 0) {
-            $idAddressDelivery = (int) $this->id_address_delivery;
-        } else {
-            $idAddressDelivery = (int) Address::getFirstCustomerAddressId(Context::getContext()->customer->id);
+        if (Validate::isLoadedObject($this)) {
+            // Get the main address of the customer
+            if ((int)$this->id_address_delivery > 0) {
+                $idAddressDelivery = (int)$this->id_address_delivery;
+            } else {
+                $idAddressDelivery = (int)Address::getFirstCustomerAddressId(Context::getContext()->customer->id);
+            }
+
+            if (!$idAddressDelivery) {
+                return;
+            }
+
+            // Update
+            $conn = Db::getInstance();
+            $cartId = (int)$this->id;
+            $conn->update(
+                'cart_product',
+                [
+                    'id_address_delivery' => (int)$idAddressDelivery,
+                ],
+                '`id_cart` = ' . $cartId . ' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL) AND `id_shop` = ' . (int)$this->id_shop
+            );
+
+            $conn->update(
+                'customization',
+                [
+                    'id_address_delivery' => (int)$idAddressDelivery,
+                ],
+                '`id_cart` = ' . $cartId . ' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL)'
+            );
         }
-
-        if (!$idAddressDelivery) {
-            return;
-        }
-
-        // Update
-        $conn = Db::getInstance();
-        $conn->update(
-            'cart_product',
-            [
-                'id_address_delivery' => (int) $idAddressDelivery,
-            ],
-            '`id_cart` = '.(int) $this->id.' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL) AND `id_shop` = '.(int) $this->id_shop
-        );
-
-        $conn->update(
-            'customization',
-            [
-                'id_address_delivery' => (int) $idAddressDelivery,
-            ],
-            '`id_cart` = '.(int) $this->id.' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL)'
-        );
     }
 
     /**

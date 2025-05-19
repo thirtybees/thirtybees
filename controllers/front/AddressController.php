@@ -303,25 +303,28 @@ class AddressControllerCore extends FrontController
         // Save address
         if ($address->save()) {
             // Update id address of the current cart if necessary
+            $cart = $this->context->cart;
             if (isset($addressOld) && $addressOld->isUsed()) {
-                $this->context->cart->updateAddressId($addressOld->id, $address->id);
+                $cart->updateAddressId($addressOld->id, $address->id);
             } else { // Update cart address
-                $this->context->cart->autosetProductAddress();
+                $cart->autosetProductAddress();
             }
 
             if (Tools::getValue('select_address', false) || (Tools::getValue('type') == 'invoice' && Configuration::get('PS_ORDER_PROCESS_TYPE'))) {
-                $this->context->cart->id_address_invoice = (int) $address->id;
+                $cart->id_address_invoice = (int) $address->id;
             } elseif (Configuration::get('PS_ORDER_PROCESS_TYPE')) {
-                $this->context->cart->id_address_invoice = (int) $this->context->cart->id_address_delivery;
+                $cart->id_address_invoice = (int) $cart->id_address_delivery;
             }
-            $this->context->cart->update();
+            if (Validate::isLoadedObject($cart)) {
+                $cart->update();
+            }
 
             if ($this->ajax) {
                 $return = [
                     'hasError'            => (bool) $this->errors,
                     'errors'              => $this->errors,
-                    'id_address_delivery' => (int) $this->context->cart->id_address_delivery,
-                    'id_address_invoice'  => (int) $this->context->cart->id_address_invoice,
+                    'id_address_delivery' => (int) $cart->id_address_delivery,
+                    'id_address_invoice'  => (int) $cart->id_address_invoice,
                 ];
                 $this->ajaxDie(json_encode($return));
             }
