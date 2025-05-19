@@ -8456,7 +8456,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopException
      * @since thirty bees 1.7.0
      */
-    public function getAvailableQuantity(bool $ignoreNegativeStocks = true, bool $fresh = false, int $idShop = null): int
+    public function getAvailableQuantity(bool $ignoreNegativeStocks = true, bool $fresh = false, ?int $idShop = null): int
     {
         $productId = (int)$this->id;
         if (! $productId) {
