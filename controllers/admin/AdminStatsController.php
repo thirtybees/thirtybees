@@ -276,8 +276,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				SELECT
 					COUNT(`id_order`) as orders,
 					SUM(`total_paid_tax_excl` / `conversion_rate`) as total_paid_tax_excl
-				FROM `'._DB_PREFIX_.'orders`
-				WHERE `invoice_date` BETWEEN "'.pSQL(date('Y-m-d', strtotime('-31 day'))).' 00:00:00" AND "'.pSQL(date('Y-m-d', strtotime('-1 day'))).' 23:59:59"
+				FROM `'._DB_PREFIX_.'orders` o
+				WHERE o.`invoice_date` BETWEEN "'.pSQL(date('Y-m-d', strtotime('-30 day'))).' 00:00:00" AND "'.pSQL(date('Y-m-d')).' 23:59:59"
+				  AND o.`current_state` != ' . (int)Configuration::get('PS_OS_CANCELED') . '
 				'.Shop::addSqlRestriction()
                 );
                 $orders = (int)$row['orders'];
@@ -285,7 +286,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 $value = $orders ? $total / $orders : 0;
                 $value = sprintf($this->l('%s tax excl.'), Tools::displayPrice($value, $currency));
                 ConfigurationKPI::updateValue('AVG_ORDER_VALUE', [$languageId => $value]);
-                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', [$languageId => strtotime(date('Y-m-d 00:00:00', strtotime('+1 day')))]);
+                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', [$languageId => strtotime('+6 hour')]);
                 break;
 
             case 'netprofit_visit':
