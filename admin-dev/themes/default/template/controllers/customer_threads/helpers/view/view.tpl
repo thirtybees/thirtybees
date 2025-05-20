@@ -125,6 +125,12 @@
 				</div>
 				<div class="media-body">
 					<textarea cols="30" rows="7" id="txt_msg" name="reply_message">{$PS_CUSTOMER_SERVICE_SIGNATURE|escape:'html':'UTF-8'}</textarea>
+					<div class="row" style="margin-top:10px;">
+						<div class="col-sm-12 form-inline">
+							<label for="file_attachment" class="control-label">{l s='Attach file'}</label>
+							<input type="file" id="file_attachment" name="file_attachment" class="form-control">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
