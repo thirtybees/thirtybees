@@ -846,9 +846,9 @@
             </div>
           </div>
         {/if}
-        <div id="messages" class="well hidden-print">
-          <form action="{$smarty.server.REQUEST_URI|escape:'html':'UTF-8'}&amp;token={$smarty.get.token|escape:'html':'UTF-8'}" method="post" onsubmit="if (getE('visibility').checked == true) return confirm('{l s='Do you want to send this message to the customer?'}');">
-            <div id="message" class="form-horizontal">
+        <div id="messages" class="hidden-print panel panel-sm">
+          <form action="{$smarty.server.REQUEST_URI|escape:'html':'UTF-8'}&amp;token={$smarty.get.token|escape:'html':'UTF-8'}" method="post" enctype="multipart/form-data" onsubmit="if (getE('visibility').checked == true) return confirm('{l s='Do you want to send this message to the customer?'}');" class="form-horizontal">
+            <div id="message">
               <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Choose a standard message'}</label>
                 <div class="col-lg-9">
@@ -901,6 +901,12 @@
                 <div class="col-lg-9">
                   <textarea id="txt_msg" class="textarea-autosize" name="message">{Tools::getValue('message')|escape:'html':'UTF-8'}</textarea>
                   <p id="nbchars"></p>
+                </div>
+                <div class="form-inline">
+                  <div class="col-lg-12">
+                    <label for="file_attachment" class="control-label">{l s='Attach file'}</label>
+                    <input type="file" id="file_attachment" name="file_attachment" class="form-control">
+                  </div>
                 </div>
               </div>
 
