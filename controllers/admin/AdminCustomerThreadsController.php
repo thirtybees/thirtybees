@@ -598,17 +598,16 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 $cm->id_customer_thread = $ct->id;
                 $cm->ip_address = (int) ip2long(Tools::getRemoteAddr());
                 $cm->message = Tools::getValue('reply_message');
+                $fileAttachment = Tools::fileAttachment('file_attachment');
+                if (isset($fileAttachment['rename']) && !empty($fileAttachment['rename']) && rename($fileAttachment['tmp_name'], _PS_UPLOAD_DIR_.basename($fileAttachment['rename']))) {
+                    $cm->file_name = $fileAttachment['rename'];
+                    @chmod(_PS_UPLOAD_DIR_.basename($fileAttachment['rename']), 0664);
+                }
                 if (($error = $cm->validateField('message', $cm->message, null, [], true)) !== true) {
                     $this->errors[] = $error;
-                } elseif (!empty($_FILES['joinFile']['name']) && $_FILES['joinFile']['error'] != 0) {
+                } elseif (!empty($fileAttachment['name']) && $fileAttachment['error'] != 0) {
                     $this->errors[] = Tools::displayError('An error occurred during the file upload process.');
                 } elseif ($cm->add()) {
-                    $fileAttachment = null;
-                    if (!empty($_FILES['joinFile']['name'])) {
-                        $fileAttachment['content'] = file_get_contents($_FILES['joinFile']['tmp_name']);
-                        $fileAttachment['name'] = $_FILES['joinFile']['name'];
-                        $fileAttachment['mime'] = $_FILES['joinFile']['type'];
-                    }
                     $customer = new Customer($ct->id_customer);
                     $params = [
                         '{reply}'     => Tools::nl2br(Tools::getValue('reply_message')),
