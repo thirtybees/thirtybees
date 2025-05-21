@@ -749,7 +749,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $id = (int)$this->id;
 
         if (!$id) {
-            trigger_error("Attempt to update unsaved object", E_USER_WARNING);
+            trigger_error("Attempt to update unsaved object ".get_class($this), E_USER_WARNING);
             return false;
         }
 
