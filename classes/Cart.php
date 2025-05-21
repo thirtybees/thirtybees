@@ -4539,7 +4539,6 @@ class CartCore extends ObjectModel
 
         // Insert customized_data
         if (count($customs)) {
-            $insert = [];
             foreach ($customs as $custom) {
                 $customizedValue = $custom['value'];
 
@@ -4549,14 +4548,13 @@ class CartCore extends ObjectModel
                     copy(_PS_UPLOAD_DIR_.$custom['value'].'_small', _PS_UPLOAD_DIR_.$customizedValue.'_small');
                 }
 
-                $insert[] = [
+                $conn->insert('customized_data', [
                     'id_customization' => (int) $customIds[$custom['id_customization']],
                     'type'             => (int) $custom['type'],
                     'index'            => (int) $custom['index'],
                     'value'            => pSQL($customizedValue),
-                ];
+                ]);
             }
-            $conn->insert('customized_data', $insert);
         }
 
         return ['cart' => $cart, 'success' => $success];
