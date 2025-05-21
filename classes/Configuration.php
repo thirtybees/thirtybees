@@ -1271,4 +1271,15 @@ class ConfigurationCore extends ObjectModel
         }
         return $value;
     }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    public static function getValidConfigKey(string $key): string
+    {
+        $str = preg_replace("/[^A-Z0-9_]/", "_", strtoupper($key));
+        $str = preg_replace("/_+/", "_", $str);
+        return trim($str, '_');
+    }
 }

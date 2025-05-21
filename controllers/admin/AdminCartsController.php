@@ -254,9 +254,8 @@ class AdminCartsControllerCore extends AdminController
         if (ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang) !== false) {
             $helper->value = ConfigurationKPI::get('AVG_ORDER_VALUE', $this->context->employee->id_lang);
         }
-        if (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE', $this->context->employee->id_lang) < $time) {
-            $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=average_order_value';
-        }
+        $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=average_order_value';
+        $helper->refresh = (bool) (ConfigurationKPI::get('AVG_ORDER_VALUE_EXPIRE', $this->context->employee->id_lang) < $time);
         $kpis[] = $helper;
 
         $helper = new HelperKpi();

@@ -1257,6 +1257,7 @@ CREATE TABLE `PREFIX_meta` (
   `id_meta` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `page` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `configurable` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `nobots` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_meta`),
   UNIQUE KEY `page` (`page`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

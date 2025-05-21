@@ -1288,7 +1288,7 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         $thmName = str_replace('.', '', Tools::getValue('theme'));
-        $kpiKey = substr(strtoupper($thmName.'_'.Tools::getValue('lang')), 0, 16);
+        $kpiKey = $thmName.'_'.Tools::getValue('lang');
 
         require_once $filePath;
         $translationsArray = $GLOBALS[$translationInformation['var']];
@@ -1306,14 +1306,13 @@ class AdminTranslationsControllerCore extends AdminController
 
         // update translations
         foreach ($_POST as $key => $value) {
-            if (!empty($value)) {
+            if (! empty($value)) {
                 $translationsArray[$key] = $value;
-            } else {
-                unset($translationsArray[$key]);
             }
         }
 
         // translations array is ordered by key (easy merge)
+        $translationsArray = array_filter($translationsArray);
         ksort($translationsArray);
         $varName = $translationInformation['var'];
         $result = file_put_contents(
@@ -1329,14 +1328,7 @@ class AdminTranslationsControllerCore extends AdminController
             }
 
             ConfigurationKPI::updateValue('FRONTOFFICE_TRANSLATIONS_EXPIRE', time());
-            ConfigurationKPI::updateValue(
-                'TRANSLATE_TOTAL_'.$kpiKey,
-                count($translationsArray)
-            );
-            ConfigurationKPI::updateValue(
-                'TRANSLATE_DONE_'.$kpiKey,
-                count($translationsArray)
-            );
+            ConfigurationKPI::updateValue(Configuration::getValidConfigKey('TRANSLATE_DONE_'.$kpiKey), count($translationsArray));
 
             $this->redirect((bool) $saveAndStay);
         } else {
@@ -1851,10 +1843,10 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public function initFormFront()
     {
-        if (!$this->theme_exists(Tools::getValue('theme'))) {
-            $this->errors[] = sprintf(Tools::displayError('Invalid theme "%s"'), Tools::getValue('theme'));
-
-            return;
+        $themeName = Tools::getValue('theme');
+        if (!$this->theme_exists($themeName)) {
+            $this->errors[] = sprintf(Tools::displayError('Invalid theme "%s"'), $themeName);
+            return '';
         }
 
         $missingTranslationsFront = [];
@@ -1920,6 +1912,12 @@ class AdminTranslationsControllerCore extends AdminController
                 }
             }
         }
+
+        $done = $count - array_sum($missingTranslationsFront);
+        $kpiKey = $themeName.'_'.Tools::getValue('lang');
+        ConfigurationKPI::updateValue('FRONTOFFICE_TRANSLATIONS_EXPIRE', time());
+        ConfigurationKPI::updateValue(Configuration::getValidConfigKey('TRANSLATE_TOTAL_'.$kpiKey), $count);
+        ConfigurationKPI::updateValue(Configuration::getValidConfigKey('TRANSLATE_DONE_'.$kpiKey), $done);
 
         $this->tpl_view_vars = array_merge(
             $this->tpl_view_vars,

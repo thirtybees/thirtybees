@@ -50,6 +50,11 @@ class MetaCore extends ObjectModel
     public $configurable = 1;
 
     /**
+     * @var bool
+     */
+    public $nobots = 0;
+
+    /**
      * @var string|string[]
      */
     public $title;
@@ -80,6 +85,7 @@ class MetaCore extends ObjectModel
         'fields'         => [
             'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 128, 'unique' => true],
             'configurable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'nobots'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
 
             /* Lang fields */
             'title'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
@@ -378,11 +384,25 @@ class MetaCore extends ObjectModel
     public static function getHomeMetas($idLang, $pageName)
     {
         $metas = Meta::getMetaByPage($pageName, $idLang);
-        $ret['meta_title'] = (isset($metas['title']) && $metas['title']) ? $metas['title'].' - '.Configuration::get('PS_SHOP_NAME') : Configuration::get('PS_SHOP_NAME');
-        $ret['meta_description'] = (isset($metas['description']) && $metas['description']) ? $metas['description'] : '';
-        $ret['meta_keywords'] = (isset($metas['keywords']) && $metas['keywords']) ? $metas['keywords'] : '';
-
-        return $ret;
+        $shopName = (string)Configuration::get('PS_SHOP_NAME');
+        if ($metas) {
+            $title = (string)$metas['title'];
+            return [
+                'meta_title' => $title ? $title . ' - ' . $shopName : $shopName,
+                'meta_description' => (string)$metas['description'],
+                'meta_keywords' => (string)$metas['keywords'],
+                'nobots' => (bool)$metas['nobots'],
+                'nofollow' => (bool)$metas['nobots'],
+            ];
+        } else {
+            return [
+                'meta_title' => $shopName,
+                'meta_description' => '',
+                'meta_keywords' => '',
+                'nobots' => false,
+                'nofollow' => false
+            ];
+        }
     }
 
     /**

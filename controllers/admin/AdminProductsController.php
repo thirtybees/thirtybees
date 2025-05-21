@@ -5313,7 +5313,8 @@ class AdminProductsControllerCore extends AdminController
         $data->assign('languages', $this->getLanguages());
         $data->assign('default_form_language', $this->getDefaultFormLanguage());
 
-        if ($obj->id) {
+        $productId = (int)$obj->id;
+        if ($productId) {
             if ($this->product_exists_in_shop) {
                 // Get all id_product_attribute
                 $attributes = $obj->getAttributesResume($this->context->language->id);
@@ -5348,7 +5349,7 @@ class AdminProductsControllerCore extends AdminController
                         (new DbQuery())
                             ->select('COUNT(`id_product`)')
                             ->from('product_attribute')
-                            ->where('`id_product` = '.(int) $obj->id)
+                            ->where('`id_product` = '.$productId)
                     ));
                 } else {
                     $data->assign('countAttributes', false);
@@ -5356,23 +5357,18 @@ class AdminProductsControllerCore extends AdminController
                 // if advanced stock management is active, checks associations
                 $advanced_stock_management_warning = false;
                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $obj->advanced_stock_management) {
-                    $p_attributes = Product::getProductAttributesIds($obj->id);
-                    $warehouses = [];
-
-                    if (!$p_attributes) {
-                        $warehouses[] = Warehouse::getProductWarehouseList($obj->id, 0);
-                    }
-
-                    foreach ($p_attributes as $p_attribute) {
-                        $ws = Warehouse::getProductWarehouseList($obj->id, $p_attribute['id_product_attribute']);
-                        if ($ws) {
-                            $warehouses[] = $ws;
+                    $combinations = Product::getProductAttributesIds($productId);
+                    if (! $combinations) {
+                        if (! Warehouse::getProductWarehouseList($productId, 0)) {
+                            $advanced_stock_management_warning = true;
                         }
-                    }
-                    $warehouses = array_unique($warehouses);
-
-                    if (empty($warehouses)) {
-                        $advanced_stock_management_warning = true;
+                    } else {
+                        foreach ($combinations as $combination) {
+                            if (! Warehouse::getProductWarehouseList($productId, (int)$combination['id_product_attribute'])) {
+                                $advanced_stock_management_warning = true;
+                                break;
+                            }
+                        }
                     }
                 }
                 if ($advanced_stock_management_warning) {
@@ -5384,8 +5380,8 @@ class AdminProductsControllerCore extends AdminController
 
                 $pack_quantity = null;
                 // if product is a pack
-                if (Pack::isPack($obj->id)) {
-                    $items = Pack::getItems((int) $obj->id, Configuration::get('PS_LANG_DEFAULT'));
+                if (Pack::isPack($productId)) {
+                    $items = Pack::getItems($productId, Configuration::get('PS_LANG_DEFAULT'));
                     $pack_quantity = PHP_INT_MAX;
                     foreach ($items as $item) {
                         if ($item->pack_quantity > 0) {
@@ -5394,7 +5390,7 @@ class AdminProductsControllerCore extends AdminController
                         }
                     }
 
-                    if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && !Warehouse::getPackWarehouses((int) $obj->id)) {
+                    if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && !Warehouse::getPackWarehouses($productId)) {
                         $this->displayWarning($this->l('You must have a common warehouse between this pack and its product.'));
                     }
                 }
@@ -5407,7 +5403,7 @@ class AdminProductsControllerCore extends AdminController
                         'stock_management_active' => Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
                         'product_designation'     => $product_designation,
                         'product'                 => $obj,
-                        'isPack'                  => Pack::isPack($obj->id),
+                        'isPack'                  => Pack::isPack($productId),
                         'show_quantities'         => $show_quantities,
                         'order_out_of_stock'      => Configuration::get('PS_ORDER_OUT_OF_STOCK'),
                         'pack_stock_type'         => Pack::getGlobalStockTypeSettings(),

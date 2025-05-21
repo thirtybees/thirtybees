@@ -276,6 +276,11 @@ class OrderCore extends ObjectModel
     protected static $_historyCache = [];
 
     /**
+     * @var bool|null
+     */
+    protected ?bool $cacheCanEditProducts = null;
+
+    /**
      * OrderCore constructor.
      *
      * @param int|null $id
@@ -994,6 +999,41 @@ class OrderCore extends ObjectModel
     {
         return count($this->getHistory((int) $this->id_lang, false, false, OrderState::FLAG_DELIVERY));
     }
+
+    /**
+     * Returns true, if order product list can be modified -- products can be added, deleted, or change quantity
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public function canEditProducts(): bool
+    {
+        if (is_null($this->cacheCanEditProducts)) {
+            $this->cacheCanEditProducts = $this->resolveCanEditProducts();
+        }
+        return (bool) $this->cacheCanEditProducts;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    protected function resolveCanEditProducts(): bool
+    {
+        if ($this->hasBeenDelivered()) {
+            return false;
+        }
+        $responses = Hook::getResponses('actionCanEditOrderProducts', ['order' => $this]);
+        foreach ($responses as $response) {
+            if (! $response) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Has products returned by the merchant or by the customer?

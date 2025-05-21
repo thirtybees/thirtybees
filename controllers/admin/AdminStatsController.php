@@ -221,9 +221,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 foreach ($themes as $theme) {
                     /** @var Theme $theme */
                     foreach ($languages as $language) {
-                        $kpiKey = substr(strtoupper($theme->name.'_'.$language['iso_code']), 0, 16);
-                        $total += (int) ConfigurationKPI::get('TRANSLATE_TOTAL_'.$kpiKey);
-                        $translated += (int) ConfigurationKPI::get('TRANSLATE_DONE_'.$kpiKey);
+                        $kpiKey = $theme->name.'_'.$language['iso_code'];
+                        $total += (int) ConfigurationKPI::get(Configuration::getValidConfigKey('TRANSLATE_TOTAL_'.$kpiKey));
+                        $translated += (int) ConfigurationKPI::get(Configuration::getValidConfigKey('TRANSLATE_DONE_'.$kpiKey));
                     }
                 }
                 $value = 0;
@@ -276,8 +276,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
 				SELECT
 					COUNT(`id_order`) as orders,
 					SUM(`total_paid_tax_excl` / `conversion_rate`) as total_paid_tax_excl
-				FROM `'._DB_PREFIX_.'orders`
-				WHERE `invoice_date` BETWEEN "'.pSQL(date('Y-m-d', strtotime('-31 day'))).' 00:00:00" AND "'.pSQL(date('Y-m-d', strtotime('-1 day'))).' 23:59:59"
+				FROM `'._DB_PREFIX_.'orders` o
+				WHERE o.`invoice_date` BETWEEN "'.pSQL(date('Y-m-d', strtotime('-30 day'))).' 00:00:00" AND "'.pSQL(date('Y-m-d')).' 23:59:59"
+				  AND o.`current_state` != ' . (int)Configuration::get('PS_OS_CANCELED') . '
 				'.Shop::addSqlRestriction()
                 );
                 $orders = (int)$row['orders'];
@@ -285,7 +286,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 $value = $orders ? $total / $orders : 0;
                 $value = sprintf($this->l('%s tax excl.'), Tools::displayPrice($value, $currency));
                 ConfigurationKPI::updateValue('AVG_ORDER_VALUE', [$languageId => $value]);
-                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', [$languageId => strtotime(date('Y-m-d 00:00:00', strtotime('+1 day')))]);
+                ConfigurationKPI::updateValue('AVG_ORDER_VALUE_EXPIRE', [$languageId => strtotime('+6 hour')]);
                 break;
 
             case 'netprofit_visit':
@@ -997,22 +998,22 @@ class AdminStatsControllerCore extends AdminStatsTabController
             // Add flat fees for this order
             $flatFees = Configuration::get('CONF_ORDER_FIXED') + (
                 $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_FIXED_FOREIGN')
+                    ? Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['module'].'_FIXED'))
+                    : Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['module'].'_FIXED_FOREIGN'))
                 );
 
             // Add variable fees for this order
             $varFees = $order['total_paid_tax_incl'] * (
                 $order['id_currency'] == Configuration::get('PS_CURRENCY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['module']).'_VAR_FOREIGN')
+                    ? Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['module'].'_VAR'))
+                    : Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['module'].'_VAR_FOREIGN'))
                 ) / 100;
 
             // Add shipping fees for this order
             $shippingFees = $order['total_shipping_tax_excl'] * (
                 $order['id_country'] == Configuration::get('PS_COUNTRY_DEFAULT')
-                    ? Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP')
-                    : Configuration::get('CONF_'.strtoupper((string)$order['carrier_reference']).'_SHIP_OVERSEAS')
+                    ? Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['carrier_reference'].'_SHIP'))
+                    : Configuration::get(Configuration::getValidConfigKey('CONF_'.$order['carrier_reference'].'_SHIP_OVERSEAS'))
                 ) / 100;
 
             // Tally up these fees
@@ -1175,4 +1176,5 @@ class AdminStatsControllerCore extends AdminStatsTabController
             return $tableAlias.'.`invoice_date`';
         }
     }
+
 }

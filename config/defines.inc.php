@@ -261,3 +261,7 @@ if (!defined('_PS_JQUERY_VERSION_')) {
 if (! defined('K_TCPDF_EXTERNAL_CONFIG')) {
     define('K_TCPDF_EXTERNAL_CONFIG', true);
 }
+
+if (! defined('K_PATH_IMAGES')) {
+    define('K_PATH_IMAGES', _PS_ROOT_DIR_.'/img/');
+}

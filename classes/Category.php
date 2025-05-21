@@ -1780,8 +1780,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         $categories = new PrestaShopCollection('Category', $idLang);
-        $categories->where('nleft', '>', $this->nleft);
-        $categories->where('nright', '<', $this->nright);
+        $categories->where('nleft', '>', (int)$this->nleft);
+        $categories->where('nright', '<', (int)$this->nright);
 
         return $categories;
     }
@@ -2010,8 +2010,8 @@ class CategoryCore extends ObjectModel implements InitializationCallback
         }
 
         $categories = new PrestaShopCollection('Category', $idLang);
-        $categories->where('nleft', '<', $this->nleft);
-        $categories->where('nright', '>', $this->nright);
+        $categories->where('nleft', '<', (int)$this->nleft);
+        $categories->where('nright', '>', (int)$this->nright);
         $categories->orderBy('nleft');
 
         return $categories;
@@ -2324,6 +2324,10 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      */
     public function inShop(?Shop $shop = null)
     {
+        if (! Validate::isLoadedObject($this)) {
+            return false;
+        }
+
         if (!$shop) {
             $shop = Context::getContext()->shop;
         }
@@ -2396,13 +2400,16 @@ class CategoryCore extends ObjectModel implements InitializationCallback
     }
 
     /**
-     * @return false|int|null|string
+     * @return int
      *
      * @throws PrestaShopException
      */
     public function getWsNbProductsRecursive()
     {
-        $nb_product_recursive = Db::readOnly()->getValue(
+        if (! Validate::isLoadedObject($this)) {
+            return -1;
+        }
+        $nb_product_recursive = (int)Db::readOnly()->getValue(
             '
 			SELECT COUNT(DISTINCT(id_product))
 			FROM  `'._DB_PREFIX_.'category_product`
@@ -2547,16 +2554,19 @@ class CategoryCore extends ObjectModel implements InitializationCallback
      * Get all ids of all subcategories of the current category
      *
      * @return array list of ids of the subcategories
-     * @throws PrestaShopDatabaseException
+     *
      * @throws PrestaShopException
      */
     public function getAllSubcategories()
     {
+        if (! Validate::isLoadedObject($this)) {
+            return [];
+        }
         return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('`id_category`')
                 ->from('category')
-                ->where('`nleft` > '.$this->nleft.' AND `nright` < '.$this->nright)
+                ->where('`nleft` > '.(int)$this->nleft.' AND `nright` < '.(int)$this->nright)
         );
     }
 
