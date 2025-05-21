@@ -260,6 +260,9 @@ class CacheRedisCore extends Cache
      */
     protected static function resolveKeysPrefix()
     {
+        if (defined(static::KEYS_PREFIX_CONFIG_KEY)) {
+            return constant(static::KEYS_PREFIX_CONFIG_KEY);
+        }
         $value = Configuration::getGlobalValue(static::KEYS_PREFIX_CONFIG_KEY);
         if (! $value) {
             $value = Tools::passwdGen(6);
