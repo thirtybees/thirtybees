@@ -384,14 +384,25 @@ class MetaCore extends ObjectModel
     public static function getHomeMetas($idLang, $pageName)
     {
         $metas = Meta::getMetaByPage($pageName, $idLang);
-        $ret['meta_title'] = (isset($metas['title']) && $metas['title']) ? $metas['title'].' - '.Configuration::get('PS_SHOP_NAME') : Configuration::get('PS_SHOP_NAME');
-        $ret['meta_description'] = (isset($metas['description']) && $metas['description']) ? $metas['description'] : '';
-        $ret['meta_keywords'] = (isset($metas['keywords']) && $metas['keywords']) ? $metas['keywords'] : '';
-        if ($metas['nobots']) {
-            $ret['nobots'] = true;
-            $ret['nofollow'] = true;
+        $shopName = (string)Configuration::get('PS_SHOP_NAME');
+        if ($metas) {
+            $title = (string)$metas['meta_title'];
+            return [
+                'meta_title' => $title ? $title . ' - ' . $shopName : $shopName,
+                'meta_description' => (string)$metas['description'],
+                'meta_keywords' => (string)$metas['keywords'],
+                'nobots' => (bool)$metas['nobots'],
+                'nofollow' => (bool)$metas['nofollow'],
+            ];
+        } else {
+            return [
+                'meta_title' => $shopName,
+                'meta_description' => '',
+                'meta_keywords' => '',
+                'nobots' => false,
+                'nofollow' => false
+            ];
         }
-        return $ret;
     }
 
     /**
