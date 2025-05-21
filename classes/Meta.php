@@ -386,13 +386,13 @@ class MetaCore extends ObjectModel
         $metas = Meta::getMetaByPage($pageName, $idLang);
         $shopName = (string)Configuration::get('PS_SHOP_NAME');
         if ($metas) {
-            $title = (string)$metas['meta_title'];
+            $title = (string)$metas['title'];
             return [
                 'meta_title' => $title ? $title . ' - ' . $shopName : $shopName,
                 'meta_description' => (string)$metas['description'],
                 'meta_keywords' => (string)$metas['keywords'],
                 'nobots' => (bool)$metas['nobots'],
-                'nofollow' => (bool)$metas['nofollow'],
+                'nofollow' => (bool)$metas['nobots'],
             ];
         } else {
             return [
