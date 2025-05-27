@@ -387,20 +387,21 @@ class MetaCore extends ObjectModel
         $shopName = (string)Configuration::get('PS_SHOP_NAME');
         if ($metas) {
             $title = (string)$metas['title'];
-            return [
+            $ret = [
                 'meta_title' => $title ? $title . ' - ' . $shopName : $shopName,
                 'meta_description' => (string)$metas['description'],
                 'meta_keywords' => (string)$metas['keywords'],
-                'nobots' => (bool)$metas['nobots'],
-                'nofollow' => (bool)$metas['nobots'],
             ];
+            if ($metas['nobots']) {
+                $ret['nobots'] = true;
+                $ret['nofollow'] = true;
+            }
+            return $ret;
         } else {
             return [
                 'meta_title' => $shopName,
                 'meta_description' => '',
                 'meta_keywords' => '',
-                'nobots' => false,
-                'nofollow' => false
             ];
         }
     }
