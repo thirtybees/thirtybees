@@ -777,7 +777,7 @@ class ImageManagerCore
             $allowedExtensions = static::getAllowedImageExtensions();
         }
 
-        $extension = pathinfo((string)$filename, PATHINFO_EXTENSION);
+        $extension = strtolower((string)pathinfo((string)$filename, PATHINFO_EXTENSION));
         return in_array($extension, $allowedExtensions);
     }
 
