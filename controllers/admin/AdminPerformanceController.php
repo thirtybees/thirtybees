@@ -1207,23 +1207,49 @@ class AdminPerformanceControllerCore extends AdminController
                 $valueRetention = (int) Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD);
                 $valueHtaccess  = (int) Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL');
 
-                if (Shop::getContext() === Shop::CONTEXT_ALL) {
-                    $allShopIds = Shop::getShops(false, null, true);
-                    foreach ($allShopIds as $idShop) {
-                        Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss,      false, null, $idShop);
-                        Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs,       false, null, $idShop);
-                        Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs, false, null, $idShop);
-                        Configuration::updateValue('PS_JS_DEFER',                      $valueDefer,    false, null, $idShop);
-                        Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, null, $idShop);
-                        Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess, false, null, $idShop);
-                    }
-                } else {
-                    Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss);
-                    Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs);
-                    Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs);
-                    Configuration::updateValue('PS_JS_DEFER',                      $valueDefer);
-                    Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention);
-                    Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess);
+                switch (Shop::getContext()) {
+                    case Shop::CONTEXT_ALL:
+                        // 1) Update the global setting so the "All shops" sliders read correctly:
+                        Configuration::updateGlobalValue('PS_CSS_THEME_CACHE',              $valueCss);
+                        Configuration::updateGlobalValue('PS_JS_THEME_CACHE',               $valueJs);
+                        Configuration::updateGlobalValue('PS_JS_HTML_THEME_COMPRESSION',    $valueInlineJs);
+                        Configuration::updateGlobalValue('PS_JS_DEFER',                     $valueDefer);
+                        Configuration::updateGlobalValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention);
+                        Configuration::updateGlobalValue('PS_HTACCESS_CACHE_CONTROL',       $valueHtaccess);
+
+                        // 2) Then fall‐through into the shop-loop so every shop row is also overridden,
+                        //    ensuring that if you switch back into a single shop its sliders match:
+                        $shopIds = Shop::getShops(false, null, true);
+                        break;
+
+                    case Shop::CONTEXT_GROUP:
+                        // 1) Update the group-level setting so the "Group" sliders read correctly:
+                        $groupId = (int) $this->context->shop->id_shop_group;
+                        Configuration::updateValue('PS_CSS_THEME_CACHE',              $valueCss,      false, $groupId, null);
+                        Configuration::updateValue('PS_JS_THEME_CACHE',               $valueJs,       false, $groupId, null);
+                        Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',    $valueInlineJs, false, $groupId, null);
+                        Configuration::updateValue('PS_JS_DEFER',                     $valueDefer,    false, $groupId, null);
+                        Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, $groupId, null);
+                        Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',       $valueHtaccess, false, $groupId, null);
+
+                        // 2) And still override every individual shop in that group:
+                        $shopsData = ShopGroup::getShopsFromGroup($groupId);
+                        $shopIds   = array_column($shopsData, 'id_shop');
+                        break;
+
+                    default:
+                        // Single‐shop context: only update the current shop
+                        $shopIds = [(int)$this->context->shop->id];
+                        break;
+                }
+
+                foreach ($shopIds as $idShop) {
+                    Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss,      false, null, $idShop);
+                    Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs,       false, null, $idShop);
+                    Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs, false, null, $idShop);
+                    Configuration::updateValue('PS_JS_DEFER',                      $valueDefer,    false, null, $idShop);
+                    Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, null, $idShop);
+                    Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess, false, null, $idShop);
                 }
 
                 $redirectAdmin = true;
@@ -1235,12 +1261,9 @@ class AdminPerformanceControllerCore extends AdminController
                         $message .= '<br />- '.$this->l('Create a blank .htaccess in your root directory.');
                         $message .= '<br />- '.$this->l('Give it write permissions (CHMOD 666 on Unix system).');
                         $this->errors[] = Tools::displayError($message, false);
-                        if (Shop::getContext() === Shop::CONTEXT_ALL) {
-                            foreach ($allShopIds as $idShop) {
-                                Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0, false, null, $idShop);
-                            }
-                        } else {
-                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0);
+
+                        foreach ($shopIds as $idShop) {
+                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0, false, null, $idShop);
                         }
                     }
                 }
