@@ -1173,10 +1173,16 @@ class AdminPerformanceControllerCore extends AdminController
 
         if (Tools::getValue('ccc_up')) {
             if ($this->hasEditPermission()) {
-                $themeCacheDirectory = _PS_ALL_THEMES_DIR_.$this->context->shop->theme_directory.'/cache/';
-                if ((Tools::getValue('PS_CSS_THEME_CACHE') || Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
+                $themeCacheDirectory = _PS_ALL_THEMES_DIR_ . $this->context->shop->theme_directory . '/cache/';
+                if (
+                    (Tools::getValue('PS_CSS_THEME_CACHE') || Tools::getValue('PS_JS_THEME_CACHE'))
+                    && !is_writable($themeCacheDirectory)
+                ) {
                     if (@file_exists($themeCacheDirectory) || !@mkdir($themeCacheDirectory, 0777, true)) {
-                        $this->errors[] = sprintf(Tools::displayError('To use Smart Cache directory %s must be writable.'), realpath($themeCacheDirectory));
+                        $this->errors[] = sprintf(
+                            Tools::displayError('To use Smart Cache directory %s must be writable.'),
+                            realpath($themeCacheDirectory)
+                        );
                     }
                 }
 
@@ -1194,25 +1200,47 @@ class AdminPerformanceControllerCore extends AdminController
                     }
                 }
 
-                if (!Configuration::updateValue('PS_CSS_THEME_CACHE', Tools::getIntValue('PS_CSS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_THEME_CACHE', Tools::getIntValue('PS_JS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION')) ||
-                    !Configuration::updateValue('PS_JS_DEFER', Tools::getIntValue('PS_JS_DEFER')) ||
-                    !Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD)) ||
-                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL'))
-                ) {
-                    $this->errors[] = Tools::displayError('Unknown error.');
+                $valueCss       = (int) Tools::getIntValue('PS_CSS_THEME_CACHE');
+                $valueJs        = (int) Tools::getIntValue('PS_JS_THEME_CACHE');
+                $valueInlineJs  = (int) Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION');
+                $valueDefer     = (int) Tools::getIntValue('PS_JS_DEFER');
+                $valueRetention = (int) Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD);
+                $valueHtaccess  = (int) Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL');
+
+                if (Shop::getContext() === Shop::CONTEXT_ALL) {
+                    $allShopIds = Shop::getShops(false, null, true);
+                    foreach ($allShopIds as $idShop) {
+                        Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss,      false, null, $idShop);
+                        Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs,       false, null, $idShop);
+                        Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs, false, null, $idShop);
+                        Configuration::updateValue('PS_JS_DEFER',                      $valueDefer,    false, null, $idShop);
+                        Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, null, $idShop);
+                        Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess, false, null, $idShop);
+                    }
                 } else {
-                    $redirectAdmin = true;
-                    if (Configuration::get('PS_HTACCESS_CACHE_CONTROL')) {
-                        if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
-                            Tools::generateHtaccess();
+                    Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss);
+                    Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs);
+                    Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs);
+                    Configuration::updateValue('PS_JS_DEFER',                      $valueDefer);
+                    Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention);
+                    Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess);
+                }
+
+                $redirectAdmin = true;
+                if ($valueHtaccess) {
+                    if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
+                        Tools::generateHtaccess();
+                    } else {
+                        $message  = $this->l('Before being able to use this tool, you need to:');
+                        $message .= '<br />- '.$this->l('Create a blank .htaccess in your root directory.');
+                        $message .= '<br />- '.$this->l('Give it write permissions (CHMOD 666 on Unix system).');
+                        $this->errors[] = Tools::displayError($message, false);
+                        if (Shop::getContext() === Shop::CONTEXT_ALL) {
+                            foreach ($allShopIds as $idShop) {
+                                Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0, false, null, $idShop);
+                            }
                         } else {
-                            $message = $this->l('Before being able to use this tool, you need to:');
-                            $message .= '<br />- '.$this->l('Create a blank .htaccess in your root directory.');
-                            $message .= '<br />- '.$this->l('Give it write permissions (CHMOD 666 on Unix system).');
-                            $this->errors[] = Tools::displayError($message, false);
-                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', false);
+                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0);
                         }
                     }
                 }
