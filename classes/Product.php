@@ -3078,7 +3078,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
                 unset($row3['id_product_supplier']);
                 $row3['id_product'] = $idProductNew;
                 $row3['id_product_attribute'] = $idProductAttributeNew;
-                $return = $conn->insert('product_supplier', $row3) && $return;
+                $return = $conn->insert('product_supplier', $row3, false, true, Db::INSERT_IGNORE) && $return;
             }
         }
 
