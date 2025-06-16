@@ -211,7 +211,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         // delete all residual stock
         if ($currentQuantities) {
             $ids = implode(',', array_column($currentQuantities, 'id'));
-            $conn->delete('stock_available', "id_stock_available IN ($ids)");
+            $conn->delete('stock_available', "id_stock_available IN ($ids) AND id_product_attribute != 0");
         }
 
         return $cnt;
