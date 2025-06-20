@@ -1111,6 +1111,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
         $way = Tools::getIntValue('way');
         $idAttribute = Tools::getIntValue('id_attribute');
         $positions = Tools::getValue('attribute');
+        $page = Tools::getIntValue('page');
+        $per_page = Tools::getIntValue('selected_pagination');
 
         if (is_array($positions)) {
             foreach ($positions as $position => $value) {
@@ -1118,7 +1120,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
                 if ((isset($pos[1]) && isset($pos[2])) && (int) $pos[2] === $idAttribute) {
                     if ($attribute = new ProductAttribute((int) $pos[2])) {
-                        if (isset($position) && $attribute->updatePosition($way, $position)) {
+                        $new_position = $position;
+                        if ($page > 1){
+                             $new_position += ($page - 1) * $per_page;
+                        }
+                        if (isset($position) && $attribute->updatePosition($way, $new_position)) {
+                            // make sure any new or old mixup in numbering is cleaned
+                            $attribute->cleanPositions($attribute->id_attribute_group, false);
                             echo 'ok position '.(int) $position.' for attribute '.(int) $pos[2].'\r\n';
                         } else {
                             echo '{"hasError" : true, "errors" : "Can not update the '.(int) $idAttribute.' attribute to position '.(int) $position.' "}';
