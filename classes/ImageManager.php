@@ -1049,47 +1049,75 @@ class ImageManagerCore
      * @license GNU General Public License v2.0
      * @source https://github.com/chrisbliss18/php-ico
      */
-    protected static function addFaviconImageData($im, &$images)
+    protected static function addFaviconImageData($im, array &$images)
     {
-        $width = imagesx($im);
+        $width  = imagesx($im);
         $height = imagesy($im);
-        $pixel_data = [];
+
+        $pixel_data   = [];
         $opacity_data = [];
         $current_opacity_val = 0;
+
         for ($y = $height - 1; $y >= 0; $y--) {
             for ($x = 0; $x < $width; $x++) {
+                // get the raw color & alpha
                 $color = imagecolorat($im, $x, $y);
-                $alpha = ($color & 0x7F000000) >> 24;
-                $alpha = (1 - ($alpha / 127)) * 255;
-                $color &= 0xFFFFFF;
-                $color |= 0xFF000000 & ($alpha << 24);
+                $rawA  = ($color & 0x7F000000) >> 24;               // 0–127
+
+                // compute fully‑scaled alpha and cast to int before shifting
+                $alpha = (int) round((1 - ($rawA / 127)) * 255);    // 0–255
+
+                // clear old alpha bits, then re‑insert ours
+                $color &= 0x00FFFFFF;
+                $color |= ($alpha << 24);
+
                 $pixel_data[] = $color;
+
+                // build the 1‑bit opacity mask
                 $opacity = ($alpha <= 127) ? 1 : 0;
                 $current_opacity_val = ($current_opacity_val << 1) | $opacity;
-                if ((($x + 1) % 32) == 0) {
+                if ((($x + 1) % 32) === 0) {
                     $opacity_data[] = $current_opacity_val;
                     $current_opacity_val = 0;
                 }
             }
+
+            // pad remaining bits in row to a multiple of 32
             if (($x % 32) > 0) {
                 while (($x++ % 32) > 0) {
-                    $current_opacity_val = $current_opacity_val << 1;
+                    $current_opacity_val <<= 1;
                 }
                 $opacity_data[] = $current_opacity_val;
                 $current_opacity_val = 0;
             }
         }
-        $image_header_size = 40;
-        $color_mask_size = $width * $height * 4;
-        $opacity_mask_size = (ceil($width / 32) * 4) * $height;
-        $data = pack('VVVvvVVVVVV', 40, $width, ($height * 2), 1, 32, 0, 0, 0, 0, 0, 0);
-        foreach ($pixel_data as $color) {
-            $data .= pack('V', $color);
+
+        // header sizes
+        $image_header_size  = 40;
+        $color_mask_size    = $width * $height * 4;
+        $opacity_mask_size  = (ceil($width / 32) * 4) * $height;
+
+        // build ICO directory header
+        $data = pack('VVVvvVVVVVV',
+            40,               // header size
+            $width,
+            $height * 2,      // BMP stores height*2
+            1,                // planes
+            32,               // bits per pixel
+            0, 0, 0, 0, 0, 0  // rest zeroed
+        );
+
+        // append pixel data
+        foreach ($pixel_data as $col) {
+            $data .= pack('V', $col);
         }
-        foreach ($opacity_data as $opacity) {
-            $data .= pack('N', $opacity);
+
+        // append opacity mask
+        foreach ($opacity_data as $mask) {
+            $data .= pack('N', $mask);
         }
-        $image = [
+
+        $images[] = [
             'width'                => $width,
             'height'               => $height,
             'color_palette_colors' => 0,
@@ -1097,7 +1125,6 @@ class ImageManagerCore
             'size'                 => $image_header_size + $color_mask_size + $opacity_mask_size,
             'data'                 => $data,
         ];
-        $images[] = $image;
     }
 
     /**
