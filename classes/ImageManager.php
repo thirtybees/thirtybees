@@ -1049,7 +1049,7 @@ class ImageManagerCore
      * @license GNU General Public License v2.0
      * @source https://github.com/chrisbliss18/php-ico
      */
-    protected static function addFaviconImageData($im, &$images)
+    protected static function addFaviconImageData($im, array &$images)
     {
         $width = imagesx($im);
         $height = imagesy($im);
@@ -1060,13 +1060,13 @@ class ImageManagerCore
             for ($x = 0; $x < $width; $x++) {
                 $color = imagecolorat($im, $x, $y);
                 $alpha = ($color & 0x7F000000) >> 24;
-                $alpha = (1 - ($alpha / 127)) * 255;
+                $alpha = intval(round((1 - ($alpha / 127)) * 255));
                 $color &= 0xFFFFFF;
                 $color |= 0xFF000000 & ($alpha << 24);
                 $pixel_data[] = $color;
                 $opacity = ($alpha <= 127) ? 1 : 0;
                 $current_opacity_val = ($current_opacity_val << 1) | $opacity;
-                if ((($x + 1) % 32) == 0) {
+                if ((($x + 1) % 32) === 0) {
                     $opacity_data[] = $current_opacity_val;
                     $current_opacity_val = 0;
                 }
