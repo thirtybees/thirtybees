@@ -284,7 +284,6 @@ class AdminAttachmentsControllerCore extends AdminController
                             $this->errors[] = $this->l('Failed to copy the file.');
                         }
                         $_POST['file_name'] = $_FILES['file']['name'];
-                        @unlink($_FILES['file']['tmp_name']);
                         if (!count($this->errors) && isset($a) && file_exists($a->getFilePath())) {
                             @unlink($a->getFilePath());
                         }
