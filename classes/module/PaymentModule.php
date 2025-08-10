@@ -125,15 +125,15 @@ abstract class PaymentModuleCore extends Module
             $hookPayment = 'displayPayment';
         }
 
-        return $connection->getArray(
-            (new DbQuery())
-                ->select('DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`')
-                ->from('module', 'm')
-                ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
-                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
-                ->innerJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module` AND ms.`id_shop` = '.(int) Context::getContext()->shop->id)
-                ->where('h.`name` = \''.pSQL($hookPayment).'\'')
-        );
+        $sql = (new DbQuery())
+            ->select('DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`')
+            ->from('module', 'm')
+            ->innerJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module` AND ms.`id_shop` = '.(int) Context::getContext()->shop->id)
+            ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module` AND hm.`id_shop` = ms.`id_shop`')
+            ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+            ->where('h.`name` = \''.pSQL($hookPayment).'\'');
+
+        return $connection->getArray($sql);
     }
 
     /**
