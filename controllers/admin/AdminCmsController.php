@@ -143,7 +143,9 @@ class AdminCmsControllerCore extends AdminController
         $this->initToolbar();
         $this->initPageHeaderToolbar();
 
+
         $idShop = Shop::getContext() === Shop::CONTEXT_ALL ? null : (int) $this->context->shop->id;
+
         $categories = CMSCategory::getCategories(
             $this->context->language->id,
             false,
