@@ -143,7 +143,12 @@ class AdminCmsControllerCore extends AdminController
         $this->initToolbar();
         $this->initPageHeaderToolbar();
 
-        $categories = CMSCategory::getCategories($this->context->language->id, false);
+        $categories = CMSCategory::getCategories(
+            $this->context->language->id,
+            false,
+            true,
+            $this->context->shop->id
+        );
         $htmlCategories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_cms_category'), 1);
 
         $this->fields_form = [

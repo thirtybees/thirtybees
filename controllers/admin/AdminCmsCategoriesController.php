@@ -247,7 +247,12 @@ class AdminCmsCategoriesControllerCore extends AdminController
             return null;
         }
 
-        $categories = CMSCategory::getCategories($this->context->language->id, false);
+        $categories = CMSCategory::getCategories(
+            $this->context->language->id,
+            false,
+            true,
+            $this->context->shop->id
+        );
         $htmlCategories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_parent'), 1);
 
         $this->fields_form = [

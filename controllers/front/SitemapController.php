@@ -66,7 +66,14 @@ class SitemapControllerCore extends FrontController
         parent::initContent();
 
         $this->context->smarty->assign('categoriesTree', Category::getRootCategory()->recurseLiteCategTree(0));
-        $this->context->smarty->assign('categoriescmsTree', CMSCategory::getRecurseCategory($this->context->language->id, 1, 1, 1));
+        $this->context->smarty->assign('categoriescmsTree', CMSCategory::getRecurseCategory(
+            $this->context->language->id,
+            1,
+            1,
+            1,
+            null,
+            $this->context->shop->id
+        ));
         $this->context->smarty->assign('voucherAllowed', (int) CartRule::isFeatureActive());
 
         if (Module::isInstalled('blockmanufacturer') && Module::isEnabled('blockmanufacturer')) {
