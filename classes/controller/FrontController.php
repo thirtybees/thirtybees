@@ -2026,7 +2026,14 @@ class FrontControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'categoriesTree'            => Category::getRootCategory()->recurseLiteCategTree(0),
-                'categoriescmsTree'         => CMSCategory::getRecurseCategory($this->context->language->id, 1, 1, 1),
+                'categoriescmsTree'         => CMSCategory::getRecurseCategory(
+                    $this->context->language->id,
+                    1,
+                    1,
+                    1,
+                    null,
+                    $this->context->shop->id
+                ),
                 'voucherAllowed'            => (int) CartRule::isFeatureActive(),
                 'display_manufacturer_link' => (bool) $blockmanufacturer->active,
                 'display_supplier_link'     => (bool) $blocksupplier->active,
