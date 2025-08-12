@@ -296,7 +296,7 @@
 								--
 							{else}
 								{if $params.type === HelperList::COLUMN_TYPE_BOOL}
-									<select class="filter fixed-width-xs center" name="{$list_id}Filter_{if isset($params.filter_key)}{$params.filter_key}{else}{$key}{/if}">
+									<select class="filter fixed-width-xs center" onchange="$('#submitFilterButton{$list_id}').focus();$('#submitFilterButton{$list_id}').click();" name="{$list_id}Filter_{if isset($params.filter_key)}{$params.filter_key}{else}{$key}{/if}">
 										<option value="">-</option>
 										<option value="1" {if $params.value == 1} selected="selected" {/if}>{l s='Yes'}</option>
 										<option value="0" {if $params.value == 0 && $params.value != ''} selected="selected" {/if}>{l s='No'}</option>
