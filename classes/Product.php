@@ -6555,25 +6555,15 @@ class ProductCore extends ObjectModel implements InitializationCallback
                     return false;
                 }
                 /* Multilingual label name update */
-                if (Shop::isFeatureActive()) {
-                    foreach (Shop::getContextListShopID() as $idShop) {
-                        if (!$conn->execute(
-                            'INSERT INTO `'._DB_PREFIX_.'customization_field_lang`
-						(`id_customization_field`, `id_lang`, `id_shop`, `name`) VALUES ('.(int) $tmp[2].', '.(int) $tmp[3].', '.$idShop.', \''.pSQL($value).'\')
-						ON DUPLICATE KEY UPDATE `name` = \''.pSQL($value).'\''
-                        )
-                        ) {
-                            return false;
-                        }
+                foreach (Shop::getContextListShopID() as $idShop) {
+                    if (!$conn->execute(
+                        'INSERT INTO `'._DB_PREFIX_.'customization_field_lang`
+                    (`id_customization_field`, `id_lang`, `id_shop`, `name`) VALUES ('.(int) $tmp[2].', '.(int) $tmp[3].', '.$idShop.', \''.pSQL($value).'\')
+                    ON DUPLICATE KEY UPDATE `name` = \''.pSQL($value).'\''
+                    )
+                    ) {
+                        return false;
                     }
-                } elseif (!$conn->execute(
-                    '
-					INSERT INTO `'._DB_PREFIX_.'customization_field_lang`
-					(`id_customization_field`, `id_lang`, `name`) VALUES ('.(int) $tmp[2].', '.(int) $tmp[3].', \''.pSQL($value).'\')
-					ON DUPLICATE KEY UPDATE `name` = \''.pSQL($value).'\''
-                )
-                ) {
-                    return false;
                 }
 
                 $isRequired = isset($_POST['require_'.(int) $tmp[1].'_'.(int) $tmp[2]]) ? 1 : 0;
