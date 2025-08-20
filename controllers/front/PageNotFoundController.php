@@ -101,7 +101,7 @@ class PageNotFoundControllerCore extends FrontController
 
                         $scale = $highDpi && ImageManager::retinaSupport() ? 2 : 1;
                         $width = (int)$imageType->width * $scale;
-                        $height = (int)$imageType->width * $scale;
+                        $height = (int)$imageType->height * $scale;
 
                         ImageManager::resize(
                             $sourcePath,
