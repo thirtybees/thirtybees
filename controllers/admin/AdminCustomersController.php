@@ -1320,6 +1320,58 @@ class AdminCustomersControllerCore extends AdminController
 
         $customers = array_slice($customers, 0, 100);
 
+        if ($customers) {
+            // 1) Build index: id_customer -> array offset
+            $index = [];
+            foreach ($customers as $i => $c) {
+                $index[(int)$c['id_customer']] = $i;
+            }
+            $ids    = array_keys($index);
+            $idLang = (int) $this->context->language->id;
+
+            // 2) Get default group + all memberships in one go
+            $q = (new DbQuery())
+                ->select('c.id_customer')
+                ->select('gl_def.name AS group_default')
+                ->select('GROUP_CONCAT(DISTINCT gl_all.name ORDER BY gl_all.name SEPARATOR ",") AS groups_all')
+                ->from('customer', 'c')
+                ->leftJoin('customer_group', 'cg', 'cg.id_customer = c.id_customer')
+                ->leftJoin('group_lang', 'gl_all', 'gl_all.id_group = cg.id_group AND gl_all.id_lang = '.$idLang)
+                ->leftJoin('group_lang', 'gl_def', 'gl_def.id_group = c.id_default_group AND gl_def.id_lang = '.$idLang)
+                ->where('c.id_customer IN ('.implode(',', array_map('intval', $ids)).')')
+                ->groupBy('c.id_customer');
+
+            foreach (Db::readOnly()->getArray($q) as $row) {
+                $idc = (int) $row['id_customer'];
+                $off = $index[$idc];
+
+                $def = (string) ($row['group_default'] ?? '');
+
+                $all = ($row['groups_all'] !== null && $row['groups_all'] !== '')
+                    ? array_filter(array_map('trim', explode(',', $row['groups_all'])))
+                    : [];
+
+                // other groups (exclude default)
+                $others = $def !== '' ? array_values(array_diff($all, [$def])) : $all;
+
+                // keep old fields (backward compat)
+                $customers[$off]['group_name']   = $def;
+                $customers[$off]['group_others'] = $others;
+
+                // NEW: full ordered list for easy rendering
+                $names = $def !== '' ? array_merge([$def], $others) : $others;
+                $customers[$off]['groups'] = array_values(array_unique($names));
+            }
+
+            // ensure keys exist
+            foreach ($customers as &$c) {
+                $c['group_name']   = isset($c['group_name'])   ? $c['group_name']   : '';
+                $c['group_others'] = isset($c['group_others']) ? $c['group_others'] : [];
+                $c['groups']       = isset($c['groups'])       ? $c['groups']       : [];
+            }
+            unset($c);
+        }
+
         if (! headers_sent()) {
             header('Content-Type: application/json');
         }

@@ -28,62 +28,96 @@
 {block name="override_tpl"}
 
 <script type="text/javascript">
-    var customerId = {$customer->id};
-	$(document).ready(function() {
-		$('#customer-search').typeWatch({
-			captureLength: 1,
-			highlight: true,
-			wait: 750,
-			callback: searchCustomers
-		});
-	});
+  var customerId = {$customer->id|intval};
 
-	function searchCustomers()
-	{
-		$.ajax({
-			type:"POST",
-			url : "{$link->getAdminLink('AdminCustomers')}",
-			async: true,
-			dataType: "json",
-			data : {
-				ajax: "1",
-				tab: "AdminCustomers",
-				action: "searchCustomers",
-				customer_search: $('#customer-search').val()
-			},
-			success : function(res)
-			{
-				if(res.found)
-				{
-					var html = '';
-					$.each(res.customers, function() {
-						if (this.id_customer != customerId) {
-							html += '<div class="customerCard col-lg-4">';
-							html += '<div class="panel">';
-							html += '<div class="panel-heading">' + this.firstname + ' ' + this.lastname;
-							html += '<span class="pull-right">#' + this.id_customer + '</span></div>';
-							html += '<span>' + this.email + '</span><br/>';
-							html += '<span class="text-muted">' + ((this.birthday != '0000-00-00') ? this.birthday : '') + '</span><br/>';
-							html += '<div class="panel-footer">';
-							html += '<a href="{$link->getAdminLink('AdminCustomers')}&id_customer=' + this.id_customer + '&viewcustomer&liteDisplaying=1" class="btn btn-default fancybox"><i class="icon-search"></i> {l s='Details'}</a>&nbsp;';
-							html += '<a href="{$link->getAdminLink('AdminCustomerMerge')}&source_customer_id=' + customerId + '&target_customer_id=' + this.id_customer + '" class="btn btn-default"><i class="icon-arrow-right"></i> {l s='Merge into'}</a>';
-							html += '</div>';
-							html += '</div>';
-							html += '</div>';
-						}
-					});
-				} else  {
-					html = '<div class="alert alert-warning">{l s='No customers found'}</div>';
-				}
-				$('#customers').html(html);
-				$('.fancybox').fancybox({
-					'type': 'iframe',
-					'width': '90%',
-					'height': '90%',
-				});
-			}
-		});
-	}
+  // tiny HTML escaper (Smarty-safe)
+  function esc(s) {
+    s = (s == null ? '' : String(s));
+    return s.replace(/[&<>"']/g, function (m) {
+      switch (m) {
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '"': return '&quot;';
+        case "'": return '&#39;';
+        default: return m;
+      }
+    });
+  }
+
+  $(document).ready(function () {
+    $('#customer-search').typeWatch({
+      captureLength: 1,
+      highlight: true,
+      wait: 750,
+      callback: searchCustomers
+    });
+  });
+
+  function renderGroupBadges(cust){
+    var html = '';
+    if (Array.isArray(cust.groups) && cust.groups.length) {
+      for (var i = 0; i < cust.groups.length; i++) {
+        var cls = (i === 0 ? 'label-info' : 'label-default');
+        html += '<span class="label ' + cls + '">' + esc(cust.groups[i]) + '</span> ';
+      }
+      return '<div class="customer-groups">' + html + '</div>';
+    }
+    if (cust.group_name) {
+      html += '<span class="label label-info">' + esc(cust.group_name) + '</span> ';
+    }
+    if (Array.isArray(cust.group_others)) {
+      cust.group_others.forEach(function (g) {
+        html += '<span class="label label-default">' + esc(g) + '</span> ';
+      });
+    }
+    return html ? '<div class="customer-groups">' + html + '</div>' : '';
+  }
+
+  function searchCustomers() {
+    $.ajax({
+      type: "POST",
+      url: "{$link->getAdminLink('AdminCustomers')}",
+      async: true,
+      dataType: "json",
+      data: {
+        ajax: "1",
+        tab: "AdminCustomers",
+        action: "searchCustomers",
+        customer_search: $('#customer-search').val()
+      },
+      success: function (res) {
+        var html = '';
+        if (res.found) {
+          $.each(res.customers, function () {
+            if (this.id_customer != customerId) {
+              html += '<div class="customerCard col-lg-4">';
+              html +=   '<div class="panel">';
+              html +=     '<div class="panel-heading">' + esc(this.firstname) + ' ' + esc(this.lastname);
+              html +=       '<span class="pull-right">#' + esc(this.id_customer) + '</span></div>';
+              html +=     '<span>' + esc(this.email) + '</span><br/>';
+              html +=     renderGroupBadges(this);
+              html +=     '<span class="text-muted">' + (this.birthday !== '0000-00-00' ? esc(this.birthday) : '') + '</span><br/>';
+              html +=     '<div class="panel-footer">';
+              html +=       '<a href="{$link->getAdminLink('AdminCustomers')}&id_customer=' + esc(this.id_customer) + '&viewcustomer&liteDisplaying=1" class="btn btn-default fancybox"><i class="icon-search"></i> {l s='Details'}</a>&nbsp;';
+              html +=       '<a href="{$link->getAdminLink('AdminCustomerMerge')}&source_customer_id=' + esc(customerId) + '&target_customer_id=' + esc(this.id_customer) + '" class="btn btn-default"><i class="icon-arrow-right"></i> {l s='Merge into'}</a>';
+              html +=     '</div>';
+              html +=   '</div>';
+              html += '</div>';
+            }
+          });
+        } else {
+          html = '<div class="alert alert-warning">{l s='No customers found'}</div>';
+        }
+        $('#customers').html(html);
+        $('.fancybox').fancybox({
+          'type': 'iframe',
+          'width': '90%',
+          'height': '90%'
+        });
+      }
+    });
+  }
 </script>
 
 <div id="container-customer">
@@ -615,7 +649,7 @@
 				</div>
 				<div>
 					<div class="alert alert-info">
-                        {l s="Merge this customer with another customer account. All orders and data will be associated with the other customer account, and this one will be removed"}
+                        {l s="Merge this customer with another customer account. All orders and data will be associated with the other customer account, and this one will be removed."} {l s="Marked with blue is the account's default group."}
 					</div>
 					<div id="search-customer-form-group" class="form-group">
 						<label class="control-label col-lg-3">
