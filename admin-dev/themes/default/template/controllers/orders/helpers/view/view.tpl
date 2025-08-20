@@ -720,6 +720,9 @@
                         <i class="icon-pencil"></i>
                         {l s='Edit'}
                       </a>
+                      <span class="label-tooltip pull-right" style="margin-right: 10px" data-toggle="tooltip" title="{l s='Double-click a word to copy it, triple-click to copy the entire line.'}">
+                        <i class="icon-info"></i>
+                      </span>
 
                       <div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
                       {displayAddressDetail address=$addresses.delivery newLine='</div><div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
@@ -781,6 +784,9 @@
                       <i class="icon-pencil"></i>
                       {l s='Edit'}
                     </a>
+                    <span class="label-tooltip pull-right" style="margin-right: 10px" data-toggle="tooltip" title="{l s='Double-click a word to copy it, triple-click to copy the entire line.'}">
+                      <i class="icon-info"></i>
+                    </span>
 
                     <div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="{l s='Copied!'}" data-trigger="manual">
                     {displayAddressDetail address=$addresses.invoice newLine='</div><div onclick="copyHighlightedTextInDiv(event, true);" data-placement="left" data-content="Copied!" data-trigger="manual">'}
@@ -937,9 +943,16 @@
         </div>
 
         <div class="panel">
+        {capture assign=productListText}{foreach from=$products item=product name=productloop}{if not $product@first},{/if}{$product['product_quantity']|intval}x{$product['product_name']|regex_replace:"/\s*-.*$/":""}{/foreach}{/capture}
           <div class="panel-heading">
             <i class="icon-shopping-cart"></i>
             {l s='Products'} <span class="badge">{$products|@count}</span>
+            <div class="panel-heading-action">
+              <a class="btn btn-default" style="margin-left:5px" onclick="copyToClipboard('{$productListText|escape:'javascript':'UTF-8'}');">
+                <i class="icon-copy"></i>
+                {l s='Copy product list'}
+              </a>
+            </div>
           </div>
           <div id="refundForm">
             <!--
