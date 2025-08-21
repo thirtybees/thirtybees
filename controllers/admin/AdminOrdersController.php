@@ -3309,6 +3309,19 @@ class AdminOrdersControllerCore extends AdminController
     {
         $products = $order->getProducts();
 
+        $langId = (int) ($order->id_lang ?: $this->context->language->id);
+        foreach ($products as &$p) {
+            $idProduct = (int) ($p['product_id'] ?? $p['id_product'] ?? 0);
+            // Base name without combination
+            $baseName = $idProduct ? Product::getProductName($idProduct, null, $langId) : '';
+            // Fallback to the stored name if lookup fails (deleted product, etc.)
+            $p['product_name_plain'] = $baseName ?: ($p['product_name'] ?? '');
+        }
+        unset($p);
+
+        // Re-assign back just to be explicit (optional if you merge later)
+        $this->tpl_view_vars['products'] = $products;
+
         foreach ($products as &$product) {
             if ($product['image'] instanceof Image) {
                 $imageId = (int)$product['image']->id;

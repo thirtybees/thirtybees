@@ -943,7 +943,7 @@
         </div>
 
         <div class="panel">
-        {capture assign=productListText}{foreach from=$products item=product name=productloop}{if not $product@first},{/if}{$product['product_quantity']|intval}x{$product['product_name']|regex_replace:"/\s*-.*$/":""}{/foreach}{/capture}
+        {capture assign=productListText}{foreach from=$products item=product name=productloop}{if not $product@first},{/if}{$product['product_quantity']|intval}x{$product['product_name_plain']}{/foreach}{/capture}
           <div class="panel-heading">
             <i class="icon-shopping-cart"></i>
             {l s='Products'} <span class="badge">{$products|@count}</span>
