@@ -483,10 +483,18 @@
 				<div class="translatable-field lang-{$language.id_lang}">
 					<div class="col-lg-9">
 				{/if}
-						<input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
-				{if $languages|count > 1}
-					</div>
-					<div class="col-lg-2">
+                                                <input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
+                                                <div id="tag_pool_{$language.id_lang}" class="tag-pool" data-lang="{$language.id_lang}">
+                                                        <div class="tagify-container">
+                                                                {foreach from=$tag_pools[$language.id_lang] item=tag}
+                                                                        <span>{$tag.name|escape:'html':'UTF-8'}</span>
+                                                                {/foreach}
+                                                        </div>
+                                                        <button type="button" class="btn btn-default btn-xs tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}">{l s='Load more'}</button>
+                                                </div>
+                                {if $languages|count > 1}
+                                        </div>
+                                        <div class="col-lg-2">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							{$language.iso_code}
 							<span class="caret"></span>
@@ -518,6 +526,45 @@
 	</div>
 </div>
 <script type="text/javascript">
-	hideOtherLanguage({$default_form_language});
-	var missing_product_name = '{l s='Please fill product name input field' js=1}';
+        hideOtherLanguage({$default_form_language});
+        var missing_product_name = '{l s='Please fill product name input field' js=1}';
+        var tagPoolToken = '{$token}';
+{literal}
+        $(function(){
+                $('.tag-pool').on('click', 'span', function(e){
+                        e.preventDefault();
+                        var tag = $(this).text();
+                        var langId = $(this).closest('.tag-pool').data('lang');
+                        var input = $('#tags_' + langId);
+                        var instance = input.data('ui-tagify');
+                        if ($.inArray(tag, instance.tags) === -1) {
+                                input.tagify('add', tag);
+                        }
+                });
+                $('.tag-pool-load-more').on('click', function(){
+                        var btn = $(this);
+                        var langId = btn.data('lang');
+                        var offset = btn.data('offset');
+                        $.get('index.php', {
+                                controller: 'AdminProducts',
+                                token: tagPoolToken,
+                                ajax: 1,
+                                action: 'GetTagPool',
+                                id_lang: langId,
+                                offset: offset
+                        }, function(res){
+                                if (res.tags) {
+                                        var container = $('#tag_pool_' + langId + ' .tagify-container');
+                                        $.each(res.tags, function(i, tag){
+                                                container.append($('<span/>').text(tag));
+                                        });
+                                        btn.data('offset', offset + res.tags.length);
+                                        if (res.tags.length < 25) {
+                                                btn.hide();
+                                        }
+                                }
+                        }, 'json');
+                });
+        });
+{/literal}
 </script>

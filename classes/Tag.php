@@ -305,6 +305,44 @@ class TagCore extends ObjectModel
     }
 
     /**
+     * Retrieve most frequently used tags
+     *
+     * @param int $idLang
+     * @param int $offset
+     * @param int $limit
+     * @param int[]|null $shopIds
+     *
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getPopularTags($idLang, $offset = 0, $limit = 25, ?array $shopIds = null)
+    {
+        if ($shopIds === null) {
+            $shopIds = Shop::getContextListShopID();
+        }
+
+        $shopIds = array_map('intval', $shopIds);
+        if (!$shopIds) {
+            return [];
+        }
+
+        $query = (new DbQuery())
+            ->select('t.`name`, SUM(tc.`counter`) AS `times`')
+            ->from('tag_count', 'tc')
+            ->innerJoin('tag', 't', 't.`id_tag` = tc.`id_tag`')
+            ->where('tc.`id_group` = 0')
+            ->where('tc.`id_lang` = '.(int)$idLang)
+            ->where('tc.`id_shop` IN ('.implode(',', $shopIds).')')
+            ->groupBy('tc.`id_tag`')
+            ->orderBy('`times` DESC')
+            ->limit((int)$limit, (int)$offset);
+
+        return Db::readOnly()->getArray($query);
+    }
+
+    /**
      * @param int $idProduct
      *
      * @return array|false

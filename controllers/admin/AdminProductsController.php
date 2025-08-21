@@ -645,6 +645,21 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
+     * Ajax process to fetch popular tags for tag pool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function ajaxProcessGetTagPool()
+    {
+        $idLang = Tools::getIntValue('id_lang', $this->context->language->id);
+        $offset = Tools::getIntValue('offset', 0);
+        $tags = Tag::getPopularTags($idLang, $offset, 25);
+
+        $this->ajaxDie(Tools::jsonEncode(['tags' => array_column($tags, 'name')]));
+    }
+
+    /**
      * Process delete virtual product
      *
      * @throws PrestaShopException
@@ -4717,11 +4732,20 @@ class AdminProductsControllerCore extends AdminController
 
         $currency = $this->context->currency;
 
+        $languages = $this->getLanguages();
+        $shopIds = Shop::getContextListShopID();
+        $tagPools = [];
+        foreach ($languages as $lang) {
+            $tagPools[$lang['id_lang']] = Tag::getPopularTags($lang['id_lang'], 0, 25, $shopIds);
+        }
+
         $data->assign(
             [
-                'languages'             => $this->getLanguages(),
+                'languages'             => $languages,
                 'default_form_language' => $this->getDefaultFormLanguage(),
                 'currency'              => $currency,
+                'tag_pools'             => $tagPools,
+                'token'                => Tools::getAdminTokenLite('AdminProducts'),
             ]
         );
         $this->object = $product;
