@@ -533,8 +533,16 @@
         var missing_product_name = '{l s='Please fill product name input field' js=1}';
         var tagPoolToken = '{$token}';
         var tagPoolProductId = {$product->id|intval};
+        var tagPoolTags = {};
 {literal}
         $(function(){
+               $('.tag-pool').each(function(){
+                       var langId = $(this).data('lang');
+                       tagPoolTags[langId] = [];
+                       $(this).find('.tag-pool-container span').each(function(){
+                               tagPoolTags[langId].push($(this).text());
+                       });
+               });
                 $('.tag-pool').on('click', 'span', function(e){
                         e.preventDefault();
                         var $tag = $(this);
@@ -543,8 +551,8 @@
                         var input = $('#tags_' + langId);
                         var instance = input.data('ui-tagify');
                         if ($.inArray(tag, instance.tags) === -1) {
-                                input.tagify('add', tag);
-                                $tag.remove();
+                               input.tagify('add', tag);
+                               $tag.remove();
                         }
                 });
                 $('.tag-pool-load-more').on('click', function(){
@@ -555,16 +563,19 @@
                                 controller: 'AdminProducts',
                                 token: tagPoolToken,
                                 ajax: 1,
-                                action: 'GetTagPool',
-                                id_lang: langId,
-                                id_product: tagPoolProductId,
-                                offset: offset
+                               action: 'GetTagPool',
+                               id_lang: langId,
+                               id_product: tagPoolProductId,
+                               offset: offset
                         }, function(res){
                                 if (res.tags) {
                                         var container = $('#tag_pool_' + langId + ' .tag-pool-container');
-                                        $.each(res.tags, function(i, tag){
-                                                container.append($('<span/>').text(tag));
-                                        });
+                                       $.each(res.tags, function(i, tag){
+                                               container.append($('<span/>').text(tag));
+                                               if ($.inArray(tag, tagPoolTags[langId]) === -1) {
+                                                       tagPoolTags[langId].push(tag);
+                                               }
+                                       });
                                         btn.data('offset', offset + res.tags.length);
                                         if (res.tags.length < 25) {
                                                 btn.hide();
@@ -572,6 +583,27 @@
                                 }
                         }, 'json');
                 });
+               $('.tagify').each(function(){
+                       var input = $(this);
+                       var langId = input.attr('id').split('_')[1];
+                       var instance = input.data('ui-tagify');
+                       var originalRemove = instance.remove;
+                       instance.remove = function(tagIndex){
+                               var tagText;
+                               if (typeof tagIndex === 'number' && this.tags[tagIndex] !== undefined) {
+                                       tagText = this.tags[tagIndex];
+                               } else {
+                                       tagText = this.tags[this.tags.length - 1];
+                               }
+                               originalRemove.call(this, tagIndex);
+                               if (tagText && $.inArray(tagText, tagPoolTags[langId]) !== -1) {
+                                       var container = $('#tag_pool_' + langId + ' .tag-pool-container');
+                                       if (container.find('span').filter(function(){return $(this).text() === tagText;}).length === 0) {
+                                               container.append($('<span/>').text(tagText));
+                                       }
+                               }
+                       };
+               });
         });
 {/literal}
 </script>
