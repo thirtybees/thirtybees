@@ -484,14 +484,16 @@
 					<div class="col-lg-9">
 				{/if}
                                                 <input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
+                                                <div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}</div>
                                                 <div id="tag_pool_{$language.id_lang}" class="tag-pool" data-lang="{$language.id_lang}">
-                                                        <div class="tag-pool-container">
+                                                        <div class="tagify-container tag-pool-container">
                                                                 {foreach from=$tag_pools[$language.id_lang] item=tag}
                                                                         <span>{$tag.name|escape:'html':'UTF-8'}</span>
                                                                 {/foreach}
                                                         </div>
                                                         <button type="button" class="btn btn-link tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}" style="margin-top:6px">{l s='Load more'}</button>
                                                 </div>
+                                                <div class="help-block">{l s='Use tags to link products and make promotions, not as a SEO tool. Modern search engines does not take into account keywords and if using more than 3-4 tags it might be considered keyword stuffing'}</div>
                                 {if $languages|count > 1}
                                         </div>
                                         <div class="col-lg-2">
@@ -513,8 +515,6 @@
                         {if $languages|count > 1}
                         </div>
                         {/if}
-                        <div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}
-                        </div>
                 </div>
         </div>
 	<div class="panel-footer">
@@ -525,24 +525,26 @@
 </div>
 {literal}
 <style>
-.tag-pool-container{background-color:#fff;padding:0 3px;min-height:30px;overflow:auto;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 1px rgba(0,0,0,0.075) inset;}
-.tag-pool-container span{display:inline-block;padding:2px 5px;margin:3px;border-radius:2px;border:1px solid #337ab7;background-color:#5bc0de;color:#fff;float:left;}
+.tag-pool-container span{cursor:pointer;user-select:none;}
 </style>
 {/literal}
 <script type="text/javascript">
         hideOtherLanguage({$default_form_language});
         var missing_product_name = '{l s='Please fill product name input field' js=1}';
         var tagPoolToken = '{$token}';
+        var tagPoolProductId = {$product->id|intval};
 {literal}
         $(function(){
                 $('.tag-pool').on('click', 'span', function(e){
                         e.preventDefault();
-                        var tag = $(this).text();
-                        var langId = $(this).closest('.tag-pool').data('lang');
+                        var $tag = $(this);
+                        var tag = $tag.text();
+                        var langId = $tag.closest('.tag-pool').data('lang');
                         var input = $('#tags_' + langId);
                         var instance = input.data('ui-tagify');
                         if ($.inArray(tag, instance.tags) === -1) {
                                 input.tagify('add', tag);
+                                $tag.remove();
                         }
                 });
                 $('.tag-pool-load-more').on('click', function(){
@@ -555,6 +557,7 @@
                                 ajax: 1,
                                 action: 'GetTagPool',
                                 id_lang: langId,
+                                id_product: tagPoolProductId,
                                 offset: offset
                         }, function(res){
                                 if (res.tags) {

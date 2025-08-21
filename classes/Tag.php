@@ -317,7 +317,7 @@ class TagCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getPopularTags($idLang, $offset = 0, $limit = 25, ?array $shopIds = null)
+    public static function getPopularTags($idLang, $offset = 0, $limit = 25, ?array $shopIds = null, array $excludeNames = [])
     {
         if ($shopIds === null) {
             $shopIds = Shop::getContextListShopID();
@@ -337,6 +337,11 @@ class TagCore extends ObjectModel
             ->groupBy('pt.`id_tag`')
             ->orderBy('`times` DESC')
             ->limit((int)$limit, (int)$offset);
+
+        if ($excludeNames) {
+            $excludeNames = array_map('pSQL', $excludeNames);
+            $query->where('t.`name` NOT IN (\'' . implode("','", $excludeNames) . '\')');
+        }
 
         return Db::readOnly()->getArray($query);
     }

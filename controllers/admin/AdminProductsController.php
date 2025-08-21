@@ -654,7 +654,17 @@ class AdminProductsControllerCore extends AdminController
     {
         $idLang = Tools::getIntValue('id_lang', $this->context->language->id);
         $offset = Tools::getIntValue('offset', 0);
-        $tags = Tag::getPopularTags($idLang, $offset, 25);
+        $idProduct = Tools::getIntValue('id_product');
+
+        $exclude = [];
+        if ($idProduct) {
+            $productTags = Tag::getProductTags($idProduct);
+            if (isset($productTags[$idLang])) {
+                $exclude = $productTags[$idLang];
+            }
+        }
+
+        $tags = Tag::getPopularTags($idLang, $offset, 25, null, $exclude);
 
         $this->ajaxDie(Tools::jsonEncode(['tags' => array_column($tags, 'name')]));
     }
@@ -4734,9 +4744,11 @@ class AdminProductsControllerCore extends AdminController
 
         $languages = $this->getLanguages();
         $shopIds = Shop::getContextListShopID();
+        $existingTags = Tag::getProductTags($product->id);
         $tagPools = [];
         foreach ($languages as $lang) {
-            $tagPools[$lang['id_lang']] = Tag::getPopularTags($lang['id_lang'], 0, 25, $shopIds);
+            $exclude = isset($existingTags[$lang['id_lang']]) ? $existingTags[$lang['id_lang']] : [];
+            $tagPools[$lang['id_lang']] = Tag::getPopularTags($lang['id_lang'], 0, 25, $shopIds, $exclude);
         }
 
         $data->assign(
