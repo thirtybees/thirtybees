@@ -493,7 +493,7 @@
                                                         </div>
                                                         <button type="button" class="btn btn-link tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}" style="margin-top:6px">{l s='Load more'}</button>
                                                 </div>
-                                                <div class="help-block">{l s='Use tags to link products and make promotions, not as a SEO tool. Modern search engines does not take into account keywords and if using more than 3-4 tags it might be considered keyword stuffing'}</div>
+                                                <div class="help-block">{l s='Use tags to connect products and run promotions—not as an SEO tactic. Modern search engines place negligible value on keyword fields, and using more than 3–4 tags per product can be interpreted as keyword stuffing.'}</div>
                                 {if $languages|count > 1}
                                         </div>
                                         <div class="col-lg-2">
