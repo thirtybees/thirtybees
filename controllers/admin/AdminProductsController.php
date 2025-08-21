@@ -645,6 +645,31 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
+     * Ajax process to fetch popular tags for tag pool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function ajaxProcessGetTagPool()
+    {
+        $idLang = Tools::getIntValue('id_lang', $this->context->language->id);
+        $offset = Tools::getIntValue('offset', 0);
+        $idProduct = Tools::getIntValue('id_product');
+
+        $exclude = [];
+        if ($idProduct) {
+            $productTags = Tag::getProductTags($idProduct);
+            if (isset($productTags[$idLang])) {
+                $exclude = $productTags[$idLang];
+            }
+        }
+
+        $tags = Tag::getPopularTags($idLang, $offset, 25, null, $exclude);
+
+        $this->ajaxDie(Tools::jsonEncode(['tags' => array_column($tags, 'name')]));
+    }
+
+    /**
      * Process delete virtual product
      *
      * @throws PrestaShopException
@@ -4717,11 +4742,22 @@ class AdminProductsControllerCore extends AdminController
 
         $currency = $this->context->currency;
 
+        $languages = $this->getLanguages();
+        $shopIds = Shop::getContextListShopID();
+        $existingTags = Tag::getProductTags($product->id);
+        $tagPools = [];
+        foreach ($languages as $lang) {
+            $exclude = isset($existingTags[$lang['id_lang']]) ? $existingTags[$lang['id_lang']] : [];
+            $tagPools[$lang['id_lang']] = Tag::getPopularTags($lang['id_lang'], 0, 25, $shopIds, $exclude);
+        }
+
         $data->assign(
             [
-                'languages'             => $this->getLanguages(),
+                'languages'             => $languages,
                 'default_form_language' => $this->getDefaultFormLanguage(),
                 'currency'              => $currency,
+                'tag_pools'             => $tagPools,
+                'token'                => Tools::getAdminTokenLite('AdminProducts'),
             ]
         );
         $this->object = $product;

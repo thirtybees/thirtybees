@@ -483,10 +483,20 @@
 				<div class="translatable-field lang-{$language.id_lang}">
 					<div class="col-lg-9">
 				{/if}
-						<input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
-				{if $languages|count > 1}
-					</div>
-					<div class="col-lg-2">
+                                                <input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
+                                                <div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}</div>
+                                                <div id="tag_pool_{$language.id_lang}" class="tag-pool" data-lang="{$language.id_lang}">
+                                                        <div class="tagify-container tag-pool-container">
+                                                                {foreach from=$tag_pools[$language.id_lang] item=tag}
+                                                                        <span>{$tag.name|escape:'html':'UTF-8'}</span>
+                                                                {/foreach}
+                                                        </div>
+                                                        <button type="button" class="btn btn-link tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}" style="margin-top:6px">{l s='Load more'}</button>
+                                                </div>
+                                                <div class="help-block">{l s='Use tags to link products and make promotions, not as a SEO tool. Modern search engines does not take into account keywords and if using more than 3-4 tags it might be considered keyword stuffing'}</div>
+                                {if $languages|count > 1}
+                                        </div>
+                                        <div class="col-lg-2">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							{$language.iso_code}
 							<span class="caret"></span>
@@ -501,23 +511,99 @@
 					</div>
 				</div>
 				{/if}
-				{/foreach}
-			{if $languages|count > 1}
-			</div>
-			{/if}
-		</div>
-		<div class="col-lg-9 col-lg-offset-3">
-			<div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}
-			</div>
-		</div>
-	</div>
+                                {/foreach}
+                        {if $languages|count > 1}
+                        </div>
+                        {/if}
+                </div>
+        </div>
 	<div class="panel-footer">
 		<a href="{$link->getAdminLink('AdminProducts')|escape:'html':'UTF-8'}{if isset($smarty.request.page) && $smarty.request.page > 1}&amp;submitFilterproduct={$smarty.request.page|intval}{/if}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
 		<button type="submit" name="submitAddproduct" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save'}</button>
 		<button type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save and stay'}</button>
 	</div>
 </div>
+{literal}
+<style>
+.tag-pool-container span{cursor:pointer;user-select:none;}
+</style>
+{/literal}
 <script type="text/javascript">
-	hideOtherLanguage({$default_form_language});
-	var missing_product_name = '{l s='Please fill product name input field' js=1}';
+        hideOtherLanguage({$default_form_language});
+        var missing_product_name = '{l s='Please fill product name input field' js=1}';
+        var tagPoolToken = '{$token}';
+        var tagPoolProductId = {$product->id|intval};
+        var tagPoolTags = {};
+{literal}
+        $(function(){
+               $('.tag-pool').each(function(){
+                       var langId = $(this).data('lang');
+                       tagPoolTags[langId] = [];
+                       $(this).find('.tag-pool-container span').each(function(){
+                               tagPoolTags[langId].push($(this).text());
+                       });
+               });
+                $('.tag-pool').on('click', 'span', function(e){
+                        e.preventDefault();
+                        var $tag = $(this);
+                        var tag = $tag.text();
+                        var langId = $tag.closest('.tag-pool').data('lang');
+                        var input = $('#tags_' + langId);
+                        var instance = input.data('ui-tagify');
+                        if ($.inArray(tag, instance.tags) === -1) {
+                               input.tagify('add', tag);
+                               $tag.remove();
+                        }
+                });
+                $('.tag-pool-load-more').on('click', function(){
+                        var btn = $(this);
+                        var langId = btn.data('lang');
+                        var offset = btn.data('offset');
+                        $.get('index.php', {
+                                controller: 'AdminProducts',
+                                token: tagPoolToken,
+                                ajax: 1,
+                               action: 'GetTagPool',
+                               id_lang: langId,
+                               id_product: tagPoolProductId,
+                               offset: offset
+                        }, function(res){
+                                if (res.tags) {
+                                        var container = $('#tag_pool_' + langId + ' .tag-pool-container');
+                                       $.each(res.tags, function(i, tag){
+                                               container.append($('<span/>').text(tag));
+                                               if ($.inArray(tag, tagPoolTags[langId]) === -1) {
+                                                       tagPoolTags[langId].push(tag);
+                                               }
+                                       });
+                                        btn.data('offset', offset + res.tags.length);
+                                        if (res.tags.length < 25) {
+                                                btn.hide();
+                                        }
+                                }
+                        }, 'json');
+                });
+               $('.tagify').each(function(){
+                       var input = $(this);
+                       var langId = input.attr('id').split('_')[1];
+                       var instance = input.data('ui-tagify');
+                       var originalRemove = instance.remove;
+                       instance.remove = function(tagIndex){
+                               var tagText;
+                               if (typeof tagIndex === 'number' && this.tags[tagIndex] !== undefined) {
+                                       tagText = this.tags[tagIndex];
+                               } else {
+                                       tagText = this.tags[this.tags.length - 1];
+                               }
+                               originalRemove.call(this, tagIndex);
+                               if (tagText && $.inArray(tagText, tagPoolTags[langId]) !== -1) {
+                                       var container = $('#tag_pool_' + langId + ' .tag-pool-container');
+                                       if (container.find('span').filter(function(){return $(this).text() === tagText;}).length === 0) {
+                                               container.append($('<span/>').text(tagText));
+                                       }
+                               }
+                       };
+               });
+        });
+{/literal}
 </script>
