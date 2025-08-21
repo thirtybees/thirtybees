@@ -485,12 +485,12 @@
 				{/if}
                                                 <input type="text" id="tags_{$language.id_lang}" class="tagify updateCurrentText" name="tags_{$language.id_lang}" value="{$product->getTags($language.id_lang, true)|htmlentitiesUTF8}" />
                                                 <div id="tag_pool_{$language.id_lang}" class="tag-pool" data-lang="{$language.id_lang}">
-                                                        <div class="tagify-container">
+                                                        <div class="tag-pool-container">
                                                                 {foreach from=$tag_pools[$language.id_lang] item=tag}
                                                                         <span>{$tag.name|escape:'html':'UTF-8'}</span>
                                                                 {/foreach}
                                                         </div>
-                                                        <button type="button" class="btn btn-default btn-xs tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}">{l s='Load more'}</button>
+                                                        <button type="button" class="btn btn-link tag-pool-load-more" data-lang="{$language.id_lang}" data-offset="{$tag_pools[$language.id_lang]|count}" style="margin-top:6px">{l s='Load more'}</button>
                                                 </div>
                                 {if $languages|count > 1}
                                         </div>
@@ -509,22 +509,26 @@
 					</div>
 				</div>
 				{/if}
-				{/foreach}
-			{if $languages|count > 1}
-			</div>
-			{/if}
-		</div>
-		<div class="col-lg-9 col-lg-offset-3">
-			<div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}
-			</div>
-		</div>
-	</div>
+                                {/foreach}
+                        {if $languages|count > 1}
+                        </div>
+                        {/if}
+                        <div class="help-block">{l s='Each tag has to be followed by a comma. The following characters are forbidden: %s' sprintf='!&lt;;&gt;;?=+#&quot;&deg;{}_$%.'}
+                        </div>
+                </div>
+        </div>
 	<div class="panel-footer">
 		<a href="{$link->getAdminLink('AdminProducts')|escape:'html':'UTF-8'}{if isset($smarty.request.page) && $smarty.request.page > 1}&amp;submitFilterproduct={$smarty.request.page|intval}{/if}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
 		<button type="submit" name="submitAddproduct" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save'}</button>
 		<button type="submit" name="submitAddproductAndStay" class="btn btn-default pull-right" disabled="disabled"><i class="process-icon-loading"></i> {l s='Save and stay'}</button>
 	</div>
 </div>
+{literal}
+<style>
+.tag-pool-container{background-color:#fff;padding:0 3px;min-height:30px;overflow:auto;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 1px rgba(0,0,0,0.075) inset;}
+.tag-pool-container span{display:inline-block;padding:2px 5px;margin:3px;border-radius:2px;border:1px solid #337ab7;background-color:#5bc0de;color:#fff;float:left;}
+</style>
+{/literal}
 <script type="text/javascript">
         hideOtherLanguage({$default_form_language});
         var missing_product_name = '{l s='Please fill product name input field' js=1}';
@@ -554,7 +558,7 @@
                                 offset: offset
                         }, function(res){
                                 if (res.tags) {
-                                        var container = $('#tag_pool_' + langId + ' .tagify-container');
+                                        var container = $('#tag_pool_' + langId + ' .tag-pool-container');
                                         $.each(res.tags, function(i, tag){
                                                 container.append($('<span/>').text(tag));
                                         });

@@ -329,13 +329,12 @@ class TagCore extends ObjectModel
         }
 
         $query = (new DbQuery())
-            ->select('t.`name`, SUM(tc.`counter`) AS `times`')
-            ->from('tag_count', 'tc')
-            ->innerJoin('tag', 't', 't.`id_tag` = tc.`id_tag`')
-            ->where('tc.`id_group` = 0')
-            ->where('tc.`id_lang` = '.(int)$idLang)
-            ->where('tc.`id_shop` IN ('.implode(',', $shopIds).')')
-            ->groupBy('tc.`id_tag`')
+            ->select('t.`name`, COUNT(DISTINCT ps.`id_product`) AS `times`')
+            ->from('product_tag', 'pt')
+            ->innerJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
+            ->innerJoin('product_shop', 'ps', 'ps.`id_product` = pt.`id_product` AND ps.`id_shop` IN ('.implode(',', $shopIds).')')
+            ->where('pt.`id_lang` = '.(int)$idLang)
+            ->groupBy('pt.`id_tag`')
             ->orderBy('`times` DESC')
             ->limit((int)$limit, (int)$offset);
 
