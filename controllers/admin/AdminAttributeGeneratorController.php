@@ -309,7 +309,11 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         foreach ($images as $img) {
             $formattedImages[] = [
                 'id'  => $img['id_image'],
-                'url' => $this->context->link->getImageLink($this->product->link_rewrite[$this->context->language->id] ?? '', $img['id_image'], ImageType::getFormattedName('small')),
+                'url' => $this->context->link->getImageLink(
+                    $this->product->link_rewrite[$this->context->language->id] ?? '',
+                    $img['id_image'],
+                    ImageType::getFormatedName('small')
+                ),
             ];
         }
         $groupsAffectingView = [];

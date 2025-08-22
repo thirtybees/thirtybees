@@ -35,6 +35,7 @@
 
   var productImages = {$images|json_encode};
   var groupsAffectingView = {$groups_affecting_view|json_encode};
+  var selectImagesLabel = '{l s=\'Images\'}';
 
 	{foreach $attribute_js as $idgrp => $group}
 		{assign var="row" value="attrs[{$idgrp}] = new Array(0, '---'"}

@@ -153,11 +153,13 @@ function create_attribute_row(id, idGroup, name, price, weight, width, height, d
   html += '<td><input type="text" value="' + height + '" name="height_impact_' + id + '"></td>';
   html += '<td><input type="text" value="' + depth + '" name="depth_impact_' + id + '"></td>';
   if (groupsAffectingView && groupsAffectingView[idGroup]) {
-    html += '<td><div class="image-selector" style="max-height:100px; overflow:auto;">';
+    html += '<td><div class="dropdown image-selector">';
+    html += '<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">' + selectImagesLabel + ' <span class="caret"></span></button>';
+    html += '<ul class="dropdown-menu dropdown-menu-right" style="padding:5px; max-height:200px; overflow:auto;">';
     for (var i = 0; i < productImages.length; i += 1) {
-      html += '<div class="checkbox"><label><input type="checkbox" name="image_impact_' + id + '[]" value="' + productImages[i].id + '"> ' + productImages[i].id + '</label></div>';
+      html += '<li><div class="checkbox"><label><input type="checkbox" name="image_impact_' + id + '[]" value="' + productImages[i].id + '"> ' + productImages[i].id + '</label></div></li>';
     }
-    html += '</div></td>';
+    html += '</ul></div></td>';
   }
   html += '</tr>';
 
